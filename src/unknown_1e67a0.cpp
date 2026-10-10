@@ -164,6 +164,7 @@ void function_1fc350(long object_index, void *state);
 point3f *function_b9dd0(long object_index, point3f *result);
 void __stdcall function_1c3770(long object_index, dword flags);
 
+/* Cleans up the previous state mode, initializes the new mode, and handles mode-transition updates. */
 // @retail 0x1e54d0
 void function_1e54d0(void *state, long mode)
 {
