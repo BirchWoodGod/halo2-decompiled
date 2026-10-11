@@ -527,7 +527,7 @@ bool c_game_engine::v13(byte mask, s_engine_settings *settings)
 	s_mp_globals *g = g_4e9ae8;
 	if (mask & 2)
 	{
-		if (settings->b1c != g->w6c)
+		if (g->w6c != settings->b1c)
 		{
 			function_15cba0(settings->b1c);
 			g = g_4e9ae8;

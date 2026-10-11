@@ -50,20 +50,23 @@ void function_26edb0(long joint_index, short participant_index);
 bool function_1be9e0(long actor_index, long other_index, real *distance, short *ticks);
 
 
+PRIVATE __forceinline real function_1be9e2(point3f const *arg_1, point3f const *arg_0)
+{
+    real local_0 = arg_0->x - arg_1->x;
+    real local_1 = arg_0->y - arg_1->y;
+    real local_2 = arg_0->z - arg_1->z;
+    return (real)sqrt(local_0 * local_0 + local_1 * local_1 + local_2 * local_2);
+}
+
 // @retail 0x1be9e0
 bool function_1be9e0(long actor_index, long other_index, real *distance, short *ticks)
 {
-	s_actor_view *actor = actor_get(actor_index);
-	s_actor_view *other = actor_get(other_index);
-	vector3f delta;
 	bool result = false;
 	short slot_ticks = 0x7fff;
+	s_actor_view *actor = actor_get(actor_index);
+	s_actor_view *other = actor_get(other_index);
 
-	delta.i = actor->position.x - other->position.x;
-	delta.j = actor->position.y - other->position.y;
-	delta.k = actor->position.z - other->position.z;
-
-	real magnitude = magnitude3d(&delta);
+	real magnitude = function_1be9e2(&other->position, &actor->position);
 
 	if (magnitude < 4.0f)
 	{

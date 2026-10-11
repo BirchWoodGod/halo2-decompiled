@@ -133,7 +133,7 @@ bool __stdcall function_1bc4f0(long actor_index, s_slot *slot)
 	if (team == 1 || !team_is_enemy(team, 1))
 	{
 		function_1f86a0(actor_index);
-		return true;
+		result = true;
 	}
 	return result;
 }
@@ -196,14 +196,17 @@ short __stdcall function_1bc6d0(long actor_index)
 	if (element_502420_get(actor->unknown07c)->member_count > 1)
 	{
 		s_object_seat seats[0x40];
-		short count = 0;
-		long free_count = 0;
-		long taken_count = 0;
+		struct s_1bc6d1 { union { short field_0; long field_c; }; long field_4; long field_8; } local_1;
+		local_1.field_c = 0;
+		local_1.field_4 = 0;
+		local_1.field_8 = 0;
 
-		function_c8a40(actor->unknown26c, seats, &count, 0x40);
-		for (short i = 0; i < count; i++)
+		function_c8a40(actor->unknown26c, seats, &local_1.field_0, 0x40);
+		s_object_seat *seat = seats;
+		long local_0 = (word)local_1.field_0;
+		if (local_1.field_0 > 0)
+		do
 		{
-			s_object_seat *seat = &seats[i];
 
 			if (!TEST_FIELD_BIT(seat->definition->flags.bit11))
 			{
@@ -212,15 +215,18 @@ short __stdcall function_1bc6d0(long actor_index)
 				if (function_c8f60(seat->object_index, seat->seat_index) != NONE)
 				{
 					if (wanted)
-						taken_count++;
+						local_1.field_8++;
 				}
 				else if (!function_1b8d80(actor_index, seat->object_index, seat->seat_index, false) && wanted)
 				{
-					free_count++;
+					local_1.field_4++;
 				}
 			}
+			seat++;
+			local_0--;
 		}
-		if ((short)taken_count == 0 && (short)free_count > 0)
+		while (local_0 != 0);
+		if ((short)local_1.field_8 == 0 && (short)local_1.field_4 > 0)
 			result = 3;
 	}
 	return (short)result;

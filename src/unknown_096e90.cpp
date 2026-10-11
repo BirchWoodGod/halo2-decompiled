@@ -104,6 +104,7 @@ static __forceinline void sender_write_type(s_bitstream *stream, dword type)
 void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bitstream *stream, long reserved_bits)
 {
 	s_request_450d1c *request = 0;
+	long const *items;
 	if (requests != 0 && requests->key == key)
 		request = requests;
 	if (!unknown09)
@@ -124,7 +125,10 @@ void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bits
 				block->key = key;
 			}
 			else
+			{
+				*(s_request_450d1c *volatile *)&request = 0;
 				unknown09 = 1;
+			}
 		}
 		if (!unknown09 && request)
 		{
@@ -137,15 +141,19 @@ void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bits
 				stream->checkpoint_count++;
 				stream_write_bit(stream, true);
 				sender_write_type(stream, node->unknown04);
-				long const *items = &node->unknown10;
+				items = &node->unknown10;
 				long remaining = 2;
+				long local_8;
 				do
 				{
-					long item = *items++;
+					long item = *items;
 					stream_write_bit(stream, item != NONE);
 					if (item != NONE)
 						function_b5650(item, stream);
-				} while (--remaining);
+					items++;
+					local_8 = *(long volatile *)&remaining - 1;
+					*(long volatile *)&remaining = local_8;
+				} while (local_8);
 				if (node->size > 0)
 					owner->manager->v2(node->unknown04, node->size, node->data, stream);
 				if ((stream->size_in_bytes << 3) - stream->bit_position >= reserved_bits)
@@ -184,9 +192,11 @@ long c_vtable_450d1c::v5(dword a1, s_bitstream *stream, long max_blocks, s_block
 		error = 2;
 	else
 	{
+		s_bitstream *local_0 = stream;
+		stream = (s_bitstream *)blocks;
 		for (;;)
 		{
-			if (!stream_read_bit(stream))
+			if (!stream_read_bit(local_0))
 				break;
 			if (count >= max_blocks)
 			{
@@ -194,33 +204,35 @@ long c_vtable_450d1c::v5(dword a1, s_bitstream *stream, long max_blocks, s_block
 				break;
 			}
 
-			long type = function_1959c0(stream, 5);
+			long type = function_1959c0(local_0, 5);
 			if (type < 0 || type >= 32)
 			{
 				error = 3;
 				break;
 			}
 
-			long produced = 0;
+			long *local_1 = (long *)&blocks;
+			*local_1 = 0;
 			dword items[2];
 			dword data[2];
 			for (long i = 0; i < 2; i++)
 			{
-				if (stream_read_bit(stream))
+				if (stream_read_bit(local_0))
 				{
-					dword low = function_1959c0(stream, 10);
-					items[i] = low | ((byte)function_1959c0(stream, 4) << 28);
+					dword low = function_1959c0(local_0, 10);
+					items[i] = low | ((byte)function_1959c0(local_0, 4) << 28);
 				}
 				else
 					items[i] = NONE;
 			}
 
-			error = owner->manager->v0(type, items, 1, &produced, data, stream);
+			error = owner->manager->v0(type, items, 1, local_1, data, local_0);
 			if (error != 0)
 				break;
 
-			s_block_450c94 *block = blocks;
-			blocks++;
+			s_block_450c94 *block = (s_block_450c94 *)stream;
+			stream = (s_bitstream *)(block + 1);
+			long produced = *local_1;
 			count++;
 			block->index = NONE;
 			block->unknown00 = type;
@@ -318,12 +330,14 @@ s_sub_450d14 *c_vtable_450d14::v0()
 	sub.count = 0;
 	if (((1 << state->kind) & 0x14) != 0)
 	{
-		sub.flag = state->unknown78 == 0;
+		byte local_0 = *(byte volatile *)&state->unknown78;
+		sub.flag = local_0 == 0;
 		sub.value = state->unknown7c;
 		s_game_options_view *options = g_4e6948;
 		if (options != 0 && options->flag1120 != 0)
 		{
-			s_header_450d14 *headers = (s_header_450d14 *)g_4e0300->data;
+			s_record_pool *local_1 = g_4e0300;
+			s_sub_450d14 *local_2 = &sub;
 			for (long i = 0; i < 4; i++)
 			{
 				s_match_450d14 *match = function_6a3b0(table, &key, i);
@@ -338,13 +352,12 @@ s_sub_450d14 *c_vtable_450d14::v0()
 						if (handle == NONE)
 							continue;
 					}
-					s_object_450d14 *object = headers[handle & 0xffff].object;
-					s_entry_450d14 *entry = &sub.entries[sub.count];
-					entry->unknown04 = object->unknownd4;
-					entry->unknown08 = object->unknown64;
-					entry->unknown14 = object->unknown15c;
-					entry->unknown20 = object->unknown241;
-					entry->unknown00 = player_index;
+					s_object_450d14 *object = ((s_header_450d14 *)local_1->data)[handle & 0xffff].object;
+					sub.entries[*(long volatile *)&sub.count].unknown04 = object->unknownd4;
+					sub.entries[*(long volatile *)&sub.count].unknown08 = object->unknown64;
+					sub.entries[*(long volatile *)&sub.count].unknown14 = object->unknown15c;
+					sub.entries[*(long volatile *)&sub.count].unknown20 = object->unknown241;
+					sub.entries[*(long volatile *)&sub.count].unknown00 = player_index;
 					sub.count++;
 				}
 			}

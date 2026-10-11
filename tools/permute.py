@@ -1467,6 +1467,32 @@ def mut_reorder_fields(body, rng, context=None):
     return '\n'.join(lines)
 
 
+def mut_move_statement(body, rng, context=None):
+    """Moves one statement two or more places up or down a run of simple
+    statements at one indent, past only statements it is independent of
+    (_reorderable): the order of a block of stores, which the adjacent swaps
+    of mut_reorder and mut_reorder_fields reach only in several steps."""
+    lines = body.split('\n')
+    moves = []
+    for i, line in enumerate(lines):
+        if not _is_simple_statement(line):
+            continue
+        for step in (-1, 1):
+            j = i + step
+            while (0 <= j < len(lines) and _is_simple_statement(lines[j]) and _indent(lines[j]) == _indent(line)
+                   and _reorderable(line, lines[j])):
+                if abs(j - i) >= 2:
+                    moves.append((i, j))
+                j += step
+    moves = [(i, j) for i, j in moves
+             if not any(_controlled(body, _line_start(lines, k)) for k in range(min(i, j), max(i, j) + 1))]
+    if not moves:
+        return None
+    i, j = rng.choice(moves)
+    lines.insert(j, lines.pop(i))
+    return '\n'.join(lines)
+
+
 def _call_spans(text):
     """(open, close) indices of the parentheses of each call's argument list in text."""
     out = []
@@ -2009,7 +2035,7 @@ def mut_do_while(body, rng, context=None):
     return body[:s] + new + body[e:]
 
 
-TYPED_MUTATIONS = [mut_reorder_fields, mut_hoist_argument, mut_inline_local, mut_cache_field, mut_uncache_field,
+TYPED_MUTATIONS = [mut_reorder_fields, mut_move_statement, mut_hoist_argument, mut_inline_local, mut_cache_field, mut_uncache_field,
                    mut_zero_compare, mut_early_return, mut_volatile_local, mut_retype_wide, mut_recast,
                    mut_redundant_cast, mut_do_while]
 WEIGHTS.update(dict.fromkeys(TYPED_MUTATIONS, 1))  # drawn only with --anneal (run_fast's anneal)
