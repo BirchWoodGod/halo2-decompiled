@@ -1452,7 +1452,9 @@ PRIVATE __forceinline void score_text_161420(byte const *widget, long valid)
     }
 }
 
-// @retail 0x161420
+// Disabled: only 0x159880 calls it, and that draft is disabled because it costs 0x22dad1. Enable both together.
+#if 0
+// Retail 0x161420
 void function_161420(long player_index, real alpha)
 {
     s_score_panel_1608e0 panel;
@@ -1522,4 +1524,5 @@ score_text_161420(data + 0x270, 0x60);
         score_text_161420(row + 0x184, 0x3c);
     }
 }
+#endif
 
