@@ -343,6 +343,37 @@ allocation, geometry-buffer lookup and lighting. Texture availability remains
 bypassed. This demonstrates behavior on the specified synthetic portal graphs,
 not arbitrary real-map traversal, asset streaming, GPU submission or gameplay.
 
+## Buffer lookup, command bytes and lighting wrapper
+
+Actual geometry-buffer lookup (`0x439d0`) agrees with retail in 54 cases varying
+block index, page offset, page shift and usage clock. It updates the selected
+block's timestamp, computes the resource address with its high address bit,
+and emits the vertex-cache command words `0x41710, 0` into a synthetic
+nonexhausted command buffer. Both the bytes and the command cursor are checked.
+No flush helper is mocked; command-buffer refill and GPU execution are not
+covered.
+
+The integrated 648-case run now uses this actual lookup, high-address buffer
+storage, command generation and actual lighting wrapper (`0xd47d0`), alongside
+the previously enabled portal/record/pool logic. It passes with 504 committed
+records and 1,372 recursive query invocations/pool allocation attempts. Resource
+metadata, command storage and cursor are compared in addition to packed
+geometry and persistent state. The image remains `cef349f7...` above; no
+production source changes were needed.
+
+The lighting wrapper is already byte-matching and always returns false. These
+fixtures provide a valid fallback color and no lightmap (`g_4e0344 == 0`), so
+the wrapper runs without exercising lightmap lookup/sampling. Earlier mocked
+lighting-success cases were forced caller-branch tests, not evidence that the
+actual wrapper returns true. The commit therefore keeps its default brightness
+in this actual-wrapper configuration.
+
+Only geometry allocation remains mocked at a game-routine boundary in this
+configuration. Backing memory, resource metadata and command storage are still
+synthetic; texture availability is bypassed. Full lightmap sampling, actual
+assets, command-buffer refill, GPU execution and complete gameplay remain
+unverified.
+
 Shared changes are limited to the new header, the predicate definition and
 callers in `src/unknown_11cb00.cpp`, `src/unknown_1502e0.cpp`,
 `src/unknown_1689b0.cpp`, `src/unknown_17d9a0.cpp`, `src/ai.cpp`, and
