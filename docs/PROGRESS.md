@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7717 functions match
+
+```
+matched 7717 of 11318 game functions (921252 of 2784283 bytes, 33.09%)
+```
+
+64 new matches, none lost:
+- Outside contributors' pull requests: @Banshee64's match-tuning of the unit, biped, vehicle, damage and projectile code (#183: 56 functions) and of chain, cloth, paths, joints, looping sounds and more (#255: 7), and @BirchWoodGod's unit update helper 0xe6800 (#312).
+- Also merged: analysis docs for 0x14f820 and 0x1d77d0 from @coldspear (#334, #338), and for 0x240820 from @mrv777 (#339), a first contribution.
+
 ## 2026-10-11: 7653 functions match
 
 ```
