@@ -77,7 +77,8 @@ void __stdcall function_149f88(void *screen)
         {
             s_game_variant variant;
             long type = function_216ab0(entry->type);
-            function_1489b5(type, &variant);
+            long const *type_reference = &type;
+            function_1489b5(*type_reference, &variant);
             word name[0x100];
             name[0] = 0;
             function_1a0180(list->string_tag, entry->name, name);
