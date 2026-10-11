@@ -35,7 +35,8 @@ void function_12b980(void);
 void __stdcall function_187df0(bool arg_0)
 {
 	(void)&arg_0;
-	s_187df1 local_0;
+	struct __declspec(align(16)) s_187df3 { s_187df1 field_0; };
+	s_187df3 local_0;
 	long local_1 = NONE;
 	for (long local_2 = 0; local_2 < 4; local_2++)
 	{
@@ -64,9 +65,9 @@ void __stdcall function_187df0(bool arg_0)
 				local_6 = NONE;
 			}
 			if (arg_0)
-				local_0.field_fc |= 1;
+				local_0.field_0.field_fc |= 1;
 			else
-				local_0.field_fc &= ~1;
+				local_0.field_0.field_fc &= ~1;
 			function_18fcc4(local_4, (s_player_profile *)&local_0, local_6);
 			function_12b980();
 		}

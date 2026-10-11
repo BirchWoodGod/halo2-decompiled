@@ -267,7 +267,7 @@ bool function_252a67(c_4way_signin_screen *screen, s_widget_event *event)
 	}
 	else if ((param == 1 || param == 13) && player_slot_count_active() == 0)
 	{
-		dialog_choice_show(3, 0x7e, 4, (word)(1 << event->controller_index), function_252a32, 0, 0);
+		dialog_choice_show(3, 0x7e, 4, (1 << event->controller_index), function_252a32, 0, 0);
 	}
 	return true;
 }

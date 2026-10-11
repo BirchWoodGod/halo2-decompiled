@@ -303,7 +303,8 @@ bool function_a9820(long *block, long index)
 		long identifier = ((s_object_header *)g_4e0300->data)[index & 0xffff].object->field_d4;
 		if (identifier != NONE)
 		{
-			s_z_entity_record *entity = &world->database->entities[identifier & 0x3ff];
+			// Preserve the later world-pointer read when selecting the record.
+			s_z_entity_record *entity = &((s_z_state_world *)*(void * const *)&g_4cf77c)->database->entities[identifier & 0x3ff];
 			if (entity->active)
 			{
 				long type = entity->type;

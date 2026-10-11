@@ -741,7 +741,7 @@ bool __stdcall function_843f0(s_simulation_world_owner *watcher, long current_me
  return false;
 }
 
-static inline long watcher_find_current_machine(dword mask, const s_machine_address *machines, s_machine_address address)
+static __forceinline long watcher_find_current_machine(dword mask, const s_machine_address *machines, s_machine_address address)
 {
  for (long i = 0; i < 16; i++)
   if ((mask & (1 << i)) && !memcmp(&machines[i], &address, sizeof(address))) return i;
@@ -752,77 +752,87 @@ void function_12d520(long address);
 // @retail 0x83f00
 bool __stdcall function_83f00(s_simulation_world_owner *watcher, long update, long count, long host, const s_session_member *members)
 {
- if (watcher->unknown10 == update) return true;
- dword mask = (1 << count) - 1;
- s_machine_address machines[16];
- memset(machines, 0, sizeof(machines));
- for (long i = 0; i < count; i++) machines[i] = *(const s_machine_address *)((const byte *)&members[i] + 10);
- c_class_6a600 *world = watcher->world;
- long local = watcher_find_current_machine(mask, machines, world->local_address);
- if (local == NONE) return false;
- if (local != *(long *)((byte *)world + 0x14)) *(long *)((byte *)world + 0x14) = local;
- c_simulation_view *view;
- s_view_iterator iterator;
- iterator.mask = NONE;
- iterator.index = 0;
- while (world_next_view(watcher->world, &iterator, &view))
+
+ bool local_2 = true;
+ if (!(watcher->unknown10 == update))
  {
-  long member = watcher_find_current_machine(mask, machines, view->address);
-  if (member == NONE)
+
+  dword mask = (1 << count) - 1;
+  s_machine_address machines[16];
+  memset(machines, 0, sizeof(machines));
+  for (long i = 0; i < count; i++) machines[i] = *(const s_machine_address *)((const byte *)&members[i] + 10);
+  c_class_6a600 *world = watcher->world;
+  long local = watcher_find_current_machine(mask, machines, world->local_address);
+  if (local == NONE) { local_2 = false; goto local_3; }
+  if (local != *(long *)((byte *)world + 0x14)) *(long *)((byte *)world + 0x14) = local;
+  c_simulation_view *view;
+  s_view_iterator iterator;
+  iterator.mask = NONE;
+  iterator.index = 0;
+  while (world_next_view(watcher->world, &iterator, &view))
   {
-   if (view->type)
+   long member = watcher_find_current_machine(mask, machines, view->address);
+   if (member == NONE)
    {
-    if (view->channel_index != NONE) function_85880(view);
-    if (view->world)
+    if (view->type)
     {
-     if (view->type == 2 && view->buffer)
+     if (view->channel_index != NONE) function_85880(view);
+     if (view->world)
      {
-      view->unknown9c = 0;
-      view->unknowna0 = 0;
-      function_12d520((long)view->buffer);
-      view->buffer = 0;
-      view->unknown98 = 0;
+      if (view->type == 2 && view->buffer)
+      {
+       view->unknown9c = 0;
+       view->unknowna0 = 0;
+       function_12d520((long)view->buffer);
+       view->buffer = 0;
+       view->unknown98 = 0;
+      }
+      c_class_6a600 *local_0 = view->world;
+      local_0->views[view->world_index] = 0;
+      local_0->view_count--;
+      view->world_index = NONE;
+      view->world = 0;
      }
-     view->world->views[view->world_index] = 0;
-     view->world->view_count--;
-     view->world_index = NONE;
-     view->world = 0;
+     view->type = 0;
     }
-    view->type = 0;
+    c_replication_view_storage *storage = (c_replication_view_storage *)view->data;
+    long index = view->unknown04;
+    record_pool_release((s_record_pool *)g_4d87ec, index);
+    if (storage)
+    {
+     storage->~c_replication_view_storage();
+     record_pool_release((s_record_pool *)g_4d87f0, index);
+    }
    }
-   c_replication_view_storage *storage = (c_replication_view_storage *)view->data;
-   long index = view->unknown04;
-   record_pool_release((s_record_pool *)g_4d87ec, index);
-   if (storage)
-   {
-    storage->~c_replication_view_storage();
-    record_pool_release((s_record_pool *)g_4d87f0, index);
-   }
+   else if (member != view->unknown1c) view->unknown1c = member;
   }
-  else if (member != view->unknown1c) view->unknown1c = member;
- }
- if (watcher->world->state != 3 && watcher->world->state != 5)
- {
-  for (long i = 0; i < 16; i++)
+  if (watcher->world->state != 3 && watcher->world->state != 5)
   {
-   c_class_6a600 *world = watcher->world;
-   s_simulation_world_player *player = &world->players[i & 0xffff];
-   if (player->player_index != NONE && player->flag25 &&
-    watcher_find_current_machine(mask, machines, *(const s_machine_address *)world->players[i].unknown18) == NONE)
+   for (long i = 0; i < 16; i++)
    {
-    if (world->players[i].flag25) world->players[i].flag25 = false;
-    world->players[i].flag24 = true;
+    c_class_6a600 *world = watcher->world;
+    s_simulation_world_player *player = &world->players[i & 0xffff];
+    if (player->player_index != NONE && player->flag25 &&
+     watcher_find_current_machine(mask, machines, *(const s_machine_address *)world->players[i].unknown18) == NONE)
+    {
+     if (world->players[i].flag25) world->players[i].flag25 = false;
+     world->players[i].flag24 = true;
+    }
    }
   }
+  long local_5 = *(volatile long *)&host;
+  watcher->unknown10 = update;
+  watcher->unknown1c = mask;
+  watcher->unknown14 = local_5;
+  watcher->unknown20 = *(long *)((byte *)watcher->world + 0x14);
+  memcpy(watcher->unknown24, machines, sizeof(machines));
+  watcher->unknown84 = true;
+  watcher->unknownc30 = true;
+
+
  }
- watcher->unknown10 = update;
- watcher->unknown1c = mask;
- watcher->unknown14 = host;
- watcher->unknown20 = *(long *)((byte *)watcher->world + 0x14);
- memcpy(watcher->unknown24, machines, sizeof(machines));
- watcher->unknown84 = true;
- watcher->unknownc30 = true;
- return true;
+local_3:
+ return local_2;
 }
 
 struct s_network_session_membership;

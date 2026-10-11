@@ -2,6 +2,42 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7653 functions match
+
+```
+matched 7653 of 11318 game functions (911712 of 2784283 bytes, 32.74%)
+```
+
+16 new matches, none lost:
+- The second machine's batch r59 (#333–#343): lanes K (+5) and AA (+5), D lower (+2), F and D upper (+1 each), and its permuter lane (two).
+
+## 2026-10-11: 7637 functions match
+
+```
+matched 7637 of 11318 game functions (905986 of 2784283 bytes, 32.54%)
+```
+
+4 new matches, none lost:
+- Deep lane 2, round 20 (the closest functions in group 2): 0x149f88, 0x155710, 0x252237 and 0x25229e.
+
+## 2026-10-11: 7633 functions match
+
+```
+matched 7633 of 11318 game functions (905516 of 2784283 bytes, 32.52%)
+```
+
+11 new matches, none lost:
+- Deep lane 1, round 23 (the closest functions outside the render code): 0xa04b0, 0xa0900, 0xa98b0 and 0xa9940; 0xa9640, 0xa96d0 and 0xa9770, which waited on their callee 0xa9820; and 0x688c0, 0x15c000, 0x15dc40 and 0x1e97b0 as side effects.
+
+## 2026-10-11: 7622 functions match
+
+```
+matched 7622 of 11318 game functions (903388 of 2784283 bytes, 32.45%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, round 19: 0x173ee0.
+
 ## 2026-10-11: 7621 functions match
 
 ```

@@ -231,7 +231,7 @@ void function_2216f0(
 	DSMIXBINVOLUMEPAIR out_pairs[8];
 	long values[32];
 	long out_count = 0;
-	dword changed_mask = 0;
+	volatile dword changed_mask = 0;
 	dword seen_mask = 0;
 	bool changed;
 	long i;
@@ -438,13 +438,15 @@ void (__stdcall *const g_221980_callbacks[])(char const *, long, real) =
 bool sound_driver_voice_create_buffer(
 	long voice_index)
 {
+	bool result = false;
 	s_sound_driver_voice *voice = &SOUND_DRIVER_GLOBALS->voices[voice_index];
-	DSBUFFERDESC description = {0};
-	bool result;
+	LPDIRECTSOUND local_0 = SOUND_DRIVER_GLOBALS->direct_sound;
+	DSBUFFERDESC description;
+	memset(&description, 0, sizeof(description));
 
 	description.dwSize = sizeof(description);
 	description.dwFlags = DSBCAPS_CTRL3D | DSBCAPS_MIXIN;
-	if (SUCCEEDED(IDirectSound_CreateSoundBuffer(SOUND_DRIVER_GLOBALS->direct_sound, &description, &voice->buffer, NULL)))
+	if (SUCCEEDED(IDirectSound_CreateSoundBuffer(local_0, &description, &voice->buffer, NULL)))
 	{
 		DSMIXBINVOLUMEPAIR pairs[5];
 		DSMIXBINS mixbins;
@@ -469,10 +471,6 @@ bool sound_driver_voice_create_buffer(
 		IDirectSoundBuffer_SetDopplerFactor(voice->buffer, 0.0f, DS3D_DEFERRED);
 		IDirectSoundBuffer_SetConeOutsideVolume(voice->buffer, 0, DS3D_DEFERRED);
 		result = true;
-	}
-	else
-	{
-		result = false;
 	}
 	voice->submix = NULL;
 	return result;
@@ -670,7 +668,7 @@ void sound_driver_voice_update(
 	{
 		goto local_0;
 	}
-	if (!force && (voice->flags & 1) == flag && parameters->obstruction_rate > 0.0f)
+	if (!force && (voice->flags & 1) == flag && !(0.0f >= parameters->obstruction_rate))
 	{
 		voice->unknown30 += PIN(obstruction - voice->unknown30, -parameters->obstruction_rate, parameters->obstruction_rate);
 	}
@@ -678,7 +676,7 @@ void sound_driver_voice_update(
 	{
 		voice->unknown30 = obstruction;
 	}
-	if (!force && (voice->flags & 1) == flag && parameters->occlusion_rate > 0.0f)
+	if (!force && (voice->flags & 1) == flag && !(0.0f >= parameters->occlusion_rate))
 	{
 		voice->unknown2c += PIN(occlusion - voice->unknown2c, -parameters->occlusion_rate, parameters->occlusion_rate);
 	}

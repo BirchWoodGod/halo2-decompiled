@@ -749,12 +749,14 @@ void function_06f4b0(c_session_state_joining *self)
  }
  if (state->unknownf0 != NONE)
  {
-  switch (online_task_poll(state->unknownf0))
-  {
-  case 0:
-  case 1:
+  dword local_0 = (dword)online_task_poll(state->unknownf0);
+  if (local_0 == 0)
    return;
-  case 2:
+  local_0--;
+  if (local_0 == 0)
+   return;
+  local_0--;
+  if (local_0 == 0)
    {
     s_match_result_data result;
     if (function_90160(state->unknownf0, &result))
@@ -770,8 +772,6 @@ void function_06f4b0(c_session_state_joining *self)
     else
      state->unknown104 = 3;
    }
-   break;
-  }
   function_6b640(state->unknownf0);
   state->unknownf0 = NONE;
  }
