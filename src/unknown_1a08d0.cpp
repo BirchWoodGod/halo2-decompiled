@@ -297,21 +297,23 @@ long __stdcall function_1a0fb0(s_async_task *task)
 	long local_0 = 0;
 	s_write_position_task *write = &task->write_position;
 	DWORD bytes_written = NONE;
-	task = 0;
+	LONG local_6 = 0;
 
-	if (SetFilePointer(write->file.handle, write->offset, (LONG *)&task, FILE_BEGIN) != INVALID_SET_FILE_POINTER)
+	if (SetFilePointer(write->file.handle, write->offset, &local_6, FILE_BEGIN) != INVALID_SET_FILE_POINTER)
 	{
 		dword size = g_46e48c;
 
 		if (write->size - write->bytes_written <= size)
 			size = write->size - write->bytes_written;
 		WriteFile(write->file.handle, (byte const *)write->buffer + write->bytes_written, size, &bytes_written, NULL);
-		write->offset += bytes_written;
-		write->bytes_written += bytes_written;
-		if (write->size != write->bytes_written && bytes_written >= size)
+		DWORD local_2 = bytes_written;
+		dword local_5 = write->bytes_written + local_2;
+		write->offset += local_2;
+		write->bytes_written = local_5;
+		if (write->size != local_5 && local_2 >= size)
 			goto local_1;
 		if (write->bytes_written_out)
-			*write->bytes_written_out = write->bytes_written;
+			*write->bytes_written_out = local_5;
 	}
 	local_0 = 1;
 	if (write->flags & 1)

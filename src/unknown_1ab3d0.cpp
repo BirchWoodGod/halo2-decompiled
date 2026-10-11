@@ -118,6 +118,21 @@ short __stdcall function_1ab3d0(long actor_index)
 	return result;
 }
 
+PRIVATE __forceinline vector3f *function_1ab4b1(vector3f const *arg_0, real arg_1,
+    point3f const *arg_2, point3f const *arg_3, vector3f *arg_4)
+{
+    real local_0 = arg_0->i * arg_1;
+    real local_1 = arg_0->j * arg_1;
+    real local_2 = arg_0->k * arg_1;
+    local_0 += arg_2->x;
+    local_1 += arg_2->y;
+    local_2 += arg_2->z;
+    arg_4->i = local_0 - arg_3->x;
+    arg_4->j = local_1 - arg_3->y;
+    arg_4->k = local_2 - arg_3->z;
+    return arg_4;
+}
+
 // @retail 0x1ab4b0
 bool __stdcall function_1ab4b0(long actor_index, s_slot *slot)
 {
@@ -133,9 +148,7 @@ bool __stdcall function_1ab4b0(long actor_index, s_slot *slot)
 			s_slot_53 *slot_state = (s_slot_53 *)slot;
 			vector3f *direction = &slot_state->direction;
 
-			direction->i = (state->velocity.i * 0.5f + state->position.x) - actor->position.x;
-			direction->j = (state->velocity.j * 0.5f + state->position.y) - actor->position.y;
-			direction->k = (state->velocity.k * 0.5f + state->position.z) - actor->position.z;
+			direction = function_1ab4b1(&state->velocity, 0.5f, &state->position, &actor->position, direction);
 			if (0.0f > actor->unknown290.k * direction->k + actor->unknown290.j * direction->j + direction->i * actor->unknown290.i)
 			{
 				direction->i = state->position.x - actor->position.x;

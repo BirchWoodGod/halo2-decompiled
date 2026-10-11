@@ -146,15 +146,13 @@ void function_1a6340(vector3f const *a, vector3f const *b, point3f *out, point3f
 // @retail 0x1a62e0
 bool function_1a62e0(long object_index, point3f *out, vector3f const *direction, point3f const *origin)
 {
+	struct s_1a62e1 { real field_0; point3f field_4; vector3f field_10; };
+	s_1a62e1 local_0;
+	function_df6c0(&local_0.field_4, &local_0.field_10, object_index, &local_0.field_0);
 	bool result = false;
-	real radius;
-	point3f bottom;
-	vector3f axis;
-
-	function_df6c0(&bottom, &axis, object_index, &radius);
-	if (radius > 0.0001f)
+	if (local_0.field_0 > 0.0001f)
 	{
-		function_1a6340(&axis, direction, out, &bottom, origin, radius);
+		function_1a6340(&local_0.field_10, direction, out, &local_0.field_4, origin, local_0.field_0);
 		result = true;
 	}
 	return result;
@@ -1413,21 +1411,30 @@ bool function_1a59f0(long object_index, long excluded_index, short team, bool *h
 }
 
 
+#pragma optimize("g", off)
+PRIVATE __forceinline s_object_header *function_1a5b01(long arg_0)
+{
+    long local_0 = arg_0 & 0xffff;
+    byte *local_1 = (byte *)g_4e0300->data;
+    return (s_object_header *)(local_1 + local_0 * sizeof(s_object_header));
+}
+#pragma optimize("", on)
+
 // @retail 0x1a5b00
 bool function_1a5b00(long object_index, short team, bool *has_hostile)
 {
 	long object_offset = (object_index & 0xffff) * sizeof(s_object_header);
-	s_target_seats_definition *definition = (s_target_seats_definition *)g_4e3b44[((s_object_header *)(object_offset + (byte *)g_4e0300->data))->object->definition_index & 0xffff].bytes;
+	s_target_seats_definition *definition = (s_target_seats_definition *)g_4e3b44[function_1a5b01(object_index)->object->definition_index & 0xffff].bytes;
 	bool result = false;
 	s_unit_child_iterator iterator;
 	*has_hostile = false;
 	iterator.object_index = object_index;
 	iterator.unit_index = NONE;
 	iterator.seat_index = NONE;
-	iterator.next_index = ((s_target_occupant_view *)((s_object_header *)(object_offset + (byte *)g_4e0300->data))->object)->first_child_index;
+	iterator.next_index = ((s_target_occupant_view *)function_1a5b01(object_index)->object)->first_child_index;
 	while (function_d05c0(&iterator))
 	{
-		s_target_occupant_view *occupant = (s_target_occupant_view *)OBJECT_HEADER(iterator.unit_index)->object;
+		s_target_occupant_view *occupant = (s_target_occupant_view *)function_1a5b01(iterator.unit_index)->object;
 		if (iterator.seat_index != NONE)
 		{
 			if (!function_1df560(team, occupant->team))

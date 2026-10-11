@@ -179,9 +179,9 @@ PRIVATE __forceinline void local_1(real seconds, short *timer)
 // @retail 0x1ac100
 short __stdcall function_1ac100(long actor_index, s_slot *slot, s_slot *next)
 {
+	short result = g_46fbe8;
 	long local_2 = actor_index;
 	s_actor_view *actor = actor_get(local_2);
-	short result = g_46fbe8;
 	s_slot_2c *state = (s_slot_2c *)slot;
 	long unit_index = actor->unknown018;
 	short mode = UNIT_MODE(unit_index);
@@ -450,9 +450,12 @@ void __stdcall function_1ad130(long actor_index, s_slot *slot)
 					s_unit_request request;
 					request.type = 0x24;
 					function_210850(&state->point, &request.type25.point);
-					dword local_1 = *(dword const *)&state->facing.i;
-					dword local_2 = *(dword const *)&state->facing.j;
-					dword local_3 = *(dword const *)&state->facing.k;
+					union s_1ad133 { dword field_0[3]; vector3f field_00; };
+					s_1ad133 local_4;
+					local_4.field_00 = state->facing;
+					dword local_1 = local_4.field_0[0];
+					dword local_2 = local_4.field_0[1];
+					dword local_3 = local_4.field_0[2];
 					*(dword *)&request.type25.facing.i = local_1;
 					request.type25.unknown1c = state->unknown38;
 					*(dword *)&request.type25.facing.j = local_2;
