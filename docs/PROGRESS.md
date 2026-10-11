@@ -2,6 +2,34 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7511 functions match
+
+```
+matched 7511 of 11318 game functions (881551 of 2784283 bytes, 31.66%)
+```
+
+4 new matches, none lost:
+- Deep lane 3, new code callees first in lanes V, X, A and the UI screens: 0x1e2930, 0x1e2990, 0x1e2f50 and 0x1e5a60 (922 bytes); 24 new bodies active.
+
+## 2026-10-11: 7507 functions match
+
+```
+matched 7507 of 11318 game functions (880629 of 2784283 bytes, 31.63%)
+```
+
+7 new matches, none lost:
+- Deep lane 1, closest first in lanes W, Z, AB and AD: 0xa2e90, 0xa30b0, 0xa31c0, 0xb6bb0, and 0xe7730 with no change to its body.
+- Our permuter lane: 0x1e4290 and 0x26a310.
+
+## 2026-10-10: 7500 functions match
+
+```
+matched 7500 of 11318 game functions (879080 of 2784283 bytes, 31.57%)
+```
+
+10 new matches, none lost:
+- Deep lane 1, new code callees first in lanes W, Z, AB and AD: 0x12000, 0x141c0, 0x226c0, 0x40e90, 0xa0350, 0xa2120, 0xa3eb0, 0xbe760, 0xbf0f0, and 0x10af20 as a side effect; 36 new bodies active.
+
 ## 2026-10-10: 7490 functions match
 
 ```
