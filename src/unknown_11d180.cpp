@@ -23,9 +23,14 @@ void function_11d180(
 	*forward = *in;
 	if (function_30bf0(forward) == 0.f)
 		*forward = *g_4687a8;
-	left->i = up->j * forward->k - up->k * forward->j;
-	left->j = forward->i * up->k - up->i * forward->k;
-	left->k = up->i * forward->j - up->j * forward->i;
+	{
+		real local_0 = up->i * forward->j - up->j * forward->i;
+		real local_1 = forward->i * up->k - up->i * forward->k;
+		real local_2 = up->j * forward->k - up->k * forward->j;
+		left->i = local_2;
+		left->j = local_1;
+		left->k = local_0;
+	}
 	if (function_30bf0(left) == 0.f)
 	{
 		vector3f axis;
@@ -34,14 +39,24 @@ void function_11d180(
 			axis = *g_4687a8;
 		else
 			axis = *g_4687b0;
-		left->i = axis.j * forward->k - axis.k * forward->j;
-		left->j = forward->i * axis.k - axis.i * forward->k;
-		left->k = axis.i * forward->j - axis.j * forward->i;
+		{
+			real local_0 = axis.i * forward->j - axis.j * forward->i;
+			real local_1 = forward->i * axis.k - axis.i * forward->k;
+			real local_2 = axis.j * forward->k - axis.k * forward->j;
+			left->i = local_2;
+			left->j = local_1;
+			left->k = local_0;
+		}
 		function_30bf0(left);
 	}
-	out->i = forward->j * left->k - left->j * forward->k;
-	out->j = forward->k * left->i - forward->i * left->k;
-	out->k = left->j * forward->i - left->i * forward->j;
+	{
+		real local_0 = left->j * forward->i - left->i * forward->j;
+		real local_1 = forward->k * left->i - forward->i * left->k;
+		real local_2 = forward->j * left->k - left->j * forward->k;
+		out->i = local_2;
+		out->j = local_1;
+		out->k = local_0;
+	}
 	function_30bf0(out);
 }
 
