@@ -95,6 +95,9 @@ struct s_item_unit
 void __stdcall function_b9b90(long object_index, bool disable);
 point3f *function_b9dd0(long object_index, point3f *result);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x10c850
 void function_10c850(long item_index)
 {
@@ -102,8 +105,11 @@ void function_10c850(long item_index)
 
 	function_b9b90(item_index, false);
 	item->value_13a = 0;
+	_ReadWriteBarrier();
 	item->flag5 = false;
 }
+
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x10cf50
 bool function_10cf50(long item_index)

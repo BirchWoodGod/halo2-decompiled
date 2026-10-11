@@ -3173,7 +3173,7 @@ real function_159690(long player_index, long target_index)
 void function_1e9f40(long player_index, s_object_values *table);
 
 // @retail 0x157be0
-void function_157be0(long player_index)
+void function_157be0(dword player_index)
 {
 	if (game_engine_get())
 	{
