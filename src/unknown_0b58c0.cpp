@@ -248,13 +248,15 @@ long function_b5990(long tag_index, bool flag)
     switch (definition->kind)
     {
     case 0: result = 9; break;
-    case 1: result = flag ? (short)12 : (short)15; break;
     case 2:
         if (flag) result = 14;
         break;
+    case 1: result = flag ? 12 : 15; break;
     case 3: result = 10; break;
     case 4: result = 10; break;
     case 5: result = 13; break;
+    case 7: result = 16; break;
+    case 8: result = 16; break;
     case 6:
         if (definition->model_index != NONE)
         {
@@ -263,8 +265,7 @@ long function_b5990(long tag_index, bool flag)
                 result = 11;
         }
         break;
-    case 7: result = 16; break;
-    case 8: result = 16; break;
+
     case 9: break;
     case 10: break;
     case 11: return 11;

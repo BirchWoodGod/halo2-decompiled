@@ -667,7 +667,7 @@ bool function_c35a0(long light_index, point3f *corners)
     bool result = false;
     if (function_c17f0(light_index, &shape, true))
     {
-        real far_width = shape.cone_render.slope_x * shape.cone.values[4] * 2.0f + shape.cone_render.width;
+        real far_width = (real)(shape.cone_render.slope_x * shape.cone.values[4] * 2.0f) + shape.cone_render.width;
         real far_height = shape.cone_render.aspect * far_width;
         vector3f direction = shape.cone_render.direction;
         function_30bf0(&direction);
@@ -679,37 +679,37 @@ bool function_c35a0(long light_index, point3f *corners)
         far_x_value = frame->position.x + direction.i * shape.cone.values[4];
         far_y_value = frame->position.y + direction.j * shape.cone.values[4];
         far_z_value = frame->position.z + direction.k * shape.cone.values[4];
-        point3f volatile far_points[4], near_points[4];
-        long order[4] = {0, 1, 3, 2};
+        struct { point3f volatile far_points[4]; point3f volatile near_points[4]; long order[4]; } geometry;
+        geometry.order[0] = 0; geometry.order[1] = 1; geometry.order[2] = 3; geometry.order[3] = 2;
         for (long i = 0; i < 4; i++)
         {
-            real x = ((order[i] & 1) ? 1.0f : -1.0f) * 0.5f;
-            real y = ((order[i] & 2) ? 1.0f : -1.0f) * 0.5f;
-            far_points[i].x = far_x_value;
-            far_points[i].y = far_y_value;
-            far_points[i].z = far_z_value;
-            near_points[i].x = near_centre.x;
-            near_points[i].y = near_centre.y;
-            near_points[i].z = near_centre.z;
+            real x = ((geometry.order[i] & 1) ? 1.0f : -1.0f) * 0.5f;
+            real y = ((geometry.order[i] & 2) ? 1.0f : -1.0f) * 0.5f;
+            geometry.far_points[i].x = far_x_value;
+            geometry.far_points[i].y = far_y_value;
+            geometry.far_points[i].z = far_z_value;
+            geometry.near_points[i].x = near_centre.x;
+            geometry.near_points[i].y = near_centre.y;
+            geometry.near_points[i].z = near_centre.z;
             real near_x = x * shape.cone_render.width;
             real far_x = x * far_width;
-            near_points[i].x += shape.left.i * near_x;
-            near_points[i].y += shape.left.j * near_x;
-            near_points[i].z += shape.left.k * near_x;
-            far_points[i].x += shape.left.i * far_x;
-            far_points[i].y += shape.left.j * far_x;
-            far_points[i].z += shape.left.k * far_x;
+            geometry.near_points[i].x += shape.left.i * near_x;
+            geometry.near_points[i].y += shape.left.j * near_x;
+            geometry.near_points[i].z += shape.left.k * near_x;
+            geometry.far_points[i].x += shape.left.i * far_x;
+            geometry.far_points[i].y += shape.left.j * far_x;
+            geometry.far_points[i].z += shape.left.k * far_x;
             real near_y = y * shape.cone_render.height;
             real far_y = y * far_height;
-            near_points[i].x += frame->up.i * near_y;
-            near_points[i].y += frame->up.j * near_y;
-            near_points[i].z += frame->up.k * near_y;
-            far_points[i].x += frame->up.i * far_y;
-            far_points[i].y += frame->up.j * far_y;
-            far_points[i].z += frame->up.k * far_y;
+            geometry.near_points[i].x += frame->up.i * near_y;
+            geometry.near_points[i].y += frame->up.j * near_y;
+            geometry.near_points[i].z += frame->up.k * near_y;
+            geometry.far_points[i].x += frame->up.i * far_y;
+            geometry.far_points[i].y += frame->up.j * far_y;
+            geometry.far_points[i].z += frame->up.k * far_y;
         }
-        memcpy(corners, (void const *)near_points, sizeof(near_points));
-        memcpy(corners + 4, (void const *)far_points, sizeof(far_points));
+        memcpy(corners, (void const *)geometry.near_points, sizeof(geometry.near_points));
+        memcpy(corners + 4, (void const *)geometry.far_points, sizeof(geometry.far_points));
         result = true;
     }
     return result;
