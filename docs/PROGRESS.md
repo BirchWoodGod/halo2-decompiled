@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7596 functions match
+
+```
+matched 7596 of 11318 game functions (899325 of 2784283 bytes, 32.30%)
+```
+
+1 new matches, none lost:
+- 0x16d660, which swaps a region's permutations: the effect's tag is set before its object. The permuter can now move a statement several places in one step, which finds this kind of fix.
+
 ## 2026-10-11: 7595 functions match
 
 ```
