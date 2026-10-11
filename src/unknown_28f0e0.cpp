@@ -6,7 +6,7 @@
 // @flags /O2 /Ob1 /arch:SSE /Gr
 
 real function_30bf0(vector3f *arg_0);
-void __stdcall function_b93b0(long arg_0, long arg_1, long arg_2);
+void __stdcall function_b93b0(long arg_0, long arg_1, short arg_2);
 
 struct s_28f0e0
 {
@@ -50,7 +50,7 @@ bool function_28f0e0(vector3f const *arg_0, s_28f0e0 const *arg_1, long arg_2, l
     local_3 = NULL;
 local_6:
     function_b75a0(arg_2, &arg_1->field_60, local_2, local_3, NULL, false);
-    function_b93b0(arg_3, arg_2, arg_1->field_0);
+    function_b93b0(arg_3, arg_2, (short)(arg_1->field_0));
     ((s_object_header_view *)g_4e0300->data)[arg_2 & 0xffff].flags &= ~0x20;
     if (local_0->field_134 == 0)
     {

@@ -95,19 +95,7 @@ void c_3101c0::function_30cab0(c_interface_278b40 *arg_0) {}
 // @stub 0x2dadb0
 void __cdecl function_2dadb0(hkWorld *arg_0) {}
 
-// @stub 0x268510
-void function_268510() {}
-// @stub 0x1e2f50
-void function_1e2f50() {}
 
-class c_1e2990
-{
-public:
- void function_1e2990(bool arg_0);
-};
-
-// @stub 0x1e2990
-void c_1e2990::function_1e2990(bool arg_0) {}
 
 struct s_311100;
 class c_311100
