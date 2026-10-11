@@ -82,12 +82,17 @@ void function_22a664(s_widget_quad_2b11 const *arg_0, s_float_rect const *arg_1,
 		function_1cd90();
 		D3DDevice_Begin(D3DPT_TRIANGLEFAN);
 		D3DDevice_SetVertexDataColor(9, 0xffffffff);
-		for (long local_6 = 0; local_6 < 4; ++local_6)
+		s_22a664 const *local_6 = local_0;
+		long volatile *local_7 = &arg_2;
+		*local_7 = 4;
+		do
 		{
-			D3DDevice_SetVertexData2f(3, local_0[local_6].field_10, local_0[local_6].field_14);
-			D3DDevice_SetVertexData4f(D3DVSDE_VERTEX, local_0[local_6].field_0,
-				local_0[local_6].field_4, local_0[local_6].field_8, local_0[local_6].field_c);
-		}
+			D3DDevice_SetVertexData2f(3, local_6->field_10, local_6->field_14);
+			D3DDevice_SetVertexData4f(D3DVSDE_VERTEX, local_6->field_0,
+				local_6->field_4, local_6->field_8, local_6->field_c);
+			++local_6;
+		} while (--*local_7);
+
 		D3DDevice_End();
 	}
 }

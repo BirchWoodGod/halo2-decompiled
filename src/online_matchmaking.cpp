@@ -194,11 +194,14 @@ bool online_match_session_get_info(long task_index, s_online_match_session_info 
 // @retail 0x8fe20
 long online_match_session_update(const s_online_match_session *session)
 {
-	long task_index = NONE;
+	long local_3 = NONE;
 
-	if (*(const __int64 *)&session->session_id != 0 && online_task_exists(10, 0xff) <= 2)
+	dword local_0 = ((const dword *)&session->session_id)[0];
+	dword local_1 = ((const dword *)&session->session_id)[1];
+	if ((local_0 | local_1) != 0 && online_task_exists(10, 0xff) <= 2)
 	{
-		task_index = online_task_new_if_logged_on();
+		long task_index = online_task_new_if_logged_on();
+		local_3 = task_index;
 		s_type_9df9da *task = function_6b910(task_index);
 		if (task)
 		{
@@ -207,9 +210,11 @@ long online_match_session_update(const s_online_match_session *session)
 			if (SUCCEEDED(XOnlineMatchSessionUpdate(session->session_id, session->public_filled, session->public_open, session->private_filled, session->private_open,
 				attribute_count, (PXONLINE_ATTRIBUTE)attributes, NULL, (PXONLINETASK_HANDLE)&task->handle)))
 			{
+				long local_2 = *(volatile long *)&task_index;
 				task->flags = 1;
 				task->type = 10;
 				task->controller_index = NONE;
+				return local_2;
 			}
 			else
 			{
@@ -218,7 +223,7 @@ long online_match_session_update(const s_online_match_session *session)
 			}
 		}
 	}
-	return task_index;
+	return local_3;
 }
 
 /* whether a task finished; succeeded tells whether it did without failing */

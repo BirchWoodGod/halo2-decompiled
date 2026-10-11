@@ -112,38 +112,43 @@ void function_80940(s_cache_property_record *records, long record_capacity,
 	long records_used = 0;
 	long properties_used = 0;
 	long buffers_used = 0;
-	for (long i = 0; i < g_4cf978; i++)
+	if (g_4cf978 > 0)
 	{
-		s_player_configuration_cache_entry *entry = &g_4cf98c[i];
-		if (entry->flags & 2)
+		records = *(s_cache_property_record *volatile *)&records;
+		buffers = *(byte *volatile *)&buffers;
+		for (long i = 0; i < g_4cf978; i++)
 		{
-			if (record_capacity <= 0 || property_capacity < 4 || buffer_capacity <= 0)
-				break;
-			memcpy(records->identity, &entry->player, sizeof(records->identity));
-			records->type = 0x61;
-			records->count = 4;
-			records->properties = properties;
-			records++;
-			record_capacity--;
-			records_used++;
-			*(short *)&properties->unknown00 = -3;
-			properties->type = 4;
-			properties->unknown08 = (long)buffers;
-			properties++;
-			property_capacity--;
-			properties_used++;
-			buffers += 0x40;
-			buffer_capacity--;
-			buffers_used++;
-			for (long j = 0; j < 3; j++)
+			s_player_configuration_cache_entry *entry = &g_4cf98c[i];
+			if (entry->flags & 2)
 			{
-				*(short *)&properties[j].unknown00 = (short)(j + 2);
-				properties[j].type = 1;
-				properties[j].unknown08 = 0;
+				if (record_capacity <= 0 || property_capacity < 4 || buffer_capacity <= 0)
+					break;
+				memcpy(records->identity, &entry->player, sizeof(records->identity));
+				records->type = 0x61;
+				records->count = 4;
+				records->properties = properties;
+				records++;
+				record_capacity--;
+				records_used++;
+				*(short *)&properties->unknown00 = -3;
+				properties->type = 4;
+				properties->unknown08 = (long)buffers;
+				properties++;
+				property_capacity--;
+				properties_used++;
+				buffers += 0x40;
+				buffer_capacity--;
+				buffers_used++;
+				for (long j = 0; j < 3; j++)
+				{
+					*(short *)&properties[j].unknown00 = (short)(j + 2);
+					properties[j].type = 1;
+					properties[j].unknown08 = 0;
+				}
+				properties += 3;
+				property_capacity -= 3;
+				properties_used += 3;
 			}
-			properties += 3;
-			property_capacity -= 3;
-			properties_used += 3;
 		}
 	}
 	if (record_count)

@@ -77,6 +77,8 @@ struct s_z_transform_state
 	vector3f angular_velocity;
 };
 
+__declspec(noinline) bool function_ab9f0(s_z_transform_state const *state);
+
 // @retail 0xab9f0
 bool function_ab9f0(s_z_transform_state const *state)
 {
@@ -86,9 +88,9 @@ bool function_ab9f0(s_z_transform_state const *state)
         if (state->identifier == NONE) break;
         if (!function_a7570(&state->position)) break;
         if (!function_a74c0(&state->up, &state->forward)) break;
-        if (!function_a7570(&state->linear_velocity)) break;
-        if (!function_a7570(&state->angular_velocity)) break;
-        return true;
+        byte const *velocity_bytes = (byte const *)state + 0x28;
+        if (!function_a7570((vector3f const *)velocity_bytes)) break;
+        return function_a7570((vector3f const *)(velocity_bytes + sizeof(vector3f)));
     } while (false);
     return false;
 }
