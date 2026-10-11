@@ -1903,7 +1903,7 @@ void function_26ae30(long object_index)
 		if (g_4f55d0->active)
 			groups.current = (s_clump *)data_iterator_next_inlined(&groups.pool);
 		if (!groups.current) break;
-		bool changed = false;
+		volatile bool changed = false;
 		s_iterator props;
 		props.next = ((s_clump *)(g_502420->data + (groups.pool.datum_index & 0xffff) * sizeof(s_clump)))->first_prop;
 		s_type_76cf92 *prop;
