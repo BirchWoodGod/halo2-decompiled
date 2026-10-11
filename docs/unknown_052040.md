@@ -806,3 +806,39 @@ The fixed entry calling convention was independently checked on this build.
 If LTCG changes register allocation, inspect the ABI before interpreting a
 probe failure as a recovery bug. These remain synthetic header checks; no
 texture pixels are decoded, transferred, sampled, or rendered by this tool.
+
+### Read queue and texture request integration
+
+Local differential probes extend the texture request through actual cache-file
+routing (`0x213760`), read-task construction (`0x1a0f10`), task submission,
+priority queue, worker (`0x120c40`) and read callback (`0x1a0e70`). Game-side
+calls run intact. SDK mutex/semaphore calls use deterministic stand-ins;
+SDK seek/read calls use host `pread` on three temporary synthetic files.
+This is not a real worker thread or Xbox kernel I/O implementation.
+
+The queue-only comparison passes 216 scenarios and 648 submitted jobs,
+including 3,456 read calls, 288 short reads and 2,808 callback retries. It
+varies selected cache file, all four encoded location classes, offsets
+0/4090/8192, sizes 0/33/1200 and chunk limits 16/512. Three jobs with distinct
+priorities 1/7/3 are queued before draining. Task IDs, payloads, normalized
+node/free/work lists, done/count outputs and complete file-operation traces
+agree. Equal-priority file-position ordering and exhausted free lists are
+outside this comparison.
+
+The connected texture request comparison uses actual 4 KB texture-cache pages,
+then executes header construction, submission, queue and worker to completion.
+All 672 cases agree: 576 allocation/read requests, 96 allocation failures and
+983,040 delivered bytes. Cases vary three levels, widths 8/64, request sizes
+1/511/512/513/4096/8192/16384, wait/restriction flags, priorities 1/5 and arena
+sizes 1/128 pages, plus file routing and read chunks. The complete synthetic
+bitmap, texture/physical pools, backing memory, queue and file traces are
+compared; the initial false and final true resident flag are checked.
+
+There are 160 short transfers in that deliberately bounded-file fixture.
+Retail and recovery both set the completion/resident flag for those requests;
+the tool checks the delivered prefix and untouched tail separately. The flag
+alone therefore does not establish a fully delivered texture. These tests use
+synthetic metadata and file contents, not actual map texture assets or GPU
+sampling. The checked executable remains
+`631dd56641056580d1ac5301f1beab74577429794e6489e4d58080100fae2bed`.
+No source implementation or compiler flags changed for this extension.
