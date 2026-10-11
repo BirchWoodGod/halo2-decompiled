@@ -461,7 +461,8 @@ long function_26d570(long object_index)
 		s_location_record_view *record = (s_location_record_view *)(g_51eca4->data + (result & 0xffff) * sizeof(s_location_record_view));
 		vector3f const *up = g_4687b0;
 		long sector_index = record->location_index;
-		real radius = *(real *)((byte *)object_get(object_index) + 0x3c);
+		real radius_value = *(real *)((byte *)object_get(object_index) + 0x3c);
+		real const &radius = radius_value;
 		long ring = 0;
 		long rings_remaining = 2;
 		do

@@ -685,7 +685,7 @@ struct s_unit_action_grenade
 void function_a7a30(long object_index, dword mask);
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
 long __stdcall function_b7b40(void *data);
-void __stdcall function_b93b0(long parent_index, long object_index, long node_index);
+void __stdcall function_b93b0(long parent_index, long object_index, short node_index);
 vector3f *function_11d000(vector3f const *v, vector3f *out);
 real function_30bf0(vector3f *v);
 
@@ -736,7 +736,7 @@ void __stdcall function_e7730(long unit_index)
 
 			if (projectile_index != NONE)
 			{
-				function_b93b0(unit_index, projectile_index, marker.node_index);
+				function_b93b0(unit_index, projectile_index, (short)(marker.node_index));
 				actions->grenade_projectile_index = projectile_index;
 				actions->grenade_type = unit->current_grenade_index;
 				actions->grenade_state = 2;
@@ -3638,6 +3638,20 @@ bool __stdcall function_ec9a0(long unit_index, s_unit_request *request)
 
 void function_1e54d0(void *state, long a);
 
+/* Resets the unit action state, switches it to mode 4, and updates the supplied point. */
+// @retail 0xe5690
+void __stdcall function_e5690(long unit_index, point3f const *point)
+{
+	s_unit_action_unit *unit = UNIT_ACTION_UNIT_GET(unit_index);
+
+	*(short *)((byte *)unit + 0x34c) = NONE;
+	*((byte *)unit + 0x34e) = 0;
+	*((byte *)unit + 0x34f) = 0;
+
+	function_1e54d0((byte *)unit + 0x3dc, 4);
+	function_b75a0(unit_index, point, NULL, NULL, NULL, false);
+}
+
 // @retail 0xecb20
 void __stdcall function_ecb20(long unit_index, long type)
 {
@@ -4600,4 +4614,3 @@ void __stdcall function_fff40(long weapon_index, bool silent, bool immediate)
     }
 }
 #endif
-

@@ -29,7 +29,7 @@ struct s_player_creation_record
 void __stdcall function_14c090(long index, bool reuse, s_player_creation_record const *record);
 void function_694c0(c_class_6a600 *world, long index);
 void ai_player_add(long index);
-void function_157be0(long index);
+void function_157be0(dword index);
 void function_157ed0(long index);
 void function_152df0(long index);
 point3f *function_b9dd0(long object_index, point3f *point);

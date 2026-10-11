@@ -342,6 +342,7 @@ void function_2bdd70(point3f *out, s_spline_2bd *spline, long n, point3f *points
 // @retail 0x2bde90
 void function_2bde90(real t, point3f *out, point3f *points)
 {
+	point3f *volatile output = out;
 	real m[4][4] =
 	{
 		{ -1.0f, 3.0f, -3.0f, 1.0f },
@@ -361,10 +362,10 @@ void function_2bde90(real t, point3f *out, point3f *points)
 	}
 	while (i < 4);
 
-	*out = *g_468788;
-	out->x = points[3].x * r[3] + points[2].x * r[2] + points[1].x * r[1] + points[0].x * r[0];
-	out->y = points[3].y * r[3] + points[2].y * r[2] + points[1].y * r[1] + points[0].y * r[0];
-	out->z = points[3].z * r[3] + points[2].z * r[2] + points[1].z * r[1] + points[0].z * r[0];
+	*output = *g_468788;
+	output->x = points[3].x * r[3] + points[2].x * r[2] + points[1].x * r[1] + points[0].x * r[0];
+	output->y = points[3].y * r[3] + points[2].y * r[2] + points[1].y * r[1] + points[0].y * r[0];
+	output->z = points[3].z * r[3] + points[2].z * r[2] + points[1].z * r[1] + points[0].z * r[0];
 }
 
 /* ---- the hill's shape ---- */
@@ -740,7 +741,10 @@ bool function_2be880(long player_index, s_polygon_2be *polygon)
 				real dx = polygon->center_x - position.x;
 				real dy = polygon->center_y - position.y;
 
-				if (dx * dx + dy * dy < polygon->radius * polygon->radius)
+				real radius_squared = polygon->radius * polygon->radius;
+				real center_distance_squared = dx * dx + dy * dy;
+				bool in_circle = center_distance_squared < radius_squared;
+				if (in_circle)
 				{
 					long crossings = 0;
 
@@ -1663,7 +1667,12 @@ void c_game_engine_a::v36(long local_player)
 			s_color_bits color;
 			territory_marker_color(player_index, i, &color);
 			s_marker_list list;
-			list.position = g_4e0350->marker_entries[(short)state->w60[i]].position;
+			point3f const *position = &g_4e0350->marker_entries[(short)state->w60[i]].position;
+			long position_bits[3];
+			position_bits[0] = ((long const *)position)[0];
+			position_bits[1] = ((long const *)position)[1];
+			position_bits[2] = ((long const *)position)[2];
+			list.position = *(point3f const *)position_bits;
 			list.b0 = 0;
 			list.b1 = 0;
 			list.l4 = 1;

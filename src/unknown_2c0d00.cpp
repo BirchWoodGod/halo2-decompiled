@@ -202,8 +202,9 @@ bool obstacle_list_add(s_obstacle_list *list, word flags, point2f const *center,
 	obstacle->flags = flags;
 	obstacle->group = NONE;
 	obstacle->object_index = object_index;
-		obstacle->center.y = *(real volatile const *)&center->y;
-    *(long *)&obstacle->center.x = *(long const *)&center->x;
+	real y = *(real volatile const *)&center->y;
+	memcpy(&obstacle->center.x, &center->x, sizeof(real));
+	obstacle->center.y = y;
     obstacle->radius = *radius_reference;
 	return true;
 }
@@ -680,13 +681,15 @@ void obstacle_list_flood(short first_index, dword *bits, real radius, s_obstacle
 			{
 				if (!bit_vector_test(bits, i))
 				{
-					s_obstacle const *other = &list->obstacles[i];
 					point2f offset;
+					s_obstacle const *other = &list->obstacles[i];
 					real distance;
 
-					distance = (other->radius + radius) + (current->radius + radius);
+					real other_radius = other->radius;
+					distance = (current->radius + radius) + (other_radius + radius);
 					vector2d_from_points2d(&current->center, &other->center, &offset);
-					if (distance * distance >= length_sq2f(&offset))
+					distance *= distance;
+					if (length_sq2f(&offset) <= distance)
 					{
 						bit_vector_set(bits, i);
 						stack[stack_count++] = i;
@@ -961,7 +964,7 @@ bool function_2c2a70(point2f const *origin, point2f const *endpoint,
     normalize_offset_direction_2c(&first_direction);
     vector2d_from_points2d(second, origin, &second_direction);
     normalize_offset_direction_2c(&second_direction);
-    real first_side = first_direction.y * normal.y + first_direction.x * normal.x;
+    volatile real first_side = first_direction.y * normal.y + first_direction.x * normal.x;
     real second_side = second_direction.y * normal.y + second_direction.x * normal.x;
     second_side = fabs(second_side) < 0.001 ? 0.0f : second_side;
     first_side = fabs(first_side) < 0.001 ? 0.0f : first_side;

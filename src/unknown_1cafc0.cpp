@@ -147,33 +147,33 @@ s_graph_tag *s_animation_state::graph_get()
 // @retail 0x1cb680
 void s_animation_state::update_blend_flags()
 {
-	dword flags0 = channels[0].flags;
-	dword flags1 = channels[1].flags;
-
-	if (!g_46fbf4 || !channel_valid(&channels[1]) || 0.45f > unknown80)
-	{
-		flags &= ~0x20;
-		flags0 &= ~0x380;
-		flags1 |= 0x380;
-	}
-	else if (unknown80 > 0.55f)
-	{
-		flags |= 0x20;
-		flags0 |= 0x380;
-		flags1 &= ~0x380;
-	}
-	else
-	{
-		return;
-	}
-	if (channel_valid(&channels[0]))
-	{
-		channels[0].flags = (word)flags0;
-	}
-	if (channel_valid(&channels[1]))
-	{
-		channels[1].flags = (word)flags1;
-	}
+ dword flags0 = channels[0].flags;
+ dword flags1 = channels[1].flags;
+ if (!g_46fbf4 || !channel_valid(&channels[1]) || 0.45f > unknown80)
+ {
+  flags &= ~0x20;
+  long local_0 = channels[0].graph_tag_index;
+  flags0 &= ~0x380;
+  flags1 |= 0x380;
+  if (local_0 == NONE)
+   goto local_2;
+ }
+ else if (unknown80 > 0.55f)
+ {
+  long local_1 = channels[0].graph_tag_index;
+  flags |= 0x20;
+  flags0 |= 0x380;
+  flags1 &= ~0x380;
+  if (local_1 == NONE)
+   goto local_2;
+ }
+ else
+  return;
+ if (channels[0].animation_id.index != NONE)
+  channels[0].flags = (word)flags0;
+local_2:
+ if (channel_valid(&channels[1]))
+  channels[1].flags = (word)flags1;
 }
 
 // @retail 0x1ccba0

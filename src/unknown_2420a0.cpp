@@ -1571,10 +1571,8 @@ long function_242510(long object_index)
 	return result;
 }
 
-// @retail 0x242ef0
-long function_242ef0(s_242ef1 arg_0, long team)
+PRIVATE __forceinline long function_242ef4(s_slot_table *g, s_242ef1 const &arg_0, long team)
 {
-	s_slot_table *g = g_51ec80;
 	long result = NONE;
 
 	for (long i = 0; i < 8; i++)
@@ -1620,6 +1618,12 @@ long function_242ef0(s_242ef1 arg_0, long team)
 	}
 
 	return result;
+}
+
+// @retail 0x242ef0
+long function_242ef0(s_242ef1 arg_0, long team)
+{
+	return function_242ef4(g_51ec80, arg_0, team);
 }
 
 #pragma inline_depth(1)
@@ -2157,7 +2161,7 @@ bool c_game_engine_markers::v46(dword flags, long, s_marker_update *update)
 
 	return result;
 }
-void __stdcall function_15e360(point3f const *point);
+void function_15e360(point3f const *point, long object_index);
 
 // @retail 0x242ba0
 void function_242ba0(long marker_index, long object_index, long player_index)
@@ -2184,7 +2188,7 @@ void function_242ba0(long marker_index, long object_index, long player_index)
 			s_slot_object *object;
 
 			g_51ec80->w204 |= 1;
-			function_15e360(&point);
+			function_15e360(&point, object_index);
 			g = g_51ec80;
 			g->w204 &= ~1;
 			g->carriers[slot] = player_index;

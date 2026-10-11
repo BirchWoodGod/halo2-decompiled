@@ -713,6 +713,9 @@ void __stdcall parse_target_player_gamertag(long string_handle, word *buffer)
 	}
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x22dad1
 void __stdcall parse_game_player_count(long string_handle, word *buffer)
 {
@@ -736,7 +739,17 @@ void __stdcall parse_game_player_count(long string_handle, word *buffer)
 	names[14] = 0x2000318;
 	names[15] = 0x2000319;
 	names[16] = 0x200031a;
-	count = function_199ebc() > function_199ef8() ? function_199ebc() : function_199ef8();
+	count = function_199ef8();
+	// Keep the session-count reads ordered through whole-program optimization.
+	_ReadWriteBarrier();
+	if (function_199ebc() > count)
+	{
+		count = function_199ebc();
+	}
+	else
+	{
+		count = function_199ef8();
+	}
 	if (count >= 0)
 	{
 		if (count > 0x10)
@@ -750,6 +763,8 @@ void __stdcall parse_game_player_count(long string_handle, word *buffer)
 	}
 	function_23620d(names[g_55cae4], buffer);
 }
+
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x22db96
 void __stdcall parse_coop_level_name(long string_handle, word *buffer)

@@ -77,6 +77,7 @@ import check
 from inventory import read_rows
 from linkmap import LinkMap
 from pe import Pe
+from reduced import _skip_literal, find_body, library_symbols, match_brace, pinning_units, reduced_units
 from xbe import FUNCTIONS_CSV, ROOT, Xbe, retail_xbe_path
 
 WORST = 10 ** 6
@@ -86,60 +87,6 @@ CHAR_TYPES = ['char', 'byte']
 NOT_NAMES = {'long', 'int', 'short', 'unsigned', 'char', 'byte', 'dword', 'word', 'const', 'void', 'static', 'sizeof',
              'float', 'real', 'double', 'struct', 'return'}
 STATEMENT_STOP = ('for', 'while', 'if', 'else', 'do', 'return', 'break', 'continue', 'goto', 'switch', 'case')
-
-
-# ---------------------------------------------------------------- extraction
-
-def _skip_literal(text, i):
-    """If a comment, string or character literal starts at i, the index after it, else i."""
-    if text.startswith('//', i):
-        j = text.find('\n', i)
-        return len(text) if j < 0 else j
-    if text.startswith('/*', i):
-        j = text.find('*/', i + 2)
-        return len(text) if j < 0 else j + 2
-    if text[i] in '"\'':
-        q, j = text[i], i + 1
-        while j < len(text) and text[j] != q:
-            j += 2 if text[j] == '\\' else 1
-        return j + 1
-    return i
-
-
-def match_brace(text, open_index):
-    """The index of the '}' matching the '{' at open_index."""
-    depth, i = 0, open_index
-    while i < len(text):
-        j = _skip_literal(text, i)
-        if j != i:
-            i = j
-            continue
-        if text[i] == '{':
-            depth += 1
-        elif text[i] == '}':
-            depth -= 1
-            if depth == 0:
-                return i
-        i += 1
-    raise ValueError('unbalanced braces')
-
-
-def find_body(text, va):
-    """(start, end) such that text[start:end] is the body of the function marked
-    "// @retail <va>" (or "// @retail <va> standard"): the text between its braces."""
-    for m in re.finditer(r'^[ \t]*//[ \t]*@retail[ \t]+(0x[0-9a-fA-F]+)(?:[ \t]+standard)?[ \t]*\r?$', text, re.M):
-        if int(m.group(1), 16) != va:
-            continue
-        i = m.end()
-        while i < len(text):
-            j = _skip_literal(text, i)
-            if j != i:
-                i = j
-            elif text[i] == '{':
-                return i + 1, match_brace(text, i)
-            else:
-                i += 1
-    raise ValueError(f'no function marked @retail {va:#x}')
 
 
 # ----------------------------------------------------------------- mutations
@@ -1520,6 +1467,32 @@ def mut_reorder_fields(body, rng, context=None):
     return '\n'.join(lines)
 
 
+def mut_move_statement(body, rng, context=None):
+    """Moves one statement two or more places up or down a run of simple
+    statements at one indent, past only statements it is independent of
+    (_reorderable): the order of a block of stores, which the adjacent swaps
+    of mut_reorder and mut_reorder_fields reach only in several steps."""
+    lines = body.split('\n')
+    moves = []
+    for i, line in enumerate(lines):
+        if not _is_simple_statement(line):
+            continue
+        for step in (-1, 1):
+            j = i + step
+            while (0 <= j < len(lines) and _is_simple_statement(lines[j]) and _indent(lines[j]) == _indent(line)
+                   and _reorderable(line, lines[j])):
+                if abs(j - i) >= 2:
+                    moves.append((i, j))
+                j += step
+    moves = [(i, j) for i, j in moves
+             if not any(_controlled(body, _line_start(lines, k)) for k in range(min(i, j), max(i, j) + 1))]
+    if not moves:
+        return None
+    i, j = rng.choice(moves)
+    lines.insert(j, lines.pop(i))
+    return '\n'.join(lines)
+
+
 def _call_spans(text):
     """(open, close) indices of the parentheses of each call's argument list in text."""
     out = []
@@ -2062,7 +2035,7 @@ def mut_do_while(body, rng, context=None):
     return body[:s] + new + body[e:]
 
 
-TYPED_MUTATIONS = [mut_reorder_fields, mut_hoist_argument, mut_inline_local, mut_cache_field, mut_uncache_field,
+TYPED_MUTATIONS = [mut_reorder_fields, mut_move_statement, mut_hoist_argument, mut_inline_local, mut_cache_field, mut_uncache_field,
                    mut_zero_compare, mut_early_return, mut_volatile_local, mut_retype_wide, mut_recast,
                    mut_redundant_cast, mut_do_while]
 WEIGHTS.update(dict.fromkeys(TYPED_MUTATIONS, 1))  # drawn only with --anneal (run_fast's anneal)
@@ -2172,72 +2145,6 @@ def _within_all(fixups, window):
 
 
 # ------------------------------------------------------------ reduced image
-
-def reduced_units(va, rows, markers, depth=None):
-    """The sources of the reduced image that scores va (tools/build.py's
-    build(units=...)): the one that marks va and those that mark its callees in
-    retail (the calls column of config/functions.csv, with @retail or @stub
-    markers), followed through callees that are themselves marked @retail, to
-    depth levels (None: all the way). Link-time code generation fits a call to
-    its callee's code, and that code to the callee's own callees, so leaving a
-    callee out changes how the target calls it. A stub is a leaf: it is built
-    without LTCG. A callee that no source marks comes from the libraries."""
-    where = {m.retail: m.path for m in markers}
-    decompiled = {m.retail for m in markers if not m.stub}
-    seen, frontier, level = {va}, [va], 0
-    while frontier and (depth is None or level < depth):
-        level += 1
-        found = [int(t, 16) for f in frontier if f in decompiled for t in rows.get(f, {}).get('calls', '').split()]
-        frontier = [c for c in dict.fromkeys(found) if c not in seen]
-        seen.update(frontier)
-    return {where[f] for f in seen if f in where}
-
-
-LTCG_LIBRARIES = {name[:-len('.lib')] for name in build.LIBRARIES if name.endswith('ltcg.lib')}  # built with /GL
-
-
-def library_symbols(linkmap):
-    """One public symbol of each object an image (given its LinkMap) took from
-    a library built without LTCG. A reduced image that takes the same objects
-    (/INCLUDE) keeps the standard conventions their calls force on the
-    functions they call, such as the compiler's vector iterators."""
-    found = {}
-    for s in linkmap.symbols:
-        library, colon, _ = s.object.partition(':')
-        if colon and not s.static and library not in LTCG_LIBRARIES:
-            found.setdefault(s.object, s.name)
-    return sorted(found.values())
-
-
-def _rel_target(image, field):
-    return (field + 4 + int.from_bytes(image.read(field, 4), 'little', signed=True)) & 0xFFFFFFFF
-
-
-def pinning_units(linkmap, image, symbol, sources):
-    """The sources that, in a full image (its LinkMap and Pe), pin the calling
-    convention of the function at symbol or of a function it calls directly:
-    those that take such a function's address (link-time code generation keeps
-    the standard convention of a function whose address escapes, such as a
-    callback) and stubs, built without LTCG, that call one. sources maps the
-    map's object names to their sources (build.source_objects)."""
-    start, end = linkmap.extent(symbol)
-    pinned = {symbol.va}
-    for field in linkmap.rel_fixups:
-        if start <= field < end:
-            callee = linkmap.symbol_at(_rel_target(image, field))
-            if callee is not None and callee.va != symbol.va:
-                pinned.add(callee.va)
-    objects = set()
-    for field in image.fixups:
-        if int.from_bytes(image.read(field, 4), 'little') in pinned and linkmap.symbol_at(field):
-            objects.add(linkmap.symbol_at(field).object)
-    for field in linkmap.rel_fixups:
-        caller = linkmap.symbol_at(field)
-        if (caller is not None and sources.get(caller.object, '').startswith('src/stubs/')
-                and _rel_target(image, field) in pinned):
-            objects.add(caller.object)
-    return {sources[o] for o in objects if o in sources}
-
 
 class FastScorer(Scorer):
     """A Scorer that builds a reduced image (see reduced_units): only the
@@ -2547,7 +2454,7 @@ def run_fast(va, tries=None, seed=0, time_limit=None, scratch=None, log=print, j
             symbol = check.resolve(linkmap, full.marked,
                                    check.StandinCalls(linkmap, image, build.marked_sources(full.root)))
             include = library_symbols(linkmap)
-            pinning = pinning_units(linkmap, image, symbol, build.source_objects(full.root))
+            pinning = pinning_units(linkmap, image, [symbol], build.source_objects(full.root))
             for scorer in scorers:
                 scorer.include = include
                 scorer.units |= pinning

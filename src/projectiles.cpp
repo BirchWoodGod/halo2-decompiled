@@ -601,7 +601,7 @@ dword vector3d_compress(vector3f const *vector);
 void function_b75a0(long object_index, point3f const *point, vector3f const *forward, vector3f const *up,
 	s_location const *location, bool unknown);
 void __stdcall function_b77d0(long object_index, vector3f const *linear_velocity, vector3f const *angular_velocity);
-void __stdcall function_b93b0(long parent_index, long object_index, long node_index);
+void __stdcall function_b93b0(long parent_index, long object_index, short node_index);
 void __stdcall function_1e2930(long object_index, long actor_index);
 void function_a83e0(long object_index, long parent_index, point3f const *point, long node_index,
 	vector3f const *forward);
@@ -820,7 +820,7 @@ void function_fd560(long projectile_index, long object_index, long node_index, p
 	function_b9b90(projectile_index, true);
 	if (object_index != NONE)
 	{
-		function_b93b0(object_index, projectile_index, node_index);
+		function_b93b0(object_index, projectile_index, (short)(node_index));
 
 		s_projectile *parent = PROJECTILE_GET(object_index);
 

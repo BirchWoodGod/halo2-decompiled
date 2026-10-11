@@ -2915,7 +2915,7 @@ void __stdcall function_102fb0(long weapon_index, short barrel_index)
     s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
     s_weapon_barrel_definition *barrel_definition = &definition->barrels[*barrel_reference];
     s_weapon_barrel *barrel = &weapon->barrels[*barrel_reference];
-    long unit_index = TEST_FIELD_BIT(weapon->in_inventory) ? weapon->unit_index : NONE;
+    volatile long  unit_index = TEST_FIELD_BIT(weapon->in_inventory) ? weapon->unit_index : NONE;
     long tag_index = NONE, unit_tag_index = NONE;
     real scale_a = 0.0f, scale_b = 0.0f;
     bool fired = false, failure = false;
@@ -2990,19 +2990,16 @@ void __stdcall function_102fb0(long weapon_index, short barrel_index)
             failure = (double)(weapon->heat - threshold) * WEAPON_REAL_AT(definition, 0x260) / (1.0 - threshold) >
                 (double)_random(&g_4e7408->unknown0, NULL, 0) * (1.0 / 65535.0);
         short mode;
-        if (!fired)
-        {
-            barrel->flag6 = true;
-            barrel->flag7 = true;
-            mode = 2;
-            scale_b = 1.0f;
-        }
-        else
-        {
+        if (!(!fired)) {
             scale_b = WEAPON_REAL_AT(barrel, 0x10);
             mode = failure ? 1 : 0;
             if (!failure && WEAPON_REAL_AT(definition, 0x154) != 0.0f)
                 scale_a = WEAPON_REAL_AT(weapon, 0x180) / WEAPON_REAL_AT(definition, 0x154);
+        } else {
+            barrel->flag6 = true;
+            barrel->flag7 = true;
+            mode = 2;
+            scale_b = 1.0f;
         }
         tag_index = WEAPON_LONG_AT(entry, 8 + mode * 8);
         unit_tag_index = WEAPON_LONG_AT(entry, 0x20 + mode * 8);

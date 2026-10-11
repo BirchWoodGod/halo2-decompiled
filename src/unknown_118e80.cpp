@@ -786,7 +786,7 @@ void __stdcall function_d7b80(s_type_1e6529 *arg_0, long arg_1, short arg_2, sho
 void __stdcall function_d6bc0(long arg_0);
 void function_b75a0(long arg_0, point3f const *arg_1, vector3f const *arg_2, vector3f const *arg_3,
     s_location const *arg_4, bool arg_5);
-void __stdcall function_b93b0(long arg_0, long arg_1, long arg_2);
+void __stdcall function_b93b0(long arg_0, long arg_1, short arg_2);
 
 // @retail 0x119c10
 long function_119c10(long arg_0)
@@ -874,7 +874,7 @@ long function_119c10(long arg_0)
                 vector3f local_26;
                 function_11d180(&local_26, &local_2, &local_6, &local_0->up, &local_2);
                 function_b75a0(arg_0, &local_13, &local_2, &local_6, &local_15, false);
-                function_b93b0(local_1, arg_0, local_11);
+                function_b93b0(local_1, arg_0, (short)(local_11));
                 real local_27 = g_510c54->field_2_3 * 0.2f;
                 long local_28;
                 __asm

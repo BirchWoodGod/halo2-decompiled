@@ -149,12 +149,18 @@ bool __stdcall function_20ba60(short arg_0, long arg_1, long arg_2, long arg_3, 
         }
         if (local_3)
         {
-            function_20cbd0(arg_0, local_3, arg_1, arg_2, NONE, arg_3, (short)arg_4,
+            short const volatile *local_7 = &arg_0;
+            short local_8 = *local_7;
+            function_20cbd0(local_8, local_3, arg_1, arg_2, NONE, arg_3, (short)arg_4,
                 local_2, 100, (short *)&local_1);
             short local_6 = function_20f0a0((s_audio_weighted_entry *)local_2, (short)local_1);
-            if (local_6 != NONE && function_20d0c0(local_3, g_510c54->game_time, arg_0,
-                    &local_2[local_6], arg_5, NONE, &local_1))
-                local_0 = true;
+            if (local_6 != NONE)
+            {
+                long local_9 = g_510c54->game_time;
+                if (function_20d0c0(local_3, local_9, local_8,
+                        &local_2[local_6], arg_5, NONE, &local_1))
+                    local_0 = true;
+            }
         }
     }
     return local_0;

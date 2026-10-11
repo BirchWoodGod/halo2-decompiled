@@ -165,10 +165,11 @@ void c_handle_table_450cd0::function_97fe0()
 	while (head != 0)
 		v8(head->handle, false);
 
+	long local_0 = 0;
 	s_handle_entry *entry = entries;
 	for (long i = 0; i < 1024; i++, entry++)
 	{
-		if (entry->state != 0)
+		if (entry->state != local_0)
 		{
 			long handle = entry->handle;
 			s_handle_peer *item = &table->peers[handle & 0x3ff];
@@ -180,13 +181,14 @@ void c_handle_table_450cd0::function_97fe0()
 				if (t->peers[handle & 0x3ff].mask == 0)
 				{
 					t->owner->v12(handle);
-					t->peers[handle & 0x3ff].flags &= 0xfe;
+					byte *local_1 = &t->peers[handle & 0x3ff].flags;
+					*local_1 &= 0xfe;
 				}
 			}
-			entry->state = 0;
+			entry->state = (short)local_0;
 			entry->handle = NONE;
 			entry->unknown0a = NONE;
-			entry->unknown10 = 0;
+			entry->unknown10 = (word)local_0;
 		}
 	}
 

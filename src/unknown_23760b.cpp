@@ -1491,7 +1491,8 @@ void c_virtual_keyboard_screen::v4(long screen_rect_address)
 		s_sprite_element *cursor = (s_sprite_element *)function_236235(0, 0);
 		if (cursor)
 		{
-			real fade = (real)((cos(g_54d5b8 * 0.003f) + 1.0f) * 0.5f);
+			// Reading the timer through a const pointer here keeps the comparison above in retail's operand order.
+			real fade = (real)((cos(*(dword const *)&g_54d5b8 * 0.003f) + 1.0f) * 0.5f);
 			fade *= animation.scale;
 			fade *= 255.0f;
 			long alpha;

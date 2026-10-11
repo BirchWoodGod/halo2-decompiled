@@ -862,13 +862,13 @@ void c_xbox_live_message_display_screen::show_next_message()
 	value7eb6 = 0;
 	voice_mail_duration = 0;
 	value7eb4 = false;
-	for (; value2d04 < message_count; value2d04++)
+	if (value2d04 < message_count) do
 	{
 		c_text_widget_45a5e0 *text = (c_text_widget_45a5e0 *)find_child(6, 0, false);
 		long controller_index = get_controller_index();
 		s_online_message_view *message = &messages[value2d04];
 		XUID const *xuid = NULL;
-		bool other_title;
+		byte other_title;
 
 		if (message)
 			xuid = (XUID const *)&message->xuid;
@@ -917,7 +917,8 @@ void c_xbox_live_message_display_screen::show_next_message()
 			value2d04++;
 			return;
 		}
-	}
+		value2d04++;
+	} while (value2d04 < message_count);
 	value7ecc = true;
 }
 
@@ -1635,6 +1636,49 @@ screen_load_proc c_variant_parameter_setting_screen::get_load_proc()
 }
 
 bool function_153850(byte *model);
+
+#if 0
+// Disabled: retail passes the shared profile's address to the model helpers.
+void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
+void function_2b10a3(dword const *appearance, c_class_2b0b5e *widget, long type);
+// @retail 0x2c8d7c disabled
+void function_2c8d7c(c_class_1a2c81 *screen)
+{
+	screen->c_class_1a2c81::v3();
+	s_widget_item item;
+	memcpy(item.value48, g_54e5d0.settings.colors, sizeof(item.value48));
+	item.flags = 3;
+	item.value4 = (long)g_54e5d0.settings.name;
+	function_22f042(&item, screen, 1);
+	function_2b10a3((dword const *)g_54e5d0.settings.colors,
+		(c_class_2b0b5e *)screen->find_child(7, 0, false), 0);
+	function_2b10a3((dword const *)g_54e5d0.settings.colors,
+		(c_class_2b0b5e *)screen->find_child(7, 1, false), 1);
+}
+
+// Disabled: retail passes the shared profile's address to the model helpers.
+// @retail 0x2cb350 disabled
+void function_2cb350(c_class_1a2c81 *screen)
+{
+	if (!ANIMATION_FLAG(screen->animation, 1))
+	{
+		short color = (short)((c_class_1474e8 *)((byte *)screen + 0x7f8))->get_focused_datum();
+		long index = *(long *)((byte *)screen + 0xa9c);
+		long previous_color = (char)g_54e5d0.settings.colors[index];
+		long valid_color = color >= -1 && color <= 17 ? color : NONE;
+		if (valid_color == color)
+			previous_color = color;
+		g_54e5d0.settings.colors[index] = (byte)previous_color;
+	}
+	c_class_2b0b5e *model = (c_class_2b0b5e *)screen->find_child(7, 0, false);
+	if (model)
+		function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 0);
+	model = (c_class_2b0b5e *)screen->find_child(7, 1, false);
+	if (model)
+		function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 1);
+	screen->c_class_1a2c81::v3();
+}
+#endif
 
 /* the screen at 0x45d2b8 and the ones that derive from it (0x45d328,
    0x45d398, 0x45d408): a press of B or back copies its settings out */
@@ -3008,7 +3052,7 @@ c_custom_game_maps_list::c_custom_game_maps_list(word user_flags) :
 // @retail 0x2c9a73
 void c_custom_game_maps_list::select_last_map()
 {
-	long map_id = g_51098c;
+	volatile long map_id = g_51098c;
 
 	if (map_id != NONE)
 	{
@@ -3287,13 +3331,15 @@ c_campaign_level_handles_list::c_campaign_level_handles_list(word user_flags, bo
 	handler(this, (list_item_method)&c_campaign_level_handles_list::handle_item)
 {
 	this->alternate = alternate;
-	unlocked = false;
+	*(volatile bool *)&unlocked = false;
+	c_campaign_level_handles_list *volatile receiver = this;
 
 	s_record_pool *levels = function_19c670();
 	long last_level = function_190565();
 	s_data_datum_iterator iterator;
 
-	if (this->alternate && last_level <= 0x68)
+	bool const *alternate_reference = &alternate;
+	if (*alternate_reference && last_level <= 0x68)
 	{
 		last_level = 0x68;
 	}
@@ -3307,7 +3353,7 @@ c_campaign_level_handles_list::c_campaign_level_handles_list(word user_flags, bo
 	{
 		s_map_entry *level = (s_map_entry *)iterator.datum;
 
-		if (!this->alternate || level->map_id >= 0x69)
+		if (!receiver->alternate || level->map_id >= 0x69)
 		{
 			s_map_entry *item = &((s_map_entry *)data->data)[record_pool_allocate(data) & 0xffff];
 			s_campaign_level *definition = (s_campaign_level *)function_19c1f0(level->map_id);
@@ -3397,13 +3443,15 @@ void c_campaign_level_handles_list::handle_item(s_controller_reference **control
 		{
 			s_campaign_level *level = (s_campaign_level *)function_19c270(1, ((s_map_entry *)data->data)[*item & 0xffff].map_id);
 
+			char const *name = level->field_8_5;
 			g_54e7c4 = level->map_id;
 			if (function_592f0())
 			{
-				function_19a6f2(1, level->map_id);
+				long map_id = *(volatile long *)&level->map_id;
+				function_19a6f2(1, map_id);
 			}
 			function_19040d(level->map_id);
-			function_163890(level->field_8_5, 0);
+			function_163890(name, 0);
 			if (alternate)
 			{
 				get_screen()->start_animation(3);

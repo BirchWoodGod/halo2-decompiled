@@ -188,13 +188,20 @@ s_upload_ab *function_b62b0(s_upload_ab *upload)
 {
     char *content_type = upload->content_type;
     char *filename = upload->filename;
-    *(volatile char *)upload->path = 0;
-    *(volatile char *)upload->header = 0;
-    *(volatile char *)upload->part = 0;
-    *(volatile char *)upload->ending = 0;
-    *(volatile char *)content_type = 0;
-    *(volatile char *)filename = 0;
-    *(volatile char *)upload->extra_headers = 0;
+    char volatile &path = upload->path[0];
+    path = 0;
+    char volatile &header = upload->header[0];
+    header = 0;
+    char volatile &part = upload->part[0];
+    part = 0;
+    char volatile &ending = upload->ending[0];
+    ending = 0;
+    char volatile &type_prefix = content_type[0];
+    type_prefix = 0;
+    char volatile &filename_prefix = filename[0];
+    filename_prefix = 0;
+    char volatile &extra_prefix = upload->extra_headers[0];
+    extra_prefix = 0;
     upload->kind = 0;
     upload_copy_ab(content_type, "text/plain", sizeof(upload->content_type));
     upload_copy_ab(filename, "blob", sizeof(upload->filename));

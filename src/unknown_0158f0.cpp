@@ -6,7 +6,14 @@
 #include <xtl.h>
 #include "globals.h"
 
-long g_450768[8][24];
+// Retail has two 24-entry format rows; unrelated data starts at 0x450828.
+// Values map bitmap formats to hardware formats, with -1 for unsupported ones.
+long g_450768[2][24] = {
+    {0x19, 0, 1, 0x1a, -1, -1, 5, -1, 2, 4, 7, 6,
+     -1, -1, 0xc, 0xe, 0xf, 0xb, 0xb, -1, -1, -1, 0x28, 0x28},
+    {0x1f, 0x13, 0x1b, 0x20, -1, -1, 0x11, -1, 0x10, 0x1d, 0x1e, 0x12,
+     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0x17, 0x17}
+};
 dword g_43e8a8[12];
 long g_43e8d8[6];
 

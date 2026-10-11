@@ -13,6 +13,193 @@
 #include <string.h>
 #include "object_iterator.h"
 #include "unknown_1e46c0.h"
+#include "unknown_0d0690.h"
+
+void function_1e2a90(long actor_index);
+void __stdcall function_b83b0(long object_index, bool flag);
+void __stdcall function_b8460(long object_index, bool flag);
+void __stdcall function_b8540(long object_index);
+void __stdcall function_28e200(long index);
+bool function_bba80(long object_index);
+point3f *function_b9dd0(long object_index, point3f *position);
+void function_2691b0(long clump_index);
+void function_2687a0(long clump_index);
+void function_268900(long clump_index);
+void function_2689d0();
+__declspec(noinline) void function_268c90();
+void function_268700(long clump_index);
+void function_269870(long clump_index);
+void function_26a210(long clump_index);
+void function_26b290(long clump_index);
+__declspec(noinline) void function_268840();
+
+// @retail 0x268510
+void function_268510()
+{
+	short interval = (short)real_to_long((real)g_510c54->field_2_3);
+	short slice_interval = (short)real_to_long((real)g_510c54->field_2_3 * 0.1f);
+	s_record_pool_iterator iterator;
+	if (g_4f55d0->active)
+	{
+		iterator.data = g_502420;
+		iterator.index = iterator.datum_index = NONE;
+	}
+	for (;;)
+	{
+		byte *clump = g_4f55d0->active ? data_iterator_next_inlined(&iterator) : NULL;
+		if (!clump) break;
+		if (clump[0x1c]) function_268700(iterator.datum_index);
+	}
+	long time = g_510c54->game_time;
+	if (time % interval == 0) function_268840();
+	else if (time % slice_interval == 0)
+	{
+		struct slice_budget { short maximum; bool updated; } budget = { 0, false };
+		short &maximum = budget.maximum;
+		bool &updated = budget.updated;
+		if (g_4f55d0->active)
+		{
+			iterator.data = g_502420;
+			iterator.index = iterator.datum_index = NONE;
+		}
+		for (;;)
+		{
+			byte *clump = g_4f55d0->active ? data_iterator_next_inlined(&iterator) : NULL;
+			if (!clump) break;
+			if (clump[0x1c])
+			{
+				if (*(short *)(clump + 0x1e) == *(long *)((byte *)g_4f55d0 + 0x18) && !updated)
+				{
+					function_269870(iterator.datum_index);
+					function_26a210(iterator.datum_index);
+					function_26b290(iterator.datum_index);
+					*(short *)(clump + 0x1e) = 0;
+					updated = true;
+				}
+				else
+				{
+					short count = ++*(short *)(clump + 0x1e);
+					if (count > maximum) maximum = count;
+				}
+			}
+			else *(short *)(clump + 0x1e) = 0;
+		}
+		*(long *)((byte *)g_4f55d0 + 0x18) = maximum;
+	}
+}
+
+// @retail 0x268840
+void function_268840()
+{
+	struct { byte *current; s_record_pool_iterator pool; long datum_index; } iterator;
+	if (g_4f55d0->active)
+	{
+		iterator.pool.data = g_502420;
+		iterator.pool.index = NONE;
+	}
+	for (;;)
+	{
+		byte *clump = g_4f55d0->active ? data_iterator_next_inlined(&iterator.pool) : NULL;
+		iterator.current = clump;
+		iterator.datum_index = clump ? iterator.pool.datum_index : NONE;
+		if (!clump) break;
+		if (clump[0x1c])
+		{
+			function_2687a0(iterator.datum_index);
+			function_268900(iterator.datum_index);
+		}
+	}
+	function_2689d0();
+	function_268c90();
+}
+
+// @retail 0x268c90
+void function_268c90()
+{
+	s_record_pool_iterator clumps;
+	if (g_4f55d0->active)
+	{
+		clumps.data = g_502420;
+		clumps.index = NONE;
+	}
+	for (;;)
+	{
+		byte *clump = g_4f55d0->active ? data_iterator_next_inlined(&clumps) : NULL;
+		if (!clump) break;
+		if (clump[0x3c] && (*(long *)(clump + 0x38) == NONE ||
+			*(long *)(clump + 0x38) + real_to_long((real)g_510c54->field_2_3 * 10.0f) < g_510c54->game_time))
+		{
+			clump[0x3c] = 0;
+			long next_actor = *(long *)(clump + 0x18);
+			while (next_actor != NONE)
+			{
+				long actor_index = next_actor;
+				byte *actor = g_4f55f0->data + (actor_index & 0xffff) * 0x888;
+				next_actor = *(long *)(actor + 0x80);
+				if (!actor[0xc]) continue;
+				bool keep = false;
+				if (actor[9])
+				{
+					s_record_pool_iterator players;
+					players.data = g_4e8c24;
+					players.index = NONE;
+					byte *player;
+					while ((player = data_iterator_next_inlined(&players)) != NULL)
+					{
+						long unit = *(long *)(player + 0x2c);
+						if (unit != NONE)
+						{
+							point3f point;
+							function_b9dd0(unit, &point);
+							real z = point.z - *(real *)(actor + 0x240);
+							real y = point.y - *(real *)(actor + 0x23c);
+							real x = point.x - *(real *)(actor + 0x238);
+							if (225.0f > z * z + y * y + x * x) { keep = true; break; }
+						}
+					}
+					if (!keep && *(long *)(actor + 0x18) != NONE)
+						keep = function_bba80(*(long *)(actor + 0x18));
+				}
+				if (keep) { clump[0x3c] = 1; continue; }
+				long extra = *(long *)(actor + 0x26c);
+				if (extra == *(long *)(actor + 0x18)) extra = NONE;
+				byte *current = g_4f55f0->data + (actor_index & 0xffff) * 0x888;
+				long unit = *(long *)(current + 0x18);
+				long proxy = *(long *)(current + 0x1c);
+				function_1e2a90(actor_index);
+				if (unit != NONE)
+				{
+					function_b83b0(unit, true);
+					function_b8460(unit, true);
+				}
+				else if (proxy != NONE) function_28e200(proxy);
+				if (extra != NONE)
+				{
+					byte *object = NULL;
+					if ((extra & 0xffff) < g_4e0300->high_water_index)
+					{
+						byte *header = g_4e0300->data + (extra & 0xffff) * g_4e0300->size;
+						if (*(short *)header && *(short *)header == (extra >> 16) &&
+							(1 << header[3])) object = *(byte **)(header + 8);
+					}
+					if (object)
+					{
+						s_object_child_iterator children;
+						function_d0620(extra, &children);
+						bool held = false;
+						while (function_d0690(&children))
+						{
+							byte *child = *(byte **)(g_4e0300->data + (children.child_index & 0xffff) * 12 + 8);
+							if (!child[0xaa]) { held = true; break; }
+						}
+						if (!held) function_b8540(extra);
+					}
+				}
+			}
+		}
+		if (!*(short *)(clump + 0x10)) function_2691b0(clumps.datum_index);
+	}
+}
 
 
 typedef bool (__stdcall *t_transition_test)(long, real *, real *);
@@ -948,16 +1135,17 @@ void function_26a310(s_prop_copy_view *prop, short type, long object_index, s_cl
 	prop->state = g_470f10[type].unknown4 == 0;
 	prop->field10 = NONE;
 	prop->field18 = NONE;
-	s_slot_object_view *object = object_get(object_index);
+	s_slot_object_view volatile *object = object_get(object_index);
 	object->unknownb2 |= 2;
-	long type_mask = 1 << object->type;
+	unsigned long type_mask = 1 << object->type;
 	if (type_mask & 3)
 	{
-		prop->actor_index = object->actor_index;
+		long actor_index = object->actor_index;
+		prop->actor_index = actor_index;
 		prop->team = object->team;
 		prop->field23 = function_1df560(clump->team, prop->team);
 		prop->field24 = !prop->field23;
-		prop->field25 = object->player_index != NONE;
+		prop->field25 = NONE != object->player_index;
 		prop->field22 = false;
 	}
 	else if (type_mask & 0x1000)
@@ -1312,14 +1500,14 @@ long function_26a4f0(s_clump_activity_view *clump, short priority)
 {
 	s_clump_activity_view *const *clump_reference = &clump;
 	short const *priority_reference = &priority;
-	long result = NONE;
+	volatile long result = NONE;
 	if (priority >= clump->update_state)
 	{
 		result = record_pool_allocate(g_50241c);
 		if (result == NONE)
 		{
 			long time = g_510c54->game_time;
-			long removed = 0;
+			short removed = 0;
 			long selected;
 			do
 			{
@@ -1498,7 +1686,7 @@ long function_26ace0(long object_index, long actor_index, short type)
 	long clump_index = actor->unknown07c;
 	if (clump_index != NONE)
 	{
-		s_clump_activity_view *clump = (s_clump_activity_view *)(g_502420->data + (clump_index & 0xffff) * sizeof(s_clump_activity_view));
+		s_clump_activity_view *volatile clump = (s_clump_activity_view *)(g_502420->data + (clump_index & 0xffff) * sizeof(s_clump_activity_view));
 		long prop_index = function_26b120(object_index, clump_index);
 		if (prop_index == NONE)
 		{
@@ -1716,7 +1904,7 @@ void function_26ae30(long object_index)
 		if (g_4f55d0->active)
 			groups.current = (s_clump *)data_iterator_next_inlined(&groups.pool);
 		if (!groups.current) break;
-		bool changed = false;
+		volatile bool changed = false;
 		s_iterator props;
 		props.next = ((s_clump *)(g_502420->data + (groups.pool.datum_index & 0xffff) * sizeof(s_clump)))->first_prop;
 		s_type_76cf92 *prop;

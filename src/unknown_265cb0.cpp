@@ -806,8 +806,8 @@ struct s_object_activity_flags
 real function_267370(long volatile object_index)
 {
 	long const volatile *object_reference = &object_index;
-	real result = 0.0f;
-	long initial_object_index = *object_reference;
+	volatile real result = 0.0f;
+	long const &initial_object_index = (long)*object_reference;
 	if (initial_object_index != NONE)
 	{
 		s_slot_object_view *object = object_get(initial_object_index);

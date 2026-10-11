@@ -74,6 +74,9 @@ void function_146a20(void)
 	g_4798b4++;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x146ac0
 void function_146ac0(void)
 {
@@ -89,12 +92,17 @@ void function_146ac0(void)
 		g_47988c = 0;
 	}
 	g_479894->~hkMemory();
+	hkMemory *last = g_479898;
+	_ReadWriteBarrier();
 	g_479894 = NULL;
-	g_479898->~hkMemory();
+	_ReadWriteBarrier();
+	last->~hkMemory();
 	g_479898 = NULL;
 	g_479890 = 0;
 	g_479880 = false;
 }
+
+#pragma function(_ReadWriteBarrier)
 
 /* a page aligned block of virtual memory: its size and the offset back to
    the allocation sit before it */

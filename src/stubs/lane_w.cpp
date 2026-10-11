@@ -39,10 +39,6 @@ bool __stdcall function_44370(long)
     return false;
 }
 
-// @stub 0x174220
-void __stdcall function_174220(bool)
-{
-}
 
 
 struct s_2f970_view;
@@ -97,14 +93,8 @@ void __cdecl function_2ddbd0(void *data, s_visibility_sphere_query const *query,
 
 
 
-// @stub 0x52d40
-void function_52d40(long bitmap_index, unsigned char *shader, long count, bool mode)
-{
-}
 
 
-// @stub 0x176cb0
-void function_176cb0() {}
 
 // @stub 0x391f0
 bool __stdcall function_391f0(void *state) { return false; }

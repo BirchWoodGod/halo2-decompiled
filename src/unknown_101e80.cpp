@@ -219,7 +219,7 @@ long function_101fb0(long object_index)
 // @retail 0x102100
 bool function_102100(long link_arg, long object_index, bool *out_a, bool *out_b)
 {
-	short link_index = (short)link_arg;
+	volatile short  link_index = (short)link_arg;
 	s_object *object = OBJECT_HEADER(object_index)->object;
 	s_object_tag *tag = OBJECT_TAG(object);
 	s_object_link *link = &object->links[link_index];

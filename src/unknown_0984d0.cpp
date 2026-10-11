@@ -35,10 +35,8 @@ bool function_98620(c_handle_table_450cd0 *self, s_bitstream *stream, long index
 	stream_push_position(stream);
 	function_195720(stream, 1, 3);
 	function_b5650(handle, stream);
-	s_handle_peers *local_2 = *(s_handle_peers *volatile *)&self->table;
-	c_handle_owner *local_0 = local_2->owner;
 	dword local_1 = self->entries[index].unknown04;
-	if (local_0->v0(handle, local_1, a3, stream, reserved_bits, &released) &&
+	if (self->table->owner->v0(handle, local_1, a3, stream, reserved_bits, &released) &&
 		(stream->size_in_bytes << 3) - stream->bit_position >= reserved_bits)
 	{
 		stream->checkpoint_count--;
@@ -164,10 +162,8 @@ bool function_989f0(c_handle_table_450cd0 *self, long index, s_bitstream *stream
 	stream->checkpoint_count++;
 	function_195720(stream, 5, 3);
 	function_b5650(handle, stream);
-	s_handle_peers *local_4 = *(s_handle_peers *volatile *)&self->table;
-	c_handle_owner *local_0 = local_4->owner;
 	dword local_1 = *(volatile dword *)&self->entries[index].unknown04;
-	if (local_0->v5(handle, local_1, a3, stream, reserved_bits, &released) &&
+	if (self->table->owner->v5(handle, local_1, a3, stream, reserved_bits, &released) &&
 		(stream->size_in_bytes << 3) - stream->bit_position >= reserved_bits)
 	{
 		stream->checkpoint_count--;
@@ -176,6 +172,20 @@ bool function_989f0(c_handle_table_450cd0 *self, long index, s_bitstream *stream
 	}
 	function_194710(stream, true);
 	return false;
+}
+
+static __forceinline s_handle_node *function_984d1(s_handle_node *arg_0)
+{
+	s_handle_node *local_0 = 0;
+	if (arg_0)
+	{
+		arg_0->handle = NONE;
+		arg_0->items = 0;
+		arg_0->records = 0;
+		arg_0->next = 0;
+		local_0 = arg_0;
+	}
+	return local_0;
 }
 
 // @retail 0x984d0
@@ -193,11 +203,8 @@ void c_handle_table_450cd0::v3(long a1, long a2, long a3, long a4, long a5, long
 		if (block != 0)
 		{
 			globals->count++;
-			block->handle = NONE;
-			block->items = 0;
-			block->records = 0;
-			block->next = 0;
 		}
+		block = function_984d1(block);
 		node = block;
 		if (node != 0)
 		{
@@ -233,6 +240,7 @@ void c_handle_table_450cd0::v3(long a1, long a2, long a3, long a4, long a5, long
 		case 5:
 			function_989f0(this, a1, (s_bitstream *)a5, a3, a6);
 			break;
+		default: __assume(0);
 		}
 	}
 }

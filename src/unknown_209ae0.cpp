@@ -57,8 +57,8 @@ void function_209ae0(long thread_handle, long value)
 {
 	long thread_index = thread_handle & 0xffff;
 	s_thread *thread = &((s_thread *)g_4f9384->data)[thread_index];
-	s_definition *definition = &((s_definition *)g_4f9394->data)[thread->frame->definition_index & 0xffff];
 	short expected;
+	s_definition *definition = &((s_definition *)g_4f9394->data)[thread->frame->definition_index & 0xffff];
 	short actual;
 
 	if (!(definition->flags & 2))
@@ -69,7 +69,19 @@ void function_209ae0(long thread_handle, long value)
 
 	if (expected != actual && expected != 3)
 	{
-		if (actual < 0x38 || actual > 0x3d)
+		if (actual < 0x38)
+		{
+			if (actual >= 0x32 && actual <= 0x37)
+			{
+				if (expected >= 0x38 && expected <= 0x3d)
+					value = function_bb760((short)value);
+			}
+			else
+			{
+				value = g_4f5770[actual * 0x3e + expected](value);
+			}
+		}
+		else if (actual > 0x3d)
 		{
 			if (actual >= 0x32 && actual <= 0x37)
 			{
