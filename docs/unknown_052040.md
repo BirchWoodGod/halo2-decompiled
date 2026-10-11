@@ -771,3 +771,38 @@ The checked image is
 The full function checker retains all 7,503 previously verified branch matches,
 with no gains or losses. This branch's baseline remains main `c17d5e05`;
 these results do not cover later main or the separate pending-PR integration.
+
+### Reproducing texture-header checks
+
+The optional standalone probe exercises both complete hardware-format rows
+and compares the bits-per-pixel table before running actual header construction:
+
+```sh
+python -m pip install 'unicorn>=2.1.3,<3'
+python tools/texture_header_probe.py --retail /path/to/default.xbe
+```
+
+`--image`, `--map` and `--output` accept explicit paths. Defaults use the
+checkout's `build/halo2.exe`, `build/halo2.map` and `build/texture-headers.json`;
+the retail default uses `RETAIL_XBE` or `orig/default.xbe`. It works outside
+the checkout. Use an image and link map from the same build. Reports include
+input hashes, Unicorn version, coverage and mismatching header examples. An
+input or comparison failure replaces prior success and returns nonzero; input
+files cannot be selected as output, and optimized Python is rejected.
+
+On the image above, all 1,944 cases pass: 792 linear and 1,152 swizzled, with
+144 alternate-format cases. Cases cover each supported row/index combination,
+texture types 0/1/2, widths/heights 8/64, depth 4, levels 0/1/2, mipmap counts
+0/3, and flag 0x20 clear/set. Actual pitch, bit-count, mip-count and logarithm
+helpers execute without replacements. Full headers agree; surrounding memory,
+input records, common/data/lock fields and stack cleanup are checked separately.
+
+The earlier concern about an absent bits-per-pixel table was not reproduced:
+`g_453550` is already initialized, and all 24 entries equal retail. Zeroing the
+hardware-format table in a temporary test image is rejected by the portable
+probe, including replacing a previous successful report with a failure.
+
+The fixed entry calling convention was independently checked on this build.
+If LTCG changes register allocation, inspect the ABI before interpreting a
+probe failure as a recovery bug. These remain synthetic header checks; no
+texture pixels are decoded, transferred, sampled, or rendered by this tool.
