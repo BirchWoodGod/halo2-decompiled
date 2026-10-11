@@ -483,11 +483,17 @@ void *__stdcall function_b7a40(s_scenario_identifier_ab const *identifier, long 
 			long size = definition->element_size;
 			s_scenario_block_ab *block = (s_scenario_block_ab *)((byte *)g_4e0350 + definition->block_offset);
 			long count = block->count;
-			byte *element = block->elements;
+			long unique_id;
+			byte *element = NULL;
+			if (count > 0)
+			{
+				element = block->elements;
+				unique_id = identifier->unique_id;
+			}
 			for (long i = 0; i < count; i++, element += size)
 			{
 				s_scenario_identifier_ab *current = (s_scenario_identifier_ab *)(element + 0x28);
-				bool match = (current->unique_id == identifier->unique_id) & (current->type == type) & (current->source == source);
+				bool match = (current->unique_id == unique_id) & (current->type == type) & (current->source == source);
 				if (match && current->source == 0)
 					match &= current->origin_bsp == identifier->origin_bsp;
 				if (match)

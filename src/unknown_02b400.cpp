@@ -91,7 +91,7 @@ bool function_2f970(s_2f970_view const *view, real *out)
     if (*crop)
     {
         real width = out[1] - out[0];
-        real height = out[3] - out[2];
+        real height = *(real const volatile *)&out[3] - out[2];
         real x = (view->center_x + 1.0f) * 0.5f * width + out[0];
         real y = (view->center_y + 1.0f) * 0.5f * height + out[2];
         real half_width = *(real const volatile *)&view->crop_scale * width * 0.5f;
@@ -104,7 +104,7 @@ bool function_2f970(s_2f970_view const *view, real *out)
     else if (view->offset)
     {
         real x = (out[1] - out[0]) * (1.0f / 640.0f) * view->offset_x;
-        real y = (out[3] - out[2]) * (1.0f / 480.0f) * view->offset_y;
+        real y = (*(real const volatile *)&out[3] - out[2]) * (1.0f / 480.0f) * view->offset_y;
         out[0] += x;
         real right = out[1] + x;
         out[2] -= y;
