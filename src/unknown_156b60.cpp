@@ -208,7 +208,7 @@ void __stdcall function_157020(byte *definition, point3f const *position, vector
 void function_156b60(s_effect_beam *beam, real progress, transform4x3f const *matrix)
 {
 	byte *definition = (byte *)beam;
-	long tag = *(long *)(definition + 4);
+	volatile long  tag = *(long *)(definition + 4);
 	if (tag == NONE || g_4e92e0 >= 64)
 		return;
 	long model = *material_reference_156b60(tag);

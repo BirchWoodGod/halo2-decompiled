@@ -4,9 +4,6 @@
 struct s_effect_color_query;
 
 
-// @stub 0x14af40
-bool function_14af40(bool value, point3f const *point, vector3f const *vector, long object_index,
-    bool a, void *surface, point3f *hit_point) { return false; }
 
 
 

@@ -14,6 +14,40 @@
 #include <string.h>
 #include <math.h>
 
+extern s_record_pool *g_509434;
+struct s_location;
+void function_ce520(long weapon_index, long unit_index, bool flag);
+void function_b75a0(long object_index, point3f const *point, vector3f const *forward,
+	vector3f const *up, s_location const *location, bool flag);
+void function_b73b0(long object_index);
+long __stdcall function_3ddd0(long object_index);
+
+struct s_engine_item_flags
+{
+	byte unknown00[0x16c];
+	word : 7;
+	word held : 1;
+	word : 8;
+};
+
+// @retail 0x15e360
+void function_15e360(point3f const *point, long object_index)
+{
+	if (g_55e4d0[g_4e9ae8->engine_index])
+	{
+		byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
+		if (TEST_FIELD_BIT(((s_engine_item_flags *)object)->held))
+			function_ce520(object_index, *(long *)(object + 0x154), true);
+		function_b75a0(object_index, point, g_4687a8, g_4687b0, NULL, false);
+		function_b73b0(object_index);
+		long cache_index = function_3ddd0(object_index);
+		if (cache_index != NONE)
+			g_509434->data[(cache_index & 0xffff) * 0x100 + 2] = 0;
+		*(long *)(object + 0x150) = NONE;
+		*(long *)(object + 0x14c) = NONE;
+	}
+}
+
 /* the players (g_4e8c24, 0x21c bytes each) */
 /* a player's recent marks: an identifier, its code and when it was made */
 struct s_engine_player_mark
@@ -2315,6 +2349,56 @@ void function_15b980(bool skip_event)
 void function_1e9df0(long field, long counter, s_statborg *statistics, long team, long delta);
 void function_1e9ce0(long player_index, long counter, s_statborg *statistics, long field, long delta, bool by_team);
 
+// @retail 0x15b650
+void __stdcall function_15b650(long team, long delta)
+{
+	long const volatile *team_reference = &team;
+	long const *delta_reference = &delta;
+	s_statborg *statistics = NULL;
+	if (game_engine_get()) statistics = &function_xaee93d()->statborg;
+	byte *values = (byte *)statistics;
+	long mode = *(long *)((byte *)g_4e6948 + 0x1e0);
+	long selected_team = team;
+	long old_score = *(short *)(values + 0x1c4 + selected_team * 18);
+	long score = (long)0x80000000;
+	if (mode == 0)
+		score = old_score + *delta_reference;
+	else
+	{
+		s_engine_player_iterator iterator;
+		iterator.data = g_4e8c24;
+		iterator.absolute_index = NONE;
+		iterator.index = NONE;
+		while (function_19f240((long *)&iterator))
+		{
+			if (iterator.player->team == *team_reference)
+			{
+				long current = *(short *)(values + (iterator.index & 0xffff) * 0x1c + 4);
+				if (score == (long)0x80000000) score = current;
+				else switch (*(long *)((byte *)g_4e6948 + 0x1e0))
+				{
+				case 1: if (score > current) score = current; break;
+				case 2: if (score <= current) score = current; break;
+				}
+			}
+		}
+		if (score <= old_score) return;
+		selected_team = *team_reference;
+	}
+	if (score != old_score)
+	{
+		function_1e9df0(0, NONE, statistics, selected_team, score - old_score);
+		switch (g_4e6948->mode_180)
+		{
+		case 1: function_1967d0(NONE, selected_team, 0xe, score - old_score); break;
+		case 3: function_1967d0(NONE, selected_team, 0x17, score - old_score); break;
+		case 9: function_1967d0(NONE, selected_team, 0x12, score - old_score); break;
+		}
+		if (score > old_score && g_4e6948->score_to_win && score >= g_4e6948->score_to_win)
+			function_15b3a0(selected_team, false);
+	}
+}
+
 struct s_round_limit_options
 {
 	byte unknown00[0x188];
@@ -3089,7 +3173,7 @@ real function_159690(long player_index, long target_index)
 void function_1e9f40(long player_index, s_object_values *table);
 
 // @retail 0x157be0
-void function_157be0(long player_index)
+void function_157be0(dword player_index)
 {
 	if (game_engine_get())
 	{
@@ -4055,7 +4139,7 @@ bool function_15f3a0(long local_index, s_player_score_display *display)
             if (slot != NONE) weapon = ((long *)(unit + 0x218))[slot];
             if (function_162b10(weapon))
             {
-                real charge = function_242140(weapon);
+                volatile real  charge = function_242140(weapon);
                 if (charge > 0.0f) { display->charge = true; display->charge_fraction = charge; }
             }
             else if (g_4e6948->mode_180 == 8)
@@ -4477,4 +4561,650 @@ void function_159250(long player_index, real alpha)
 			function_15e530((c_1fa50 const *)text, alpha, &point);
 		}
 	}
+}
+
+
+struct s_effect_owner;
+void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
+long __stdcall function_b7b40(void *creation);
+void function_11df60(vector3f const *rotation, vector3f *forward, vector3f *up);
+long weighted_choice_random(long tag_index, long *extra);
+void __stdcall function_b9b90(long object_index, bool disable);
+void __stdcall function_a7870(long object_index);
+
+// @retail 0x15aad0
+void function_15aad0(s_netgame_entry_state *entries, long index)
+{
+    s_netgame_entry_state *const *entries_reference = &entries;
+    long const *index_reference = &index;
+    byte *placement = *(byte **)((byte *)g_4e0350 + 0x124) + *index_reference * 0x90;
+    long name = 0;
+    long original = NONE;
+    if (*(long *)(placement + 0x5c) != NONE)
+    {
+        if (*(long *)(placement + 0x58) == 0x69746d63)
+            original = weighted_choice_random(*(long *)(placement + 0x5c), &name);
+        else if (*(long *)(placement + 0x58) == 0x76656863)
+            original = weighted_choice_random(*(long *)(placement + 0x5c), &name);
+    }
+    long selected;
+    char kind = *(char *)(placement + 0x14);
+    if (kind >= 1 && kind <= 7)
+        selected = ((c_engine_equipment *)*entries_reference)->choose(original, &name, kind);
+    else if (kind == 8 || kind == 9)
+        selected = function_15a5b0(original);
+    else if (kind == 0)
+        selected = function_15a640(original);
+    else
+        selected = original;
+    if (selected != NONE)
+    {
+        byte creation[0xb4];
+        function_b7930(creation, selected, NONE, NULL);
+        *(long *)(creation + 0xc) = name;
+        *(point3f *)(creation + 0x1c) = *(point3f *)(placement + 0x40);
+        function_11df60((vector3f const *)(placement + 0x4c), (vector3f *)(creation + 0x28), (vector3f *)(creation + 0x34));
+        if ((*entries_reference)[*index_reference].index != NONE)
+            function_15b1e0((*entries_reference)[*index_reference].index, *index_reference, *entries_reference);
+        long object_index = function_b7b40(creation);
+        (*entries_reference)[*index_reference].index = object_index;
+        (*entries_reference)[*index_reference].value04 = 0;
+        (*entries_reference)[*index_reference].value06 = 0;
+        if (object_index != NONE)
+        {
+            engine_object_get(object_index)->netgame_entry = (char)*index_reference;
+            if ((placement[0] & 1) && selected == original)
+                function_b9b90((*entries_reference)[*index_reference].index, true);
+            function_a7870((*entries_reference)[*index_reference].index);
+        }
+    }
+}
+
+
+#include "object_iterator.h"
+extern byte *g_4ed280;
+void __stdcall function_b83b0(long object_index, bool flag);
+void __stdcall function_b8460(long object_index, bool flag);
+void function_17d520(void);
+void contrails_delete_all(void);
+void effects_delete_all(void);
+void function_1073c0(void);
+void function_c01c0(void);
+void function_126400(void);
+void function_d5560(bool skip_existing);
+void function_c09c0(long mode);
+void function_d5640(void);
+
+// @retail 0x159e20
+void function_159e20(void)
+{
+    bool clear_all = false;
+    if (TEST_FIELD_BIT(engine_options()->flags_bit3)) clear_all = true;
+    if (g_4e6948->mode != 4)
+    {
+        s_engine_player_iterator players;
+        players.data = g_4e8c24;
+        players.absolute_index = NONE;
+        players.index = NONE;
+        while (function_19f300((long *)&players))
+        {
+            long unit = players.player->unit_index;
+            function_b83b0(unit, true);
+            function_b8460(unit, true);
+        }
+        s_type_f1af8e iterator;
+        iterator.type_mask = clear_all ? ~0UL : 0xfffff83fUL;
+        if (!iterator.type_mask) iterator.type_mask = ~0UL;
+        iterator.flags = 0;
+        iterator.index = 0;
+        iterator.object_index = NONE;
+        iterator.signature = 0x86868686;
+        byte *object;
+        while ((object = (byte *)function_baeb0(&iterator)) != NULL)
+        {
+            long index = iterator.object_index;
+            long root = NONE;
+            for (long current = index; current != NONE;)
+            {
+                root = current;
+                current = *(long *)((byte *)engine_object_get(current) + 0x14);
+            }
+            bool remove = clear_all;
+            if (*(char *)(object + 0xaf) == NONE && engine_object_get(root)->netgame_entry == NONE)
+            {
+                long type = *(char *)(object + 0xaa);
+                if (type == 2)
+                    remove = *(short *)(g_4e3b44[*(long *)object & 0xffff].bytes + 0x290) == 0;
+                else if (type == 11)
+                    remove = clear_all || (bool)((*(dword *)(object + 4) >> 14) & 1);
+                else remove = true;
+            }
+            if (remove)
+            {
+                function_b83b0(index, true);
+                function_b8460(index, true);
+            }
+        }
+    }
+    else if (clear_all)
+    {
+        s_type_f1af8e iterator;
+        iterator.type_mask = ~0UL;
+        iterator.flags = 0;
+        iterator.index = 0;
+        iterator.object_index = NONE;
+        iterator.signature = 0x86868686;
+        byte *object;
+        while ((object = (byte *)function_baeb0(&iterator)) != NULL)
+        {
+            if (*(long *)(object + 0x14) == NONE && *(long *)(object + 0xd4) == NONE)
+            {
+                function_b83b0(iterator.object_index, true);
+                function_b8460(iterator.object_index, true);
+            }
+        }
+    }
+    if (clear_all)
+    {
+        function_17d520();
+        memset(g_4ed280, 0xff, 0x4201);
+        contrails_delete_all();
+        effects_delete_all();
+        function_1073c0();
+        function_c01c0();
+        if (g_55e4d0[g_4e9ae8->engine_index]) function_126400();
+        function_d5560(false);
+        function_c09c0(g_4e6948->state);
+        function_d5640();
+    }
+}
+
+bool function_100f00(long object_index);
+bool function_161cd0(long object_index);
+void __stdcall function_b8540(long object_index);
+PRIVATE real const g_4448f8[2] = { 30.0f, 30.0f };
+PRIVATE real const g_444900[2] = { 30.0f, 5.0f };
+PRIVATE real const g_444908[2] = { 90.0f, 15.0f };
+PRIVATE real const g_444910[2] = { 15.0f, 5.0f };
+PRIVATE real const g_444918[2] = { 90.0f, 10.0f };
+
+// @retail 0x159ac0
+void function_159ac0(void)
+{
+    if (g_4e6948->mode != 4)
+    {
+        long now = g_510c54->game_time;
+        long mode = *(long *)((byte *)g_4e9ae8 + 0xc0c);
+        s_type_f1af8e iterator;
+        iterator.type_mask = 0x81f;
+        iterator.flags = 0;
+        iterator.index = 0;
+        iterator.object_index = NONE;
+        iterator.signature = 0x86868686;
+        byte *object;
+        while ((object = (byte *)function_baeb0(&iterator)) != NULL)
+        {
+            long index = iterator.object_index;
+            if ((index & 0xffff) % 30 != g_510c54->game_time % 30) continue;
+            long mask = 1 << *(char *)(object + 0xaa);
+            bool remove = false;
+            if (mask & 0x1c)
+            {
+                bool available = true;
+                short special = 0;
+                if (mask & 4)
+                {
+                    byte *definition = g_4e3b44[*(long *)engine_object_get(index) & 0xffff].bytes;
+                    special = *(short *)(definition + 0x290);
+                    available = function_100f00(index);
+                }
+                if (special)
+                    remove = g_55e4d0[g_4e9ae8->engine_index]->p38(index) && !function_161cd0(index);
+                else
+                {
+                    if (*(char *)(object + 0xaf) != NONE && !(bool)((object[0x12c] >> 2) & 1) && available) continue;
+                    if (function_161cd0(index) && available) continue;
+                    if (object[0x12c] & 1) continue;
+                    remove = (real)(now - *(long *)(object + 0x150)) * g_510c54->rate >= g_4448f8[mode];
+                }
+            }
+            else if (mask & 1)
+            {
+                if (!(bool)((object[0x10a] >> 2) & 1)) continue;
+                remove = (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate >= g_444900[mode] ||
+                    (real)(now - *(long *)(object + 0x2e0)) * g_510c54->rate >= g_444908[mode];
+            }
+            else
+            {
+                if (!(bool)((*(dword *)(object + 4) >> 14) & 1) || now < *(long *)(object + 0x20)) continue;
+                remove = (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate >= g_444910[mode] ||
+                    (real)(now - *(long *)(object + 0x20)) * g_510c54->rate >= g_444918[mode];
+            }
+            if (remove)
+            {
+                function_b9b90(index, false);
+                function_b8540(index);
+            }
+        }
+    }
+}
+
+
+// @retail 0x15cba0
+void function_15cba0(long mode)
+{
+    switch (mode)
+    {
+    case 1:
+        {
+            s_game_engine_globals *globals = function_xaee93d();
+            *(long *)globals->unknown70 = g_510c54->game_time;
+            function_157a80();
+            c_engine_peer *engine = game_engine_get();
+            if (engine && g_4e6948->mode_180 == 4) engine->p3();
+        }
+        break;
+    case 3: function_159e20(); break;
+    }
+}
+
+// @retail 0x157ae0
+void function_157ae0(void)
+{
+    s_game_engine_globals *globals = function_xaee93d();
+    if (game_engine_get())
+    {
+        memset(globals->unknown70 + 4, 0, 0x6c);
+        globals->value_e0 = *(short *)((byte *)g_4e6948 + 0x190);
+        if ((short)globals->value6e > 0)
+        {
+            function_159e20();
+            globals = function_xaee93d();
+        }
+        if (g_4e6948->mode != 4)
+        {
+            function_15dc40();
+            function_15ad30(globals->netgame_entries);
+            globals = function_xaee93d();
+            s_statborg *table = game_engine_get_statborg();
+            if (table) function_1e97b0((s_object_values *)table);
+            globals->flags |= 0x20;
+        }
+        if (g_4e6948->mode != 4 && g_510ca0) g_510ca1 = false;
+        function_157a80();
+        game_engine_get()->p3();
+    }
+}
+
+
+
+#include "unknown_030290.h"
+#include "unknown_163110.h"
+#include <math.h>
+extern long g_4e64a8, g_4b9ed8;
+extern short g_4b9dd0, g_4b9dd2, g_4b9dd4, g_4b9dd6;
+void function_36580(void);
+void function_36880(color4f const *color, s_short_rectangle const *rectangle);
+void function_161420(long player_index, real alpha);
+
+// @retail 0x159880
+void function_159880(void)
+{
+    s_game_engine_globals *globals = function_xaee93d();
+    if (game_engine_get())
+    {
+        long local_user = g_4b9ed8;
+        long player_index = NONE;
+        if (local_user != NONE)
+        {
+            player_index = *(long *)((byte *)g_4e8c20 + 0xc + local_user * 4);
+            byte *ticks = (byte *)globals + 0xf5 + local_user;
+            if (globals->timer_flags & (1 << local_user))
+            {
+                if (g_4e64a8 > 0)
+                {
+                    real duration = (real)g_510c54->field_2_3 * 3.0f;
+                    long limit;
+                    __asm { fld duration }
+                    __asm { fistp limit }
+                    ++*ticks;
+                    if (*ticks > limit) globals->timer_flags &= ~(1 << local_user);
+                }
+                else globals->timer_flags &= ~(1 << local_user);
+            }
+            else *ticks = 0;
+            if (player_index != NONE)
+            {
+                s_engine_player_iterator iterator;
+                iterator.data = g_4e8c24;
+                iterator.absolute_index = NONE;
+                iterator.index = NONE;
+                while (function_19f300((long *)&iterator))
+                {
+                    long target_index = iterator.index;
+                    if (target_index == player_index) continue;
+                    real alpha = function_159690(player_index, target_index);
+                    if (alpha > 0.0f)
+                    {
+                        function_159250(target_index, alpha);
+                        globals = function_xaee93d();
+                    }
+                }
+            }
+        }
+        real fade = local_user == NONE ? 1.0f : *(real *)((byte *)globals + 0xe4 + local_user * 4);
+        if (fade > 0.0f)
+        {
+            color4f color = {fade, g_468718->x, g_468718->y, g_468718->z};
+            s_short_rectangle bounds = {0, 0, (short)(g_4b9dd6 - g_4b9dd2), (short)(g_4b9dd4 - g_4b9dd0)};
+            function_36580();
+            function_36880(&color, &bounds);
+        }
+        if (player_index != NONE)
+        {
+            real alpha = g_4e9af0.timers[local_user] * g_510c54->rate * 4.0f;
+            alpha = alpha < 0.0f ? 0.0f : alpha > 1.0f ? 1.0f : alpha;
+            if (alpha > 0.0f)
+                function_161420(player_index, (real)pow((double)alpha, 1.899999976158142));
+        }
+    }
+}
+
+
+
+void __stdcall function_d6bc0(long object_index);
+
+// @retail 0x15ae70
+void __stdcall function_15ae70(s_netgame_entry_state *entries)
+{
+    if (g_4e6948->mode == 4) return;
+    byte *globals_tag = g_4e3b44[*(long *)((byte *)g_4e034c + 0x16c) & 0xffff].bytes;
+    byte *preset = *(byte **)(*(byte **)(globals_tag + 0xc) + 0x534);
+    volatile long  arg_642c39 = g_510c54->field_2_3;
+    byte * volatile scenario = (byte *)g_4e0350;
+    for (short i = 0; i < *(long *)(scenario + 0x120); ++i)
+    {
+        byte *placement = *(byte **)(scenario + 0x124) + i * 0x90;
+        if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
+        c_engine_peer *engine = game_engine_get();
+        long type = engine ? engine->p0() : NONE;
+        if (function_15a090((short *)(placement + 4), type, 4) == NONE) continue;
+        long index = entries[i].index;
+        byte *object = NULL;
+        if (index != NONE)
+        {
+            object = (byte *)engine_object_get(index);
+            if (object[0xaa] == 1 && *(short *)(placement + 0x10) && ((byte *)g_4e6948)[0x208] != 1)
+            {
+                bool reset = function_158ff0(index);
+                if (!reset)
+                {
+                    real z = *(real *)(placement + 0x48) - *(real *)(object + 0x38);
+                    real y = *(real *)(placement + 0x44) - *(real *)(object + 0x34);
+                    real x = *(real *)(placement + 0x40) - *(real *)(object + 0x30);
+                    reset = z*z + y*y + x*x <= 100.0f || function_15f060((point3f *)(object + 0x30), *(real *)(preset + 0x28));
+                }
+                if (reset) entries[i].value06 = 0;
+                else ++entries[i].value06;
+                if (entries[i].value06 > *(short *)(placement + 0x10)) entries[i].value04 = 1;
+            }
+        }
+        short *timer = &entries[i].value04;
+        if (*timer == 0)
+        {
+            bool schedule = index == NONE;
+            if (index != NONE)
+            {
+                switch (*(short *)(placement + 0x12))
+                {
+                case 0:
+                    {
+                        if (((1 << object[0xaa]) & 0x1c) && (object[0x12c] & 3)) schedule = true;
+                        else
+                        {
+                            real z = *(real *)(object + 0x38) - *(real *)(placement + 0x48);
+                            real y = *(real *)(object + 0x34) - *(real *)(placement + 0x44);
+                            real x = *(real *)(object + 0x30) - *(real *)(placement + 0x40);
+                            schedule = z*z + y*y + x*x > 1.0f;
+                        }
+                    }
+                    break;
+                case 1: schedule = (object[0x10a] & 4) != 0; break;
+                }
+            }
+            if (schedule)
+            {
+                long delay = function_15ac50(i);
+                long modifier = 0;
+                signed char kind = *(signed char *)(placement + 0x14);
+                if (kind == 0) modifier = *(signed char *)((byte *)g_4e6948 + 0x211);
+                else if (kind >= 1 && kind <= 7) modifier = *(signed char *)((byte *)g_4e6948 + 0x208);
+                switch (modifier)
+                {
+                case 1: delay = NONE; break;
+                case 2: delay >>= 1; break;
+                case 3: delay <<= 1; break;
+                }
+                *timer = (short)delay;
+            }
+        }
+        if (*timer > 0 && --*timer == 0)
+        {
+            index = entries[i].index;
+            if (index != NONE && (placement[0] & 2) && object[0xaa] != 2)
+            {
+                if (object[0xaa] == 1 && (function_158ff0(index) || function_15f060((point3f *)(object + 0x30), *(real *)(preset + 0x28))))
+                {
+                    *timer = 1;
+                    continue;
+                }
+                function_d6bc0(entries[i].index);
+            }
+            function_15aad0(entries, i);
+        }
+    }
+}
+
+
+
+#include "bitstream.h"
+#include "unknown_067e10.h"
+struct s_entry;
+
+/* what an entity's update was last sent with (as src/unknown_0aa4d0.cpp
+   defines it) */
+struct s_relevance_observers;
+struct s_update_state
+{
+	dword flags;
+	long time;
+	s_relevance_observers const *observers;
+};
+
+/* the observers an update is weighed for, as this code sees them */
+struct s_update_observers
+{
+	byte unknown00[4];
+	bool none;
+};
+
+/* a block an update carries: the creation data (type 0xc) or the state
+   (type 0xd) of an entity */
+struct s_update_block
+{
+	short size;
+	short type;
+	void *block;
+};
+
+/* the entity definitions, as this code calls them */
+class c_entry_handler
+{
+public:
+	virtual void slot0() {}
+	virtual void slot1() {}
+	virtual long get_state_size() { return 0; }
+	virtual long get_data_size() { return 0; }
+	virtual long get_bit_count() { return 0; }
+	virtual dword get_update_mask() { return 0; }
+	virtual bool v6(s_entry *entry) { return false; }
+	virtual void slot7() {}
+	virtual bool v8(s_entry *entry, s_update_observers const *observers) { return false; }
+	virtual void v9(s_entry *entry, s_update_observers const *observers, long *bits) {}
+	virtual void v10(s_entry *entry, long a, long b, long c) {}
+	virtual void v11(s_entry *entry, s_update_state const *state, long *bits) {}
+	virtual void v12(long data_size, void *data, long a, s_bitstream *stream) {}
+	virtual bool v13(long data_size, void *data, s_bitstream *stream) { return false; }
+	virtual bool v14(bool writing, dword mask, dword *written_mask, long state_size, void *state, long a, s_bitstream *stream, long b) { return false; }
+	virtual bool v15(bool reading, dword *read_mask, long state_size, void *state, s_bitstream *stream) { return false; }
+	virtual void slot16() {}
+	virtual void slot17() {}
+	virtual void v18(s_entry *entry, long data_size, void *data) {}
+	virtual bool save(long, long, long, void *) { return false; }
+	virtual bool load(void *entry, long *out, long size, void *buffer) { return false; }
+	virtual void advance(void *entry) {}
+	virtual bool v22(s_entry *entry, long data_size, void *data, long count, long state_size, void *state) { return false; }
+	virtual bool v23(s_entry *entry, long a, long state_size, void *state) { return false; }
+	virtual bool v24(s_entry *entry) { return false; }
+	virtual bool is_valid(void *entry) { return false; }
+};
+
+
+struct s_entry
+{
+	dword identifier;
+	short handler_index;
+	byte unknown06;
+	signed char unknown07;
+	long unknown08;
+	long unknown0c;
+	long data_size;
+	void *data;
+	long state_size;
+	void *state;
+};
+
+/* an update's state, as v12 of the replication interface reads it */
+struct s_update_source
+{
+	long unknown00;
+	void *state;
+};
+
+struct c_entry_table
+{
+	virtual bool slot0(long, long) { return true; }
+	virtual bool write_busy(long a, s_bitstream *stream, long c, long d);
+	virtual long read_busy(long a, s_bitstream *stream);
+	virtual void slot3() {}
+	virtual void slot4() {}
+	virtual bool write_creation(dword identifier, dword flags, long a, s_bitstream *stream, long b, dword *written_mask);
+	virtual long read_creation(long a, long *handler_index_out, dword *mask_out, long b, long *count, s_update_block *blocks, s_bitstream *stream);
+	virtual void create(dword identifier, long handler_index, long a, long count, s_update_block *blocks);
+	virtual void creation_relevance(dword identifier, dword flags, s_update_observers const *observers, real *relevance, long *bits);
+	virtual void v9(dword identifier, long a, long b, long c);
+	virtual bool write_update(dword identifier, dword flags, long a, s_bitstream *stream, long b, dword *written_mask);
+	virtual long read_update(dword identifier, long *size_out, long a, long *count, s_update_block *blocks, s_bitstream *stream);
+	virtual void apply_update(dword identifier, long a, long b, s_update_source const *source);
+	virtual void update_relevance(dword identifier, dword flags, long time, s_update_observers const *observers, real *relevance, long *bits);
+	virtual void deletion_relevance(dword identifier, long a, real *relevance);
+	virtual void v15(dword identifier);
+	virtual void slot16(long, long, long, long) {}
+	virtual void v17(dword identifier);
+	virtual bool function_08ad30(dword identifier);
+	virtual void function_08ad70();
+	virtual dword function_08add0(dword identifier);
+	virtual bool slot21(long) { return true; }
+	virtual bool slot22(long) { return true; }
+	virtual bool function_0843e0(long a, long b);
+	bool initialized;
+	bool busy;
+	byte unknown06[2];
+	long unknown08;
+	long unknown0c;
+	struct { long count; c_entry_handler *handlers[1]; } *handlers;
+	s_entry entries[1024];
+
+	void function_08ae80(dword identifier, short handler_index, long a, long b, long c, long d);
+	void function_08aed0(dword identifier);
+	bool function_08af70(long handler_index, long *size, void **data);
+	bool function_08b010(long handler_index, long *size, void **data);
+	void function_08a030();
+	void function_08a400(dword identifier);
+};
+
+
+long entity_table_new_entity(c_entry_table *table, long handler_index);
+long function_b57d0(long handler_index, long object_index);
+void function_15cba0(long mode);
+
+// @retail 0x158530
+void function_158530(void)
+{
+    if (game_engine_get())
+    {
+        if (g_4e6948->mode != 4) function_157ae0();
+        s_index_table *users = g_4e8c20;
+        s_game_engine_globals *globals = function_xaee93d();
+        for (long user = 0; user < 4; ++user)
+        {
+            if (*(long *)((byte *)users + 0xc + user * 4) != NONE)
+            {
+                globals->timers[user] = 1.0f;
+                globals->timer_flags |= (byte)(1 << user);
+            }
+        }
+        globals->value6c = 1;
+        globals->value_c04 = 1;
+        if (g_4e6948->mode == 4) function_15cba0(1);
+        c_engine_peer *engine = game_engine_get();
+        if (engine)
+        {
+            long current = engine->get_current_id();
+            if (current != NONE)
+            {
+                long handle = function_b57d0(current, NONE);
+                if (handle != NONE)
+                {
+                    function_xaee93d()->index24 = handle;
+                    ((c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098)->function_08a400(handle);
+                }
+            }
+        }
+        long mode = ((c_class_6a600 *)g_4cf77c)->state;
+        if ((mode == 4 || mode == 5) && mode != 3 && mode != 5)
+        {
+            c_entry_table *table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
+            long handle = entity_table_new_entity(table, 7);
+            if (handle != NONE)
+            {
+                *(long *)&table->entries[handle & 0x3ff].state = NONE;
+                function_xaee93d()->index28 = handle;
+                ((c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098)->function_08a400(handle);
+            }
+        }
+        for (short i = 0; i < 16; ++i)
+        {
+            mode = ((c_class_6a600 *)g_4cf77c)->state;
+            if ((mode == 4 || mode == 5) && mode != 3 && mode != 5)
+            {
+                c_entry_table *table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
+                long handle = entity_table_new_entity(table, 6);
+                if (handle != NONE)
+                {
+                    table->entries[handle & 0x3ff].state = (void *)NONE;
+                    function_xaee93d()->slots[i] = handle;
+                    table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
+                    s_entry *entry = &table->entries[handle & 0x3ff];
+                    c_entry_handler *handler = table->handlers->handlers[entry->handler_index];
+                    handler->v18(entry, entry->data_size, entry->data);
+                    handler->save(entry->data_size, (long)entry->data, entry->state_size, entry->state);
+                    entry->unknown06 = true;
+                    entry->unknown0c = (1 << handler->get_bit_count()) - 1;
+                }
+            }
+        }
+        game_engine_get()->p12();
+        function_158e20();
+    }
 }

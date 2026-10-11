@@ -948,7 +948,7 @@ bool __stdcall function_265290(long actor_index, long prop_ref_index)
     *(short *)(actor + 0x358) = 3;
     *(long *)(actor + 0x360) = *(long *)(reference + 0x20);
     real range = *(real *)(definition + 4);
-    long owner = *(long *)(object + 0x248);
+    long const &owner = *(long *)(object + 0x248);
     long const *owner_reference = &owner;
     *(long *)(actor + 0x364) = owner;
     *(real *)(actor + 0x36c) = range;

@@ -102,7 +102,7 @@ long c_game_engine_45c7a8::v7(long player_index, byte *b)
 struct s_team_entry;
 struct s_spawn_influence_list;
 s_team_entry *function_15e410(short team);
-void __stdcall function_15e360(point3f const *point, long object_index);
+void function_15e360(point3f const *point, long object_index);
 
 // @retail 0x2bc340
 void function_2bc340(long team)

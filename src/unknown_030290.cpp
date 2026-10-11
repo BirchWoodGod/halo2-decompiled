@@ -420,15 +420,18 @@ PRIVATE __forceinline void normalize_cross_vector(vector3f *v)
 real function_31b40(vector3f *vector, vector3f const *axis)
 {
 	vector3f cross;
-	cross.i = axis->k * vector->j - vector->k * axis->j;
-	cross.j = vector->k * axis->i - axis->k * vector->i;
-	cross.k = axis->j * vector->i - axis->i * vector->j;
+	cross.i = *(real const volatile *)&vector->j * axis->k - *(real const volatile *)&axis->j * vector->k;
+	cross.j = *(real const volatile *)&axis->i * vector->k - *(real const volatile *)&vector->i * axis->k;
+	cross.k = *(real const volatile *)&axis->j * vector->i - *(real const volatile *)&vector->j * axis->i;
 	normalize_cross_vector(&cross);
+	vector3f const volatile &normalized = cross;
 	vector3f result;
-	result.i = axis->j * cross.k - cross.j * axis->k;
-	result.j = cross.i * axis->k - axis->i * cross.k;
-	result.k = axis->i * cross.j - axis->j * cross.i;
-	*vector = result;
+	result.i = axis->j * normalized.k - normalized.j * axis->k;
+	result.j = normalized.i * axis->k - axis->i * normalized.k;
+	result.k = axis->i * normalized.j - axis->j * normalized.i;
+	vector->i = result.i;
+	vector->j = result.j;
+	vector->k = result.k;
 	return function_30bf0(vector);
 }
 

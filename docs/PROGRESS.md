@@ -2,6 +2,25 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7524 functions match
+
+```
+matched 7524 of 11318 game functions (883413 of 2784283 bytes, 31.73%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, closest first with the fast check in lanes W, Z, AB and AD: 0xb62b0; 0x4c450 is one instruction from retail (from 170).
+
+## 2026-10-11: 7523 functions match
+
+```
+matched 7523 of 11318 game functions (883315 of 2784283 bytes, 31.73%)
+```
+
+10 new matches, none lost:
+- Deep lane 2, new code callees first and then closest first in lanes S, N, Q, T, R, H and the UI core: 0x10cdf0, 0x151110, 0x15cba0, 0x15e360, 0x173d80, 0x10c850, 0x143120, 0x146980, 0x146ac0, and 0x2bc340 as a side effect.
+- 0x22dad1, which a whole-program effect of the new code had cost, matches again: its two calls are now ordered with a compiler barrier.
+
 ## 2026-10-11: 7513 functions match
 
 ```

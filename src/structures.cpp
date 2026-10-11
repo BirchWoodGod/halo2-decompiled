@@ -429,3 +429,56 @@ bool __stdcall function_14a8e0(s_structure_collision_result const *collision,
 	}
 	return result;
 }
+
+
+// @retail 0x14af40
+bool function_14af40(bool include_objects, point3f const *point, vector3f const *direction,
+    long ignore_object_index, bool result, void *surface, point3f *probe)
+{
+    vector3f const *const *direction_reference = &direction;
+    long const *ignore_object_reference = &ignore_object_index;
+    void *const *surface_reference = &surface;
+    s_structure_lightmap_triangle *triangle = (s_structure_lightmap_triangle *)*surface_reference;
+    s_structure_lightmap_triangle *const *triangle_reference = &triangle;
+    long flags = include_objects ? 0x4480000d : 0x4800c0d;
+    result = false;
+    byte collision[0x5c];
+    *(short *)(collision + 0x24) = NONE;
+    *probe = *point;
+    if (!g_4e0344 || g_4e0344->count <= 0 || !g_4e0348) return false;
+    byte *bsp = (byte *)g_4e0344->bsp;
+    if (*(long *)(bsp + 0x1c) == NONE || *(long *)(bsp + 4) != *(long *)((byte *)g_4e0348 + 8)) return false;
+    (*triangle_reference)->cluster_index = NONE;
+    (*triangle_reference)->instance_index = NONE;
+    *(long *)((byte *)*triangle_reference + 8) = NONE;
+    long attempts = 0;
+    for (;;)
+    {
+        if (!function_1697c0(flags, probe, *direction_reference, *ignore_object_reference, NONE,
+            (s_collision_result_1697c0 *)collision)) break;
+        long object_index = *(long *)(collision + 0x40);
+        if (object_index == NONE)
+            result = structure_get_lightmap_triangle((s_structure_collision_result *)collision, *triangle_reference);
+        else
+        {
+            byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
+            bool excluded = object[0xaa] == 6 && *(short *)(g_4e3b44[*(long *)object & 0xffff].bytes + 0xc0) != 2;
+            if (!excluded && function_bf9a0(object_index, (long *)((byte *)*triangle_reference + 0xc),
+                (long *)((byte *)*triangle_reference + 0x10)))
+                result = function_14a8e0((s_structure_collision_result *)collision,
+                    *(long *)((byte *)*triangle_reference + 0xc), *triangle_reference);
+            else if (!excluded)
+            {
+                flags = 0x4800005;
+                if (function_1697c0(flags, probe, *direction_reference, NONE, NONE,
+                    (s_collision_result_1697c0 *)collision))
+                    result = structure_get_lightmap_triangle((s_structure_collision_result *)collision, *triangle_reference);
+            }
+        }
+        if (result || !(collision[0x58] & 1) || ++attempts >= 3) break;
+        probe->x += (*direction_reference)->i * 0.02f;
+        probe->y += (*direction_reference)->j * 0.02f;
+        probe->z += (*direction_reference)->k * 0.02f;
+    }
+    return result;
+}

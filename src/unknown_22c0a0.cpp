@@ -12,6 +12,33 @@ struct s_fixed_memory_entry
 	long size;
 };
 
+// @retail 0x22c330
+void *c_havok_fixed_memory::function_22c330(long alignment, long limit,
+	long offset, long size, s_fixed_memory_entry *entry)
+{
+	void *result = NULL;
+	if (limit >= offset)
+	{
+		switch (alignment)
+		{
+		case 2: offset = (offset + 15) & ~15; break;
+		case 4: offset = (offset + 15) & ~15; break;
+		case 8: offset = (offset + 15) & ~15; break;
+		case 16: offset = (offset + 15) & ~15; break;
+		case 0: break;
+		case 1: break;
+		default: __assume(0);
+		}
+		if (limit >= size + offset)
+		{
+			entry->offset = offset;
+			entry->size = size;
+			result = (byte *)m_buffer + offset;
+		}
+	}
+	return result;
+}
+
 // @retail 0x22c0a0
 void *c_havok_fixed_memory::allocate(long size, long memory_class)
 {
@@ -126,4 +153,71 @@ void fixed_memory_get_statistics_16(c_havok_fixed_memory *memory, s_fixed_memory
 		statistics->allocation_count = 0;
 		statistics->unknown0c = 0;
 	}
+}
+
+
+// @retail 0x22c0d0
+void *c_havok_fixed_memory::allocate_aligned(long alignment, long size, long memory_class)
+{
+    void *result = NULL;
+    long used = 0;
+    long offset = 0;
+    s_fixed_memory_entry entry;
+    if (m_count > 0)
+    {
+        s_fixed_memory_entry *last = (s_fixed_memory_entry *)((byte *)m_buffer + m_size - m_count * 8);
+        used = last->offset + last->size;
+    }
+    if (used < m_size - (m_count * 8 + 8))
+    {
+        long i;
+        for (i = 0; i < m_count; ++i)
+        {
+            s_fixed_memory_entry *current = (s_fixed_memory_entry *)((byte *)m_buffer + m_size - (i * 8 + 8));
+            long limit = current->offset;
+            if (limit >= size + offset)
+            {
+                result = function_22c330(alignment, limit, offset, size, &entry);
+                if (result)
+                {
+                    m_count++;
+                    for (long j = m_count - 1; j > i; --j)
+                    {
+                        s_fixed_memory_entry *items = (s_fixed_memory_entry *)((byte *)m_buffer + m_size);
+                        items[-j - 1] = items[-j];
+                    }
+                    s_fixed_memory_entry *items = (s_fixed_memory_entry *)((byte *)m_buffer + m_size);
+                    items[-i - 1] = entry;
+                    break;
+                }
+            }
+            offset = limit + current->size;
+        }
+        if (!result)
+        {
+            long limit = m_size - (m_count * 8 + 8);
+            if (limit >= offset)
+            {
+                switch (alignment)
+                {
+                case 0: break;
+                case 1: break;
+                case 2: offset = (offset + 15) & ~15; break;
+                case 4: offset = (offset + 15) & ~15; break;
+                case 8: offset = (offset + 15) & ~15; break;
+                case 16: offset = (offset + 15) & ~15; break;
+                default: __assume(0);
+                }
+                if (limit >= size + offset) result = (byte *)m_buffer + offset;
+            }
+            if (result)
+            {
+                m_count++;
+                s_fixed_memory_entry *items = (s_fixed_memory_entry *)((byte *)m_buffer + m_size);
+                items[-m_count].offset = offset;
+                items[-m_count].size = size;
+            }
+        }
+    }
+    return result;
 }
