@@ -188,6 +188,7 @@ signed char *function_3d430(long object_index)
     return result;
 }
 
+__declspec(noinline)
 // @retail 0x4c640
 void function_4c640(long object_index, signed char value)
 {

@@ -857,6 +857,7 @@ struct s_format_block_table
 	s_format_block *blocks;
 };
 
+__declspec(noinline)
 // @retail 0x4cbb0
 long function_4cbb0(long tag_index, dword block_index)
 {
@@ -1082,22 +1083,29 @@ struct s_vector_perturbation
 	real step;
 };
 
+extern "C" void _ReadWriteBarrier(void);
 __declspec(noinline)
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x4b3d0
 void function_4b3d0(s_vector_perturbation *state)
 {
 	state->speed_fraction = function_36a40(state->speed_fraction, state->speed_spread * g_509418, 0.0f, 1.0f);
+	_ReadWriteBarrier();
 	real speed = (state->speed_maximum - state->speed_minimum) * state->speed_fraction + state->speed_minimum;
 	state->velocity.i = state->direction.i * speed;
 	state->velocity.j = state->direction.j * speed;
 	state->velocity.k = state->direction.k * speed;
 	state->first_fraction = function_36a40(state->first_fraction, state->direction_spread * g_509418, -1.0f, 1.0f);
+	_ReadWriteBarrier();
 	state->second_fraction = function_36a40(state->second_fraction, state->direction_spread * g_509418, -1.0f, 1.0f);
+	_ReadWriteBarrier();
 	state->magnitude_fraction = function_36a40(state->magnitude_fraction, state->magnitude_spread * g_509418, 0.0f, 1.0f);
+	_ReadWriteBarrier();
 	real first = state->first_fraction * state->direction_scale;
 	state->perturbation.i = state->first_axis.i * first + state->base_direction.i;
 	state->perturbation.j = state->first_axis.j * first + state->base_direction.j;
 	state->perturbation.k = state->first_axis.k * first + state->base_direction.k;
+	_ReadWriteBarrier();
 	real second = state->second_fraction * state->direction_scale;
 	state->perturbation.i = state->second_axis.i * second + state->perturbation.i;
 	state->perturbation.j = state->second_axis.j * second + state->perturbation.j;
@@ -1107,11 +1115,13 @@ void function_4b3d0(s_vector_perturbation *state)
 	state->perturbation.i *= magnitude;
 	state->perturbation.j *= magnitude;
 	state->perturbation.k *= magnitude;
+	_ReadWriteBarrier();
 	state->velocity.i += state->perturbation.i;
 	state->velocity.j += state->perturbation.j;
 	state->velocity.k += state->perturbation.k;
 	state->step = state->step_scale * g_509418;
 }
+#pragma function(_ReadWriteBarrier)
 
 struct s_33a0b_view;
 extern s_33a0b_view *g_485a58;
@@ -1430,21 +1440,40 @@ bool function_320b0(s_320b0_box const *box)
     function_11fa40(&bounds, 12, edges);
     for (long edge = 0; edge < 12; ++edge)
     {
-        for (long endpoint = 0; endpoint < 2; ++endpoint)
         {
-            long i = edge * 2 + endpoint;
-            point3f point = ((point3f *)edges)[i];
-            if (*box_scale != 1.0f)
+            long i = edge * 2;
+            real x = ((point3f *)edges)[i].x;
+            real y = ((point3f *)edges)[i].y;
+            real z = ((point3f *)edges)[i].z;
+            real scale = *box_scale;
+            if (scale != 1.0f)
             {
-                point.x = *box_scale * point.x;
-                point.y = *box_scale * point.y;
-                point.z = *box_scale * point.z;
+                x = scale * x;
+                y = *box_scale * y;
+                z = *box_scale * z;
             }
             real const *m = (real const *)&box->matrix;
-            transformed[i].x = m[1] * point.x + m[7] * point.z + m[4] * point.y + m[10];
-            transformed[i].y = m[2] * point.x + m[8] * point.z + m[5] * point.y + m[11];
-            transformed[i].z = m[3] * point.x + m[9] * point.z + m[6] * point.y + m[12];
-        }
+            transformed[i].x = m[1] * x + m[7] * z + m[4] * y + m[10];
+            transformed[i].y = m[2] * x + m[8] * z + m[5] * y + m[11];
+            transformed[i].z = m[3] * x + m[9] * z + m[6] * y + m[12];
+                }
+        {
+            long i = edge * 2 + 1;
+            real x = ((point3f *)edges)[i].x;
+            real y = ((point3f *)edges)[i].y;
+            real z = ((point3f *)edges)[i].z;
+            real scale = *box_scale;
+            if (scale != 1.0f)
+            {
+                x = scale * x;
+                y = *box_scale * y;
+                z = *box_scale * z;
+            }
+            real const *m = (real const *)&box->matrix;
+            transformed[i].x = m[1] * x + m[7] * z + m[4] * y + m[10];
+            transformed[i].y = m[2] * x + m[8] * z + m[5] * y + m[11];
+            transformed[i].z = m[3] * x + m[9] * z + m[6] * y + m[12];
+                }
     }
     s_bounds3d projected;
     bool visible = function_1652e0((s_view *)(context + 4), *(real *)(context + 0x74), transformed,
@@ -3777,3 +3806,140 @@ void __stdcall function_2bcd0(long frame_mode, long draw_ui, bool world_effects,
     function_13630();
 }
 #endif
+
+
+extern s_record_pool *g_509434;
+extern long g_4ba050;
+long __stdcall function_3ddd0(long object_index);
+
+// @retail 0x4c450
+long function_4c450(long object_index, real distance, real const *definition, real *fraction)
+{
+    (void)&object_index;
+    real defaults[6] = { 10.0f, 8.0f, 6.0f, 4.0f, 2.0f, 0.0f };
+    real thresholds[6];
+    real upper;
+    *fraction = 0.9999f;
+    if (definition && definition[3] > 0.0f && definition[3] >= definition[4]
+        && definition[4] >= definition[5] && definition[5] >= definition[6]
+        && definition[6] >= definition[7] && definition[8] == 0.0f)
+    {
+        memcpy(thresholds, definition + 3, sizeof(thresholds));
+        upper = definition[0];
+    }
+    else
+    {
+        memcpy(thresholds, defaults, sizeof(thresholds));
+        upper = 0.0f;
+    }
+    long level = 0;
+    while (level < 6)
+    {
+        real lower = thresholds[level];
+        if (distance > lower || lower == 0.0f)
+        {
+            if (level == 0)
+            {
+                if (!(upper > lower))
+                {
+                    *fraction = 0.9999f;
+                    break;
+                }
+            }
+            else upper = thresholds[level - 1];
+            real value = (upper - distance) / (upper - lower);
+            if (value < 0.0f) value = 0.0f;
+            else if (value > 0.9999f) value = 0.9999f;
+            *fraction = value;
+            break;
+        }
+        ++level;
+    }
+    signed char previous = -1;
+    if (g_4ba050 >= 0 && g_4ba050 < 4)
+    {
+        byte *slot = NULL;
+        long cache = function_3ddd0(object_index);
+        if (cache != NONE)
+            slot = g_509434->data + (cache & 0xffff) * 0x100 + 0xbc;
+        previous = (signed char)slot[g_4ba050];
+    }
+    long previous_level = previous;
+    if (previous_level != -1)
+    {
+        long difference = previous_level - level;
+        long absolute = abs(difference);
+        if (absolute == 1)
+        {
+            if (difference == absolute && *fraction < 0.8f)
+                ++level;
+            else if (difference == -1 && *fraction > 0.2f)
+                --level;
+        }
+    }
+    return level;
+}
+
+
+struct s_camera;
+real function_50650(real cosine);
+long function_30830(point3f const *a, s_camera const *camera, vector3f const *d,
+    point2f const *scale, bool perspective, bool negate, point2f *out);
+
+// @retail 0x4ff50
+void function_4ff50(byte const *definition, byte const *state, bool facing, real time,
+    real cosine, real *strength, real *horizontal, real *vertical, real *out)
+{
+    if (*(long const *)(definition + 0x38) > 0)
+    {
+        byte const *curve = *(byte **)(definition + 0x3c);
+        if (facing)
+        {
+            real angle;
+            if (function_50650(cosine) * 0.6366197466850281f < 0.0f) angle = 0.0f;
+            else if (function_50650(cosine) * 0.6366197466850281f > 1.0f) angle = 1.0f;
+            else angle = function_50650(cosine) * 0.6366197466850281f;
+            real lower = curve ? *(real const *)(curve + 0x14) * 0.6366197466850281f : 0.0f;
+            if (0.0f > lower) lower = 0.0f;
+            else if (lower > 0.9998999834060669f) lower = 0.9998999834060669f;
+            real value = (angle - lower) / (1.0f - lower);
+            if (0.0f > value) value = 0.0f;
+            else if (value > 1.0f) value = 1.0f;
+            *strength = value;
+            if (value > 0.0f)
+            {
+                if (curve && *(real const *)(curve + 0x18) > 0.0f)
+                    *strength = (real)pow(value, *(real const *)(curve + 0x18));
+                else
+                    *strength = 1.0f;
+            }
+            if (*strength > 0.0f)
+            {
+                point2f projected;
+                if (function_30830((point3f const *)(state + 8), NULL, (vector3f const *)(state + 0x14),
+                    NULL, true, true, &projected) && (projected.x != 0.0f || projected.y != 0.0f))
+                {
+                    double direction = atan2(projected.y, projected.x);
+                    *horizontal = (real)cos(direction);
+                    *vertical = (real)sin(direction);
+                }
+            }
+        }
+        if (curve)
+        {
+            real base = *(real const *)(curve + 0x10);
+            if (*strength > 0.0f)
+            {
+                real value = function_13bb90((s_tag_data const *)curve, time, 0.0f);
+                out[0] = base - (base - value) * *strength;
+                value = function_13bb90((s_tag_data const *)(curve + 8), time, 0.0f);
+                out[1] = base - (base - value) * *strength;
+            }
+            else
+            {
+                out[0] = base;
+                out[1] = base;
+            }
+        }
+    }
+}

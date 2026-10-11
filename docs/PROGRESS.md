@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7524 functions match
+
+```
+matched 7524 of 11318 game functions (883413 of 2784283 bytes, 31.73%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, closest first with the fast check in lanes W, Z, AB and AD: 0xb62b0; 0x4c450 is one instruction from retail (from 170).
+
 ## 2026-10-11: 7523 functions match
 
 ```
