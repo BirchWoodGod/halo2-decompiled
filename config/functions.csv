@@ -3580,7 +3580,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0010a520,309,game,speed,a16 pad,,,0020a9a0,src/scenery.cpp,todo
 0010a660,447,game,speed,a16 pad,,,000b7290 000b7360 000b75a0 000b8600 000b8840 000b9a50 000b9b90 000bd020 001cb0d0 001cbd10 001ccae0 001ccb80,src/unknown_10a660.cpp,todo
 0010a820,144,game,speed,a16 pad,,,0010a8b0,src/scenery.cpp,todo
-0010a8b0,207,game,unknown,a16,,,,src/unknown_10a8b0.cpp,todo
+0010a8b0,207,game,unknown,a16,,,,src/unknown_10a8b0.cpp,matched
 0010a980,71,game,speed,a16 pad,,,00163ba0,src/unknown_10a980.cpp,matched
 0010a9d0,11,game,speed,a16 pad,,,,src/unknown_10a980.cpp,matched
 0010a9e0,208,game,speed,a16 pad,,,,src/unknown_10a980.cpp,matched
