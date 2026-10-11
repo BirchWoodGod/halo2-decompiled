@@ -566,9 +566,9 @@ bool object_change_region_permutations(long object_index, long render_model_inde
 						s_effect_parameters parameters;
 
 						effect_parameters_initialize(&parameters);
+						parameters.object_index = object_index;
 						parameters.unknown30 = choice->unknown14;
 						parameters.tag_index = choice->unknown10;
-						parameters.object_index = object_index;
 						parameters.unknown34 = 0x30005a6;
 						parameters.unknown38 = 0x30005a6;
 						parameters.flags = 3;

@@ -3,6 +3,7 @@
    candidates, the local players' view state, the players' census) */
 
 #include "unknown_11c920.h"
+#include "segment_sphere.h"
 #include "globals.h"
 #include "sound_sources.h"
 #include "unknown_0259d0.h"
@@ -576,7 +577,6 @@ struct s_player_target_object
 };
 
 void function_cafc0(long unit_index, point3f *position);
-bool function_11e5e0(point3f const *origin, point3f const *center, vector3f const *direction, real radius);
 bool function_1078f0(long control_index, vector3f const *direction);
 bool function_107870(long device_index);
 
@@ -590,7 +590,7 @@ void function_1516c0(long object_index, long player_index, s_target_candidate *b
 	s_player_target_object *object = (s_player_target_object *)tail_object_get(object_index);
 	point3f eye;
 	function_cafc0(player->unit_index, &eye);
-	if (function_11e5e0(&eye, &object->position, &unit->direction, object->radius) &&
+	if (function_11e5e0(&eye, &unit->direction, &object->position, object->radius) &&
 		function_1078f0(object_index, &unit->direction) && function_107870(object_index))
 	{
 		s_target_candidate candidate;

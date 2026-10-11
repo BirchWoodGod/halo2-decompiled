@@ -54,13 +54,3 @@ void __stdcall function_e56f0(long unit_index, point3f const *point) { }
 
 // @stub 0xe5750
 void function_e5750(long unit_index) { }
-
-
-struct s_tracked_point;
-// @stub 0x1fc350
-void __stdcall function_1fc350(long object_index, s_tracked_point *tracked) { }
-
-
-
-// @stub 0xe5690
-void __stdcall function_e5690(long unit_index, point3f const *point) { }

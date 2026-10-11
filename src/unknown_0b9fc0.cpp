@@ -305,18 +305,31 @@ void __stdcall machine_place(long machine_index, s_type_181dea *scenario_machine
 	}
 }
 
+struct s_115191
+{
+	byte field_0[0x11e];
+	word : 2;
+	word field_11e : 1;
+	word : 13;
+};
+
+PRIVATE inline void function_115192(dword *arg_0)
+{
+	*arg_0 |= 0x800;
+}
+
 // @retail 0x115190
 bool __stdcall machine_new(long machine_index, void const *data, long unused)
 {
 	s_machine *machine = MACHINE_GET(machine_index);
 	s_machine_definition *definition = MACHINE_DEFINITION_GET(machine->definition_index);
 
-	*(dword *)&machine->object_flags |= 0x800;
-	if ((*(byte *)&definition->flags >> 2) & 1)
+	function_115192((dword *)&machine->object_flags);
+	if (TEST_FIELD_BIT(((s_115191 *)definition)->field_11e))
 		machine->object_flags.static_lighting = true;
 	else
 		machine->object_flags.static_lighting = false;
-	if ((*(byte *)&definition->flags >> 2) & 1)
+	if (TEST_FIELD_BIT(((s_115191 *)definition)->field_11e))
 		machine->object_flags.static_lighting_sideways = true;
 	else
 		machine->object_flags.static_lighting_sideways = false;
@@ -645,7 +658,7 @@ struct s_component_property_view
 };
 
 // @retail 0x11bd60
-bool __stdcall function_11bd60(long object_index, long key, long positive, long value)
+bool __stdcall function_11bd60(long object_index, long key, long value, long positive)
 {
 	long index = MACHINE_GET(object_index)->havok_component_index;
 	bool result = false;

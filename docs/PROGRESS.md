@@ -2,6 +2,25 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7587 functions match
+
+```
+matched 7587 of 11318 game functions (896086 of 2784283 bytes, 32.18%)
+```
+
+21 new matches, none lost:
+- Outside contributors' pull requests: @BirchWoodGod's quad renderer, shader setup and bitmap fallback (#313: 13 functions), saved profile lookup (#315, with its caller), map time helper (#316) and object callback dispatcher (#318), and @BrassMonkey71's 0x28e160 (#317) and 0xe5690 with 0x1e54d0 and 0x1fc350 (#201).
+- Also merged: @BirchWoodGod's decal placement and projection fixes (#323), relocation tests (#310) and join-request codec analysis (#87).
+
+## 2026-10-11: 7566 functions match
+
+```
+matched 7566 of 11318 game functions (893873 of 2784283 bytes, 32.10%)
+```
+
+42 new matches, none lost:
+- The second machine's batch r58 (#306–#329): lanes J (+9), D lower (+6), AA (+6), B (+5 and +2), Y (+4), K (+3), and one each from F, M, AC, P, D upper and its permuter lane (two).
+
 ## 2026-10-11: 7524 functions match
 
 ```
