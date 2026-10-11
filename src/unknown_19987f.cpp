@@ -1487,6 +1487,8 @@ bool function_138800();
 // @retail 0x19b0e1
 long function_19b0e1(long screen_id)
 {
+	long const *screen_id_reference = &screen_id;
+	screen_id = *screen_id_reference;
 	long result = 0;
 
 	if (function_138800() && g_4e6948->state != 3)
