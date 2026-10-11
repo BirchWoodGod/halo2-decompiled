@@ -145,12 +145,13 @@ long online_round_register(bool free_for_all, XNKID const *session_id, ULONGLONG
 			XONLINE_ARB_ID id;
 			id.SessionID = *session_id;
 			id.qwRoundID = *round_key;
-			dword flags = free_for_all ? 0x1c : 0x0c;
+			dword flags = (free_for_all ? 0x10 : 0) | 0x0c;
 			if (SUCCEEDED(XOnlineArbitrationRegister(&id, seconds, flags, NULL, (PXONLINETASK_HANDLE)&task->handle)))
 			{
 				task->flags = 1;
 				task->type = 0x12;
 				task->controller_index = NONE;
+				return task_index;
 			}
 			else
 			{

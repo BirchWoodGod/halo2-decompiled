@@ -114,6 +114,8 @@ public:
 
 struct s_network_observer : public c_network_connection_listener
 {
+	void function_79c00(long index, bool pass_on);
+	void function_776a0(long channel_index);
 	s_network_observer();
 	~s_network_observer();
 	void packet_sent(long connection_index, long size, bool flag);

@@ -7,6 +7,8 @@
 #include <math.h>
 
 
+PRIVATE __forceinline real function_11cd21(real arg_0);
+
 // @retail 0x11cc90
 real function_11cc90(
 	vector2f const *a,
@@ -14,12 +16,16 @@ real function_11cc90(
 {
 	real d = a->i * b->i + a->j * b->j;
 	real angle;
-	d = d < -1.f ? -1.f : d;
-	d = d > 1.f ? 1.f : d;
-	angle = (real)acos(d);
+	d = d < -1.f ? -1.f : d > 1.f ? 1.f : d;
+	angle = function_11cd21(d);
 	if (a->j * b->i - a->i * b->j < 0.f)
 		return 0.f - angle;
 	return angle;
+}
+
+PRIVATE __forceinline real function_11cd21(real arg_0)
+{
+	return (real)acos(arg_0 < -1.f ? -1.f : arg_0 > 1.f ? 1.f : arg_0);
 }
 
 // @retail 0x11cd20
@@ -33,9 +39,8 @@ real function_11cd20(
 	{
 		real d = b->i * a->i + b->j * a->j;
 		real c = d / l * d * 2.f - 1.f;
-		c = c < -1.f ? -1.f : c;
-		c = c > 1.f ? 1.f : c;
-		result = (real)acos(c) * 0.5f;
+		c = c < -1.f ? -1.f : c > 1.f ? 1.f : c;
+		result = function_11cd21(c) * 0.5f;
 		if (d < 0.f)
 			result = g_5476c4 - result;
 	}
@@ -53,9 +58,8 @@ real function_11ce20(
 	{
 		real d = b->k * a->k + b->j * a->j + b->i * a->i;
 		real c = d / l * d * 2.f - 1.f;
-		c = c < -1.f ? -1.f : c;
-		c = c > 1.f ? 1.f : c;
-		result = (real)acos(c) * 0.5f;
+		c = c < -1.f ? -1.f : c > 1.f ? 1.f : c;
+		result = function_11cd21(c) * 0.5f;
 		if (d < 0.f)
 			result = g_5476c4 - result;
 	}
@@ -63,18 +67,20 @@ real function_11ce20(
 }
 
 // @retail 0x11cf50
-real function_11cf50(
-	vector3f const *a,
-	vector3f const *b)
+real function_11cf50(vector3f const *a, vector3f const *b)
 {
 	real d, angle;
+	real local_0;
 	if (((long const *)a)[0] == ((long const *)b)[0] && ((long const *)a)[1] == ((long const *)b)[1] && ((long const *)a)[2] == ((long const *)b)[2])
-		return 0.f;
-	d = a->k * b->k + a->j * b->j + a->i * b->i;
-	d = d < -1.f ? -1.f : d;
-	d = d > 1.f ? 1.f : d;
-	angle = (real)acos(d);
-	return angle;
+		local_0 = 0.f;
+	else
+	{
+		d = a->k * b->k + a->j * b->j + a->i * b->i;
+		d = d < -1.f ? -1.f : d > 1.f ? 1.f : d;
+		angle = function_11cd21(d);
+		local_0 = angle;
+	}
+	return local_0;
 }
 
 // @retail 0x11d000

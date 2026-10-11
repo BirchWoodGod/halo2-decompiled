@@ -327,8 +327,8 @@ short function_1b1100(long actor_index, vector2f const *forward, s_slot_7e *stat
 
 /* whether the actor stands on the right side of its formation position */
 // @retail 0x1b1970
-bool function_1b1970(long actor_index, short mode, short index, vector2f const *forward,
-	vector2f const *left)
+bool function_1b1970(long actor_index, short mode, vector2f const *forward,
+	vector2f const *left, short index)
 {
 	bool result = false;
 
@@ -359,10 +359,12 @@ bool function_1b1970(long actor_index, short mode, short index, vector2f const *
 				real forward_dot = forward->i * direction.x + forward->j * direction.y;
 				real left_dot = left->i * direction.x + left->j * direction.y;
 
-				if ((index % 2 == 0 ? 0.0f >= left_dot : left_dot >= 0.0f) || forward_dot >= 0.9f)
-					result = true;
+				if (index % 2 == 0)
+					result = left_dot <= 0.0f;
 				else
-					result = false;
+					result = left_dot >= 0.0f;
+				if (!result)
+					result = forward_dot >= 0.9f;
 			}
 		}
 		break;
@@ -422,7 +424,7 @@ void __stdcall function_1b1a90(long actor_index, s_slot *slot, s_slot_target_lis
 		if (actor->unknown086 >= 7)
 		{
 			if (state->position_index != NONE)
-				actor->unknown488 = function_1b1970(actor_index, list->mode, state->position_index, &forward, &left);
+				actor->unknown488 = function_1b1970(actor_index, list->mode, &forward, &left, state->position_index);
 			else
 				actor->unknown488 = false;
 			actor->unknown41c = 3;

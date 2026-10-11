@@ -209,7 +209,7 @@ void c_unit_type::v26(long index, long b, s_entity_state *state)
 	s_unit_object_view *first = UNIT_OBJECT(index);
 	s_unit_object_view *object;
 
-	unit_state_clear(unit_state);
+	memset(unit_state, 0, sizeof(*unit_state));
 
 	object = UNIT_OBJECT(index);
 	unit_state->field4 = object->definition_index;
@@ -217,7 +217,7 @@ void c_unit_type::v26(long index, long b, s_entity_state *state)
 	unit_state->field8 = object->field_af;
 	unit_state->fieldc = object->field24;
 
-	long4_clear(&unit_state->field10);
+	memset(&unit_state->field10, 0, sizeof(unit_state->field10));
 	if (first->field13c != NONE)
 	{
 		s_long4 *element = (s_long4 *)(g_4e8c24->data + (first->field13c & 0xffff) * 0x21c + 0x84);
@@ -428,14 +428,14 @@ bool c_game_engine_player_entity_definition::v23(s_entity_slot *entity, long b, 
 bool c_game_engine_player_entity_definition::v24(s_entity_slot *entity)
 {
 	bool result = false;
+	long index = 0;
 	s_mp_globals *local_0 = g_4e9ae8;
 	c_engine_peer *manager = g_55e4d0[*(volatile long *)&local_0->engine_index];
 	s_entity_slot *volatile *local_2 = &entity;
 	s_entity_slot *local_3 = *local_2;
 	long local_1 = local_3->id;
-	long index;
 
-	for (index = 0; index < 16; index++)
+	for (; index < 16; index++)
 	{
 		if (slot_of(manager, index) == local_1)
 			break;
@@ -698,23 +698,24 @@ bool function_e68c0(long type, long unit_index);
 bool c_unit_exit_vehicle_event_definition::v11(long a, long const *entities, long c, void const *data)
 {
 	bool result = false;
+	volatile bool local_0 = result;
 	long unit_index = function_a58d0(entities[0]);
 	long vehicle_index = function_a58d0(entities[1]);
-	if (unit_index != NONE && vehicle_index != NONE)
+	if (unit_index == NONE || vehicle_index == NONE)
+		return result;
+	s_record_pool *local_1 = g_4e0300;
+	s_typed_object_header *headers = (s_typed_object_header *)local_1->data;
+	if (((1 << headers[unit_index & 0xffff].type) & 3) && ((1 << headers[vehicle_index & 0xffff].type) & 3))
 	{
-		s_typed_object_header *headers = (s_typed_object_header *)g_4e0300->data;
-		if (((1 << headers[unit_index & 0xffff].type) & 3) && ((1 << headers[vehicle_index & 0xffff].type) & 3))
+		s_vehicle_event_unit_view *unit = (s_vehicle_event_unit_view *)headers[unit_index & 0xffff].object;
+		if (unit->parent_index != NONE && unit->parent_index == vehicle_index &&
+			unit->seat_index != NONE && unit->seat_index == *(long const *)data)
 		{
-			s_vehicle_event_unit_view *unit = (s_vehicle_event_unit_view *)headers[unit_index & 0xffff].object;
-			if (unit->parent_index != NONE && unit->parent_index == vehicle_index &&
-				unit->seat_index != NONE && unit->seat_index == *(long const *)data)
-			{
-				function_e68c0(0x1d, unit_index);
-				result = true;
-			}
+			function_e68c0(0x1d, unit_index);
+			return true;
 		}
 	}
-	return result;
+	return local_0;
 }
 
 static inline long pin(long value, long lo, long hi)
@@ -742,7 +743,16 @@ bool c_vehicle_trick_event_definition::v11(long a, long const *entities, long c,
 	if (unit_index != NONE && ((1 << ((s_typed_object_header *)g_4e0300->data)[unit_index & 0xffff].type) & 2))
 	{
 		long trick = *(long const *)data;
-		if (pin(trick, 0, 3) == trick)
+		short local_0;
+		if (trick < 0)
+			local_0 = 0;
+		else
+		{
+			local_0 = 3;
+			if (trick <= 3)
+				local_0 = (short)trick;
+		}
+		if (local_0 == trick)
 			result = function_f47d0(unit_index, trick);
 	}
 	return result;
@@ -2046,7 +2056,7 @@ long c_unit_type::v27(long arg_0, long arg_1, long arg_2, long arg_3)
 {
 	c_unit_type *volatile local_0 = this;
 	s_9d450 *local_2 = (s_9d450 *)arg_3;
-	byte *local_1 = (byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object;
+	byte *local_1 = *(byte **)(((arg_0 & 0xffff) * 12) + (long)g_4e0300->data + 8);
 	dword local_3 = (dword)arg_1;
 	long local_4 = function_a5e70(arg_0, local_3 & 0x3ff, arg_3);
 	if (local_3 & 0x400)
@@ -2055,8 +2065,11 @@ long c_unit_type::v27(long arg_0, long arg_1, long arg_2, long arg_3)
 		long local_5 = *(long *)(local_1 + 0x13c);
 		short local_7 = *(short *)(local_1 + 0x130);
 		if (local_5 != NONE)
+		{
 			local_6 = (short)local_5;
-		if (local_5 == NONE || local_6 == NONE || local_7 == NONE)
+			if (local_6 != NONE && local_7 != NONE)
+				goto local_18;
+		}
 		{
 			if (local_2->field_90 != local_6 || local_2->field_92 != local_7)
 			{
@@ -2066,6 +2079,7 @@ long c_unit_type::v27(long arg_0, long arg_1, long arg_2, long arg_3)
 			}
 		}
 	}
+local_18:
 	if (local_3 & 0x800)
 	{
 		long local_5 = NONE;
@@ -2107,7 +2121,7 @@ long c_unit_type::v27(long arg_0, long arg_1, long arg_2, long arg_3)
 	}
 	long local_5 = 18;
 	long local_16 = 4;
-	s_9d451 *local_17 = local_2->field_ac;
+	short *local_17 = &local_2->field_ac[0].field_4;
 	do
 	{
 		dword local_6 = 1 << (local_5 - 4);
@@ -2132,23 +2146,23 @@ long c_unit_type::v27(long arg_0, long arg_1, long arg_2, long arg_3)
 					local_12 = *(short *)(local_14 + 0x22a);
 				}
 			}
-			s_9d451 *local_14 = local_17;
-			if ((local_3 & local_6) && (local_14->field_0 != local_9 || local_14->field_4 != local_10))
+			short *local_14 = local_17;
+			if ((local_3 & local_6) && ((*(long *)(local_14 - 2)) != local_9 || local_14[0] != local_10))
 			{
 				local_4 |= local_6;
-				local_14->field_0 = local_9;
-				local_14->field_4 = local_10;
+				(*(long *)(local_14 - 2)) = local_9;
+				local_14[0] = local_10;
 			}
 			dword local_7 = 1 << local_5;
-			if ((local_3 & local_7) && (local_14->field_6 != local_11 || local_14->field_8 != local_12 || local_14->field_c != local_13))
+			if ((local_3 & local_7) && (local_14[1] != local_11 || local_14[2] != local_12 || (*(real *)(local_14 + 4)) != local_13))
 			{
 				local_4 |= local_7;
-				local_14->field_6 = (short)local_11;
-				local_14->field_8 = (short)local_12;
-				local_14->field_c = local_13;
+				local_14[1] = (short)local_11;
+				local_14[2] = (short)local_12;
+				(*(real *)(local_14 + 4)) = local_13;
 			}
 		}
-		local_17++;
+		local_17 += 8;
 		local_5++;
 	}
 	while (--local_16);
@@ -2163,7 +2177,7 @@ long c_unit_type::v27(long arg_0, long arg_1, long arg_2, long arg_3)
 		real local_6 = function_9d452((real *)(local_1 + 0x2b8));
 		byte local_7 = (byte)((*(dword *)(local_1 + 0x134) >> 3) & 1);
 		bool local_8 = false;
-		bool local_9 = false;
+		volatile bool local_9 = false;
 		bool local_10 = false;
 		if (local_2->field_ee != local_7)
 		{
@@ -2185,4 +2199,3 @@ long c_unit_type::v27(long arg_0, long arg_1, long arg_2, long arg_3)
 	}
 	return local_4;
 }
-
