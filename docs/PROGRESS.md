@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7566 functions match
+
+```
+matched 7566 of 11318 game functions (893873 of 2784283 bytes, 32.10%)
+```
+
+42 new matches, none lost:
+- The second machine's batch r58 (#306–#329): lanes J (+9), D lower (+6), AA (+6), B (+5 and +2), Y (+4), K (+3), and one each from F, M, AC, P, D upper and its permuter lane (two).
+
 ## 2026-10-11: 7524 functions match
 
 ```
