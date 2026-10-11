@@ -1022,8 +1022,8 @@ long __stdcall function_1e0850(long character_index, long squad_index, s_203780 
 		if (weapon != NONE)
 		{
 			byte *weapon_object = *(byte **)(g_4e0300->data + (weapon & 0xffff) * 12 + 8);
-			byte *weapon_definition = g_4e3b44[*(long *)weapon_object & 0xffff].bytes;
-			if (*(long *)(weapon_definition + 0x2f4) != NONE) actor[0x22a] = true;
+			byte *local_67e06b_3 = g_4e3b44[*(long *)weapon_object & 0xffff].bytes;
+			if (*(long *)(local_67e06b_3 + 0x2f4) != NONE) actor[0x22a] = true;
 		}
 		if (data[0x1c] & 0x10) function_b9c60(unit, true);
 	}
@@ -1299,8 +1299,8 @@ long function_1e0fe0(point3f const *point, long unit_index, long character_index
 	placement.field10 = NONE;
 	placement.field14 = placement.field18 = 0.0f;
 	placement.field1c = 2;
-	short current_mode = *mode_reference;
-	placement.field2e = current_mode > 0 ? current_mode : 3;
+	short local_792ecd = *mode_reference;
+	placement.field2e = local_792ecd > 0 ? local_792ecd : 3;
 	long previous = *(long *)(object + 0x12c);
 	if (previous != NONE)
 	{

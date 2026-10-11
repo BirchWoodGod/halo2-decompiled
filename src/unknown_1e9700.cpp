@@ -36,15 +36,15 @@ void function_1e9df0(long field, long counter, s_statborg *statistics, long team
 long function_196ef0(byte code);
 void function_196e60(long player_index, long counter, long code, long delta);
 void function_225880(long player_index);
-void function_162bf0(long player_index, long other_player);
+void function_162bf0(long player_index, long arg_1f407d_2);
 void function_1e9ce0(long player_index, long counter, s_statborg *statistics, long field, long delta, bool by_team);
 
 // @retail 0x1ea770
-void function_1ea770(byte code, long player_index, s_statborg *statistics, long other_player, bool self, bool friendly)
+void function_1ea770(byte code, long player_index, s_statborg *statistics, long arg_1f407d_2, bool self, bool friendly)
 {
 	long kind = function_196ef0(code);
 	s_statborg *const volatile *statistics_reference = &statistics;
-	long volatile other = other_player & 0xffff;
+	long volatile other = arg_1f407d_2 & 0xffff;
 	long index = player_index & 0xffff;
 	function_1e9ce0(player_index, 9, *statistics_reference, 3, 1, true);
 	function_196e60(index, 1, kind, 1);
@@ -53,13 +53,13 @@ void function_1ea770(byte code, long player_index, s_statborg *statistics, long 
 		function_1e9ce0(player_index, 11, statistics, 4, 1, true);
 		function_196e60(index, 3, kind, 1);
 	}
-	else if (friendly && other_player != NONE)
+	else if (friendly && arg_1f407d_2 != NONE)
 	{
 		byte *player = g_4e8c24->data + other * 0x21c;
-		if (*(short *)(player + 0x28) != NONE) function_225880(other_player);
-		function_1e9ce0(other_player, 10, statistics, 5, 1, true);
+		if (*(short *)(player + 0x28) != NONE) function_225880(arg_1f407d_2);
+		function_1e9ce0(arg_1f407d_2, 10, statistics, 5, 1, true);
 		function_196e60(other, 2, kind, 1);
-		function_162bf0(player_index, other_player);
+		function_162bf0(player_index, arg_1f407d_2);
 	}
 	byte *row = (byte *)statistics + index * 0x1c;
 	*(short *)(row + 0x16) = 0;
@@ -110,10 +110,10 @@ void function_1ea5b0(long player_index, s_statborg *statistics, long threshold, 
 struct s_object;
 s_object *function_badc0(long object_index, dword types);
 bool function_1df560(short team, short other_team);
-void function_197160(long player_index, long other_player, long code);
+void function_197160(long player_index, long arg_1f407d_2, long code);
 long function_baf80(long object_index);
 void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte damage);
-void function_196dd0(long player_index, long counter, long other_player, long delta);
+void function_196dd0(long player_index, long counter, long arg_1f407d_2, long delta);
 void function_1ea880(long first_player, long player_index, s_object_values *table);
 
 // @retail 0x1e9fa0
