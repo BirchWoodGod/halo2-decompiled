@@ -359,7 +359,7 @@ void function_1486b8(long error, bool keep)
 	{
 		if (choice)
 		{
-			dialog_choice_show(1, dialog_id, 4, 0xffff, first, second, 0);
+			dialog_choice_show(1, dialog_id, 4, (long)NONE, first, second, 0);
 		}
 		else
 		{
