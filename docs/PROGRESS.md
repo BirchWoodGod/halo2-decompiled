@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7633 functions match
+
+```
+matched 7633 of 11318 game functions (905516 of 2784283 bytes, 32.52%)
+```
+
+11 new matches, none lost:
+- Deep lane 1, round 23 (the closest functions outside the render code): 0xa04b0, 0xa0900, 0xa98b0 and 0xa9940; 0xa9640, 0xa96d0 and 0xa9770, which waited on their callee 0xa9820; and 0x688c0, 0x15c000, 0x15dc40 and 0x1e97b0 as side effects.
+
 ## 2026-10-11: 7622 functions match
 
 ```
