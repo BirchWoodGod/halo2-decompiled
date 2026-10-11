@@ -38,9 +38,9 @@ void function_141590(
 		{
 			real inverse = 1.f / in->scale;
 			out->scale = inverse;
-			x = inverse * x;
-			y = inverse * y;
-			z = inverse * z;
+			z = (real)(z * inverse);
+			y = (real)(y * inverse);
+			x = (real)(x * inverse);
 		}
 		else
 		{
