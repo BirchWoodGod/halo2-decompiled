@@ -575,8 +575,7 @@ void __stdcall function_1d77d0(s_havok_component *component,
 ## Evidence
 
 - **Disassembly.** The function was disassembled with capstone 5.0.7 through
-  `tools/xbe.py`. The XBE used has a header edited after signing; its 33
-  section digests match those of two other owners' retail copies.
+  `tools/xbe.py`.
 - **Stack and control flow.** A control-flow graph followed the jump table and
   walked the stack depth over every path from the 16-byte-aligned frame. It
   took the allocator slot as popping 8, and each direct callee's stack effect

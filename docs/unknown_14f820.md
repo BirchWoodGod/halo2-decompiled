@@ -939,10 +939,7 @@ void __stdcall function_14f820(long player_index, long unit_index,
 ## Evidence
 
 - **Disassembly.** The function was disassembled with capstone 5.0.7 through
-  `tools/xbe.py`. The source was a retail XBE whose header was edited after
-  signing; only its certificate differs. Its 33 section digests verify, and
-  they match those of two other owners' retail copies (Cxbx-Reloaded
-  game-compatibility #878, the same disc, and #329, another pressing).
+  `tools/xbe.py`.
 - **Stack and control flow.** A control-flow graph with a stack-depth walk over
   every path put every stack operand at an offset from L. The depth is
   consistent at every join, and each callee's stack effect was taken from its
@@ -953,24 +950,10 @@ void __stdcall function_14f820(long player_index, long unit_index,
 - **References.** An image-wide scan of every section looked for `call` and
   `jmp` (near, short and conditional) and for absolute dwords at any
   alignment. For `0x14f820` it finds only the call at `0x14d7d7`.
-- **Checks.** The text was written from that analysis, and then checked by
-  two independent agents:
-  - one against retail: 230 claims confirmed, 7 corrected;
-  - one against the repository: 166 confirmed, 7 corrected.
-
-  Both also raised points that were imprecise or missing. Every correction
-  and point that held up against retail or the source has been applied.
-- **Final check.** A third agent then checked the finished document against
-  both, with about 590 claims confirmed, 4 corrected and 6 made more precise.
-  Those changes are applied here too. A script confirmed that every cited
-  address is an instruction or function start and every `function_` name is
-  an inventory entry.
-- **The draft comparison.** A fourth agent checked
-  [The draft compared with retail](#the-draft-compared-with-retail) against
-  retail and the draft at `6aa795b` (unchanged at `5d1a893`), path by path.
-  It confirmed about 160 claims with none wrong, found no semantic difference
-  between the draft and retail, and raised the precision points and the two
-  further differences (items 10 and 11) that are applied here.
+- **Checks.** The map and
+  [The draft compared with retail](#the-draft-compared-with-retail) were
+  checked against retail and the repository, and the corrections are
+  applied.
 - **Constants.** These are read from retail `.rdata`, as listed under
   [Constants](#constants).
 - **Prior coverage.** No document covered this range before. Source line
