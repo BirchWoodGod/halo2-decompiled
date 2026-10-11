@@ -40,7 +40,7 @@ struct s_impact
 	real priority;
 	short reference_count;
 	char age;
-	byte unknownb;
+	char unknownb;
 	char type;
 	char unknownd;
 	bool unknowne;
@@ -732,7 +732,7 @@ void impact_rigid_body_indices_get(
 		{
 			s_havok_component_element0c *contact = &component->unknown7c.data[i];
 
-			if (contact->unknown00 == impact->shape.type && contact->unknown02 == impact->shape.index)
+			if (contact->unknown00 == impact->shape.type && contact->unknown02 == (*(s_impact const *const volatile *)&impact)->shape.index)
 			{
 				contact_index = i;
 			}
@@ -1306,7 +1306,10 @@ long impact_new(
 	impact->unknown1f = NONE;
 	impact->normal = data->normal;
 	function_1201a0(&impact->normal, g_4687b0);
-	impact->position = data->position;
+	dword const *local_0 = (dword const *)&data->position;
+	*(dword *)&impact->position.x = local_0[0];
+	*(dword *)&impact->position.y = local_0[1];
+	*(dword *)&impact->position.z = local_0[2];
 	impact->unknown48 = 0.0f;
 	impact->unknown4c = 0.0f;
 	impact->sort_index = NONE;
@@ -1392,6 +1395,11 @@ void impact_material_effects_get_for_component(
 		first_value04, second_value04, first_value, second_value, first_value0c, second_value0c);
 }
 
+PRIVATE __forceinline byte *function_2284c1(long arg_0)
+{
+	return impact_tag_get(impact_object_header_get(havok_component_get(arg_0)->object_index)->object->definition_index);
+}
+
 // @retail 0x2284c0
 void impact_material_effects_get(
 	s_impact const *impact,
@@ -1411,8 +1419,8 @@ void impact_material_effects_get(
 	c_type_47f957 second_material;
 
 	if (impact->component_b != NONE &&
-		*(long *)(impact_component_definition_get(impact->component_a) + 0x58) == NONE &&
-		*(long *)(impact_component_definition_get(impact->component_b) + 0x58) != NONE)
+		*(long *)(function_2284c1(impact->component_a) + 0x58) == NONE &&
+		*(long *)(function_2284c1(impact->component_b) + 0x58) != NONE)
 	{
 		first_material = material_a;
 		second_material = material_b;
@@ -2258,7 +2266,7 @@ void impacts_update(void)
 			impact->age = MIN(impact->age + 1, 0x7e);
 			if (!impact_has_sounds_or_effects(impact) &&
 				(impact->time == NONE || function_146650() - impact->time > game_seconds_to_ticks_round(0.2f)) ||
-				!(impact->age * g_510c54->rate < 0.2f))
+				impact->age * g_510c54->rate >= 0.2f)
 			{
 				function_2266a0(impact_index);
 				continue;
@@ -2294,7 +2302,10 @@ static __forceinline bool impact_component_center_get(s_havok_component *compone
 	{
 		hkRigidBody *rigid_body = component->rigid_bodies.data[function_0b67a0((s_small_index const *)component)].rigid_body;
 
-		*center = *(point3f *)((byte *)rigid_body->m_motion + 0x70);
+		point3f const *local_0 = (point3f const *)((byte *)rigid_body->m_motion + 0x70);
+		center->x = local_0->x;
+		center->y = local_0->y;
+		center->z = local_0->z;
 		return true;
 	}
 	return false;
@@ -2328,14 +2339,14 @@ void impact_sound_location_get(s_impact const *impact, s_impact_sound_location *
 			if (impact->component_b != NONE)
 			{
 				s_havok_component *component_b = havok_component_get(impact->component_a);
-				point3f center_a;
+				point3f volatile center_a;
 				point3f center_b;
 				bool has_a = false;
 				bool has_b = false;
 
-				if (impact_component_center_get(component, &center_a))
+				if (impact_component_center_get(component, (point3f *)&center_a))
 				{
-					arg_26d7e7->position = center_a;
+					arg_26d7e7->position = *(point3f *)&center_a;
 					has_a = true;
 				}
 				if (impact_component_center_get(component_b, &center_b))

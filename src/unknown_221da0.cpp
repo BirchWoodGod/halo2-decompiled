@@ -697,7 +697,7 @@ void function_221e30(s_221e30 *arg_0, real const *arg_1, s_local_camera const *a
 	if (*(long const *)arg_2->unknown00 != arg_0->field_40)
 	{
 		s_221e33 local_10;
-		s_structure_bsp_view *local_13 = (s_structure_bsp_view *)g_4e0348;
+		s_structure_bsp_view *volatile local_13 = (s_structure_bsp_view *)g_4e0348;
 		real local_0 = 0.0f;
 		if (!arg_0->field_47)
 		{
