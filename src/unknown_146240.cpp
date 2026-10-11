@@ -139,7 +139,7 @@ long function_146650(void)
 static inline long game_time_speed_to_ticks(s_game_options_view *options, real speed)
 {
 	real ticks = (real)options->field_2_3 / speed;
-	long result;
+	volatile long result;
 
 	__asm
 	{

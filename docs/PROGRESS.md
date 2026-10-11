@@ -2,6 +2,25 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7523 functions match
+
+```
+matched 7523 of 11318 game functions (883315 of 2784283 bytes, 31.73%)
+```
+
+10 new matches, none lost:
+- Deep lane 2, new code callees first and then closest first in lanes S, N, Q, T, R, H and the UI core: 0x10cdf0, 0x151110, 0x15cba0, 0x15e360, 0x173d80, 0x10c850, 0x143120, 0x146980, 0x146ac0, and 0x2bc340 as a side effect.
+- 0x22dad1, which a whole-program effect of the new code had cost, matches again: its two calls are now ordered with a compiler barrier.
+
+## 2026-10-11: 7513 functions match
+
+```
+matched 7513 of 11318 game functions (881670 of 2784283 bytes, 31.67%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, closest first with the new fast check in lanes V, X, A and the UI screens: 0x1ee470 and 0x2c0d00.
+
 ## 2026-10-11: 7511 functions match
 
 ```

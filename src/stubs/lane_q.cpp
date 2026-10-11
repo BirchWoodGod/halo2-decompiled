@@ -8,8 +8,6 @@
 
 
 
-// @stub 0x15b650
-void __stdcall function_15b650(long team, long delta) { }
 
 struct s_statborg;
 

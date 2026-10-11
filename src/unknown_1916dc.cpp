@@ -325,6 +325,60 @@ void function_24da7d(long local_player_index);
 void function_24cf66(long local_player_index);
 void function_13954b(void);
 void function_191fd8(long player_index);
+
+// Disabled: split shared camera globals cannot supply retail's storage binding safely.
+#if 0
+#include "unknown_030290.h"
+struct s_bitmap_view;
+struct D3DTexture;
+struct s_type_7ba8e9;
+struct s_13e703 { short field_0, field_2; };
+void function_caf60(long unit_index, point3f *point);
+point3f *transform4x3f_apply_point(transform4x3f const *matrix, point3f const *point, point3f *out);
+bool function_30710(vector3f const *v, short_rectangle2d const *rect, point2f *out,
+	s_camera const *camera, s_view const *view);
+long function_13e615(short index);
+s_type_7ba8e9 *function_137610(long group_index, short frame_index, short sequence_index);
+D3DTexture *function_12360(s_bitmap_view *bitmap, real priority);
+void function_13e703(byte const *bitmap, s_13e703 const *position, box2f const *bounds,
+	real scale, real angle, real alpha);
+extern short g_4b9dd0, g_4b9dd2;
+extern real g_4b9de0, g_4b9de4;
+
+// Retail 0x191fd8; camera/view arguments expose the unresolved storage binding.
+void function_191fd8(long player_index, s_camera const *camera, s_view const *view)
+{
+	byte *player = g_4e8c24->data + (player_index & 0xffff) * 0x21c;
+	point3f position, transformed;
+	point2f projected;
+	function_caf60(*(long *)(player + 0x2c), &position);
+	position.z += 0.3f;
+	transform4x3f_apply_point((transform4x3f const *)camera, &position, &transformed);
+	if (function_30710((vector3f const *)&transformed, NULL, &projected, camera, view))
+	{
+		s_type_7ba8e9 *bitmap = function_137610(function_13e615(9), 0, 0);
+		if (function_12360((s_bitmap_view *)bitmap, 0.0f))
+		{
+			long x, y;
+			__asm
+			{
+				fld projected.x
+				fistp x
+				fld projected.y
+				fistp y
+			}
+			s_13e703 screen;
+			screen.field_0 = (short)(x - g_4b9dd2);
+			screen.field_2 = (short)(y - g_4b9dd0);
+			real fraction = 1.0f - ((-transformed.z - g_4b9de0) * 100.0f) / (g_4b9de4 - g_4b9de0);
+			if (fraction < 0.075f) fraction = 0.075f;
+			else if (fraction > 1.0f) fraction = 1.0f;
+			box2f bounds = { 0.0f, 1.0f, (1.0f - fraction) * 0.5f, 1.0f };
+			function_13e703((byte const *)bitmap, &screen, &bounds, 1.0f, 0.0f, 1.0f);
+		}
+	}
+}
+#endif
 bool function_13cb40(void);
 bool function_15e020(short first, short second);
 
