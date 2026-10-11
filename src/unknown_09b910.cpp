@@ -1182,12 +1182,19 @@ struct s_z_event_unit_bits { byte unknown000[0x10a]; byte flags; };
 // @retail 0xa2e90
 bool c_weapon_reload_event::v11(long a, long const *entities, long c, void const *data)
 {
+    struct s_unit_flags
+    {
+        byte unknown000[0x10a];
+        word unknown0 : 2;
+        word suppressed : 1;
+        word unknown3 : 13;
+    };
     bool result = false;
     long index = function_a58d0(entities[0]);
     if (index != NONE)
     {
         s_z_event_header *header = (s_z_event_header *)g_4e0300->data + (index & 0xffff);
-        if (((1 << header->type) & 3) && !(bool)((((s_z_event_unit_bits *)header->object)->flags >> 2) & 1))
+        if (((1 << header->type) & 3) && !((bool)((s_unit_flags *)header->object)->suppressed))
         {
             function_e68c0(0, index);
             function_e68c0(10, index);
@@ -1201,14 +1208,26 @@ bool c_weapon_reload_event::v11(long a, long const *entities, long c, void const
 // @retail 0xa4540
 bool c_device_touch_event::v11(long a, long const *entities, long c, void const *data)
 {
+    struct s_unit_flags
+    {
+        byte unknown000[0x10a];
+        word unknown0 : 2;
+        word suppressed : 1;
+        word unknown3 : 13;
+    };
     long device = function_a58d0(entities[0]);
     long unit = function_a58d0(entities[1]);
     if (device != NONE && unit != NONE)
     {
-        s_z_event_header *headers = (s_z_event_header *)g_4e0300->data;
-        if (((1 << headers[device & 0xffff].type) & 0x380) &&
-            ((1 << headers[unit & 0xffff].type) & 3) && !(bool)((((s_z_event_unit_bits *)headers[unit & 0xffff].object)->flags >> 2) & 1))
-            function_107840(device, unit);
+        byte *headers = g_4e0300->data;
+        long device_offset = (device & 0xffff) * 12;
+        if ((1 << *(byte *)(headers + device_offset + 3)) & 0x380)
+        {
+            long unit_offset = (unit & 0xffff) * 12;
+            if (((1 << *(byte *)(headers + unit_offset + 3)) & 3) &&
+                !((bool)((s_unit_flags *)*(byte **)(headers + unit_offset + 8))->suppressed))
+                function_107840(device, unit);
+        }
     }
     return false;
 }
@@ -1246,10 +1265,10 @@ bool c_projectile_attached_event::v11(long a, long const *entities, long c, void
             byte const *event = (byte const *)data;
             vector3f const *forward = (vector3f const *)(event + 0x10);
             if (*(short const *)(event + 0x14) == NONE && *(long const *)(event + 0x10) == NONE) forward = 0;
-            word node = *(word const *)(event + 2);
-            if ((event[0] && node != 0xffff) || (!event[0] && node == 0xffff))
+            short node = *(short const *)(event + 2);
+            if ((event[0] && node != NONE) || (!event[0] && node == NONE))
             {
-                function_fd560(projectile, target, node, (point3f const *)(event + 4), forward);
+                function_fd560(projectile, target, (word)node, (point3f const *)(event + 4), forward);
                 result = true;
             }
         }
@@ -1260,12 +1279,19 @@ bool c_projectile_attached_event::v11(long a, long const *entities, long c, void
 // @retail 0xa31c0
 bool c_weapon_put_away_event::v11(long a, long const *entities, long c, void const *data)
 {
+    struct s_unit_flags
+    {
+        byte unknown000[0x10a];
+        word unknown0 : 2;
+        word suppressed : 1;
+        word unknown3 : 13;
+    };
     long unit = function_a58d0(entities[0]);
     if (unit != NONE)
     {
         s_z_event_header *headers = (s_z_event_header *)g_4e0300->data;
         s_z_event_header *header = headers + (unit & 0xffff);
-        if (((1 << header->type) & 3) && !(bool)((((s_z_event_unit_bits *)header->object)->flags >> 2) & 1))
+        if (((1 << header->type) & 3) && !((bool)((s_unit_flags *)header->object)->suppressed))
         {
             byte const *event = (byte const *)data;
             short hand = *(short const *)event, slot = *(short const *)(event + 2);
@@ -1283,12 +1309,19 @@ bool c_weapon_put_away_event::v11(long a, long const *entities, long c, void con
 // @retail 0xa30b0
 bool c_weapon_drop_event::v11(long a, long const *entities, long c, void const *data)
 {
+    struct s_unit_flags
+    {
+        byte unknown000[0x10a];
+        word unknown0 : 2;
+        word suppressed : 1;
+        word unknown3 : 13;
+    };
     long unit = function_a58d0(entities[0]);
     if (unit != NONE)
     {
         s_z_event_header *headers = (s_z_event_header *)g_4e0300->data;
         s_z_event_header *header = headers + (unit & 0xffff);
-        if (((1 << header->type) & 3) && !(bool)((((s_z_event_unit_bits *)header->object)->flags >> 2) & 1))
+        if (((1 << header->type) & 3) && !((bool)((s_unit_flags *)header->object)->suppressed))
         {
             byte const *event = (byte const *)data;
             short hand = *(short const *)event, slot = *(short const *)(event + 2);
@@ -1329,24 +1362,35 @@ struct s_object_relevance_result
 void function_82b30(s_object_relevance_result const *source, s_object_relevance_source *result);
 
 // @retail 0xa3420
-bool c_weapon_pickup_event::v11(long a, long const *entities, long c, void const *data)
+bool c_weapon_pickup_event::v11(long a, long const *entities, volatile long c, void const *data)
 {
+    struct s_unit_flags
+    {
+        byte unknown000[0x10a];
+        word unknown0 : 2;
+        word suppressed : 1;
+        word unknown3 : 13;
+    };
     bool result = false;
     long unit = function_a58d0(entities[0]);
-    long weapon = function_a58d0(entities[1]);
+    long weapon = c = function_a58d0(entities[1]);
     if (unit != NONE && weapon != NONE)
     {
-        s_z_event_header *headers = (s_z_event_header *)g_4e0300->data;
-        s_z_event_header *unit_header = headers + (unit & 0xffff);
-        s_z_event_header *weapon_header = headers + (weapon & 0xffff);
-        if (((1 << unit_header->type) & 3) && ((1 << weapon_header->type) & 4))
+        byte *headers = g_4e0300->data;
+        long unit_offset = (unit & 0xffff) * 12;
+        if ((1 << *(byte *)(headers + unit_offset + 3)) & 3)
         {
-            byte *unit_object = unit_header->object, *weapon_object = weapon_header->object;
+            long weapon_offset = (c & 0xffff) * 12;
+            if ((1 << *(byte *)(headers + weapon_offset + 3)) & 4)
+            {
+            byte *unit_object = *(byte **)(headers + unit_offset + 8);
+            byte *weapon_object = *(byte **)(headers + weapon_offset + 8);
             long const *event = (long const *)data;
-            if (!(bool)((((s_z_event_unit_bits *)unit_object)->flags >> 2) & 1) && *(long *)(weapon_object + 0x14c) != unit &&
+            if (!((bool)((s_unit_flags *)unit_object)->suppressed) && *(long *)(weapon_object + 0x14c) != unit &&
                 !(weapon_object[0x12c] & 1) && *(long *)(unit_object + 0x210) == event[0])
             {
                 bool modes[4];
+                weapon = c;
                 if (function_cd7b0(unit, weapon, modes))
                 {
                     bool allowed = false;
@@ -1366,6 +1410,7 @@ bool c_weapon_pickup_event::v11(long a, long const *entities, long c, void const
                         if (function_e6900(unit, &request)) result = true;
                     }
                 }
+            }
             }
         }
     }
