@@ -1380,11 +1380,11 @@ bool c_weapon_pickup_event::v11(long a, long const *entities, volatile long c, v
         long unit_offset = (unit & 0xffff) * 12;
         if ((1 << *(byte *)(headers + unit_offset + 3)) & 3)
         {
-            long weapon_offset = (c & 0xffff) * 12;
-            if ((1 << *(byte *)(headers + weapon_offset + 3)) & 4)
+            long local_ffe5f7 = (c & 0xffff) * 12;
+            if ((1 << *(byte *)(headers + local_ffe5f7 + 3)) & 4)
             {
             byte *unit_object = *(byte **)(headers + unit_offset + 8);
-            byte *weapon_object = *(byte **)(headers + weapon_offset + 8);
+            byte *weapon_object = *(byte **)(headers + local_ffe5f7 + 8);
             long const *event = (long const *)data;
             if (!((bool)((s_unit_flags *)unit_object)->suppressed) && *(long *)(weapon_object + 0x14c) != unit &&
                 !(weapon_object[0x12c] & 1) && *(long *)(unit_object + 0x210) == event[0])
