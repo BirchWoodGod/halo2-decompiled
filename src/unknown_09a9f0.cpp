@@ -288,7 +288,8 @@ bool c_object_type_definition::v25(s_entity *entity)
 	bool result = false;
 	if (index != NONE)
 	{
-		result = v32(entity->object_index);
+		// Retail reloads the object index for the virtual call.
+		result = v32(*(long volatile *)&entity->object_index);
 	}
 	return result;
 }
