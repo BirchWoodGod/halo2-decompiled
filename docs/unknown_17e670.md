@@ -193,14 +193,31 @@ endpoint intersections and translated cases, through the generated stand-in.
 The 216 traversal, 2,048 real-geometry preparation and 1,024 placement tests
 also pass on this same image.
 
+Angled fixtures add 2,916 two-face and 2,916 three-face cases at bends of
+-80, -41, -39, -15, 15, 39, 41, 80 and 111 degrees. The right-hand surface
+rotates around its shared edge; its normalized plane and vertices are updated
+together. These tests use projection mode 0 and vary size, placement offset,
+radius, orientation flags, chain length and winding. Every case agrees with
+retail byte for byte at the commit boundary. The two-face sweep produces
+3,672 polygons/16,176 vertices; the three-face sweep produces 5,400
+polygons/23,388 vertices, each across 5,832 commit boundaries.
+
+The three-face fixture divides the angled surface into two adjacent polygons.
+Helper-call traces also agree. It executes 1,312 additional quad constructions
+in 656 cases, establishing that the secondary rotated-projection path runs;
+432 of those cases emit at least three polygons. Thus the check includes
+multi-face output after rotated projection, not just angle rejection or empty
+results. This remains a bounded synthetic fixture rather than evidence for
+arbitrary mesh topology or every projection mode.
+
 Full checking against main `588746a4` preserves all 7,500 baseline matches,
 including caller `0x1516c0`, with no gains or losses. The predicate remains
 unmatched (271/271 bytes); equal sizes are not an exact-match claim.
 Validated image SHA-256:
 `bb565a283c842da5579964ceaf2c1e80427acffe2b8d5d878d870b752378f7d2`.
 These local differential probes establish synthetic geometry behavior only;
-bent surfaces, secondary-face grouping, real assets, GPU output and complete
-gameplay remain unverified.
+real assets, final decal commit, GPU output and complete gameplay remain
+unverified. Angled-surface coverage is limited to the fixtures described above.
 
 Shared changes are limited to the new header, the predicate definition and
 callers in `src/unknown_11cb00.cpp`, `src/unknown_1502e0.cpp`,
