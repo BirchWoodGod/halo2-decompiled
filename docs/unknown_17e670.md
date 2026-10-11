@@ -257,10 +257,49 @@ The image used for all actual-commit tests has SHA-256
 This covers generated and packed synthetic geometry, not the actual allocator,
 lighting, spatial indexing, asset streaming, GPU submission or gameplay.
 
+## Spatial references and initial record creation
+
+A spatial-registration probe executes `0x180b60` with controlled cluster search
+and allocation. The 256-case boundary sweep agrees with retail. Enabling actual
+reference copying (`0x17d100`) and cell linking (`0x17ce00`) passes 1,024 cases
+with 384 queries and 16,212 allocation attempts. Comparisons include copied
+records and salts, cell heads and links, fading/permanent counts, and query
+state. Cases cover zero radius, missing clusters, skipping the original cluster,
+512-entry clamping and allocation failure at several positions. BSP traversal
+and record-pool allocation remain controlled.
+
+Testing initial record creation exposed a separate discrepancy in `0x17cfa0`.
+For cluster 0/type 1, retail writes record offsets +3/+0xa as 1/0 and selects
+cell-head offset +0x800. The previous source wrote 0/1 and selected +4. Retail's
+call to `decal_link` receives EBX=cluster and EDX=type; the compiled call had
+those roles reversed. The definition now names its third/fourth arguments
+`cluster_index`/`decal_type` and calls
+`decal_link(cluster_index, decal_type, decal_index)`. The sole source caller in
+`0x180d80` retains its argument order; its forward declaration is named
+consistently. The matching `decal_link` body is unchanged.
+
+All 40 direct initial-record cases now agree, varying five cluster indices,
+four types and permanent/nonpermanent records. Only record-pool allocation is
+mocked; low fading counts avoid the eviction path. The integrated 648 flat
+cases also agree with actual initial record creation, commit, spatial
+registration, reference copying and cell linking enabled. They issue 504
+spatial queries and 1,512 pool allocations: 504 initial records and 1,008
+secondary references. Final records, cell lists and counters, packed buffers,
+state, seed, helper traces and per-registration snapshots are compared.
+
+Full checking preserves all 7,500 baseline matches with zero gains/losses.
+Record creation remains unmatched at 355/349 compiled/retail bytes. These tests
+use image SHA-256
+`cef349f727f83f7295b1d4f698fe004e632ef2098a26ef5f05f2926c11a34857`.
+Geometry allocation, buffer lookup, lighting, BSP cluster search and record-pool
+allocation are still controlled. This does not establish actual resource
+management, eviction, asset streaming, GPU submission or gameplay.
+
 Shared changes are limited to the new header, the predicate definition and
 callers in `src/unknown_11cb00.cpp`, `src/unknown_1502e0.cpp`,
 `src/unknown_1689b0.cpp`, `src/unknown_17d9a0.cpp`, `src/ai.cpp`, and
-`src/unknown_1ddda0.cpp`, the precision correction in `src/unknown_180d80.cpp`, and the previously removed placement stub in
+`src/unknown_1ddda0.cpp`, the precision correction in `src/unknown_180d80.cpp`, record-creation parameter
+semantics in `src/unknown_17d2a0.cpp`, and the previously removed placement stub in
 `src/stubs/lane_r.cpp`. No compiler flags or generated inventory are included.
 
 Sources: independent disassembly of the project's SHA-256-pinned retail

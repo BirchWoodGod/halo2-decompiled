@@ -382,7 +382,7 @@ bool function_17ce60(void)
 }
 
 // @retail 0x17cfa0
-long function_17cfa0(long first_index, long definition_index, short cell_x, short cell_y, bool permanent)
+long function_17cfa0(long first_index, long definition_index, short cluster_index, short decal_type, bool permanent)
 {
 	bool first = false;
 	long *first_index_reference = &first_index;
@@ -434,7 +434,7 @@ long function_17cfa0(long first_index, long definition_index, short cell_x, shor
 			record_pool_release(decals, decal_index);
 			return NONE;
 		}
-		decal_link(cell_y, cell_x, decal_index);
+		decal_link(cluster_index, decal_type, decal_index);
 	}
 	else if (definition_index != NONE)
 	{

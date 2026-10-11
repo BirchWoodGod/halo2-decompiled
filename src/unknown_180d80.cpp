@@ -64,7 +64,7 @@ void *function_439d0(long arg_0);
 bool __stdcall function_d47d0(s_cluster_query const *arg_0, color3f *arg_1);
 color3f *function_131c20(color3f const *arg_0, color3f const *arg_1, dword arg_2, real arg_3, color3f *arg_4);
 dword __cdecl pack_color3f(color3f const *arg_0);
-long function_17cfa0(long arg_0, long arg_1, short arg_2, short arg_3, bool arg_4);
+long function_17cfa0(long first_index, long definition_index, short cluster_index, short decal_type, bool permanent);
 void __stdcall function_180b60(s_cluster_query const *arg_0, real arg_1, long arg_2);
 dword vector3d_pack(vector3f const *arg_0);
 
