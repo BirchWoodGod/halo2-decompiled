@@ -346,8 +346,8 @@ bool function_17ce60(void)
 		if (globals->fading_count <= 0x80)
 			return true;
 		s_decal_datum *decal = data_step_17ce60(&iterator);
-		if (!decal)
-		{
+		if (!(!decal))
+		{} else {
 			iterator.data = g_4ea950;
 			iterator.index = NONE;
 			attempts++;

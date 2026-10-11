@@ -1320,10 +1320,17 @@ long function_1e0fe0(point3f const *point, long unit_index, long character_index
 			function_1e11b0(result, true);
 		}
 		actor[0xc] = cleanup;
-		if (actor[7] && *(long *)(actor + 0x1c) != NONE && ((1 << object[0xaa]) & 1) && function_e58e0(unit_index))
+		if (actor[7] && *(long *)(actor + 0x1c) != NONE)
 		{
-			vector3f velocity;
-			if (function_109e00(unit_index, &velocity, true)) function_2901e0(*(long *)(actor + 0x1c), &velocity);
+			dword mask = 1;
+			byte *type_object = object;
+			mask <<= type_object[0xaa];
+			if ((mask & 1) && function_e58e0(unit_index))
+			{
+				vector3f velocity;
+				if (function_109e00(unit_index, &velocity, true))
+					function_2901e0(*(long *)(actor + 0x1c), &velocity);
+			}
 		}
 	}
 	return result;

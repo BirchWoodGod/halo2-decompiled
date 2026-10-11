@@ -200,7 +200,9 @@ bool function_14b120(void *source, void *surface)
     }
     if (!excluded && found)
         result = structure_get_lightmap_triangle(collision, triangle);
-    return result;
+    if (result)
+    	return true;
+    return false;
 }
 
 struct s_16e1b0_list;

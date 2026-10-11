@@ -570,6 +570,8 @@ bool function_101640(long weapon_index)
 // @retail 0x101980
 void function_101980(long weapon_index, short rounds_loaded, short magazine_index, short rounds_total)
 {
+	long const *weapon_index_reference = &weapon_index;
+	weapon_index = *weapon_index_reference;
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
 	short maximum = definition->magazines[magazine_index].rounds_loaded_maximum;

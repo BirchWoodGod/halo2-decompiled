@@ -38,7 +38,9 @@ bool function_10f340(long unit_index, long mode, long set)
 	s_animation_names names;
 
 	state->animation_lookup(&names, &found, mode, 0x7000101, 0x7000101, set, 0, &animation_id);
-	return animation_id.index != NONE;
+	if (animation_id.index != NONE)
+		return true;
+	return false;
 }
 
 // @retail 0x10f3b0

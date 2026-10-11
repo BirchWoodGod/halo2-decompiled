@@ -3,8 +3,6 @@
 
 #include "unknown_11c920.h"
 
-// @stub 0x1f2b0
-void function_1f2b0() {}
 #include "unknown_0259d0.h"
 
 struct s_frame_view_2c560;
