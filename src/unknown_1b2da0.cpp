@@ -48,7 +48,7 @@ short __stdcall function_1b2e80(long actor_index, short level, long active)
 			state->unknown11 = true;
 			result = 2;
 		}
-		else if (result != 2)
+		else if (*(short const volatile *)&result != 2)
 			state->unknown12 = true;
 	}
 	if (result != 0 && *(long *)actor->unknown01c != NONE)

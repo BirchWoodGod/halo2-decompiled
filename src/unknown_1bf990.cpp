@@ -233,11 +233,13 @@ short function_1bf890(long actor_index, long object_index, short seat_index, boo
 // @retail 0x1bfb10
 bool __stdcall function_1bfb10(long actor_index, s_slot *slot)
 {
+    bool result = false;
+    s_slot *volatile *local_0 = &slot;
+    s_slot *local_1 = *local_0;
     s_actor_view *actor = actor_get(actor_index);
     s_slot_object_view *unit = object_get(prop_node_get(actor->prop_index)->object_index);
     long vehicle_index = unit->parent_index;
-    bool result = false;
-    s_slot_vehicle_board *state = (s_slot_vehicle_board *)slot;
+    s_slot_vehicle_board *state = (s_slot_vehicle_board *)local_1;
     if (object_header_get(vehicle_index)->type == 1)
     {
         byte *movement = (byte *)function_1e4a50(actor->unknown054);
@@ -254,9 +256,8 @@ bool __stdcall function_1bfb10(long actor_index, s_slot *slot)
             state->requested = false;
             state->unknown1b = false;
             state->unknown1a = vertical;
-            return true;
+            result = true;
         }
-        return false;
     }
     return result;
 }
