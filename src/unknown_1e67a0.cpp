@@ -160,7 +160,7 @@ void function_1f03e0(s_shape_state *state);
 void function_1ec570(s_state_c570 *state);
 void function_1eb640(s_ease_state *state);
 void function_1fc2f0(s_tracked_point *tracked, point3f const *point, bool unknown);
-void function_1fc350(long object_index, void *state);
+void function_1fc350(long object_index, s_tracked_point *tracked);
 point3f *function_b9dd0(long object_index, point3f *result);
 void __stdcall function_1c3770(long object_index, dword flags);
 
@@ -187,7 +187,7 @@ void function_1e54d0(void *state, long mode)
 
 		case 4:
 		case 5:
-			function_1fc350(*(long *)(physics_state + 4), physics_state + 0x10);
+			function_1fc350(*(long *)(physics_state + 4), (s_tracked_point *)(physics_state + 0x10));
 			break;
 
 		case 6:

@@ -77,7 +77,7 @@ void function_1fc2f0(s_tracked_point *tracked, point3f const *point, bool unknow
 
 /* Updates an object's position from Havok state and adjusts its rigid-body linear velocity. */
 // @retail 0x1fc350
-void function_1fc350(long object_index, void *state)
+void function_1fc350(long object_index, s_tracked_point *tracked)
 {
 	s_havok_object *havok_object = havok_object_get(object_index);
 	s_havok_component *component = havok_component_get(havok_object->havok_component_index);
@@ -89,7 +89,7 @@ void function_1fc350(long object_index, void *state)
 	if (object->parent_index == NONE)
 		function_b75a0(object_index, &matrix.position, NULL, NULL, NULL, false);
 
-	vector3f *velocity = &((s_tracked_point *)state)->velocity;
+	vector3f *velocity = &tracked->velocity;
 	vector3f linear_velocity;
 	real magnitude = function_30bf0(velocity);
 
