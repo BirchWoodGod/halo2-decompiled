@@ -789,7 +789,7 @@ bool function_1e7ab0(long local_index, long type)
  if (player_index != NONE && entry &&
   (!(*((byte *)entry + 0x10) & 1) || g_4e6948->state != 2))
  {
-  s_player_request_view *player = (s_player_request_view *)(g_4e8c24->data + (player_index & 0xffff) * 0x21c);
+  s_player_request_view *volatile player = (s_player_request_view *)(g_4e8c24->data + (player_index & 0xffff) * 0x21c);
   long unit_index = player->unit_index;
   if (unit_index != NONE)
   {
@@ -833,7 +833,7 @@ bool function_1e7ab0(long local_index, long type)
       {
        s_unit_child_iterator iterator;
        function_d0590(&iterator, parent);
-       bool blocked = false;
+       volatile bool blocked = false;
        while (function_d05c0(&iterator))
        {
         if (iterator.seat_index != NONE && iterator.unit_index != unit_index &&

@@ -162,19 +162,22 @@ short __stdcall function_1c04f0(long actor_index, s_slot *slot, bool active)
 		else if (prop->unknown3c != NONE || object_header_type(node->object_index) == 1)
 		{
 			s_actor_tag_entry_1e4f90 *entry = (s_actor_tag_entry_1e4f90 *)function_1e4f90(actor_index);
-			bool local_0 = *(volatile bool const *)&state->unknown18;
+			s_slot_7c *local_3 = (s_slot_7c *)*(s_slot *const volatile *)&slot;
+            bool local_0 = *(volatile bool const *)&local_3->unknown18;
 			real distance = distance2d(&prop->position, (point2f *)&actor->position);
 
 			result = g_46fbe8;
 			if (local_0)
 			{
-				if (g_510c54->game_time - state->unknown14 > game_seconds_to_ticks_round(4.0f))
+				long local_1 = g_510c54->game_time;
+                long local_2 = game_seconds_to_ticks_round(4.0f);
+                if (local_1 - local_3->unknown14 > local_2)
 				{
 					result = g_46fbe4;
 				}
 			}
 			else if (distance > entry->unknown10 ||
-				function_1c04f1(state, entry))
+				function_1c04f1(local_3, entry))
 			{
 				result = g_46fbe4;
 			}
