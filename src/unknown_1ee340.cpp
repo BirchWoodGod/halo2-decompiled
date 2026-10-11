@@ -375,17 +375,20 @@ void c_count_interface::get_bounds(const __m128 *matrix, real expansion, __m128 
 // @retail 0x1ee470
 long c_count_interface::get_count()
 {
+	long result = 0;
 	s_count_owner *o = owner;
-	long count = o->count;
-	if (count > 0)
+	result = o->count;
+	if (o->count > 0)
 	{
-		const s_count_entry *last = &o->entries[count - 1];
-		if (last->flags & 0x10)
+		const s_count_entry *last;
+		last = &o->entries[o->count - 1];
+		word flags = last->flags;
+		if ((flags & 0x10) != 0)
 		{
-			count--;
+			result--;
 		}
 	}
-	return count;
+	return result;
 }
 
 // @retail 0x1ee490

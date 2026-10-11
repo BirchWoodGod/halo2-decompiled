@@ -12,6 +12,54 @@
 
 bool function_2624d0(s_261d20_entry *entry, s_reference reference);
 __declspec(noinline) bool function_260160(long actor_index, s_prop_search *search, s_261d20_entry *entry);
+struct s_reference_filter_view;
+bool function_2623a0(s_reference_filter_view const *filter, long actor_index, s_actor_view *actor, s_reference reference);
+void __stdcall function_261510(long actor_index, s_2605d0_request const *request);
+s_reference __stdcall function_260670(long actor_index, s_2605d0_request const *request,
+	s_261d20_entry *entries, short count, long unknown, long unknown2, byte *scratch, bool *has_path);
+byte *ai_scratch_buffer_get();
+void ai_scratch_buffer_release(byte *buffer);
+
+// @retail 0x2613d0
+bool function_2613d0(long actor_index, s_reference reference, s_prop_search *search)
+{
+	s_2605d0_request const *request = (s_2605d0_request const *)search;
+	s_actor_view *actor = actor_get(actor_index);
+	s_262b40_result *volatile definition = function_262b40(reference);
+	bool has_path = false;
+	if (definition)
+	{
+		function_261510(actor_index, request);
+		if (function_2623a0((s_reference_filter_view const *)request, actor_index, actor, reference))
+		{
+			struct { s_261d20_entry entry; byte output[0x78]; } evaluation;
+			s_261d20_entry &entry = evaluation.entry;
+			if (function_2624d0(&entry, reference))
+			{
+				byte *candidate = (byte *)&entry;
+				if (reference.unknown2 & 0x8000)
+					*(short *)(candidate + 0x5c) = *(short *)(g_51eca4->data +
+						(reference.unknown2 & 0x7fff) * 0x484 + reference.unknown0 * 2 + 0x444);
+				else
+				{
+					long flags = definition->flags;
+					candidate[0x5a] = 1;
+					candidate[0x58] = (byte)((flags >> 5) & 1);
+					candidate[0x59] = (byte)(~(flags >> 6) & 1);
+				}
+				byte *scratch = ai_scratch_buffer_get();
+				long reported_entry;
+				s_reference selected = function_260670(actor_index, request, &entry, 1,
+					(long)evaluation.output, (long)&reported_entry, scratch, &has_path);
+				bool result = true;
+				if (!REFERENCE_EQUAL(selected, reference)) result = has_path;
+				ai_scratch_buffer_release(scratch);
+				return result;
+			}
+		}
+	}
+	return has_path;
+}
 
 /* the request as function_261280 reads it */
 struct s_prop_search_request_view
@@ -654,7 +702,8 @@ PRIVATE inline bool reference_owner_find(hash_table *table, void *key, void *dat
 	return false;
 }
 
-// Disabled retail draft 0x260670
+// Disabled: activation changes matched 0x2605d0 and 0x261280 through LTCG.
+// @retail 0x260670 disabled
 s_reference __stdcall function_260670(long actor_index, s_2605d0_request const *request,
 	s_261d20_entry *entries, short count, long reported_entry, long reported_owner, byte *scratch, bool *has_path)
 {
