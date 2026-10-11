@@ -198,10 +198,10 @@ void function_1e54d0(void *state, long mode)
 		}
 	}
 
-	byte new_mode = (byte)mode;
-	physics_state[0] = new_mode;
+	byte local_27f376 = (byte)mode;
+	physics_state[0] = local_27f376;
 
-	switch (new_mode)
+	switch (local_27f376)
 	{
 	case 1:
 		function_1f03e0((s_shape_state *)(physics_state + 0x10));
@@ -225,7 +225,7 @@ void function_1e54d0(void *state, long mode)
 	{
 		point3f point;
 		function_b9dd0(*(long *)(physics_state + 4), &point);
-		function_1fc2f0((s_tracked_point *)(physics_state + 0x10), &point, new_mode == 5);
+		function_1fc2f0((s_tracked_point *)(physics_state + 0x10), &point, local_27f376 == 5);
 		break;
 	}
 
@@ -233,12 +233,12 @@ void function_1e54d0(void *state, long mode)
 		__assume(0);
 	}
 
-	byte current_mode = physics_state[0];
+	byte local_792ecd_2 = physics_state[0];
 
-	if (old_mode != current_mode &&
-		(old_mode == 3 || current_mode == 3 ||
+	if (old_mode != local_792ecd_2 &&
+		(old_mode == 3 || local_792ecd_2 == 3 ||
 		 old_mode == 4 || old_mode == 5 ||
-		 current_mode == 4 || current_mode == 5))
+		 local_792ecd_2 == 4 || local_792ecd_2 == 5))
 	{
 		function_1c3770(*(long *)(physics_state + 4), 0);
 	}
