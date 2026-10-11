@@ -1577,22 +1577,22 @@ void __stdcall function_e64e0(vector3f const *move, vector3f const *forward, boo
 void function_150400(long player_index, vector3f const *forward, vector3f const *movement,
     vector3f *new_forward, vector3f *new_movement)
 {
-    vector3f const *const *forward_reference = &forward;
+    vector3f const *const *local_41f0cc_2 = &forward;
     vector3f *const *new_forward_reference = &new_forward;
     vector3f *const *new_movement_reference = &new_movement;
     s_tail_player *player = tail_player_get(player_index);
-    vector3f facing = *(*forward_reference);
+    vector3f facing = *(*local_41f0cc_2);
     real x = movement->i, y = movement->j;
     if (function_150380(player_index))
     {
         byte *unit = (byte *)tail_object_get(player->unit_index);
         s_horizontal_axes axes;
-        function_1502e0(*forward_reference, (vector3f const *)(unit + 0x70), &axes);
+        function_1502e0(*local_41f0cc_2, (vector3f const *)(unit + 0x70), &axes);
         vector3f world;
         world.i = axes.forward.i * movement->i + axes.left.i * movement->j;
         world.j = axes.forward.j * movement->i + axes.left.j * movement->j;
         world.k = axes.forward.k * movement->i + axes.left.k * movement->j;
-        function_e64e0(&world, *forward_reference, false, &facing, 0);
+        function_e64e0(&world, *local_41f0cc_2, false, &facing, 0);
         function_1502e0(&facing, (vector3f const *)(unit + 0x70), &axes);
         x = axes.forward.j * world.j + axes.forward.k * world.k + axes.forward.i * world.i;
         y = axes.left.k * world.k + axes.left.j * world.j + axes.left.i * world.i;

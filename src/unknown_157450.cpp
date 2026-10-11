@@ -4920,12 +4920,12 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
     if (g_4e6948->mode == 4) return;
     byte *globals_tag = g_4e3b44[*(long *)((byte *)g_4e034c + 0x16c) & 0xffff].bytes;
     byte *preset = *(byte **)(*(byte **)(globals_tag + 0xc) + 0x534);
-    long tick_rate = g_510c54->field_2_3;
+    long arg_642c39 = g_510c54->field_2_3;
     byte *scenario = (byte *)g_4e0350;
     for (short i = 0; i < *(long *)(scenario + 0x120); ++i)
     {
         byte *placement = *(byte **)(scenario + 0x124) + i * 0x90;
-        if (i % tick_rate != g_510c54->game_time % tick_rate) continue;
+        if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
         c_engine_peer *engine = game_engine_get();
         long type = engine ? engine->p0() : NONE;
         if (function_15a090((short *)(placement + 4), type, 4) == NONE) continue;

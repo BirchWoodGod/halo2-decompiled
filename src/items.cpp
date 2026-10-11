@@ -903,9 +903,9 @@ void __stdcall function_10b850(long object_index)
     if (!(item->flags_c1 & 1))
     {
         real dt = g_510c54->rate;
-        vector3f old_velocity = item->linear_velocity;
+        vector3f local_c01284_3 = item->linear_velocity;
         vector3f carrier_delta;
-        bool carrier = function_109a00(object_index, &old_velocity, true, &carrier_delta);
+        bool carrier = function_109a00(object_index, &local_c01284_3, true, &carrier_delta);
         vector3f velocity = item->linear_velocity;
         vector3f angular = item->angular_velocity;
         bool fixed = ((*(dword *)(definition + 0xbc) >> 2) & 1) != 0;
@@ -913,7 +913,7 @@ void __stdcall function_10b850(long object_index)
         if (!fixed)
         {
             velocity.k -= g_51e9c4->unknown0 * dt;
-            old_velocity.k -= g_51e9c4->unknown0 * dt;
+            local_c01284_3.k -= g_51e9c4->unknown0 * dt;
         }
         point3f position = {velocity.i*dt + item->position.x, velocity.j*dt + item->position.y, velocity.k*dt + item->position.z};
         vector3f ray = {position.x-item->position.x, position.y-item->position.y, position.z-item->position.z};
@@ -926,7 +926,7 @@ void __stdcall function_10b850(long object_index)
             vector3f const &normal = *(vector3f *)(hit + 0x28);
             point3f const &point = *(point3f *)(hit + 8);
             bool floor = normal.k > 0.707099974155426f;
-            bool slow = 1.5f > -item_dot(old_velocity, normal);
+            bool slow = 1.5f > -item_dot(local_c01284_3, normal);
             position.x = point.x + normal.i*0.05f;
             position.y = point.y + normal.j*0.05f;
             position.z = point.z + normal.k*0.05f;
@@ -979,7 +979,7 @@ void __stdcall function_10b850(long object_index)
                     item->value_13a = count > 254 ? 254 : (byte)count;
                 }
                 else item->value_13a = 0;
-                real dot = item_dot(old_velocity, normal);
+                real dot = item_dot(local_c01284_3, normal);
                 real correction = dot * ((surface && floor) || -dot > 1.0f ? -1.4f : -1.8f);
                 if (collision.type != 1 && collision.type != 3 && correction > 15.0f) correction = 15.0f;
                 if ((collision.value_58 & 0x20) && collision.type == 1)
@@ -994,7 +994,7 @@ void __stdcall function_10b850(long object_index)
                         {
                             real amount = g_510c54->rate * 12.0f;
                             vector3f side = item_cross(flow, normal);
-                            real along_side = item_dot(side, old_velocity);
+                            real along_side = item_dot(side, local_c01284_3);
                             if (fabs(along_side) < 3.25f) item_add_scaled(&velocity, side, along_side < 0.0f ? -amount : amount);
                             real along_flow = item_dot(flow, velocity);
                             if (along_flow < length) item_add_scaled(&velocity, flow, along_flow < 0.0f ? -amount : amount);

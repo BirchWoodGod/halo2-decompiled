@@ -1111,9 +1111,9 @@ void __stdcall function_174220(bool view_pass)
             long owner = NONE;
             if (effect_index != NONE) owner = DATUM(g_4ea93c, s_effect_datum, effect_index)->unknown58;
             long view = g_4b9ed8;
-            bool first_person = view != NONE && !function_155760(view);
-            bool same_view = owner != NONE && view == owner && first_person;
-            bool attached = first_person && effect_index != NONE && function_17afd0(effect_index, view);
+            bool local_287b6e_2 = view != NONE && !function_155760(view);
+            bool same_view = owner != NONE && view == owner && local_287b6e_2;
+            bool attached = local_287b6e_2 && effect_index != NONE && function_17afd0(effect_index, view);
             bool draw = same_view == view_pass;
             bool camera_relative = false;
             if (same_view)

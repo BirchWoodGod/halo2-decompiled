@@ -1923,7 +1923,7 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
         long second = player_round_ticks((real)g_510c54->field_2_3 * *(real *)(settings + 0x24));
         real decay = *(real *)(settings + 0x28);
         weapon = player_current_weapon(unit_index, 0);
-        bool weapon_busy = weapon != NONE && function_101340(weapon);
+        bool local_85417d = weapon != NONE && function_101340(weapon);
         real angle = (real)atan2(*(real *)(input + 0x10), *(real *)(input + 0xc));
         real x = *(real *)(input + 0xc), y = *(real *)(input + 0x10);
         bool moving = sqrt(x*x + y*y) > *(real *)(settings + 0x30) &&
@@ -1934,7 +1934,7 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
         else if (remaining >= first+second) { idle = (short)(first+second); rest = 0; }
         dword activity = buttons;
         bool first_activity = function_10f890(unit_index) || *(short *)(input + 0x24) != *(signed char *)(unit + 0x240) || (activity & 0x10000001);
-        bool second_activity = function_cc3c0(unit_index) || (activity & 0x4030031) || weapon_busy;
+        bool second_activity = function_cc3c0(unit_index) || (activity & 0x4030031) || local_85417d;
         if (first_activity || second_activity)
         {
             long ticks = idle - player_round_ticks(rest*decay);
@@ -2000,8 +2000,8 @@ void function_152340(void);
 
 // Disabled: retail reset requires an array-element address prohibited by the shared-global rule.
 #if 0
-// Retail 0x14f2e0; local_players exposes the required local-player storage binding.
-bool __stdcall function_14f2e0(long player_index, s_player_4e9bd4 *local_players)
+// Retail 0x14f2e0; arg_9b462b exposes the required local-player storage binding.
+bool __stdcall function_14f2e0(long player_index, s_player_4e9bd4 *arg_9b462b)
 {
     byte *player = (byte *)player_get(player_index);
     bool reused = false;
@@ -2035,8 +2035,8 @@ bool __stdcall function_14f2e0(long player_index, s_player_4e9bd4 *local_players
     }
     if (g_4e6948->mode != 4)
     {
-        long first_person = NONE, tag = NONE;
-        player_get_representation(player_index, &first_person, &tag);
+        long local_287b6e_2 = NONE, tag = NONE;
+        player_get_representation(player_index, &local_287b6e_2, &tag);
         short spawn = (short)function_14ef00(player_index, tag, true, false);
         if (spawn == NONE || tag == NONE) return false;
         s_players_globals *globals = (s_players_globals *)g_4e8c20;
@@ -2060,7 +2060,7 @@ bool __stdcall function_14f2e0(long player_index, s_player_4e9bd4 *local_players
         {
             byte creation[0xc4];
             function_b7930(creation, tag, NONE, NULL);
-            *(long *)(creation + 0xc) = first_person;
+            *(long *)(creation + 0xc) = local_287b6e_2;
             real angle;
             marker_record_get_position_and_angle(marker, (point3f *)(creation + 0x1c), &angle);
             ((vector3f *)(creation + 0x28))->i = (real)cos(angle);
@@ -2110,7 +2110,7 @@ initialized:
     user = *(short *)(player + 0x28);
     if (user != NONE) function_153b80(user);
     user = *(short *)(player + 0x28);
-    if (user != NONE) function_16f4b0(local_players + user);
+    if (user != NONE) function_16f4b0(arg_9b462b + user);
     function_152340();
     player[2] &= ~8;
     return true;

@@ -448,7 +448,7 @@ struct s_decal_projection_17fd20
 	short frame_index;
 	short bitmap_index;
 	short unknown102;
-	byte *bitmap_group;
+	byte *field_104_2;
 	byte *sequence;
 	byte *frame;
 };
@@ -827,9 +827,9 @@ bool function_17ef10(transform4x3f const *matrix, long tag_index, s_decal_placem
     projection->matrix.left.i = b.i * sine + a.i * cosine;
     projection->matrix.left.j = b.j * sine + a.j * cosine;
     projection->matrix.left.k = b.k * sine + a.k * cosine;
-    byte *bitmap_group = g_4e3b44[*(long const *)(definition + 0x8c) & 0xffff].bytes;
-    projection->bitmap_group = bitmap_group;
-    long sequence_count = *(long *)(bitmap_group + 0x3c);
+    byte *local_104_3 = g_4e3b44[*(long const *)(definition + 0x8c) & 0xffff].bytes;
+    projection->field_104_2 = local_104_3;
+    long sequence_count = *(long *)(local_104_3 + 0x3c);
     if (sequence_count > 0)
     {
         if (sequence_index != NONE) projection->sequence_index = sequence_index;
@@ -852,10 +852,10 @@ bool function_17ef10(transform4x3f const *matrix, long tag_index, s_decal_placem
     if (!random->initialized) random->scale = decal_random_17ef10();
     projection->radius = (*(real const *)(definition + 0x14) - *(real const *)(definition + 0x10)) * random->scale + *(real const *)(definition + 0x10);
     projection->radius *= scale;
-    if (*(short *)bitmap_group == 3 && function_17cb00((s_decal_sprite_definition const *)definition,
+    if (*(short *)local_104_3 == 3 && function_17cb00((s_decal_sprite_definition const *)definition,
         projection->sequence_index, 0, projection->radius, &projection->texture_bounds, &projection->bounds))
     {
-        projection->sequence = *(byte **)(bitmap_group + 0x40) + projection->sequence_index * 0x3c;
+        projection->sequence = *(byte **)(local_104_3 + 0x40) + projection->sequence_index * 0x3c;
         projection->frame = *(byte **)(projection->sequence + 0x38) + projection->frame_index * 0x20;
         projection->bitmap_index = *(short *)projection->frame;
     }
@@ -864,7 +864,7 @@ bool function_17ef10(transform4x3f const *matrix, long tag_index, s_decal_placem
         real aspect = 1.0f;
         if (flags & 0x100)
         {
-            byte *bitmap = *(byte **)(bitmap_group + 0x48) + projection->bitmap_index * 0x74;
+            byte *bitmap = *(byte **)(local_104_3 + 0x48) + projection->bitmap_index * 0x74;
             aspect = (real)*(short *)(bitmap + 6) / (real)*(short *)(bitmap + 4);
         }
         projection->bounds.x0 = 0.0f - projection->radius;
@@ -876,7 +876,7 @@ bool function_17ef10(transform4x3f const *matrix, long tag_index, s_decal_placem
     }
     if (!skip_texture)
     {
-        byte *bitmap = *(byte **)(bitmap_group + 0x48) + projection->bitmap_index * 0x74;
+        byte *bitmap = *(byte **)(local_104_3 + 0x48) + projection->bitmap_index * 0x74;
         if (*(long *)(bitmap + 0x70) <= g_4e6488 || !*(long *)(bitmap + 0x50))
             if (!texture_cache_bitmap_get_texture((s_bitmap_data *)bitmap, 2, 0.0f) &&
                 !function_12ce00((s_bitmap_data *)bitmap, 2, 0.0f)) return false;
