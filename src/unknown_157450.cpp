@@ -1382,31 +1382,32 @@ struct s_item_collection
 // @retail 0x15ac50
 long function_15ac50(long index)
 {
-	long const *index_reference = &index;
-	index = *index_reference;
 	s_scenario_netgame_equipment *equipment = &((s_scenario_netgame_equipment_view *)g_4e0350)->equipment[index];
-	real seconds = 30.0f;
-	short spawn_time = 0;
-	long result;
-
-	if (equipment->spawn_time)
-	{
-		spawn_time = equipment->spawn_time;
-	}
-	else if ((equipment->group_tag == 'itmc' || equipment->group_tag == 'vehc') && equipment->tag_index != NONE)
-	{
-		spawn_time = ((s_item_collection *)g_4e3b44[equipment->tag_index & 0xffff].bytes)->spawn_time;
-	}
+	struct { real seconds; long result; } rounding;
+	rounding.seconds = 30.0f;
+	short spawn_time = equipment->spawn_time;
+	long ticks;
 	if (spawn_time)
 	{
-		seconds = (real)spawn_time;
+		ticks = spawn_time;
 	}
+	else
+	{
+		if ((equipment->group_tag != 'itmc' && equipment->group_tag != 'vehc') || equipment->tag_index == NONE)
+			goto done;
+		short collection_time = ((s_item_collection *)g_4e3b44[equipment->tag_index & 0xffff].bytes)->spawn_time;
+		if (!collection_time)
+			goto done;
+		ticks = collection_time;
+	}
+	rounding.seconds = (real)ticks;
+done:
 	__asm
 	{
-		fld seconds
-		fistp result
+		fld rounding.seconds
+		fistp rounding.result
 	}
-	return result;
+	return rounding.result;
 }
 
 // @retail 0x15b1e0

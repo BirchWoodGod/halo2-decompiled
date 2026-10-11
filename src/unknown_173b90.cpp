@@ -189,14 +189,15 @@ void function_173de0(void)
 void particle_systems_update_locations(void)
 {
 	s_record_pool_iterator iterator;
-	short bsp_index = g_4686c4;
+	union { short index; word bits; } bsp_snapshot;
+	bsp_snapshot.index = g_4686c4;
 	s_particle_system_datum *particle_system;
 
 	iterator.data = g_510c74;
 	iterator.index = NONE;
 	while ((particle_system = (s_particle_system_datum *)data_iterator_next_inlined(&iterator)) != 0)
 	{
-		if (particle_system->location.bsp_index != bsp_index)
+		if (particle_system->location.bsp_index != bsp_snapshot.index)
 		{
 			s_location location;
 
@@ -204,7 +205,7 @@ void particle_systems_update_locations(void)
 			{
 				s_particle_location_datum *particle_location = DATUM(g_51ec8c, s_particle_location_datum, particle_system->location_index);
 
-				if (!(bsp_index != NONE))
+				if (!(bsp_snapshot.index != NONE))
 				{
 					location.leaf_index = NONE;
 					location.cluster_index = NONE;
@@ -223,7 +224,7 @@ void particle_systems_update_locations(void)
 				location.leaf_index = NONE;
 				location.cluster_index = NONE;
 			}
-			location.bsp_index = bsp_index;
+			location.bsp_index = bsp_snapshot.index;
 			particle_system->set_location(&location);
 		}
 	}
