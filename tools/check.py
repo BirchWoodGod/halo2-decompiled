@@ -10,21 +10,37 @@ function.
 Writes build/report.json, updates the status and source columns of
 config/functions.csv, and prints a summary.
 
+--fast checks the listed functions on a reduced image instead (see
+tools/reduced.py): one image holding each function's own source, the sources
+of its callees in retail all the way down, those of the functions and globals
+its body uses by name, and what the last full build (build/halo2.exe and
+build/halo2.map) says pins their calling conventions and which library
+objects it takes. Only those sources are compiled, and the link leaves out
+the rest of the program, so a check takes seconds, not minutes.
+The comparison and its output are the full check's. A CAVEAT line follows a
+function when the reduced image may build it differently from the full one.
+--fast writes build/report-fast.json and nothing else: the csv and
+build/report.json only ever come from a full build, which stays the judge of
+what is kept. The image is linked as build/fast/reduced.img, never as an .exe,
+and is reused when nothing it was linked from has changed. --jobs compiles
+that many sources at once (default 2).
+
     python tools/check.py [<retail va> ...] [--no-build]
+    python tools/check.py --fast <retail va> ... [--jobs N]
 """
 import argparse
-import bisect
 import json
 import os
 import re
 import sys
+import time
 
 from capstone import CS_ARCH_X86, CS_MODE_32, Cs
 
 import build
+import reduced
 from inventory import check_retail, read_rows, write_rows
-from linkmap import LinkMap, plain_name
-from pe import Pe
+from linkmap import plain_name
 from xbe import FUNCTIONS_CSV, ROOT, Xbe, retail_xbe_path
 
 NEAR = 2  # differing instructions, at most, for "near"
@@ -278,9 +294,7 @@ def check_function(full, start, theirs, theirs_va, absolute, relative, lo, hi, i
     return ('near' if near else 'todo'), min(offsets), lines, len(ours)
 
 
-def _within(fixups, low, high):
-    """The part of the sorted fixups in [low, high)."""
-    return fixups[bisect.bisect_left(fixups, low):bisect.bisect_left(fixups, high)]
+_within = reduced.fields_within  # the part of sorted fixups in [low, high)
 
 
 def parse_addresses(texts):
@@ -311,18 +325,176 @@ def write_report(path, report, merge):
         json.dump(report, f, indent=1, sort_keys=True)
 
 
+def check_one(m, row, ours, retail, identity, standin_calls):
+    """Compares the marked function m (row, its config/functions.csv row) with
+    retail in a built image (ours, a reduced.Image), and prints MATCH, DIFF
+    with a listing, or MISSING. Returns (its report entry, its symbol in the
+    image or None)."""
+    symbol = resolve(ours.linkmap, m, standin_calls)
+    if symbol is None:
+        print(f'MISSING {m.retail:08x} {m.name}: not in the image '
+              '(the linker folded it into an identical function, or nothing references it)')
+        return dict(name=m.name, source=m.path, status='todo', size=int(row['size']), ours=0, first_difference=0), None
+    start, end = ours.linkmap.extent(symbol)
+    theirs = retail.read(m.retail, int(row['size']))
+    window = (start - 3, end)  # every fixup that touches the function
+    status, first, lines, length = check_function(
+        ours.image.read(start, end - start), start, theirs, m.retail,
+        _within(ours.absolute, *window), _within(ours.relative, *window),
+        retail.base, max(s.va + s.vsize for s in retail.sections), identity)
+    if first is not None:
+        print(f'DIFF   {m.retail:08x} {m.name} at +{first:#x} ({length} bytes, retail {len(theirs)})')
+        print('\n'.join(lines))
+    else:
+        print(f'MATCH  {m.retail:08x} {m.name}')
+    return dict(name=m.name, source=m.path, status=status, size=len(theirs), ours=length, first_difference=first), symbol
+
+
+FAST_IMAGE = os.path.join('build', 'fast', 'reduced.img')
+FAST_PARSED = os.path.join('build', 'fast', 'parsed.pickle')  # build.load_parse_cache
+FAST_REPORT = os.path.join('build', 'report-fast.json')
+FAST_JOBS = 2  # sources --fast compiles at once
+NO_FULL_BUILD = ('no full build (build/halo2.exe and build/halo2.map), so the reduced image leaves out the library '
+                 'objects and the address-taking sources one would add; run python tools/check.py once')
+
+
+def same_code(a, a_symbol, b, b_symbol):
+    """Whether two images (reduced.Image) hold the same code for the two
+    symbols: the same length and the same bytes, apart from address fields."""
+    x, x_masked = a.code(a_symbol)
+    y, y_masked = b.code(b_symbol)
+    return compare(x, y, x_masked | y_masked) is None
+
+
+def fast_caveats(ours, symbol, full, identity):
+    """What may make a reduced image (ours, a reduced.Image) build the function
+    at symbol differently from a full build: calls and references to globals
+    that the reduced image leaves out (unresolved: the full build may inline
+    such a function, or build differently around such a global), and code that
+    differs from the last full build (full, a reduced.FullBuild, or None) for
+    the function itself or a function it calls, where their sources and those
+    of their own callees went into that build unchanged."""
+    direct, calls = ours.callees(symbol)
+    unresolved = ours.unresolved_globals(symbol)
+    notes = []
+    if calls or unresolved:
+        what = [f'{n} {kind}{"" if n == 1 else "s"}' for n, kind in ((calls, 'call'), (unresolved, 'global reference'))
+                if n]
+        notes.append(f'{" and ".join(what)} reach{"es" if calls + unresolved == 1 else ""} what the reduced image '
+                     'leaves out (unresolved); the full build may inline such a function, or build differently '
+                     'around such a global')
+    if full is None:
+        return notes
+    for s in [symbol, *direct]:
+        twin = full.counterpart(s)
+        if (twin is None or ':' in s.object
+                or not all(map(full.unchanged, [s, *(direct if s is symbol else ours.callees(s)[0])]))
+                or same_code(ours, s, full, twin)):
+            continue
+        if s is symbol:
+            notes.append('it builds differently here than in the last full build of the same source; '
+                         'trust the full check for it')
+        else:
+            va = identity.address_of.get(s.name)
+            name = f'{va:#x}' if va is not None else plain_name(s.name)
+            notes.append(f'its callee {name} builds differently here than in the last full build '
+                         '(link-time code generation outside the reduced image); trust the full check for it')
+    return notes
+
+
+def fast_check(wanted, retail, jobs, root=ROOT, started=None):
+    """--fast: checks the functions marked at the retail addresses in wanted on
+    one reduced image (see the module docstring), prints the full check's lines
+    for each, with CAVEAT lines, and writes build/report-fast.json. Returns the
+    exit status: 1 when one differs. started: when the run started
+    (time.perf_counter), for the time line."""
+    started = time.perf_counter() if started is None else started
+    build.load_parse_cache(os.path.join(root, FAST_PARSED))
+    rows = read_rows(os.path.join(root, 'config', 'functions.csv'))
+    marked, stubs = build.marked_sources(root), build.stub_sources(root)
+    markers = marked + stubs
+    check_unique_markers(markers)
+    unmarked = wanted - {m.retail for m in marked}
+    if unmarked:
+        print('no @retail marker in src/ for: ' + ', '.join(f'{a:#x}' for a in sorted(unmarked)))
+        return 1
+    targets = [m for m in marked if m.retail in wanted]
+    for m in targets:
+        if m.retail not in rows:
+            raise SystemExit(f'{m.path}: @retail {m.retail:#x} is not a function start in config/functions.csv')
+    units = set().union(*(reduced.reduced_units(m.retail, rows, markers) for m in targets))
+    caveats = {m.retail: [] for m in targets}
+    full, include = reduced.FullBuild.load(root), ()
+    if full is None:
+        print(f'CAVEAT {NO_FULL_BUILD}')
+    else:
+        include = reduced.library_symbols(full.linkmap)
+        full_calls = StandinCalls(full.linkmap, full.image, marked)
+        found = []
+        for m in targets:
+            hits = find_overload(full.linkmap, m, full_calls)
+            if len(hits) == 1:
+                found.append(hits[0])
+            else:
+                caveats[m.retail].append('not in the last full build, so the sources that take its address '
+                                         'there are unknown')
+        sources = build.source_objects(root)
+        units |= reduced.pinning_units(full.linkmap, full.image, found, sources)
+        units |= reduced.named_units(reduced.bodies(targets, root), full.linkmap, sources)
+    timings = {}
+    image_path = os.path.join(root, FAST_IMAGE)
+    map_path = build.build(root, units=units, image=image_path, include=include, jobs=jobs, reuse=True,
+                           timings=timings)
+    built = time.perf_counter()
+    build.save_parse_cache(os.path.join(root, FAST_PARSED))
+
+    ours = reduced.Image.read(map_path, image_path)
+    standin_calls = StandinCalls(ours.linkmap, ours.image, marked)
+    identity = Identity(ours.linkmap, rows, markers, standin_calls)
+    report, failed = {}, 0
+    for m in targets:
+        entry, symbol = check_one(m, rows[m.retail], ours, retail, identity, standin_calls)
+        failed += entry['first_difference'] is not None
+        notes = caveats[m.retail] + (fast_caveats(ours, symbol, full, identity) if symbol else [])
+        for note in notes:
+            print(f'CAVEAT {m.retail:08x} {m.name}: {note}')
+        report[f'{m.retail:08x}'] = dict(entry, caveats=([NO_FULL_BUILD] if full is None else []) + notes)
+    write_report(os.path.join(root, FAST_REPORT), report, merge=False)
+    done = time.perf_counter()
+
+    print(f'fast check: {len(targets) - failed} of {len(targets)} match on a reduced image of {len(units)} sources; '
+          'only the full check (python tools/check.py) updates config/functions.csv')
+    link, compiled = timings['link'], timings['compiled']
+    print(f'time {done - started:.1f}s: prepare {built - started - timings["compile"] - (link or 0):.1f}s, '
+          f'compile {compiled} source{"" if compiled == 1 else "s"} {timings["compile"]:.1f}s, '
+          f'link {"kept from the last run" if link is None else f"{link:.1f}s"}, compare {done - built:.1f}s')
+    return 1 if failed else 0
+
+
 def main():
     # `@file` reads arguments one per line, so long address lists stay off the
     # command line (antivirus heuristics flag long runs of hex arguments)
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0], fromfile_prefix_chars='@')
     ap.add_argument('addresses', nargs='*')
     ap.add_argument('--no-build', action='store_true')
+    ap.add_argument('--fast', action='store_true',
+                    help='check the listed functions on a reduced image; writes only build/report-fast.json')
+    ap.add_argument('--jobs', type=int, default=None, help=f'with --fast: sources compiled at once (default {FAST_JOBS})')
     args = ap.parse_args()
+    started = time.perf_counter()
+    if args.fast and not args.addresses:
+        ap.error('--fast checks the functions it is given: list their retail addresses')
+    if args.fast and args.no_build:
+        ap.error('--fast builds its own reduced image; --no-build is for the full check')
+    if args.jobs is not None and (not args.fast or args.jobs < 1):
+        ap.error('--jobs takes a positive count, and needs --fast')
     retail_path = retail_xbe_path()
     if not os.path.exists(retail_path):
         raise SystemExit(f'retail XBE not found at {retail_path}: put it at orig/default.xbe or set RETAIL_XBE')
     check_retail(retail_path)
     wanted = parse_addresses(args.addresses)
+    if args.fast:
+        sys.exit(fast_check(wanted, Xbe(retail_path), args.jobs or FAST_JOBS, started=started))
     map_path = os.path.join(ROOT, 'build', build.MAP_NAME)
     exe_path = os.path.join(ROOT, 'build', build.EXE_NAME)
     if args.no_build:
@@ -331,19 +503,15 @@ def main():
     else:
         map_path = build.build()
 
-    linkmap = LinkMap.read(map_path)
-    image = Pe(exe_path)
+    ours = reduced.Image.read(map_path, exe_path)
     retail = Xbe(retail_path)
     rows = read_rows(FUNCTIONS_CSV)
-    absolute, relative = sorted(image.fixups), sorted(linkmap.rel_fixups)
-    lo = retail.base
-    hi = max(s.va + s.vsize for s in retail.sections)
 
     marked = build.marked_sources()
     stubs = build.stub_sources()
     check_unique_markers(marked + stubs)
-    standin_calls = StandinCalls(linkmap, image, marked)
-    identity = Identity(linkmap, rows, marked + stubs, standin_calls)
+    standin_calls = StandinCalls(ours.linkmap, ours.image, marked)
+    identity = Identity(ours.linkmap, rows, marked + stubs, standin_calls)
     unmarked = wanted - {m.retail for m in marked}
     if unmarked:
         print('no @retail marker in src/ for: ' + ', '.join(f'{a:#x}' for a in sorted(unmarked)))
@@ -355,31 +523,11 @@ def main():
         row = rows.get(m.retail)
         if row is None:
             raise SystemExit(f'{m.path}: @retail {m.retail:#x} is not a function start in config/functions.csv')
-        symbol = resolve(linkmap, m, standin_calls)
+        entry, _ = check_one(m, row, ours, retail, identity, standin_calls)
         claimed.add(m.retail)
-        if symbol is None:
-            failed += 1
-            print(f'MISSING {m.retail:08x} {m.name}: not in the image '
-                  '(the linker folded it into an identical function, or nothing references it)')
-            row['status'], row['source'] = 'todo', m.path
-            report[f'{m.retail:08x}'] = dict(name=m.name, source=m.path, status='todo', size=int(row['size']),
-                                             ours=0, first_difference=0)
-            continue
-        start, end = linkmap.extent(symbol)
-        theirs = retail.read(m.retail, int(row['size']))
-        window = (start - 3, end)  # every fixup that touches the function
-        status, first, lines, length = check_function(
-            image.read(start, end - start), start, theirs, m.retail,
-            _within(absolute, *window), _within(relative, *window), lo, hi, identity)
-        if first is not None:
-            failed += 1
-            print(f'DIFF   {m.retail:08x} {m.name} at +{first:#x} ({length} bytes, retail {len(theirs)})')
-            print('\n'.join(lines))
-        else:
-            print(f'MATCH  {m.retail:08x} {m.name}')
-        row['status'], row['source'] = status, m.path
-        report[f'{m.retail:08x}'] = dict(name=m.name, source=m.path, status=status, size=len(theirs),
-                                         ours=length, first_difference=first)
+        failed += entry['first_difference'] is not None
+        row['status'], row['source'] = entry['status'], m.path
+        report[f'{m.retail:08x}'] = entry
     if not wanted:
         for va, r in rows.items():
             if r['source'] and va not in claimed:

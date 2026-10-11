@@ -22,17 +22,21 @@ build(units=...) builds a reduced image instead, build/reduced.img with its
 map build/reduced.map: only the listed sources (with their stand-ins), the
 ballast and the libraries, linked with /FORCE:UNRESOLVED so that what the
 left-out sources define does not stop the link. tools/permute.py --fast scores
-variants on it; nothing else may use it. It is never named .exe: it does not
-run, and antivirus software flags such images. build(image=...) links to the
-given path instead.
+variants on it, and tools/check.py --fast checks functions on it (see
+tools/reduced.py); nothing else may use it. It is never named .exe: it does
+not run, and antivirus software flags such images. build(image=...) links to
+the given path instead.
 
     python tools/build.py
 """
 import json
 import os
+import pickle
 import re
 import subprocess
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 
 from inventory import read_rows
@@ -410,11 +414,12 @@ def _source_names(root):
     return sorted(n for n in os.listdir(src) if n.endswith('.cpp')) if os.path.isdir(src) else []
 
 
-# path -> ((modification time, size), text, {what: derived from the text}):
-# a file is read and parsed again only when it changes (_stale trusts the same
-# times), so repeated builds in one process (tools/permute.py) parse only the
-# source that changed
+# path -> ((modification time, size), text or None until read, {what: derived
+# from the text}): a file is read and parsed again only when it changes (_stale
+# trusts the same times), so repeated builds in one process (tools/permute.py)
+# parse only the source that changed
 _FILES = {}
+_derived = False  # whether this process derived anything (save_parse_cache)
 
 
 def _read(path, what=None, derive=None):
@@ -423,13 +428,50 @@ def _read(path, what=None, derive=None):
     key = (stat.st_mtime_ns, stat.st_size)
     entry = _FILES.get(path)
     if entry is None or entry[0] != key:
+        entry = _FILES[path] = (key, None, {})
+    if what is not None and what in entry[2]:
+        return entry[2][what]
+    if entry[1] is None:
         with open(path, encoding='utf-8') as f:
-            entry = _FILES[path] = (key, f.read(), {})
+            entry = _FILES[path] = (key, f.read(), entry[2])
     if what is None:
         return entry[1]
-    if what not in entry[2]:
-        entry[2][what] = derive(entry[1])
+    global _derived
+    _derived = True
+    entry[2][what] = derive(entry[1])
     return entry[2][what]
+
+
+def _parse_version():
+    """This module's own time and size: a parse cache is only as good as the code that wrote it."""
+    stat = os.stat(__file__)
+    return stat.st_mtime_ns, stat.st_size
+
+
+def load_parse_cache(path):
+    """Takes in what an earlier process derived from the sources and headers
+    (save_parse_cache), for each file unchanged since. tools/check.py --fast
+    runs a process per check, and parsing every source costs it a second."""
+    try:
+        with open(path, 'rb') as f:
+            version, files = pickle.load(f)
+    except Exception:  # missing, or written by another version of Python
+        return
+    if version == _parse_version():
+        for name, (key, derived) in files.items():
+            _FILES.setdefault(name, (key, None, derived))
+
+
+def save_parse_cache(path):
+    """Saves what this process derived from the files it read (see
+    load_parse_cache), unless it derived nothing new."""
+    if not _derived and os.path.exists(path):
+        return
+    files = {name: (key, derived) for name, (key, _, derived) in _FILES.items() if derived}
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path + '.tmp', 'wb') as f:
+        pickle.dump((_parse_version(), files), f)
+    os.replace(path + '.tmp', path)
 
 
 def marked_sources(root=ROOT):
@@ -494,13 +536,18 @@ def ballast_source(functions=BALLAST_FUNCTIONS):
     return '\n'.join(out) + '\n'
 
 
-def build(root=ROOT, xdk=None, units=None, image=None, include=()):
+def build(root=ROOT, xdk=None, units=None, image=None, include=(), jobs=1, reuse=False, timings=None):
     """Builds the image and returns its map's path. units, if given, is the set
     of sources ('src/<name>.cpp', 'src/stubs/<name>.cpp') of a reduced image
     (see the module docstring). image, if given, is the path to link the image
     to, instead of build/halo2.exe or build/reduced.img; its map goes next to
     it. include lists symbols the link must take in (/INCLUDE), with the
-    library objects that define them."""
+    library objects that define them. jobs compiles that many stale sources
+    at once. reuse keeps the image of the last link when nothing it was
+    linked from has changed since (its objects, their times, the link's
+    arguments; <image>.inputs records them). timings, a dict if
+    given, gets the seconds spent compiling ('compile', of 'compiled' sources)
+    and linking ('link', None when the last image was kept)."""
     xdk = xdk or xdk_dir()
     if not os.path.exists(os.path.join(xdk, 'bin', 'vc71', 'CL.Exe')):
         raise SystemExit(f'Xbox SDK 5849 not found at {xdk}. Put its xbox folder at sdk/xbox, '
@@ -515,12 +562,33 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=()):
                for n in ns if n.endswith('.h')]
     newest_header = max((os.path.getmtime(h) for h in headers), default=0)
     includes = ['/I', os.path.join(root, 'include'), '/I', src]
+    timings = {} if timings is None else timings
+    timings.update(compile=0.0, compiled=0, link=None)
+    pending = []
+
+    def compile_pending():
+        started = time.perf_counter()
+        if jobs > 1:
+            with ThreadPoolExecutor(jobs) as pool:
+                list(pool.map(lambda args: run_tool('CL.Exe', args, root, xdk), pending))
+        else:
+            for args in pending:
+                run_tool('CL.Exe', args, root, xdk)
+        timings['compile'] += time.perf_counter() - started
+        timings['compiled'] += len(pending)
+        pending.clear()
+
+    def compile_(args):
+        """Compiles now, or with jobs above 1 with the others, at once, before the link."""
+        pending.append(args)
+        if jobs == 1:
+            compile_pending()
+
     marked_by_path = {}
     for m in marked_sources(root):
         marked_by_path.setdefault(m.path, []).append(m)
 
-    texts = {name: _read(os.path.join(src, name)) for name in _source_names(root)}
-    parsed = [os.path.join(src, name) for name in texts] + headers
+    parsed = [os.path.join(src, name) for name in _source_names(root)] + headers
     classes = set().union(*(_read(path, 'declared', _declared) for path in parsed))
     polymorphic = _polymorphic(_read(path, 'class bodies', _class_bodies) for path in parsed)
     outside = outside_callees(read_rows(os.path.join(root, 'config', 'functions.csv')))
@@ -531,7 +599,7 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=()):
             continue
         path = os.path.join(src, name)
         stem = os.path.splitext(name)[0]
-        text = texts[name]
+        text = _read(path)
         flags = file_flags(text, name, config)
         obj = os.path.join(obj_dir, stem + '.obj')
         marked = marked_by_path.get(f'src/{name}')
@@ -549,7 +617,7 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=()):
                 entry_decls.append(f'void {standin}(void);')
                 entry_calls.append(f'\t{standin}();')
         if _stale(obj, depends, newest_header):
-            run_tool('CL.Exe', ['/c', *source_flags(flags), *includes, compiled, f'/Fo{obj}'], root, xdk)
+            compile_(['/c', *source_flags(flags), *includes, compiled, f'/Fo{obj}'])
         objects.append(obj)
 
     folder = os.path.join(src, 'stubs')
@@ -561,7 +629,7 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=()):
             obj = os.path.join(obj_dir, f'stubs_{os.path.splitext(name)[0]}.obj')
             if _stale(obj, [path], newest_header):
                 # /O2 without /Gy (VC7.1 has no /Gy-): the stubs are not packaged as COMDATs, so the linker never folds identical bodies
-                run_tool('CL.Exe', ['/c', '/Og', '/Oi', '/Ot', '/Oy', '/Ob2', '/Gs', '/GF', '/Gr', *includes, path, f'/Fo{obj}'], root, xdk)
+                compile_(['/c', '/Og', '/Oi', '/Ot', '/Oy', '/Ob2', '/Gs', '/GF', '/Gr', *includes, path, f'/Fo{obj}'])
             objects.append(obj)
 
     ballast = os.path.join(gen, 'ltcg_ballast.cpp')
@@ -571,8 +639,7 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=()):
         with open(ballast, 'w', encoding='utf-8') as f:
             f.write(ballast_text)
     if _stale(ballast_obj, [ballast], 0):
-        run_tool('CL.Exe', ['/c', '/GL', '/O2', '/Gr', f'/d2inlT{INLINE_THRESHOLD}', ballast, f'/Fo{ballast_obj}'],
-                 root, xdk)
+        compile_(['/c', '/GL', '/O2', '/Gr', f'/d2inlT{INLINE_THRESHOLD}', ballast, f'/Fo{ballast_obj}'])
     objects.append(ballast_obj)
 
     entry_name = 'entry' if units is None else f'entry_{REDUCED_NAME}'
@@ -583,8 +650,9 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=()):
         with open(entry, 'w', encoding='utf-8') as f:
             f.write(entry_text)
     if _stale(entry_obj, [entry], newest_header):
-        run_tool('CL.Exe', ['/c', '/GL', *SIZE_FLAGS, entry, f'/Fo{entry_obj}'], root, xdk)
+        compile_(['/c', '/GL', *SIZE_FLAGS, entry, f'/Fo{entry_obj}'])
     objects.append(entry_obj)
+    compile_pending()
 
     if units is None:
         exe = image or os.path.join(out, EXE_NAME)
@@ -599,10 +667,23 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=()):
     with open(response, 'w', encoding='utf-8') as f:
         f.write(''.join(f'"{tool_arg(obj)}"\n' for obj in objects))
         f.write(''.join(f'/INCLUDE:{symbol}\n' for symbol in include))
-    run_tool('Link.Exe', ['/LTCG', '/NODEFAULTLIB', '/ENTRY:entry', '/SUBSYSTEM:CONSOLE', '/MAP:' + map_path,
-                          '/MAPINFO:FIXUPS', '/FIXED:NO', *force, f'/OUT:{exe}', '@' + tool_arg(response),
-                          *LIBRARIES],
-             root, xdk)
+    link = ['/LTCG', '/NODEFAULTLIB', '/ENTRY:entry', '/SUBSYSTEM:CONSOLE', '/MAP:' + map_path, '/MAPINFO:FIXUPS',
+            '/FIXED:NO', *force, f'/OUT:{exe}', '@' + tool_arg(response), *LIBRARIES]
+    if reuse:
+        stamp = exe + '.inputs'
+        inputs = ''.join(f'{line}\n' for line in [*link, *include, *(
+            f'{obj} {stat.st_mtime_ns} {stat.st_size}' for obj, stat in zip(objects, map(os.stat, objects)))])
+        if all(map(os.path.exists, (exe, map_path, stamp))):
+            with open(stamp, encoding='utf-8') as f:
+                if f.read() == inputs:
+                    return map_path
+            os.remove(stamp)
+    started = time.perf_counter()
+    run_tool('Link.Exe', link, root, xdk)
+    timings['link'] = time.perf_counter() - started
+    if reuse:
+        with open(stamp, 'w', encoding='utf-8') as f:
+            f.write(inputs)
     return map_path
 
 
