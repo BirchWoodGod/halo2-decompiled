@@ -1059,32 +1059,48 @@ void function_1089d0(long object_index);
 // @retail 0xb6c50
 void function_b6c50()
 {
-    function_c0110();
-    s_type_f1af8e iterator;
-    iterator.type_mask = NONE;
-    iterator.flags = 0;
-    iterator.index = 0;
-    iterator.object_index = NONE;
-    iterator.signature = 0x86868686;
-    byte *object = (byte *)function_baeb0(&iterator);
-    while (object)
+    struct s_object_flags
     {
-        long index = iterator.object_index;
-        s_object_header_view *header = OBJECT_HEADER_GET(index);
+        dword unknown00;
+        dword unknown0 : 8;
+        dword flag8 : 1;
+        dword unknown9 : 5;
+        dword flag14 : 1;
+        dword unknown15 : 17;
+    };
+    function_c0110();
+    struct
+    {
+        byte *object;
+        s_type_f1af8e iterator;
+    } iteration;
+    iteration.iterator.signature = 0x86868686;
+    iteration.iterator.type_mask = NONE;
+    iteration.iterator.flags = 0;
+    iteration.iterator.index = 0;
+    iteration.iterator.object_index = NONE;
+    iteration.object = (byte *)function_baeb0(&iteration.iterator);
+    while (iteration.object)
+    {
+        long index = iteration.iterator.object_index;
+        s_record_pool *pool = g_4e0300;
+        byte *records = pool->data;
+        long offset = (index & 0xffff) * 12;
+        s_object_header_view *header = (s_object_header_view *)(records + offset);
         if (header->flags & 1)
         {
-            byte *current = (byte *)OBJECT_GET(index);
+            byte *current = *(byte **)(*(byte *volatile *)((byte *)pool + 0x44) + offset + 8);
             header->flags &= ~5;
             if ((1 << header->type) & 0x1883) function_1c38a0(index);
-            if (*(dword *)(current + 4) & 0x4000) --*(short *)((byte *)g_4de2f4 + 4);
+            if ((bool)((s_object_flags *)current)->flag14) --*(short *)((byte *)g_4de2f4 + 4);
         }
-        if (*(dword *)(object + 4) & 0x100) function_b87b0(index);
+        if ((bool)((s_object_flags *)iteration.object)->flag8) function_b87b0(index);
         function_1089d0(index);
         *(short *)((byte *)header + 4) = NONE;
-        *(long *)(object + 0x28) = NONE;
-        *(short *)(object + 0x2c) = NONE;
-        *(short *)(object + 0x2e) = g_4686c4;
-        object = (byte *)function_baeb0(&iterator);
+        *(long *)(iteration.object + 0x28) = NONE;
+        *(short *)(iteration.object + 0x2c) = NONE;
+        *(short *)(iteration.object + 0x2e) = g_4686c4;
+        iteration.object = (byte *)function_baeb0(&iteration.iterator);
     }
     *(byte *)g_4de2f4 = 0;
 }
@@ -1233,25 +1249,36 @@ void function_1c4a80(long object_index, long position_unchanged, long force);
 // @retail 0xb6bb0
 void function_b6bb0()
 {
-    *(byte *)g_4de2f4 = 1;
-    s_type_f1af8e iterator;
-    iterator.signature = 0x86868686;
-    iterator.type_mask = NONE;
-    iterator.flags = 0;
-    iterator.index = 0;
-    iterator.object_index = NONE;
-    byte *object = (byte *)function_baeb0(&iterator);
-    while (object)
+    struct s_object_flags
     {
-        long index = iterator.object_index;
-        if (*(long *)(object + 0x14) == NONE && !(*(dword *)(object + 4) & 0x80))
+        dword unknown00;
+        dword unknown0 : 7;
+        dword flag7 : 1;
+        dword unknown8 : 24;
+    };
+    *(byte *)g_4de2f4 = 1;
+    struct
+    {
+        byte *object;
+        s_type_f1af8e iterator;
+    } iteration;
+    iteration.iterator.signature = 0x86868686;
+    iteration.iterator.type_mask = NONE;
+    iteration.iterator.flags = 0;
+    iteration.iterator.index = 0;
+    iteration.iterator.object_index = NONE;
+    iteration.object = (byte *)function_baeb0(&iteration.iterator);
+    while (iteration.object)
+    {
+        long index = iteration.iterator.object_index;
+        if (*(long *)(iteration.object + 0x14) == NONE && !((bool)((s_object_flags *)iteration.object)->flag7))
         {
             s_location location;
             function_bf510(index, &location);
             function_b8600(index, (long)&location);
         }
         function_108960(index);
-        object = (byte *)function_baeb0(&iterator);
+        iteration.object = (byte *)function_baeb0(&iteration.iterator);
     }
     function_bfcc0();
     function_c00a0();
@@ -1734,7 +1761,7 @@ long function_baf80(long index);
 void function_bba20(long index);
 
 // @retail 0xb93b0
-void __stdcall function_b93b0(volatile long parent_index, volatile long index, volatile long node)
+void __stdcall function_b93b0(volatile long parent_index, volatile long index, volatile short node)
 {
     s_record_pool *pool = g_4e0300;
     long offset = (index & 0xffff) * 12;

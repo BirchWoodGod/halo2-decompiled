@@ -629,14 +629,30 @@ static __forceinline real basis_dot_xzy(vector3f const *a, vector3f const *b)
 {
 	real result = a->i * b->i;
 	result += b->k * a->k;
-	result += a->j * b->j;
+	real side = a->j;
+	side *= b->j;
+	result += side;
+	return result;
+}
+
+static __forceinline real basis_dot_xzy_vertical(vector3f const *a, vector3f const *b)
+{
+	real result = a->i * b->i;
+	real vertical = b->k;
+	vertical *= a->k;
+	result += vertical;
+	real side = a->j;
+	side *= b->j;
+	result += side;
 	return result;
 }
 
 static __forceinline real basis_dot_xyz(vector3f const *a, vector3f const *b)
 {
 	real result = a->i * b->i;
-	result += b->j * a->j;
+	real side = a->j;
+	side *= b->j;
+	result += side;
 	result += a->k * b->k;
 	return result;
 }
@@ -652,7 +668,7 @@ bool function_143120(
 		function_a0190(up) &&
 		function_a0200(basis_dot_xzy(forward, left), 0.f) &&
 		function_a0200(basis_dot_xyz(left, up), 0.f) &&
-		function_a0200(basis_dot_xzy(forward, up), 0.f);
+		function_a0200(basis_dot_xzy_vertical(forward, up), 0.f);
 }
 
 // @retail 0x143250

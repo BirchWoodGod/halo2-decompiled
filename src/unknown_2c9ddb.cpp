@@ -29,6 +29,8 @@ word *function_215b50(long variant, word *buffer);
 long g_54e49c;
 long g_50933c;
 
+
+
 /* an item of the list's data */
 struct s_variant_item
 {
@@ -37,6 +39,68 @@ struct s_variant_item
 	long variant;
 	long string_handle;
 };
+
+#if 0
+// Disabled: retail registers a callback and passes shared variant addresses.
+// @retail 0x2ca284 disabled
+void c_class_2c9e69::handle_item(s_controller_reference **controller, long *item)
+{
+	if (*item == NONE) return;
+	s_variant_item *entry = &((s_variant_item *)data->data)[*item & 0xffff];
+	s_game_variant variant;
+	byte name[0x100];
+	long selected = entry->variant;
+	if (selected != NONE && !(flag_a && ((dword)selected >> 21 & 1)))
+	{
+		if (entry->value2 != NONE)
+		{
+			if (function_212bc0(selected, &variant))
+			{
+				if (flag_a || flag_b)
+				{
+					s_screen_parameters parameters;
+					if (flag_a)
+					{
+						g_54e49c = selected;
+						g_54e4a0 = variant;
+					}
+					function_149f49(&parameters, 0, 0, 1 << (*controller)->controller_index,
+						flag_a ? 3 : 5, 4, flag_a ? function_2baae7 : function_2bb31d);
+					parameters.load(&parameters);
+				}
+				else
+				{
+					function_19a728(&variant);
+					((c_widget *)this)->function_22eeee(3)->function_22e957();
+				}
+				return;
+			}
+			flag_c = true;
+		}
+		g_50933c = selected;
+		function_19b5af(1, 0x79, 4, 1 << (*controller)->controller_index, function_2cb001, 0, 0);
+		return;
+	}
+	g_55c154 = 0;
+	long saved = NONE;
+	if (function_215f40(game_type, name) &&
+		(saved = function_212380(game_type, (*controller)->controller_index, name)) != NONE &&
+		function_212bc0(selected == NONE ? saved : selected, &variant))
+	{
+		g_54e49c = saved;
+		g_54e4a0 = variant;
+		if (selected == NONE)
+		{
+			function_1489b5(game_type, &g_54e4a0);
+			function_13fac0((word *)variant.name, (word *)g_54e4a0.name, 0x20);
+		}
+		else *(byte *)&g_54e4a0 &= ~1;
+		function_238c69(selected == NONE ? 5 : 7,
+			function_216a50(&g_54e4a0), (word *)g_54e4a0.name, 0x20, (*controller)->controller_index);
+	}
+	else function_148aa3(g_55c154, user_flags);
+}
+#endif
 
 /* the custom game profile screen (vtable 0x45d6f8) */
 class c_custom_game_profile_screen : public c_screen_with_menu

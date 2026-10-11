@@ -93,6 +93,8 @@ public:
 	byte unknown24[0x30 - 0x24];
 };
 
+struct s_fixed_memory_entry;
+
 class c_havok_fixed_memory : public c_havok_fixed_memory_base
 {
 public:
@@ -101,10 +103,12 @@ public:
 	{
 	}
 
+	void *function_22c330(long alignment, long limit, long offset, long size, s_fixed_memory_entry *entry);
+
 	/* unknown_22c0a0.cpp */
 	virtual void *allocate(long size, long memory_class);
 	virtual void deallocate(void *address);
-	virtual void *allocate_aligned(long alignment, long size, long memory_class) { return 0; }
+	virtual void *allocate_aligned(long alignment, long size, long memory_class);
 	virtual void deallocate_aligned(void *address);
 	virtual void *allocate16(long size, long memory_class);
 	virtual void deallocate16(void *address, long size, long memory_class);

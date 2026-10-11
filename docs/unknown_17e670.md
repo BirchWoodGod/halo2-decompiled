@@ -1,9 +1,11 @@
 # Decal placement recovery: `0x17dd80`–`0x17fd1f`
 
-This work-in-progress batch covers three routines with no source in the
-inventory at main `4e084bdf`, plus a neighboring-face intersection correction.
+This batch supplies independently validated implementations of placement,
+chain traversal and preparation, plus corrections to neighboring-face
+intersection, registration radius accumulation and initial record linking.
+Upstream `413fea15` also implements these three routines; this contribution
+retains the implementations exercised by the reproducible comparisons below.
 The shared predicate at `0x11e5e0` and its eight callers are audited below.
-The final commit helper remains an unchanged dependency.
 
 | Retail entry | Bytes | Current evidence |
 | --- | ---: | --- |
@@ -12,9 +14,10 @@ The final commit helper remains an unchanged dependency.
 | `0x17ef10` | 3,591 | Preparation body recovered; behavior checked, byte matching pending |
 
 The intervening placement-copy helper `0x17ed70` already has matching source
-in `src/unknown_17d9a0.cpp`; preserve it. The three missing bodies total 5,618
-retail bytes. All three bodies are implemented and their temporary stubs
-removed. No new exact matches are claimed.
+in `src/unknown_17d9a0.cpp`; preserve it. The three bodies total 5,618 retail
+bytes. No new exact matches are claimed. Historical observations below name
+their original tested revisions; current validation must use the image and
+map from the contributor's own build.
 
 ## Reproduce the synthetic comparison
 

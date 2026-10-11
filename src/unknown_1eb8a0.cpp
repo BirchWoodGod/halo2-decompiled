@@ -911,7 +911,8 @@ public:
  real radius;
 };
 
-// Disabled retail draft 0x1ec690
+// Disabled: activation changes matched 0x2901e0 and 0xfa100 through LTCG.
+// @retail 0x1ec690 disabled
 void function_1ec690(byte const *input, s_state_c570 *state, byte *output)
 {
  byte *component = g_51e9b8->data + (*(long *)(input + 0x18) & 0xffff) * 0xa0;

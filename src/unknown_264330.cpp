@@ -27,6 +27,123 @@ long function_10f8f0(long object_index);
 struct s_28fb50;
 long function_28fb50(long object_index, s_28fb50 const *context, long target_index);
 __forceinline long real_to_long(real value);
+long function_10f5f0(long object_index);
+real function_10f690(long object_index, real *duration);
+long function_1469f0(real seconds);
+long function_25d770(long actor_index, long object_index);
+bool function_2651e0(long object_index, short *volatile output_index);
+bool function_1a8220(long index, short a, short b, long unknown, short c, short d, short e);
+bool __stdcall function_25d020(long actor_index, long object_index, long type,
+	long prop_index, long a, long b);
+
+// @retail 0x265680
+void __stdcall function_265680(long volatile actor_index)
+{
+	byte *actor = g_4f55f0->data + (actor_index & 0xffff) * 0x888;
+	if (*(short *)(actor + 0x358) <= 0) return;
+	byte *object = (byte *)function_badc0(*(long *)(actor + 0x360), NONE);
+	if (!object) { *(short *)(actor + 0x358) = 0; return; }
+	point3f &position = *(point3f *)(actor + 0x370);
+	vector3f &velocity = *(vector3f *)(actor + 0x37c);
+	function_b9dd0(*(long *)(actor + 0x360), &position);
+	velocity = *(vector3f *)(object + 0x88);
+	s_2641c0 context;
+	if (function_2641c0(actor_index, &context, &position))
+	{
+		double x = position.x - (double)context.field_c.x;
+		double y = position.y - (double)context.field_c.y;
+		double z = position.z - (double)context.field_c.z;
+		*(real *)(actor + 0x394) = (real)sqrt(z * z + y * y + x * x);
+		real dz = *(real *)(actor + 0x3a8) - context.field_c.z;
+		real dy = *(real *)(actor + 0x3a4) - context.field_c.y;
+		real dx = *(real *)(actor + 0x3a0) - context.field_c.x;
+		*(real *)(actor + 0x398) = dz * dz + dy * dy + dx * dx;
+	}
+	point3f &prediction = *(point3f *)(actor + 0x388);
+	prediction.x = velocity.i * 1.5f + position.x;
+	prediction.y = velocity.j * 1.5f + position.y;
+	prediction.z = velocity.k * 1.5f + position.z;
+	point3f &midpoint = *(point3f *)(actor + 0x3a0);
+	midpoint.x = (position.x + prediction.x) * 0.5f;
+	midpoint.y = (position.y + prediction.y) * 0.5f;
+	midpoint.z = (position.z + prediction.z) * 0.5f;
+	double x = position.x - (double)midpoint.x;
+	double y = position.y - (double)midpoint.y;
+	double z = position.z - (double)midpoint.z;
+	*(real *)(actor + 0x39c) = (real)(sqrt(z * z + y * y + x * x) + *(real *)(actor + 0x36c));
+	s_record_pool *references = g_502418;
+	byte *reference = record_pool_lookup(references, *(long *)(actor + 0x368));
+	if (!reference) { *(short *)(actor + 0x358) = 0; return; }
+	bool active = *(short *)(reference + 0x24) >= 1 && *(short *)(reference + 0x24) <= 2;
+	bool attached = false;
+	bool related = false;
+	switch (*(short *)(actor + 0x358))
+	{
+	case 1:
+		if (function_10f5f0(*(long *)(actor + 0x360)) == 0xc000043)
+		{
+			real duration;
+			real elapsed = function_10f690(*(long *)(actor + 0x360), &duration);
+			*(short *)(actor + 0x3ac) = (short)function_1469f0(duration - elapsed);
+		}
+		else *(short *)(actor + 0x3ac) = NONE;
+		break;
+	case 2:
+		attached = *(long *)(actor + 0x18) != NONE && *(long *)(object + 0x14) == *(long *)(actor + 0x18);
+		if (*(real *)(object + 0x158) > 0.0f && *(real *)(object + 0x15c) > 0.0f)
+			*(short *)(actor + 0x3ac) = (short)real_to_long((1.0f - *(real *)(object + 0x158)) / *(real *)(object + 0x15c));
+		else *(short *)(actor + 0x3ac) = NONE;
+		if (attached && !actor[0x35e])
+			function_1fb7e0(0xae, actor_index, NULL, *(long *)(actor + 0x360), NONE);
+		break;
+	case 3:
+		{
+			vector3f const &v = *(vector3f *)(object + 0x88);
+			byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+			if (0.04f > v.i * v.i + v.j * v.j + v.k * v.k ||
+				*(real *)(actor + 0x394) > *(real *)(definition + 4) + 10.0f)
+				*(short *)(actor + 0x358) = 0;
+			else if (active) goto finished;
+			else if (*(long *)(object + 0x248) != NONE)
+			{
+				long index = function_25d770(actor_index, *(long *)(object + 0x248));
+				if (index != NONE)
+				{
+					byte *other = references->data + (index & 0xffff) * 0x3c;
+					active = *(short *)(other + 0x24) >= 1 && *(short *)(other + 0x24) <= 2;
+					related = active;
+				}
+			}
+		}
+		break;
+	case 4:
+		{
+			short index = NONE;
+			if (function_2651e0(*(long *)(actor + 0x360), &index)) *(short *)(actor + 0x3ac) = index;
+			else { *(short *)(actor + 0x3ac) = NONE; *(short *)(actor + 0x358) = 0; }
+		}
+		break;
+	}
+	if (!active)
+	{
+		if (related && *(short *)(actor + 0x684) <= 0)
+		{
+			*(short *)(actor + 0x686) = (short)real_to_long((real)g_510c54->field_2_3 * 2.0f);
+			*(short *)(actor + 0x688) = 5;
+			*(short *)(actor + 0x684) = 0;
+		}
+		if (*(short *)(actor + 0x35a) != 0 || attached)
+			function_25d020(actor_index, *(long *)(actor + 0x360), 0, *(long *)(actor + 0x368), NONE, NONE);
+	}
+finished:
+	actor[0x35e] = attached;
+	if (attached)
+	{
+		actor[0x35c] = 0;
+		function_1a8220(actor_index, 0x19, 1, 3, 1, NONE, 0);
+		function_1a8220(actor_index, 0xc, 1, 3, 1, NONE, 0);
+	}
+}
 
 // @retail 0x265050
 void function_265050(long actor_index, long prop_ref_index)
@@ -259,6 +376,173 @@ struct s_actor_object_sample;
 bool function_28fa60(long perception_index, point3f const *point, s_actor_object_sample *sample);
 struct s_object_motion_view;
 void function_2640c0(long object_index, s_object_motion_view *result);
+void __stdcall function_263210(long actor_index);
+void __stdcall function_265680(long actor_index);
+void function_263670(s_prop_datum *node);
+bool function_25d610(s_prop_datum *node);
+bool function_25da40(s_prop_datum *node);
+bool __stdcall function_25c230(long actor_index, long node_index, short type);
+void function_25c860(long node_index);
+void function_25c820(long node_index, long actor_index);
+void function_25ac00(long node_index, long actor_index);
+void function_1e2150(long actor_index, long node_index);
+void *function_1e5240(long actor_index);
+real function_2683f0(long actor_index, long node_index, short type);
+void __stdcall function_264b50(long actor_index, long node_index, s_2641c0 *sample, s_2640c0 *motion);
+
+// @retail 0x262ba0
+void function_262ba0(long actor_index)
+{
+	byte *actor = (byte *)actor_get(actor_index);
+	dword volatile maximum = 1;
+	bool sampled_one = false;
+	if (actor[0x44]) function_263210(actor_index);
+	function_265680(actor_index);
+	actor = (byte *)actor_get(actor_index);
+	long next = *(long *)(actor + 0x58);
+	while (next != NONE)
+	{
+		long index = next;
+		s_prop_datum *node = prop_ref_get(index);
+		byte *p = (byte *)node;
+		next = *(long *)(p + 0x2c);
+		long old_state = *(short *)(p + 0x24);
+		bool sample = false, update = false;
+		function_263670(node);
+		if (!sampled_one && *(short *)(p + 0xc) >= *(short *)(actor + 0x50) && actor[0x48])
+		{
+			sample = update = true;
+			*(short *)(p + 0xc) = 0;
+			sampled_one = true;
+		}
+		else
+		{
+			*(short *)(p + 0xc) += g_470f10[*(short *)(p + 0x18)].unknown2;
+			if (index == *(long *)(actor + 0x338)) *(short *)(p + 0xc) += 25;
+		}
+		if (*(short *)(p + 0xc) > (short)maximum) maximum = *(word *)(p + 0xc);
+		if (index == *(long *)(actor + 0x338))
+		{
+			*(short *)(p + 0x1a) = 3;
+			sample = true;
+		}
+		s_2640c0 motion;
+		s_2641c0 context;
+		if (sample)
+		{
+			function_2640c0(*(long *)(p + 0x20), (s_object_motion_view *)&motion);
+			byte *current = (byte *)actor_get(actor_index);
+			if (current[7] && *(long *)(current + 0x1c) != NONE)
+			{
+				if (!function_28fa60(*(long *)(current + 0x1c), &motion.field_c, (s_actor_object_sample *)&context)) sample = false;
+			}
+			else context = *(s_2641c0 *)(current + 0x22c);
+			if (sample && update && function_25d610(node)) function_264b50(actor_index, index, &context, &motion);
+		}
+		s_type_f95cd3 *tracking;
+		byte *view;
+		switch (*(short *)(p + 0x24))
+		{
+		case 0:
+			if (*(short *)((byte *)prop_get(*(long *)(p + 8)) + 4) == 1 && !g_470f10[*(short *)(p + 0x18)].kind)
+			{
+				function_25c230(actor_index, index, 0);
+				*(real *)(p + 0x10) = 1.0f;
+			}
+			else if ((char)p[0x26] > 0)
+			{
+				*(real *)(p + 0x10) += function_2683f0(actor_index, index, (char)p[0x26]);
+				if (*(real *)(p + 0x10) >= 1.0f)
+				{
+					function_25c230(actor_index, index, 0);
+					if ((char)p[0x27] < 1 && function_25da40(node)) function_25c860(index);
+					*(real *)(p + 0x10) = 1.0f;
+				}
+			}
+			else *(real *)(p + 0x10) = 0.0f;
+			break;
+		case 1:
+			if (!p[0x27] && function_25d610(node))
+			{
+				if (function_25da40(node))
+				{
+					tracking = function_25d740((s_prop_node *)node);
+					*(short *)(p + 0x24) = 2;
+					if (tracking) *(short *)((byte *)tracking + 0xa0) = (short)real_to_long((real)g_510c54->field_2_3 * 0.33f);
+				}
+				else { function_1e2150(actor_index, index); function_25c820(index, actor_index); }
+			}
+			break;
+		case 2:
+			if (!function_25da40(node)) { function_1e2150(actor_index, index); function_25c820(index, actor_index); }
+			else if ((char)p[0x27] > 0) function_25c230(actor_index, index, NONE);
+			else
+			{
+				view = *(long *)(p + 0x14) == NONE ? NULL : g_502414->data + (*(long *)(p + 0x14) & 0xffff) * 0x124 + 0x70;
+				point3f position;
+				function_b9dd0(*(long *)(p + 0x20), &position);
+				if (view && *(short *)(view + 0xa0))
+				{
+					byte *state = (byte *)function_25d690(node);
+					real y = *(real *)(state + 8) - position.y;
+					real x = *(real *)(state + 4) - position.x;
+					if (y * y + x * x > 1.0f) break;
+				}
+				function_25c860(index);
+			}
+			break;
+		case 3:
+			if (!function_25da40(node)) { function_1e2150(actor_index, index); function_25c820(index, actor_index); break; }
+			view = (byte *)function_25d700(index);
+			if (view && !view[0x88])
+			{
+				real limit = 1.5f;
+				byte *weapon = (byte *)function_1e5240(actor_index);
+				if (weapon && *(real *)(weapon + 0x1c) > 0.0f) limit = 10.0f;
+				if (*(short *)(view + 0x8a) >= 2)
+				{
+					++*(short *)(view + 0x90);
+					if ((real)*(short *)(view + 0x90) * g_510c54->rate >= limit) view[0x88] = true;
+				}
+				else *(short *)(view + 0x90) = 0;
+			}
+			if ((char)p[0x27] > 0) { *(short *)(p + 0x24) = 4; *(real *)(p + 0x10) = 0.0f; }
+			else if (view)
+			{
+				long decrement = index == *(long *)(actor + 0x338) ? (view[0x69] ? 2 : 0) : (view[0x69] ? 3 : 1);
+				*(short *)(view + 0x8e) -= (short)decrement;
+				if (*(short *)(view + 0x8e) < 0) { function_1e2150(actor_index, index); function_25c820(index, actor_index); }
+			}
+			break;
+		case 4:
+			if (!p[0x27]) { function_25c860(index); *(real *)(p + 0x10) = 0.0f; }
+			else
+			{
+				*(real *)(p + 0x10) += function_2683f0(actor_index, index, (char)p[0x26]);
+				if (*(real *)(p + 0x10) >= 1.0f) function_25c230(actor_index, index, NONE);
+			}
+			break;
+		}
+		if (old_state != *(short *)(p + 0x24))
+		{
+			view = *(long *)(p + 0x14) == NONE ? NULL : g_502414->data + (*(long *)(p + 0x14) & 0xffff) * 0x124 + 0x70;
+			if (view) *(real *)(view + 0x3c) = function_265d30(actor_index, index);
+		}
+		if (sample) function_264330(actor_index, index, &context, &motion, false);
+		if (((byte *)function_25d690(prop_ref_get(index)))[0x68] && *(short *)(p + 0x24) >= 1)
+			function_25ac00(index, actor_index);
+	}
+	long current = *(long *)(actor + 0x338);
+	if (current != NONE)
+	{
+		byte *view = (byte *)function_25d700(current);
+		if (view && *(short *)view >= 5) actor[0x34c] = true;
+		view = (byte *)function_25d700(current);
+		if (view && *(short *)view >= 6) { *(long *)(actor + 0x350) = 0; *(short *)(actor + 0x50) = maximum; return; }
+	}
+	if (*(long *)(actor + 0x350) != NONE) ++*(long *)(actor + 0x350);
+	*(short *)(actor + 0x50) = maximum;
+}
 
 struct s_tracking_candidate
 {
@@ -664,7 +948,7 @@ bool __stdcall function_265290(long actor_index, long prop_ref_index)
     *(short *)(actor + 0x358) = 3;
     *(long *)(actor + 0x360) = *(long *)(reference + 0x20);
     real range = *(real *)(definition + 4);
-    long owner = *(long *)(object + 0x248);
+    long const &owner = *(long *)(object + 0x248);
     long const *owner_reference = &owner;
     *(long *)(actor + 0x364) = owner;
     *(real *)(actor + 0x36c) = range;
@@ -684,4 +968,3 @@ bool __stdcall function_265290(long actor_index, long prop_ref_index)
 done:
  return *result_reference;
 }
-
