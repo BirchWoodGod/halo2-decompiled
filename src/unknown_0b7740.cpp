@@ -273,15 +273,12 @@ void function_b8b70(long object_index)
     s_object_partition_view_ab *object = header->object;
     if ((*((byte *)header + 2) & 0x40) && (bool)((object->flags >> 9) & 1))
     {
-        s_object_partition_record_ab record;
-        function_b88e0(object_index, &record);
-        s_cluster_partition partition =
-        {
-            (long *)g_4de2e0,
-            (s_record_pool *)g_4de2e4,
-            (s_record_pool *)g_4de2e8
-        };
-        function_1cadf0(&partition, *(long *)((byte *)object + 0x60), object_index, sizeof(record), &record);
+        struct { s_object_partition_record_ab record; s_cluster_partition partition; } state;
+        function_b88e0(object_index, &state.record);
+        state.partition.cluster_first_data_references = (long *)g_4de2e0;
+        state.partition.data_references = (s_record_pool *)g_4de2e4;
+        state.partition.cluster_references = (s_record_pool *)g_4de2e8;
+        function_1cadf0(&state.partition, *(long *)((byte *)object + 0x60), object_index, sizeof(state.record), &state.record);
     }
 }
 

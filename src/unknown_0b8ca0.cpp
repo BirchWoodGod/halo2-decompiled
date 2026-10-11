@@ -1206,8 +1206,9 @@ void __stdcall function_beca0(long object_index)
         for (long i = 0; i < *(long *)(definition + 0x94); ++i)
         {
             byte *entry = *(byte **)(definition + 0x98) + i * 0x18;
-            long tag = *(long *)(entry + 4), index = NONE;
             short kind = NONE;
+            long index = kind;
+            long tag = *(long *)(entry + 4);
             if (tag != NONE)
             {
                 switch (*(dword *)entry)
