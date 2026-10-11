@@ -1963,14 +1963,13 @@ void function_159460(long player_index, bool *leading, bool *tied)
 // @retail 0x15adb0
 void function_15adb0(s_netgame_entry_state *entries)
 {
-	s_type_f1af8e iterator;
-	s_engine_object *object;
+	struct { s_engine_object *object; s_type_f1af8e iterator; } local;
 
 	function_15ace0(entries);
-	function_bae80(&iterator, 0x1e, 0);
-	while ((object = (s_engine_object *)function_baeb0(&iterator)) != 0)
+	function_bae80(&local.iterator, 0x1e, 0);
+	while ((local.object = (s_engine_object *)function_baeb0(&local.iterator)) != 0)
 	{
-		long index = object->netgame_entry;
+		long index = local.object->netgame_entry;
 
 		if (index >= 0 && index < ((s_scenario_netgame_view *)g_4e0350)->count)
 		{
@@ -1979,11 +1978,11 @@ void function_15adb0(s_netgame_entry_state *entries)
 				function_15b1e0(entries[index].index, index, entries);
 			}
 			entries[index].value04 = 0;
-			entries[index].index = iterator.object_index;
+			entries[index].index = local.iterator.object_index;
 		}
 		else
 		{
-			object->netgame_entry = NONE;
+			local.object->netgame_entry = NONE;
 		}
 	}
 }
