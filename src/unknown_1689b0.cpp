@@ -4,6 +4,7 @@
    test of a surface against the query */
 
 #include "unknown_11c920.h"
+#include "segment_sphere.h"
 #include "globals.h"
 #include "unknown_0259d0.h"
 
@@ -559,7 +560,6 @@ bool function_244980(long cluster_index, point3f const *point, vector3f const *v
 	dword test_flags, s_collision_result_1697c0 *result);
 long function_b8940(short cluster_index, s_object_cluster_reference **reference, s_object_cluster_iterator *iterator);
 long function_b89b0(s_object_cluster_reference **reference, s_object_cluster_iterator *iterator);
-bool function_11e5e0(point3f const *origin, point3f const *center, vector3f const *direction, real radius);
 bool __stdcall function_169510(long object_index, bool a, dword flags, dword test_flags, point3f const *point,
 	vector3f const *vector, long ignore_object_index, long ignore_unit_index, s_collision_result_1697c0 *result);
 
@@ -585,7 +585,6 @@ struct s_lookup_ray_result
 bool function_1eff40(s_lookup *lookup, long flags, point3f const *point,
 	vector3f const *direction, s_lookup_ray_result *result);
 void function_d8ae0(long object_index, long region_index, short *material);
-bool function_11e5e0(point3f const *origin, point3f const *center, vector3f const *direction, real radius);
 
 // @retail 0x169510
 bool __stdcall function_169510(long object_index, bool a, dword flags, dword test_flags, point3f const *point,
@@ -603,7 +602,7 @@ bool __stdcall function_169510(long object_index, bool a, dword flags, dword tes
 		s_collision_object *object = header->object;
 		s_collision_object *volatile saved_object = object;
 		if (a || (collision_object_test(object_index, header, object, flags, ignore_object_index, ignore_unit_index) &&
-			function_11e5e0(point, (point3f const *)((byte *)object + 0x40), vector, *(real *)((byte *)object + 0x4c))))
+			function_11e5e0(point, vector, (point3f const *)((byte *)object + 0x40), *(real *)((byte *)object + 0x4c))))
 		{
 			if (lookup.initialize(object_index) && function_1eff40(&lookup, test_flags, point, vector, &hit) && result->t > hit.hit.t)
 			{
@@ -989,7 +988,7 @@ bool __stdcall function_1697c0(long flags, point3f const *point, vector3f const 
 						}
 						g_4de300[object_index & 0xffff] = g_4de2fc;
 						if ((type_mask & (1 << reference->type)) && !(reference->flags & object_flags) &&
-							function_11e5e0((*point_reference), &reference->center, (*vector_reference), reference->radius) &&
+							function_11e5e0((*point_reference), (*vector_reference), &reference->center, reference->radius) &&
 							object_index != ignore_object_index && object_index != ignore_unit_index &&
 							function_169510(object_index, true, (*flags_reference), test_flags, (*point_reference), (*vector_reference), ignore_object_index,
 								ignore_unit_index, collision))
@@ -1279,7 +1278,7 @@ bool function_1691a0(long instance_index, dword flags, dword test_flags, point3f
     s_168d60_instance *instance = &bsp->instances[instance_index];
     byte *section = bsp->sections + instance->section_index * 0xc8;
     if (collision_surface_test((s_collision_result_view const *)section, instance_index, flags) &&
-        function_11e5e0(&instance->center, point, vector, instance->radius))
+        function_11e5e0(point, vector, &instance->center, instance->radius))
     {
         transform4x3f inverse;
         function_141590(&instance->matrix, &inverse);

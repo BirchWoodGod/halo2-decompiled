@@ -1,8 +1,9 @@
-# Decal placement recovery: `0x17e670`–`0x17fd1f`
+# Decal placement recovery: `0x17dd80`–`0x17fd1f`
 
 This work-in-progress batch covers three routines with no source in the
-inventory at main `4e084bdf`. Existing projection and commit helpers outside
-the range are dependencies, not claimed for edits.
+inventory at main `4e084bdf`, plus a neighboring-face intersection correction.
+The shared predicate at `0x11e5e0` and its eight callers are audited below.
+The final commit helper remains an unchanged dependency.
 
 | Retail entry | Bytes | Current evidence |
 | --- | ---: | --- |
@@ -144,49 +145,68 @@ padding in the compiled extent); preparation is
 Explicit whole-buffer clearing reproduces the retail preparation clear of 68
 dwords. The remaining traversal differences include register/instruction order
 and the existing projection helper's stack argument convention; equal extents
-do not mean an exact or near match. Both temporary stubs have been removed. No outside helper bodies or flags changed.
+do not mean an exact or near match. Both temporary stubs have been removed. The shared predicate contract and
+caller changes are described below; no per-file compiler flags changed.
 
-## Integration finding: neighboring faces
+## Neighboring-face correction and shared predicate contract
 
-A stronger integration probe executes the actual traversal, preparation,
-projection (`0x17fd20`), face clipping (`0x17dd80`) and their math helpers on
-synthetic mesh data. Final commit is mocked; texture availability is bypassed
-by the caller flag. The single-face sweep passes 324 scenarios, producing
-288 polygons and 1,280 vertices identically on both sides. This is generated
-geometry evidence, not GPU or gameplay verification.
+The actual traversal, preparation, projection (`0x17fd20`), face clipping
+(`0x17dd80`) and math helpers are compared on synthetic mesh data. Final commit
+is mocked; texture availability is bypassed by the caller flag. A unit square
+split at x=0, decal centered at the origin, radius 0.25, flags zero, and one
+chain link exposed a defect: retail emitted two polygons/eight vertices while
+the previous source emitted one polygon/four vertices. Preparation of the first
+polygon and random state agreed; the missing work was the neighboring face.
 
-Adding a second coplanar face exposes an existing dependency discrepancy. With
-a unit square split at x=0, a decal centered at the origin, radius 0.25, flags
-zero, and one chain link, retail emits two polygons/eight vertices while the
-compiled image emits one polygon/four vertices. The first polygon, preparation
-buffer and random state agree. The missing work is traversal onto the neighboring
-face, not preparation of the initial decal.
+At retail calls `0x17e087` and `0x17e3ad`, EAX contains the sphere center,
+ECX the edge start, and EDX the full segment displacement. The predicate at
+`0x11e5e0` computes start minus center. Supplying the two points in reverse
+changes the sign of the direction/delta dot product and can reject a real
+intersection. All eight retail callers were inspected to establish these roles:
 
-At the calls from retail `0x17e087` and `0x17e3ad` to `0x11e5e0`, EAX contains
-the decal center, ECX the edge start, and EDX the edge direction. The predicate
-subtracts EAX's point from ECX's point. The compiled predicate performs the same
-subtraction, but the existing `decal_add_adjacent_17dd80` call supplies those two
-points in reverse. Its generated stand-in confirms the first declared point
-argument enters ECX and the second EAX. For an edge from (0,1,0) to (0,-1,0)
-around a sphere at the origin, this reverses the sign of the direction/delta dot
-product and incorrectly rejects the intersection.
+| Caller | Sphere center | Segment start |
+| --- | --- | --- |
+| `0x11ea30` | endpoint of one segment | start of the other segment |
+| `0x1516c0` | object position | eye position |
+| `0x1691a0` | instance center | query point |
+| `0x169510` | object center at +0x40 | query point |
+| `0x1697c0` | reference center | query point |
+| `0x17dd80` | decal quad center | edge start |
+| `0x1c8d20` | capsule center | query origin |
+| `0x1de2c0` | supplied sphere center | polygon edge start |
 
-An explicitly labeled emulator diagnostic swaps only those two compiled
-register arguments at calls originating in `0x17dd80`. With that intervention,
-all 648 single/two-face scenarios agree: 720 polygons and 3,208 vertices across
-1,296 commit boundaries. This is evidence for the proposed correction, **not a
-passing test of the current source**. The unmodified image still fails the
-neighboring-face case. Bent surfaces and the secondary-face grouping path have
-not been established by this probe.
+`include/segment_sphere.h` now declares the explicit contract
+`(segment_start, direction, sphere_center, radius)`. The definition and every
+call site use that order, with duplicate local declarations removed. This
+corrects reversed point roles in `0x11ea30`, `0x1691a0`, `0x17dd80`, and
+`0x1c8d20`; the other callers retain their established geometric inputs.
+The predicate's arithmetic and branch conditions are unchanged. This is a
+consistent shared-contract correction, not an isolated argument permutation
+used to claim a match to an unmatched callee.
 
-No dependency source was changed. The predicate is itself unmatched, and
-[the false-match rule](DECOMPILING.md#near-functions-the-permuter) says:
-“Never keep an argument swap at a call to a function that doesn't match, unless
-you change that function's parameters at its definition and every call site the
-same way.” A repair therefore needs the predicate's declaration/caller audit
-and coordination for the additional addresses; a local swap must not be
-published as a byte-matching improvement. This finding does not invalidate the
-narrower tests above, but limits the end-to-end decal claim.
+The unmodified compiled image now agrees with retail on all 648 single/two-face
+scenarios: 720 polygons and 3,208 vertices across 1,296 commit boundaries,
+including 324 two-face cases. No emulator argument intervention is used.
+The local direct predicate probe also passes 10,504 finite random and boundary
+cases (1,500 hits and 9,004 misses), including zero-length segments, tangencies,
+endpoint intersections and translated cases, through the generated stand-in.
+The 216 traversal, 2,048 real-geometry preparation and 1,024 placement tests
+also pass on this same image.
+
+Full checking against main `588746a4` preserves all 7,500 baseline matches,
+including caller `0x1516c0`, with no gains or losses. The predicate remains
+unmatched (271/271 bytes); equal sizes are not an exact-match claim.
+Validated image SHA-256:
+`bb565a283c842da5579964ceaf2c1e80427acffe2b8d5d878d870b752378f7d2`.
+These local differential probes establish synthetic geometry behavior only;
+bent surfaces, secondary-face grouping, real assets, GPU output and complete
+gameplay remain unverified.
+
+Shared changes are limited to the new header, the predicate definition and
+callers in `src/unknown_11cb00.cpp`, `src/unknown_1502e0.cpp`,
+`src/unknown_1689b0.cpp`, `src/unknown_17d9a0.cpp`, `src/ai.cpp`, and
+`src/unknown_1ddda0.cpp`, plus the previously removed placement stub in
+`src/stubs/lane_r.cpp`. No compiler flags or generated inventory are included.
 
 Sources: independent disassembly of the project's SHA-256-pinned retail
 executable and the existing CC0 repository source and inventory. No leaked

@@ -2,6 +2,7 @@
 /* UNKNOWN_17D9A0.CPP: decal placement and rendering (0x17d9a0 onwards) */
 
 #include "unknown_11c920.h"
+#include "segment_sphere.h"
 #include "unknown_0259d0.h"
 #include <float.h>
 #include "globals.h"
@@ -234,7 +235,6 @@ struct vector2f { real i, j; };
 struct plane2f { vector2f n; real d; };
 plane3f *bsp3d_get_plane(s_bsp3d const *bsp, short plane_index, plane3f *plane);
 real function_11cf50(vector3f const *a, vector3f const *b);
-bool function_11e5e0(point3f const *origin, point3f const *center, vector3f const *direction, real radius);
 real *function_120790(real *out, real const *plane, real const *point, short axis, byte side);
 short function_23a6f0(point2f *output, short count, point2f const *points,
 	plane2f const *plane, short capacity, dword *point_mask, bool *clipped, real epsilon);
@@ -250,7 +250,7 @@ PRIVATE __forceinline void decal_add_adjacent_17dd80(s_decal_mesh_view const *me
 		direction.i = end->x - start->x;
 		direction.j = end->y - start->y;
 		direction.k = end->z - start->z;
-		if (function_11e5e0(&quad->matrix.position, start, &direction, g_444a38[mode].radius_scale * radius))
+		if (function_11e5e0(start, &direction, &quad->matrix.position, g_444a38[mode].radius_scale * radius))
 		{
 			long face = edge->faces[!reverse];
 			short i = 0;

@@ -3,6 +3,7 @@
    ai helpers (0x1c7790..0x1caxxx) */
 
 #include "unknown_11c920.h"
+#include "segment_sphere.h"
 #include "globals.h"
 #include "slot_handler.h"
 #include "unknown_123b30.h"
@@ -1416,7 +1417,6 @@ long __stdcall function_1dfb90(long definition_index)
 }
 
 
-bool function_11e5e0(point3f const *origin, point3f const *center, vector3f const *direction, real radius);
 long function_11ea30(point3f const *a, vector3f const *u, point3f const *b, vector3f const *v, real radius);
 
 // @retail 0x1c8d20
@@ -1433,7 +1433,7 @@ bool function_1c8d20(long actor_index, point3f const *origin, long excluded_obje
             continue;
         char intersects;
         if (capsules[i].active)
-            intersects = function_11e5e0(&capsules[i].center, origin, direction, capsules[i].radius);
+            intersects = function_11e5e0(origin, direction, &capsules[i].center, capsules[i].radius);
         else
             intersects = (char)function_11ea30(&capsules[i].center,
                 (vector3f *)&capsules[i].value10, origin, direction, capsules[i].radius);
