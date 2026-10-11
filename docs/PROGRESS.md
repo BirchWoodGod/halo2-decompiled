@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7611 functions match
+
+```
+matched 7611 of 11318 game functions (901699 of 2784283 bytes, 32.39%)
+```
+
+10 new matches, none lost:
+- Deep lane 1, round 21 (helpers, second pass): eight, including the serializer 0xa6660 and initializer callers 0xa07b0 and 0xa3b90.
+- Two of the second machine's lane J functions, 0x9d360 and 0x9dd70, which now pass the serializer and initializer the second argument retail passes.
+
 ## 2026-10-11: 7601 functions match
 
 ```
