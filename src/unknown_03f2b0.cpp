@@ -62,6 +62,7 @@ struct s_unknown_13bf00;
 extern s_unknown_13bf00 *g_510c50;
 extern byte g_509415;
 
+__declspec(noinline)
 // @retail 0x335c0
 byte function_335c0(void)
 {
@@ -1294,62 +1295,7 @@ real function_13bb90(s_tag_data const *function, real input, real range);
 long function_30830(point3f const *a, s_camera const *camera, vector3f const *d,
     point2f const *scale, bool perspective, bool negate, point2f *out);
 
-// @retail 0x4ff50
-void function_4ff50(byte const *definition, byte const *state, bool facing, real time,
-    real cosine, real *strength, real *horizontal, real *vertical, real *out)
-{
-    if (*(long const *)(definition + 0x38) > 0)
-    {
-        byte const *curve = *(byte **)(definition + 0x3c);
-        if (facing)
-        {
-            real angle = function_50650(cosine) * 0.6366197466850281f;
-            if (angle < 0.0f) angle = 0.0f;
-            else if (angle > 1.0f) angle = 1.0f;
-            real lower = curve ? *(real const *)(curve + 0x14) * 0.6366197466850281f : 0.0f;
-            if (0.0f > lower) lower = 0.0f;
-            else if (lower > 0.9998999834060669f) lower = 0.9998999834060669f;
-            real value = (angle - lower) / (1.0f - lower);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
-            *strength = value;
-            if (value > 0.0f)
-            {
-                if (curve && *(real const *)(curve + 0x18) > 0.0f)
-                    *strength = (real)pow(value, *(real const *)(curve + 0x18));
-                else
-                    *strength = 1.0f;
-            }
-            if (*strength > 0.0f)
-            {
-                point2f projected;
-                if (function_30830((point3f const *)(state + 8), NULL, (vector3f const *)(state + 0x14),
-                    NULL, true, true, &projected) && (projected.x != 0.0f || projected.y != 0.0f))
-                {
-                    double direction = atan2(projected.y, projected.x);
-                    *horizontal = (real)cos(direction);
-                    *vertical = (real)sin(direction);
-                }
-            }
-        }
-        if (curve)
-        {
-            real base = *(real const *)(curve + 0x10);
-            if (*strength > 0.0f)
-            {
-                real value = function_13bb90((s_tag_data const *)curve, time, 0.0f);
-                out[0] = base - (base - value) * *strength;
-                value = function_13bb90((s_tag_data const *)(curve + 8), time, 0.0f);
-                out[1] = base - (base - value) * *strength;
-            }
-            else
-            {
-                out[0] = base;
-                out[1] = base;
-            }
-        }
-    }
-}
+void function_4ff50(byte const *definition, byte const *state, bool facing, real time, real cosine, real *strength, real *horizontal, real *vertical, real *out);
 
 
 struct s_137801;
@@ -1824,7 +1770,7 @@ void function_44720(void)
 }
 
 signed char *function_3d430(long object_index);
-void function_4c640(long object_index, signed char value);
+__declspec(noinline) void function_4c640(long object_index, signed char value);
 
 extern s_record_pool *g_509434;
 extern long g_4ba050;
@@ -1835,70 +1781,7 @@ extern byte *g_485a80;
 bool object_or_parent_hidden(long object_index);
 bool __stdcall function_bab40(long object_index, long name, real *value);
 
-// @retail 0x4c450
-long function_4c450(long object_index, real distance, real const *definition, real *fraction)
-{
-    (void)&object_index;
-    real defaults[6] = { 10.0f, 8.0f, 6.0f, 4.0f, 2.0f, 0.0f };
-    real thresholds[6];
-    real upper;
-    *fraction = 0.9999f;
-    if (definition && definition[3] > 0.0f && definition[3] >= definition[4]
-        && definition[4] >= definition[5] && definition[5] >= definition[6]
-        && definition[6] >= definition[7] && definition[8] == 0.0f)
-    {
-        memcpy(thresholds, definition + 3, sizeof(thresholds));
-        upper = definition[0];
-    }
-    else
-    {
-        memcpy(thresholds, defaults, sizeof(thresholds));
-        upper = 0.0f;
-    }
-    long level = 0;
-    while (level < 6)
-    {
-        real lower = thresholds[level];
-        if (distance > lower || lower == 0.0f)
-        {
-            if (level != 0)
-                upper = thresholds[level - 1];
-            if (level != 0 || upper > lower)
-            {
-                real value = (upper - distance) / (upper - lower);
-                if (value < 0.0f) value = 0.0f;
-                else if (value > 0.9999f) value = 0.9999f;
-                *fraction = value;
-            }
-            else
-                *fraction = 0.9999f;
-            break;
-        }
-        ++level;
-    }
-    signed char previous = -1;
-    if (g_4ba050 >= 0 && g_4ba050 < 4)
-    {
-        byte *slot = NULL;
-        long cache = function_3ddd0(object_index);
-        if (cache != NONE)
-            slot = g_509434->data + (cache & 0xffff) * 0x100 + 0xbc;
-        previous = (signed char)slot[g_4ba050];
-    }
-    if (previous != -1)
-    {
-        long difference = previous - level;
-        long absolute = difference < 0 ? -difference : difference;
-        if (absolute == 1)
-        {
-            if (difference == absolute && *fraction < 0.8f)
-                ++level;
-            else if (difference == -1 && *fraction > 0.2f)
-                --level;
-        }
-    }
-    return level;
-}
+long function_4c450(long object_index, real distance, real const *definition, real *fraction);
 
 // @retail 0x4bcc0
 short function_4bcc0(byte *output, long object_index, real distance, long override,

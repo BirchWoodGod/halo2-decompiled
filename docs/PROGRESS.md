@@ -2,6 +2,89 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7524 functions match
+
+```
+matched 7524 of 11318 game functions (883413 of 2784283 bytes, 31.73%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, closest first with the fast check in lanes W, Z, AB and AD: 0xb62b0; 0x4c450 is one instruction from retail (from 170).
+
+## 2026-10-11: 7523 functions match
+
+```
+matched 7523 of 11318 game functions (883315 of 2784283 bytes, 31.73%)
+```
+
+10 new matches, none lost:
+- Deep lane 2, new code callees first and then closest first in lanes S, N, Q, T, R, H and the UI core: 0x10cdf0, 0x151110, 0x15cba0, 0x15e360, 0x173d80, 0x10c850, 0x143120, 0x146980, 0x146ac0, and 0x2bc340 as a side effect.
+- 0x22dad1, which a whole-program effect of the new code had cost, matches again: its two calls are now ordered with a compiler barrier.
+
+## 2026-10-11: 7513 functions match
+
+```
+matched 7513 of 11318 game functions (881670 of 2784283 bytes, 31.67%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, closest first with the new fast check in lanes V, X, A and the UI screens: 0x1ee470 and 0x2c0d00.
+
+## 2026-10-11: 7511 functions match
+
+```
+matched 7511 of 11318 game functions (881551 of 2784283 bytes, 31.66%)
+```
+
+4 new matches, none lost:
+- Deep lane 3, new code callees first in lanes V, X, A and the UI screens: 0x1e2930, 0x1e2990, 0x1e2f50 and 0x1e5a60 (922 bytes); 24 new bodies active.
+
+## 2026-10-11: 7507 functions match
+
+```
+matched 7507 of 11318 game functions (880629 of 2784283 bytes, 31.63%)
+```
+
+7 new matches, none lost:
+- Deep lane 1, closest first in lanes W, Z, AB and AD: 0xa2e90, 0xa30b0, 0xa31c0, 0xb6bb0, and 0xe7730 with no change to its body.
+- Our permuter lane: 0x1e4290 and 0x26a310.
+
+## 2026-10-10: 7500 functions match
+
+```
+matched 7500 of 11318 game functions (879080 of 2784283 bytes, 31.57%)
+```
+
+10 new matches, none lost:
+- Deep lane 1, new code callees first in lanes W, Z, AB and AD: 0x12000, 0x141c0, 0x226c0, 0x40e90, 0xa0350, 0xa2120, 0xa3eb0, 0xbe760, 0xbf0f0, and 0x10af20 as a side effect; 36 new bodies active.
+
+## 2026-10-10: 7490 functions match
+
+```
+matched 7490 of 11318 game functions (877610 of 2784283 bytes, 31.52%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, shared root causes across this machine's ranges: 0x24b1bf and 0x25d770, from fixes to three shared declarations that also cut the surveyed functions' differences by 54 instructions.
+
+## 2026-10-10: 7488 functions match
+
+```
+matched 7488 of 11318 game functions (877391 of 2784283 bytes, 31.51%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, closest first in lanes W, Z, AB and AD: 0xada90.
+
+## 2026-10-10: 7487 functions match
+
+```
+matched 7487 of 11318 game functions (877360 of 2784283 bytes, 31.51%)
+```
+
+6 new matches, none lost:
+- Deep lane 2, helpers first in 0x160000 to 0x16ffff: the helpers 0x16c4f0 and 0x16c5f0, and their callers 0x2a89b0, 0x2a8a00, 0x2a8c70 and 0x2a8cc0, unchanged.
+
 ## 2026-10-10: 7481 functions match
 
 ```

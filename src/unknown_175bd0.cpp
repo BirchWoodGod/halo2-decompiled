@@ -407,7 +407,7 @@ long function_d6c80(s_type_1e6529 *data, long ignore_object_index); /* damage.cp
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner); /* stubs/lane_o.cpp */
 bool function_a7640(s_effect_object_placement *data);
 void __stdcall function_a7870(long object_index); /* stubs/lane_o.cpp */
-void function_c0350(long tag_index, long object_index, long node_index, vector3f const *up, vector3f const *forward, point3f const *position, real scale);
+long function_c0350(long tag_index, long object_index, long node_index, vector3f const *up, vector3f const *forward, point3f const *position, real scale);
 bool __stdcall function_16a8e0(long name, point3f const *point, real radius, long object_index, long unknown, point3f *origin, real *radius_reference);
 void __stdcall function_179880(s_effect_datum *effect, long effect_index);
 void __stdcall function_179e80(s_effect_datum *effect);
@@ -1319,7 +1319,9 @@ long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 			else
 			{
 				effect->object_index = NONE;
-				effect->velocity = parameters->velocity;
+				effect->velocity.i = parameters->velocity.i;
+				effect->velocity.j = parameters->velocity.j;
+				effect->velocity.k = parameters->velocity.k;
 			}
 			if (TEST_FIELD_BIT(parameters->flag1))
 			{
@@ -1342,14 +1344,18 @@ long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 				function_1789f0(effect);
 			if (TEST_FIELD_BIT(definition->flag3) || TEST_FIELD_BIT(definition->flag4))
 				function_17b5d0(effect, parameters->object_index, parameters, true);
-			if (parameters->unknown50)
+			long const *scales = parameters->unknown50;
+			if (scales)
 			{
-				*(long *)&effect->unknown74 = parameters->unknown50[0];
-				*(long *)&effect->unknown78 = parameters->unknown50[1];
+				*(long *)&effect->unknown74 = scales[0];
+				*(long *)&effect->unknown78 = scales[1];
 			}
 			function_177310(effect_index);
 			g_510c78 = parameters->source;
-			function_179850(effect_index, (TEST_FIELD_BIT(definition->flag1) && !TEST_FIELD_BIT(effect->flag1) && !TEST_FIELD_BIT(effect->flag9)) ? 1.0f : 0.0f);
+			if (TEST_FIELD_BIT(definition->flag1) && !TEST_FIELD_BIT(effect->flag1) && !TEST_FIELD_BIT(effect->flag9))
+				function_179850(effect_index, 1.0f);
+			else
+				function_179850(effect_index, 0.0f);
 			g_510c78 = 0;
 			if (!record_pool_lookup(g_4ea93c, effect_index))
 				return NONE;
@@ -3167,3 +3173,54 @@ done:
 		parameters->color_b = effect->color_b;
 	}
 }
+
+
+struct s_effect_preview_screen_176cb0
+{
+    byte unknown00[4];
+    s_effect_preview_screen_176cb0 *parent;
+    byte unknown08[8];
+    s_effect_preview_screen_176cb0 *child;
+    byte unknown14[0x70 - 0x14];
+    long screen_id;
+};
+s_effect_preview_screen_176cb0 *g_54d760;
+void __stdcall function_174420(long system_index, bool view_pass, bool camera_relative, bool force_visible);
+
+// @retail 0x176cb0
+void function_176cb0(void)
+{
+    if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 3 && g_54d760)
+    {
+        s_effect_preview_screen_176cb0 *screen = g_54d760->child;
+        if (screen)
+            while (screen->child) screen = screen->child;
+        else if (!g_54d760->parent) screen = g_54d760;
+        if (screen && (screen->screen_id == 6 || screen->screen_id == 9))
+        {
+            s_record_pool *effects = g_4ea93c;
+            long index = data_datum_index(effects, function_16bc00(effects, 0));
+            while (index != NONE)
+            {
+                s_effect_datum *effect = DATUM(effects, s_effect_datum, index);
+                long particle_index = effect->first_particle_system_index;
+                if (TEST_FIELD_BIT(effect->flag0) && !TEST_FIELD_BIT(effect->flag2) &&
+                    !TEST_FIELD_BIT(effect->flag3) && !TEST_FIELD_BIT(effect->flag6))
+                {
+                    function_179880(effect, index);
+                    function_179e80(effect);
+                    effects = g_4ea93c;
+                }
+                while (particle_index != NONE)
+                {
+                    s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, particle_index);
+                    function_174420(particle_index, false, false, true);
+                    particle_index = system->next_index;
+                }
+                effects = g_4ea93c;
+                index = data_datum_index(effects, function_16bc00(effects, index == NONE ? 0 : (index & 0xffff) + 1));
+            }
+        }
+    }
+}
+

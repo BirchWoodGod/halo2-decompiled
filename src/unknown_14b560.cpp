@@ -1704,3 +1704,839 @@ void __stdcall function_14c090(long index, bool reuse, s_player_creation_record 
         *(long *)(player + 0x10) = g_510c54->game_time;
     }
 }
+
+
+#include "unit_requests.h"
+#include <math.h>
+struct s_target_candidate;
+bool function_151c10(long, s_target_candidate *);
+bool function_151c90(long, s_target_candidate *);
+bool function_151940(long, s_target_candidate *, bool);
+bool function_151aa0(long, bool);
+bool function_151b80(long, bool);
+bool function_0c7070(long);
+void function_a9390(long);
+void function_a8dd0(long);
+void function_1628f0(long, char);
+void function_151ea0(long, long);
+void function_ccd20(long);
+bool function_1012c0(long);
+bool function_101300(long);
+bool function_101340(long);
+bool function_101160(long);
+bool function_10f890(long);
+bool function_cc3c0(long);
+bool function_e4050(long);
+s_object *function_bae20(long, dword);
+point3f *function_b9dd0(long, point3f *);
+
+static __forceinline long player_current_weapon(long unit_index, long hand)
+{
+    byte *unit = object_get_unchecked(unit_index);
+    short slot = *(signed char *)(unit + 0x212 + hand);
+    return slot == NONE ? NONE : *(long *)(unit + 0x218 + slot*4);
+}
+static __forceinline void player_clear_weapon_view(long player_index)
+{
+    short user = player_get(player_index)->user_index;
+    if (user != NONE)
+    {
+        byte *view = (byte *)g_4ed284 + user*0x94 + 0x14;
+        if (view[0x8e]) view[0x8f] = true;
+        *(short *)(view + 0x28) = NONE;
+    }
+}
+static __forceinline long player_round_ticks(real value)
+{
+    long result;
+    __asm { fld value }
+    __asm { fistp result }
+    return result;
+}
+
+// @retail 0x14f820
+void __stdcall function_14f820(long player_index, long unit_index, byte *input)
+{
+    byte *player = (byte *)player_get(player_index);
+    byte *unit = object_get_unchecked(unit_index);
+    word &actions = *(word *)(input + 0x1c);
+    dword &buttons = *(dword *)input;
+    s_target_candidate *candidate = (s_target_candidate *)(input + 0x28);
+    if ((actions & 4) && function_151c10(player_index, candidate))
+    {
+        player_get(player_index)->flags_word |= 0x10;
+        input[0x1c] &= ~4;
+    }
+    if (actions & 2)
+    {
+        if (function_151c90(player_index, candidate))
+        {
+            player_get(player_index)->flags_word |= 0x10;
+            actions &= 0xfffd;
+        }
+        if ((actions & 2) && function_151940(player_index, candidate, true))
+        {
+            player_get(player_index)->flags_word |= 0x10;
+            actions &= 0xfffd;
+        }
+    }
+    if ((actions & 0x20) && function_151940(player_index, candidate, false))
+    {
+        player_get(player_index)->flags_word |= 0x20;
+        player_clear_weapon_view(player_index);
+        actions &= 0xfffd;
+    }
+    if ((actions & 0x80) && (function_151aa0(player_index, false) || function_151b80(player_index, false)))
+    {
+        player_get(player_index)->flags_word |= 0x20;
+        player_clear_weapon_view(player_index);
+        input[0x1c] &= 0x7f;
+    }
+    if ((actions & 4) && (player_current_weapon(unit_index, 0) != NONE || player_current_weapon(unit_index, 1) != NONE))
+    {
+        buttons |= 0x10000000;
+        function_a8dd0(unit_index);
+        input[0x1c] &= ~4;
+    }
+    long parent_index = *(long *)(unit + 0x14);
+    short seat_index = *(short *)(unit + 0x1fc);
+    if (parent_index != NONE && seat_index != NONE)
+    {
+        byte *parent = object_get_unchecked(parent_index);
+        byte *definition = g_4e3b44[*(long *)parent & 0xffff].bytes;
+        byte *seat = *(byte **)(definition + 0x1cc) + seat_index*0xb0;
+        if ((*(dword *)seat & (1 << 11)) && !function_0c7070(unit_index) &&
+            (g_4e6948->mode == 4 || !function_e68c0(0x1f, unit_index)) && (buttons & 0x4000000))
+            function_e68c0(0x16, unit_index);
+        if (actions & 6)
+        {
+            bool ready = true;
+            if (function_0c7070(unit_index))
+            {
+                byte *current = object_get_unchecked(unit_index);
+                byte *animation = current + *(short *)(current + 0x12a);
+                real progress = 0.0f;
+                if (*(long *)animation != NONE && *(short *)(animation + 6) != NONE)
+                    progress = *(real *)(animation + 0x1c) * 0.03333333507180214f;
+                if (1.0f > progress) ready = false;
+            }
+            if (ready)
+            {
+                bool accepted = true;
+                if (g_4e6948->mode == 4) function_a9390(unit_index);
+                else accepted = function_e68c0(0x1d, unit_index);
+                if (accepted)
+                {
+                    player_get(player_index)->flags_word |= 0x10;
+                    input[0x1c] &= ~6;
+                }
+            }
+        }
+    }
+    if (g_4e6948->state == 2)
+    {
+        if (buttons & 0x80) function_1628f0(player_index, 5);
+        if (buttons & 0x100) function_1628f0(player_index, 4);
+    }
+    if ((buttons & 0x10) && *(long *)(unit + 0x238) != NONE)
+    {
+        function_151ea0(player_index, *(long *)(unit + 0x238));
+        function_ccd20(unit_index);
+    }
+    if (buttons & 0x60)
+    {
+        long weapon = player_current_weapon(unit_index, 0);
+        bool lunge = false;
+        bool allowed = true;
+        if ((buttons & 0x40) && weapon != NONE)
+        {
+            if (function_1012c0(weapon))
+            {
+                long victim = *(long *)(unit + 0x1c8);
+                if (*(real *)(unit + 0x1e4) >= 1.0f && function_bae20(victim, 3))
+                {
+                    point3f victim_position, unit_position;
+                    function_b9dd0(victim, &victim_position);
+                    function_b9dd0(unit_index, &unit_position);
+                    real z = unit_position.z-victim_position.z;
+                    real y = unit_position.y-victim_position.y;
+                    real x = unit_position.x-victim_position.x;
+                    if (z*z + y*y + x*x > 0.809999942779541f) lunge = true;
+                }
+                if (*(signed char *)(player + 0x3f) > 0 || unit[0x212] != unit[0x216]) allowed = false;
+            }
+            else if (!function_101300(weapon)) allowed = false;
+        }
+        else
+        {
+            if (!(buttons & 0x20) || *(signed char *)(player + 0x40) > 0) allowed = false;
+            else if (function_1012c0(weapon) && *(signed char *)(player + 0x3f) > 0) allowed = false;
+        }
+        if (allowed)
+        {
+            long target = *(long *)(input + 0x30);
+            if (!function_bae20(target, 3)) target = NONE;
+            s_unit_request request;
+            memset(&request, 0, sizeof(request));
+            request.type = 0x1b;
+            *(short *)request.arguments = lunge ? 2 : 1;
+            *(long *)(request.arguments + 4) = target;
+            if (function_e6900(unit_index, &request) && lunge)
+                player[0x3f] = (byte)player_round_ticks((real)g_510c54->field_2_3 * 1.1f);
+        }
+    }
+    long weapon = player_current_weapon(unit_index, 0);
+    if (weapon != NONE)
+    {
+        byte *definition = g_4e3b44[*(long *)object_get_unchecked(weapon) & 0xffff].bytes;
+        if (*(dword *)(definition + 0x12c) & (1 << 12)) buttons &= ~0x4000000;
+    }
+    if (buttons & 0x4000000)
+    {
+        s_unit_request request;
+        memset(&request, 0, sizeof(request));
+        request.type = 0x16;
+        function_e6900(unit_index, &request);
+    }
+    byte *current = object_get_unchecked(unit_index);
+    if (current[0x212] != 0xff && current[0x213] != 0xff)
+        *(long *)(input + 0x1e) = *(long *)(unit + 0x214);
+    else
+    {
+        weapon = player_current_weapon(unit_index, 0);
+        if (weapon != NONE)
+        {
+            byte *definition = g_4e3b44[*(long *)object_get_unchecked(weapon) & 0xffff].bytes;
+            if (*(dword *)(definition + 0x12c) & 8)
+            {
+                *(long *)(input + 0x1e) = *(long *)(unit + 0x214);
+                if (buttons & 0x4010000) function_151b80(player_index, true);
+            }
+        }
+    }
+    short &idle = *(short *)(player + 0x17c);
+    short &rest = *(short *)(player + 0x17e);
+    if (*(long *)(unit + 0x14) == NONE && g_4e6948->state != 2)
+    {
+        byte *settings = *(byte **)((byte *)g_4e034c + 0xf4);
+        long first = player_round_ticks((real)g_510c54->field_2_3 * *(real *)(settings + 0x20));
+        long second = player_round_ticks((real)g_510c54->field_2_3 * *(real *)(settings + 0x24));
+        real decay = *(real *)(settings + 0x28);
+        weapon = player_current_weapon(unit_index, 0);
+        bool local_85417d = weapon != NONE && function_101340(weapon);
+        real angle = (real)atan2(*(real *)(input + 0x10), *(real *)(input + 0xc));
+        real x = *(real *)(input + 0xc), y = *(real *)(input + 0x10);
+        bool moving = sqrt(x*x + y*y) > *(real *)(settings + 0x30) &&
+            angle > *(real *)(settings + 0x34)*-0.01745329238474369f &&
+            angle < *(real *)(settings + 0x34)*0.01745329238474369f;
+        real remaining = idle - rest*decay;
+        if (remaining < 0.0f) { idle = 0; rest = 0; }
+        else if (remaining >= first+second) { idle = (short)(first+second); rest = 0; }
+        dword activity = buttons;
+        bool first_activity = function_10f890(unit_index) || *(short *)(input + 0x24) != *(signed char *)(unit + 0x240) || (activity & 0x10000001);
+        bool second_activity = function_cc3c0(unit_index) || (activity & 0x4030031) || local_85417d;
+        if (first_activity || second_activity)
+        {
+            long ticks = idle - player_round_ticks(rest*decay);
+            idle = ticks < 0 ? 0 : (short)ticks;
+            rest = 0;
+            if (first_activity && idle > first) idle = (short)first;
+            if (second_activity) idle = 0;
+        }
+        if (unit[0xaa] != 0 || !function_e4050(unit_index))
+        {
+            if (moving) ++idle;
+            else ++rest;
+        }
+    }
+    else idle = rest = 0;
+    long first_weapon = player_current_weapon(unit_index, 0);
+    long second_weapon = player_current_weapon(unit_index, 1);
+    long &target = *(long *)(player + 0x184);
+    short &target_node = *(short *)(player + 0x188);
+    long &target_age = *(long *)(player + 0x18c);
+    if ((first_weapon != NONE && function_101160(first_weapon)) || (second_weapon != NONE && function_101160(second_weapon)))
+    {
+        if (*(long *)(input + 0x34) != NONE && !(input[0x4c] & 1))
+        {
+            target = *(long *)(input + 0x34);
+            target_node = *(short *)(input + 0x38);
+            target_age = 0;
+        }
+        else if (target != NONE && (real)++target_age * g_510c54->rate > 5.0f)
+        {
+            target = NONE; target_node = NONE; target_age = 0;
+        }
+    }
+    else { target = NONE; target_node = NONE; target_age = 0; }
+}
+
+
+
+#include "unknown_157450.h"
+#include "unknown_03d380.h"
+struct s_effect_owner;
+struct s_tail_traits;
+struct s_marker_position_angle { point3f position; real angle; };
+void marker_record_get_position_and_angle(s_marker_position_angle const *, point3f *, real *);
+void function_b75a0(long, point3f const *, vector3f const *, vector3f const *, s_location const *, bool);
+void function_b9c60(long, bool);
+void function_b7290(long);
+bool function_b9d20(long);
+void __stdcall function_bef30(long, long, long, long, bool);
+void function_b8b70(long);
+void __stdcall function_b8540(long);
+void function_b7930(void *, long, long, s_effect_owner const *);
+long __stdcall function_b7b40(void *);
+void __stdcall function_a7870(long);
+void function_a7a30(long, dword);
+void function_15e970(long);
+s_tail_traits *function_1529a0(long);
+bool function_152bf0(byte const *, long);
+void function_cce00(long, short, bool, bool);
+void motion_sensor_reset(long);
+void function_153b80(long);
+void function_152340(void);
+
+// Disabled: retail reset requires an array-element address prohibited by the shared-global rule.
+#if 0
+// Retail 0x14f2e0; arg_9b462b exposes the required local-player storage binding.
+bool __stdcall function_14f2e0(long player_index, s_player_4e9bd4 *arg_9b462b)
+{
+    byte *player = (byte *)player_get(player_index);
+    bool reused = false;
+    long unit_index = NONE;
+    if (g_4e6948->state == 1)
+    {
+        unit_index = *(long *)(player + 0x34);
+        *(long *)(player + 0x34) = NONE;
+        if (unit_index != NONE)
+        {
+            byte *unit = object_get_unchecked(unit_index);
+            if (unit[0x10a] & 4)
+            {
+                function_b8540(unit_index);
+                unit_index = NONE;
+            }
+            else
+            {
+                function_b7290(unit_index);
+                unit = object_get_unchecked(unit_index);
+                if (*(dword *)(unit + 4) & 1)
+                {
+                    *(dword *)(unit + 4) &= ~1;
+                    if (function_b9d20(unit_index)) function_bef30(unit_index, 0, 1, 0, false);
+                    function_b8b70(unit_index);
+                }
+                function_14cad0(player_index, unit_index);
+                goto initialized;
+            }
+        }
+    }
+    if (g_4e6948->mode != 4)
+    {
+        long local_287b6e_2 = NONE, tag = NONE;
+        player_get_representation(player_index, &local_287b6e_2, &tag);
+        short spawn = (short)function_14ef00(player_index, tag, true, false);
+        if (spawn == NONE || tag == NONE) return false;
+        s_players_globals *globals = (s_players_globals *)g_4e8c20;
+        s_marker_position_angle *marker = (s_marker_position_angle *)(*(byte **)((byte *)g_4e0350 + 0x104) + spawn*0x34);
+        if (globals->unknownac != NONE && function_badc0(globals->unknownac, 3))
+        {
+            point3f position;
+            real angle;
+            marker_record_get_position_and_angle(marker, &position, &angle);
+            vector3f forward = {(real)cos(angle), (real)sin(angle), 0.0f};
+            function_b75a0(globals->unknownac, &position, &forward, g_4687b0, NULL, false);
+            globals = (s_players_globals *)g_4e8c20;
+            function_b9c60(globals->unknownac, false);
+            function_b7290(globals->unknownac);
+            globals = (s_players_globals *)g_4e8c20;
+            unit_index = globals->unknownac;
+            globals->unknownac = NONE;
+            reused = true;
+        }
+        else
+        {
+            byte creation[0xc4];
+            function_b7930(creation, tag, NONE, NULL);
+            *(long *)(creation + 0xc) = local_287b6e_2;
+            real angle;
+            marker_record_get_position_and_angle(marker, (point3f *)(creation + 0x1c), &angle);
+            ((vector3f *)(creation + 0x28))->i = (real)cos(angle);
+            ((vector3f *)(creation + 0x28))->j = (real)sin(angle);
+            ((vector3f *)(creation + 0x28))->k = 0.0f;
+            *(vector3f *)(creation + 0x34) = *g_4687b0;
+            *(long *)(creation + 0x5c) = player_index;
+            *(long *)(creation + 0x64) = *(signed char *)(player + 0xc0);
+            *(long *)(creation + 0xa8) = *(long *)(player + 0x89);
+            color3f colors[4];
+            if (function_15f330(&player_get(player_index)->appearance, *(signed char *)(player + 0xc0), colors))
+            {
+                *(dword *)(creation + 0x74) |= 0xf;
+                memcpy(creation + 0x78, colors, sizeof(colors));
+            }
+            unit_index = function_b7b40(creation);
+        }
+        if (unit_index == NONE) return false;
+        function_14cad0(player_index, unit_index);
+        function_a7870(unit_index);
+        function_a7a30(unit_index, 0x400);
+        if (g_4e6948->state == 2) function_15e970(unit_index);
+        else if (!reused)
+        {
+            byte *scenario = (byte *)g_4e0350;
+            bool initial = (player[2] & 8) == 0;
+            long profile = initial ? 1 : 0;
+            if (profile > *(long *)(scenario + 0xf8)-1) profile = *(long *)(scenario + 0xf8)-1;
+            bool loadout = false;
+            if (!initial && (scenario[0x12] & 0x20))
+            {
+                s_tail_traits *traits = function_1529a0(player_index);
+                if (traits) loadout = function_152bf0((byte const *)traits, unit_index);
+            }
+            if (!loadout && profile >= 0 && profile < *(long *)(scenario + 0xf8))
+                function_cce00(unit_index, (short)profile, true, initial);
+        }
+    }
+initialized:
+    *(long *)(player + 0x198) = 0;
+    player[3] &= 0xf9;
+    *(short *)(player + 0x17c) = 0;
+    *(short *)(player + 0x17e) = 0;
+    short user = *(short *)(player + 0x28);
+    if (user != NONE) motion_sensor_reset(user);
+    *(long *)(player + 0x194) = g_510c54->field_2_3;
+    user = *(short *)(player + 0x28);
+    if (user != NONE) function_153b80(user);
+    user = *(short *)(player + 0x28);
+    if (user != NONE) function_16f4b0(arg_9b462b + user);
+    function_152340();
+    player[2] &= ~8;
+    return true;
+}
+#endif
+bool __stdcall function_14f2e0(long player_index);
+
+bool __stdcall function_cc170(long *);
+bool function_1ca670(void);
+bool function_14e970(long, point3f const *, long);
+struct s_unknown_13bf00;
+extern s_unknown_13bf00 *g_510c50;
+
+// @retail 0x14cdd0
+void function_14cdd0(void)
+{
+    byte *game = (byte *)g_510c50;
+    s_players_globals *globals = (s_players_globals *)g_4e8c20;
+    globals->unknown9c = 0;
+    if (globals->unknowna0 > 0 && (!game || !game[5])) --globals->unknowna0;
+    if (!globals->unknown9e) return;
+    if (game && game[5]) globals->unknown9c = 2;
+    else if (!globals->unknown9f)
+    {
+        if (globals->unknowna0 > 0) globals->unknown9c = 3;
+        else if (((byte *)g_4e6948)[0x1121]) globals->unknown9c = 8;
+        else
+        {
+            long value;
+            if (function_cc170(&value)) globals->unknown9c = 4;
+            else if (function_1ca670()) globals->unknown9c = 5;
+        }
+    }
+    if (globals->unknown9c != 0) return;
+    s_record_pool *players = g_4e8c24;
+    long last_unit = NONE;
+    point3f last_position;
+    long absolute = NONE;
+    while ((absolute = function_16bc00(players, absolute+1)) != NONE)
+    {
+        s_player *player = (s_player *)(players->data + absolute*players->size);
+        long unit = player->unit_index;
+        if (unit == NONE) continue;
+        long root = unit;
+        for (long current = unit; current != NONE; current = *(long *)(object_get_unchecked(current) + 0x14)) root = current;
+        bool busy = false;
+        if (root == unit)
+        {
+            if (function_badc0(unit, 1)) busy = function_e4050(unit);
+        }
+        else
+        {
+            byte *vehicle = (byte *)function_badc0(root, 2);
+            if (vehicle) busy = vehicle[0x34c] > 0;
+        }
+        if (busy) ((s_players_globals *)g_4e8c20)->unknown9c = 6;
+        else
+        {
+            last_unit = player->unit_index;
+            last_position = *(point3f *)(object_get_unchecked(last_unit) + 0x30);
+        }
+    }
+    if (last_unit != NONE)
+    {
+        bool failed = false;
+        s_data_datum_iterator iterator;
+        iterator.data = players;
+        iterator.index = NONE;
+        iterator.datum_index = NONE;
+        if (data_datum_iterator_next(&iterator))
+        {
+            do
+            {
+                s_player *player = (s_player *)iterator.datum;
+                if (!(player->flags_word & 2) && (player->flags_word & 1) && player->unit_index == NONE)
+                {
+                    long index = iterator.datum_index;
+                    if (!function_14f2e0(index) || !function_14e970(index, &last_position, last_unit)) failed = true;
+                }
+            } while (data_datum_iterator_next(&iterator));
+        }
+        if (failed) return;
+        ((s_players_globals *)g_4e8c20)->unknown9e = false;
+    }
+}
+
+struct s_damage_owner
+{
+	long player_index;
+	long object_index;
+	short team;
+};
+
+/* a damage event (0x88 bytes) */
+struct s_type_1e6529
+{
+	long definition_index;
+	union
+	{
+		byte unknown04[4];
+		dword flags;
+	};
+	s_damage_owner owner;
+	long unknown14;
+	long unknown18;
+	long unknown1c;
+	short unknown20;
+	short unknown22;
+	point3f position;
+	point3f origin;
+	vector3f direction;
+	vector3f node_direction;
+	real unknown54;
+	real unknown58;
+	real unknown5c;
+	real distance;
+	real distance_scale;
+	bool in_unknown_radius;
+	byte unknown69[3];
+	vector3f cone_direction;
+	real unknown78;
+	short unknown7c;
+	short unknown7e;
+	byte unknown80[4];
+	bool unknown84;
+	byte unknown85[3];
+};
+
+
+#include "game_engine_events.h"
+#include "effects.h"
+void function_d6660(s_type_1e6529 *, long);
+void object_get_damage_owner(long, s_damage_owner *);
+void function_d7b80(s_type_1e6529 *, long, short, short, short, vector3f const *);
+bool __stdcall function_cc460(long);
+void function_b7360(long);
+void function_153cd0(long);
+void function_153bd0(long, real);
+void function_1521d0(long);
+bool function_11c470(long, point3f const *);
+void function_12b850(short);
+void __stdcall function_1508e0(long);
+void function_1e6bd0(long);
+
+struct s_player_update_iterator
+{
+    byte *current;
+    s_record_pool_iterator cursor;
+};
+
+// @retail 0x14d8b0
+void function_14d8b0(void)
+{
+    byte *player;
+    s_player_update_iterator iterator = { NULL, { g_4e8c24, NONE, NONE } };
+    while ((player = iterator.current = data_iterator_next_inlined(&iterator.cursor)) != NULL)
+    {
+        long index = iterator.cursor.datum_index;
+        if (player[3] & 0x20)
+        {
+            byte *globals = *(byte **)((byte *)g_4e034c + 0x134);
+            long effect = *(long *)(globals + 0xb4);
+            long unit = *(long *)(player + 0x2c);
+            if (unit != 0 && effect != NONE) function_176780(unit, NULL, 0.0f, effect, 0.0f, NULL, NULL);
+            player[3] &= ~0x20;
+        }
+        long unit = *(long *)(player + 0x2c);
+        if (unit != NONE && g_4e6948->mode != 4)
+        {
+            long counter = 0;
+            if (((g_510c54->game_time + (short)index) % 16 == 0 || player[0x3e]) && function_cc460(unit))
+            {
+                counter = player[0x3e] + 1;
+                if (counter > 254) counter = 254;
+            }
+            player[0x3e] = (byte)counter;
+            long limit = player_round_ticks((real)g_510c54->field_2_3 * 0.5f);
+            if (player[0x3e] > limit)
+            {
+                unit = *(long *)(player + 0x2c);
+                if (unit != NONE)
+                {
+                    byte *object = object_get_unchecked(unit);
+                    object[0x10a] |= 0x20;
+                    function_b7360(unit);
+                }
+            }
+        }
+        else player[0x3e] = 0;
+        long &ticks = *(long *)(player + 0x16c);
+        if ((player[2] & 4) && *(long *)(player + 0x2c) != NONE)
+        {
+            ++ticks;
+            real time = (real)ticks * g_510c54->rate;
+            if (time >= 3.0f)
+            {
+                unit = *(long *)(player + 0x2c);
+                if (!(object_get_unchecked(unit)[0x10a] & 0x20))
+                {
+                    if (g_4e6948->mode != 4)
+                    {
+                        s_event event;
+                        game_engine_event_initialize_inline(&event, 0, 0x2e);
+                        event.effect_player_index = index;
+                        function_a7c50(&event);
+                        function_19eb30(&event);
+                        byte *globals = *(byte **)((byte *)g_4e034c + 0x144);
+                        s_type_1e6529 damage;
+                        damage.unknown7c = NONE;
+                        function_d6660(&damage, *(long *)(globals + 0x28));
+                        damage.flags |= 4;
+                        *(byte *)&damage.unknown84 = 0x29;
+                        object_get_damage_owner(*(long *)(player + 0x2c), &damage.owner);
+                        function_d7b80(&damage, *(long *)(player + 0x2c), NONE, NONE, NONE, NULL);
+                    }
+                    function_153cd0(index);
+                }
+            }
+            else function_153bd0(*(short *)(player + 0x28), time * 0.3333333432674408f);
+            if (g_4e6948->mode != 4) player[2] &= ~4;
+        }
+        else if (ticks > 0 && --ticks == 0)
+        {
+            if (game_engine_get())
+            {
+                long slot = function_xaee93d()->slots[(short)index];
+                if (slot != NONE) function_b58c0(slot, 8);
+            }
+            short user = player_get(index)->user_index;
+            if (user != NONE)
+            {
+                g_502120->entries[user].value80 = 0.0f;
+                g_502120->entries[user].value84 = 0.0f;
+            }
+        }
+        if (*(signed char *)(player + 0x3f) > 0) --player[0x3f];
+        if (*(signed char *)(player + 0x40) > 0) --player[0x40];
+        short &timer = *(short *)(player + 0x180);
+        if (g_4e6948->mode != 4 && timer > 0 && --timer == 0)
+        {
+            player[3] &= ~8;
+            if (game_engine_get())
+            {
+                long slot = function_xaee93d()->slots[(short)index];
+                if (slot != NONE) function_b58c0(slot, 0x100);
+            }
+        }
+        if (*(long *)(player + 0x2c) != NONE) function_1521d0(index);
+        unit = *(long *)(player + 0x2c);
+        if (unit != NONE)
+        {
+            long root = unit;
+            for (long current = unit; current != NONE; current = *(long *)(object_get_unchecked(current) + 0x14)) root = current;
+            if (!(*(dword *)(object_get_unchecked(root) + 4) & (1 << 18)))
+            {
+                byte *scenario = (byte *)g_4e0350;
+                for (short trigger = 0; trigger < *(long *)(scenario + 0x130); ++trigger)
+                {
+                    byte *volume = *(byte **)(scenario + 0x134) + trigger*0xe;
+                    if (*(short *)(volume + 2) == g_4686c4)
+                    {
+                        unit = *(long *)(player + 0x2c);
+                        if (unit != NONE && function_11c470(*(short *)volume, (point3f *)(object_get_unchecked(unit) + 0x30)))
+                        {
+                            byte *globals = (byte *)g_4e8c20;
+                            *(short *)(globals + 0xa4) = trigger;
+                            *(short *)(globals + 0xa6) = 0;
+                            *(long *)(globals + 0xa8) = index;
+                            function_12b850(*(short *)(volume + 4));
+                        }
+                    }
+                }
+            }
+        }
+        function_1508e0(index);
+        if (*(short *)(player + 0x28) != NONE) function_1e6bd0(index);
+    }
+    byte *globals = (byte *)g_4e8c20;
+    if (*(long *)(globals + 0xa8) != NONE && ++*(short *)(globals + 0xa6) > 12)
+    {
+        *(long *)(globals + 0xa8) = NONE;
+        *(short *)(globals + 0xa6) = 0;
+    }
+}
+
+bool function_15dd40(long);
+void function_15ed60(void);
+void function_14f0f0(long);
+bool function_138820(void);
+bool function_1388a0(void);
+struct s_request_source;
+void function_1e6b00(long, s_request_source *);
+void function_1505f0(long, long, byte const *);
+void function_150790(long);
+bool function_163b60(void);
+bool function_162c50(long, long *);
+__declspec(noinline) bool function_2259f0(long);
+void function_2259a0(long);
+void function_a9400(long, long);
+void game_engine_boot_player(long);
+#include "main_globals.h"
+
+// @retail 0x14d3a0
+void __stdcall function_14d3a0(byte const *input)
+{
+    byte const *const volatile *input_reference = &input;
+    players_update_connections();
+    long pending[16];
+    long count = 0;
+    s_player_update_iterator iterator;
+    iterator.cursor.data = g_4e8c24; iterator.cursor.index = NONE; iterator.cursor.datum_index = NONE;
+    byte *player;
+    while ((player = iterator.current = data_iterator_next_inlined(&iterator.cursor)) != NULL)
+    {
+        long index = iterator.cursor.datum_index;
+        word flags = *(word *)(player + 2);
+        if ((flags & 2) || !(flags & 1) || *(long *)(player + 0x2c) != NONE) continue;
+        if (g_4e6948->state == 2)
+        {
+            if (g_4e6948->mode != 4 && function_15dd40(index)) pending[count++] = index;
+            else function_14f0f0(index);
+        }
+        else if (g_4e6948->state == 1 && g_4e6948->mode != 4)
+        {
+            if (flags & 8) function_14f2e0(index);
+            else if (function_138820() && function_1388a0()) players_start_countdown();
+        }
+    }
+    while (count > 0)
+    {
+        long selected = 0;
+        if (count > 1)
+        {
+            g_4e7408->unknown0 = g_4e7408->unknown0 * 1664525 + 1013904223;
+            selected = (long)(g_4e7408->unknown0 >> 16) % count;
+        }
+        long index = pending[selected];
+        if (function_15dd40(index))
+        {
+            function_14f2e0(index);
+            function_15ed60();
+        }
+        else
+        {
+            player = (byte *)player_get(index);
+            if (player[2] & 8)
+                *(long *)(player + 0x164) = player_round_ticks((real)*(long *)((byte *)g_4e6948 + 0x1bc) * (real)g_510c54->field_2_3);
+        }
+        if (selected != count-1) pending[selected] = pending[count-1];
+        --count;
+    }
+    function_14cdd0();
+    iterator.cursor.data = g_4e8c24; iterator.cursor.index = NONE; iterator.cursor.datum_index = NONE;
+    while ((player = iterator.current = data_iterator_next_inlined(&iterator.cursor)) != NULL)
+    {
+        long unit = *(long *)(player + 0x2c);
+        if (unit == NONE) unit = *(long *)(player + 0x30);
+        if (unit == NONE) continue;
+        long root = NONE;
+        for (long current = unit; current != NONE; current = *(long *)(object_get_unchecked(current) + 0x14)) root = current;
+        short cluster = *(short *)(object_get_unchecked(root) + 0x2c);
+        if (cluster != NONE) *(short *)(player + 0x2a) = cluster;
+    }
+    iterator.cursor.data = g_4e8c24; iterator.cursor.index = NONE; iterator.cursor.datum_index = NONE;
+    while ((player = iterator.current = data_iterator_next_inlined(&iterator.cursor)) != NULL)
+    {
+        long index = iterator.cursor.datum_index;
+        long absolute = index & 0xffff;
+        byte const *source = *input_reference;
+        if (!(*(dword *)(source + 8) & (1 << absolute))) continue;
+        s_player_action const *action = (s_player_action const *)(source + 0xc + absolute*0x5c);
+        if (!function_14d0a0(action) || !action) continue;
+        long unit = *(long *)(player + 0x2c);
+        byte *object = NULL;
+        if (unit != NONE) object = object_get_unchecked(unit);
+        if (unit != NONE && (*(dword *)(object + 0x134) & 1))
+        {
+            byte *game = (byte *)g_510c50;
+            if ((action->flags & 0x100) && game[6])
+            {
+                bool reset = true;
+                if (game[0x22]) reset = !function_163b60();
+                if (reset)
+                {
+                    main_globals.switch_structure_bsp = false;
+                    main_globals.save_map = false;
+                    main_globals.unknown72 = true;
+                }
+            }
+            byte *globals = (byte *)g_4e8c20;
+            if (!globals[6])
+            {
+                s_player_action current = *action;
+                if (globals[7] && player_get(index)->user_index != NONE)
+                {
+                    dword yaw = *(dword *)&current.facing_yaw, pitch = *(dword *)&current.facing_pitch;
+                    player_action_initialize(&current);
+                    *(dword *)&current.facing_yaw = yaw; *(dword *)&current.facing_pitch = pitch;
+                }
+                player_action_update_latches(index, &current);
+                function_1e6b00(index, (s_request_source *)&current);
+                function_14f820(index, *(long *)(player + 0x2c), (byte *)&current);
+                function_1505f0(index, *(long *)(player + 0x2c), (byte const *)&current);
+            }
+            else if (*(long *)(object + 0x12c) == NONE) function_150790(*(long *)(player + 0x2c));
+        }
+        else if (*(short *)(player + 0x28) != NONE)
+        {
+            long spectated;
+            if (function_162c50(index, &spectated) && function_2259f0(index))
+            {
+                word &flags = *(word *)(player + 2);
+                if (action->flags & 2)
+                {
+                    if (!(flags & 0x200) && (flags & 0x400))
+                    {
+                        flags |= 0x200;
+                        function_2259a0(index);
+                        if (g_4e6948->mode == 4) function_a9400(spectated, index);
+                        else game_engine_boot_player(spectated);
+                    }
+                    player[3] &= ~4;
+                }
+                else flags = (flags & 0xfdff) | 0x400;
+            }
+        }
+    }
+}
+

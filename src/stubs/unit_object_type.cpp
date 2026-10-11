@@ -15,13 +15,9 @@
 
 
 /* outside the unit range */
-// @stub 0x10cdf0
-void function_10cdf0(long object_index) { }
 
 
 /* outside the unit range */
-// @stub 0x10cec0
-void function_10cec0(long unit_index, long weapon_index, long parent_marker_name, long marker_name) { }
 
 
 /* outside the unit range */

@@ -133,14 +133,14 @@ bool function_15eaf0();
 long function_23f260(long, long, long);
 void function_1523c0();
 void function_196780();
-void function_15cba0();
+void function_15cba0(long mode);
 void function_1389c0();
 long function_19f3c0(long, long);
 struct s_team_entry;
 s_team_entry *function_15e410(short team);
 bool function_19f240(long *);
 void function_15fe70(long);
-void function_2bc1f0();
+void function_2bc1f0(long team);
 void __stdcall function_2bc990(long);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 
@@ -529,7 +529,7 @@ bool c_game_engine::v13(byte mask, s_engine_settings *settings)
 	{
 		if (settings->b1c != g->w6c)
 		{
-			function_15cba0();
+			function_15cba0(settings->b1c);
 			g = g_4e9ae8;
 			g->w6c = settings->b1c;
 		}
@@ -815,7 +815,7 @@ void c_game_engine_derived::v40()
 				if (function_15e410((short)i))
 					function_2bc990(i);
 				else
-					function_2bc1f0();
+					function_2bc1f0(i);
 			}
 		}
 	}

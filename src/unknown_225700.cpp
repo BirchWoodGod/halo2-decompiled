@@ -214,6 +214,7 @@ void function_2259a0(
 	}
 }
 
+__declspec(noinline)
 // @retail 0x2259f0
 bool function_2259f0(
 	long player_index)

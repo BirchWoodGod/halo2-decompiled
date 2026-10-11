@@ -74,6 +74,9 @@ void function_146a20(void)
 	g_4798b4++;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x146ac0
 void function_146ac0(void)
 {
@@ -89,12 +92,17 @@ void function_146ac0(void)
 		g_47988c = 0;
 	}
 	g_479894->~hkMemory();
+	hkMemory *last = g_479898;
+	_ReadWriteBarrier();
 	g_479894 = NULL;
-	g_479898->~hkMemory();
+	_ReadWriteBarrier();
+	last->~hkMemory();
 	g_479898 = NULL;
 	g_479890 = 0;
 	g_479880 = false;
 }
+
+#pragma function(_ReadWriteBarrier)
 
 /* a page aligned block of virtual memory: its size and the offset back to
    the allocation sit before it */
@@ -236,7 +244,7 @@ hkMemory *function_146e30(void)
 {
 	if (!g_4798a0)
 	{
-		long size = 0x800000;
+		long volatile size = 0x800000;
 		byte *block;
 		long adjustment;
 
@@ -275,7 +283,7 @@ hkMemory *function_146e30(void)
 			}
 			g_47988c = (long)block;
 		}
-		while (!block && (size >>= 1) >= 0x100000);
+		while (!block && ((size = size / 2) >= 0x100000));
 
 		adjustment = (((dword)block + 0xf) & ~0xf) - (dword)block;
 		g_4798a0 = new ((byte *)g_479888 + 0x105440) c_havok_fixed_memory(block, size - adjustment);

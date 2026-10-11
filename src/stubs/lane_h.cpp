@@ -34,10 +34,7 @@ long function_59570(void)
 
 
 
-// @stub 0xb3e90
-void __stdcall function_b3e90(unsigned char *results)
-{
-}
+
 
 
 struct s_network_session_player;
@@ -67,5 +64,10 @@ void function_13954b(void)
 
 // @stub 0x191fd8
 void function_191fd8(long player_index)
+{
+}
+
+// @stub 0x195ed0
+void function_195ed0(void)
 {
 }
