@@ -862,13 +862,13 @@ void c_xbox_live_message_display_screen::show_next_message()
 	value7eb6 = 0;
 	voice_mail_duration = 0;
 	value7eb4 = false;
-	for (; value2d04 < message_count; value2d04++)
+	if (value2d04 < message_count) do
 	{
 		c_text_widget_45a5e0 *text = (c_text_widget_45a5e0 *)find_child(6, 0, false);
 		long controller_index = get_controller_index();
 		s_online_message_view *message = &messages[value2d04];
 		XUID const *xuid = NULL;
-		bool other_title;
+		byte other_title;
 
 		if (message)
 			xuid = (XUID const *)&message->xuid;
@@ -917,7 +917,8 @@ void c_xbox_live_message_display_screen::show_next_message()
 			value2d04++;
 			return;
 		}
-	}
+		value2d04++;
+	} while (value2d04 < message_count);
 	value7ecc = true;
 }
 
@@ -3051,7 +3052,7 @@ c_custom_game_maps_list::c_custom_game_maps_list(word user_flags) :
 // @retail 0x2c9a73
 void c_custom_game_maps_list::select_last_map()
 {
-	long map_id = g_51098c;
+	volatile long map_id = g_51098c;
 
 	if (map_id != NONE)
 	{
@@ -3442,13 +3443,15 @@ void c_campaign_level_handles_list::handle_item(s_controller_reference **control
 		{
 			s_campaign_level *level = (s_campaign_level *)function_19c270(1, ((s_map_entry *)data->data)[*item & 0xffff].map_id);
 
+			char const *name = level->field_8_5;
 			g_54e7c4 = level->map_id;
 			if (function_592f0())
 			{
-				function_19a6f2(1, level->map_id);
+				long map_id = *(volatile long *)&level->map_id;
+				function_19a6f2(1, map_id);
 			}
 			function_19040d(level->map_id);
-			function_163890(level->field_8_5, 0);
+			function_163890(name, 0);
 			if (alternate)
 			{
 				get_screen()->start_animation(3);

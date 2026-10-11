@@ -56,7 +56,7 @@ void function_1eb110(s_physics_constraint_iterator *iterator)
 {
 	byte *volatile element;
 	iterator->type = 0;
-	s_physics_model_shape_key *key = (s_physics_model_shape_key *)&iterator->type;
+	s_physics_model_shape_key *const &key = (s_physics_model_shape_key *)&iterator->type;
 	for (;;)
 	{
 		iterator->index = 0;
@@ -69,9 +69,10 @@ void function_1eb110(s_physics_constraint_iterator *iterator)
 			if (value)
 				break;
 		}
-		if (key->type >= 5)
+		dword current_type = (word)key->type;
+		if ((short)current_type >= 5)
 			break;
-		key->type++;
+		key->type = (short)(current_type + 1);
 	}
 }
 

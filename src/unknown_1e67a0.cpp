@@ -176,7 +176,7 @@ void function_1e54d0(void *physics, long mode)
 		case 1: break;
 		case 2: break;
 		case 3: break;
-		case 4: function_1fc350(*(long *)(state + 4), (s_tracked_point *)(state + 0x10)); break;
+		case 4:
 		case 5: function_1fc350(*(long *)(state + 4), (s_tracked_point *)(state + 0x10)); break;
 		case 6: break;
 		default: __assume(0);
@@ -192,6 +192,7 @@ void function_1e54d0(void *physics, long mode)
 		*(vector3f *)(state + 0x14) = *g_4687a4;
 		break;
 	case 3: function_1ec570((s_state_c570 *)(state + 0x10)); break;
+	case 6: function_1eb640((s_ease_state *)(state + 0x10)); break;
 	case 4:
 	case 5:
 	{
@@ -200,7 +201,6 @@ void function_1e54d0(void *physics, long mode)
 		function_1fc2f0((s_tracked_point *)(state + 0x10), &position, *state == 5);
 		break;
 	}
-	case 6: function_1eb640((s_ease_state *)(state + 0x10)); break;
 	default: __assume(0);
 	}
 	if (old_mode != *state && (old_mode == 3 || *state == 3 || old_mode == 4 || old_mode == 5 || *state == 4 || *state == 5))
@@ -748,10 +748,11 @@ void function_1ecf50(vector3f *forward, vector3f *up, s_direction_rotation_input
 // @retail 0x1e5af0
 void function_1e5af0(void *physics, s_biped_physics_output *output, vector3f const *up, vector3f const *forward)
 {
+ byte *shape = (byte *)physics + 0x10;
  switch (*(byte *)physics)
  {
- case 1: function_1f1460((byte *)output, (s_shape_state *)((byte *)physics + 0x10), (vector3f *)up, (vector3f *)forward); break;
- case 2: function_1faa20((byte *)output, (vector3f *)up, (vector3f *)forward, (long *)((byte *)physics + 0x10)); break;
+ case 1: function_1f1460((byte *)output, (s_shape_state *)shape, (vector3f *)up, (vector3f *)forward); break;
+ case 2: function_1faa20((byte *)output, (vector3f *)up, (vector3f *)forward, (long *)shape); break;
  case 3: function_1ecf50((vector3f *)forward, (vector3f *)up, (s_direction_rotation_input *)output); break;
  case 4: break;
  case 5: break;

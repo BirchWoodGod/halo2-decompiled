@@ -968,7 +968,7 @@ void damage_at_cutscene_flag(short cutscene_flag_index, long definition_index)
 {
 	if (g_4e6948->mode != 4)
 	{
-		s_scenario_cutscene_flag_view *flag = &((s_scenario_cutscene_flags_view *)g_4e0350)->cutscene_flags[cutscene_flag_index];
+		s_scenario_cutscene_flag_view *const &flag = &((s_scenario_cutscene_flags_view *)g_4e0350)->cutscene_flags[cutscene_flag_index];
 		s_damage_data_view data;
 		function_d6660((s_type_1e6529 *)&data, definition_index);
 		data.unknown7c = NONE;
@@ -10060,7 +10060,8 @@ void __stdcall function_2abb50(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, interpolator_set(arguments[0], *(real *)&arguments[1]));
+		long first_argument = arguments[0];
+		function_209ae0(thread_index, interpolator_set(first_argument, *(real *)&arguments[1]));
 	}
 }
 
@@ -10108,7 +10109,8 @@ void __stdcall function_2abc10(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = function_xa57cf5(arguments[0], *(bool *)&arguments[1]);
+		long first_argument = arguments[0];
+		*(real *)&result = function_xa57cf5(first_argument, *(bool *)&arguments[1]);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -10138,7 +10140,8 @@ void __stdcall function_2abca0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = interpolator_get_target_value(arguments[0], *(bool *)&arguments[1]);
+		long first_argument = arguments[0];
+		*(real *)&result = interpolator_get_target_value(first_argument, *(bool *)&arguments[1]);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -10222,7 +10225,8 @@ void __stdcall function_2abe70(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = interpolator_convert_value(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
+		long first_argument = arguments[0];
+		*(real *)&result = interpolator_convert_value(first_argument, *(real *)&arguments[1], *(bool *)&arguments[2]);
 		function_209ae0(thread_index, result);
 	}
 }

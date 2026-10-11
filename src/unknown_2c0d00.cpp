@@ -964,7 +964,7 @@ bool function_2c2a70(point2f const *origin, point2f const *endpoint,
     normalize_offset_direction_2c(&first_direction);
     vector2d_from_points2d(second, origin, &second_direction);
     normalize_offset_direction_2c(&second_direction);
-    real first_side = first_direction.y * normal.y + first_direction.x * normal.x;
+    volatile real first_side = first_direction.y * normal.y + first_direction.x * normal.x;
     real second_side = second_direction.y * normal.y + second_direction.x * normal.x;
     second_side = fabs(second_side) < 0.001 ? 0.0f : second_side;
     first_side = fabs(first_side) < 0.001 ? 0.0f : first_side;
