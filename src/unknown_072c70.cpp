@@ -140,7 +140,7 @@ struct s_team_entry;
 s_team_entry *function_15e410(short team);
 bool function_19f240(long *);
 void function_15fe70(long);
-void function_2bc1f0();
+void function_2bc1f0(long team);
 void __stdcall function_2bc990(long);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 
@@ -815,7 +815,7 @@ void c_game_engine_derived::v40()
 				if (function_15e410((short)i))
 					function_2bc990(i);
 				else
-					function_2bc1f0();
+					function_2bc1f0(i);
 			}
 		}
 	}

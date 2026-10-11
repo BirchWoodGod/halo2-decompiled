@@ -5507,6 +5507,45 @@ real g_509334;
 dword g_509338;
 void function_28980(long index);
 
+#if 0
+// Disabled: retail passes the shared music-state address to the silence helper.
+struct s_main_menu_music;
+extern s_main_menu_music g_54e7e0;
+real main_menu_music_silence_fraction(s_main_menu_music *music);
+dword function_235ca9();
+real __stdcall function_122dd0(byte *map_name, long mode, long type);
+
+// @retail 0x2c52e7 disabled
+void __stdcall function_2c52e7(char const *map_name)
+{
+	real progress = function_122dd0((byte *)map_name, 0, 0);
+	real step = 1.0f;
+	real duration = (real)(long)function_235ca9();
+	dword now = GetTickCount();
+	real elapsed = (real)(now - g_509338);
+	g_509338 = now;
+	if (duration > 0.0f)
+		step = (elapsed > 0.0f ? elapsed : 0.0f) / duration;
+	if (0.0f > g_509330)
+		g_509330 = progress;
+	if (!(0.001f >= 1.0f - g_509330))
+	{
+		if (g_509330 > progress) progress = g_509330;
+		else if (progress > 1.0f) progress = 1.0f;
+		progress = (progress - g_509330) / (1.0f - g_509330);
+		if (0.0f > progress) progress = 0.0f;
+		else if (progress > 1.0f) progress = 1.0f;
+	}
+	else progress = 1.0f;
+	real target = main_menu_music_silence_fraction(&g_54e7e0) * 0.3f + progress * 0.7f;
+	if (!(target < g_509334))
+	{
+		g_509334 += step;
+		if (!(target > g_509334)) g_509334 = target;
+	}
+}
+#endif
+
 // @retail 0x2c5224
 void c_level_select_screen::v18(void *parameters)
 {
@@ -5913,3 +5952,127 @@ void c_class_2b01eb::v3()
  }
  value78 = now;
 }
+
+#if 0
+// Disabled: the shared visibility context escapes to the collection helper.
+struct s_model_render_definition_2b
+{
+    byte field_0[0xc];
+    long object_count;
+    char (*objects)[32];
+    long extra_count;
+    char (*extras)[32];
+    real distance[3];
+    point3f position;
+    real angle;
+    s_widget_bounds bounds;
+    byte field_40[0xc];
+};
+
+struct s_visibility_object_lists;
+extern s_visibility_object_lists g_547f88;
+extern s_visibility_object_lists *g_4c0b80;
+extern color3f const *g_46871c;
+extern color4f const *g_4686d8;
+void visibility_object_lists_add(long const *, long, s_visibility_object_lists *, long const *, long, bool);
+void function_bbf40(long object_index, bool flag);
+long function_c38e0(short index);
+real function_30bf0(vector3f *v);
+void function_2cbc0(bool enabled);
+void function_44720();
+void function_2c560(point3f const *position, vector3f const *forward,
+    short left, short top, short right, short bottom, vector3f const *up, real angle);
+
+// Requires the added declaration virtual void c_class_2b0b5e::v4(long frame).
+// @retail 0x2b0baa disabled
+void c_class_2b0b5e::v4(long frame)
+{
+    if (*(long *)g_54d598.unknown00 != 4)
+        return;
+    long object_indices[32];
+    long extra_indices[32];
+    long object_count = 0;
+    long extra_count = 0;
+    for (long i = 0; i < ((s_model_render_definition_2b *)definition)->object_count; ++i)
+    {
+        char const *name = ((s_model_render_definition_2b *)definition)->objects[i];
+        if (*name)
+        {
+            short index = function_11c0b0(name, (s_name_table_11c0b0 *)g_4e0350);
+            if (index != NONE)
+            {
+                long object_index = function_bb760(index);
+                if (object_index != NONE)
+                {
+                    object_indices[object_count++] = object_index;
+                    function_bbf40(object_index, true);
+                }
+            }
+        }
+    }
+    for (long j = 0; j < ((s_model_render_definition_2b *)definition)->extra_count; ++j)
+    {
+        char const *name = ((s_model_render_definition_2b *)definition)->extras[j];
+        if (*name)
+        {
+            short index = function_11c0b0(name, (s_name_table_11c0b0 *)g_4e0350);
+            if (index != NONE)
+            {
+                long object_index = function_c38e0(index);
+                if (object_index != NONE)
+                    extra_indices[extra_count++] = object_index;
+            }
+        }
+    }
+    if (object_count > 0)
+    {
+        short_rectangle2d const *screen = (short_rectangle2d const *)frame;
+        long half_width = (screen->x1 - screen->x0) >> 1;
+        long half_height = (screen->y1 - screen->y0) >> 1;
+        s_model_render_definition_2b const *model = (s_model_render_definition_2b const *)definition;
+        long left = half_width + model->bounds.left;
+        long top = half_height - model->bounds.top;
+        long right = half_width + model->bounds.right;
+        long bottom = half_height - model->bounds.bottom;
+        real degrees = 1.0f > model->angle ? 1.0f :
+            (model->angle > 359.0f ? 359.0f : model->angle);
+        real angle = degrees * 0.008726646192371845f;
+        bool show_label = g_54d59f && has_screen() && v11() != 6;
+        short x, y;
+        function_2363d4(screen, &x, &y);
+        vector3f animation_translation = *(vector3f const *)((byte const *)this + 0x58);
+        point3f position;
+        position.x = model->position.x - model->distance[0] * animation_translation.i;
+        position.y = model->position.y - model->distance[1] * animation_translation.k;
+        position.z = model->position.z - model->distance[2] * animation_translation.j;
+        vector3f up = { 0.0f, 1.0f, 0.0f };
+        vector3f forward = { 0.0f, 0.0f, 1.0f };
+        function_30bf0(&up);
+        function_30bf0(&forward);
+        g_4c0b80 = &g_547f88;
+        visibility_object_lists_add(object_indices, object_count, &g_547f88, extra_indices, extra_count, false);
+        function_2cbc0(true);
+        function_44720();
+        function_2c560(&position, &forward, (short)(left + x), (short)(top + y),
+            (short)(right + x), (short)(bottom + y), &up, angle);
+        if (show_label)
+        {
+            c_user_interface_text_buffer_32 text;
+            real depth = get_depth();
+            real alpha = animation.scale;
+            word label[16];
+            unicode_string_snprintf(label, 16, (word const *)L"%d", value0a);
+            text.setup(label, 0, g_46871c, 0, NONE, 0, NONE);
+            s_widget_bounds outline = bounds;
+            function_22cd48(&text, (short_rectangle2d const *)&outline, (short_rectangle2d const *)&outline,
+                depth, alpha, screen);
+            outline.left += x;
+            outline.right += x;
+            outline.top += y;
+            outline.bottom += y;
+            function_235d69((short_rectangle2d const *)&outline, alpha, screen, g_4686d8);
+        }
+    }
+}
+
+#endif

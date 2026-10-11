@@ -671,7 +671,7 @@ struct s_unit_action_grenade
 void function_a7a30(long object_index, dword mask);
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
 long __stdcall function_b7b40(void *data);
-void __stdcall function_b93b0(long parent_index, long object_index, long node_index);
+void __stdcall function_b93b0(long parent_index, long object_index, short node_index);
 vector3f *function_11d000(vector3f const *v, vector3f *out);
 real function_30bf0(vector3f *v);
 
@@ -722,7 +722,7 @@ void __stdcall function_e7730(long unit_index)
 
 			if (projectile_index != NONE)
 			{
-				function_b93b0(unit_index, projectile_index, marker.node_index);
+				function_b93b0(unit_index, projectile_index, (short)(marker.node_index));
 				actions->grenade_projectile_index = projectile_index;
 				actions->grenade_type = unit->current_grenade_index;
 				actions->grenade_state = 2;

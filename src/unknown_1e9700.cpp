@@ -5,8 +5,10 @@
 #include "unknown_11c920.h"
 #include "globals.h"
 #include <string.h>
+#include <float.h>
 #include <xmmintrin.h>
 #include "slot_handler.h"
+#include "input_record.h"
 
 real function_1e96a0(short column, short row);
 
@@ -28,6 +30,255 @@ struct s_object_values
 };
 
 void function_b58c0(long index, dword mask);
+struct s_statborg;
+void function_1968b0(long team, long index, long counter, long value);
+void function_1e9df0(long field, long counter, s_statborg *statistics, long team, long delta);
+long function_196ef0(byte code);
+void function_196e60(long player_index, long counter, long code, long delta);
+void function_225880(long player_index);
+void function_162bf0(long player_index, long arg_1f407d_2);
+void function_1e9ce0(long player_index, long counter, s_statborg *statistics, long field, long delta, bool by_team);
+
+// @retail 0x1ea770
+void function_1ea770(byte code, long player_index, s_statborg *statistics, long arg_1f407d_2, bool self, bool friendly)
+{
+	long kind = function_196ef0(code);
+	s_statborg *const volatile *statistics_reference = &statistics;
+	long volatile other = arg_1f407d_2 & 0xffff;
+	long index = player_index & 0xffff;
+	function_1e9ce0(player_index, 9, *statistics_reference, 3, 1, true);
+	function_196e60(index, 1, kind, 1);
+	if (self)
+	{
+		function_1e9ce0(player_index, 11, statistics, 4, 1, true);
+		function_196e60(index, 3, kind, 1);
+	}
+	else if (friendly && arg_1f407d_2 != NONE)
+	{
+		byte *player = g_4e8c24->data + other * 0x21c;
+		if (*(short *)(player + 0x28) != NONE) function_225880(arg_1f407d_2);
+		function_1e9ce0(arg_1f407d_2, 10, statistics, 5, 1, true);
+		function_196e60(other, 2, kind, 1);
+		function_162bf0(player_index, arg_1f407d_2);
+	}
+	byte *row = (byte *)statistics + index * 0x1c;
+	*(short *)(row + 0x16) = 0;
+	*(short *)(row + 0x18) = 0;
+	*(long *)(row + 0x1c) = NONE;
+	*(dword *)g_4e9ae8 |= 0x20;
+}
+
+// @retail 0x1ea5b0
+void function_1ea5b0(long player_index, s_statborg *statistics, long threshold, byte code)
+{
+	long kind = function_196ef0(code);
+	long index = player_index & 0xffff;
+	struct s_team_player { byte before[0xc0]; char team; byte after[0x21c - 0xc1]; };
+	s_team_player *player = ((s_team_player *)g_4e8c24->data) + index;
+	function_1e9ce0(player_index, 7, statistics, 2, 1, true);
+	function_196e60(index, 0, kind, 1);
+	if ((code & 0xc0) == 0x40) function_196e60(index, 6, kind, 1);
+	long old_maximum = NONE;
+	if (g_510ca0 && index != NONE) old_maximum = g_511bf4.groups[index][12].value;
+	byte *row = (byte *)statistics + index * 0x1c;
+	short consecutive = ++*(short *)(row + 0x16);
+	if ((short)old_maximum < consecutive && g_510ca0 && !g_510ca1 && index != NONE)
+	{
+		long value = consecutive;
+		if (value < g_46ddc0[12].minimum) value = g_46ddc0[12].minimum;
+		else if (value > g_46ddc0[12].maximum) value = g_46ddc0[12].maximum;
+		g_511bf4.groups[index][12].value = (word)value;
+	}
+	if (g_55e4d0[g_4e9ae8->engine_index])
+	{
+		byte volatile *code_reference = &code;
+		*code_reference = (byte)g_4e6948->flags184.bit0;
+	}
+	else code = 0;
+	if (code && player->team != NONE)
+	{
+		long team = player->team;
+		long team_maximum = g_510ca0 && team != NONE ? g_511bf4.counters[team][12].value : NONE;
+		if ((short)team_maximum < *(short *)(row + 0x16)) function_1968b0(team, NONE, 12, *(short *)(row + 0x16));
+	}
+	if (*(long *)(row + 0x1c) >= threshold) ++*(short *)(row + 0x18);
+	else *(short *)(row + 0x18) = 1;
+	*(long *)(row + 0x1c) = g_510c54->game_time;
+	*(dword *)g_4e9ae8 |= 0x20;
+}
+
+struct s_object;
+s_object *function_badc0(long object_index, dword types);
+bool function_1df560(short team, short other_team);
+void function_197160(long player_index, long arg_1f407d_2, long code);
+long function_baf80(long object_index);
+void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte damage);
+void function_196dd0(long player_index, long counter, long arg_1f407d_2, long delta);
+void function_1ea880(long first_player, long player_index, s_object_values *table);
+
+// @retail 0x1e9fa0
+void __stdcall function_1e9fa0(void *engine_globals, long object_index, long reported_player, word reported_team, byte code)
+{
+	if (!*(byte *)engine_globals) return;
+	s_statborg *statistics = (s_statborg *)engine_globals;
+	byte *unit = (byte *)function_badc0(object_index, 3);
+	long victim = unit ? *(long *)(unit + 0x13c) : NONE;
+	long victim_team = victim == NONE ? NONE : (char)g_4e8c24->data[(victim & 0xffff) * 0x21c + 0xc0];
+	long killer_team = NONE;
+	long cutoff = g_510c54->game_time - real_to_long((real)g_510c54->field_2_3 * 4.0f);
+	long recent = g_510c54->game_time - real_to_long((real)g_510c54->field_2_3 * 6.0f);
+	byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
+	bool consider_team = !(reported_player != NONE && function_1df560((short)victim_team, (short)reported_team));
+	long selected = NONE, reported_slot = NONE;
+	real best = -FLT_MAX;
+	byte *history = object + 0x2f0;
+	for (short i = 0; i < 4; ++i)
+	{
+		byte *entry = history + i * 0x10;
+		long player_index = *(long *)(entry + 0xc);
+		if (player_index == NONE) continue;
+		if (player_index == reported_player) reported_slot = i;
+		else
+		{
+			if (!consider_team) continue;
+			byte *player = record_pool_lookup(g_4e8c24, player_index);
+			if (!player || !function_1df560((short)victim_team, (char)player[0xc0])) continue;
+		}
+		if (*(dword *)entry > (dword)recent && *(real *)(entry + 4) > best)
+		{
+			selected = i;
+			best = *(real *)(entry + 4);
+		}
+	}
+	if (selected == NONE) selected = reported_slot;
+	long killer = NONE;
+	real assist_threshold = 0.0f;
+	bool hostile = false;
+	byte damage_code = code;
+	if (selected != NONE)
+	{
+		byte *entry = history + selected * 0x10;
+		damage_code = object[0x330 + selected];
+		long player_index = *(long *)(entry + 0xc);
+		if (datum_get_inlined(g_4e8c24, player_index))
+		{
+			killer = player_index;
+			assist_threshold = *(real *)(entry + 4) * 0.4f;
+			if (killer == reported_player) damage_code = code;
+		}
+	}
+	if (killer == NONE && datum_get_inlined(g_4e8c24, reported_player)) { killer = reported_player; damage_code = code; }
+	if (killer != NONE)
+	{
+		byte *player = g_4e8c24->data + (killer & 0xffff) * 0x21c;
+		killer_team = (char)player[0xc0];
+		if (function_1df560((short)victim_team, (short)killer_team) && victim != NONE)
+		{
+			function_197160(killer, victim, damage_code);
+			function_1ea5b0(killer, statistics, cutoff, damage_code);
+		}
+		else { ++*(short *)(player + 0x1c4); hostile = true; }
+	}
+	long assists[5], other_assists[4];
+	long assist_count = 0, other_count = 0;
+	if (assist_threshold > 0.0f && victim != NONE)
+		for (long i = 0; i < 4; ++i)
+		{
+			byte *entry = history + i * 0x10;
+			long player_index = *(long *)(entry + 0xc);
+			byte *player = datum_get_inlined(g_4e8c24, player_index);
+			if (!player || player_index == killer ||
+				(player_index != reported_player && !(*(real *)(entry + 4) > assist_threshold))) continue;
+			if (function_1df560((short)victim_team, (char)player[0xc0])) assists[assist_count++] = player_index;
+			else other_assists[other_count++] = player_index;
+		}
+	if (killer != NONE && victim != NONE)
+	{
+		byte *player = g_4e8c24->data + (killer & 0xffff) * 0x21c;
+		if (function_1df560((short)victim_team, (char)player[0xc0]))
+		{
+			long killer_unit = *(long *)(player + 0x2c);
+			if (killer_unit != NONE)
+			{
+				long root = function_baf80(killer_unit);
+				byte *header = g_4e0300->data + (root & 0xffff) * 12;
+				if ((1 << header[3]) & 3)
+				{
+					byte *root_unit = *(byte **)(header + 8);
+					long related = *(long *)(root_unit + 0x248);
+					if (related != NONE && related != killer_unit)
+					{
+						byte *related_unit = *(byte **)(g_4e0300->data + (related & 0xffff) * 12 + 8);
+						long related_player = *(long *)(related_unit + 0x13c);
+						if (related_player != NONE)
+						{
+							byte *other = g_4e8c24->data + (related_player & 0xffff) * 0x21c;
+							if (function_1df560((short)victim_team, (char)other[0xc0]) && (dword)assist_count < 5)
+								assists[assist_count++] = related_player;
+						}
+					}
+				}
+			}
+		}
+	}
+	if (victim != NONE)
+	{
+		function_15ce70(killer, victim, hostile, damage_code);
+		if (killer != NONE)
+		{
+			function_196dd0(killer & 0xffff, 0, victim & 0xffff, 1);
+			function_196dd0(victim & 0xffff, 1, killer & 0xffff, 1);
+		}
+	}
+	for (long i = 0; i < assist_count; ++i)
+	{
+		long j = 0;
+		while (j < i && assists[j] != assists[i]) ++j;
+		if (j == i) { function_1e9ce0(assists[i], 8, statistics, 6, 1, true); *(dword *)g_4e9ae8 |= 0x20; }
+	}
+	for (long i = 0; i < other_count; ++i)
+	{
+		long j = 0;
+		while (j < i && other_assists[j] != other_assists[i]) ++j;
+		if (j == i) function_1ea880(victim, other_assists[i], (s_object_values *)statistics);
+	}
+	if (victim != NONE)
+	{
+		bool self = reported_player == victim;
+		bool friendly = g_55e4d0[g_4e9ae8->engine_index] && g_4e6948->flags184.bit0 &&
+			victim_team != NONE && killer_team != NONE && victim_team == killer_team;
+		function_1ea770(damage_code, victim, statistics, killer, self, friendly);
+	}
+}
+
+// @retail 0x1e9ce0
+void function_1e9ce0(long player_index, long counter, s_statborg *statistics,
+	long field, long volatile delta, bool by_team)
+{
+	long const volatile *field_reference = &field;
+	long stored_field = *field_reference;
+	long index = player_index & 0xffff;
+	short *entry = &((s_object_values *)statistics)->values[index][stored_field];
+	long value = *entry + (short)delta;
+	if (value < -30000) value = -30000;
+	else if (value > 30000) value = 30000;
+	*entry = (short)value;
+	if (g_55e4d0[g_4e9ae8->engine_index] && g_4e9ae8->value28 != NONE)
+		function_b58c0(g_4e9ae8->value28, 1 << index);
+	if (counter != NONE) function_1968b0(NONE, index, counter, *entry);
+	if (by_team)
+	{
+		by_team = false;
+		if (g_55e4d0[g_4e9ae8->engine_index]) by_team = g_4e6948->flags184.bit0;
+	}
+	if (by_team &&
+		index != NONE && index >= 0 && index < g_4e8c24->high_water_index)
+	{
+		byte *player = g_4e8c24->data + index * g_4e8c24->size;
+		if (*(short *)player && (char)player[0xc0] != NONE)
+			function_1e9df0(field, counter, statistics, (char)player[0xc0], delta);
+	}
+}
 
 // @retail 0x1e9c90
 void function_1e9c90(long object_index, long column, s_object_values *table)
@@ -506,9 +757,8 @@ byte *textures = definition + (alternate ? 0x20 : 0);
 	return result;
 }
 
-#if 0
-// Activating this body regresses 0x15ca10, 0x2bce70 and 0x2c0a90.
-// Disabled retail draft 0x1e9df0
+// The new statistic callers allow this body without the earlier LTCG regressions.
+// @retail 0x1e9df0
 void function_1e9df0(long field, long counter, s_statborg *statistics, long team, long volatile delta)
 {
  short *entry = &((s_object_values *)statistics)->team_values[team][field];
@@ -521,9 +771,9 @@ void function_1e9df0(long field, long counter, s_statborg *statistics, long team
  if (g_55e4d0[g_4e9ae8->engine_index] && g_4e9ae8->value28 != NONE)
   function_b58c0(g_4e9ae8->value28, 1 << (team + 16));
  if (counter != NONE)
-  function_1968b0(NONE, team, counter, *entry);
+  function_1968b0(team, NONE, counter, *entry);
 }
-#endif
+
 
 
 #include "unknown_0259d0.h"
