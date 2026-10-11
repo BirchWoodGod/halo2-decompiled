@@ -96,6 +96,7 @@ helpers = {
 compiled_helpers = {symbol(name): address for address, name in helpers.items()}
 trace = {r: [], c: []}
 real_geometry = "--real-geometry" in sys.argv
+real_textures = "--real-textures" in sys.argv
 
 
 def hook(u, address, size, unused):
@@ -104,6 +105,11 @@ def hook(u, address, size, unused):
         return
     sp = reg(u, "ESP")
     trace[u].append(retail_address)
+    if real_textures and retail_address in (0x12CCF0, 0x12CE00):
+        assert retail_address != 0x12CE00, (
+            "Unexpected texture fallback in resident fixture"
+        )
+        return
     if real_geometry and retail_address in (0x142390, 0x17CB00, 0x17D9A0):
         return
     if retail_address == 0x142390:

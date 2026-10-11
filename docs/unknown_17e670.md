@@ -432,3 +432,31 @@ Sources: independent disassembly of the project's SHA-256-pinned retail
 executable and the existing CC0 repository source and inventory. No leaked
 symbols or proprietary SDK implementation is used. AI assistance: Codex.
 This analysis is released under CC0 1.0.
+
+## Texture availability through actual cache lookup
+
+`python tools/decal_probe.py --suite decal-textures --retail /path/to/default.xbe`
+runs the full synthetic allocation/projection/commit path with availability
+checks enabled. It crosses the 648 geometry combinations with three routes:
+a texture remembered for a future frame, a raw texture, and a resident
+level-zero cache entry. The latter two execute actual `0x12ccf0`; the first
+bypasses the helper through the actual preparation branch. Unexpected fallback
+is rejected instead of replaced by a successful stand-in.
+
+All 1,944 cases pass on the previously checked image
+`cef349f727f83f7295b1d4f698fe004e632ef2098a26ef5f05f2926c11a34857`:
+2,700 commits, 2,160 polygons, 9,577 vertices, 1,512 registered records, and
+4,116 portal-query invocations (including recursion). The test compares full
+bitmap and synthetic cache state plus normalized helper traces, alongside the
+existing geometry/record comparisons. Independent assertions check the texture
+pointer, resident frame update to current+2, physical block timestamp, and
+lookup count: none for a frame hit, one per commit for a raw texture, and one
+initial lookup for a resident texture subsequently remembered by the bitmap.
+
+The check-enabling zero argument also propagates to commit, as in retail; it
+is not forced back to the default suite's nonzero value. The default suite
+continues to cover its original flag and bypassed texture path. Texture
+resources are synthetic, lighting has no lightmap, and command storage does
+not refill. This verifies neither missing-texture fallback nor shared textures,
+streamed loading, GPU texture sampling, real assets, or gameplay. No C++ or
+compiler flags changed for this validation extension.

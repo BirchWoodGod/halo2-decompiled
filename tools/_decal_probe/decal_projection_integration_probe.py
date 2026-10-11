@@ -14,6 +14,7 @@ single_face = "--single-face" in sys.argv
 bent = "--bent" in sys.argv
 three_faces = "--three-faces" in sys.argv
 assert not three_faces or bent
+real_textures = "--real-textures" in sys.argv
 real_commit = "--real-commit" in sys.argv
 real_spatial = "--real-spatial" in sys.argv
 assert not real_spatial or real_commit
@@ -42,6 +43,8 @@ PLANE = MESH + 0x100
 FACE = MESH + 0x140
 EDGES = MESH + 0x180
 VERTICES = MESH + 0x200
+TEXTURE_CACHE = p.DATA + 0x80000
+texture_coverage = {route: 0 for route in ("frame", "raw", "resident")}
 captures = {r: [], c: []}
 commits = {r: 0, c: 0}
 commit_targets = {r: 0x180D80, c: p.symbol("function_180d80")}
@@ -57,7 +60,7 @@ def commit(u, address, size, unused):
         transform == 0
         and tag == 0x12340000
         and placement == p.PLACE
-        and flag & 255 == 1
+        and flag & 255 == (0 if real_textures else 1)
     )
     vertices = p.get(u, output + 0x5000, "h")[0]
     polygons = p.get(u, output + 0x5802, "h")[0]
@@ -111,6 +114,7 @@ for case, (
     winding,
     two_faces,
     angle_degrees,
+    texture_route,
 ) in enumerate(
     itertools.product(
         (0.25, 1.0, 4.0),
@@ -121,6 +125,7 @@ for case, (
         (1, -1),
         (True,) if bent else (False,) if single_face else (False, True),
         (-80, -41, -39, -15, 15, 39, 41, 80, 111) if bent else (0,),
+        ("frame", "raw", "resident") if real_textures else ("bypass",),
     )
 ):
     u = r
@@ -273,8 +278,43 @@ for case, (
                 (0x4EA950, "g_4ea950", commit_probe.POOL),
             ]:
                 p.put(u, va if u is r else p.symbol(name), "I", value)
+        if real_textures:
+            cache = TEXTURE_CACHE
+            u.mem_write(cache, bytes(0x1000))
+            for va, name, value, fmt in [
+                (0x468841, "g_468841", 0, "B"),
+                (0x4E647B, "g_4e647b", 0, "B"),
+                (0x4E6454, "g_4e6454", cache + 0x100, "I"),
+                (0x4E6464, "g_4e6464", cache + 0x400, "I"),
+            ]:
+                p.put(u, va if u is r else p.symbol(name), fmt, value)
+            p.put(u, cache + 0x144, "I", cache + 0x200)
+            p.put(u, cache + 0x203, "B", 1)
+            p.put(u, cache + 0x438, "I", 0x1234)
+            p.put(u, cache + 0x464, "I", cache + 0x500)
+            p.put(u, cache + 0x544, "I", cache + 0x600)
+            p.put(u, p.BITMAP + 0xE, "H", 0x200 if texture_route == "resident" else 0)
+            p.put(u, p.BITMAP + 0x28, "3i", 0, -1, -1)
+            p.put(
+                u,
+                p.BITMAP + 0x50,
+                "I",
+                0 if texture_route == "resident" else cache + 0x900,
+            )
+            p.put(u, p.BITMAP + 0x58, "f", 1)
+            p.put(u, p.BITMAP + 0x70, "i", 6 if texture_route == "frame" else 0)
         p.put(
-            u, p.STACK, "8I", p.STOP, MESH, 0, p.DIRECTION, 0x3F800000, 1, 0xFFFFFFFF, 0
+            u,
+            p.STACK,
+            "8I",
+            p.STOP,
+            MESH,
+            0,
+            p.DIRECTION,
+            0x3F800000,
+            0 if real_textures else 1,
+            0xFFFFFFFF,
+            0,
         )
         u.reg_write(X.UC_X86_REG_ECX, 0x12340000)
         u.reg_write(X.UC_X86_REG_EBX, p.PLACE)
@@ -328,6 +368,33 @@ for case, (
                 else None,
             )
         )
+        if real_textures:
+            lookups = p.trace[u].count(0x12CCF0)
+            expected_lookups = (
+                0
+                if texture_route == "frame"
+                else commits[u]
+                if texture_route == "raw"
+                else 1
+            )
+            assert lookups == expected_lookups, (
+                texture_route,
+                lookups,
+                expected_lookups,
+            )
+            assert p.get(u, p.BITMAP + 0x50, "I")[0] == TEXTURE_CACHE + (
+                0x214 if texture_route == "resident" else 0x900
+            )
+            if texture_route == "resident":
+                assert p.get(u, p.BITMAP + 0x70, "i")[0] == 7
+                assert p.get(u, TEXTURE_CACHE + 0x614, "I")[0] == 0x1234
+            results[-1] += (
+                bytes(u.mem_read(p.BITMAP, 0x74)),
+                bytes(u.mem_read(TEXTURE_CACHE, 0x1000)),
+                p.trace[u][:],
+            )
+    if real_textures:
+        texture_coverage[texture_route] += 1
     if results[0] != results[1]:
         print(
             "FAIL",
@@ -477,12 +544,19 @@ if real_commit:
             if real_lighting
             else ""
         )
-        + "Texture availability is bypassed. Compares generated/packed buffers, records, state, seed, helper traces and per-registration snapshots. No GPU, asset streaming or gameplay proof."
+        + (
+            "Texture availability executes frame-hit, raw-texture and resident-cache paths; fallback/streaming are excluded. "
+            if real_textures
+            else "Texture availability is bypassed. "
+        )
+        + "Compares generated/packed buffers, records, state, seed, helper traces and per-registration snapshots. No GPU, asset streaming or gameplay proof."
     )
 report = {
     "passed": True,
     "diagnostic_argument_swap": diagnose_arguments,
     "coverage": coverage,
+    "real_textures": real_textures,
+    "texture_coverage": texture_coverage if real_textures else None,
     "real_physical": real_physical,
     "real_buffer": real_buffer,
     "real_lighting": real_lighting,

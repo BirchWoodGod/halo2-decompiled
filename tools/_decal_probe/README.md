@@ -19,6 +19,16 @@ Lighting runs without a lightmap, texture availability is bypassed, allocator
 callbacks are absent and command storage does not refill. **This is not a GPU,
 real-map, asset-streaming or gameplay test.**
 
+Use `--suite decal-textures` to enable texture availability checks across
+1,944 cases: the same geometry combinations crossed with a frame hit, a raw
+texture, and a resident level-zero cache entry. Actual cache lookup executes,
+including bitmap texture/frame updates and physical-cache timestamps. Full
+bitmap/cache memory and helper traces are compared, with independent expected
+pointer, frame, timestamp and lookup-count checks. Unexpected fallback is an
+error; streaming, missing textures, shared textures and GPU sampling are not
+covered. Enabling this check also forwards a zero flag to decal commit, as
+retail does; the default suite retains its original nonzero flag.
+
 Other suites are `--suite physical`, `--suite portals` and `--suite buffer`.
 The runner accepts `--image`, `--map`, and `--output`; defaults are
 `build/halo2.exe`, `build/halo2.map`, and `build/decal-probe.json`. The image and

@@ -19,6 +19,7 @@ from xbe import ROOT, retail_xbe_path
 
 SUITES = {
     "decal": "decal_projection_integration_probe.py",
+    "decal-textures": "decal_projection_integration_probe.py",
     "physical": "physical_geometry_probe.py",
     "portals": "cluster_portal_probe.py",
     "buffer": "decal_buffer_probe.py",
@@ -83,7 +84,11 @@ def main(argv=None):
         fixtures = Path(__file__).resolve().parent / "_decal_probe"
         sys.path.insert(0, str(fixtures))
         script = fixtures / SUITES[args.suite]
-        sys.argv = [str(script)] + (FULL_PATH if args.suite == "decal" else [])
+        sys.argv = [str(script)] + (
+            FULL_PATH if args.suite in ("decal", "decal-textures") else []
+        )
+        if args.suite == "decal-textures":
+            sys.argv.append("--real-textures")
         with tempfile.TemporaryDirectory(prefix="halo2-decal-probe-") as temp:
             os.environ["DECOMP_PROBE_REPORT_DIR"] = temp
             runpy.run_path(str(script), run_name="__main__")
