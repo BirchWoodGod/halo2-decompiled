@@ -389,7 +389,7 @@ def test_pinning_units_take_address_takers_and_stub_callers():
     sources = {'a.obj': 'src/a.cpp', 'b.obj': 'src/b.cpp', 'c.obj': 'src/c.cpp', 'd.obj': 'src/d.cpp',
                'e.obj': 'src/e.cpp', 'stubs_s.obj': 'src/stubs/s.cpp'}
     target = linkmap.find('target')[0]
-    assert permute.pinning_units(linkmap, image, target, sources) == {'src/c.cpp', 'src/e.cpp', 'src/stubs/s.cpp'}
+    assert permute.pinning_units(linkmap, image, [target], sources) == {'src/c.cpp', 'src/e.cpp', 'src/stubs/s.cpp'}
 
 
 def search(full, log=None):

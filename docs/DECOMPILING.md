@@ -66,7 +66,9 @@ This is the procedure for one function, written for a person or a subagent.
    - *Direct3D:* a function that calls the public D3D API must call the public
      D3D API. `d3d8ltcg.lib` is linked, and LTCG inlines parts of it into the
      caller just as it did in retail. Never write a stub for a D3D internal.
-6. **Run** `python tools/check.py <va>`. Repeat until it prints `MATCH`.
+6. **Run** `python tools/check.py --fast <va>` after each edit (see
+   [The fast check](#the-fast-check)), and `python tools/check.py <va>`
+   before you keep a change. Repeat until it prints `MATCH`.
    When it does not match, it prints the first difference, and
    `build/report.json` stores it too.
    Things that usually decide a match:
@@ -83,6 +85,53 @@ This is the procedure for one function, written for a person or a subagent.
    `near` or `todo` with the first difference, so someone can come back to
    it. `python tools/near.py` lists every near-miss in the csv by source
    file (count and size) and does not need the XBE.
+
+## The fast check
+
+The plain check rebuilds and links the whole program, which takes one to
+three minutes. While you iterate, check on a reduced image instead:
+
+    python tools/check.py --fast <va> [<va> ...]
+
+(or `@file`, one address per line). It builds one image holding each listed
+function's source, the sources of its callees in retail all the way down, the
+sources of the functions and globals its body uses by name (so the compiler
+can inline them as the full build does), and, from your last full build, the
+sources that take the address of the function or its callees, and the library
+objects. Only those are compiled and linked. It prints the full check's
+`MATCH` and `DIFF` lines and listing, then where the time went: on a busy
+machine about 8 seconds for one function, 12 to 40 for twenty, and about
+1.5 when nothing changed since the last run.
+
+- It writes only `build/report-fast.json`. `config/functions.csv` and
+  `build/report.json` only change with the plain check, which stays the
+  judge: run `python tools/check.py <va>` before you keep a change, and the
+  full `python tools/check.py` before you finish.
+- It takes what it needs from the last full build in `build/` (any plain
+  check makes one). Without one it says so, and leaves out the library objects
+  and the sources that take addresses.
+- A function whose callees go a few hundred sources deep takes about as long
+  as a full link (25 to 30 seconds). Several functions from one file or area
+  share most of their image, so check them together.
+
+A `CAVEAT` line follows a function when the reduced image may build it
+differently from the full one:
+
+- *builds differently here than in the last full build*: the function, or a
+  function it calls, comes out different from the last full build although
+  its source has not changed since. Code outside the reduced image decides
+  it (such as a callee that takes a `float` in `xmm4` only in the full image);
+  trust only the plain check for this function. In a 212-function comparison
+  every disagreement with the full check carried this caveat.
+- *calls or global references reach what the reduced image leaves out*: a
+  function the full build may inline, or a global defined in a source the
+  image leaves out. Usually harmless; run the plain check when a result
+  surprises you.
+
+The first caveat compares with the last full build, so it says nothing about
+a function whose source you changed since (only its unchanged callees are
+compared), and nothing at all after a header change until the next plain
+check.
 
 ## Stand-ins: marking functions
 
