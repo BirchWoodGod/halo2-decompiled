@@ -774,21 +774,10 @@ these results do not cover later main or the separate pending-PR integration.
 
 ### Reproducing texture-header checks
 
-The optional standalone probe exercises both complete hardware-format rows
-and compares the bits-per-pixel table before running actual header construction:
-
-```sh
-python -m pip install 'unicorn>=2.1.3,<3'
-python tools/texture_header_probe.py --retail /path/to/default.xbe
-```
-
-`--image`, `--map` and `--output` accept explicit paths. Defaults use the
-checkout's `build/halo2.exe`, `build/halo2.map` and `build/texture-headers.json`;
-the retail default uses `RETAIL_XBE` or `orig/default.xbe`. It works outside
-the checkout. Use an image and link map from the same build. Reports include
-input hashes, Unicorn version, coverage and mismatching header examples. An
-input or comparison failure replaces prior success and returns nonzero; input
-files cannot be selected as output, and optimized Python is rejected.
+These checks were made with a standalone Unicorn-based probe (`texture_header_probe.py`) that exercises both
+complete hardware-format rows and compares the bits-per-pixel table before running actual header construction.
+The probe is not kept in this repository; its source is in the history of
+[pull request #313](https://github.com/kirklandsig/halo2-decompiled/pull/313).
 
 On the image above, all 1,944 cases pass: 792 linear and 1,152 swizzled, with
 144 alternate-format cases. Cases cover each supported row/index combination,

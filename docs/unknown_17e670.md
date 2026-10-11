@@ -21,23 +21,11 @@ map from the contributor's own build.
 
 ## Reproduce the synthetic comparison
 
-The optional emulator runner is included in this contribution:
-
-```sh
-python -m pip install -r tools/_decal_probe/requirements.txt
-python tools/decal_probe.py --retail /path/to/default.xbe
-```
-
-Build first using the normal repository instructions. The runner uses
-`build/halo2.exe` and its paired `build/halo2.map`; `--image` and `--map` override
-these paths. It verifies the retail hash and writes a fresh pass/fail report to
-`build/decal-probe.json`, including input hashes and emulator versions. The
-default suite is the 648-case full synthetic path described below. Optional
-`--suite physical`, `--suite portals` and `--suite buffer` reproduce the
-allocator, portal and command-generation checks. See
-[the probe README](../tools/_decal_probe/README.md) for boundaries and usage.
-The historical exploratory sweeps below have narrower or different fixtures;
-not every local exploratory mode is exposed by this runner.
+The comparisons below were made with an optional emulator runner (Unicorn) that builds synthetic fixtures and
+checks our build against retail: a 648-case full synthetic path by default, plus physical-allocator, portal and
+command-generation suites. The runner is not kept in this repository; its source and README are in the history of
+[pull request #323](https://github.com/kirklandsig/halo2-decompiled/pull/323).
+The historical exploratory sweeps below have narrower or different fixtures.
 
 ## Independently observed flow at `0x17ee20`
 
@@ -438,8 +426,7 @@ This analysis is released under CC0 1.0.
 
 ## Texture availability through actual cache lookup
 
-`python tools/decal_probe.py --suite decal-textures --retail /path/to/default.xbe`
-runs the full synthetic allocation/projection/commit path with availability
+The runner's `decal-textures` suite runs the full synthetic allocation/projection/commit path with availability
 checks enabled. It crosses the 648 geometry combinations with three routes:
 a texture remembered for a future frame, a raw texture, and a resident
 level-zero cache entry. The latter two execute actual `0x12ccf0`; the first
