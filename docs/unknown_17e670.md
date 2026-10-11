@@ -374,6 +374,33 @@ synthetic; texture availability is bypassed. Full lightmap sampling, actual
 assets, command-buffer refill, GPU execution and complete gameplay remain
 unverified.
 
+## Physical geometry allocation
+
+Actual physical allocation/deletion and their record-pool helpers pass nine
+lifecycle sequences: 990 allocation attempts, 162 explicit deletions, 345
+failed allocations and 450 evicted blocks. Synthetic arenas vary page capacity,
+allocation policy, requested size, type and time. Comparisons include returned
+handles, manager state, block records and allocation bitmaps after every step.
+Busy/delete callbacks are absent in these fixtures, so callback effects are not
+covered by this allocator result.
+
+The integrated 648 flat decal cases also pass with actual physical allocation
+and cleanup enabled. This configuration no longer replaces any reached game
+routine with a mock. It executes allocation, preparation, projection, packing,
+buffer lookup, initial record creation, portal search, reference copying and
+cell linking, using real generated handles and block offsets. There are 504
+committed records and 1,372 recursive cluster-query invocations/decal-pool
+allocation attempts. Physical manager/block/bitmap state, high-address geometry
+storage, command storage/cursor, decal records/cells, lookup, seed and persistent
+state agree with retail. No production changes were required; the image
+remains `cef349f7...` above.
+
+This is a bounded synthetic scenario: the physical arena has ample space for
+the short chains, callbacks are absent, lighting uses the no-lightmap path,
+texture availability is bypassed, and command storage does not refill. It
+verifies vertex-cache command generation, not GPU execution or draw output.
+Real-map/assets, rendering and complete gameplay remain unverified.
+
 Shared changes are limited to the new header, the predicate definition and
 callers in `src/unknown_11cb00.cpp`, `src/unknown_1502e0.cpp`,
 `src/unknown_1689b0.cpp`, `src/unknown_17d9a0.cpp`, `src/ai.cpp`, and
