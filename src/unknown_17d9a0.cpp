@@ -659,7 +659,7 @@ struct s_decal_preparation_17ef10
     short frame_index;
     short bitmap_index;
     short unknown102;
-    s_decal_bitmap_group *bitmap_group;
+    s_decal_bitmap_group *field_104_2;
     s_decal_sprite_sequence *sequence;
     s_decal_sprite_frame *frame;
 };
@@ -730,7 +730,7 @@ struct s_decal_recent_17ef10
 struct s_decal_globals;
 extern s_decal_globals *g_4ea94c;
 extern __int64 g_485aa0;
-long g_46dd4c;
+long g_46dd4c = NONE;
 point3f g_510c80;
 short g_468cac[8] = {1, 1, -1, -1, 0, 1, 0, -1};
 short g_468cc0[8] = {1, -1, -1, 1, 1, 0, -1, 0};
@@ -990,7 +990,7 @@ bool function_17ef10(transform4x3f const *transform, long tag_index,
 
     s_decal_bitmap_view_17ef10 *bitmap =
         (s_decal_bitmap_view_17ef10 *)g_4e3b44[definition->bitmap_index & 0xffff].bytes;
-    preparation->bitmap_group = (s_decal_bitmap_group *)bitmap;
+    preparation->field_104_2 = (s_decal_bitmap_group *)bitmap;
     if (bitmap->sequence_count > 0)
     {
         if ((short)unknown1 != -1)

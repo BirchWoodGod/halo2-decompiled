@@ -315,15 +315,15 @@ real function_11e000(
 bool function_11e5e0(
 	point3f const *segment_start,
 	vector3f const *direction,
-	point3f const *sphere_center,
+	point3f const *arg_28f920,
 	real radius)
 {
 	vector3f delta;
 	real c;
 
-	delta.i = segment_start->x - sphere_center->x;
-	delta.j = segment_start->y - sphere_center->y;
-	delta.k = segment_start->z - sphere_center->z;
+	delta.i = segment_start->x - arg_28f920->x;
+	delta.j = segment_start->y - arg_28f920->y;
+	delta.k = segment_start->z - arg_28f920->z;
 	c = delta.k * delta.k + delta.j * delta.j + delta.i * delta.i - radius * radius;
 
 	if (c < 0.f)

@@ -226,7 +226,7 @@ if __name__ == "__main__":
         "success": 0,
         "failure": 0,
         "plane_basis": 0,
-        "sprite_bounds": 0,
+        "bounds_17cb00": 0,
         "lookup": 0,
         "fallback": 0,
         "quad": 0,
@@ -370,7 +370,7 @@ if __name__ == "__main__":
         coverage["success" if outputs[0][0] else "failure"] += 1
         for address, key in [
             (0x142390, "plane_basis"),
-            (0x17CB00, "sprite_bounds"),
+            (0x17CB00, "bounds_17cb00"),
             (0x12CCF0, "lookup"),
             (0x12CE00, "fallback"),
             (0x17D9A0, "quad"),

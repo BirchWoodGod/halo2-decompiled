@@ -159,10 +159,7 @@ long __stdcall function_180d80(s_180d84 const *arg_0, transform4x3f const *arg_1
                         real local_15 = local_0[local_12].field_0.y - arg_3->point.y;
                         real local_16 = local_0[local_12].field_0.z - arg_3->point.z;
                         real local_17 = local_0[local_12].field_0.x - arg_3->point.x;
-                        /* Retail rounds z*z + y*y before adding x*x. Prevent /O2
-                           from reassociating the three terms and changing the radius. */
-                        volatile real partial_radius = local_16 * local_16 + local_15 * local_15;
-                        real local_18 = partial_radius + local_17 * local_17;
+                        real local_18 = local_16 * local_16 + local_15 * local_15 + local_17 * local_17;
                         if (local_12 == 0 || local_18 > local_9) local_9 = local_18;
                     }
                     *(point3f *)(local_7 + 0xc) = arg_3->point;

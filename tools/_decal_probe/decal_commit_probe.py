@@ -122,7 +122,7 @@ if __name__ == "__main__":
         "success": 0,
         "failure": 0,
         "transformed": 0,
-        "allocated_bytes": 0,
+        "bytes_allocated": 0,
         "cleanup": 0,
         "lighting": 0,
     }
@@ -258,7 +258,7 @@ if __name__ == "__main__":
         coverage["cases"] += 1
         coverage["success" if success else "failure"] += 1
         coverage["transformed"] += int(success and bool(transform))
-        coverage["allocated_bytes"] += sum(
+        coverage["bytes_allocated"] += sum(
             x[1] for x in trace[p.r] if x[0] == "allocate"
         )
         coverage["cleanup"] += sum(x[0] == "delete" for x in trace[p.r])
