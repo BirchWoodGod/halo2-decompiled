@@ -242,6 +242,8 @@ bool function_10f630(long object_index, long *first, long *second);
 // @retail 0x10eef0
 long function_10eef0(long object_index, bool alternate, bool no_request)
 {
+	bool const * volatile alternate_reference = &alternate;
+	alternate = *alternate_reference;
 	s_object_10db60 *object = OBJECT_GET_10db60(object_index);
 	s_object_state_33e *state = OBJECT_STATE_33E(object);
 	long result = 0x7000101;

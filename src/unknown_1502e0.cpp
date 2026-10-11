@@ -1640,7 +1640,9 @@ bool function_152bf0(byte const *loadout, long unit_index)
         if (special != NONE && !function_cd0c0(unit_index, special, 7))
         { function_b8540(special); return false; }
     }
-    return result;
+    if (result)
+    	return true;
+    return false;
 }
 
 bool function_cb810(long unit_index, vector3f *vector);

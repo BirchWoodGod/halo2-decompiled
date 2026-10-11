@@ -482,7 +482,7 @@ void function_158140(void)
 	dword old_playing_teams = globals->playing_teams;
 	word old_team_mask = globals->team_mask;
 	dword playing_teams = 0;
-	dword present_teams = 0;
+	volatile dword present_teams = 0;
 	s_record_pool_iterator iterator;
 	s_engine_player *player;
 
@@ -1382,6 +1382,8 @@ struct s_item_collection
 // @retail 0x15ac50
 long function_15ac50(long index)
 {
+	long const *index_reference = &index;
+	index = *index_reference;
 	s_scenario_netgame_equipment *equipment = &((s_scenario_netgame_equipment_view *)g_4e0350)->equipment[index];
 	real seconds = 30.0f;
 	short spawn_time = 0;

@@ -204,18 +204,18 @@ void particle_systems_update_locations(void)
 			{
 				s_particle_location_datum *particle_location = DATUM(g_51ec8c, s_particle_location_datum, particle_system->location_index);
 
-				if (bsp_index != NONE)
+				if (!(bsp_index != NONE))
+				{
+					location.leaf_index = NONE;
+					location.cluster_index = NONE;
+				}
+				else
 				{
 					location.leaf_index = function_14a280(g_4e033c, 0, &particle_location->position);
 					if (location.leaf_index != NONE)
 						location.cluster_index = ((s_structure_bsp_173b90 *)g_4e0348)->leaves[location.leaf_index].cluster_index;
 					else
 						location.cluster_index = NONE;
-				}
-				else
-				{
-					location.leaf_index = NONE;
-					location.cluster_index = NONE;
 				}
 			}
 			else
