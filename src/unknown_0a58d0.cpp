@@ -5,15 +5,18 @@
 #include "globals.h"
 #include "unknown_0a58d0.h"
 #include "unknown_xa19f52.h"
+#include <string.h>
 
-// The callers currently omit the stream and initial-state output arguments.
-// Keep these bodies disabled until those caller interfaces can be completed.
+// The serializer and initializer now use the complete stream and state-output
+// interfaces at their definitions, declarations, and callers.
 #if 0
 void scenario_object_name_encode(long object_name, s_bitstream *stream);
-void *function_122c10(long group_tag, long tag_index);
+__declspec(noinline) void *function_122c10(long group_tag, long tag_index);
 void function_11df60(vector3f const *rotation, vector3f *forward, vector3f *up);
 
-// Retail 0xa6660; the active stub remains in unknown_09a9f0.cpp.
+#endif
+void scenario_object_name_encode(long object_name, s_bitstream *stream);
+// @retail 0xa6660
 void __stdcall function_a6660(s_entity_info const *info, s_bitstream *stream)
 {
 	scenario_object_name_encode(info->definition_index, stream);
@@ -22,16 +25,24 @@ void __stdcall function_a6660(s_entity_info const *info, s_bitstream *stream)
 		stream_write_checked(stream, info->field0, 13);
 	stream_write_checked(stream, (signed char)info->byte8 + 1, 7);
 	byte const *fields = (byte const *)info;
-	bool present = fields[0xc] || fields[0xd] || fields[0xe];
-	stream_write_bit(stream, present);
-	if (present)
-	{
+	if (!fields[0xc] && !fields[0xd] && !fields[0xe])
+    {
+        stream_write_bit(stream, false);
+        return;
+    }
+    stream_write_bit(stream, true);
+    {
 		stream_write_checked(stream, fields[0xc], 6);
 		stream_write_checked(stream, fields[0xd], 6);
 		stream_write_checked(stream, fields[0xe], 4);
 	}
 }
+#if 0
 
+
+#endif
+__declspec(noinline) void *function_122c10(long group_tag, long tag_index);
+void function_11df60(vector3f const *rotation, vector3f *forward, vector3f *up);
 struct s_z_initial_placement_type
 {
 	byte unknown00[0xa];
@@ -72,13 +83,14 @@ struct s_z_initial_state
 	byte value61;
 };
 
-// Retail 0xa5bd0; the active stub remains in unknown_09a9f0.cpp.
+// @retail 0xa5bd0
 bool function_a5bd0(s_entity_info const *info, s_z_initial_state *state)
 {
-	bool result = false;
-	if (function_122c10(0x6f626a65, info->definition_index))
+	long definition_index = info->definition_index;
+    bool volatile result = false;
+	if (function_122c10(0x6f626a65, definition_index))
 	{
-		byte *definition = g_4e3b44[info->definition_index & 0xffff].bytes;
+		byte *definition = g_4e3b44[definition_index & 0xffff].bytes;
 		state->position = *g_468788;
 		state->forward = *g_4687a8;
 		state->up = *g_4687b0;
@@ -88,7 +100,8 @@ bool function_a5bd0(s_entity_info const *info, s_z_initial_state *state)
 			s_z_initial_placement_type *type = (s_z_initial_placement_type *)g_468630[*(short *)definition];
 			if (type->placements_offset != NONE && type->palette_offset != NONE)
 			{
-				s_z_initial_placement_block *block = (s_z_initial_placement_block *)(g_4e0350 + type->placements_offset);
+				long placement_size = type->placement_size;
+				s_z_initial_placement_block *block = (s_z_initial_placement_block *)((byte *)g_4e0350 + type->placements_offset);
 				long index = info->field0;
 				long clamped;
 				if (index < 0)
@@ -99,7 +112,7 @@ bool function_a5bd0(s_entity_info const *info, s_z_initial_state *state)
 					clamped = index;
 				if (clamped == index)
 				{
-					s_z_initial_placement *placement = (s_z_initial_placement *)(block->data + index * type->placement_size);
+					s_z_initial_placement *placement = (s_z_initial_placement *)(block->data + index * placement_size);
 					state->position = placement->position;
 					function_11df60(&placement->rotation, &state->forward, &state->up);
 					state->scale = placement->scale > 0.0f ? placement->scale : 1.0f;
@@ -131,6 +144,8 @@ bool function_a5bd0(s_entity_info const *info, s_z_initial_state *state)
 	}
 	return result;
 }
+#if 0
+
 #endif
 
 /* the entity an index stands for, or none when its salt is stale; retail
@@ -839,55 +854,55 @@ bool function_a6d50(long flags_address, long state_address, s_bitstream *stream)
  {
   function_195240(stream, (vector3f *)(state + 0x18), (vector3f *)(state + 0xc));
   *flags |= 4;
-  result = result && function_a74c0((vector3f *)(state + 0xc), (vector3f *)(state + 0x18));
+  if (result) result = function_a74c0((vector3f *)(state + 0xc), (vector3f *)(state + 0x18));
  }
  if (function_1957d0(stream))
  {
   *(real *)(state + 0x24) = z_decode_state_scalar(stream, 7, 127, 0.0f, 10.0f);
   *flags |= 8;
-  result = result && z_state_real_valid(*(real *)(state + 0x24));
+  if (result) result = z_state_real_valid(*(real *)(state + 0x24));
  }
  if (function_1957d0(stream))
  {
   function_195070(stream, (vector3f *)(state + 0x28), 0.03f, 350.0f, 10);
   *flags |= 0x10;
-  result = result && function_a7570((vector3f *)(state + 0x28));
+  if (result) result = function_a7570((vector3f *)(state + 0x28));
  }
  if (function_1957d0(stream))
  {
   function_195070(stream, (vector3f *)(state + 0x34), 0.03f, 30.0f, 8);
   *flags |= 0x20;
-  result = result && function_a7570((vector3f *)(state + 0x34));
+  if (result) result = function_a7570((vector3f *)(state + 0x34));
  }
  if (function_1957d0(stream))
  {
   *(real *)(state + 0x40) = z_decode_state_scalar(stream, 8, 254, -1.0f, 1.0f);
   *(bool *)(state + 0x44) = function_1957d0(stream);
   *flags |= 0x40;
-  result = result && z_state_real_valid(*(real *)(state + 0x40));
+  if (result) result = z_state_real_valid(*(real *)(state + 0x40));
  }
  if (function_1957d0(stream))
  {
   *(real *)(state + 0x48) = z_decode_state_scalar(stream, 8, 254, 0.0f, 3.0f);
   *(bool *)(state + 0x4c) = function_1957d0(stream);
   *flags |= 0x80;
-  result = result && z_state_real_valid(*(real *)(state + 0x48));
+  if (result) result = z_state_real_valid(*(real *)(state + 0x48));
  }
  if (function_1957d0(stream))
  {
   state[0x50] = (byte)function_1959c0(stream, 4);
-  result = result && state[0x50] <= 16;
+  if (result) result = state[0x50] <= 16;
   for (long i = 0; i < 16; ++i)
   {
    state[0x51 + i] = (byte)function_1959c0(stream, 3);
-   result = result && state[0x51 + i] < 12;
+   if (result) result = state[0x51 + i] < 12;
   }
   *flags |= 0x100;
  }
  if (stream_read_bit(stream))
  {
   state[0x61] = (byte)function_1959c0(stream, 5);
-  result = result && state[0x61] <= 16;
+  if (result) result = state[0x61] <= 16;
   if (state[0x61] > 0)
   {
    *(word *)(state + 0x62) = (word)function_1959c0(stream, state[0x61]);

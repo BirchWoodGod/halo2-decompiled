@@ -276,6 +276,8 @@ static inline bool cache_tag_group_is(s_cache_tag_group const *group, long group
 	return group->group_tag == group_tag || group->parent_group_tags[0] == group_tag || group->parent_group_tags[1] == group_tag;
 }
 
+__declspec(noinline) void *function_122c10(long group_tag, long tag_index);
+
 // @retail 0x122c10
 void *function_122c10(long group_tag, long tag_index)
 {

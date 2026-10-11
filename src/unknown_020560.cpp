@@ -1347,7 +1347,7 @@ long function_211a0(long source, real passes, real distortion, real falloff,
     real scale, real offset)
 {
     (void)&unused;
-    real pass = 0.0f;
+    real volatile pass = 0.0f;
     if (alternate == NONE)
         alternate = source;
     if ((byte)configure)

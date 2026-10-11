@@ -42,7 +42,7 @@ bool function_2613d0(long actor_index, s_reference reference, s_prop_search *sea
 						(reference.unknown2 & 0x7fff) * 0x484 + reference.unknown0 * 2 + 0x444);
 				else
 				{
-					long flags = definition->flags;
+					dword flags = (dword)(long)(short)definition->flags;
 					candidate[0x5a] = 1;
 					candidate[0x58] = (byte)((flags >> 5) & 1);
 					candidate[0x59] = (byte)(~(flags >> 6) & 1);

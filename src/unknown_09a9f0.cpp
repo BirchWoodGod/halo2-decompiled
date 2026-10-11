@@ -104,7 +104,7 @@ void c_object_type_definition::v11(long a, long b, long c)
 void c_turret_entity_definition::v12(long a, s_entity_info *info, long c, s_bitstream *stream)
 {
 	c_turret_entity_definition *volatile self = this;
-	function_a6660(info);
+	function_a6660(info, stream);
 	if (stream->size_in_bytes * 8 - stream->bit_position >= 1 && info->identifier != NONE)
 	{
 		stream->data[stream->bit_position / 8] |= (byte)(1 << (stream->bit_position % 8));
@@ -185,7 +185,7 @@ bool c_object_type_definition::v19(long a, long b, long c, s_entity_data *data)
     (void)&self;
 	bool result = false;
 	memset(data, 0, sizeof(s_entity_data));
-	if (function_a5bd0(b))
+	if (function_a5bd0((s_entity_info const *)b, (s_z_initial_state *)data))
 	{
 		result = true;
 	}
@@ -712,7 +712,7 @@ void function_a3fd0(long index, bool immediate, bool set_position, real position
  }
 }
 
-void *function_122c10(long group_tag, long tag_index);
+__declspec(noinline) void *function_122c10(long group_tag, long tag_index);
 void function_fd0e0(long definition_index, real scale_a, real scale_b, vector3f const *direction,
  point3f const *point, vector3f const *normal, long index, bool attached, long object_index,
  short node_index, bool alternate);

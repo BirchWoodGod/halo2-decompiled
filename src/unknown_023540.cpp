@@ -1779,7 +1779,11 @@ void function_34420(t_34770_begin begin, real const *bounds,
         do
         {
             { long attribute = 15; if (attribute >= 0) do {
-                real out[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+                real out[4];
+                out[3] = 1.0f;
+                out[0] = 0.0f;
+                out[1] = 0.0f;
+                out[2] = 0.0f;
                 if (vertex(attribute, bounds, t, out, user))
                     D3DDevice_SetVertexData4f(attribute ? attribute : D3DVSDE_VERTEX,
                         out[0], out[1], out[2], out[3]);

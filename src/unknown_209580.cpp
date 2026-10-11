@@ -80,13 +80,15 @@ void function_209310(void)
 		long index = next_script_record(records, NONE);
 		while (index != NONE)
 		{
-			s_hs_due_thread *thread = (s_hs_due_thread *)(records->data + (index & 0xffff) * sizeof(s_hs_due_thread));
+			long local_0 = index;
+            index &= 0xffff;
+            s_hs_due_thread *thread = (s_hs_due_thread *)(records->data + index * sizeof(s_hs_due_thread));
 			if (thread->unknown00[2] != 4 && thread->sleep_until >= 0 && thread->sleep_until <= current_time)
 			{
-				function_209850(index);
+				function_209850(local_0);
 				records = g_4f9384;
 			}
-			index = data_datum_index(records, function_16bc00(records, (index & 0xffff) + 1));
+			index = data_datum_index(records, function_16bc00(records, index + 1));
 			if (!g_4f9388)
 				break;
 		}

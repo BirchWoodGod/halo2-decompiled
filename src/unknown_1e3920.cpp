@@ -1292,12 +1292,13 @@ long function_1e0fe0(point3f const *point, long unit_index, long character_index
 {
 	byte *volatile object = *(byte **)(g_4e0300->data + (unit_index & 0xffff) * 12 + 8);
 	short const *mode_reference = &mode;
-	s_actor_position_state placement;
 	long squad_index = NONE;
-	bool cleanup = false;
+	byte cleanup = false;
+	s_actor_position_state placement;
 	placement.position = *point;
 	placement.field10 = NONE;
-	placement.field14 = placement.field18 = 0.0f;
+	placement.field14 = 0.0f;
+	placement.field18 = 0.0f;
 	placement.field1c = 2;
 	short local_792ecd = *mode_reference;
 	placement.field2e = local_792ecd > 0 ? local_792ecd : 3;
@@ -1306,7 +1307,7 @@ long function_1e0fe0(point3f const *point, long unit_index, long character_index
 	{
 		byte *actor = (byte *)actor_get(previous);
 		squad_index = *(long *)(actor + 0x30);
-		cleanup = actor[0xc] != 0;
+		cleanup = actor[0xc];
 	}
 	long result = function_1e0850(character_index, squad_index, (s_203780 const *)&placement, false);
 	if (result != NONE)
@@ -1319,10 +1320,17 @@ long function_1e0fe0(point3f const *point, long unit_index, long character_index
 			function_1e11b0(result, true);
 		}
 		actor[0xc] = cleanup;
-		if (actor[7] && *(long *)(actor + 0x1c) != NONE && ((1 << object[0xaa]) & 1) && function_e58e0(unit_index))
+		if (actor[7] && *(long *)(actor + 0x1c) != NONE)
 		{
-			vector3f velocity;
-			if (function_109e00(unit_index, &velocity, true)) function_2901e0(*(long *)(actor + 0x1c), &velocity);
+			dword mask = 1;
+			byte *type_object = object;
+			mask <<= type_object[0xaa];
+			if ((mask & 1) && function_e58e0(unit_index))
+			{
+				vector3f velocity;
+				if (function_109e00(unit_index, &velocity, true))
+					function_2901e0(*(long *)(actor + 0x1c), &velocity);
+			}
 		}
 	}
 	return result;

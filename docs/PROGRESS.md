@@ -2,6 +2,62 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7612 functions match
+
+```
+matched 7612 of 11318 game functions (901785 of 2784283 bytes, 32.39%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 32: 0x2ae1d0.
+
+## 2026-10-11: 7611 functions match
+
+```
+matched 7611 of 11318 game functions (901699 of 2784283 bytes, 32.39%)
+```
+
+10 new matches, none lost:
+- Deep lane 1, round 21 (helpers, second pass): eight, including the serializer 0xa6660 and initializer callers 0xa07b0 and 0xa3b90.
+- Two of the second machine's lane J functions, 0x9d360 and 0x9dd70, which now pass the serializer and initializer the second argument retail passes.
+
+## 2026-10-11: 7601 functions match
+
+```
+matched 7601 of 11318 game functions (900241 of 2784283 bytes, 32.33%)
+```
+
+5 new matches, none lost:
+- Deep lane 3, round 31 (near-length functions): 0x2a11c0, 0x2c509c and 0x1edc10, plus 0x21ebc0 and 0x25d810, which now build as retail does as a side effect.
+
+## 2026-10-11: 7596 functions match
+
+```
+matched 7596 of 11318 game functions (899325 of 2784283 bytes, 32.30%)
+```
+
+1 new matches, none lost:
+- 0x16d660, which swaps a region's permutations: the effect's tag is set before its object. The permuter can now move a statement several places in one step, which finds this kind of fix.
+
+## 2026-10-11: 7595 functions match
+
+```
+matched 7595 of 11318 game functions (898780 of 2784283 bytes, 32.28%)
+```
+
+1 new matches, none lost:
+- 0x237c04, the virtual keyboard's selection and cursor drawing: reading the timer through a const pointer in the cursor fade keeps an earlier comparison in retail's operand order.
+
+## 2026-10-11: 7594 functions match
+
+```
+matched 7594 of 11318 game functions (898266 of 2784283 bytes, 32.26%)
+```
+
+7 new matches, none lost:
+- The second machine's lanes C (+2, #331), U (+3, #332) and O (+1, #330).
+- 0x16ff10, from the permuter: two source edits, a declaration order and the grouping of one expression.
+
 ## 2026-10-11: 7587 functions match
 
 ```

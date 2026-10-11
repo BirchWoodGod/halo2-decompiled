@@ -891,8 +891,8 @@ void function_201460(long squad_index, dword *unavailable)
 	s_squad_placement_definition *squad = &((s_squad_placement_table *)g_4e0350)->squads[squad_index & 0xffff];
 	for (short i = 0; i < squad->count; i++)
 	{
-		long placement_index = squad_placement_entry(squad, i)->placement_index;
-		if ((short)placement_index != NONE)
+		dword placement_index = squad_placement_entry(squad, i)->placement_index;
+		if ((word)placement_index != (word)NONE)
 		{
 			long object_index = function_201330((short)placement_index);
 			if (object_index == NONE || !function_2013c0(object_index))

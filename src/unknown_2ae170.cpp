@@ -83,7 +83,12 @@ void function_2ae1d0(s_47f0d0 *codec_view)
 
 	PHYSICAL_MEMORY_ALLOCATE(buffer, 2 * WMA_PACKET_SIZE);
 	codec->m_buffer = (byte *)buffer;
-	memset(codec->m_packet_status, 0, sizeof(codec->m_packet_status));
+	long packet = 0;
+	do
+	{
+		codec->m_packet_status[packet] = 0;
+		++packet;
+	} while (packet < 2);
 }
 
 // @retail 0x2ae230

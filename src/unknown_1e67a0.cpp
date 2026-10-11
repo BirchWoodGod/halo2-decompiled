@@ -785,11 +785,14 @@ void function_1ecf50(vector3f *forward, vector3f *up, s_direction_rotation_input
 // @retail 0x1e5af0
 void function_1e5af0(void *physics, s_biped_physics_output *output, vector3f const *up, vector3f const *forward)
 {
+ s_biped_physics_output *volatile output_home = output;
+ vector3f const *const *forward_home = &forward;
+ byte *shape = (byte *)physics + 0x10;
  switch (*(byte *)physics)
  {
- case 1: function_1f1460((byte *)output, (s_shape_state *)((byte *)physics + 0x10), (vector3f *)up, (vector3f *)forward); break;
- case 2: function_1faa20((byte *)output, (vector3f *)up, (vector3f *)forward, (long *)((byte *)physics + 0x10)); break;
- case 3: function_1ecf50((vector3f *)forward, (vector3f *)up, (s_direction_rotation_input *)output); break;
+ case 1: function_1f1460((byte *)output_home, (s_shape_state *)shape, (vector3f *)up, (vector3f *)*forward_home); break;
+ case 2: function_1faa20((byte *)output_home, (vector3f *)up, (vector3f *)*forward_home, (long *)shape); break;
+ case 3: function_1ecf50((vector3f *)*forward_home, (vector3f *)up, (s_direction_rotation_input *)output_home); break;
  case 4: break;
  case 5: break;
  case 6: break;

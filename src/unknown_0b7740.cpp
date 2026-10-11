@@ -89,11 +89,12 @@ void function_b7740(long object_index, vector3f const *linear_velocity,
 {
 	object_index &= 0xffff;
 	s_record_pool *objects = g_4e0300;
-	s_velocity_object *object = ((s_velocity_object_header *)objects->data)[object_index].object;
+	byte *volatile const *header_data = &objects->data;
+    s_velocity_object *object = ((s_velocity_object_header *)*header_data)[object_index].object;
 	dword update_mask = object_velocity_write(object, linear_velocity, angular_velocity);
 	if (!skip_update && update_mask)
 	{
-		long index = ((s_velocity_object_header *)objects->data)[object_index].object->synchronization_index;
+		long index = ((s_velocity_object_header *)*header_data)[object_index].object->synchronization_index;
 		if (index != NONE)
 			function_b58c0(index, update_mask);
 	}
@@ -614,7 +615,7 @@ short __stdcall function_bb050(long mask, dword type_mask, void const *location,
     short volatile count = 0;
     if (!type_mask) type_mask = 0xffffffff;
     if (!mask) mask = NONE;
-    volatile short cluster = *(short *)((byte const *)location + 4);
+    volatile long cluster = *(short *)((byte const *)location + 4);
     short cluster_count = 0;
     short clusters[0x200];
     if (cluster != NONE)
@@ -638,31 +639,36 @@ short __stdcall function_bb050(long mask, dword type_mask, void const *location,
     for (short i = 0; i < cluster_count; ++i)
     {
         short cluster = clusters[i];
-        s_object_cluster_reference *record = 0;
+        struct search_slots { s_object_cluster_reference *record; s_object_cluster_iterator first, second; } search;
+        search.record = 0;
         if (mask & 1)
         {
-            s_object_cluster_iterator iterator;
-            for (long object = function_b8940(cluster, &record, &iterator); object != NONE;
-                 object = object_cluster_next_ab((s_record_pool *)g_4de2e4, &iterator, &record))
+            s_object_cluster_iterator &iterator = search.first;
+            for (long object = function_b8940(cluster, &search.record, &iterator); object != NONE;
+                 object = object_cluster_next_ab((s_record_pool *)g_4de2e4, &iterator, &search.record))
             {
-                if (cluster_sphere_accept_ab(object, record, type_mask, position, radius))
+                if (cluster_sphere_accept_ab(object, search.record, type_mask, position, radius))
                 {
                     if (count >= maximum_count) goto done;
-                    objects[count++] = object;
+                    long *output = objects + count;
+                    *output = object;
+                    ++count;
                 }
             }
         }
-        record = 0;
+        search.record = 0;
         if (mask & 2)
         {
-            s_object_cluster_iterator iterator;
-            for (long object = function_b8a10(cluster, &record, &iterator); object != NONE;
-                 object = object_cluster_next_ab((s_record_pool *)g_4de2d8, &iterator, &record))
+            s_object_cluster_iterator &iterator = search.second;
+            for (long object = function_b8a10(cluster, &search.record, &iterator); object != NONE;
+                 object = object_cluster_next_ab((s_record_pool *)g_4de2d8, &iterator, &search.record))
             {
-                if (cluster_sphere_accept_ab(object, record, type_mask, position, radius))
+                if (cluster_sphere_accept_ab(object, search.record, type_mask, position, radius))
                 {
                     if (count >= maximum_count) goto done;
-                    objects[count++] = object;
+                    long *output = objects + count;
+                    *output = object;
+                    ++count;
                 }
             }
         }
@@ -753,10 +759,10 @@ void function_bfa40(long object_index, long node_mask)
         byte *local_be682a = (byte *)((s_object_transform_header *)g_4e0300->data)[parent_index & 0xffff].object;
         parent_mirrored = (*(dword *)(local_be682a + 4) >> 10) & 1;
     }
-    transform4x3f root, inverse_root, inverse_parent, relative;
+    struct { transform4x3f root, inverse_root, inverse_parent, relative; } workspace;
     function_bdc40((point3f *)(object + 0x64), (vector3f *)(object + 0x70), (vector3f *)(object + 0x7c),
-        *(real *)(object + 0xa0), (*(dword *)(object + 4) >> 10) & 1, parent, parent_mirrored, &root);
-    function_141590(&root, &inverse_root);
+        *(real *)(object + 0xa0), (*(dword *)(object + 4) >> 10) & 1, parent, parent_mirrored, &workspace.root);
+    function_141590(&workspace.root, &workspace.inverse_root);
     for (long i = 0; i < count; ++i)
     {
         if (!node_mask || (((dword *)node_mask)[i >> 5] & (1 << (i & 31))))
@@ -764,16 +770,16 @@ void function_bfa40(long object_index, long node_mask)
             short node_parent = *(short *)(*(byte **)(model + 0x7c) + i * 0x5c + 4);
             if (node_parent != NONE)
             {
-                function_141590(&matrices[node_parent], &inverse_parent);
-                function_142a60(&inverse_parent, &matrices[i], &relative);
-                function_141f60(&relative.rotation, &orientations[i].rotation);
-                orientations[i].position = relative.position;
-                orientations[i].scale = relative.scale;
+                function_141590(&matrices[node_parent], &workspace.inverse_parent);
+                function_142a60(&workspace.inverse_parent, &matrices[i], &workspace.relative);
+                function_141f60(&workspace.relative.rotation, &orientations[i].rotation);
+                orientations[i].position = workspace.relative.position;
+                orientations[i].scale = workspace.relative.scale;
             }
             else
             {
-                function_142a60(&inverse_root, &matrices[i], &relative);
-                orientation_from_matrix4x3(&relative, &orientations[i]);
+                function_142a60(&workspace.inverse_root, &matrices[i], &workspace.relative);
+                orientation_from_matrix4x3(&workspace.relative, &orientations[i]);
             }
         }
     }
