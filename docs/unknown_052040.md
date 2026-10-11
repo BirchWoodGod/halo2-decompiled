@@ -846,16 +846,16 @@ No source implementation or compiler flags changed for this extension.
 
 ## Current-main integration check (2026-10-11)
 
-Merged upstream `f042a75b` while preserving both sets of additions in the
+Merged upstream `3b0cea47` while preserving both sets of additions in the
 shared graphics translation unit and retaining upstream's new stubs. The
 `0x52d40` stub remains removed because this contribution implements it.
-A fresh build of that main revision reproduced 7,511 matches; the merged
-contribution produced 7,524: the same thirteen gains listed above, no lost
+A fresh build of that main revision reproduced 7,513 matches; the merged
+contribution produced 7,526: the same thirteen gains listed above, no lost
 main matches, and all 7,503 previously verified branch matches preserved.
 The three unmatched bodies retain their reported compiled/retail lengths.
 
 The header probe passed all 1,944 comparisons on the new image
-`1aa8afbc33a9f5d9329b5d2e1e7d05b63df4efe2db95c23228340228a00017a8`.
+`8d377a3cc69f9e2a0d8726ff430445933682bde85b9d49d28c4bc4c03cc16434`.
 Tooling tests passed: 316 passed, 9 skipped. Earlier behavioral reports in
 this document remain tied to their stated images; they were not rerun as
 part of this merge. The separate eight-PR parser regression remains outside
