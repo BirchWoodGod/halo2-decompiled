@@ -2,7 +2,9 @@
 
 Retail range covered: `0xacc20`–`0xad1bf`, the writer and reader for the
 `"join-request"` message. The two inventory entries contain 1,422 retail
-bytes. Both already have implementations in `src/unknown_0acc20.cpp`.
+bytes. Both already have implementations in `src/unknown_0acc20.cpp`,
+where they are `message_join_request_encode` (`0xacc20`) and
+`message_join_request_decode` (`0xacfa0`), registered by `function_adab0`.
 **Analysis only:** this document adds no source or new match claim. It
 records the body layout and edge behaviour for review and interoperability
 work. The `function_<va>` form is primary; descriptions below name what
@@ -13,10 +15,8 @@ the code does, without assigning meanings to the opaque fields.
 - `function_0acc20` is 884 bytes; `function_0acfa0` is 538 bytes. The
   range includes the alignment after each body. The preceding entry,
   `0xacb10`, and following entry, `0xad1c0`, are excluded.
-- The Active claims issue (#9), checked on 2026-10-05, lists the message
-  codecs (`0xac490`–`0xb2e00`) as finished and unclaimed. Lane Z ends at
-  `0xac48f`; no open PR in that check covers this pair. This is a new
-  document about existing code, with no reservation against source work.
+- This is a new document about existing code, with no reservation
+  against source work.
 - Registration at `0xadab0` and the bitstream helpers are evidence for
   this document, outside its range. Session admission, transport and the
   meaning of the mode values are outside its scope.
@@ -194,9 +194,7 @@ The reader's result is only al; the rest of eax is not a boolean result.
   through `tools/xbe.py`. The wire lengths above are arithmetic derived
   from the verified field widths.
 - BirchWoodGod/halo2-decomp has independent functional recoveries of
-  both codecs in `src/network_messages.c`, with ABI entries in
-  `config/host_bridge_abi.json` and registration evidence in
-  `config/message_descriptors.json`. Its `tests/bitstream_oracle.py`
+  both codecs, with ABI and registration records. Its differential test
   supplies 512 writer and 512 reader comparisons: all five-bit counts,
   bit alignments, short and empty streams, sticky errors, ignored sizes,
   out-of-range writer values and absent optionals. It compares the full
@@ -227,8 +225,8 @@ python tools/disasm.py adab0
 Our own disassembly and analysis of the retail executable. The lead came
 from our own published functional recovery,
 [BirchWoodGod/halo2-decomp](https://github.com/BirchWoodGod/halo2-decomp)
-(CC0), especially `ENGINE.md`'s join-request codec notes and the files
-listed above. Each behavioural statement was checked against retail.
+(CC0), especially `ENGINE.md`'s join-request codec notes. Its names
+were not used here. Each behavioural statement was checked against retail.
 `"join-request"` is the retail registration string; field roles here are
 descriptions of accesses, not recovered original symbols. No leaked,
 internal or third-party symbol data was used. Game and SDK files remain
