@@ -124,7 +124,7 @@ void c_object_type_definition::v12(long a, s_entity_info *info, long c, s_bitstr
     s_entity_info *held_info = *info_reference;
     s_bitstream *volatile *stream_reference = &stream;
     s_bitstream *held_stream = *stream_reference;
-	function_a6660(held_info);
+	function_a6660(held_info, held_stream);
 	function_1955d0(held_stream, held_info->vehicle_data, 0x20);
 }
 

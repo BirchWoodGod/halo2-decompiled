@@ -1493,32 +1493,42 @@ PRIVATE __forceinline real random_signed_value(s_random_globals *random)
 // @retail 0x36f50
 void function_36f50(byte *state)
 {
+    struct signed_fraction {
+        static __forceinline real evaluate(s_random_globals *state) {
+            real fraction = (real)random_next(&state->seed) * (1.0f / 65535.0f);
+            return fraction * 2.0f - 1.0f;
+        }
+    };
     s_random_globals *random = g_4e7408;
-    byte *entry = state + 0xc8;
+    byte *entry = state + 0xec;
     for (long i = 0; i < 4; ++i, entry += 0xb8)
     {
-        for (long j = 0; j < 9; ++j) ((dword *)entry)[j] = 0;
-        for (long k = 0; k < 9; ++k) ((dword *)(entry + 0x24))[k] = 0;
-        *(vector3f *)(entry + 0x3c) = *(vector3f *)entry;
-        *(vector3f *)(entry + 0x48) = *(vector3f *)entry;
-        *(real *)(entry + 0x80) = 1.0f;
-        *(real *)(entry + 0x84) = 1.0f;
-        *(real *)(entry + 0x78) = 0.0f;
+        dword *clear = (dword *)(entry - 0x24);
+        for (long n = 0; n < 9; ++n) *clear++ = 0;
+        clear = (dword *)((entry - 0x24) + 0x24);
+        for (long n = 0; n < 9; ++n) *clear++ = 0;
+        clear = (dword *)((entry - 0x24) + 0x3c);
+        for (long n = 0; n < 3; ++n) *clear++ = 0;
+        clear = (dword *)((entry - 0x24) + 0x48);
+        for (long n = 0; n < 3; ++n) *clear++ = 0;
+        *(real *)((entry - 0x24) + 0x80) = 1.0f;
+        *(real *)((entry - 0x24) + 0x84) = 1.0f;
+        *(real *)((entry - 0x24) + 0x78) = 0.0f;
         vector3f const *a = (vector3f const *)(state + 0x24);
         vector3f const *b = (vector3f const *)(state + 0x30);
         vector3f const *c = (vector3f const *)(state + 0x3c);
-        *(real *)(entry + 0xac) = (real)sqrt((double)a->i * a->i + (double)a->j * a->j + (double)a->k * a->k);
-        *(real *)(entry + 0xb0) = (real)sqrt((double)b->i * b->i + (double)b->j * b->j + (double)b->k * b->k);
-        *(real *)(entry + 0xb4) = (real)sqrt((double)c->i * c->i + (double)c->j * c->j + (double)c->k * c->k);
-        *(real *)(entry + 0x88) = random_signed_value(random);
-        *(real *)(entry + 0x8c) = random_signed_value(random);
-        *(real *)(entry + 0x90) = random_signed_value(random);
-        *(real *)(entry + 0x94) = random_signed_value(random);
-        *(real *)(entry + 0x98) = random_signed_value(random);
-        *(real *)(entry + 0x9c) = random_signed_value(random);
-        *(real *)(entry + 0xa0) = random_signed_value(random);
-        *(real *)(entry + 0xa4) = random_signed_value(random);
-        *(real *)(entry + 0xa8) = random_signed_value(random);
+        *(real *)((entry - 0x24) + 0xac) = (real)sqrt((double)a->i * a->i + (double)a->j * a->j + (double)a->k * a->k);
+        *(real *)((entry - 0x24) + 0xb0) = (real)sqrt((double)b->i * b->i + (double)b->j * b->j + (double)b->k * b->k);
+        *(real *)((entry - 0x24) + 0xb4) = (real)sqrt((double)c->i * c->i + (double)c->j * c->j + (double)c->k * c->k);
+        *(real *)((entry - 0x24) + 0x88) = signed_fraction::evaluate(random);
+        *(real *)((entry - 0x24) + 0x8c) = signed_fraction::evaluate(random);
+        *(real *)((entry - 0x24) + 0x90) = signed_fraction::evaluate(random);
+        *(real *)((entry - 0x24) + 0x94) = signed_fraction::evaluate(random);
+        *(real *)((entry - 0x24) + 0x98) = signed_fraction::evaluate(random);
+        *(real *)((entry - 0x24) + 0x9c) = signed_fraction::evaluate(random);
+        *(real *)((entry - 0x24) + 0xa0) = signed_fraction::evaluate(random);
+        *(real *)((entry - 0x24) + 0xa4) = signed_fraction::evaluate(random);
+        *(real *)((entry - 0x24) + 0xa8) = signed_fraction::evaluate(random);
     }
 }
 

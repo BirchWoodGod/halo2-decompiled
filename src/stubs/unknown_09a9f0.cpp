@@ -3,11 +3,6 @@
 #include "unknown_11c920.h"
 #include "unknown_0a58d0.h"
 
-// @stub 0xa5bd0
-bool function_a5bd0(long a)
-{
-	return false;
-}
 
 
 
@@ -16,10 +11,8 @@ bool function_a5bd0(long a)
 
 
 
-// @stub 0xa6660
-void __stdcall function_a6660(s_entity_info *info)
-{
-}
+
+
 
 
 
