@@ -321,6 +321,28 @@ allocation, geometry-buffer lookup, lighting and BSP cluster search; texture
 availability is bypassed. Actual asset streaming, GPU submission and complete
 gameplay remain unverified.
 
+## Actual portal cluster search
+
+A separate probe executes `0x14a5b0` and its actual portal-plane, sphere and
+polygon intersection helpers on synthetic chain, cycle and diamond graphs.
+All 384 cases agree with retail, including 152 cases reaching multiple clusters
+and 164 cases whose total exceeds output capacity. Comparisons cover the
+returned total, bounded output and untouched canaries, visited markers, and
+fixture memory. Cases vary sphere position/radius and output capacity; no
+portal helper is mocked.
+
+The integrated 648 flat decal cases also pass with actual portal traversal
+enabled and a real 16-record pool. There are 504 committed records, 1,372 query
+invocations including recursion, and 1,372 pool allocation attempts. Pool
+metadata/bitmap, cell lists and counters, visited markers/pass counter,
+per-definition lookup, all records, packed output and persistent state agree.
+No production change was needed; the image remains `cef349f7...` above.
+
+Remaining controlled dependencies in this integrated configuration are geometry
+allocation, geometry-buffer lookup and lighting. Texture availability remains
+bypassed. This demonstrates behavior on the specified synthetic portal graphs,
+not arbitrary real-map traversal, asset streaming, GPU submission or gameplay.
+
 Shared changes are limited to the new header, the predicate definition and
 callers in `src/unknown_11cb00.cpp`, `src/unknown_1502e0.cpp`,
 `src/unknown_1689b0.cpp`, `src/unknown_17d9a0.cpp`, `src/ai.cpp`, and
