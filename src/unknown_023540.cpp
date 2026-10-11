@@ -2002,13 +2002,14 @@ void function_24ee0(s_24ee0_state const *state, short mode)
         real value = (real)i * (1.0f / 255.0f);
         real result;
         if (value <= low) result = 0.0f;
-        else if (value >= high) result = 1.0f;
-        else
+        else if (!(value >= high))
         {
             result = (real)pow(((double)value - low) / ((double)high - low), (double)gamma);
             if (result < 0.0f) result = 0.0f;
             else if (result > 1.0f) result = 1.0f;
         }
+        else
+            result = 1.0f;
         byte mapped = (byte)(long)((double)result * 255.0 + 0.5);
         curve[i] = mapped;
         if (mode == 1 && g_4ba04c == 1)
@@ -2159,19 +2160,19 @@ void function_34d90(long target, real const *weights, short blend, dword color_w
     long width = 0, height = 0;
     function_01dd60(target != NONE ? target : g_4858b8, &width, &height);
     real bounds[4];
-    if (full_surface)
-    {
-        bounds[0] = 0.0f;
-        bounds[1] = (real)width;
-        bounds[2] = 0.0f;
-        bounds[3] = (real)height;
-    }
-    else
+    if (!(full_surface))
     {
         bounds[0] = (real)g_4b9dd2;
         bounds[1] = (real)g_4b9dd6;
         bounds[2] = (real)g_4b9dd0;
         bounds[3] = (real)g_4b9dd4;
+    }
+    else
+    {
+        bounds[0] = 0.0f;
+        bounds[1] = (real)width;
+        bounds[2] = 0.0f;
+        bounds[3] = (real)height;
     }
     real inverse_x = 1.0f / width;
     real inverse_y = 1.0f / height;
@@ -2201,6 +2202,7 @@ struct s_245c0_state
     dword frame_count;
 };
 
+__declspec(noinline) void function_245c0(s_245c0_state *state, real *histogram, short mode);
 // @retail 0x245c0
 void function_245c0(s_245c0_state *state, real *histogram, short mode)
 {
@@ -3405,3 +3407,74 @@ bool __stdcall function_26e50(void *context)
     function_1c710(g_51f0f0);
     return true;
 }
+
+
+// Disabled: frame construction copies full camera/projection ranges across split shared declarations and takes new shared frame/context addresses.
+#if 0
+// Retail 0x2ba10
+void function_2ba10(s_2f970_view const *view, long cluster, long player,
+    byte const *camera, bool enabled, long leaf, bool invalid, vector3f const *sky_color,
+    long unknown0, long object, long object_index, byte kind, long sky_index,
+    byte const *geometry, bool unknown1, long unknown2, byte const *lighting,
+    long unknown3, s_speed_result const *speed)
+{
+    if (!camera) camera = (byte const *)view;
+    g_4b9ed4 = player;
+    g_4b9ee4 = cluster;
+    g_4b9ee0 = leaf;
+    g_4b9ee8 = invalid;
+    g_4b9ed8 = object;
+    g_4b9edc = object_index;
+    ++g_4ba038;
+    g_4b9ee9 = kind;
+    g_4b9eec = sky_index;
+    memcpy(&g_4b9ef0, geometry, 0x120);
+    g_4ba010 = 0;
+    memcpy(&g_4b9da0, view, 0x74);
+    function_2fd90((s_2f800_view const *)&g_4b9da0, (box2f const *)sky_color, (byte *)&g_4b9e14);
+    function_3d2c0();
+    function_3ea60();
+    function_c15a0();
+    byte frame[0x298];
+    memset(frame, 0, sizeof(frame));
+    memcpy(frame + 0x18, camera, 0x74);
+    function_2fd90((s_2f800_view const *)(frame + 0x18), (box2f const *)sky_color, frame + 0x8c);
+    frame[6] = unknown1;
+    *(short *)(frame + 2) = (short)unknown0;
+    *(short *)frame = (short)player;
+    *(short *)(frame + 4) = (short)unknown2;
+    memcpy(frame + 0xc, geometry + 4, 12);
+    frame[7] = enabled;
+    *(short *)(frame + 8) = 2;
+    memcpy(frame + 0x14c, &g_4b9ef0, 0x120);
+    frame[0x26c] = 1;
+    memcpy(frame + 0x270, speed, 24);
+    frame[0x294] = (byte)unknown3;
+    *(byte const **)(frame + 0x290) = lighting;
+    ++g_46701c;
+    byte *stored_frame = (byte *)&g_4850d0 + g_46701c * 0x298;
+    memcpy(stored_frame, frame, sizeof(frame));
+    function_132d0((s_frame_view_2c560 *)stored_frame);
+    function_1beb0();
+    if (g_4e9194)
+    {
+        function_156040(g_4e9194);
+        function_13c20();
+        return;
+    }
+    g_4e64a8 = 0;
+    g_4e92e0 = 0;
+    function_2c3b0(&g_4e9268);
+    g_4e926c = function_156b30;
+    function_3fd70();
+    function_2b990(object);
+    function_13680(false);
+    function_15370(0);
+    function_15680(0);
+    if (g_4b9ed8 != NONE) function_1917eb();
+    function_40890();
+    function_147af1(NONE, object_index, (c_render_window *)(camera + 0x30));
+    function_13c20();
+}
+#endif
+

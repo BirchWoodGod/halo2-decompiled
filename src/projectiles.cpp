@@ -596,7 +596,7 @@ dword vector3d_compress(vector3f const *vector);
 void function_b75a0(long object_index, point3f const *point, vector3f const *forward, vector3f const *up,
 	s_location const *location, bool unknown);
 void __stdcall function_b77d0(long object_index, vector3f const *linear_velocity, vector3f const *angular_velocity);
-void __stdcall function_b93b0(long parent_index, long object_index, long node_index);
+void __stdcall function_b93b0(long parent_index, long object_index, short node_index);
 void __stdcall function_1e2930(long object_index, long actor_index);
 void function_a83e0(long object_index, long parent_index, point3f const *point, long node_index,
 	vector3f const *forward);
@@ -815,7 +815,7 @@ void function_fd560(long projectile_index, long object_index, long node_index, p
 	function_b9b90(projectile_index, true);
 	if (object_index != NONE)
 	{
-		function_b93b0(object_index, projectile_index, node_index);
+		function_b93b0(object_index, projectile_index, (short)(node_index));
 
 		s_projectile *parent = PROJECTILE_GET(object_index);
 
@@ -1802,7 +1802,7 @@ void function_1c4b00(long object_index, void *a, void *b, long c);
 void function_b7360(long object_index);
 void function_bba20(long object_index);
 bool function_b9d20(long object_index);
-void __stdcall function_bef30(long object_index, long a, long b, long c, long d);
+void __stdcall function_bef30(long object_index, long a, long b, long c, bool d);
 void function_b8b70(long object_index);
 void __stdcall function_b8540(long object_index);
 void function_faa60(vector3f *velocity, long projectile_index, s_collision_result_1697c0 const *collision,
@@ -2166,7 +2166,7 @@ void function_f8eb0(long projectile_index, vector3f *displacement)
 			if (!(*(byte *)&object->object_flags & 1))
 			{
 				if (function_b9d20(projectile_index))
-					function_bef30(projectile_index, 1, 0, 0, 0);
+					function_bef30(projectile_index, 1, 0, 0, false);
 				*(dword *)&object->object_flags |= 1;
 				function_b8b70(projectile_index);
 			}

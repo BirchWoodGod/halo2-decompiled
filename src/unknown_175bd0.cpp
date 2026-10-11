@@ -167,10 +167,10 @@ bool __stdcall function_bab40(long object_index, long name, real *value);
 bool function_bad50(long object_index, long index, point3f *out);
 long function_baf80(long object_index);
 long function_155760(long index);
-bool function_163080(void);
+__declspec(noinline) bool function_163080(void);
 long function_166244(long key);
 bool function_166283(long group_index, long key);
-s_player_state *function_16f3a0(long index);
+__declspec(noinline) s_player_state *function_16f3a0(long index);
 vector3f *function_11d000(vector3f const *v, vector3f *out);
 void function_179fb0(s_effect_datum *effect);
 void __stdcall function_17a380(s_effect_datum *effect);
@@ -310,7 +310,7 @@ static inline void effect_parameters_initialize_inline(s_effect_parameters *para
 
 long __stdcall effect_new_from_parameters(s_effect_parameters *parameters);
 bool function_176210(s_effect_parameters *parameters);
-long function_178120(s_effect_owner const *owner, bool force, long tag_index);
+long function_178120(long tag_index, bool force, s_effect_owner const *owner);
 void function_178240(point3f const *origin, vector3f const *direction, s_effect_datum *effect, real scale_a, real scale_b);
 struct s_effect_marker_source;
 void function_1786f0(s_effect_marker_source const *source, s_effect_object_marker *out, short marker_index);
@@ -407,7 +407,7 @@ long function_d6c80(s_type_1e6529 *data, long ignore_object_index); /* damage.cp
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner); /* stubs/lane_o.cpp */
 bool function_a7640(s_effect_object_placement *data);
 void __stdcall function_a7870(long object_index); /* stubs/lane_o.cpp */
-void function_c0350(long tag_index, long object_index, long node_index, vector3f const *up, vector3f const *forward, point3f const *position, real scale);
+long function_c0350(long tag_index, long object_index, long node_index, vector3f const *up, vector3f const *forward, point3f const *position, real scale);
 bool __stdcall function_16a8e0(long name, point3f const *point, real radius, long object_index, long unknown, point3f *origin, real *radius_reference);
 void __stdcall function_179880(s_effect_datum *effect, long effect_index);
 void __stdcall function_179e80(s_effect_datum *effect);
@@ -614,6 +614,8 @@ void function_175d70(void)
 	}
 	particle_systems_update_locations();
 }
+
+__declspec(noinline) void effect_parameters_initialize(s_effect_parameters *parameters);
 
 // @retail 0x175ee0
 void effect_parameters_initialize(s_effect_parameters *parameters)
@@ -934,7 +936,7 @@ bool function_178060(void)
 }
 
 // @retail 0x178120
-long function_178120(s_effect_owner const *owner, bool force, long tag_index)
+long function_178120(long tag_index, bool force, s_effect_owner const *owner)
 {
 	long effect_index = NONE;
 
@@ -1197,14 +1199,21 @@ __declspec(noinline) void function_17aec0(s_effect_datum *effect, transform4x3f 
 // @retail 0x17aec0
 void function_17aec0(s_effect_datum *effect, transform4x3f *matrix, short node_index)
 {
-	if (node_index != NONE && (node_index & 0x8000) && effect->unknown58 != NONE)
-	{
-		function_1664da(effect->unknown58, effect->object_index, node_index & 0x7fff, matrix);
-	}
-	else
-	{
-		*matrix = *effect_object_node_matrix(effect->object_index, node_index == NONE ? NONE : (short)(node_index & 0x7fff));
-	}
+    long index;
+    if (node_index != NONE)
+    {
+        if ((node_index & 0x8000) && effect->unknown58 != NONE)
+        {
+            function_1664da(effect->unknown58, effect->object_index, node_index & 0x7fff, matrix);
+            return;
+        }
+        index = node_index & 0x7fff;
+    }
+    else
+        index = NONE;
+    s_effect_object *object = OBJECT_GET(effect->object_index);
+    transform4x3f const *nodes = (transform4x3f const *)((byte *)object + object->nodes_offset);
+    *matrix = nodes[(short)index];
 }
 
 // @retail 0x17af30
@@ -1275,12 +1284,12 @@ void function_17b750(long *values, long value)
 // @retail 0x175fa0
 long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 {
-	bool force = TEST_FIELD_BIT(parameters->flag2);
 	long effect_index = NONE;
+	bool force = TEST_FIELD_BIT(parameters->flag2);
 
 	if (force || function_176210(parameters))
 	{
-		effect_index = function_178120(&parameters->owner, force, parameters->tag_index);
+		effect_index = function_178120(parameters->tag_index, force, &parameters->owner);
 		if (effect_index != NONE)
 		{
 			s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
@@ -1291,7 +1300,10 @@ long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 			{
 				s_effect_object *object = OBJECT_GET(parameters->object_index);
 
-				effect->flag10 = TEST_FIELD_BIT(TAG_GET(s_effect_object_definition, object->tag_index)->flag13);
+				if (TEST_FIELD_BIT(TAG_GET(s_effect_object_definition, object->tag_index)->flag13))
+					((byte *)effect)[3] |= 4;
+				else
+					((byte *)effect)[3] &= ~4;
 			}
 			if (TEST_FIELD_BIT(parameters->attached))
 			{
@@ -1307,7 +1319,9 @@ long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 			else
 			{
 				effect->object_index = NONE;
-				effect->velocity = parameters->velocity;
+				effect->velocity.i = parameters->velocity.i;
+				effect->velocity.j = parameters->velocity.j;
+				effect->velocity.k = parameters->velocity.k;
 			}
 			if (TEST_FIELD_BIT(parameters->flag1))
 			{
@@ -1330,14 +1344,18 @@ long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 				function_1789f0(effect);
 			if (TEST_FIELD_BIT(definition->flag3) || TEST_FIELD_BIT(definition->flag4))
 				function_17b5d0(effect, parameters->object_index, parameters, true);
-			if (parameters->unknown50)
+			long const *scales = parameters->unknown50;
+			if (scales)
 			{
-				*(long *)&effect->unknown74 = parameters->unknown50[0];
-				*(long *)&effect->unknown78 = parameters->unknown50[1];
+				*(long *)&effect->unknown74 = scales[0];
+				*(long *)&effect->unknown78 = scales[1];
 			}
 			function_177310(effect_index);
 			g_510c78 = parameters->source;
-			function_179850(effect_index, (TEST_FIELD_BIT(definition->flag1) && !TEST_FIELD_BIT(effect->flag1) && !TEST_FIELD_BIT(effect->flag9)) ? 1.0f : 0.0f);
+			if (TEST_FIELD_BIT(definition->flag1) && !TEST_FIELD_BIT(effect->flag1) && !TEST_FIELD_BIT(effect->flag9))
+				function_179850(effect_index, 1.0f);
+			else
+				function_179850(effect_index, 0.0f);
 			g_510c78 = 0;
 			if (!record_pool_lookup(g_4ea93c, effect_index))
 				return NONE;
@@ -1374,7 +1392,9 @@ bool function_176210(s_effect_parameters *parameters)
 						real dx = source->position.x - player->position.x;
 						real dy = source->position.y - player->position.y;
 						real dz = source->position.z - player->position.z;
-						real distance_squared = dx * dx + dy * dy + dz * dz;
+						real distance_squared = dx * dx;
+						distance_squared += dy * dy;
+						distance_squared += dz * dz;
 
 						if (minimum > distance_squared)
 							minimum = distance_squared;
@@ -1385,7 +1405,7 @@ bool function_176210(s_effect_parameters *parameters)
 					if (minimum > upper * upper)
 						result = false;
 					else
-						result = (g_4c56c0[source->index >> 5] & (1 << (source->index & 31))) != 0;
+						result = (g_4c56c0[parameters->source->index >> 5] & (1 << (parameters->source->index & 31))) != 0;
 				}
 			}
 		}
@@ -2023,23 +2043,25 @@ bool function_1792b0(long effect_index, real dt)
 	{
 		long iterations = 0;
 
-		while (dt >= 0.0f && !TEST_FIELD_BIT(effect->flag2) && iterations < 8)
+		while (dt >= 0.0f)
 		{
+			if (TEST_FIELD_BIT(effect->flag2) || iterations >= 8)
+				break;
 			real remaining = effect->event_delay - effect->unknown60;
 			real start = effect->unknown60;
-			real step = dt > remaining ? remaining : dt;
+			real step = remaining > dt ? dt : remaining;
 			bool finished;
 
 			if (dt >= remaining)
 			{
-				effect->unknown60 = effect->event_delay;
 				finished = true;
+				effect->unknown60 = effect->event_delay;
 				dt -= remaining;
 			}
 			else
 			{
-				effect->unknown60 += dt;
 				finished = false;
+				effect->unknown60 += dt;
 				dt = -1.0f;
 			}
 			if (TEST_FIELD_BIT(effect->flag0))
@@ -2055,7 +2077,10 @@ bool function_1792b0(long effect_index, real dt)
 					if (event_index >= definition->event_count)
 					{
 						if (function_177610(effect_index))
-							return true;
+						{
+							effect = 0;
+							goto event_done;
+						}
 						break;
 					}
 					function_1782a0(effect_index, (short)event_index);
@@ -2065,7 +2090,7 @@ bool function_1792b0(long effect_index, real dt)
 			{
 				s_effect_event *event = &definition->events[effect->event_index];
 
-				effect->flag0 = true;
+				((byte *)effect)[2] |= 1;
 				effect->unknown60 = 0.0f;
 				effect->unknown68 = -1.0f;
 				if (event->duration_lower == event->duration_upper)
@@ -2081,6 +2106,7 @@ bool function_1792b0(long effect_index, real dt)
 		}
 		effect->flag9 = false;
 	}
+event_done:
 	return effect == 0;
 }
 

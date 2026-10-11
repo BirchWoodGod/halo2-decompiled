@@ -11,6 +11,8 @@
 
 void *g_509438;
 
+__declspec(noinline) void function_43990(void);
+
 // @retail 0x43990
 void function_43990(void)
 {
@@ -60,6 +62,7 @@ struct s_unknown_13bf00;
 extern s_unknown_13bf00 *g_510c50;
 extern byte g_509415;
 
+__declspec(noinline)
 // @retail 0x335c0
 byte function_335c0(void)
 {
@@ -1904,7 +1907,7 @@ short function_4bcc0(byte *output, long object_index, real distance, long overri
 {
     (void)&object_index; (void)&distance; (void)&override;
     (void)&cached; (void)&force; (void)&level;
-    short result = 0;
+    volatile short result = 0;
     *(dword *)(output + 0x16c) = 0;
     bool volatile eligible = false;
     bool current = false;

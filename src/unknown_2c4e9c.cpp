@@ -34,7 +34,7 @@ c_class_1473c9 *__stdcall function_2bbacb(s_screen_parameters *parameters);
 /* ---- opening screens ---- */
 
 struct s_message;
-void function_149f49(s_message *message, word a, dword *id, word b, long c, long d, long e);
+void function_149f49(s_message *message, word a, dword *id, short b, long c, long d, long e);
 
 /* the screens 0x2c7dc3/0x2c7e0f and 0x2c8362/0x2c83a4 load */
 struct s_screen_view_2c83
@@ -1635,6 +1635,49 @@ screen_load_proc c_variant_parameter_setting_screen::get_load_proc()
 }
 
 bool function_153850(byte *model);
+
+#if 0
+// Disabled: retail passes the shared profile's address to the model helpers.
+void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
+void function_2b10a3(dword const *appearance, c_class_2b0b5e *widget, long type);
+// @retail 0x2c8d7c disabled
+void function_2c8d7c(c_class_1a2c81 *screen)
+{
+	screen->c_class_1a2c81::v3();
+	s_widget_item item;
+	memcpy(item.value48, g_54e5d0.settings.colors, sizeof(item.value48));
+	item.flags = 3;
+	item.value4 = (long)g_54e5d0.settings.name;
+	function_22f042(&item, screen, 1);
+	function_2b10a3((dword const *)g_54e5d0.settings.colors,
+		(c_class_2b0b5e *)screen->find_child(7, 0, false), 0);
+	function_2b10a3((dword const *)g_54e5d0.settings.colors,
+		(c_class_2b0b5e *)screen->find_child(7, 1, false), 1);
+}
+
+// Disabled: retail passes the shared profile's address to the model helpers.
+// @retail 0x2cb350 disabled
+void function_2cb350(c_class_1a2c81 *screen)
+{
+	if (!ANIMATION_FLAG(screen->animation, 1))
+	{
+		short color = (short)((c_class_1474e8 *)((byte *)screen + 0x7f8))->get_focused_datum();
+		long index = *(long *)((byte *)screen + 0xa9c);
+		long previous_color = (char)g_54e5d0.settings.colors[index];
+		long valid_color = color >= -1 && color <= 17 ? color : NONE;
+		if (valid_color == color)
+			previous_color = color;
+		g_54e5d0.settings.colors[index] = (byte)previous_color;
+	}
+	c_class_2b0b5e *model = (c_class_2b0b5e *)screen->find_child(7, 0, false);
+	if (model)
+		function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 0);
+	model = (c_class_2b0b5e *)screen->find_child(7, 1, false);
+	if (model)
+		function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 1);
+	screen->c_class_1a2c81::v3();
+}
+#endif
 
 /* the screen at 0x45d2b8 and the ones that derive from it (0x45d328,
    0x45d398, 0x45d408): a press of B or back copies its settings out */

@@ -575,12 +575,19 @@ long g_485af4[4], g_485b04[4];
 struct s_bitmap_view;
 extern byte *g_485a80;
 
-PRIVATE __forceinline D3DTexture *fetch_bitmap_texture(s_bitmap_view *bitmap, dword flags, real priority)
+PRIVATE inline D3DTexture *cached_bitmap_texture(s_bitmap_view *bitmap)
 {
     s_bitmap_predict_view *view = (s_bitmap_predict_view *)bitmap;
     D3DTexture *texture = NULL;
     if (view->last_frame > g_4e6488)
         texture = view->texture;
+    return texture;
+}
+
+PRIVATE __forceinline D3DTexture *fetch_bitmap_texture(s_bitmap_view *bitmap, dword flags, real priority)
+{
+    s_bitmap_predict_view *view = (s_bitmap_predict_view *)bitmap;
+    D3DTexture *texture = cached_bitmap_texture(bitmap);
     if (!texture)
     {
         _mm_prefetch((char const *)&view->flags, _MM_HINT_T0);
@@ -684,7 +691,7 @@ bool function_14560(long tag, short stage, short fallback, short fallback_index,
     if (tag != NONE)
     {
         byte *group = g_4e3b44[tag & 0xffff].bytes;
-        long count = *(long *)(group + 0x44);
+        volatile long count = *(long *)(group + 0x44);
         if (count > 0)
         {
             bitmap = function_137550(tag, (short)(index % count));
@@ -1731,6 +1738,7 @@ long g_4858b8;
 
 #if 0
 // Retail 0x14b60. The additional clear call changes matched 0x14ac0's stack frame.
+// Retail 0x14b60
 void __stdcall function_14b60(dword flags, dword color, real depth, byte stencil)
 {
     dword clear_flags = (flags & 1 ? 0xf0 : 0) | ((flags & 0x1e) << 3) | ((flags >> 5) & 3);
@@ -2421,7 +2429,7 @@ PRIVATE __forceinline real maximum_25ca0(real first, real second)
 // @retail 0x25ca0
 void function_25ca0(bool enabled)
 {
-    real divisor = maximum_25ca0(0.0001f, g_4b9fa4);
+    volatile real divisor = maximum_25ca0(0.0001f, g_4b9fa4);
     real value = g_4b9ff8;
     value *= 1.0f / divisor;
     value = 0.0f - value;
@@ -2429,14 +2437,14 @@ void function_25ca0(bool enabled)
     constants[0] = value < 0.0f ? 0.0f : value > 1.0f ? 1.0f : value;
     constants[1] = 0.0f;
     constants[2] = g_4b9f18;
-    if (enabled)
+    if (!(enabled))
     {
-        constants[3] = g_4b9f9c;
+        constants[3] = 0.0f;
         D3DDevice_SetVertexShaderConstant(-81, constants, 1);
     }
     else
     {
-        constants[3] = 0.0f;
+        constants[3] = g_4b9f9c;
         D3DDevice_SetVertexShaderConstant(-81, constants, 1);
     }
 }
@@ -3784,7 +3792,7 @@ bool function_45ce0(short index, byte *out, short part, short transform_index)
 
 long g_485870;
 real g_485874, g_485878, g_48587c, g_485880, g_485884;
-dword __cdecl pack_color4f(color4f const *color);
+__declspec(noinline) dword __cdecl pack_color4f(color4f const *color);
 
 // @retail 0x40890
 void function_40890(void)
@@ -6192,3 +6200,960 @@ bool __stdcall function_37a60(void *context)
     }
     return true;
 }
+
+
+struct s_245c0_state
+{
+    real range[6];
+    real *histogram;
+    long index;
+    dword frame_count;
+};
+s_245c0_state *g_485890;
+real g_51ecf0[256];
+real g_4b9fd0, g_4b9fd4, g_4b9fd8;
+extern short g_485600;
+extern long g_485898;
+__declspec(noinline) void function_245c0(s_245c0_state *state, real *histogram, short mode);
+void __stdcall function_214f0(real passes, real distortion, real strength, real falloff,
+    real scale, bool blend, bool preserve);
+bool function_022710();
+real function_134fc0(long index);
+
+// @retail 0x13870
+void __stdcall function_13870(bool finish, bool blur)
+{
+    g_4670bc = true;
+    function_16b10((s_render_reset_state *)g_485b48);
+    if (g_485890)
+    {
+        g_485890->index = g_485600;
+        function_245c0(g_485890, g_51ecf0, 0);
+    }
+    s_245c0_state *state = g_485890;
+    if (blur)
+    {
+        real strength = 0.0f;
+        real extra = 0.0f;
+        real distortion = 0.9f;
+        function_137a0(&strength, &extra);
+        if (state)
+            distortion = (1.0f - (1.0f - state->range[4])) * 0.9f;
+        if (strength > 0.0f)
+        {
+            strength = (extra + 1.0f) * strength * 0.5f;
+            strength = 0.0f > strength ? 0.0f : strength > 1.0f ? 1.0f : strength;
+            if (g_4b9fd0 > 0.0f)
+            {
+                distortion = (g_4b9fd4 - distortion) * g_4b9fd0 + distortion;
+                strength = (g_4b9fd8 - strength) * g_4b9fd0 + strength;
+            }
+            function_214f0(3.992000102996826f, distortion, strength, 0.25f, 0.0f, true, g_485898 == 6);
+        }
+    }
+    if (g_4e0350 && !(g_485898 >= 5 && g_485898 <= 7) && !g_485607 && !g_4850c8 && function_022710())
+    {
+        struct { real weights[4]; s_filter_vector grid[4]; } scratch;
+        s_filter_vector *grid = scratch.grid;
+        real top = (real)g_4b9dd0;
+        real left = (real)g_4b9dd2;
+        real bottom = (real)g_4b9dd4;
+        real right = (real)g_4b9dd6;
+        grid[0].x = left; grid[0].y = top; grid[0].z = 0.0f; grid[0].w = 0.0f;
+        grid[1].x = right; grid[1].y = top; grid[1].z = 1.0f; grid[1].w = 0.0f;
+        grid[2].x = left; grid[2].y = bottom; grid[2].z = 0.0f; grid[2].w = 1.0f;
+        grid[3].x = right; grid[3].y = bottom; grid[3].z = 1.0f; grid[3].w = 1.0f;
+        for (long i = 0; i < *(long *)((byte *)g_4e0350 + 0x3d0); ++i)
+        {
+                byte *entry = *(byte **)((byte *)g_4e0350 + 0x3d4) + i * 0x24;
+                if (*(long *)(entry + 0x14) != NONE &&
+                    (*(short *)(entry + 0x20) != NONE || *(short *)(entry + 0x22) != NONE))
+                {
+                    real *weights = scratch.weights;
+                    weights[0] = weights[1] = weights[2] = weights[3] = 0.0f;
+                    if (*(short *)(entry + 0x20) != NONE)
+                        weights[0] = function_134fc0(*(short *)(entry + 0x20));
+                    if (*(short *)(entry + 0x22) != NONE)
+                        weights[1] = function_134fc0(*(short *)(entry + 0x22));
+                    if (weights[0] != 0.0f || weights[1] != 0.0f)
+                        function_2d140(*(long *)(entry + 0x14), weights, 2, 2, grid);
+                }
+        }
+    }
+    if (finish) function_2df00();
+}
+
+
+struct s_tag_data;
+real function_13b390(void const *function, real input, real range);
+real function_13bb90(s_tag_data const *function, real input, real range);
+dword function_13bc00(s_tag_data const *function, real input);
+color3f *unpack_color3f(dword pixel, color3f *color);
+dword __cdecl pack_color4f(color4f const *color);
+void function_4ff50(byte const *definition, byte const *state, bool facing, real time,
+    real cosine, real *strength, real *horizontal, real *vertical, real *out);
+
+PRIVATE __forceinline real clamp_callback(real x, real low, real high)
+{
+    return low > x ? low : x > high ? high : x;
+}
+PRIVATE __forceinline real callback_curve(byte const *curve, real time, real range)
+{
+    if (!*(byte *const *)(curve + 4) || *(long const *)curve <= 0) return 0.0f;
+    real value = function_13b390(curve, time, range);
+    byte *data = *(byte **)(curve + 4);
+    if (!(data[1] & 0xf0))
+    {
+        real low = *(real *)(data + 4);
+        real high = *(real *)(data + 8);
+        value = low + (high - low) * clamp_callback(value, 0.0f, 1.0f);
+    }
+    return value;
+}
+
+// @retail 0x4f010
+void __stdcall function_4f010(void *payload)
+{
+    s_501e0 points[256];
+    s_42850_payload *state = (s_42850_payload *)payload;
+    if (state->b == NONE) return;
+    byte *definition = g_4e3b44[state->b & 0xffff].bytes;
+    if (*(long *)(definition + 8) <= 0) return;
+    real fade = 1.0f;
+    vector3f direction;
+    direction.i = g_4b9da0.x - state->position.x;
+    direction.j = g_4b9da0.y - state->position.y;
+    direction.k = g_4b9da0.z - state->position.z;
+    real distance = function_30bf0(&direction);
+    if (*(real *)(definition + 4) > *(real *)definition)
+        fade = clamp_callback((*(real *)(definition + 4) - distance) /
+            (*(real *)(definition + 4) - *(real *)definition), 0.0f, 1.0f);
+    fade *= state->width;
+    if (!(fade > 0.0f)) return;
+    g_46713c = true;
+    g_4670bc = true;
+    function_16b10((s_render_reset_state *)g_485b48);
+    for (long group = 0; group < *(long *)(definition + 8); ++group)
+    {
+        byte *entry = *(byte **)(definition + 0xc) + group * 0x98;
+        long count = *(long *)(entry + 0xc);
+        if (count > 0)
+        {
+            bool filtered = (bool)((*(dword *)entry >> 3) & 1);
+            real facing = (real)fabs((double)direction.k * state->first.k +
+                (double)direction.j * state->first.j + (double)direction.i * state->first.i);
+            real angle = clamp_callback(1.0f - facing, 0.0f, 1.0f);
+            real time = 1.0f - function_13b390(entry + 0x30, angle, 0.0f);
+            real step = 1.0f / (real)(count - 1);
+            real strength = 0.0f, horizontal = 1.0f, vertical = 0.0f;
+            real output[2] = {1.0f, 1.0f};
+            real start = 1.0f, multiplier = 1.0f, inverse = 1.0f, offset = 0.0f;
+            byte *positions = *(long *)(entry + 0x60) == count ? *(byte **)(entry + 0x64) : NULL;
+            if (*(dword *)(entry + 0x5c) & 1)
+            {
+                real first = function_13bb90((s_tag_data *)(entry + 0x18), 0.0f, time);
+                real second = function_13bb90((s_tag_data *)(entry + 0x18), 1.0f, time);
+                if (second > first)
+                {
+                    if (!(first > second * (1.0f / 256.0f))) first = second * (1.0f / 256.0f);
+                }
+                else if (!(second > first * (1.0f / 256.0f))) second = first * (1.0f / 256.0f);
+                if (!(fabs(first) < 0.0001f)) multiplier = (real)pow((double)second / first, (double)step);
+                start = first;
+                if (!(fabs(first - second) < 0.0001f)) inverse = 1.0f / (second - first);
+                offset = 0.0f - first * inverse;
+            }
+            for (long i = 0; i < *(long *)(entry + 0xc); ++i)
+            {
+                real position;
+                if (*(dword *)(entry + 0x5c) & 2) position = (real)i * step;
+                else if (*(dword *)(entry + 0x5c) & 1)
+                {
+                    position = inverse * start + offset;
+                    start *= multiplier;
+                }
+                else if (positions)
+                    position = (1.0f - time) * *(real *)(positions + i * 8) +
+                        *(real *)(positions + i * 8 + 4) * time;
+                else position = 0.0f;
+                real length = state->scale * callback_curve(entry + 0x10, position, time);
+                real width = state->scale * callback_curve(entry + 0x18, position, time);
+                real opacity = callback_curve(entry + 0x20, position, time);
+                function_4ff50(entry, (byte const *)state, i == 0, position, facing, &strength, &horizontal, &vertical, output);
+                real colour_time = function_13b390(entry + 0x28, position, time);
+                color4f colour;
+                if (*(byte **)(entry + 0x2c) && *(long *)(entry + 0x28) > 0)
+                    unpack_color3f(function_13bc00((s_tag_data *)(entry + 0x28), colour_time), (color3f *)&colour.red);
+                else *(color3f *)&colour.red = *(color3f *)&g_4686cc->red;
+                colour.red = clamp_callback(state->third.i * colour.red, 0.0f, 1.0f);
+                colour.green = clamp_callback(state->third.j * colour.green, 0.0f, 1.0f);
+                colour.blue = clamp_callback(state->third.k * colour.blue, 0.0f, 1.0f);
+                colour.alpha = clamp_callback(opacity * fade, 0.0f, 1.0f);
+                points[i].field_0.x = state->first.i * length + state->position.x;
+                points[i].field_0.y = state->first.j * length + state->position.y;
+                points[i].field_0.z = state->first.k * length + state->position.z;
+                points[i].field_c = width * output[0];
+                points[i].field_10 = width * output[1];
+                points[i].field_14 = pack_color4f(&colour);
+            }
+            function_4f7e0(*(long *)(entry + 8), points, *(long *)(entry + 0xc), 0,
+                horizontal, vertical, false, false, filtered);
+        }
+    }
+    if (!g_46713c)
+    {
+        g_4b8474 = 0;
+        D3DDevice_SetVertexShader(0);
+    }
+    g_46713c = true;
+}
+
+
+// Disabled: prior callback activation loses matched 0x12b2a0; counter storage is shared.
+#if 0
+extern s_connection_counter g_485ab0;
+extern s_connection_counter g_485ab8;
+extern dword g_55e6b8;
+
+// Retail 0x14280
+long __fastcall function_14280(void const *data)
+{
+    if (++g_485ab0.low == 0)
+        ++g_485ab0.high;
+    long result = 0;
+    if (((dword const *)data)[1] != g_55e6b8)
+    {
+        result = g_485ab0.low - g_485ab8.low;
+        g_485ab8 = g_485ab0;
+        g_55e6b8 = ((dword const *)data)[1];
+    }
+    return result;
+}
+
+struct s_font_cache_entry_1eff0
+{
+    long character_index;
+    long value;
+};
+struct s_font_cache_state_1eff0
+{
+    byte active;
+    byte unknown01[5];
+    short value06;
+    short value08;
+    byte unknown0a[2];
+    byte *bitmap;
+    s_font_cache_entry_1eff0 entries[512];
+};
+extern s_font_cache_state_1eff0 g_4b62a0;
+byte *function_1358e0(short width, short height, short depth, short levels, short format, word flags);
+
+// Retail 0x1eff0
+bool function_1eff0()
+{
+    bool result = true;
+    byte *bitmap = function_1358e0(256, 256, 1, 0, 9, 0x810);
+    if (bitmap)
+    {
+        memset(&g_4b62a0, 0, sizeof(g_4b62a0));
+        if (function_1d000(bitmap))
+        {
+            g_4b62a0.bitmap = bitmap;
+            g_4b62a0.active = true;
+            g_4b62a0.value06 = 1;
+            g_4b62a0.value08 = 1;
+        }
+        else
+            result = false;
+    }
+    else
+        result = false;
+    long index = 0;
+    do
+    {
+        memset(&g_4b62a0.entries[index], 0, sizeof(g_4b62a0.entries[index]));
+        g_4b62a0.entries[index].character_index = NONE;
+        index++;
+    } while (index < 512);
+    return result;
+}
+#endif
+
+
+
+// Disabled: canonical font render storage has 256 entries, while retail traverses 512.
+#if 0
+extern s_record_pool *g_54d574;
+
+// Retail 0x1f2b0
+void function_1f2b0()
+{
+    if (g_4b62a0.active)
+    {
+        for (long i = 0; i < 512; ++i)
+        {
+            long character = g_4b62a0.entries[i].character_index;
+            if (character != NONE && i != NONE)
+            {
+                if (character != NONE)
+                    *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
+                g_4b62a0.entries[i].character_index = NONE;
+            }
+        }
+    }
+}
+#endif
+
+
+
+struct s_record_source;
+struct s_record_sources
+{
+    dword unknown00;
+    long count;
+    dword flags;
+    long first;
+    dword unknown10;
+    s_record_source *sources;
+};
+extern s_record_sources g_4c1a48[3];
+struct s_41c80_state;
+void function_41c80(short type, s_41c80_state const *state);
+void function_176bb0();
+void __stdcall function_174220(bool value);
+void function_176cb0();
+void function_41640();
+
+// @retail 0x40e90
+void function_40e90(long mode)
+{
+    long mask;
+    if (!mode) mask = NONE;
+    else mask = mode == 2 ? 0x10 : 0x20;
+    s_2cb30_state *state = g_4c0b78.state;
+    long group = state->active;
+    if (!group)
+    {
+        g_4c1a48[0].count = 0;
+        g_4c1a48[0].flags = 0;
+        g_4c1a48[0].first = 0;
+        g_4b6280.count = 0;
+        g_4b6280.unknown04 = 0;
+    }
+    else
+    {
+        g_4c1a48[1].count = 0;
+        g_4c1a48[1].flags = 0;
+        g_4c1a48[1].first = 0;
+        g_4c1a48[2].count = 0;
+        g_4c1a48[2].flags = 0;
+        g_4c1a48[2].first = 0;
+    }
+    function_41c80((short)group, (s_41c80_state const *)state);
+    function_44ac0(group, mask, 0x1f);
+    if (!group)
+    {
+        if (g_4e6948->state != 3)
+        {
+            function_176bb0();
+            function_174220(false);
+            function_420a0();
+            function_42760(mask);
+            function_41640();
+        }
+        else
+        {
+            function_176cb0();
+            function_420a0();
+            function_42760(mask);
+            function_41640();
+        }
+    }
+}
+
+
+
+// Disabled: the shared glyph atlas ring currently allocates 256 of retail's 512 slots.
+#if 0
+struct s_glyph_header_1f5c0
+{
+    word value00, pixels_size;
+    short width, height;
+    byte unknown08[8];
+};
+struct s_glyph_entry_1f5c0
+{
+    long character;
+    short x, y;
+};
+struct s_glyph_cache_1f5c0
+{
+    bool active;
+    byte unknown01;
+    short first, next;
+    short x, y, row_height;
+    byte *bitmap;
+    s_glyph_entry_1f5c0 entries[512];
+};
+extern s_glyph_cache_1f5c0 g_4b62a0;
+extern s_record_pool *g_54d574;
+void function_140960(long character, word *pixels);
+byte *function_1d5e0(byte *bitmap, long mode, long *pitch);
+
+PRIVATE inline void glyph_remove_first_1f5c0(bool *removed)
+{
+    long first = g_4b62a0.first;
+    *removed = true;
+    if (first != NONE)
+    {
+        long character = g_4b62a0.entries[first].character;
+        if (character != NONE)
+            *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
+        g_4b62a0.entries[first].character = NONE;
+    }
+    g_4b62a0.first = (g_4b62a0.first + 1) & 0x1ff;
+}
+
+// Retail 0x1f5c0
+void __stdcall function_1f5c0(long character_index)
+{
+    word pixels[4096];
+    if (character_index != NONE
+        && *(long *)(g_54d574->data + (character_index & 0xffff) * 0x38 + 0x34) != NONE)
+        return;
+    byte *character = g_54d574->data + (character_index & 0xffff) * 0x38;
+    s_glyph_header_1f5c0 *header = 0;
+    if (*(long *)(character + 0x10) == 4)
+        header = (s_glyph_header_1f5c0 *)(character + 0x1c);
+    bool removed = false;
+    if (header->width + g_4b62a0.x > 256)
+    {
+        g_4b62a0.y += g_4b62a0.row_height;
+        g_4b62a0.x = 1;
+        g_4b62a0.row_height = 0;
+    }
+    if (header->height + g_4b62a0.y > 256)
+    {
+        g_4b62a0.y = 1;
+        g_4b62a0.x = 1;
+        g_4b62a0.row_height = 0;
+        while (g_4b62a0.first != g_4b62a0.next && g_4b62a0.entries[g_4b62a0.first].y > 0)
+            glyph_remove_first_1f5c0(&removed);
+    }
+    if (header->height + 1 > g_4b62a0.row_height)
+    {
+        long old_end = g_4b62a0.y + g_4b62a0.row_height;
+        long new_end = g_4b62a0.y + header->height;
+        while (g_4b62a0.first != g_4b62a0.next
+            && g_4b62a0.entries[g_4b62a0.first].y >= old_end
+            && g_4b62a0.entries[g_4b62a0.first].y < new_end)
+            glyph_remove_first_1f5c0(&removed);
+        g_4b62a0.row_height = header->height + 1;
+    }
+    if (((g_4b62a0.next + 1) & 0x1ff) == g_4b62a0.first)
+        glyph_remove_first_1f5c0(&removed);
+    long slot = g_4b62a0.next;
+    if (character_index != NONE)
+        *(long *)(g_54d574->data + (character_index & 0xffff) * 0x38 + 0x34) = slot;
+    s_glyph_entry_1f5c0 *entry = &g_4b62a0.entries[slot];
+    entry->character = character_index;
+    entry->x = g_4b62a0.x;
+    entry->y = g_4b62a0.y;
+    function_140960(character_index, pixels);
+    long pitch;
+    byte *destination = function_1d5e0(g_4b62a0.bitmap, removed ? 1 : 0, &pitch);
+    if (destination)
+    {
+        short first_x = entry->x - 1;
+        if (first_x < 0) first_x = 0;
+        short first_y = entry->y - 1;
+        if (first_y < 0) first_y = 0;
+        short end_x = entry->x + header->width + 1;
+        short width = *(short *)(g_4b62a0.bitmap + 4) - 1;
+        if (end_x > width) end_x = width;
+        short end_y = entry->y + header->height + 1;
+        short height = *(short *)(g_4b62a0.bitmap + 6) - 1;
+        if (end_y > height) end_y = height;
+        for (long y = first_y; y < end_y; y++)
+            for (long x = first_x; x < end_x; x++)
+                *(word *)(destination + y * pitch + x * 2) = 0x0fff;
+        long source = 0;
+        for (long y = 0; y < header->height; y++)
+        {
+            word *row = (word *)(destination + (entry->y + y) * pitch + entry->x * 2);
+            for (long x = 0; x < header->width; x++) row[x] = pixels[source + x];
+            source += header->width;
+        }
+        bitmap_predict_inline((s_bitmap_predict_view *)g_4b62a0.bitmap, 7);
+    }
+    g_4b62a0.x += header->width + 1;
+    g_4b62a0.next = (g_4b62a0.next + 1) & 0x1ff;
+}
+#endif
+
+
+
+void function_1f2b0();
+
+// @retail 0x226c0
+void function_226c0()
+{
+    function_1f2b0();
+    g_485a80 = 0;
+}
+
+
+
+extern byte g_4b569d;
+void function_014a60();
+void function_01d2a0();
+struct s_type_7ba8e9;
+void function_1359d0(s_type_7ba8e9 *bitmap);
+void texture_cache_dispose();
+void geometry_cache_dispose();
+
+// @retail 0x141c0
+void function_141c0()
+{
+    if (g_5093e0)
+    {
+        memset(g_5093e0, 0, 0x3fc);
+        if (g_4b5690 && !g_4b569d) g_4b569d = 1;
+    }
+    function_14980();
+    function_014a60();
+    function_01d2a0();
+    function_1e310();
+    if (g_4b62a0)
+    {
+        function_1f2b0();
+        function_1359d0((s_type_7ba8e9 *)g_4b62ac);
+        g_4b62a0 = 0;
+    }
+    texture_cache_dispose();
+    geometry_cache_dispose();
+    if (g_5093b0)
+    {
+        D3DDevice_Release();
+        g_5093b0 = 0;
+    }
+    if (g_509350) g_509350 = 0;
+}
+
+
+// Disabled: retail clears the contiguous 0x40c0-byte state at 0x51f408; its owner declares split globals.
+#if 0
+extern byte *g_5093e4;
+extern byte g_51f408[0x40c0];
+extern long g_485a58;
+void function_20e50(long index);
+
+// Retail 0x22590
+void function_22590()
+{
+    byte *globals = (byte *)g_4e034c;
+    g_485a80 = *(long *)(globals + 0x108) ? *(byte **)(globals + 0x10c) : 0;
+    function_1f2b0();
+    s_timed_effect_globals *effects = g_5093e0;
+    if (effects)
+    {
+        memset(effects, 0, 0x3fc);
+        effects->unknown180[0] = 1.0f;
+        effects->unknown180[1] = 1.0f;
+        effects->unknown180[2] = 1.0f;
+        effects->unknown180[3] = 1.0f;
+        effects->unknown3f8 = 1.0f;
+    }
+    *(long *)g_50934c = 0;
+    *(real *)(g_50934c + 0x10) = 0.5f;
+    *(real *)(g_50934c + 0x18) = 0.5f;
+    *(real *)(g_50934c + 0x28) = 0.5f;
+    *(real *)(g_50934c + 0x30) = 0.5f;
+    g_5093e4[0] = g_5093e4[1] = 0;
+    for (long i = 4; i <= 0x14; i += 4) *(real *)(g_5093e4 + i) = -1.0f;
+    g_5093e4[0x18] = 1;
+    g_5093e4[0x19] = 0;
+    *(real *)(g_5093e4 + 0x1c) = -1.0f;
+    *(real *)(g_5093e4 + 0x20) = -1.0f;
+    g_5093e4[0x1a] = 0;
+    memset(g_51f408, 0, sizeof(g_51f408));
+    for (long i = 0; i < 0x1ff; ++i) function_20e50(i);
+    if (effects) *(real *)effects->unknown190 = 0.0f;
+    g_485a58 = 0;
+}
+#endif
+
+// Disabled: retail indexes all 512 glyph atlas entries; the foreign canonical ring still has 256 slots.
+#if 0
+extern long g_4e28f4[11];
+extern s_record_pool *g_54d574;
+extern s_glyph_entry_1f5c0 g_4b62b0[512];
+long function_140b20(long font_index, long character);
+void function_140900(long character, long font, long priority);
+void __stdcall function_1f5c0(long character);
+
+// Retail 0x1f490
+void __stdcall function_1f490(long unused, long font, long character, long color, long shadow,
+    real x, real y, real u, real v, real width, real height, real scale, long callback, long context)
+{
+    long index = function_140b20(g_4e28f4[font], character);
+    if (index == NONE)
+    {
+        function_140900(character, font, 3);
+        index = function_140b20(g_4e28f4[font], character);
+        if (index == NONE) return;
+    }
+    function_1f5c0(index);
+    if (index == NONE) return;
+    long entry = *(long *)(g_54d574->data + (index & 0xffff) * 0x38 + 0x34);
+    if (entry == NONE) return;
+    s_glyph_entry_1f5c0 *rectangle = &g_4b62b0[entry];
+    bool draw_shadow = ((dword)shadow & 0xff000000) > 0;
+    do
+    {
+        real offset = draw_shadow ? scale : 0.0f;
+        function_1f3a0((short const *)rectangle, x + offset, y + offset, (long)width, (long)height,
+            (short)(long)u, (short)(long)v, scale, draw_shadow ? shadow : color,
+            (t_1f3a0_callback)callback, (void *)context);
+        if (!draw_shadow) break;
+        draw_shadow = false;
+    } while (true);
+}
+#endif
+
+// Disabled: the frame copies overlap independently declared shared camera/projection globals.
+#if 0
+struct s_frame_view_2c560 { byte data[0x298]; };
+extern s_frame_view_2c560 g_485600;
+extern byte g_48574c[0x120];
+extern dword g_5093b4, g_5093b8;
+extern vector3f g_4b9dac;
+extern byte g_4670cd;
+dword __cdecl function_131ed0(void const *color);
+void function_25a10(void const *view, point3f *position, vector3f *forward);
+
+// Retail 0x132d0
+void __stdcall function_132d0(s_frame_view_2c560 const *frame)
+{
+    g_485600 = *frame;
+    short mode = *(short const *)(frame->data + 2);
+    g_4858b8 = mode == 1 ? 18 : 0;
+    function_15370(0);
+    g_5093b4 = 0x901;
+    g_5093b8 = 0x900;
+    function_12fa0((real const *)(frame->data + 0x8c), frame->data + 0x18,
+        frame->data[7] != 0, mode);
+    if (*(short *)(g_485600.data + 8))
+    {
+        dword color = 0;
+        dword flags = 1;
+        if (!g_4670cd)
+        {
+            flags = 0x61;
+            color = function_131ed0(g_485600.data + 0xc);
+        }
+        function_14bc0((short)g_4858b8, 0, true);
+        function_14b60(flags, color, 1.0f, 0);
+    }
+    else function_14bc0((short)g_4858b8, 0, true);
+    D3DDevice_SetVertexData4f(7, 0.0f, 0.5f, 1.0f, 42.0f);
+    D3DDevice_SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+    g_4670bc = 1;
+    function_16b10((s_render_reset_state *)g_485b48);
+    if (frame->data[0x26c])
+    {
+        memcpy(g_48574c, frame->data + 0x14c, 0x120);
+        function_25a10(g_48574c, &g_4b9da0, &g_4b9dac);
+    }
+}
+#endif
+
+// Disabled: retail publishes the persistent shared render-source address and needs the blocked 14b60 flags interface.
+#if 0
+struct s_render_mode_44370
+{
+    long target;
+    dword clear_flags, field_8_7;
+    real clear_depth;
+    byte clear_stencil, unknown11[7];
+    short cull_mode, unknown1a;
+    long group, unknown20;
+};
+extern s_render_mode_44370 g_43fa1c[25];
+extern byte g_4ba022, g_4ba023, g_4ba024;
+extern long g_467130, g_467134, g_4858b4;
+extern s_record_sources *g_467138;
+extern dword g_4ba014;
+void function_15680(short mode);
+void function_495e0();
+void function_496f0();
+
+// Retail 0x44370
+bool __stdcall function_44370(long mode)
+{
+    s_render_mode_44370 const *settings = &g_43fa1c[mode];
+    long group = settings->group;
+    s_record_sources *sources = &g_4c1a48[group];
+    bool enabled = true;
+    if ((1 << mode) & 0xbffdee) enabled = (sources->flags & (1 << mode)) != 0;
+    if (enabled)
+    {
+        if (mode == 2) enabled = g_4ba023 != 0;
+        else if (mode == 8) enabled = g_4ba022 != 0;
+        else if (mode == 17) enabled = g_4ba024 != 0;
+    }
+    if (enabled)
+    {
+        g_467130 = mode;
+        g_467134 = group;
+        g_467138 = sources;
+        long target = settings->target;
+        if (target == NONE)
+            target = mode == 10 ? ((g_4ba014 & 0x10) && !(g_4ba014 & 0x20) ? 10 : 9) : g_4858b8;
+        g_4858b4 = target;
+        function_14bc0((short)target, 0, true);
+        if (settings->clear_flags)
+        {
+            if (!g_485a75 && !g_485a76)
+                function_14b60(settings->clear_flags, settings->field_8_7, settings->clear_depth, settings->clear_stencil);
+        }
+        else if (mode == 10)
+        {
+            if ((g_4ba014 & 0x10) && !(g_4ba014 & 0x20)) function_14b60(1, 0xffffff, 0.0f, 0);
+            else function_14b60(0x60, 0, 1.0f, 0);
+        }
+        function_15680(g_485898 >= 4 && g_485898 <= 7 ? 0 : settings->cull_mode);
+        switch (mode)
+        {
+        case 3: case 16: enabled = true; break;
+        case 10: enabled = true; function_495e0(); break;
+        case 11: enabled = true; function_496f0(); break;
+        case 17: g_485a74 = 1; enabled = true; break;
+        }
+    }
+    else g_467130 = 0;
+    function_15370(mode == 3 || mode == 1);
+    return enabled;
+}
+#endif
+
+
+
+// Disabled: retail clears split shared render globals and passes their addresses into allocation/reset helpers.
+#if 0
+// Retail 0x12560
+void function_12560()
+{
+    if (g_485a88) return;
+    function_169f0();
+    function_16a30(g_485ac5 && g_485ac6 ? 0x20 : 0x30,
+        g_485ac5 && g_485ac6 ? 0x18 : 0x24, 1.0f);
+    D3D__CommandBufferSize = 0x100000;
+    D3D__SegmentSize = 0x8000;
+    bool success = function_128c0(&g_43ed80);
+    if (success)
+    {
+        g_4670bc = 1;
+        function_16b10((s_render_reset_state *)g_485b48);
+        function_1c1b0();
+        function_1c810();
+        success = function_1d3f0(3, (long)g_468848, (long *)&g_484dbc);
+        if (success)
+            for (long i = 0; i < 4; ++i) D3DDevice_SetPalette(i, (D3DPalette *)g_484dbc);
+        memset(g_484dd0, 0, 0x180);
+        if (success)
+        {
+            D3DDevice_SetVertexShader(0x11);
+            D3DDevice_SetRenderState(D3DRS_CULLMODE, 2);
+            D3DDevice_SetRenderState(D3DRS_ZWRITEENABLE, 1);
+            D3DDevice_SetRenderState(D3DRS_ZFUNC, 0x203);
+            D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
+            D3DDevice_SetRenderState(D3DRS_STENCILENABLE, 0);
+            D3DDevice_SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+            D3DDevice_SetRenderState(D3DRS_ALPHAFUNC, 0x204);
+            D3DDevice_SetRenderState(D3DRS_ALPHAREF, 0);
+            D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
+            D3DDevice_SetRenderState(D3DRS_SRCBLEND, 1);
+            D3DDevice_SetRenderState(D3DRS_DESTBLEND, 0);
+            D3DDevice_SetRenderState(D3DRS_BLENDOP, 0x8006);
+            D3DDevice_SetRenderState(D3DRS_FOGENABLE, 1);
+            D3DDevice_SetRenderState(D3DRS_LIGHTING, 0);
+            D3DDevice_SetRenderState(D3DRS_SPECULARENABLE, 1);
+            for (long i = 0; i < 4; ++i) D3DDevice_SetTextureStageState(i, D3DTSS_TEXCOORDINDEX, i);
+        }
+    }
+    function_1d660();
+    if (success && function_14600() && function_14850() && function_1d770() && function_1d0e0() && function_1e110())
+    {
+        g_4670f8 = 0x24;
+        if (function_1eff0())
+        {
+            g_4b72b4 = *g_468788;
+            g_4b72c0 = NONE;
+            success = true;
+        }
+        else success = false;
+    }
+    else success = false;
+    function_1fbb0();
+    function_12d8b0();
+    function_12c0d0();
+    memset(g_51f408, 0, 0x40c0);
+    for (long i = 0; i < 0x1ff; ++i) function_20e50(i);
+    byte *allocated = g_4e6080 + g_4e6084;
+    g_4e6084 += 0x34;
+    long size = 0x34;
+    crc32(4, &size, &g_4e608c);
+    g_50934c = allocated;
+    function_20eb0();
+    if (success) g_485a88 = 1;
+}
+#endif
+
+
+
+#include "async.h"
+#include <float.h>
+extern dword g_510800_pool_base;
+extern long g_510804_pool_size;
+bool function_12200();
+void global_preferences_initialize();
+void function_120a90();
+void function_121fc0();
+void function_2136c0();
+void function_123180();
+void function_123b30();
+void function_12560();
+bool function_1248b0();
+void function_1253d0();
+
+// @retail 0x12000
+bool function_12000()
+{
+    bool result = false;
+    XMountSecondaryUtilityDrive();
+    g_510800_pool_base = (dword)VirtualAlloc(0, 0x23000, MEM_COMMIT, PAGE_READWRITE);
+    g_510804_pool_size = 0;
+    if (function_12200())
+    {
+    _control87(0x9001f, 0xfffff);
+    function_120a90();
+    global_preferences_initialize();
+    function_121fc0();
+    function_2136c0();
+    function_123180();
+    function_123b30();
+    function_12560();
+    if (g_5093b0)
+    {
+        function_1248b0();
+        function_1253d0();
+        result = true;
+    }
+    }
+    return result;
+}
+
+
+
+// Disabled: shutdown clears two shared aggregate ranges currently split into independent globals.
+#if 0
+// Retail 0x12080
+void function_12080()
+{
+    if (*(byte *)&g_4e3b60)
+    {
+        g_5020d8 = 0;
+        function_2150f0();
+        memset(&g_4e3b60, 0, 0x2540);
+    }
+    function_125600();
+    function_124920();
+    function_141c0();
+    function_123310();
+    function_141190();
+    function_140aa0();
+    memset(&g_4e2920, 0, 0x1220);
+    CloseHandle(g_4e0354);
+    CloseHandle(g_4e0360);
+    CloseHandle(g_4e035c);
+    CloseHandle(g_4e0358);
+    if (g_510800_pool_base)
+    {
+        VirtualFree((void *)g_510800_pool_base, 0, MEM_RELEASE);
+        g_5107fc = g_510800_pool_base = g_510804_pool_size = g_510808 = 0;
+    }
+}
+#endif
+
+// Disabled: retail restores a 0x74-byte camera and 0x120-byte projection across split shared declarations.
+#if 0
+// Retail 0x13c20
+void function_13c20()
+{
+    if (g_4ba04c > 1) D3DDevice_Clear(0, 0, 0x80, 0, 1.0f, 0);
+    --g_46701c;
+    if (g_46701c >= 0)
+    {
+        byte *frame = (byte *)&g_4850d0 + g_46701c * 0x298;
+        function_132d0((s_frame_view_2c560 const *)frame);
+        g_4b9ed4 = *(short *)frame;
+        memcpy(&g_4b9ef0, frame + 0x14c, 0x120);
+        memcpy(&g_4b9da0, frame + 0x18, 0x74);
+        real bounds[4];
+        function_2f970((s_2f970_view const *)&g_4b9da0, bounds);
+        function_2fd90((s_2f800_view const *)&g_4b9da0, (box2f const *)bounds, (byte *)&g_4b9e14);
+    }
+}
+#endif
+
+// Disabled: launch stack reset takes a new address of shared global g_4e6420; its aggregate is not yet canonical.
+#if 0
+// Retail 0x12190
+void function_12190()
+{
+    function_12420();
+    function_12b400();
+    long depth = g_4e6420;
+    g_4e642c[depth + 1] = g_4e642c[depth];
+    g_4e6440[depth + 1] = g_4e6440[depth];
+    g_4e6420 = depth + 1;
+    if (function_12000())
+    {
+        function_12b690();
+        function_12080();
+    }
+    memset(&g_4e6420, 0, 0x34);
+    MmFreeContiguousMemory((void *)0x80061000);
+    __debugbreak();
+}
+#endif
+
+
+
+// Disabled: the dual timed-effect pass publishes a new shared visibility-pool address and depends on blocked 2bcd0.
+#if 0
+// Retail 0x13680
+void function_13680(bool skip_effects)
+{
+    function_1bdf0();
+    s_timed_effect_globals *effect = function_01fd20(0);
+    if (g_485602 == 2)
+    {
+        function_2bcd0(1, 1, false, 0, 0, 0, 0.0f);
+        return;
+    }
+    bool draw_ui = !skip_effects && g_485898 != 6;
+    bool world_effects = !skip_effects && g_485898 != 7 && function_22710();
+    if (!function_16ac0() && !skip_effects && effect && effect->unknown3c &&
+        effect->unknown40 > 0.0f && function_22710() && function_01de20(18))
+    {
+        function_2bcd0(1, 1, false, world_effects, 1, 1, effect->unknown40);
+        g_4c0b78.state = (s_2cb30_state *)&g_547f88;
+        function_2bcd0(1, 1, false, world_effects, 2, 2, effect->unknown40);
+        function_21a80(effect->unknown44, effect->unknown48, effect->unknown40);
+    }
+    else function_2bcd0(1, 1, draw_ui, world_effects, 0, 0, 0.0f);
+}
+#endif
+

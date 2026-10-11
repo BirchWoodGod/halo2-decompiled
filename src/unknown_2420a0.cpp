@@ -2157,7 +2157,7 @@ bool c_game_engine_markers::v46(dword flags, long, s_marker_update *update)
 
 	return result;
 }
-void __stdcall function_15e360(point3f const *point);
+void __stdcall function_15e360(point3f const *point, long object_index);
 
 // @retail 0x242ba0
 void function_242ba0(long marker_index, long object_index, long player_index)
@@ -2184,7 +2184,7 @@ void function_242ba0(long marker_index, long object_index, long player_index)
 			s_slot_object *object;
 
 			g_51ec80->w204 |= 1;
-			function_15e360(&point);
+			function_15e360(&point, object_index);
 			g = g_51ec80;
 			g->w204 &= ~1;
 			g->carriers[slot] = player_index;
@@ -2217,7 +2217,7 @@ void function_19f680(long tag, long group, long pass, long variant, void *contex
 	real perimeter, point3f const *color, real height);
 struct s_sort_record;
 typedef bool (__stdcall *t_record_fill)(long, void *, long, long, long, void *, s_sort_record *);
-void function_41490(long tag, short group, short kind, real distance, t_record_fill fill,
+void function_41490(short group, long tag, short kind, real distance, t_record_fill fill,
 	dword value, void (__stdcall *callback)(void *), void *context, point3f const *position);
 
 // @retail 0x244470
@@ -2271,7 +2271,7 @@ void function_244630(point3f const *arg_0, long arg_1)
 	byte *local_0 = (byte *)g_4e3b44[g_4e034c->index & 0xffff].data;
 	byte *local_1 = *(byte **)(local_0 + 0xc);
 	byte *local_2 = *(byte **)(local_1 + 0x534);
-	function_41490(*(long *)(local_2 + 0xc4), 0, NONE, 640.f,
+	function_41490(0, *(long *)(local_2 + 0xc4), NONE, 640.f,
 		(t_record_fill)function_d4bc0, (dword)function_244470, function_244610, (void *)arg_1, arg_0);
 }
 

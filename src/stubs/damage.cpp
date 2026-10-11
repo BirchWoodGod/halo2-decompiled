@@ -7,8 +7,6 @@ struct s_damage_info;
 struct s_damage_region_accumulator;
 struct s_damage_object;
 
-// @stub 0xbef30
-void __stdcall function_bef30(long object_index, long a, long b, long c, long d) { }
 /* sets a region's permutation */
 // @stub 0xe6460
 void __stdcall function_e6460(long object_index) { }
@@ -22,8 +20,6 @@ bool function_183910(long component_index, point3f const *origin, point3f *point
 struct s_damage_report;
 // @stub 0x119280
 void function_119280(long object_index, unsigned long flags) { }
-// @stub 0x1e9fa0
-void __stdcall function_1e9fa0(void *engine_globals, long object_index, long player_index, unsigned short team, unsigned char kind) { }
 /* called by function_d7b80 (0xd7b80) */
 /* called by function_d5de0 (0xd5de0) */
 /* the physics model constraint iterator and the model node search (for
