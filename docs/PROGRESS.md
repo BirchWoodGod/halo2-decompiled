@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7601 functions match
+
+```
+matched 7601 of 11318 game functions (900241 of 2784283 bytes, 32.33%)
+```
+
+5 new matches, none lost:
+- Deep lane 3, round 31 (near-length functions): 0x2a11c0, 0x2c509c and 0x1edc10, plus 0x21ebc0 and 0x25d810, which now build as retail does as a side effect.
+
 ## 2026-10-11: 7596 functions match
 
 ```
