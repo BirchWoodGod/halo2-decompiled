@@ -2,6 +2,34 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7596 functions match
+
+```
+matched 7596 of 11318 game functions (899325 of 2784283 bytes, 32.30%)
+```
+
+1 new matches, none lost:
+- 0x16d660, which swaps a region's permutations: the effect's tag is set before its object. The permuter can now move a statement several places in one step, which finds this kind of fix.
+
+## 2026-10-11: 7595 functions match
+
+```
+matched 7595 of 11318 game functions (898780 of 2784283 bytes, 32.28%)
+```
+
+1 new matches, none lost:
+- 0x237c04, the virtual keyboard's selection and cursor drawing: reading the timer through a const pointer in the cursor fade keeps an earlier comparison in retail's operand order.
+
+## 2026-10-11: 7594 functions match
+
+```
+matched 7594 of 11318 game functions (898266 of 2784283 bytes, 32.26%)
+```
+
+7 new matches, none lost:
+- The second machine's lanes C (+2, #331), U (+3, #332) and O (+1, #330).
+- 0x16ff10, from the permuter: two source edits, a declaration order and the grouping of one expression.
+
 ## 2026-10-11: 7587 functions match
 
 ```

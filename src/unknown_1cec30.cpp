@@ -308,13 +308,13 @@ long __cdecl havok_entity_property_2003_get(hkEntity const *entity)
 }
 
 // @retail 0x1cf3b0
-void havok_entity_property_2003_set(hkEntity *entity, hkPropertyValue value)
+void havok_entity_property_2003_set(hkEntity *entity, long value)
 {
 	if (havok_entity_property_exists(entity, HAVOK_PROPERTY_2003))
 	{
 		entity->removeProperty(HAVOK_PROPERTY_2003);
 	}
-	entity->addProperty(HAVOK_PROPERTY_2003, value);
+	entity->addProperty(HAVOK_PROPERTY_2003, *(hkPropertyValue const *)&value);
 }
 
 // @retail 0x1cf950
@@ -712,13 +712,15 @@ void havok_component_rigid_body_angular_velocity_get(long rigid_body_index, s_ha
 // @retail 0x1d0a20
 void havok_component_rigid_body_point_velocity_get(long rigid_body_index, s_havok_component *component, point3f const *point, vector3f *velocity)
 {
-	if (!havok_component_rigid_body_get(rigid_body_index, component)->m_fixed)
+    s_havok_component *const volatile *local_0 = &component;
+    s_havok_component *local_1 = *local_0;
+	if (!havok_component_rigid_body_get(rigid_body_index, local_1)->m_fixed)
 	{
 		hkVector4 havok_point;
 		hkVector4 havok_velocity;
 
 		havok_from_vector3d(&havok_point, (vector3f const *)point);
-		havok_component_rigid_body_get(rigid_body_index, component)->m_motion->getPointVelocity(havok_point, havok_velocity);
+		havok_component_rigid_body_get(rigid_body_index, local_1)->m_motion->getPointVelocity(havok_point, havok_velocity);
 		vector3d_from_havok(velocity, &havok_velocity);
 	}
 	else
@@ -1263,9 +1265,7 @@ c_component_body_state::c_component_body_state(hkEntity *body, byte const *value
 	angular_velocity = *g_4687a4;
 	position = *g_468788;
 	vector.m_quad = _mm_setzero_ps();
-	hkPropertyValue property;
-	memset(&property, 0, sizeof(property));
-	havok_entity_property_2003_set(body, property);
+	havok_entity_property_2003_set(body, 0);
 	this->values.resize(count);
 	if (enabled)
 		flags |= 1;
@@ -2126,7 +2126,7 @@ void __stdcall function_1d87b0(s_havok_component_rigid_body *body, long body_ind
     }
     if (material_count == 0)
     {
-        havok_entity_property_2003_set((hkEntity *)body->rigid_body, hkPropertyValue(0));
+        havok_entity_property_2003_set((hkEntity *)body->rigid_body, 0);
         *( __m128 *)((byte *)body + 0x30) = _mm_setzero_ps();
         body->unknown44 = 0;
         return;
