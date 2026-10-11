@@ -420,9 +420,9 @@ long function_b42b0(long kind, long controller, struct _XUID owner, wchar_t cons
             if (status >= 0)
             {
                 *task_out = task_index;
+                task->controller_index = controller;
                 task->flags = 1;
                 task->type = 0x29;
-                task->controller_index = controller;
                 return 0;
             }
             switch (status)

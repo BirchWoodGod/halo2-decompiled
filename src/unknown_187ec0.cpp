@@ -565,24 +565,25 @@ struct s_unit_material_model
 // @retail 0x1886d0
 short *function_1886d0(long object_index, short *material_type)
 {
+	struct s_1886d4 { signed short field_0 : 16; };
+	s_1886d4 local_1;
+	local_1.field_0 = g_47d8e0;
 	s_unit_material_object *object = ((s_unit_material_object_header *)g_4e0300->data)[object_index & 0xffff].object;
 	s_unit_material_definition *definition = (s_unit_material_definition *)g_4e3b44[object->definition_index & 0xffff].bytes;
-	short result = g_47d8e0;
 
 	if (function_badc0(object_index, 1))
 	{
 		if (TEST_FIELD_BIT(object->flag2))
 		{
-			result = definition->alternate_material_type;
+			local_1.field_0 = definition->alternate_material_type;
 		}
 		else
 		{
-			result = definition->material_type;
+			local_1.field_0 = definition->material_type;
 		}
-		if (result != g_47d8e0)
+		if (local_1.field_0 != g_47d8e0)
 		{
-			*material_type = result;
-			return material_type;
+			goto local_0;
 		}
 	}
 	if (definition->model_index != NONE)
@@ -590,10 +591,10 @@ short *function_1886d0(long object_index, short *material_type)
 		s_unit_material_model *model = (s_unit_material_model *)g_4e3b44[definition->model_index & 0xffff].bytes;
 		if (model->count)
 		{
-			*material_type = model->entries->material_type;
-			return material_type;
+			local_1.field_0 = model->entries->material_type;
 		}
 	}
-	*material_type = result;
+local_0:
+	*material_type = local_1.field_0;
 	return material_type;
 }

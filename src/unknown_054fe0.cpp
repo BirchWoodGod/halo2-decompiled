@@ -1431,9 +1431,9 @@ void function_80490(const s_cached_player_identity *identity, const s_cached_pla
 // @retail 0x65530
 void __stdcall function_65530(long user_index)
 {
+ long maximum = NONE;
  long levels[16];
  memset(levels, NONE, sizeof(levels));
- long maximum = NONE;
  for (long i = 0; i < 16; i++)
  {
   if (game_variant_get_map_status(i) == 1)

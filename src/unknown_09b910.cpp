@@ -670,7 +670,8 @@ bool c_game_engine_request_boot_player_event::v10(long a, void *data, s_bitstrea
 // @retail 0xa04b0
 void c_item_type::v11(long a, long b, long c)
 {
-	long flags_address = b;
+	long const volatile *flags_parameter = &b;
+	long flags_address = *flags_parameter;
 	((s_flags_a6900 const *)flags_address)->function_a6900(&b, this);
 	long result = b + 1;
 	if (*(dword const *)flags_address & 0x400)

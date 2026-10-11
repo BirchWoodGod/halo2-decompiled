@@ -636,7 +636,8 @@ void __stdcall function_ba7f0(long object_index, long region_index, long bit_ind
 {
     char previous[16];
     s_object_blocks_ab *object = ((s_object_blocks_header_ab *)g_4e0300->data)[object_index & 0xffff].object;
-    long model_index = ((s_object_variant_definition_ab *)g_4e3b44[object->tag_index & 0xffff].bytes)->model_index;
+    s_object_variant_definition_ab *definition = (s_object_variant_definition_ab *)g_4e3b44[object->tag_index & 0xffff].bytes;
+    long model_index = *(long volatile *)&definition->model_index;
     if (model_index != NONE)
     {
         char *regions = (char *)object + object->regions_offset;
