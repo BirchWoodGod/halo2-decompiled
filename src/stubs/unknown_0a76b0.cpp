@@ -5,6 +5,12 @@ void __stdcall function_fff40(long a, long b) { }
 #include "unknown_0259d0.h"
 
 struct s_object;
+// @stub 0x1a7cc0
+void __stdcall function_1a7cc0(long actor_index) {}
+// @stub 0x1f38c0
+void function_1f38c0(long actor_index) {}
+// @stub 0x1fc7e0
+void __stdcall function_1fc7e0(long actor_index) {}
 struct s_effect_owner;
 struct s_unit_request;
 class c_animation_channel;
@@ -51,8 +57,9 @@ void __stdcall function_e56f0(long unit_index, point3f const *point) { }
 void function_e5750(long unit_index) { }
 
 
-// @stub 0x1e54d0
-void function_1e54d0(void *state, long a) { }
+struct s_tracked_point;
+// @stub 0x1fc350
+void __stdcall function_1fc350(long object_index, s_tracked_point *tracked) { }
 
 
 

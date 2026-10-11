@@ -5,6 +5,134 @@
 
 // @flags /O2 /Gr
 
+#if 0 // Disabled: the nine shape families lack the complete retail virtual interfaces.
+// Constructor declarations here describe the retail field setup; activating them
+// requires the common C/J/AA shape interfaces, including array child_count (+0x28).
+struct s_shape_block_table;
+void *function_1eaf30(short type, s_shape_block_table *table, short index);
+struct c_part_a { c_part_a(void *definition); };
+struct c_part_b { c_part_b(void *owner); };
+struct c_part_c { c_part_c(void *definition); };
+struct c_shape_456088 { c_shape_456088(void *definition); };
+struct c_shape_455ef0 { c_shape_455ef0(void *definition, word flags); };
+struct c_shape_456048 { c_shape_456048(void *definition); };
+struct c_shape_456008 { c_shape_456008(void *definition, void *first, void *second); };
+struct c_shape_455fc0 {
+	c_shape_455fc0(void *children);
+	long child_count();
+};
+struct c_shape_455f58 { c_shape_455f58(void *child, void *data); };
+struct c_shape_455f30 { c_shape_455f30(void *child, void *linked); };
+struct c_shape_455f8c { c_shape_455f8c(long saved_value); };
+
+// @retail 0x1ea9c0 disabled
+void function_1ea9c0(long tag_index, long restore)
+{
+	byte *definition = g_4e3b44[tag_index & 0xffff].bytes;
+	s_shape_block_table *table = (s_shape_block_table *)definition;
+	if (!(byte)restore)
+		for (long i = 0; i < *(long *)(definition + 0x38); ++i)
+		{
+			byte *entry = *(byte **)(definition + 0x3c) + i * 0x90;
+			long key = *(long *)(entry + 0x38);
+			*(void **)(entry + 0x38) = function_1eaf30((short)key, table, (short)(key >> 16));
+		}
+	for (long i = 0; i < *(long *)(definition + 0x48); ++i)
+	{
+		byte *entry = *(byte **)(definition + 0x4c) + i * 0x80;
+		new (entry + 0x20) c_part_a((byte)restore ? NULL : entry);
+		new (entry + 0x30) c_part_b((byte)restore ? NULL : entry + 0x20);
+	}
+	for (long i = 0; i < *(long *)(definition + 0x50); ++i)
+	{
+		byte *entry = *(byte **)(definition + 0x54) + i * 0xb0;
+		new (entry + 0x20) c_shape_456088((byte)restore ? NULL : entry);
+	}
+	for (long i = 0; i < *(long *)(definition + 0x58); ++i)
+	{
+		byte *entry = *(byte **)(definition + 0x5c) + i * 0x50;
+		new (entry + 0x20) c_part_c((byte)restore ? NULL : entry);
+	}
+	for (long i = 0; i < *(long *)(definition + 0x60); ++i)
+	{
+		byte *entry = *(byte **)(definition + 0x64) + i * 0x90;
+		new (entry + 0x20) c_shape_455ef0((byte)restore ? NULL : entry, (byte)restore ? 1 : 0x80);
+		new (entry + 0x40) c_part_b((byte)restore ? NULL : entry + 0x20);
+	}
+	for (long i = 0; i < *(long *)(definition + 0x68); ++i)
+	{
+		byte *entry = *(byte **)(definition + 0x6c) + i * 0x60;
+		new (entry + 0x20) c_shape_456048((byte)restore ? NULL : entry);
+	}
+	long first_count = 0, second_count = 0;
+	for (long i = 0; i < *(long *)(definition + 0x70); ++i)
+	{
+		byte *entry = *(byte **)(definition + 0x74) + i * 0x100;
+		byte *shape = entry + 0x20;
+		if ((byte)restore) new (shape) c_shape_456008(NULL, NULL, NULL);
+		else
+		{
+			bool inline_first = (*(dword *)(shape + 0x38) & 0x7fffffff) <= 3;
+			byte *first = inline_first ? shape + 0x40 : *(byte **)(definition + 0x7c) + first_count * 0x30;
+			byte *second = *(byte **)(definition + 0x84) + second_count * 0x10;
+			new (shape) c_shape_456008(entry, first, second);
+			if (!inline_first) first_count += *(long *)(shape + 0x34);
+			second_count += *(long *)(shape + 0xd8);
+		}
+	}
+	long child_count = 0;
+	for (long i = 0; i < *(long *)(definition + 0x90); ++i)
+	{
+		byte *entry = *(byte **)(definition + 0x94) + i * 0x38;
+		if ((byte)restore) new (entry) c_shape_455fc0(NULL);
+		else
+		{
+			bool inline_children = (*(dword *)(entry + 0x14) & 0x7fffffff) <= 4;
+			byte *children = inline_children ? entry + 0x18 : *(byte **)(definition + 0x9c) + child_count * 8;
+			c_shape_455fc0 *shape = new (entry) c_shape_455fc0(children);
+			for (long j = 0; j < shape->child_count(); ++j)
+			{
+				long key = *(long *)(children + j * 8);
+				*(void **)(children + j * 8) = function_1eaf30((short)key, table, (short)(key >> 16));
+				*(long *)(children + j * 8 + 4) = 0;
+			}
+			if (!inline_children) child_count += *(long *)(entry + 0x10);
+		}
+	}
+	long data_offset = 0;
+	for (long i = 0; i < *(long *)(definition + 0xa0); ++i)
+	{
+		byte *entry = *(byte **)(definition + 0xa4) + i * 0x14;
+		if ((byte)restore) new (entry) c_shape_455f58(NULL, NULL);
+		else
+		{
+			long key = *(long *)(entry + 0xc);
+			byte *child = *(byte **)(definition + 0x94) + (key >> 16) * 0x38;
+			byte *data = *(byte **)(definition + 0xac) + data_offset;
+			new (entry) c_shape_455f58(child, data);
+			data_offset += (*(long *)(data + 0x20) + 15) & ~15;
+		}
+	}
+	for (long i = 0; i < *(long *)(definition + 0x108); ++i)
+	{
+		byte *entry = *(byte **)(definition + 0x10c) + i * 0x20;
+		if ((byte)restore)
+		{
+			new (entry) c_shape_455f30(NULL, NULL);
+			new (entry + 0x14) c_shape_455f8c(0);
+		}
+		else
+		{
+			long key = *(long *)(entry + 0xc);
+			long saved_value = *(long *)(entry + 0x1c);
+			void *child = function_1eaf30((short)key, table, (short)(key >> 16));
+			new (entry) c_shape_455f30(child, entry + 0x14);
+			new (entry + 0x14) c_shape_455f8c(saved_value);
+		}
+	}
+}
+#endif
+
 struct c_1ea960 : c_a
 {
 	virtual ~c_1ea960();
