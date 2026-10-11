@@ -5,6 +5,7 @@
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_0a58d0.h"
+#include "object_types_21_2.h"
 #include <string.h>
 
 #define OBJECT_HEADER(index) (&((s_object_header *)g_4e0300->data)[(index) & 0xFFFF])
@@ -104,7 +105,7 @@ void c_object_type_definition::v11(long a, long b, long c)
 void c_turret_entity_definition::v12(long a, s_entity_info *info, long c, s_bitstream *stream)
 {
 	c_turret_entity_definition *volatile self = this;
-	function_a6660(info);
+	function_a6660(info, stream);
 	if (stream->size_in_bytes * 8 - stream->bit_position >= 1 && info->identifier != NONE)
 	{
 		stream->data[stream->bit_position / 8] |= (byte)(1 << (stream->bit_position % 8));
@@ -185,7 +186,7 @@ bool c_object_type_definition::v19(long a, long b, long c, s_entity_data *data)
     (void)&self;
 	bool result = false;
 	memset(data, 0, sizeof(s_entity_data));
-	if (function_a5bd0(b))
+	if (function_a5bd0((s_entity_info const *)b, (s_z_initial_state *)data))
 	{
 		result = true;
 	}
@@ -712,7 +713,7 @@ void function_a3fd0(long index, bool immediate, bool set_position, real position
  }
 }
 
-void *function_122c10(long group_tag, long tag_index);
+__declspec(noinline) void *function_122c10(long group_tag, long tag_index);
 void function_fd0e0(long definition_index, real scale_a, real scale_b, vector3f const *direction,
  point3f const *point, vector3f const *normal, long index, bool attached, long object_index,
  short node_index, bool alternate);
@@ -1224,20 +1225,11 @@ bool c_projectile_type::v13(long a, s_entity_info *info, s_bitstream *stream)
 }
 
 
-// Disabled: serialization/initial-state callees still omit the required stream/output in protected callers.
-#if 0
 struct s_z_initial_state;
 void __stdcall function_a6660(s_entity_info const *, s_bitstream *);
 bool function_a5bd0(s_entity_info const *, s_z_initial_state *);
 
-// Retail 0xa2380
-void c_item_type::v12(long a, s_entity_info *info, long c, s_bitstream *stream)
-{
-    c_item_type *volatile self = this;
-    function_a6660(info, stream);
-}
-
-// Retail 0xa3db0
+// @retail 0xa3db0
 bool c_device_type::v19(long a, long info, long c, s_entity_data *data)
 {
     c_device_type *volatile self = this;
@@ -1247,7 +1239,7 @@ bool c_device_type::v19(long a, long info, long c, s_entity_data *data)
     return result;
 }
 
-// Retail 0xa02a0
+// @retail 0xa02a0
 bool c_item_type::v19(long a, long info, long c, s_entity_data *data)
 {
     c_item_type *volatile self = this;
@@ -1261,7 +1253,7 @@ bool c_item_type::v19(long a, long info, long c, s_entity_data *data)
     return result;
 }
 
-// Retail 0xa1f10
+// @retail 0xa1f10
 bool c_weapon_type::v19(long a, long info, long c, s_entity_data *data)
 {
     c_weapon_type *volatile self = this;
@@ -1277,34 +1269,36 @@ bool c_weapon_type::v19(long a, long info, long c, s_entity_data *data)
     }
     return result;
 }
-#endif
+
+// @retail 0xa2380
+void c_item_type::v12(long a, s_entity_info *info, long c, s_bitstream *stream)
+{
+    c_item_type *volatile self = this;
+    function_a6660(info, stream);
+}
 
 
 
-// Disabled: required stream cannot be supplied through a6660's current protected one-argument interface.
-#if 0
-// Retail 0xa0f50
+// @retail 0xa0f50
 void c_projectile_type::v12(long a, s_entity_info *info, long c, s_bitstream *stream)
 {
     c_projectile_type *volatile self = this;
     function_a6660(info, stream);
     byte const *data = (byte const *)info;
+    stream_write_bit(stream, *(long const *)(data + 0x10) != NONE);
     long first = *(long const *)(data + 0x10);
-    stream_write_bit(stream, first != NONE);
     if (first != NONE) stream_write_checked(stream, first, 4);
-    long second = *(long const *)(data + 0x14);
-    stream_write_bit(stream, second != NONE);
-    if (second != NONE)
+    stream_write_bit(stream, *(long const *)(data + 0x14) != NONE);
+    if (*(long const *)(data + 0x14) != NONE)
     {
-        function_b5650(second, stream);
+        function_b5650(*(long const *)(data + 0x14), stream);
+        stream_write_bit(stream, *(long const *)(data + 0x18) != NONE);
         long third = *(long const *)(data + 0x18);
-        stream_write_bit(stream, third != NONE);
         if (third != NONE) stream_write_checked(stream, third, 5);
     }
     stream_write_bit(stream, data[0x1c] != 0);
     stream_write_bit(stream, data[0x1d] != 0);
 }
-#endif
 
 
 
@@ -1415,4 +1409,3 @@ long c_weapon_type::v29(long a, s_entity_info *info, long *flags, long size, lon
 {
     return ((c_item_type *)this)->c_item_type::v29(0x10, info, flags, 0x94, state);
 }
-

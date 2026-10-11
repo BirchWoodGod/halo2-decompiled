@@ -3073,9 +3073,10 @@ void c_matchmaking_screen::v3()
         {
         case 0: function_251c68(this); break;
         case 1: function_251f8d(this); break;
-        case 2: break;
+        case 2: goto poll_members;
         case 3: function_251d84(this); break;
         }
+    poll_members:
         if (!function_6c7e0() || !player_slot_count_active())
         {
             value610=1;

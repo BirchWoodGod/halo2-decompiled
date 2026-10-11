@@ -1682,7 +1682,8 @@ long function_26ace0(long object_index, long actor_index, short type)
 	long const *actor_reference = &actor_index;
 	short const *type_reference = &type;
 	s_actor_view *actor = actor_get(actor_index);
-	long volatile result = NONE;
+	long result = NONE;
+	long const *result_reference = &result;
 	long clump_index = actor->unknown07c;
 	if (clump_index != NONE)
 	{
@@ -1709,7 +1710,7 @@ long function_26ace0(long object_index, long actor_index, short type)
 		}
 	}
 done:
-	return result;
+	return *result_reference;
 }
 
 void function_269250(long clump_index, long actor_index);

@@ -639,8 +639,8 @@ void __stdcall function_ba7f0(long object_index, long region_index, long bit_ind
     long model_index = ((s_object_variant_definition_ab *)g_4e3b44[object->tag_index & 0xffff].bytes)->model_index;
     if (model_index != NONE)
     {
-        long count = object->regions_size / 10;
         char *regions = (char *)object + object->regions_offset;
+        long count = object->regions_size / 10;
         memcpy(previous, regions, count);
         object_change_region_permutations(object_index, model_index, object->variant, region_index,
             NONE, false, bit_index, (short)bit_mask, regions,

@@ -821,6 +821,8 @@ static inline real rect4_area(s_rect4 const *rect)
 // @retail 0x172c70
 void function_172c70(s_pool_lists *lists, s_pool *pool)
 {
+	s_pool_lists * const *lists_reference = &lists;
+	lists = *lists_reference;
 	for (long list = 0; list < g_4e0348->list_count; list++)
 	{
 		long index = list_head(lists, (short)list);

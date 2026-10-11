@@ -434,16 +434,16 @@ void function_168b40(s_168b40_result *result, s_168b40_surface const *surface, t
 			result->plane.d = 0.0f - result->plane.d;
 		}
 	}
-	else if (surface->flags & 0x8000)
+	else if (!(surface->flags & 0x8000))
+	{
+		result->plane = *surface->plane;
+	}
+	else
 	{
 		result->plane.i = 0.0f - surface->plane->i;
 		result->plane.j = 0.0f - surface->plane->j;
 		result->plane.k = 0.0f - surface->plane->k;
 		result->plane.d = 0.0f - surface->plane->d;
-	}
-	else
-	{
-		result->plane = *surface->plane;
 	}
 	result->unknown4c = surface->unknown08;
 	result->unknown50 = surface->unknown0c;
@@ -1133,7 +1133,9 @@ bool collision_test_vector_object(dword flags, s_collision_result_1697c0 *collis
 	collision->point.y = vector->j * fraction + (*point_reference)->y;
 	collision->point.z = vector->k * fraction + (*point_reference)->z;
 	function_11bed0((s_location *)&collision->end_location, &collision->point);
-	return result;
+	if (result)
+		return true;
+	return false;
 }
 
 real function_30bf0(vector3f *v);
@@ -1317,14 +1319,15 @@ void __stdcall function_16a280(long object_index, dword flags, point3f const *po
     real radius, real height, real thickness, long ignore_object_index, long ignore_object_index2,
     s_collection_245270 *collection)
 {
+	real dx;
     do
     {
         s_collision_object_header *volatile header = &((s_collision_object_header *)g_4e0300->data)[object_index & 0xffff];
         s_collision_object *object = header->object;
         if (collision_object_test(object_index, header, object, flags, ignore_object_index, ignore_object_index2))
         {
-            real dx = object->center.x - point->x;
-            real dy = object->center.y - point->y;
+            dx = object->center.x - point->x;
+            volatile real dy = object->center.y - point->y;
             real dz = object->center.z - point->z;
             real extent = object->radius + radius;
             if (dx * dx + dy * dy + dz * dz <= extent * extent)

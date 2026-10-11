@@ -150,6 +150,8 @@ void *c_game_havok_memory::allocate16(long size, long memory_class)
 // @retail 0x147320
 void c_game_havok_memory::deallocate16(void *address, long size, long memory_class)
 {
+	volatile long const *size_reference = &size;
+	size = *size_reference;
 	if (address)
 	{
 		if (ADDRESS_IN_BLOCK(address, (byte *)g_479898 + 0x4340, (byte *)g_479898 + 0xf0340))
