@@ -948,16 +948,17 @@ void function_26a310(s_prop_copy_view *prop, short type, long object_index, s_cl
 	prop->state = g_470f10[type].unknown4 == 0;
 	prop->field10 = NONE;
 	prop->field18 = NONE;
-	s_slot_object_view *object = object_get(object_index);
+	s_slot_object_view volatile *object = object_get(object_index);
 	object->unknownb2 |= 2;
-	long type_mask = 1 << object->type;
+	unsigned long type_mask = 1 << object->type;
 	if (type_mask & 3)
 	{
-		prop->actor_index = object->actor_index;
+		long actor_index = object->actor_index;
+		prop->actor_index = actor_index;
 		prop->team = object->team;
 		prop->field23 = function_1df560(clump->team, prop->team);
 		prop->field24 = !prop->field23;
-		prop->field25 = object->player_index != NONE;
+		prop->field25 = NONE != object->player_index;
 		prop->field22 = false;
 	}
 	else if (type_mask & 0x1000)
