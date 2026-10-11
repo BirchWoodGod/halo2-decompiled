@@ -774,7 +774,7 @@ void function_10ca80(long object_index, long owner_index)
 
 #include <math.h>
 void function_1420f0(transform4x3f *out, point3f const *position, vector3f const *forward, vector3f const *up);
-void __stdcall function_b92d0(long object_index, s_object_marker const *marker, transform4x3f const *transform);
+void function_b92d0(long index, transform4x3f const *old_parent, transform4x3f const *new_parent);
 
 // @retail 0x10d710
 void function_10d710(vector3f const *facing, long object_index, point3f const *origin, point3f *position)
@@ -821,7 +821,7 @@ void function_10d710(vector3f const *facing, long object_index, point3f const *o
             transform4x3f transform;
             function_1420f0(&transform, origin, facing, &up);
             transform.scale = *(real *)((byte *)item + 0xa0);
-            function_b92d0(*object_reference, &marker, &transform);
+            function_b92d0(*object_reference, (transform4x3f const *)&marker, &transform);
             **position_reference = item->position;
         }
     }
@@ -1029,7 +1029,7 @@ void __stdcall function_10b850(long object_index)
             matrix.left = item_cross(matrix.up, matrix.forward);
             matrix.forward = item_cross(matrix.left, matrix.up);
             function_30bf0(&matrix.forward); function_30bf0(&matrix.left); function_30bf0(&matrix.up);
-            function_b92d0(object_index, &marker, &matrix);
+            function_b92d0(object_index, (transform4x3f const *)&marker, &matrix);
         }
         else
         {

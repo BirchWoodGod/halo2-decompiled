@@ -99,8 +99,6 @@ void function_52d40(long bitmap_index, unsigned char *shader, long count, bool m
 }
 
 
-// @stub 0x176cb0
-void function_176cb0() {}
 
 // @stub 0x391f0
 bool __stdcall function_391f0(void *state) { return false; }
