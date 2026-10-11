@@ -351,7 +351,6 @@ bool function_216f80(long type, s_saved_game_file_location *location)
 	{
 		return true;
 	}
-	bool result = false;
 	char path[256];
 	path[0] = 0;
 	strncpy(path, (char const *)location, sizeof(path));
@@ -366,12 +365,10 @@ bool function_216f80(long type, s_saved_game_file_location *location)
 	function_137320(file.path, path);
 	file.flags |= 1;
 	dword error;
-	if (function_1367d0((s_type_acf665 *)&file) &&
+	return (function_1367d0((s_type_acf665 *)&file) &&
 		function_136970((s_type_acf665 *)&file, 2, &error) &&
 		function_136d00((s_type_acf665 *)&file, g_449038, sizeof(g_449038)) &&
-		function_136bb0((s_type_acf665 *)&file))
-		result = true;
-	return result;
+		function_136bb0((s_type_acf665 *)&file));
 }
 
 
