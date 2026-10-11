@@ -1215,6 +1215,9 @@ struct s_motion_channels_16ff10
 void function_16ff10(long user_index)
 {
 	s_motion_channels_16ff10 *state = (s_motion_channels_16ff10 *)g_4e9bd4 + user_index;
+	real *acceleration = state->second_derivative;
+	real *velocity = state->first_derivative;
+	real *delta = state->delta;
 	real *fifth = state->fifth;
 	real *fourth = state->fourth;
 	real *third = state->third;
@@ -1222,9 +1225,6 @@ void function_16ff10(long user_index)
 	real *first = state->first;
 	real *constant = state->constant;
 	real *time = state->times;
-	real *acceleration = state->second_derivative;
-	real *velocity = state->first_derivative;
-	real *delta = state->delta;
 	function_172520((s_observer_command *)((byte *)state + 8));
 	for (short group = 0; group < 6; ++time, ++group)
 	{

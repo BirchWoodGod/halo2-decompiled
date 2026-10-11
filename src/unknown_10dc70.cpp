@@ -241,7 +241,7 @@ void function_10de40(s_vibration_curve_set *set, s_vibration_output *output, rea
 			for (long c = 0; c < channel_count; c++, channel++)
 			{
 				s_vibration_key *keys = keys_base + channel->key_offset;
-				real result = 0.0f;
+				volatile real  result = 0.0f;
 				bool skip = skip_special && (c == 0x12 || c == 0x13 || c == 0x14);
 				short key_count = channel->key_count;
 				if (key_count > 0 && !skip)
@@ -291,7 +291,7 @@ void function_10de40(s_vibration_curve_set *set, s_vibration_output *output, rea
 								}
 								if (t1 - t0 > 0.0001f)
 								{
-									real fraction = (time - t0) / (t1 - t0);
+									volatile real  fraction = (time - t0) / (t1 - t0);
 									real smooth = function_10e8e0(fraction);
 									result = (v1 - v0) * smooth + v0;
 									if (fabs(result) < 0.0001f)

@@ -1146,6 +1146,21 @@ PRIVATE inline real movement_normalize2d(point2f *v)
     return 0.0f;
 }
 
+PRIVATE __forceinline real function_1f99d1(point2f *arg_0)
+{
+    real local_0 = arg_0->x;
+    real local_1 = arg_0->y;
+    real local_2 = (real)sqrt(local_0 * local_0 + local_1 * local_1);
+    if (!(fabs(local_2) < 0.0001f))
+    {
+        real local_3 = 1.0f / local_2;
+        arg_0->x *= local_3;
+        arg_0->y *= local_3;
+        return local_2;
+    }
+    return 0.0f;
+}
+
 // @retail 0x1f99d0
 real function_1f99d0(long actor_index, long object_index, short type, point2f const *target,
     point2f const *origin, point2f const *facing, s_obstacle_list const *obstacles)
@@ -1157,7 +1172,7 @@ real function_1f99d0(long actor_index, long object_index, short type, point2f co
     real result = 0.0f;
     real radius = *(real *)(entry + 0x28);
     point2f direction = { target->x - local_1->x, target->y - local_1->y };
-    movement_normalize2d(&direction);
+    function_1f99d1(&direction);
     point2f side = { 0.0f - direction.y, direction.x };
     volatile bool left = true;
     if (!(facing->y * side.y + facing->x * side.x > 0.0f))

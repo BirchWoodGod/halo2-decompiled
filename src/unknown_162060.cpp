@@ -171,7 +171,7 @@ void __stdcall function_162060(void *engine)
 
 	if (game_engine_round_in_progress() && ((s_162060_options_view *)g_4e6948)->time_limit)
 	{
-		long minutes = ((s_162060_options_view *)g_4e6948)->time_limit - function_xaee93d()->value_e0;
+		volatile long  minutes = ((s_162060_options_view *)g_4e6948)->time_limit - function_xaee93d()->value_e0;
 
 		if (minutes < 1)
 		{

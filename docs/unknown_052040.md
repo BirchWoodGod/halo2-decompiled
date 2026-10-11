@@ -23,13 +23,76 @@ same program, and its draw is a different one. Ten callees (all Direct3D
 library routines) have no source and are described only as far as this function
 needs them.
 
+## Implementation follow-up
+
+`src/unknown_01cf50.cpp` now contains this renderer beside the related
+rendering code; `src/unknown_052020.cpp` contains its copy callback. The
+inventory/status statements in the original analysis above
+record the state when that analysis was written. The callback matches all
+24 retail bytes with its real registration caller present; the renderer
+remains unmatched (the current local build is 3,368 bytes, versus 3,316 in
+retail). Equal behavior in isolated tests does not establish an exact match.
+
+Local instruction comparisons cover shader construction, viewport/constants
+preparation, texture-state setup, descriptor selection and the final draw
+sequence. The texture and draw-boundary tests substitute external callees;
+the descriptor test runs the real cache-reset helper but substitutes binding
+calls. Those tests do not verify GPU rendering or whole-function equivalence.
+Their reports identify the executable tested; results from an older build
+must be rechecked after changes.
+
+The initial descriptor selection is expanded in this renderer, as in retail;
+the final draw sequence calls `function_1ccb0(36)`. Both use the existing
+private descriptor table in the same translation unit, preserving pointer
+identity without exporting the table. Grouping this renderer with its related
+code also avoids adding another Direct3D-header translation unit, which
+changed the matched player-count parser under LTCG in an isolated reproducer.
+The optional-record alpha path
+keeps the reciprocal as a float, multiplies by 255 on x87, then uses `FISTP`;
+rounding that product to float first changes some integer results.
+
+## Bitmap fallback dependency
+
+The bitmap loader at `0x12310` calls `0x12ce00` when its first cache lookup
+fails. That fallback now has source in `src/unknown_12c0d0.cpp`, replacing its
+empty stub. It chooses shared, requested, resident, or default textures and
+propagates cache-failure state. Its level-selection bias is accumulated in
+retail's float-operation order; the early shared-texture comparison uses the
+original bias instead.
+
+The fallback remains unmatched (645 compiled bytes versus 658 retail).
+The resident-level scan uses an advancing pointer and a three-iteration
+countdown, retaining a loop like retail instead of three unrolled copies.
+Default texture selection uses a switch, reproducing retail's signed type
+load and decrement-based branches.
+A const pointer to its bitmap parameter's own slot, read into a local view,
+keeps that argument on the stack as in retail without changing its value.
+This makes `0x12310` match all 77 retail bytes, and also enables exact
+`0x12360`, `0x1cfb0`, `0x3bcb0`, `0xd15e0`, `0xd1630`, `0xd1680`, and
+`0x2a04f0`, without editing those callers. Replacing the stub previously
+enabled `0x42b20`, `0x23625d`, and `0x2b1179`. Full checks retain every
+previous match.
+A 4,096-case actual-instruction comparison covers the fallback's return
+paths, cache timestamps, failure state, arguments and stack cleanup. Format
+and level helpers execute their real bodies; the shared-header builder and
+cache loader are explicit stand-ins. This does not validate loading,
+allocation, or GPU behavior.
+
+A separate 16,384-case integration comparison executes the renderer texture
+loop, the complete bitmap loader at `0x12310`, and the raw-texture path of
+`0x12ce00`. It covers frame-cache hits, initial-lookup hits, raw fallback
+textures and null returns across all three bitmap slots. Only the initial
+cache lookup is replaced by a stand-in. State/cache writes, call routes,
+request preservation and stack balance agree; streamed loading and GPU
+execution remain outside this test.
+
 ## Boundary
 
-- `0x516d0`, just before, is `todo` with source in `src/unknown_050690.cpp` and
-  ends at `0x52020`. `0x52d40`, just after (1,136 bytes), is `todo` with no
-  source; it calls `function_142f0`, `function_15180`, `function_1c590` and
-  several of the same Direct3D routines, so it looks like a sibling (inferred;
-  it was not analysed). Both are excluded.
+- `0x516d0`, just before, is `todo` with source in `src/unknown_050690.cpp`
+  and ends at `0x52020`; it is excluded.
+- The adjacent shader-setup routine `0x52d40` now has source alongside this
+  renderer in `src/unknown_01cf50.cpp`. Its separate analysis and validation
+  are in [unknown_052d40.md](unknown_052d40.md).
 - This function has nothing to do with the liquid draw callback `0x508d0` or
   the noise points of `0x516d0`: neither calls it, it calls neither, and it
   only neighbours them by address. It belongs with the interface drawing code
@@ -667,5 +730,122 @@ void __stdcall function_52040(s_interface_draw_request const *request,
   and the default colour (three 1.0 reals) at `0x4409e4` behind the pointer at
   `0x468710`. The state values, masks and combiner words are immediates.
 - No document covered this range before. Source line numbers are at `ad1dab2`.
-- No emulator, runtime testing, SDK or outside dataset was used. Names are the
-  repository's own, or describe behaviour.
+- The original analysis below the recovery notes used no emulator, runtime
+  testing, SDK or outside dataset. The later source recovery and behavioral
+  checks are described above. Names are the repository's own, or describe
+  behaviour.
+
+## Texture format data dependency
+
+Texture request validation exposed an initialized-data gap: `g_450768` was an
+uninitialized `long[8][24]`. The retail executable contains two 24-entry rows
+at `0x450768` and `0x4507c8`; unrelated data begins at `0x450828`. The first
+row supplies ordinary texture formats and the second supplies linear formats.
+Texture creation and `0x12d6d0` index these rows with a 96-byte stride.
+
+`src/unknown_0158f0.cpp` now defines both rows, with `-1` for unsupported
+formats. Its cache-side declaration in `src/unknown_12c0d0.cpp` agrees on the
+two-row extent. The values were independently read from the pinned retail
+executable, not from SDK source or external symbol data. All 48 compiled
+entries were compared directly with retail. No instructions or flags were
+changed. Other zero-initialized renderer tables remain separate recovery work.
+
+The first request case originally differed in the header's format byte:
+retail used `0x19`, while the compiled table supplied zero. After correction,
+960 comparisons of actual `0x12d5a0`, physical allocation, pool insertion,
+and texture header construction pass: 576 allocations/read requests and
+384 allocation failures. Cases cross three levels, widths 8/64, sizes
+1/511/512/513/4096, wait/restriction flags, priorities 1/5, two arena sizes,
+and a controlled read-completion flag. These header cases use bitmap format
+zero and the non-linear path; the table comparison covers both complete rows.
+
+Only asynchronous read submission at `0x213760` is replaced by a boundary
+that checks location, 512-byte rounding, destination, completion pointer,
+category and priority, and returns a controlled handle/completion state.
+Full synthetic bitmap, allocation/pool memory, callback arguments and request
+counter agree. This is not disk delivery, a real asynchronous queue, GPU
+sampling or gameplay proof.
+
+The checked image is
+`631dd56641056580d1ac5301f1beab74577429794e6489e4d58080100fae2bed`.
+The full function checker retains all 7,503 previously verified branch matches,
+with no gains or losses. This branch's baseline remains main `c17d5e05`;
+these results do not cover later main or the separate pending-PR integration.
+
+### Reproducing texture-header checks
+
+These checks were made with a standalone Unicorn-based probe (`texture_header_probe.py`) that exercises both
+complete hardware-format rows and compares the bits-per-pixel table before running actual header construction.
+The probe is not kept in this repository; its source is in the history of
+[pull request #313](https://github.com/kirklandsig/halo2-decompiled/pull/313).
+
+On the image above, all 1,944 cases pass: 792 linear and 1,152 swizzled, with
+144 alternate-format cases. Cases cover each supported row/index combination,
+texture types 0/1/2, widths/heights 8/64, depth 4, levels 0/1/2, mipmap counts
+0/3, and flag 0x20 clear/set. Actual pitch, bit-count, mip-count and logarithm
+helpers execute without replacements. Full headers agree; surrounding memory,
+input records, common/data/lock fields and stack cleanup are checked separately.
+
+The earlier concern about an absent bits-per-pixel table was not reproduced:
+`g_453550` is already initialized, and all 24 entries equal retail. Zeroing the
+hardware-format table in a temporary test image is rejected by the portable
+probe, including replacing a previous successful report with a failure.
+
+The fixed entry calling convention was independently checked on this build.
+If LTCG changes register allocation, inspect the ABI before interpreting a
+probe failure as a recovery bug. These remain synthetic header checks; no
+texture pixels are decoded, transferred, sampled, or rendered by this tool.
+
+### Read queue and texture request integration
+
+Local differential probes extend the texture request through actual cache-file
+routing (`0x213760`), read-task construction (`0x1a0f10`), task submission,
+priority queue, worker (`0x120c40`) and read callback (`0x1a0e70`). Game-side
+calls run intact. SDK mutex/semaphore calls use deterministic stand-ins;
+SDK seek/read calls use host `pread` on three temporary synthetic files.
+This is not a real worker thread or Xbox kernel I/O implementation.
+
+The queue-only comparison passes 216 scenarios and 648 submitted jobs,
+including 3,456 read calls, 288 short reads and 2,808 callback retries. It
+varies selected cache file, all four encoded location classes, offsets
+0/4090/8192, sizes 0/33/1200 and chunk limits 16/512. Three jobs with distinct
+priorities 1/7/3 are queued before draining. Task IDs, payloads, normalized
+node/free/work lists, done/count outputs and complete file-operation traces
+agree. Equal-priority file-position ordering and exhausted free lists are
+outside this comparison.
+
+The connected texture request comparison uses actual 4 KB texture-cache pages,
+then executes header construction, submission, queue and worker to completion.
+All 672 cases agree: 576 allocation/read requests, 96 allocation failures and
+983,040 delivered bytes. Cases vary three levels, widths 8/64, request sizes
+1/511/512/513/4096/8192/16384, wait/restriction flags, priorities 1/5 and arena
+sizes 1/128 pages, plus file routing and read chunks. The complete synthetic
+bitmap, texture/physical pools, backing memory, queue and file traces are
+compared; the initial false and final true resident flag are checked.
+
+There are 160 short transfers in that deliberately bounded-file fixture.
+Retail and recovery both set the completion/resident flag for those requests;
+the tool checks the delivered prefix and untouched tail separately. The flag
+alone therefore does not establish a fully delivered texture. These tests use
+synthetic metadata and file contents, not actual map texture assets or GPU
+sampling. The checked executable remains
+`631dd56641056580d1ac5301f1beab74577429794e6489e4d58080100fae2bed`.
+No source implementation or compiler flags changed for this extension.
+
+
+## Current-main integration check (2026-10-11)
+
+Merged upstream `3b0cea47` while preserving both sets of additions in the
+shared graphics translation unit and retaining upstream's new stubs. The
+`0x52d40` stub remains removed because this contribution implements it.
+A fresh build of that main revision reproduced 7,513 matches; the merged
+contribution produced 7,526: the same thirteen gains listed above, no lost
+main matches, and all 7,503 previously verified branch matches preserved.
+The three unmatched bodies retain their reported compiled/retail lengths.
+
+The header probe passed all 1,944 comparisons on the new image
+`8d377a3cc69f9e2a0d8726ff430445933682bde85b9d49d28c4bc4c03cc16434`.
+Tooling tests passed: 316 passed, 9 skipped. Earlier behavioral reports in
+this document remain tied to their stated images; they were not rerun as
+part of this merge. The separate eight-PR parser regression remains outside
+this branch's verified zero-loss result.

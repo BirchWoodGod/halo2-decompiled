@@ -4139,7 +4139,7 @@ bool function_15f3a0(long local_index, s_player_score_display *display)
             if (slot != NONE) weapon = ((long *)(unit + 0x218))[slot];
             if (function_162b10(weapon))
             {
-                real charge = function_242140(weapon);
+                volatile real  charge = function_242140(weapon);
                 if (charge > 0.0f) { display->charge = true; display->charge_fraction = charge; }
             }
             else if (g_4e6948->mode_180 == 8)
@@ -4920,8 +4920,8 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
     if (g_4e6948->mode == 4) return;
     byte *globals_tag = g_4e3b44[*(long *)((byte *)g_4e034c + 0x16c) & 0xffff].bytes;
     byte *preset = *(byte **)(*(byte **)(globals_tag + 0xc) + 0x534);
-    long arg_642c39 = g_510c54->field_2_3;
-    byte *scenario = (byte *)g_4e0350;
+    volatile long  arg_642c39 = g_510c54->field_2_3;
+    byte * volatile scenario = (byte *)g_4e0350;
     for (short i = 0; i < *(long *)(scenario + 0x120); ++i)
     {
         byte *placement = *(byte **)(scenario + 0x124) + i * 0x90;
