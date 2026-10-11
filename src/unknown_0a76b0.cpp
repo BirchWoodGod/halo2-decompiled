@@ -18,6 +18,19 @@ The handlers of the unit request table at 0x467564
 #include <math.h>
 #include <string.h>
 
+void function_1fc350(long object_index, void *state);
+
+struct s_shape_state;
+struct s_state_c570;
+struct s_tracked_point;
+struct s_ease_state;
+
+void function_1f03e0(s_shape_state *state);
+void function_1ec570(s_state_c570 *state);
+void function_1fc2f0(s_tracked_point *tracked, point3f const *point, bool unknown);
+void function_1eb640(s_ease_state *state);
+void __stdcall function_1c3770(long object_index, dword flags);
+
 /* a unit's actions: a bit per request type being performed, after a header
    dword (the block at the offset in the unit at +0x346) */
 struct s_unit_actions
@@ -3604,6 +3617,20 @@ bool __stdcall function_ec9a0(long unit_index, s_unit_request *request)
 
 void function_1e54d0(void *state, long a);
 
+/* Resets the unit action state, switches it to mode 4, and updates the supplied point. */
+// @retail 0xe5690
+void __stdcall function_e5690(long unit_index, point3f const *point)
+{
+	s_unit_action_unit *unit = UNIT_ACTION_UNIT_GET(unit_index);
+
+	*(short *)((byte *)unit + 0x34c) = NONE;
+	*((byte *)unit + 0x34e) = 0;
+	*((byte *)unit + 0x34f) = 0;
+
+	function_1e54d0((byte *)unit + 0x3dc, 4);
+	function_b75a0(unit_index, point, NULL, NULL, NULL, false);
+}
+
 // @retail 0xecb20
 void __stdcall function_ecb20(long unit_index, long type)
 {
@@ -4553,4 +4580,3 @@ void __stdcall function_fff40(long weapon_index, bool silent, bool immediate)
     }
 }
 #endif
-
