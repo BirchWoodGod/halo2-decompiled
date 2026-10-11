@@ -81,7 +81,9 @@ bool c_unit_type::v13(long arg_0, s_entity_info *arg_1, s_bitstream *arg_2)
         *local_2 = (short)function_1959c0(arg_2, 4);
     else
         *local_2 = -1;
-    return arg_2->bit_position <= arg_2->size_in_bytes * 8 && local_0 && local_1;
+    if (arg_2->bit_position > arg_2->size_in_bytes * 8 || !local_0 || !local_1)
+        return false;
+    return true;
 }
 
 // @retail 0x9dd70
@@ -90,8 +92,10 @@ void c_unit_type::v12(long arg_0, s_entity_info *arg_1, long arg_2, s_bitstream 
     c_unit_type *volatile local_1 = this;
     function_a6660(arg_1);
     function_7ee10(arg_3, (s_player_appearance const *)((byte *)arg_1 + 0x10));
+    if ((arg_3->size_in_bytes << 3) - arg_3->bit_position >= 1 && *(short *)((byte *)arg_1 + 0x20) != -1)
+        arg_3->data[arg_3->bit_position / 8] |= (byte)(1 << (arg_3->bit_position % 8));
+    arg_3->bit_position++;
     short local_0 = *(short *)((byte *)arg_1 + 0x20);
-    stream_write_bit(arg_3, local_0 != -1);
     if (local_0 != -1)
         stream_write_checked(arg_3, local_0, 4);
 }
@@ -105,8 +109,8 @@ bool c_unit_type::v19(long arg_0, long arg_1, long arg_2, s_entity_data *arg_3)
     memset(local_1, 0, sizeof(*local_1));
     if (function_a5bd0(arg_1))
     {
-        local_1->field_9c = local_1->field_c;
         local_1->field_90 = -1;
+        local_1->field_9c = local_1->field_c;
         local_1->field_92 = -1;
         local_1->field_94 = -1;
         local_1->field_98 = -1;
@@ -354,7 +358,8 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
             if (flags_writer_begin(&local_1, 11, "parent-vehicle-exists"))
             {
                 long local_4 = local_3->field_94;
-                if (local_4 == NONE || !arg_5 || function_99640((c_handle_table_450cd0 *)(*(byte **)(*(byte **)(*(byte **)arg_5 + 4) + 8) + 0x30), local_4))
+                if (local_4 != NONE && arg_5 && !function_99640((c_handle_table_450cd0 *)(*(byte **)(*(byte **)(*(byte **)arg_5 + 4) + 8) + 0x30), local_4))
+                    goto local_8;
                 {
                     function_194830(local_2, local_4 != NONE);
                     if (local_3->field_94 != NONE)
@@ -363,8 +368,10 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
                         function_1947e0(local_2, local_3->field_98, 5);
                     }
                 }
-                else
-                    local_1.discarded |= 1 << local_1.index;
+                goto local_9;
+            local_8:
+                local_1.discarded |= 1 << local_1.index;
+            local_9:;
             }
             flags_writer_end(&local_1);
             if (flags_writer_begin(&local_1, 12, "desired-aiming-vector-exists"))
@@ -377,22 +384,24 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
                 function_9dfc2(local_2, local_3->field_ab + 1, 3);
             }
             flags_writer_end(&local_1);
+            short const *local_10 = &local_3->field_ac[0].field_6;
             local_5 = 0;
             do
             {
                 if (flags_writer_begin(&local_1, local_5 + 14, "weapon-type-exists"))
                 {
-                    scenario_object_name_encode(local_3->field_ac[local_5].field_0, local_2);
-                    function_9dfc2(local_2, local_3->field_ac[local_5].field_4 + 1, 4);
+                    scenario_object_name_encode(*(long const *)(local_10 - 3), local_2);
+                    function_9dfc2(local_2, local_10[-1] + 1, 4);
                 }
                 flags_writer_end(&local_1);
                 if (flags_writer_begin(&local_1, local_5 + 18, "weapon-state-exists"))
                 {
-                    function_9dfc2(local_2, local_3->field_ac[local_5].field_6, 8);
-                    function_9dfc2(local_2, local_3->field_ac[local_5].field_8, 11);
-                    function_9dfc1(local_2, local_3->field_ac[local_5].field_c, 126.0f, 7);
+                    function_9dfc2(local_2, local_10[0], 8);
+                    function_9dfc2(local_2, local_10[1], 11);
+                    function_9dfc1(local_2, *(real const *)(local_10 + 3), 126.0f, 7);
                 }
                 flags_writer_end(&local_1);
+                local_10 += 8;
                 ++local_5;
             } while (local_5 < 4);
             if (flags_writer_begin(&local_1, 22, "grenade-counts-exists"))
@@ -434,7 +443,7 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
     dword local_1 = arg_1;
     s_9d360 *local_2 = (s_9d360 *)arg_3;
     if (local_1 & 0x3ff)
-        function_a6430(arg_0, local_1 & 0x3ff, arg_3);
+        function_a6430(local_1 & 0x3ff, arg_0, arg_3);
     if (local_1 & 0x400)
     {
         long local_3 = local_2->field_90;

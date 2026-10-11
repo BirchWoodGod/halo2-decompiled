@@ -2297,7 +2297,7 @@ static inline long network_session_member_from_remote_inline(c_class_58d20 *sess
 }
 
 // @retail 0x5dea0
-bool network_session_handle_countdown_timer(c_class_58d20 *session, long remote_index, const s_network_message_countdown_timer *message)
+bool network_session_handle_countdown_timer(const s_network_message_countdown_timer *message, c_class_58d20 *session, long remote_index)
 {
 	bool result = false;
 
