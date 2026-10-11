@@ -4,6 +4,7 @@
 
 #include "unknown_11c920.h"
 #include "globals.h"
+#include "sound_sources.h"
 #include "unknown_0259d0.h"
 #include <string.h>
 #include "object_iterator.h"
@@ -105,6 +106,90 @@ static inline s_tail_object *tail_object_get(long object_index)
 void function_14cad0(long player_index, long unit_index);
 void function_187a60(long datum_index);
 void function_152340(void);
+
+bool __stdcall function_e5470(long player_index, long object_index);
+long __stdcall function_e5bc0(long unit_index, long object_index, long previous_index);
+bool function_1df560(short team_a, short team_b);
+bool function_151320(s_target_candidate *candidate, s_target_candidate *best, long player_index);
+
+// @retail 0x1515e0
+void function_1515e0(long object_index, long player_index, s_target_candidate *best)
+{
+	long const *player_reference = &player_index;
+	s_target_candidate *const *best_reference = &best;
+	byte *player = (byte *)tail_player_get(*player_reference);
+	byte *object = (byte *)tail_object_get(object_index);
+	long unit_index = *(long *)(player + 0x2c);
+	byte type = ((s_tail_object_header *)g_4e0300->data)[unit_index & 0xffff].type;
+	if (((1 << type) & 1) && !(bool)((object[0x10a] >> 2) & 1))
+	{
+		if (function_1df560(*(short *)(object + 0x138), (short)*(char *)(player + 0xc0)))
+			*(long *)((byte *)*best_reference + 8) = function_e5bc0(unit_index, object_index, *(long *)((byte *)*best_reference + 8));
+		else if (function_e5470(*player_reference, object_index))
+		{
+			s_target_candidate candidate;
+			memset(&candidate, 0, sizeof(candidate));
+			candidate.priority = 2;
+			candidate.object_index = object_index;
+			function_151320(&candidate, *best_reference, *player_reference);
+		}
+	}
+}
+
+bool function_d6af0(long unit_index);
+bool function_d6790(long unit_index);
+void player_speed_request_14ea20(long player_index);
+void player_speed_request_14eb10(long player_index);
+void player_speed_request_14ec00(long player_index);
+bool function_152000(long player_index, short effect, short ticks);
+void __stdcall function_191fab(long definition_index, long local_index);
+void function_a89c0(long unit_index, long definition_index);
+void function_f8110(long object_index);
+void __stdcall function_b8540(long object_index);
+
+// @retail 0x151ea0
+void function_151ea0(long player_index, long object_index)
+{
+	long const *player_reference = &player_index;
+	long const *object_reference = &object_index;
+	s_tail_player *player = tail_player_get(*player_reference);
+	s_tail_object_header *header = (s_tail_object_header *)g_4e0300->data + (*object_reference & 0xffff);
+	byte *object = (byte *)header->object;
+	byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+	real duration = *(real *)(definition + 0x130) * g_510c54->field_2_3;
+	long ticks;
+	__asm
+	{
+		fld duration
+		fistp ticks
+	}
+	bool unavailable = (header->flags & 0x10) != 0;
+	if ((short)ticks > 0 && !unavailable)
+	{
+		short kind = *(short *)(definition + 0x12c);
+		if (kind == 2)
+		{
+			if (!function_d6af0(player->unit_index)) return;
+			player_speed_request_14ea20(*player_reference);
+		}
+		else if (kind == 5)
+		{
+			if (!function_d6790(player->unit_index)) return;
+			player_speed_request_14ec00(*player_reference);
+		}
+		else if (kind != 1)
+		{
+			short effect = kind == 3 ? 0 : 1;
+			if (!function_152000(*player_reference, effect, (short)ticks)) return;
+			if (effect == 0) player_speed_request_14eb10(*player_reference);
+		}
+		long definition_index = *(long *)tail_object_get(*object_reference);
+		function_191fab(definition_index, player->local_index);
+		function_a89c0(player->unit_index, definition_index);
+		if (player->local_index != NONE) function_f8110(*object_reference);
+		function_b8540(*object_reference);
+	}
+}
 
 // @retail 0x151320
 bool function_151320(s_target_candidate *candidate, s_target_candidate *best, long player_index)
@@ -1418,3 +1503,345 @@ void function_1523c0()
         function_14be90(datum, configuration.words);
     }
 }
+
+
+struct s_tag_iterator
+{
+    long unknown00, unknown04, datum_index, next_index, group_tag;
+};
+struct s_loadout_state_152a50 { short kind, rounds, total, depleted; };
+struct s_effect_owner;
+long function_122c70(s_tag_iterator *iterator);
+void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
+long __stdcall function_b7b40(void *creation);
+
+// @retail 0x152a50
+long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool *failed)
+{
+    long const *owner_reference = &owner_index;
+    bool *const *failed_reference = &failed;
+    long result = NONE;
+    if (state->kind != 0)
+    {
+        s_tag_iterator iterator;
+        iterator.datum_index = 0;
+        iterator.next_index = 0;
+        iterator.group_tag = 0x77656170;
+        long tag;
+        while ((tag = function_122c70(&iterator)) != NONE)
+        {
+            byte *definition = g_4e3b44[tag & 0xffff].bytes;
+            bool found = false;
+            if (*(long *)(definition + 0x2d0) > 0)
+            {
+                byte *seat = *(byte **)(definition + 0x2d4);
+                long ammunition = *(long *)(seat + 0x90);
+                if (ammunition != NONE)
+                    found = state->kind == (short)g_4e3b44[ammunition & 0xffff].bytes[0x128];
+                else if (*(long *)(seat + 0x98) != NONE)
+                    found = state->kind == (short)seat[0x88];
+            }
+            if (found || state->kind == (short)definition[0x1fc]) break;
+        }
+        if (tag != NONE)
+        {
+            byte creation[0xb4];
+            function_b7930(creation, tag, *owner_reference, NULL);
+            result = function_b7b40(creation);
+            if (result != NONE)
+            {
+                byte *object = (byte *)tail_object_get(result);
+                byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+                if (*(long *)(definition + 0x2c0) > 0)
+                {
+                    *(short *)(object + 0x22c) = state->total;
+                    *(short *)(object + 0x22a) = state->rounds;
+                }
+                *(real *)(object + 0x184) = 1.0f - (real)state->depleted * 0.01f;
+            }
+            else **failed_reference = true;
+        }
+        else if (state->kind != 0) **failed_reference = true;
+    }
+    return result;
+}
+
+
+
+#include <math.h>
+byte function_150380(long player_index);
+void __stdcall function_e64e0(vector3f const *move, vector3f const *forward, bool flag,
+    vector3f *output, long mode);
+
+// @retail 0x150400
+void function_150400(long player_index, vector3f const *forward, vector3f const *movement,
+    vector3f *new_forward, vector3f *new_movement)
+{
+    vector3f const *const *forward_reference = &forward;
+    vector3f *const *new_forward_reference = &new_forward;
+    vector3f *const *new_movement_reference = &new_movement;
+    s_tail_player *player = tail_player_get(player_index);
+    vector3f facing = *(*forward_reference);
+    real x = movement->i, y = movement->j;
+    if (function_150380(player_index))
+    {
+        byte *unit = (byte *)tail_object_get(player->unit_index);
+        s_horizontal_axes axes;
+        function_1502e0(*forward_reference, (vector3f const *)(unit + 0x70), &axes);
+        vector3f world;
+        world.i = axes.forward.i * movement->i + axes.left.i * movement->j;
+        world.j = axes.forward.j * movement->i + axes.left.j * movement->j;
+        world.k = axes.forward.k * movement->i + axes.left.k * movement->j;
+        function_e64e0(&world, *forward_reference, false, &facing, 0);
+        function_1502e0(&facing, (vector3f const *)(unit + 0x70), &axes);
+        x = axes.forward.j * world.j + axes.forward.k * world.k + axes.forward.i * world.i;
+        y = axes.left.k * world.k + axes.left.j * world.j + axes.left.i * world.i;
+        real square = y * y + x * x;
+        if (square > 1.0f)
+        {
+            real inverse = 1.0f / (real)sqrt(square);
+            x *= inverse;
+            y *= inverse;
+        }
+    }
+    **new_forward_reference = facing;
+    (*new_movement_reference)->j = y;
+    (*new_movement_reference)->i = x;
+    (*new_movement_reference)->k = 0.0f;
+}
+
+
+
+void __stdcall function_ccff0(long unit_index);
+bool __stdcall function_cd0c0(long unit_index, long weapon_index, short mode);
+
+// @retail 0x152bf0
+bool function_152bf0(byte const *loadout, long unit_index)
+{
+    bool result = false;
+    if (loadout[0])
+    {
+        byte *unit = (byte *)tail_object_get(unit_index);
+        function_ccff0(unit_index);
+        bool failed = false;
+        long primary = function_152a50((s_loadout_state_152a50 *)(loadout + 2), unit_index, &failed);
+        long special = function_152a50((s_loadout_state_152a50 *)(loadout + 0x12), unit_index, &failed);
+        long secondary = function_152a50((s_loadout_state_152a50 *)(loadout + 0xa), unit_index, &failed);
+        result = !failed;
+        for (long i = 0; i < 2; ++i)
+        {
+            unit[0x23e + i] = 0;
+            unit[0x23e + i] = loadout[0x1a + i];
+        }
+        if (primary != NONE && !function_cd0c0(unit_index, primary, 1))
+        { function_b8540(primary); result = false; }
+        if (secondary != NONE && !function_cd0c0(unit_index, secondary, 1))
+        { function_b8540(secondary); result = false; }
+        if (special != NONE && !function_cd0c0(unit_index, special, 7))
+        { function_b8540(special); return false; }
+    }
+    return result;
+}
+
+bool function_cb810(long unit_index, vector3f *vector);
+// @retail 0x1505f0
+void function_1505f0(long player_index, long unit_index, byte const *input)
+{
+    (void)&unit_index; (void)&input;
+    vector3f facing;
+    facing.i = (real)(cos(*(real const *)(input + 4)) * cos(*(real const *)(input + 8)));
+    facing.j = (real)(sin(*(real const *)(input + 4)) * cos(*(real const *)(input + 8)));
+    facing.k = (real)sin(*(real const *)(input + 8));
+    long player_unit = tail_player_get(player_index)->unit_index;
+    if (player_unit != NONE) function_cb810(player_unit, &facing);
+    vector3f projected_facing, movement;
+    function_150400(player_index, &facing, (vector3f const *)(input + 0xc), &projected_facing, &movement);
+    byte control[0x7c];
+    function_c6ef0((s_unit_state_c6ef0 *)control);
+    *(dword *)(control + 0x10) = *(dword const *)input;
+    *(vector3f *)(control + 0x14) = movement;
+    *(real *)(control + 0x20) = *(real const *)(input + 0x14);
+    *(real *)(control + 0x24) = *(real const *)(input + 0x18);
+    *(vector3f *)(control + 0x28) = projected_facing;
+    *(vector3f *)(control + 0x34) = facing;
+    *(vector3f *)(control + 0x40) = facing;
+    memcpy(control + 6, input + 0x1e, 8);
+    memcpy(control + 0x58, input + 0x34, 0x24);
+    *(dword *)control = 0x06000086;
+    *(word *)(control + 4) = 0;
+    dword *flags = (dword *)((byte *)tail_object_get(unit_index) + 0x134);
+    if (input[0x58]) *flags |= 0x40000000;
+    else *flags &= ~0x40000000;
+    function_c6de0(unit_index, control);
+}
+
+
+
+short __stdcall function_bb050(long, dword, void const *, point3f const *, real, long *, short);
+
+// @retail 0x151110
+void __stdcall function_151110(long player_index, void *output)
+{
+    s_tail_player *player = tail_player_get(player_index);
+    memset(output, 0, 12);
+    memset(output, 0, 8);
+    *(long *)((byte *)output + 4) = NONE;
+    *(long *)((byte *)output + 8) = NONE;
+    long unit_index = player->unit_index;
+    if (unit_index == NONE) return;
+    byte *unit = (byte *)tail_object_get(unit_index);
+    if (*(long *)(unit + 0x14) != NONE) return;
+    struct s_region { real radius; point3f *center; } region;
+    region.radius = *(real *)(unit + 0x3c) + 0.4f;
+    region.center = (point3f *)(unit + 0x30);
+    long objects[64];
+    long count = function_bb050(0, 0xffffebcf, unit + 0x28, region.center, region.radius + 3.0f, objects, 64);
+    for (long i = 0; i < count; ++i)
+    {
+        long object_index = objects[i];
+        byte *object = (byte *)tail_object_get(object_index);
+        long type = *(signed char *)(object + 0xaa);
+        dword mask = 1 << type;
+        if (mask & 0x1430) continue;
+        if (mask & 0x184)
+        {
+            real reach = *(real *)(object + 0x3c) + region.radius;
+            real x = *(real *)(object + 0x30) - region.center->x;
+            real y = *(real *)(object + 0x34) - region.center->y;
+            real z = *(real *)(object + 0x38) - region.center->z;
+            real distance = x * x;
+            distance += z * z;
+            distance += y * y;
+            if (!(distance <= reach * reach)) continue;
+        }
+        s_target_candidate *best = (s_target_candidate *)output;
+        switch (type)
+        {
+        case 2: function_151780(object_index, player_index, best); break;
+        case 8: function_1516c0(object_index, player_index, best); break;
+        case 1: function_151430(object_index, player_index, best); break;
+        case 0: function_1515e0(object_index, player_index, best); break;
+        default:
+            {
+                long child_index = *(long *)(object + 0x10);
+                while (child_index != NONE && (unsigned long)count < 64)
+                {
+                    objects[count++] = child_index;
+                    child_index = *(long *)((byte *)tail_object_get(child_index) + 0xc);
+                }
+            }
+            break;
+        }
+    }
+}
+
+bool __stdcall function_ffc60(long weapon_index, long other_index, long unit_index, long local_user, short *rounds);
+bool __stdcall function_ccba0(long unit_index, long grenade_index);
+long function_ccb80(long unit_index);
+void function_15e8e0(long object_index, long player_index);
+void __stdcall function_191ec4(long definition_index, long player_index, short count);
+void __stdcall function_191e51(long definition_index, long player_index);
+
+// @retail 0x150e30
+void __stdcall function_150e30(long player_index, long object_index)
+{
+    s_tail_player *player = tail_player_get(player_index);
+    if (player->unit_index == NONE) return;
+    byte *unit = (byte *)tail_object_get(player->unit_index);
+    byte *object = (byte *)tail_object_get(object_index);
+    long parent_index = *(long *)(object + 0x14);
+    if (parent_index != NONE)
+    {
+        byte parent_type = ((s_tail_object_header *)g_4e0300->data)[parent_index & 0xffff].type;
+        if (parent_type != 11 && parent_type != 7) return;
+    }
+    if (*(long *)(object + 0x14c) == player->unit_index) return;
+    real z = *(real *)(object + 0x38) - *(real *)(unit + 0x38);
+    real x = *(real *)(object + 0x30) - *(real *)(unit + 0x30);
+    real y = *(real *)(object + 0x34) - *(real *)(unit + 0x34);
+    real radius = *(real *)(unit + 0x3c) + 0.3f;
+    if (radius * radius <= z * z + x * x + y * y) return;
+    long weapon_index = NONE;
+    short rounds;
+    for (short i = 0; i < 4; ++i)
+    {
+        long current = *(signed char *)(unit + 0x212);
+        if (current < 0) current = 0;
+        long slot = (current + i) % 4;
+        weapon_index = *(long *)(unit + 0x218 + slot * 4);
+        if (weapon_index != NONE && function_ffc60(weapon_index, object_index, player->unit_index, player->local_index, &rounds))
+        {
+            if (rounds > 0)
+                function_191ec4(*(long *)tail_object_get(weapon_index), player->local_index, rounds);
+            break;
+        }
+    }
+    s_object *pickup = function_badc0(object_index, 8);
+    if (pickup)
+    {
+        byte *definition = g_4e3b44[*(long *)pickup & 0xffff].bytes;
+        short kind = *(short *)(definition + 0x12c);
+        if (kind == 6)
+        {
+            if (function_ccba0(player->unit_index, object_index))
+                function_191e51(*(long *)pickup, player->local_index);
+        }
+        else if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
+            function_151ea0(player_index, object_index);
+    }
+    byte type = ((s_tail_object_header *)g_4e0300->data)[object_index & 0xffff].type;
+    if ((1 << type) & 4)
+    {
+        bool modes[4];
+        if (function_cd7b0(player->unit_index, object_index, modes) && modes[0] && function_150dd0(player_index))
+        {
+            if (function_138880())
+            {
+                function_a8f10(player->unit_index, object_index, 3);
+                function_15e8e0(object_index, player_index);
+                return;
+            }
+            s_unit_request request;
+            memset(&request, 0, sizeof(request));
+            request.type = 0x14;
+            *(long *)request.arguments = object_index;
+            *(short *)(request.arguments + 4) = 3;
+            function_e6900(player->unit_index, &request);
+        }
+    }
+    function_15e8e0(object_index, player_index);
+}
+
+
+// @retail 0x1508e0
+void __stdcall function_1508e0(long player_index)
+{
+    long unit_index = tail_player_get(player_index)->unit_index;
+    long objects[16];
+    if (unit_index != NONE)
+    {
+        byte *unit = (byte *)tail_object_get(unit_index);
+        if (*(long *)(unit + 0x14) == NONE)
+        {
+            long count = function_bb050(0, 0x89c, unit + 0x28, (point3f *)(unit + 0x30),
+                *(real *)(unit + 0x3c) + 0.3f, objects, 16);
+            for (long i = 0; i < count; ++i)
+            {
+                long index = objects[i];
+                byte *object = (byte *)tail_object_get(index);
+                long type = *(signed char *)(object + 0xaa);
+                if (type >= 2 && type <= 3) function_150e30(player_index, index);
+                if (object[0xaa] == 11 || object[0xaa] == 7)
+                {
+                    long child = *(long *)(object + 0x10);
+                    while (child != NONE && (unsigned long)count < 16)
+                    {
+                        objects[count++] = child;
+                        child = *(long *)((byte *)tail_object_get(child) + 0xc);
+                    }
+                }
+            }
+        }
+    }
+}
+

@@ -36,10 +36,6 @@ bool __stdcall function_44370(long)
     return false;
 }
 
-// @stub 0x174220
-void __stdcall function_174220(bool)
-{
-}
 
 
 struct s_2f970_view;

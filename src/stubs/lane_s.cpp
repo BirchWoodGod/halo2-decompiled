@@ -1,4 +1,10 @@
 #include "unknown_11c920.h"
+
+struct s_object_marker;
+struct transform4x3f;
+// @stub 0xb92d0
+void __stdcall function_b92d0(long object_index, s_object_marker const *marker,
+    transform4x3f const *transform) { }
 #include "unknown_0259d0.h"
 
 /* callees of lane S's region (0x100000-0x10ffff) that are not decompiled yet */

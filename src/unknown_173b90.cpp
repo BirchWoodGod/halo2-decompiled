@@ -925,3 +925,207 @@ bool function_174a30(s_particle_system_datum *particle_system, real dt)
 		return true;
 	return false;
 }
+
+
+#include <math.h>
+struct c_entry_list;
+struct s_bit_vector_pool_sizes { short unknown0, list_sizes[4], record_count; };
+struct s_bit_vector_pool
+{
+    void *context;
+    s_location location;
+    c_entry_list *lists[4];
+    long indices[0x80];
+    dword flags[0x10], pool[0x200];
+    word pool_used, entry_count;
+    dword entries[0x200][4], flags2a60;
+    short frustum_count;
+    byte unknown2a66[2];
+    point3f center;
+    real radius;
+    long mode, query_type;
+    byte unknown2a80[4];
+    real plane_offset;
+    plane3f plane;
+    long counters[13];
+    byte *records;
+    void *filter;
+    s_bit_vector_pool_sizes sizes;
+};
+extern s_bit_vector_pool g_547f88;
+extern point3f g_4b9da0;
+extern vector3f g_4b9dac, g_4b9db8;
+extern real g_4b9dcc;
+extern dword g_4ba034;
+struct s_frame_offset
+{
+    point3f position;
+    vector3f forward;
+    vector3f up;
+};
+extern s_frame_offset g_485618;
+struct s_frustum_set_view;
+struct s_sphere_frustum;
+struct s_distance_fade;
+bool function_165010(s_frustum_set_view const *, long, point3f const *, real, bool *);
+long function_181800(s_sphere_frustum const *, point3f const *, real);
+real function_249bb0(s_distance_fade const *, real);
+bool function_3eb20(long cluster_index);
+typedef void (__stdcall *t_1e4e0_callback)(void *);
+bool function_1e4e0(point3f const *, t_1e4e0_callback, void const *, long);
+struct s_sort_record;
+typedef bool (__stdcall *t_record_fill)(long, void *, long, long, long, void *, s_sort_record *);
+void function_40e30(short, long, real, long, word, dword, dword, t_record_fill, dword, void *);
+
+// @retail 0x174420
+void __stdcall function_174420(long system_index, bool view_pass, bool camera_relative, bool force_visible)
+{
+    s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, system_index);
+    if (function_137bd0(system->function_1751d0()->tag_index))
+    {
+        long tag_index = system->function_1751d0()->tag_index;
+        long const *reference;
+        dword group = TAG_GROUP(tag_index);
+        if (group == 0x5052544d || group == 'prt3')
+            reference = function_137bd0(tag_index)->function_x947334();
+        else reference = *(long const **)(TAG_GET(byte, tag_index) + 0x24);
+        byte *shader = TAG_GET(byte, *reference);
+        byte *table = *(byte **)(shader + 0x5c);
+        dword render_flags = *(dword *)(*(byte **)(table + 4) + 2);
+        s_effect_particle_system_definition *definition = system->function_1751d0();
+        word flags = *(word *)((byte *)definition + 0x16);
+        if (!(flags & (1 << 5)))
+        {
+            real bias = *(short *)definition->unknown14 * 0.05f;
+            vector3f forward, left, up;
+            if (camera_relative)
+            {
+                forward = g_4b9dac;
+                up = g_4b9db8;
+                left.i = forward.k * up.j - up.k * forward.j;
+                left.j = up.k * forward.i - forward.k * up.i;
+                left.k = forward.j * up.i - up.j * forward.i;
+            }
+            s_particle_render_request_173c90 request;
+            request.system = system;
+            for (long index = system->location_index; index != NONE; )
+            {
+                s_particle_location_datum *location = DATUM(g_51ec8c, s_particle_location_datum, index);
+                request.location = location;
+                if (view_pass == (((byte *)location)[2] != 0))
+                {
+                    bool draw = true;
+                    point3f position;
+                    if (camera_relative)
+                    {
+                        position.x = left.i * location->position.y + up.i * location->position.z + forward.i * location->position.x + g_4b9da0.x;
+                        position.y = forward.j * location->position.x + left.j * location->position.y + up.j * location->position.z + g_4b9da0.y;
+                        position.z = forward.k * location->position.x + left.k * location->position.y + up.k * location->position.z + g_4b9da0.z;
+                        *(dword *)((byte *)location + 0x30) = g_4ba034;
+                    }
+                    else
+                    {
+                        long cluster = system->location.cluster_index;
+                        bool visible = function_3eb20(cluster) || system->flag10;
+                        bool in_pool = (g_547f88.flags[cluster >> 5] & (1 << (cluster & 31))) != 0;
+                        if (!force_visible && !(flags & (1 << 9)) && !in_pool && !visible) draw = false;
+                        else
+                        {
+                            if (!visible && !force_visible)
+                            {
+                                if (flags & (1 << 9))
+                                    draw = function_181800((s_sphere_frustum const *)((byte *)g_547f88.context + 0x94),
+                                        (point3f const *)((byte *)location + 0x20), *(real *)((byte *)location + 0x2c)) != 0;
+                                else
+                                {
+                                    bool contained = false;
+                                    draw = function_165010((s_frustum_set_view const *)g_547f88.context,
+                                        ((signed char *)g_547f88.indices)[cluster],
+                                        (point3f const *)((byte *)location + 0x20), *(real *)((byte *)location + 0x2c), &contained);
+                                }
+                            }
+                            if (draw)
+                            {
+                                system->flag10 = visible;
+                                vector3f delta = {location->position.x - g_4b9da0.x,
+                                    location->position.y - g_4b9da0.y, location->position.z - g_4b9da0.z};
+                                if (!visible)
+                                {
+                                    real distance = (real)(sqrt(delta.k * delta.k + delta.j * delta.j + delta.i * delta.i) * g_4b9dcc);
+                                    draw = function_249bb0((s_distance_fade const *)definition, distance) > 0.0f;
+                                }
+                                *(dword *)((byte *)location + 0x30) = g_4ba034;
+                            }
+                        }
+                        position = location->position;
+                    }
+                    if (draw)
+                    {
+                        position.x += g_485618.forward.i * bias;
+                        position.y += g_485618.forward.j * bias;
+                        position.z += g_485618.forward.k * bias;
+                        if (render_flags & 0x8000)
+                            function_1e4e0(&position, (t_1e4e0_callback)function_173c90, &request, sizeof(request));
+                        if (render_flags & ~0x8000)
+                            function_40e30(0, system->function_1751d0()->tag_index, 0.0f, 5, (word)NONE, NONE, 0,
+                                (t_record_fill)function_173cb0, (dword)function_173d80, (void *)system_index);
+                    }
+                }
+                else *(dword *)((byte *)location + 0x30) = g_4ba034;
+                index = location->next_index;
+            }
+        }
+    }
+    for (long child_index = system->first_child_index; child_index != NONE; )
+    {
+        s_particle_system_datum *child = DATUM(g_510c74, s_particle_system_datum, child_index);
+        child->flag10 = system->flag10;
+        function_174420(child_index, view_pass, camera_relative, force_visible);
+        child_index = child->next_index;
+    }
+}
+
+
+
+extern long g_4b9ed8;
+long function_155760(long index);
+bool function_17afd0(long effect_index, long value);
+
+// @retail 0x174220
+void __stdcall function_174220(bool view_pass)
+{
+    s_record_pool *systems = g_510c74;
+    long index = data_datum_index(systems, function_16bc00(systems, 0));
+    while (index != NONE)
+    {
+        s_particle_system_datum *system = DATUM(systems, s_particle_system_datum, index);
+        s_effect_particle_system_definition *definition = system->function_1751d0();
+        long cluster = system->location.cluster_index;
+        if (cluster != NONE &&
+            ((*(word *)((byte *)definition + 0x16) & (1 << 9)) ||
+             (g_547f88.flags[cluster >> 5] & (1 << (cluster & 31))) || function_3eb20(cluster)) &&
+            system->unknown4c == NONE && system->location_index != NONE)
+        {
+            long effect_index = system->effect_index;
+            definition = system->function_1751d0();
+            long owner = NONE;
+            if (effect_index != NONE) owner = DATUM(g_4ea93c, s_effect_datum, effect_index)->unknown58;
+            long view = g_4b9ed8;
+            bool first_person = view != NONE && !function_155760(view);
+            bool same_view = owner != NONE && view == owner && first_person;
+            bool attached = first_person && effect_index != NONE && function_17afd0(effect_index, view);
+            bool draw = same_view == view_pass;
+            bool camera_relative = false;
+            if (same_view)
+            {
+                if (view != NONE && *(short *)((byte *)g_4ed284 + view * 0x94 + 0x42) != NONE)
+                    draw = (((byte *)definition)[0x16] >> 6) & 1;
+                if (definition->unknown0c != 0) camera_relative = true;
+            }
+            else if (attached && definition->location_mode == 2) draw = false;
+            if (draw) function_174420(index, same_view, camera_relative, false);
+        }
+        systems = g_510c74;
+        index = data_datum_index(systems, function_16bc00(systems, index == NONE ? 0 : (index & 0xffff) + 1));
+    }
+}

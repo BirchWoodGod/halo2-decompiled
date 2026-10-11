@@ -133,7 +133,7 @@ bool function_15eaf0();
 long function_23f260(long, long, long);
 void function_1523c0();
 void function_196780();
-void function_15cba0();
+void function_15cba0(long mode);
 void function_1389c0();
 long function_19f3c0(long, long);
 struct s_team_entry;
@@ -529,7 +529,7 @@ bool c_game_engine::v13(byte mask, s_engine_settings *settings)
 	{
 		if (settings->b1c != g->w6c)
 		{
-			function_15cba0();
+			function_15cba0(settings->b1c);
 			g = g_4e9ae8;
 			g->w6c = settings->b1c;
 		}
