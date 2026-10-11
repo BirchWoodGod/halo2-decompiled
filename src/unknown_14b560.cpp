@@ -1099,14 +1099,14 @@ void players_set_local_machine(s_machine_address const *machine_address)
 	{
 		s_players_globals *globals = (s_players_globals *)g_4e8c20;
 
-		for (long i = 0; i < 16; i++)
-		{
+		{ long i = 0; if (i < 16) { do {
 			if (TEST_FLAG(globals->machine_valid_mask, i) &&
 				memcmp(machine_address, &globals->machine_addresses[i], sizeof(s_machine_address)) == 0)
 			{
 				machine_index = i;
 			}
-		}
+		
+i++; } while (i < 16); } }
 	}
 
 	s_players_globals *globals = (s_players_globals *)g_4e8c20;
@@ -1757,8 +1757,12 @@ static __forceinline long player_round_ticks(real value)
 // @retail 0x14f820
 void __stdcall function_14f820(long player_index, long unit_index, byte *input)
 {
-    byte *player = (byte *)player_get(player_index);
-    byte *unit = object_get_unchecked(unit_index);
+    struct { 
+        byte * player;
+        byte * unit;
+    } locals;
+    locals.player = (byte *)player_get(player_index);
+    locals.unit = object_get_unchecked(unit_index);
     word &actions = *(word *)(input + 0x1c);
     dword &buttons = *(dword *)input;
     s_target_candidate *candidate = (s_target_candidate *)(input + 0x28);
@@ -1798,8 +1802,8 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
         function_a8dd0(unit_index);
         input[0x1c] &= ~4;
     }
-    long parent_index = *(long *)(unit + 0x14);
-    short seat_index = *(short *)(unit + 0x1fc);
+    long parent_index = *(long *)(locals.unit + 0x14);
+    short seat_index = *(short *)(locals.unit + 0x1fc);
     if (parent_index != NONE && seat_index != NONE)
     {
         byte *parent = object_get_unchecked(parent_index);
@@ -1838,9 +1842,9 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
         if (buttons & 0x80) function_1628f0(player_index, 5);
         if (buttons & 0x100) function_1628f0(player_index, 4);
     }
-    if ((buttons & 0x10) && *(long *)(unit + 0x238) != NONE)
+    if ((buttons & 0x10) && *(long *)(locals.unit + 0x238) != NONE)
     {
-        function_151ea0(player_index, *(long *)(unit + 0x238));
+        function_151ea0(player_index, *(long *)(locals.unit + 0x238));
         function_ccd20(unit_index);
     }
     if (buttons & 0x60)
@@ -1852,8 +1856,8 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
         {
             if (function_1012c0(weapon))
             {
-                long victim = *(long *)(unit + 0x1c8);
-                if (*(real *)(unit + 0x1e4) >= 1.0f && function_bae20(victim, 3))
+                long victim = *(long *)(locals.unit + 0x1c8);
+                if (*(real *)(locals.unit + 0x1e4) >= 1.0f && function_bae20(victim, 3))
                 {
                     point3f victim_position, unit_position;
                     function_b9dd0(victim, &victim_position);
@@ -1863,14 +1867,14 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
                     real x = unit_position.x-victim_position.x;
                     if (z*z + y*y + x*x > 0.809999942779541f) lunge = true;
                 }
-                if (*(signed char *)(player + 0x3f) > 0 || unit[0x212] != unit[0x216]) allowed = false;
+                if (*(signed char *)(locals.player + 0x3f) > 0 || locals.unit[0x212] != locals.unit[0x216]) allowed = false;
             }
             else if (!function_101300(weapon)) allowed = false;
         }
         else
         {
-            if (!(buttons & 0x20) || *(signed char *)(player + 0x40) > 0) allowed = false;
-            else if (function_1012c0(weapon) && *(signed char *)(player + 0x3f) > 0) allowed = false;
+            if (!(buttons & 0x20) || *(signed char *)(locals.player + 0x40) > 0) allowed = false;
+            else if (function_1012c0(weapon) && *(signed char *)(locals.player + 0x3f) > 0) allowed = false;
         }
         if (allowed)
         {
@@ -1882,7 +1886,7 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
             *(short *)request.arguments = lunge ? 2 : 1;
             *(long *)(request.arguments + 4) = target;
             if (function_e6900(unit_index, &request) && lunge)
-                player[0x3f] = (byte)player_round_ticks((real)g_510c54->field_2_3 * 1.1f);
+                locals.player[0x3f] = (byte)player_round_ticks((real)g_510c54->field_2_3 * 1.1f);
         }
     }
     long weapon = player_current_weapon(unit_index, 0);
@@ -1900,7 +1904,7 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
     }
     byte *current = object_get_unchecked(unit_index);
     if (current[0x212] != 0xff && current[0x213] != 0xff)
-        *(long *)(input + 0x1e) = *(long *)(unit + 0x214);
+        *(long *)(input + 0x1e) = *(long *)(locals.unit + 0x214);
     else
     {
         weapon = player_current_weapon(unit_index, 0);
@@ -1909,14 +1913,14 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
             byte *definition = g_4e3b44[*(long *)object_get_unchecked(weapon) & 0xffff].bytes;
             if (*(dword *)(definition + 0x12c) & 8)
             {
-                *(long *)(input + 0x1e) = *(long *)(unit + 0x214);
+                *(long *)(input + 0x1e) = *(long *)(locals.unit + 0x214);
                 if (buttons & 0x4010000) function_151b80(player_index, true);
             }
         }
     }
-    short &idle = *(short *)(player + 0x17c);
-    short &rest = *(short *)(player + 0x17e);
-    if (*(long *)(unit + 0x14) == NONE && g_4e6948->state != 2)
+    short &idle = *(short *)(locals.player + 0x17c);
+    short &rest = *(short *)(locals.player + 0x17e);
+    if (*(long *)(locals.unit + 0x14) == NONE && g_4e6948->state != 2)
     {
         byte *settings = *(byte **)((byte *)g_4e034c + 0xf4);
         long first = player_round_ticks((real)g_510c54->field_2_3 * *(real *)(settings + 0x20));
@@ -1933,7 +1937,7 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
         if (remaining < 0.0f) { idle = 0; rest = 0; }
         else if (remaining >= first+second) { idle = (short)(first+second); rest = 0; }
         dword activity = buttons;
-        bool first_activity = function_10f890(unit_index) || *(short *)(input + 0x24) != *(signed char *)(unit + 0x240) || (activity & 0x10000001);
+        bool first_activity = function_10f890(unit_index) || *(short *)(input + 0x24) != *(signed char *)(locals.unit + 0x240) || (activity & 0x10000001);
         bool second_activity = function_cc3c0(unit_index) || (activity & 0x4030031) || local_85417d;
         if (first_activity || second_activity)
         {
@@ -1943,7 +1947,7 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
             if (first_activity && idle > first) idle = (short)first;
             if (second_activity) idle = 0;
         }
-        if (unit[0xaa] != 0 || !function_e4050(unit_index))
+        if (locals.unit[0xaa] != 0 || !function_e4050(unit_index))
         {
             if (moving) ++idle;
             else ++rest;
@@ -1952,9 +1956,9 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
     else idle = rest = 0;
     long first_weapon = player_current_weapon(unit_index, 0);
     long second_weapon = player_current_weapon(unit_index, 1);
-    long &target = *(long *)(player + 0x184);
-    short &target_node = *(short *)(player + 0x188);
-    long &target_age = *(long *)(player + 0x18c);
+    long &target = *(long *)(locals.player + 0x184);
+    short &target_node = *(short *)(locals.player + 0x188);
+    long &target_age = *(long *)(locals.player + 0x18c);
     if ((first_weapon != NONE && function_101160(first_weapon)) || (second_weapon != NONE && function_101160(second_weapon)))
     {
         if (*(long *)(input + 0x34) != NONE && !(input[0x4c] & 1))

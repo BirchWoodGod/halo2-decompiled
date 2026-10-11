@@ -617,7 +617,7 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 	use_plane1 &= (view->flag84 || view->flag85);
 	*bounds = *g_4687e0;
 
-	real near_distance = view->margin + margin;
+	volatile real  near_distance = view->margin + margin;
 	if (near_distance < 1.52588e-5f)
 		near_distance = 1.52588e-5f;
 
