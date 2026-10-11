@@ -538,6 +538,9 @@ def parses(body):
 CASES = [
     (permute.mut_reorder_fields, '\n\tthing->value = 0;\n\tthing->count = 1;\n\treturn 0;\n',
      {'\n\tthing->count = 1;\n\tthing->value = 0;\n\treturn 0;\n'}),
+    (permute.mut_move_statement, '\n\tthing->value = 0;\n\tthing->count = 1;\n\tindex = 2;\n\treturn 0;\n',
+     {'\n\tthing->count = 1;\n\tindex = 2;\n\tthing->value = 0;\n\treturn 0;\n',
+      '\n\tindex = 2;\n\tthing->value = 0;\n\tthing->count = 1;\n\treturn 0;\n'}),
     (permute.mut_hoist_argument, '\n\tstore(thing->value, index != 0);\n\treturn 0;\n',
      {'\n\tlong tmp0 = thing->value;\n\tstore(tmp0, index != 0);\n\treturn 0;\n',
       '\n\tbool tmp0 = index != 0;\n\tstore(thing->value, tmp0);\n\treturn 0;\n'}),
@@ -617,6 +620,10 @@ def test_typed_mutations_leave_alone_what_they_must():
     assert permute.mut_reorder_fields('\n\tstore(thing->value, true);\n\tstore(thing->value, false);\n', rng(),
                                       ctx) is None
     assert permute.mut_reorder_fields('\n\tlong a = 1;\n\tlong b = 2;\n', rng(), ctx) is None
+    # the middle statement reads what the first writes, so neither end can pass it; two calls
+    assert permute.mut_move_statement('\n\tindex = 1;\n\tthing->value = index;\n\tindex = 2;\n', rng(), ctx) is None
+    assert permute.mut_move_statement('\n\tstore(index, true);\n\tthing->value = 0;\n\tstore(index, false);\n', rng(),
+                                      ctx) is None
     # an argument whose type nothing declares, and trivial ones
     assert permute.mut_hoist_argument('\n\tstore(unknown->field, true);\n', rng(), ctx) is None
     assert permute.mut_hoist_argument('\n\tstore(index, true);\n', rng(), ctx) is None
