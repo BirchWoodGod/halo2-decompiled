@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7595 functions match
+
+```
+matched 7595 of 11318 game functions (898780 of 2784283 bytes, 32.28%)
+```
+
+1 new matches, none lost:
+- 0x237c04, the virtual keyboard's selection and cursor drawing: reading the timer through a const pointer in the cursor fade keeps an earlier comparison in retail's operand order.
+
 ## 2026-10-11: 7594 functions match
 
 ```
