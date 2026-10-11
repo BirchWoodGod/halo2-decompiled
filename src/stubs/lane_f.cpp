@@ -24,8 +24,6 @@ struct s_game_options;
 void __stdcall function_137ca0(s_game_options const *arg_0) { }
 // @stub 0x137e40
 void function_137e40(void) { }
-// @stub 0x158530
-void function_158530(void) { }
 
 struct s_1870a0;
 struct s_player_action;
@@ -34,8 +32,6 @@ struct s_packed_clc;
 // @stub 0xb3ed0
 void __stdcall function_b3ed0(s_packed_clc const *arg_0, long arg_1, char const *arg_2) { }
 
-// @stub 0x151110
-void __stdcall function_151110(long arg_0, void *arg_1) { }
 
 struct s_186ab2;
 // @stub 0x1a4900

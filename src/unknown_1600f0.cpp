@@ -1414,3 +1414,112 @@ void __stdcall function_1608e0(long player_index, s_score_panel_1608e0 *panel, r
 	}
 	panel->player_count = display.player_count;
 }
+
+
+#include "font_loading.h"
+class c_1fa50
+{
+public:
+    void function_1fa50(short_rectangle2d const *, void const *, void const *, long, real, long, void const *) const;
+    void function_1fb10(short_rectangle2d const *, real) const;
+};
+void function_163400(s_text_widget_a const *widget);
+void connection_widget_draw(s_text_widget_c const *widget);
+struct s_engine_border_state;
+void function_15ff80(s_engine_border_state const *state);
+void function_36580(void);
+void function_36880(color4f const *color, s_short_rectangle const *rectangle);
+void function_13ec70(color4f const *color);
+struct s_33a0b_default;
+extern s_33a0b_default *g_4686d4;
+
+
+PRIVATE __forceinline void score_background_161420(byte const *widget, long valid)
+{
+    if (widget[valid])
+        function_36880((color4f const *)(widget + 0x14), (s_short_rectangle const *)widget);
+}
+
+PRIVATE __forceinline void score_text_161420(byte const *widget, long valid)
+{
+    if (widget[valid])
+    {
+        g_4e73a0.style = NONE;
+        g_4e73a0.flags = 0;
+        g_4e73a0.justification = widget[8] ? 2 : 0;
+        function_13ec70((color4f const *)(widget + 0x24));
+        ((c_1fa50 const *)(widget + 0x38))->function_1fa50((short_rectangle2d const *)(widget + 0xa), NULL, NULL, 0, 1.0f, 0, NULL);
+    }
+}
+
+// @retail 0x161420
+void function_161420(long player_index, real alpha)
+{
+    s_score_panel_1608e0 panel;
+    function_1608e0(player_index, &panel, alpha);
+    for (long i = 0; i < panel.player_count; ++i)
+        function_163400(&panel.players[i].row.icon);
+    function_36580();
+    byte const *data = (byte const *)&panel;
+    score_background_161420(data + 0xe0, 0x60);
+score_background_161420(data + 0x144, 0x60);
+score_background_161420(data + 0x1a8, 0x60);
+score_background_161420(data + 0x20c, 0x60);
+score_background_161420(data + 0x270, 0x60);
+    for (long team = 0; team < panel.team_count; ++team)
+    {
+        byte const *row = (byte const *)&panel.teams[team];
+        score_background_161420(row, 0x44);
+        score_background_161420(row + 0x48, 0x60);
+        score_background_161420(row + 0xac, 0x44);
+        score_background_161420(row + 0xf4, 0x44);
+    }
+    for (long player = 0; player < panel.player_count; ++player)
+    {
+        byte const *row = (byte const *)&panel.players[player];
+        if (*(short *)(row + 0x80) == 2) score_background_161420(row + 0x48, 0x44);
+        score_background_161420(row, 0x44);
+        score_background_161420(row + 0x90, 0x60);
+        score_background_161420(row + 0xf4, 0x44);
+        score_background_161420(row + 0x13c, 0x44);
+        score_background_161420(row + 0x184, 0x3c);
+        connection_widget_draw((s_text_widget_c const *)(row + 0x184));
+        if (row[0x1c4]) function_15ff80((s_engine_border_state const *)row);
+    }
+    font_get(g_4e28f4[6]);
+    g_4e73a0.font = 6;
+    function_13ec70(g_4686cc);
+    if (g_4686d4)
+    {
+        g_4e73a0.shadow = true;
+        g_4e73a0.field_24 = *(color4f const *)g_4686d4;
+    }
+    else g_4e73a0.shadow = false;
+    g_4e73a0.style = NONE;
+    g_4e73a0.justification = 0;
+    g_4e73a0.flags = 0;
+    score_text_161420(data + 4, 0xd8);
+    score_text_161420(data + 0xe0, 0x60);
+score_text_161420(data + 0x144, 0x60);
+score_text_161420(data + 0x1a8, 0x60);
+score_text_161420(data + 0x20c, 0x60);
+score_text_161420(data + 0x270, 0x60);
+    for (long team = 0; team < panel.team_count; ++team)
+    {
+        byte const *row = (byte const *)&panel.teams[team];
+        score_text_161420(row, 0x44);
+        score_text_161420(row + 0x48, 0x60);
+        score_text_161420(row + 0xac, 0x44);
+        score_text_161420(row + 0xf4, 0x44);
+    }
+    for (long player = 0; player < panel.player_count; ++player)
+    {
+        byte const *row = (byte const *)&panel.players[player];
+        score_text_161420(row, 0x44);
+        score_text_161420(row + 0x90, 0x60);
+        score_text_161420(row + 0xf4, 0x44);
+        score_text_161420(row + 0x13c, 0x44);
+        score_text_161420(row + 0x184, 0x3c);
+    }
+}
+
