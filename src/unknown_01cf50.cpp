@@ -6891,28 +6891,27 @@ bool function_1eff0()
 
 
 
-// Disabled: canonical font render storage has 256 entries, while retail traverses 512.
-#if 0
+#include "font_render_cache.h"
 extern s_record_pool *g_54d574;
 
-// Retail 0x1f2b0
+// @retail 0x1f2b0
 void function_1f2b0()
 {
-    if (g_4b62a0.active)
-    {
+    if (g_4b62a0)
         for (long i = 0; i < 512; ++i)
         {
-            long character = g_4b62a0.entries[i].character_index;
-            if (character != NONE && i != NONE)
+            if (g_4b62b0[i].character_index != NONE)
             {
-                if (character != NONE)
-                    *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                g_4b62a0.entries[i].character_index = NONE;
+                if (i != NONE)
+                {
+                    long character = g_4b62b0[i].character_index;
+                    if (character != NONE)
+                        *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
+                    g_4b62b0[i].character_index = NONE;
+                }
             }
         }
-    }
 }
-#endif
 
 
 
@@ -6983,48 +6982,39 @@ void function_40e90(long mode)
 
 
 
-// Disabled: the shared glyph atlas ring currently allocates 256 of retail's 512 slots.
-#if 0
 struct s_glyph_header_1f5c0
 {
     word value00, pixels_size;
     short width, height;
     byte unknown08[8];
 };
-struct s_glyph_entry_1f5c0
+// The two words share the full-width cursor read used before masking the ring index.
+union s_font_cursor_1f5c0
 {
-    long character;
-    short x, y;
+    dword pair;
+    struct { short next, x; } fields;
 };
-struct s_glyph_cache_1f5c0
-{
-    bool active;
-    byte unknown01;
-    short first, next;
-    short x, y, row_height;
-    byte *bitmap;
-    s_glyph_entry_1f5c0 entries[512];
-};
-extern s_glyph_cache_1f5c0 g_4b62a0;
-extern s_record_pool *g_54d574;
-void function_140960(long character, word *pixels);
-byte *function_1d5e0(byte *bitmap, long mode, long *pitch);
+short g_4b62a2;
+s_font_cursor_1f5c0 g_4b62a4;
+short g_4b62a8, g_4b62aa;
+
+bool font_cache_character_copy_pixels(long character, void *pixels);
 
 PRIVATE inline void glyph_remove_first_1f5c0(bool *removed)
 {
-    long first = g_4b62a0.first;
+    long first = g_4b62a2;
     *removed = true;
     if (first != NONE)
     {
-        long character = g_4b62a0.entries[first].character;
+        long character = g_4b62b0[first].character_index;
         if (character != NONE)
             *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-        g_4b62a0.entries[first].character = NONE;
+        g_4b62b0[first].character_index = NONE;
     }
-    g_4b62a0.first = (g_4b62a0.first + 1) & 0x1ff;
+    g_4b62a2 = (g_4b62a2 + 1) & 0x1ff;
 }
 
-// Retail 0x1f5c0
+// @retail 0x1f5c0
 void __stdcall function_1f5c0(long character_index)
 {
     word pixels[4096];
@@ -7032,74 +7022,73 @@ void __stdcall function_1f5c0(long character_index)
         && *(long *)(g_54d574->data + (character_index & 0xffff) * 0x38 + 0x34) != NONE)
         return;
     byte *character = g_54d574->data + (character_index & 0xffff) * 0x38;
-    s_glyph_header_1f5c0 *header = 0;
+    s_glyph_header_1f5c0 *volatile header = 0;
     if (*(long *)(character + 0x10) == 4)
         header = (s_glyph_header_1f5c0 *)(character + 0x1c);
     bool removed = false;
-    if (header->width + g_4b62a0.x > 256)
+    if (header->width + g_4b62a4.fields.x > 256)
     {
-        g_4b62a0.y += g_4b62a0.row_height;
-        g_4b62a0.x = 1;
-        g_4b62a0.row_height = 0;
+        g_4b62a8 += g_4b62aa;
+        g_4b62a4.fields.x = 1;
+        g_4b62aa = 0;
     }
-    if (header->height + g_4b62a0.y > 256)
+    if (header->height + g_4b62a8 > 256)
     {
-        g_4b62a0.y = 1;
-        g_4b62a0.x = 1;
-        g_4b62a0.row_height = 0;
-        while (g_4b62a0.first != g_4b62a0.next && g_4b62a0.entries[g_4b62a0.first].y > 0)
+        g_4b62a8 = 1;
+        g_4b62a4.fields.x = 1;
+        g_4b62aa = 0;
+        while (g_4b62a2 != g_4b62a4.fields.next && g_4b62b0[g_4b62a2].position.y > 0)
             glyph_remove_first_1f5c0(&removed);
     }
-    if (header->height + 1 > g_4b62a0.row_height)
+    if (header->height + 1 > g_4b62aa)
     {
-        long old_end = g_4b62a0.y + g_4b62a0.row_height;
-        long new_end = g_4b62a0.y + header->height;
-        while (g_4b62a0.first != g_4b62a0.next
-            && g_4b62a0.entries[g_4b62a0.first].y >= old_end
-            && g_4b62a0.entries[g_4b62a0.first].y < new_end)
+        long old_end = g_4b62a8 + g_4b62aa;
+        long new_end = g_4b62a8 + header->height;
+        while (g_4b62a2 != g_4b62a4.fields.next
+            && g_4b62b0[g_4b62a2].position.y >= old_end
+            && g_4b62b0[g_4b62a2].position.y < new_end)
             glyph_remove_first_1f5c0(&removed);
-        g_4b62a0.row_height = header->height + 1;
+        g_4b62aa = header->height + 1;
     }
-    if (((g_4b62a0.next + 1) & 0x1ff) == g_4b62a0.first)
+    if (((g_4b62a4.pair + 1) & 0x1ff) == g_4b62a2)
         glyph_remove_first_1f5c0(&removed);
-    long slot = g_4b62a0.next;
+    long slot = g_4b62a4.fields.next;
     if (character_index != NONE)
         *(long *)(g_54d574->data + (character_index & 0xffff) * 0x38 + 0x34) = slot;
-    s_glyph_entry_1f5c0 *entry = &g_4b62a0.entries[slot];
-    entry->character = character_index;
-    entry->x = g_4b62a0.x;
-    entry->y = g_4b62a0.y;
-    function_140960(character_index, pixels);
+    g_4b62b0[slot].character_index = character_index;
+    g_4b62b0[slot].position.x = g_4b62a4.fields.x;
+    g_4b62b0[slot].position.y = g_4b62a8;
+    font_cache_character_copy_pixels(character_index, pixels);
     long pitch;
-    byte *destination = function_1d5e0(g_4b62a0.bitmap, removed ? 1 : 0, &pitch);
+    byte *destination = (byte *)function_1d5e0(g_4b62ac, removed ? 1 : 0, &pitch);
     if (destination)
     {
-        short first_x = entry->x - 1;
-        if (first_x < 0) first_x = 0;
-        short first_y = entry->y - 1;
-        if (first_y < 0) first_y = 0;
-        short end_x = entry->x + header->width + 1;
-        short width = *(short *)(g_4b62a0.bitmap + 4) - 1;
-        if (end_x > width) end_x = width;
-        short end_y = entry->y + header->height + 1;
-        short height = *(short *)(g_4b62a0.bitmap + 6) - 1;
-        if (end_y > height) end_y = height;
+        long left = (long)g_4b62b0[slot].position.x - 1;
+        short first_x = (short)(left > 0 ? left : 0);
+        long top = (long)g_4b62b0[slot].position.y - 1;
+        short first_y = (short)(top > 0 ? top : 0);
+        long right = (long)g_4b62b0[slot].position.x + header->width + 1;
+        long width = (long)*(short *)((byte *)g_4b62ac + 4) - 1;
+        short end_x = (short)(right <= width ? right : width);
+        long bottom = (long)g_4b62b0[slot].position.y + header->height + 1;
+        long height = (long)*(short *)((byte *)g_4b62ac + 6) - 1;
+        short end_y = (short)(bottom <= height ? bottom : height);
         for (long y = first_y; y < end_y; y++)
             for (long x = first_x; x < end_x; x++)
                 *(word *)(destination + y * pitch + x * 2) = 0x0fff;
         long source = 0;
         for (long y = 0; y < header->height; y++)
         {
-            word *row = (word *)(destination + (entry->y + y) * pitch + entry->x * 2);
+            word *row = (word *)(destination + (g_4b62b0[slot].position.y + y) * pitch + g_4b62b0[slot].position.x * 2);
             for (long x = 0; x < header->width; x++) row[x] = pixels[source + x];
             source += header->width;
         }
-        bitmap_predict_inline((s_bitmap_predict_view *)g_4b62a0.bitmap, 7);
+        bitmap_predict_inline((s_bitmap_predict_view *)g_4b62ac, 7);
     }
-    g_4b62a0.x += header->width + 1;
-    g_4b62a0.next = (g_4b62a0.next + 1) & 0x1ff;
+    g_4b62a4.fields.x += header->width + 1;
+    g_4b62a4.fields.next = (g_4b62a4.pair + 1) & 0x1ff;
 }
-#endif
+
 
 
 
@@ -7193,11 +7182,11 @@ void function_22590()
 }
 #endif
 
-// Disabled: retail indexes all 512 glyph atlas entries; the foreign canonical ring still has 256 slots.
+// Disabled: passing the shared glyph rectangle address to 1f3a0 is prohibited.
 #if 0
 extern long g_4e28f4[11];
 extern s_record_pool *g_54d574;
-extern s_glyph_entry_1f5c0 g_4b62b0[512];
+extern s_font_render_entry g_4b62b0[512];
 long function_140b20(long font_index, long character);
 void function_140900(long character, long font, long priority);
 void __stdcall function_1f5c0(long character);
@@ -7217,7 +7206,7 @@ void __stdcall function_1f490(long unused, long font, long character, long color
     if (index == NONE) return;
     long entry = *(long *)(g_54d574->data + (index & 0xffff) * 0x38 + 0x34);
     if (entry == NONE) return;
-    s_glyph_entry_1f5c0 *rectangle = &g_4b62b0[entry];
+    s_font_render_entry *rectangle = &g_4b62b0[entry];
     bool draw_shadow = ((dword)shadow & 0xff000000) > 0;
     do
     {
@@ -7566,4 +7555,3 @@ void function_13680(bool skip_effects)
     else function_2bcd0(1, 1, draw_ui, world_effects, 0, 0, 0.0f);
 }
 #endif
-
