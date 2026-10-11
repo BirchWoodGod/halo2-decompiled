@@ -4847,9 +4847,7 @@ void function_36580(void);
 void function_36880(color4f const *color, s_short_rectangle const *rectangle);
 void function_161420(long player_index, real alpha);
 
-// Disabled: with this draft active, the matched 0x22dad1 stops matching (a whole-program LTCG effect, found by bisection). Enable it once it matches.
-#if 0
-// Retail 0x159880
+// @retail 0x159880
 void function_159880(void)
 {
     s_game_engine_globals *globals = function_xaee93d();
@@ -4911,7 +4909,6 @@ void function_159880(void)
         }
     }
 }
-#endif
 
 
 
