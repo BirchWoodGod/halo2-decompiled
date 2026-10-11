@@ -1666,7 +1666,12 @@ void c_game_engine_a::v36(long local_player)
 			s_color_bits color;
 			territory_marker_color(player_index, i, &color);
 			s_marker_list list;
-			list.position = g_4e0350->marker_entries[(short)state->w60[i]].position;
+			point3f const *position = &g_4e0350->marker_entries[(short)state->w60[i]].position;
+			long position_bits[3];
+			position_bits[0] = ((long const *)position)[0];
+			position_bits[1] = ((long const *)position)[1];
+			position_bits[2] = ((long const *)position)[2];
+			list.position = *(point3f const *)position_bits;
 			list.b0 = 0;
 			list.b1 = 0;
 			list.l4 = 1;
