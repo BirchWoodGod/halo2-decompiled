@@ -236,9 +236,9 @@ void function_7f410(void)
 	}
 	if (g_4cf95c)
 	{
+		long single = 0;
 		long sent = 0;
 		long received = 0;
-		long single = 0;
 		if (g_4cf8f0[9] >= ((s_estimate_configuration *)g_4cf8e8)->minimum_samples)
 		{
 			sent = samples_trimmed_mean(g_4cf8f0 + 10, g_4cf8f0[9]);
@@ -258,7 +258,8 @@ void function_7f410(void)
 			if (single > estimate && g_4cf8f0[26] > ((s_estimate_configuration *)g_4cf8e8)->threshold)
 			{
 				long grown = (g_4cf8f0[26] - ((s_estimate_configuration *)g_4cf8e8)->threshold) * ((s_estimate_configuration *)g_4cf8e8)->step + estimate;
-				estimate = grown > single ? single : grown;
+				if (grown > single) grown = single;
+				estimate = grown;
 			}
 		}
 		else if (single > 0)

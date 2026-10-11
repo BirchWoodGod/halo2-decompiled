@@ -924,7 +924,7 @@ bool function_07d520(s_bitstream *stream, void *part)
 		{
 			s_game_variant checked;
 			memcpy(&checked, packet, sizeof(checked));
-			return function_19d650(&checked);
+			result = function_19d650(&checked);
 		}
 	}
 	else
@@ -1103,13 +1103,14 @@ static inline long ratings_allowed_imbalance(s_surface_description *variant)
 bool function_7e210(c_class_58d20 *session, s_matchmaking_ratings *out)
 {
 	long variant_index = NONE;
-	if (session->state > 2 && session->state <= 8) variant_index = session->value49c8;
+	long local_0 = session->state;
+	if (local_0 > 2 && local_0 <= 8) variant_index = session->value49c8;
 	s_surface_description *variant = function_192e60(variant_index);
 	const s_ratings_summary *summary = NULL;
-	if (session->state > 2 && session->state <= 8 && session->flag49fd)
+	if (local_0 > 2 && local_0 <= 8 && session->flag49fd)
 		summary = (const s_ratings_summary *)session->data4a00;
 	long capacity = 16;
-	if (session->state > 2 && session->state <= 8) capacity = session->value4994;
+	if (local_0 > 2 && local_0 <= 8) capacity = session->value4994;
 	volatile bool result = true;
 	memset(out, 0, sizeof(*out));
 	if (!summary || summary->player_count > capacity || !variant ||
