@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7620 functions match
+
+```
+matched 7620 of 11318 game functions (903086 of 2784283 bytes, 32.44%)
+```
+
+5 new matches, none lost:
+- Deep lane 3, round 33 (unwritten functions, callees first): the item, device and weapon initializers 0xa02a0, 0xa3db0 and 0xa1f10, the projectile serializer 0xa0f50 and the wrapper 0xa2380.
+
 ## 2026-10-11: 7615 functions match
 
 ```
