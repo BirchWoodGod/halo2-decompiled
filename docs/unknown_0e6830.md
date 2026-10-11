@@ -31,25 +31,17 @@ returns the boolean in `AL` and removes one stack argument with `ret 4`.
 The retail instructions were read from the executable identified by the
 project's published SHA-256. The table layout is consistent with the
 existing `s_unit_request_definition` in `src/unknown_0e6900.cpp`.
-An independently written local control-flow model agreed with retail
-execution for 2,048 cases and 33,962 callback invocations, comparing callback
-order, arguments, persistent memory, and the return value. Cases included
-null callbacks, signed displacements, bit mutations, object/block replacement,
-and replacement of later callback definitions. The same cases also passed
-when executing the XDK-compiled function against retail in separate emulator
-memory backings, using the linked map to resolve the compiled globals.
-Neither behavioral comparison establishes a byte match.
+The behaviour above was also compared with retail's under emulation,
+including null callbacks, signed displacements, bit mutations, and callbacks
+that replace the object, its block or later callback definitions. That
+comparison does not establish a byte match.
 
 The current compiled function is 137 bytes, like retail. The checker finds
 three instruction differences: its bitmap accesses encode `[ebx + esi + 4]`
-where retail encodes `[esi + ebx + 4]`. Both address the same word. A full
-check against the baseline at `23dba6c9` retained all 7,478 existing matches.
-A bounded permutation search tried 15 variants
-without improving the three-instruction difference. The function remains
-unmatched.
+where retail encodes `[esi + ebx + 4]`. Both address the same word. The
+function remains unmatched.
 
-The adjacent animation-channel query at `0xe6800` now matches exactly (39
-bytes): it materializes its playing condition as a full-width 0/1 and tests
-the low byte when returning the negation. This preserves the boolean logic
-while reproducing retail's instruction widths. The final full check reports
-7,479 matches, with this one gain and zero losses relative to `23dba6c9`.
+The adjacent animation-channel query at `0xe6800` matches (39 bytes): it
+materializes its playing condition as a full-width 0/1 and tests the low
+byte when returning the negation. This preserves the boolean logic while
+reproducing retail's instruction widths.
