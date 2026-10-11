@@ -267,8 +267,8 @@ short __stdcall function_1b6740(long actor_index, long leader_index, long a, lon
 
 	if (actor->unknown07c != NONE && actor->prop_index != NONE)
 	{
-		s_prop_node_view *node = prop_node_get(actor->prop_index);
 		long index = element_502420_get(actor->unknown07c)->first_actor_index;
+		s_prop_node_view *node = prop_node_get(actor->prop_index);
 
 		while (index != NONE)
 		{

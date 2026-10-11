@@ -58,7 +58,7 @@ long c_handle_table_450cd0::v1(long a1, long max_count, void *output)
 							size += item_size;
 						}
 						if (blocked)
-							goto next;
+							priority = 0.0f;
 					}
 					else
 					{
@@ -119,10 +119,10 @@ long c_handle_table_450cd0::v1(long a1, long max_count, void *output)
 				if (priority > 0.0f)
 				{
 					out->unknown00 = *(long *)unknown04;
-					out->unknown04 = priority;
-					out->size = (handles_count > 1 ? 2 : 0) + size + 14 * handles_count + 3;
-					out->unknown0c = type;
 					out->index = index;
+					out->unknown04 = priority;
+					out->unknown0c = type;
+					out->size = (handles_count > 1 ? 2 : 0) + size + 14 * handles_count + 3;
 					out++;
 					count++;
 				}
@@ -521,19 +521,20 @@ static inline void stream_initialize(s_bitstream *stream, void *buffer, long siz
 
 /* retail inlines the end of a stream here: its size is rounded up to the
    alignment, and its bits are appended to the output */
-static inline void stream_finish(s_bitstream *stream, s_bitstream *out)
+static __forceinline void function_97ab1(s_bitstream *arg_0, s_bitstream *arg_1)
 {
-	long bits = stream->bit_position;
-	long alignment = stream->unknown08;
-	long bytes = (bits + 7) / 8;
-	stream->size_in_bytes = bytes;
-	long remainder = bytes % alignment;
-	if (remainder != 0)
-		stream->size_in_bytes = bytes - remainder + alignment;
-	stream->mode = 2;
-	function_1955d0(out, stream->data, bits);
-	out->unknown2c += stream->unknown2c;
-	out->unknown30 += stream->unknown30;
+	long *local_0 = &arg_0->size_in_bytes;
+	long local_1 = local_0[3];
+	long local_2 = local_0[1];
+	long local_3 = (local_1 + 7) / 8;
+	local_0[0] = local_3;
+	long local_4 = local_3 % local_2;
+	if (local_4)
+		local_0[0] = local_3 - local_4 + local_2;
+	local_0[2] = 2;
+	function_1955d0(arg_1, (void *)local_0[-1], local_1);
+	arg_1->unknown2c += local_0[10];
+	arg_1->unknown30 += local_0[11];
 }
 
 // @retail 0x97ab0
@@ -575,16 +576,16 @@ bool c_aggregate_450cf4::v4(long a1, s_bitstream *out, long a3, long reserved_bi
 	{
 		for (long i = 0; i < total; i++)
 		{
-			s_priority_entry *entry = &list[i];
-			long which = entry->child;
-			if (entry->size <= budget)
+			long *local_0 = &list_raw[i].v[2];
+			long which = local_0[-2];
+			if (local_0[0] <= budget)
 			{
 				c_handle_table_450cd0 *child = children[which];
 				s_bitstream *stream = &streams[which];
 				if (child != 0)
 				{
 					long before = stream->bit_position;
-					child->v3(entry->index, entry->unknown0c, source_value, a1, (long)stream, (stream->size_in_bytes << 3) - before - budget);
+					child->v3(local_0[2], local_0[1], source_value, a1, (long)stream, (stream->size_in_bytes << 3) - before - budget);
 					budget += before - stream->bit_position;
 					if (budget <= 0)
 						break;
@@ -597,14 +598,15 @@ bool c_aggregate_450cf4::v4(long a1, s_bitstream *out, long a3, long reserved_bi
 
 	for (long i = 0; i < 3; i++)
 	{
-		if (children[i] != 0)
-			children[i]->v4(a1, &streams[i]);
+		c_handle_table_450cd0 *local_1 = children[i];
+		if (local_1)
+			local_1->v4(a1, &streams[i]);
 	}
 
 	for (long i = 0; i < 3; i++)
 	{
 		if (children[i] != 0)
-			stream_finish(&streams[i], out);
+			function_97ab1(&streams[i], out);
 	}	return overflowed;
 }
 /* the part of 0x992d0 that points the records of earlier nodes, which referred
@@ -627,22 +629,27 @@ static inline void records_relink(s_handle_node *head, s_handle_node *stop, long
 	}
 }
 
+static __forceinline s_handle_node *function_992d1(s_handle_node **&arg_0, long arg_1)
+{
+	s_handle_node *local_0 = *arg_0;
+	while (local_0)
+	{
+		if (local_0->handle == arg_1)
+			break;
+		arg_0 = &local_0->next;
+		local_0 = *arg_0;
+	}
+	return local_0;
+}
+
 // @retail 0x992d0
 void c_handle_table_450cd0::v8(long handle, bool flag)
 {
 	s_handle_node **head_link = &head;
 	s_handle_node **link = head_link;
-	s_handle_node *node = *link;
+	s_handle_node *node = function_992d1(link, handle);
 	if (node != 0)
 	{
-		while (node->handle != handle)
-		{
-			link = &node->next;
-			node = *link;
-			if (node == 0)
-				return;
-		}
-
 		s_handle_record *record = node->records;
 		if (record != 0)
 		{

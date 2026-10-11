@@ -1,5 +1,6 @@
 // @flags /O2 /arch:SSE /Gr
 #include "unknown_11c920.h"
+#include "segment_sphere.h"
 #include "unknown_0259d0.h"
 #include "globals.h"
 #include <xmmintrin.h>
@@ -316,7 +317,6 @@ struct s_1de2c0
  bool field_21f;
  point2f field_220;
 };
-bool function_11e5e0(point3f const *, point3f const *, vector3f const *, real);
 
 PRIVATE __forceinline void function_1de2c1(s_1de2c2 *arg_0, long arg_1)
 {
@@ -401,7 +401,7 @@ void function_1de2c0(s_1de2c0 *arg_0, long arg_1)
   local_11.i = local_10->x - local_9->x;
   local_11.j = local_10->y - local_9->y;
   local_11.k = local_10->z - local_9->z;
-  if (function_11e5e0(local_9, arg_0->field_c, &local_11, arg_0->field_10))
+  if (function_11e5e0(local_9, &local_11, arg_0->field_c, arg_0->field_10))
   {
    function_1de2c4(arg_0->field_14, local_3);
    local_1 = true;

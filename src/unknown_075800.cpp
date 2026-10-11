@@ -32,7 +32,7 @@ bool network_session_handle_mode_acknowledge(c_class_58d20 *session, const s_net
 void network_session_close(c_class_58d20 *session);
 bool network_session_channel_is_host_address(c_class_58d20 *session, const s_type_99af70 *address);
 bool network_session_address_is_leaving_host(c_class_58d20 *session, const s_type_99af70 *address);
-bool network_session_handle_countdown_timer(c_class_58d20 *session, long remote_index, const s_network_message_countdown_timer *message);
+bool network_session_handle_countdown_timer(const s_network_message_countdown_timer *message, c_class_58d20 *session, long remote_index);
 bool network_session_handle_session_disband(c_class_58d20 *session, const s_type_99af70 *address);
 bool network_session_handle_session_boot(c_class_58d20 *session, const s_type_99af70 *address);
 bool network_session_handle_channel_closed(c_class_58d20 *session, long remote_index);
@@ -605,7 +605,7 @@ void c_class_938e0::handle_countdown_timer(const s_network_message_countdown_tim
 {
 	c_class_58d20 *session = network_session_manager_find_session(session_manager, (const s_session_id *)message);
 	if (session && session->function_058d20())
-		network_session_handle_countdown_timer(session, remote_index, message);
+		network_session_handle_countdown_timer(message, session, remote_index);
 }
 
 // @retail 0x948c0
@@ -754,6 +754,26 @@ struct s_type_ac8d96
 
 #define CONNECTION(index) (&((s_network_connection *)g_4d87d4)[index])
 
+static __forceinline void function_94ae1(s_type_2c88a0 const *arg_0, s_network_connection *arg_1)
+{
+	switch (arg_0->reason)
+	{
+	case 0:
+	case 1:
+	case 2:
+	case 5:
+	case 6:
+		network_connection_close(arg_1, 5);
+		break;
+	case 3:
+	case 4:
+	case 7:
+		break;
+	default:
+		__assume(0);
+	}
+}
+
 // @retail 0x94ae0
 void network_message_handle_connect_refuse(long connection_index, const s_type_2c88a0 *message)
 {
@@ -761,23 +781,7 @@ void network_message_handle_connect_refuse(long connection_index, const s_type_2
 	long state = connection->state;
 	if (state > 2 && state != 5 && connection->local_sequence == message->identifier)
 	{
-		long reason = message->reason;
-		switch (reason)
-		{
-		case 0:
-		case 1:
-		case 2:
-		case 5:
-		case 6:
-			network_connection_close(connection, 5);
-			break;
-		case 3:
-		case 4:
-		case 7:
-			break;
-		default:
-			__assume(0);
-		}
+		function_94ae1(message, connection);
 	}
 }
 

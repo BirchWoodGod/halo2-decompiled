@@ -458,12 +458,18 @@ bool function_114040(long unit_index, long name)
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
 	bool result = false;
 	if (control->channel_9c.unknown08 == name)
-		return true;
-	if (control->channel_bc.unknown08 == name)
-		return true;
-	long second, first;
-	if (function_10f630(unit_index, &first, &second))
-		result = second == name;
+		result = true;
+	else if (control->channel_bc.unknown08 == name)
+		result = true;
+	else
+	{
+		long second, first;
+		if (function_10f630(unit_index, &first, &second))
+		{
+			if (second == name)
+				result = true;
+		}
+	}
 	return result;
 }
 
@@ -595,18 +601,30 @@ static inline void slot_reset(s_unit_animation_slot *slot, byte value)
 	slot->unknown3 = 0;
 }
 
+PRIVATE __forceinline void function_113871(s_unit_animation_slot *arg_0)
+{
+	arg_0->unknown1 = 0;
+	arg_0->unknown0 = 0;
+	arg_0->unknown3 = 0;
+}
+
 // @retail 0x113870
 void function_113870(long unit_index)
 {
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
-
-	slot_reset(&control->slots[0], 1);
-	slot_reset(&control->slots[1], 1);
-	slot_reset(&control->slots[2], 2);
-	slot_reset(&control->slots[3], 1);
-	slot_reset(&control->slots[4], 1);
+	function_113871(&control->slots[0]);
+	function_113871(&control->slots[1]);
+	function_113871(&control->slots[2]);
+	function_113871(&control->slots[3]);
+	function_113871(&control->slots[4]);
+	control->slots[0].unknown2 = 1;
+	control->slots[1].unknown2 = 1;
+	control->slots[2].unknown2 = 2;
+	control->slots[3].unknown2 = 1;
+	control->slots[4].unknown2 = 1;
 }
+
 
 // @retail 0x114330
 void function_114330(long unit_index)

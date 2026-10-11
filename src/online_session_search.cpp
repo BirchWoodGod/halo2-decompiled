@@ -247,6 +247,12 @@ struct s_qos_target
 
 long qos_lookup(long kind, long count, long bits_per_second, s_qos_target *targets);
 
+struct s_90021
+{
+	byte field_0[0x10];
+	XNKID field_10;
+};
+
 // @retail 0x90020
 long online_match_session_delete(s_search_session const *session, bool *unavailable)
 {
@@ -258,19 +264,20 @@ long online_match_session_delete(s_search_session const *session, bool *unavaila
 		s_type_9df9da *task = online_task_try_and_get(task_index);
 		if (task)
 		{
-			HRESULT result = XOnlineMatchSessionDelete(session->id, NULL, (PXONLINETASK_HANDLE)&task->handle);
+			HRESULT result = XOnlineMatchSessionDelete(((s_90021 const *)session)->field_10, NULL, (PXONLINETASK_HANDLE)&task->handle);
 			if (SUCCEEDED(result))
 			{
 				task->flags = 1;
 				task->type = 8;
 				task->controller_index = NONE;
-				*unavailable = service_unavailable;
-				return task_index;
 			}
-			if (result == 0x80155100)
-				service_unavailable = true;
-			function_6b640(task_index);
-			task_index = NONE;
+			else
+			{
+				if (result == 0x80155100)
+					service_unavailable = true;
+				function_6b640(task_index);
+				task_index = NONE;
+			}
 		}
 	}
 	*unavailable = service_unavailable;
@@ -286,18 +293,29 @@ long online_match_session_find(XNKID const *session_id)
 	s_type_9df9da *task = function_6b910(task_index);
 	if (task)
 	{
-		if (FAILED(XOnlineMatchSessionFindFromID(*session_id, NULL, (PXONLINETASK_HANDLE)&task->handle)))
+		if (SUCCEEDED(XOnlineMatchSessionFindFromID(*session_id, NULL, (PXONLINETASK_HANDLE)&task->handle)))
 		{
-			function_6b640(task_index);
-			return NONE;
+			task->flags = 1;
+			task->type = 9;
+			task->controller_index = NONE;
+			return task_index;
 		}
-		task->flags = 1;
-		task->type = 9;
-		task->controller_index = NONE;
+		function_6b640(task_index);
+		return NONE;
 	}
 	return task_index;
 }
 
+static __forceinline void function_90c81(void *arg_0, long *arg_1)
+{
+	g_4d87f8->allocator->get_info(arg_0, arg_1);
+	s_allocator_globals *local_0;
+	(local_0 = g_4d87f8)->allocator->release(arg_0, NONE);
+	if (arg_0)
+		local_0->count--;
+}
+
+#pragma optimize("s", on)
 // @retail 0x90c80
 void __stdcall function_090c80(byte *p)
 {
@@ -322,22 +340,24 @@ void __stdcall function_090c80(byte *p)
 	}
 	if (search->unknown90)
 	{
-		free_block(search->unknown90);
+		function_90c81(search->unknown90, (long *)&p);
 		search->unknown90 = 0;
 	}
 	if (search->results)
 	{
-		free_block(search->results);
+		function_90c81(search->results, (long *)&p);
 		search->results = 0;
 	}
 	if (search->seen)
 	{
-		free_block(search->seen);
+		function_90c81(search->seen, (long *)&p);
 		search->seen = 0;
 	}
 	search->active = false;
 }
 
+
+#pragma optimize("", on)
 
 // @retail 0x91290
 bool session_search_seen(s_session_search *search, XNKID const *id)
@@ -448,23 +468,24 @@ void __stdcall function_905a0(s_session_search *search, long kind)
 							s_qos_result *result = (s_qos_result *)((byte *)entry + 0x84);
 							if (!qos_target_result(search->qos_handles[kind], result, entry->unknown7c))
 								session_search_mark_seen(search, entry);
-							else if (!result->data_size)
+							else if (!SEARCH_LONG(entry, 0x9c))
 								session_search_mark_seen(search, entry);
 							else
 							{
 								dword values[0x53];
-								if (function_7e080(result->data, result->data_size, (s_session_message_values *)values))
+								if (function_7e080((byte const *)SEARCH_LONG(entry, 0xa0), SEARCH_LONG(entry, 0x9c), (s_session_message_values *)values))
 								{
 									memcpy((byte *)entry + 0xa8, values, sizeof(values));
 									SEARCH_FLAG(entry, 0xa4) = true;
-									SEARCH_LONG(entry, 0x1f4) = function_75870();
-									*((bool *)entry + 0x74 + kind) = true;
+									*(long volatile *)((byte *)entry + 0x1f4) = function_75870();
+									long local_0 = *(long volatile *)&kind;
+									*((bool *)entry + 0x74 + local_0) = true;
 									entry->unknown7c = NONE;
 								}
 								else
 									session_search_mark_seen(search, entry);
-								result->data_size = 0;
-								result->data = 0;
+								SEARCH_LONG(entry, 0x9c) = 0;
+								SEARCH_LONG(entry, 0xa0) = 0;
 							}
 						}
 						break;
@@ -861,23 +882,60 @@ PRIVATE inline void *function_90891(long arg_0)
 	return local_1;
 }
 
+#pragma inline_depth(0)
 // @retail 0x90880
 bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3, long arg_4, long arg_5, long arg_6, long arg_7, s_909ff const *arg_8, long arg_9)
 {
 	s_surface_description *local_0 = function_192e60(arg_1);
 	arg_0->unknown88 = 50 * sizeof(s_search_result);
-	arg_0->results = (s_search_result *)function_90891(arg_0->unknown88);
-	arg_0->unknown90 = function_90891(arg_0->unknown88);
+	{
+		long local_12 = arg_0->unknown88;
+		s_allocator_globals *local_10 = g_4d87f8;
+		void *local_11 = local_10->allocator->allocate(local_12, 0, 0);
+		if (!local_11)
+		{
+			local_10->allocator->compact(0);
+			local_11 = local_10->allocator->allocate(local_12, 0, 0);
+		}
+		if (local_11)
+			local_10->count++;
+		arg_0->results = (s_search_result *)local_11;
+	}
+	{
+		long local_12 = arg_0->unknown88;
+		s_allocator_globals *local_10 = g_4d87f8;
+		void *local_11 = local_10->allocator->allocate(local_12, 0, 0);
+		if (!local_11)
+		{
+			local_10->allocator->compact(0);
+			local_11 = local_10->allocator->allocate(local_12, 0, 0);
+		}
+		if (local_11)
+			local_10->count++;
+		arg_0->unknown90 = local_11;
+	}
 	arg_0->seen_capacity = g_network_configuration.value1f8;
 	arg_0->unknown9c = arg_0->seen_capacity * sizeof(XNKID);
-	arg_0->seen = (XNKID *)function_90891(arg_0->unknown9c);
+	{
+		long local_12 = arg_0->unknown9c;
+		s_allocator_globals *local_10 = g_4d87f8;
+		void *local_11 = local_10->allocator->allocate(local_12, 0, 0);
+		if (!local_11)
+		{
+			local_10->allocator->compact(0);
+			local_11 = local_10->allocator->allocate(local_12, 0, 0);
+		}
+		if (local_11)
+			local_10->count++;
+		arg_0->seen = (XNKID *)local_11;
+	}
 	if (arg_0->results && arg_0->unknown90 && arg_0->seen)
 	{
 		SEARCH_LONG(arg_0, 0x6c) = arg_9;
 		SEARCH_LONG(arg_0, 0x4c) = arg_3;
 		SEARCH_LONG(arg_0, 0x50) = arg_4;
 		SEARCH_LONG(arg_0, 0x54) = arg_5;
-		SEARCH_LONG(arg_0, 0x10) = arg_1;
+		SEARCH_LONG(arg_0, 0x10) = *(long volatile *)&arg_1;
 		s_90880 *local_1 = (s_90880 *)local_0;
 		arg_0->flag14 = local_1->field_0 == 5 || local_1->field_0 == 2 || local_1->field_0 == 4;
 		SEARCH_FLAG(arg_0, 0x15) = local_1->field_0 == 5;
@@ -906,22 +964,41 @@ bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3,
 	{
 		if (arg_0->results)
 		{
-			free_block(arg_0->results);
+			void *local_12 = arg_0->results;
+			long local_10;
+			g_4d87f8->allocator->get_info(local_12, &local_10);
+			s_allocator_globals *local_11 = g_4d87f8;
+			local_11->allocator->release(local_12, NONE);
+			if (local_12)
+				local_11->count--;
 			arg_0->results = 0;
 		}
 		if (arg_0->unknown90)
 		{
-			free_block(arg_0->unknown90);
+			void *local_12 = arg_0->unknown90;
+			long local_10;
+			g_4d87f8->allocator->get_info(local_12, &local_10);
+			s_allocator_globals *local_11 = g_4d87f8;
+			local_11->allocator->release(local_12, NONE);
+			if (local_12)
+				local_11->count--;
 			arg_0->unknown90 = 0;
 		}
 		if (arg_0->seen)
 		{
-			free_block(arg_0->seen);
+			void *local_12 = arg_0->seen;
+			long local_10;
+			g_4d87f8->allocator->get_info(local_12, &local_10);
+			s_allocator_globals *local_11 = g_4d87f8;
+			local_11->allocator->release(local_12, NONE);
+			if (local_12)
+				local_11->count--;
 			arg_0->seen = 0;
 		}
 	}
 	return arg_0->active;
 }
+#pragma inline_depth(255)
 
 // @retail 0x90840
 void function_90840(s_session_search *arg_0)
