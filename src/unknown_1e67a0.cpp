@@ -160,51 +160,88 @@ void function_1f03e0(s_shape_state *state);
 void function_1ec570(s_state_c570 *state);
 void function_1eb640(s_ease_state *state);
 void function_1fc2f0(s_tracked_point *tracked, point3f const *point, bool unknown);
-void __stdcall function_1fc350(long object_index, s_tracked_point *tracked);
+void function_1fc350(long object_index, s_tracked_point *tracked);
 point3f *function_b9dd0(long object_index, point3f *result);
 void __stdcall function_1c3770(long object_index, dword flags);
 
+/* Cleans up the previous state mode, initializes the new mode, and handles mode-transition updates. */
 // @retail 0x1e54d0
-void function_1e54d0(void *physics, long mode)
+void function_1e54d0(void *state, long mode)
 {
-	byte *state = (byte *)physics;
-	long old_mode = *state;
-	if (old_mode)
+	byte *physics_state = (byte *)state;
+	byte old_mode_byte = physics_state[0];
+	long old_mode = old_mode_byte;
+
+	if (old_mode_byte != 0)
 	{
 		switch (old_mode)
 		{
-		case 1: break;
-		case 2: break;
-		case 3: break;
-		case 4: function_1fc350(*(long *)(state + 4), (s_tracked_point *)(state + 0x10)); break;
-		case 5: function_1fc350(*(long *)(state + 4), (s_tracked_point *)(state + 0x10)); break;
-		case 6: break;
-		default: __assume(0);
+		case 1:
+			break;
+
+		case 2:
+			break;
+
+		case 3:
+			break;
+
+		case 4:
+		case 5:
+			function_1fc350(*(long *)(physics_state + 4), (s_tracked_point *)(physics_state + 0x10));
+			break;
+
+		case 6:
+			break;
+
+		default:
+			__assume(0);
 		}
 	}
-	long const *mode_reference = &mode;
-	*state = (byte)*mode_reference;
-	switch (*state)
+
+	byte local_27f376 = (byte)mode;
+	physics_state[0] = local_27f376;
+
+	switch (local_27f376)
 	{
-	case 1: function_1f03e0((s_shape_state *)(state + 0x10)); break;
-	case 2:
-		*(long *)(state + 0x10) = 0;
-		*(vector3f *)(state + 0x14) = *g_4687a4;
+	case 1:
+		function_1f03e0((s_shape_state *)(physics_state + 0x10));
 		break;
-	case 3: function_1ec570((s_state_c570 *)(state + 0x10)); break;
+
+	case 2:
+		*(long *)(physics_state + 0x10) = 0;
+		*(vector3f *)(physics_state + 0x14) = *g_4687a4;
+		break;
+
+	case 3:
+		function_1ec570((s_state_c570 *)(physics_state + 0x10));
+		break;
+
+	case 6:
+		function_1eb640((s_ease_state *)(physics_state + 0x10));
+		break;
+
 	case 4:
 	case 5:
 	{
-		point3f position;
-		function_b9dd0(*(long *)(state + 4), &position);
-		function_1fc2f0((s_tracked_point *)(state + 0x10), &position, *state == 5);
+		point3f point;
+		function_b9dd0(*(long *)(physics_state + 4), &point);
+		function_1fc2f0((s_tracked_point *)(physics_state + 0x10), &point, local_27f376 == 5);
 		break;
 	}
-	case 6: function_1eb640((s_ease_state *)(state + 0x10)); break;
-	default: __assume(0);
+
+	default:
+		__assume(0);
 	}
-	if (old_mode != *state && (old_mode == 3 || *state == 3 || old_mode == 4 || old_mode == 5 || *state == 4 || *state == 5))
-		function_1c3770(*(long *)(state + 4), 0);
+
+	byte local_792ecd_2 = physics_state[0];
+
+	if (old_mode != local_792ecd_2 &&
+		(old_mode == 3 || local_792ecd_2 == 3 ||
+		 old_mode == 4 || old_mode == 5 ||
+		 local_792ecd_2 == 4 || local_792ecd_2 == 5))
+	{
+		function_1c3770(*(long *)(physics_state + 4), 0);
+	}
 }
 
 // @retail 0x1e5a60
@@ -748,10 +785,11 @@ void function_1ecf50(vector3f *forward, vector3f *up, s_direction_rotation_input
 // @retail 0x1e5af0
 void function_1e5af0(void *physics, s_biped_physics_output *output, vector3f const *up, vector3f const *forward)
 {
+ byte *shape = (byte *)physics + 0x10;
  switch (*(byte *)physics)
  {
- case 1: function_1f1460((byte *)output, (s_shape_state *)((byte *)physics + 0x10), (vector3f *)up, (vector3f *)forward); break;
- case 2: function_1faa20((byte *)output, (vector3f *)up, (vector3f *)forward, (long *)((byte *)physics + 0x10)); break;
+ case 1: function_1f1460((byte *)output, (s_shape_state *)shape, (vector3f *)up, (vector3f *)forward); break;
+ case 2: function_1faa20((byte *)output, (vector3f *)up, (vector3f *)forward, (long *)shape); break;
  case 3: function_1ecf50((vector3f *)forward, (vector3f *)up, (s_direction_rotation_input *)output); break;
  case 4: break;
  case 5: break;

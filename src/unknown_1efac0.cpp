@@ -377,9 +377,9 @@ struct s_surface_object_header
 // @retail 0x1ef3e0
 bool function_1ef3e0(dword key)
 {
-	long surface_index = (key >> 16) & 0x1fff;
 	long object_index = key & 0xffff;
-	bool result = true;
+	long surface_index = (key >> 16) & 0x1fff;
+	volatile bool result = true;
 	switch (key >> 29)
 	{
 	case 5:

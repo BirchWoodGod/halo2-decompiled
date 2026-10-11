@@ -173,6 +173,19 @@ done:
 	return result;
 }
 
+PRIVATE __forceinline long function_20f1a3(byte const *arg_0, real arg_1)
+{
+    long local_0 = *(long const *)(arg_0 + 8);
+    real local_1 = *(short const *)(arg_0 + 2) * arg_1;
+    long local_2;
+    __asm
+    {
+        fld local_1
+        fistp local_2
+    }
+    return local_0 + local_2;
+}
+
 // @retail 0x20f1a0
 real function_20f1a0(long object_index, short type)
 {
@@ -186,15 +199,7 @@ real function_20f1a0(long object_index, short type)
 		short side = (short)function_20f040(team);
 		byte *queue = (byte *)g_4f939c + side * 0x7dc;
 		long index = *(volatile long *)(queue + 0x7d0);
-		long time = g_510c54->game_time;
-		real seconds = g_510c54->field_2_3 * *(real *)((byte *)&table->entries[type] + 0x24);
-		long delay;
-		__asm
-		{
-			fld seconds
-			fistp delay
-		}
-		time += delay;
+		long time = function_20f1a3((byte const *)g_510c54, *(real *)((byte *)&table->entries[type] + 0x24));
 		long found = NONE;
 		for (; index != NONE; )
 		{
@@ -960,7 +965,7 @@ short g_4f9cbc;
 s_cell g_4f9cc0[8];
 vector3f g_4f93bc[24][8];
 
-void function_211fd0(vector3f *out, real const *position, real time, real scale);
+void function_211fd0(vector3f *out, real const *position, real scale, real time);
 
 struct s_cell_effect_tag
 {
@@ -1170,13 +1175,15 @@ void function_211cc0(void)
 }
 
 // @retail 0x211fd0
-void function_211fd0(vector3f *out, real const *position, real time, real scale)
+void function_211fd0(vector3f *out, real const *position, real scale, real time)
 {
 	real frequencies[3] = { 0.1f, 0.2f, 0.07f };
 	short i = 0;
 
 	*out = *g_4687a4;
 	scale *= 1.0f / 3.0f;
+    real const volatile *local_0 = &time;
+    real local_1 = *local_0;
 
 	do
 	{
@@ -1184,7 +1191,12 @@ void function_211fd0(vector3f *out, real const *position, real time, real scale)
 		short index;
 		vector3f *noise;
 
-		value = ((real)g_4fa0c0 * frequencies[i] * time + position[i]) * 8.0f;
+        __asm
+        {
+            cvtsi2ss xmm4, g_4fa0c0
+            movss value, xmm4
+        }
+        value = (value * frequencies[i] * local_1 + position[i]) * 8.0f;
 		*(dword *)&value &= 0x7fffffff;
 		value += 8388608.0f;
 		index = *(byte *)&value;

@@ -120,7 +120,9 @@ void function_249170(real const *values, s_particle_spawn_state *particle, s_par
 	{
 		real radius = function_246cd0(&definition->radius, values);
 		random_unit_vector(&particle->velocity, &g_4e7408->seed);
-		particle_scale_position(radius, &particle->velocity, &particle->position);
+		particle->position.x = particle->velocity.i * radius;
+		particle->position.y = particle->velocity.j * radius;
+		particle->position.z = particle->velocity.k * radius;
 		break;
 	}
 	case 3:

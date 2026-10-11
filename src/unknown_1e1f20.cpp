@@ -242,7 +242,8 @@ void function_1e3a00(long object_index, s_actor_object_sample *sample)
 		memcpy(point_output, &(*sample_reference)->center, sizeof(point3f));
 	function_ba1d0(object_index, &(*sample_reference)->velocity, NULL);
 	s_actor_object_query *root = actor_query_object(actor_query_root(object_index));
-	memcpy((*sample_reference)->location, root->location, sizeof(root->location));
+	struct location_pair { long first; long second; };
+	*(location_pair *)(*sample_reference)->location = *(location_pair *)root->location;
 }
 
 struct s_actor_variant_entry

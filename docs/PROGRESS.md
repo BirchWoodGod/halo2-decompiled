@@ -2,6 +2,62 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7601 functions match
+
+```
+matched 7601 of 11318 game functions (900241 of 2784283 bytes, 32.33%)
+```
+
+5 new matches, none lost:
+- Deep lane 3, round 31 (near-length functions): 0x2a11c0, 0x2c509c and 0x1edc10, plus 0x21ebc0 and 0x25d810, which now build as retail does as a side effect.
+
+## 2026-10-11: 7596 functions match
+
+```
+matched 7596 of 11318 game functions (899325 of 2784283 bytes, 32.30%)
+```
+
+1 new matches, none lost:
+- 0x16d660, which swaps a region's permutations: the effect's tag is set before its object. The permuter can now move a statement several places in one step, which finds this kind of fix.
+
+## 2026-10-11: 7595 functions match
+
+```
+matched 7595 of 11318 game functions (898780 of 2784283 bytes, 32.28%)
+```
+
+1 new matches, none lost:
+- 0x237c04, the virtual keyboard's selection and cursor drawing: reading the timer through a const pointer in the cursor fade keeps an earlier comparison in retail's operand order.
+
+## 2026-10-11: 7594 functions match
+
+```
+matched 7594 of 11318 game functions (898266 of 2784283 bytes, 32.26%)
+```
+
+7 new matches, none lost:
+- The second machine's lanes C (+2, #331), U (+3, #332) and O (+1, #330).
+- 0x16ff10, from the permuter: two source edits, a declaration order and the grouping of one expression.
+
+## 2026-10-11: 7587 functions match
+
+```
+matched 7587 of 11318 game functions (896086 of 2784283 bytes, 32.18%)
+```
+
+21 new matches, none lost:
+- Outside contributors' pull requests: @BirchWoodGod's quad renderer, shader setup and bitmap fallback (#313: 13 functions), saved profile lookup (#315, with its caller), map time helper (#316) and object callback dispatcher (#318), and @BrassMonkey71's 0x28e160 (#317) and 0xe5690 with 0x1e54d0 and 0x1fc350 (#201).
+- Also merged: @BirchWoodGod's decal placement and projection fixes (#323), relocation tests (#310) and join-request codec analysis (#87).
+
+## 2026-10-11: 7566 functions match
+
+```
+matched 7566 of 11318 game functions (893873 of 2784283 bytes, 32.10%)
+```
+
+42 new matches, none lost:
+- The second machine's batch r58 (#306–#329): lanes J (+9), D lower (+6), AA (+6), B (+5 and +2), Y (+4), K (+3), and one each from F, M, AC, P, D upper and its permuter lane (two).
+
 ## 2026-10-11: 7524 functions match
 
 ```

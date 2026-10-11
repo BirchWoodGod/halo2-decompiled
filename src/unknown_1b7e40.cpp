@@ -185,19 +185,19 @@ short __stdcall function_1b83b0(long actor_index, long leader_index, s_slot *slo
 	long count = 0;
 
 	data->unknown4 = ((s_slot_12 *)slot)->unknown1c;
-	if (actor->unknown07c == NONE)
-		return 0;
-
-	long index = element_502420_get(actor->unknown07c)->first_actor_index;
-
-	while (index != NONE)
+	if (actor->unknown07c != NONE)
 	{
-		s_actor_view *other = actor_get(index);
-		long other_index = index;
+		long index = element_502420_get(actor->unknown07c)->first_actor_index;
 
-		index = other->next_index;
-		if (actor != other && function_26eae0(leader_index, other_index, 3, 1.0f))
-			count++;
+		while (index != NONE)
+		{
+			s_actor_view *other = actor_get(index);
+			long other_index = index;
+
+			index = other->next_index;
+			if (actor != other && function_26eae0(leader_index, other_index, 3, 1.0f))
+				count++;
+		}
 	}
 	return (short)count;
 }

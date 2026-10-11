@@ -54,8 +54,9 @@ void function_268510()
 	if (time % interval == 0) function_268840();
 	else if (time % slice_interval == 0)
 	{
-		short maximum = 0;
-		bool updated = false;
+		struct slice_budget { short maximum; bool updated; } budget = { 0, false };
+		short &maximum = budget.maximum;
+		bool &updated = budget.updated;
 		if (g_4f55d0->active)
 		{
 			iterator.data = g_502420;
@@ -1499,14 +1500,14 @@ long function_26a4f0(s_clump_activity_view *clump, short priority)
 {
 	s_clump_activity_view *const *clump_reference = &clump;
 	short const *priority_reference = &priority;
-	long result = NONE;
+	volatile long result = NONE;
 	if (priority >= clump->update_state)
 	{
 		result = record_pool_allocate(g_50241c);
 		if (result == NONE)
 		{
 			long time = g_510c54->game_time;
-			long removed = 0;
+			short removed = 0;
 			long selected;
 			do
 			{
@@ -1685,7 +1686,7 @@ long function_26ace0(long object_index, long actor_index, short type)
 	long clump_index = actor->unknown07c;
 	if (clump_index != NONE)
 	{
-		s_clump_activity_view *clump = (s_clump_activity_view *)(g_502420->data + (clump_index & 0xffff) * sizeof(s_clump_activity_view));
+		s_clump_activity_view *volatile clump = (s_clump_activity_view *)(g_502420->data + (clump_index & 0xffff) * sizeof(s_clump_activity_view));
 		long prop_index = function_26b120(object_index, clump_index);
 		if (prop_index == NONE)
 		{
@@ -1903,7 +1904,7 @@ void function_26ae30(long object_index)
 		if (g_4f55d0->active)
 			groups.current = (s_clump *)data_iterator_next_inlined(&groups.pool);
 		if (!groups.current) break;
-		bool changed = false;
+		volatile bool changed = false;
 		s_iterator props;
 		props.next = ((s_clump *)(g_502420->data + (groups.pool.datum_index & 0xffff) * sizeof(s_clump)))->first_prop;
 		s_type_76cf92 *prop;

@@ -1571,10 +1571,8 @@ long function_242510(long object_index)
 	return result;
 }
 
-// @retail 0x242ef0
-long function_242ef0(s_242ef1 arg_0, long team)
+PRIVATE __forceinline long function_242ef4(s_slot_table *g, s_242ef1 const &arg_0, long team)
 {
-	s_slot_table *g = g_51ec80;
 	long result = NONE;
 
 	for (long i = 0; i < 8; i++)
@@ -1620,6 +1618,12 @@ long function_242ef0(s_242ef1 arg_0, long team)
 	}
 
 	return result;
+}
+
+// @retail 0x242ef0
+long function_242ef0(s_242ef1 arg_0, long team)
+{
+	return function_242ef4(g_51ec80, arg_0, team);
 }
 
 #pragma inline_depth(1)

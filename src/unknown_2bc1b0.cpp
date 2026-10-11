@@ -206,12 +206,12 @@ void function_2bce70(long player_index);
 void __stdcall function_2bc990(long volatile team_argument)
 {
 	long team = team_argument;
-	byte *entry = (byte *)function_15e410((short)team);
+	byte *const &entry = (byte *)function_15e410((short)team);
 	if (!entry || *(long *)entry == NONE) return;
 	long object_index = *(long *)entry;
 	team_argument = (long)*(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
 	byte *object = (byte *)team_argument;
-	long maximum = g_510c54->field_2_3 * 40;
+	volatile long maximum = g_510c54->field_2_3 * 40;
 	point3f position;
 	function_10da60(object_index, &position);
 	byte *state = (byte *)g_51ecc4;

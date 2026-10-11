@@ -1215,6 +1215,9 @@ struct s_motion_channels_16ff10
 void function_16ff10(long user_index)
 {
 	s_motion_channels_16ff10 *state = (s_motion_channels_16ff10 *)g_4e9bd4 + user_index;
+	real *acceleration = state->second_derivative;
+	real *delta = state->delta;
+	real *velocity = state->first_derivative;
 	real *fifth = state->fifth;
 	real *fourth = state->fourth;
 	real *third = state->third;
@@ -1222,9 +1225,6 @@ void function_16ff10(long user_index)
 	real *first = state->first;
 	real *constant = state->constant;
 	real *time = state->times;
-	real *acceleration = state->second_derivative;
-	real *velocity = state->first_derivative;
-	real *delta = state->delta;
 	function_172520((s_observer_command *)((byte *)state + 8));
 	for (short group = 0; group < 6; ++time, ++group)
 	{
@@ -1237,9 +1237,7 @@ void function_16ff10(long user_index)
 			real inverse5 = inverse4 * inverse;
 			for (short i = 0; i < g_468d3c[group]; ++i)
 			{
-				real fifth_delta = delta[i] * inverse5 * 6.0f;
-				real fifth_velocity = velocity[i] * inverse4 * 3.0f;
-				fifth[i] = acceleration[i] * inverse3 * 0.5f - (fifth_delta + fifth_velocity);
+				fifth[i] = acceleration[i] * inverse3 * 0.5f - ((real)(delta[i] * inverse5 * 6.0f) + (real)(velocity[i] * inverse4 * 3.0f));
 				fourth[i] = delta[i] * inverse4 * 15.0f + velocity[i] * inverse3 * 7.0f - acceleration[i] * inverse2;
 				third[i] = acceleration[i] * inverse * 0.5f - (delta[i] * inverse3 * 10.0f + velocity[i] * inverse2 * 4.0f);
 				second[i] = 0.0f;

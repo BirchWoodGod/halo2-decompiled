@@ -12,6 +12,16 @@ struct s_18444a;
 void __stdcall function_184440(long arg_0, long arg_1, s_18444a const *arg_2, long arg_3);
 extern byte *g_4ed280;
 
+static __forceinline long function_9c912(long arg_0, long arg_1, long arg_2)
+{
+    long local_0 = arg_2;
+    if (arg_0 < arg_1)
+        local_0 = arg_1;
+    else if (arg_0 <= arg_2)
+        local_0 = arg_0;
+    return local_0;
+}
+
 // @retail 0x9c910
 bool c_damage_section_response_event_definition::v11(long arg_0, long const *arg_1, long arg_2, void const *arg_3)
 {
@@ -38,11 +48,12 @@ bool c_damage_section_response_event_definition::v11(long arg_0, long const *arg
                     if (local_10 >= 0 && local_10 < *(long *)(local_9 + 0xc))
                     {
                         long local_11 = local_2[2];
-                        if ((local_11 < 0 ? 0 : (local_11 > 1 ? 1 : local_11)) == local_11)
+                        if (function_9c912(local_11, 0, 1) == local_11)
                         {
-                            if (!(*(word *)(local_6 + local_7 * 8) & (1 << local_10)))
+                            long local_14 = *(volatile long const *)(local_2 + 1);
+                            if (!(*(word *)(local_6 + local_7 * 8) & (1 << local_14)))
                             {
-                                if (local_11 != 1 || *(long *)(*(byte **)(local_9 + 0x10) + local_10 * 0x50 + 0x34) != NONE)
+                                if (local_11 != 1 || *(long *)(*(byte **)(local_9 + 0x10) + local_14 * 0x50 + 0x34) != NONE)
                                 {
                                     function_db760(local_7, local_10, *(volatile long *)&arg_0, local_11);
                                     local_0 = true;
@@ -114,10 +125,10 @@ struct s_9f881
     byte field_0[0x10a];
     struct s_9f882
     {
-        byte field_0 : 1;
-        byte field_1 : 1;
-        byte field_2 : 1;
-        byte field_3 : 5;
+        word field_0 : 1;
+        word field_1 : 1;
+        word field_2 : 1;
+        word field_3 : 13;
     } field_10a;
 };
 

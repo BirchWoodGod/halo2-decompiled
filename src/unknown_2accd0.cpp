@@ -294,7 +294,7 @@ s_saved_game_file *saved_game_file_new_from_id(s_saved_game_file *file, long fla
 bool saved_game_file_copy_create(s_saved_game_file *file)
 {
 	volatile long type = file->flags & 0xf;
-	volatile bool result = false;
+	volatile long result = 0;
 	wchar_t name[0x80];
 	char root[8];
 	char path[0x100] = { 0 };
@@ -323,7 +323,7 @@ bool saved_game_file_copy_create(s_saved_game_file *file)
 			function_136bb0(&s_type_acf665);
 		}
 	}
-	return result;
+	return result != 0;
 }
 // @retail 0x2ad380
 bool file_copy_read_chunk(s_saved_game_file *copy)

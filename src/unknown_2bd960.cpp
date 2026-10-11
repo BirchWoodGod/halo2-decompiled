@@ -342,6 +342,7 @@ void function_2bdd70(point3f *out, s_spline_2bd *spline, long n, point3f *points
 // @retail 0x2bde90
 void function_2bde90(real t, point3f *out, point3f *points)
 {
+	point3f *volatile output = out;
 	real m[4][4] =
 	{
 		{ -1.0f, 3.0f, -3.0f, 1.0f },
@@ -361,10 +362,10 @@ void function_2bde90(real t, point3f *out, point3f *points)
 	}
 	while (i < 4);
 
-	*out = *g_468788;
-	out->x = points[3].x * r[3] + points[2].x * r[2] + points[1].x * r[1] + points[0].x * r[0];
-	out->y = points[3].y * r[3] + points[2].y * r[2] + points[1].y * r[1] + points[0].y * r[0];
-	out->z = points[3].z * r[3] + points[2].z * r[2] + points[1].z * r[1] + points[0].z * r[0];
+	*output = *g_468788;
+	output->x = points[3].x * r[3] + points[2].x * r[2] + points[1].x * r[1] + points[0].x * r[0];
+	output->y = points[3].y * r[3] + points[2].y * r[2] + points[1].y * r[1] + points[0].y * r[0];
+	output->z = points[3].z * r[3] + points[2].z * r[2] + points[1].z * r[1] + points[0].z * r[0];
 }
 
 /* ---- the hill's shape ---- */
