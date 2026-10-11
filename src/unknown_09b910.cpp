@@ -949,7 +949,7 @@ bool c_projectile_effect_event::v10(long a, void *data, s_bitstream *stream)
 }
 
 struct s_effect_owner;
-void *function_122c10(long group_tag, long tag_index);
+__declspec(noinline) void *function_122c10(long group_tag, long tag_index);
 void function_fcbc0(point3f const *point, vector3f const *normal, long definition_index,
  s_effect_owner const *owner, bool attached, bool airburst);
 void function_fcdd0(long definition_index, point3f const *point, vector3f const *forward);
@@ -1162,7 +1162,7 @@ bool function_e68c0(long type, long unit_index);
 void function_a8dd0(long unit_index);
 void function_107840(long device_index, long unit_index);
 bool __stdcall function_cd4e0(long unit_index, short hand, bool flag);
-void *function_122c10(long group_tag, long tag_index);
+__declspec(noinline) void *function_122c10(long group_tag, long tag_index);
 void function_fd0e0(long definition_index, real scale_a, real scale_b, vector3f const *direction,
     point3f const *point, vector3f const *normal, long index, bool attached, long object_index,
     short node_index, bool alternate);

@@ -6,7 +6,7 @@
 
 // @flags /O2 /arch:SSE /Gr
 
-void *function_122c10(long arg_0, long arg_1);
+__declspec(noinline) void *function_122c10(long arg_0, long arg_1);
 void function_db760(long arg_0, long arg_1, long arg_2, long arg_3);
 struct s_18444a;
 void __stdcall function_184440(long arg_0, long arg_1, s_18444a const *arg_2, long arg_3);

@@ -90,7 +90,7 @@ bool c_unit_type::v13(long arg_0, s_entity_info *arg_1, s_bitstream *arg_2)
 void c_unit_type::v12(long arg_0, s_entity_info *arg_1, long arg_2, s_bitstream *arg_3)
 {
     c_unit_type *volatile local_1 = this;
-    function_a6660(arg_1);
+    function_a6660(arg_1, arg_3);
     function_7ee10(arg_3, (s_player_appearance const *)((byte *)arg_1 + 0x10));
     if ((arg_3->size_in_bytes << 3) - arg_3->bit_position >= 1 && *(short *)((byte *)arg_1 + 0x20) != -1)
         arg_3->data[arg_3->bit_position / 8] |= (byte)(1 << (arg_3->bit_position % 8));
@@ -107,7 +107,7 @@ bool c_unit_type::v19(long arg_0, long arg_1, long arg_2, s_entity_data *arg_3)
     bool local_0 = false;
     s_9d360 *local_1 = (s_9d360 *)arg_3;
     memset(local_1, 0, sizeof(*local_1));
-    if (function_a5bd0(arg_1))
+    if (function_a5bd0((s_entity_info const *)arg_1, (s_z_initial_state *)arg_3))
     {
         local_1->field_90 = -1;
         local_1->field_9c = local_1->field_c;
@@ -422,7 +422,7 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
 }
 #pragma inline_depth(255)
 
-void *function_122c10(long arg_0, long arg_1);
+__declspec(noinline) void *function_122c10(long arg_0, long arg_1);
 void function_d0d20(long arg_0);
 void function_d0c10(long arg_0);
 void function_d0930(long arg_0, vector3f *arg_1);

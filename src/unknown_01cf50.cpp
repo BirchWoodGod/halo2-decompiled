@@ -516,7 +516,9 @@ void function_36880(color4f const *color, s_short_rectangle const *rectangle)
 		bool right = i == 1 || i == 2;
 		short y = top ? rectangle->top : rectangle->bottom;
 		short x = right ? rectangle->right : rectangle->left;
-		D3DDevice_SetVertexData2f(0, (real)x, (real)y);
+		real vertex_x = (real)x;
+        real vertex_y = (real)y;
+        D3DDevice_SetVertexData2f(0, vertex_x, vertex_y);
 	}
 	D3DDevice::End();
 }

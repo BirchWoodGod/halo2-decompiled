@@ -169,26 +169,27 @@ struct s_projection_scalars
 // @retail 0x2fb70
 void function_2fb70(s_2f800_view const *view, box2f const *clip, s_projection_scalars *out)
 {
+    s_projection_scalars &output = *out;
     short const *viewport = (short const *)view->unknown30;
-    out->width = (real)(viewport[3] - viewport[1]);
-    out->height = (real)(viewport[2] - viewport[0]);
+    output.width = (real)(viewport[3] - viewport[1]);
+    output.height = (real)(viewport[2] - viewport[0]);
     if (!clip)
     {
-        out->clip.x0 = out->clip.y0 = -1.0f;
-        out->clip.x1 = out->clip.y1 = 1.0f;
+        output.clip.x0 = output.clip.y0 = -1.0f;
+        output.clip.x1 = output.clip.y1 = 1.0f;
     }
     else
-        out->clip = *clip;
-    real half_width = (out->clip.x1 - out->clip.x0) * 0.5f;
-    real half_height = (out->clip.y1 - out->clip.y0) * 0.5f;
-    real offset_x = (out->clip.x1 + out->clip.x0) / half_width * -0.5f;
-    real offset_y = (out->clip.y0 + out->clip.y1) / half_height * -0.5f;
-    out->half_height = half_height;
-    out->half_width = half_width;
-    out->offset_x = offset_x;
-    out->offset_y = offset_y;
+        output.clip = *clip;
+    real half_width = (output.clip.x1 - output.clip.x0) * 0.5f;
+    real half_height = (output.clip.y1 - output.clip.y0) * 0.5f;
+    real offset_x = (output.clip.x1 + output.clip.x0) / half_width * -0.5f;
+    real offset_y = (output.clip.y0 + output.clip.y1) / half_height * -0.5f;
+    output.half_height = half_height;
+    output.half_width = half_width;
+    output.offset_x = offset_x;
+    output.offset_y = offset_y;
     real volatile tangent = (real)tan((double)view->angle * 0.5f);
-    real aspect = out->width / out->height;
+    real aspect = output.width / output.height;
     if (!(g_4e6948 && g_4e6948->flag && g_4e6948->index != NONE && g_4e6948->state == 3) && g_485ac2)
     {
         aspect *= 4.0f / 3.0f;
@@ -197,21 +198,21 @@ void function_2fb70(s_2f800_view const *view, box2f const *clip, s_projection_sc
     }
     else if (g_510c50 && ((byte *)g_510c50)[5])
     {
-        real scale = out->height * (1.0f / 480.0f);
-        out->clip.y0 *= scale;
-        out->clip.y1 *= scale;
+        real scale = output.height * (1.0f / 480.0f);
+        output.clip.y0 *= scale;
+        output.clip.y1 *= scale;
     }
-    out->scale_x = 1.0f / (half_width * aspect * tangent);
-    real inverse_x = 1.0f / out->scale_x;
-    out->scale_y = 1.0f / (out->half_height * tangent);
+    output.scale_x = 1.0f / (half_width * aspect * tangent);
+    real inverse_x = 1.0f / output.scale_x;
+    output.scale_y = 1.0f / (output.half_height * tangent);
     real left = 0.0f - (offset_x + 1.0f) * inverse_x;
-    out->right = 0.0f - (offset_x - 1.0f) * inverse_x;
-    real inverse_y = 1.0f / out->scale_y;
-    real bottom = 0.0f - (out->offset_y + 1.0f) * inverse_y;
-    real top = 0.0f - (out->offset_y - 1.0f) * inverse_y;
-    out->left = left;
-    out->bottom = bottom;
-    out->top = top;
+    output.right = 0.0f - (offset_x - 1.0f) * inverse_x;
+    real inverse_y = 1.0f / output.scale_y;
+    real bottom = 0.0f - (output.offset_y + 1.0f) * inverse_y;
+    real top = 0.0f - (output.offset_y - 1.0f) * inverse_y;
+    output.left = left;
+    output.bottom = bottom;
+    output.top = top;
 }
 
 #define k_real_epsilon 0.0001f

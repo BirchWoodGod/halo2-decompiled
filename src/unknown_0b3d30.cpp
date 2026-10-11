@@ -318,7 +318,10 @@ long function_b4810(long kind, long controller, struct _XUID owner, wchar_t cons
         if (task)
         {
             HRESULT status = XOnlineStorageDownload(facility, controller, path, directory, 0, 0, (XONLINETASK_HANDLE *)&task->handle);
-            if (status >= 0)
+            if (status < 0) {
+                result = storage_error_ab(status);
+                function_6b640(task_index);
+            } else
             {
                 *task_out = task_index;
                 task->flags = 1;
@@ -326,8 +329,6 @@ long function_b4810(long kind, long controller, struct _XUID owner, wchar_t cons
                 task->controller_index = controller;
                 return 0;
             }
-            result = storage_error_ab(status);
-            function_6b640(task_index);
         }
     }
     return result;

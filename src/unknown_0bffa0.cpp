@@ -671,22 +671,23 @@ bool function_c35a0(long light_index, point3f *corners)
         real far_height = shape.cone_render.aspect * far_width;
         vector3f direction = shape.cone_render.direction;
         function_30bf0(&direction);
-        point3f near_centre, far_centre;
+        point3f near_centre;
+        real far_y_value, far_z_value, far_x_value;
         near_centre.x = frame->position.x + direction.i * 0.0f;
         near_centre.y = frame->position.y + direction.j * 0.0f;
         near_centre.z = frame->position.z + direction.k * 0.0f;
-        far_centre.x = frame->position.x + direction.i * shape.cone.values[4];
-        far_centre.y = frame->position.y + direction.j * shape.cone.values[4];
-        far_centre.z = frame->position.z + direction.k * shape.cone.values[4];
-        point3f far_points[4], near_points[4];
+        far_x_value = frame->position.x + direction.i * shape.cone.values[4];
+        far_y_value = frame->position.y + direction.j * shape.cone.values[4];
+        far_z_value = frame->position.z + direction.k * shape.cone.values[4];
+        point3f volatile far_points[4], near_points[4];
         long order[4] = {0, 1, 3, 2};
         for (long i = 0; i < 4; i++)
         {
             real x = ((order[i] & 1) ? 1.0f : -1.0f) * 0.5f;
             real y = ((order[i] & 2) ? 1.0f : -1.0f) * 0.5f;
-            far_points[i].x = far_centre.x;
-            far_points[i].y = far_centre.y;
-            far_points[i].z = far_centre.z;
+            far_points[i].x = far_x_value;
+            far_points[i].y = far_y_value;
+            far_points[i].z = far_z_value;
             near_points[i].x = near_centre.x;
             near_points[i].y = near_centre.y;
             near_points[i].z = near_centre.z;
@@ -707,8 +708,8 @@ bool function_c35a0(long light_index, point3f *corners)
             far_points[i].y += frame->up.j * far_y;
             far_points[i].z += frame->up.k * far_y;
         }
-        memcpy(corners, near_points, sizeof(near_points));
-        memcpy(corners + 4, far_points, sizeof(far_points));
+        memcpy(corners, (void const *)near_points, sizeof(near_points));
+        memcpy(corners + 4, (void const *)far_points, sizeof(far_points));
         result = true;
     }
     return result;
