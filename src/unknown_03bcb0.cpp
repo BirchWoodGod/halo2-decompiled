@@ -263,7 +263,7 @@ long function_15d70(long tag, long stage, long pass, bool first, bool second)
 	return result;
 }
 
-long function_4cbb0(long tag_index, dword block_index);
+__declspec(noinline) long function_4cbb0(long tag_index, dword block_index);
 
 PRIVATE __forceinline byte *record_material(long tag, long pass, long stage, long entry)
 {
@@ -284,10 +284,10 @@ bool __stdcall function_4dfa0(long tag, long context, long pass, long stage, lon
 	s_geometry_block_info *block = (s_geometry_block_info *)(*(byte **)(table + 0x14) + *(short *)(record + 6) * 0x2c);
 	if (function_12de70(block, 3) && *(word *)(record + 0xe) > 0)
 	{
+		out->value0c = handle;
 		out->unknown04 = 0;
 		out->group = 4;
 		out->subkey = 0xffff;
-		out->value0c = handle;
 		byte *material = record_material(tag, pass, stage, entry);
 		out->value10 = (dword)material;
 		out->value08 = 0;
@@ -335,10 +335,11 @@ bool __stdcall function_4e0d0(long tag, long context, long pass, long stage, lon
 	byte *table = *(byte **)((byte *)g_4e0348 + 0x238);
 	byte *blocks = *(byte **)(table + 0x14);
 	byte *record = *(byte **)(table + 0x1c) + (((dword)handle >> 8) & 0x3fffff) * 24;
+	s_geometry_block_info *block = (s_geometry_block_info *)(blocks + *(short *)(record + 6) * 0x2c);
 	long record_tag = (*(long **)((byte *)g_4e0350 + 0x37c))[(signed char)record[0] * 2 + 1];
 	byte *definition = g_4e3b44[record_tag & 0xffff].bytes;
 	byte *part = *(byte **)(definition + 0x14) + record[1] * 20;
-	if (function_12de70((s_geometry_block_info *)(blocks + *(short *)(record + 6) * 0x2c), 3) && *(word *)(record + 0xe) > 0)
+	if (function_12de70(block, 3) && *(word *)(record + 0xe) > 0)
 	{
 		out->unknown04 = 0;
 		out->group = 4;
