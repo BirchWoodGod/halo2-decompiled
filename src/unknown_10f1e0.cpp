@@ -1139,7 +1139,7 @@ bool function_111490(long unit_index)
 // @retail 0x1112f0
 bool function_1112f0(long unit_index)
 {
-	bool result = true;
+	char result = true;
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
 	s_animation_state *state = UNIT_ANIMATION_STATE(unit);
@@ -1810,6 +1810,13 @@ void function_c96b0(long unit_index, long *result, real a, real b);
 // @retail 0x1147e0
 bool function_1147e0(long unit_index, bool a, real b, real c, long definition_index, bool hard)
 {
+	bool result = false;
+	char outside = 0;
+	short priority;
+	short entry;
+	long tag_index;
+	bool local_0 = hard;
+	bool local_1 = a;
 	// Retail preserves the object argument on the stack throughout the request.
 	long const *unit_reference = &unit_index;
 	unit_index = *unit_reference;
@@ -1817,8 +1824,6 @@ bool function_1147e0(long unit_index, bool a, real b, real c, long definition_in
 	byte *state = (byte *)unit + *(short *)((byte *)unit + 0x342);
 	short type = 0;
 	bool special = false;
-	bool result = false;
-	bool outside = false;
 	if (definition_index != NONE)
 	{
 		byte *definition = TAG_BYTES(definition_index);
@@ -1826,7 +1831,7 @@ bool function_1147e0(long unit_index, bool a, real b, real c, long definition_in
 		special = (*(dword *)(definition + 0x14) >> 7) & 1;
 	}
 	short selection;
-	if (hard)
+	if (local_0)
 	{
 		long actor_index = *(long *)((byte *)unit + 0x12c);
 		bool strong = false;
@@ -1843,13 +1848,13 @@ bool function_1147e0(long unit_index, bool a, real b, real c, long definition_in
 		else if (!strong && type == 6)
 			selection = 5;
 		else
-			selection = a ? 4 : 0;
+			selection = local_1 ? 4 : 0;
 	}
 	else
 	{
 		if (*(short *)(state + 0x42))
-			return false;
-		a = *(real *)((byte *)unit + 0x100) > 0.0f;
+			goto local_2;
+		local_1 = *(real *)((byte *)unit + 0x100) > 0.0f;
 		long range;
 		function_c96b0(unit_index, &range, c, b);
 		outside = range == 2;
@@ -1857,7 +1862,7 @@ bool function_1147e0(long unit_index, bool a, real b, real c, long definition_in
 			selection = 11;
 		else if (outside)
 		{
-			if (a)
+			if (local_1)
 				selection = function_259a0(&g_4e7408->unknown0) < 0.6667f ? 8 : 9;
 			else
 				selection = 10;
@@ -1865,15 +1870,15 @@ bool function_1147e0(long unit_index, bool a, real b, real c, long definition_in
 		else
 		{
 			if (*(short *)(state + 0x40) || *(short *)(state + 0x3e) >= 3)
-				return false;
+				goto local_2;
 			if (*(short *)(state + 0xc) && !(function_259a0(&g_4e7408->unknown0) < 0.4f))
-				return false;
-			selection = a ? 7 : 10;
+				goto local_2;
+			selection = local_1 ? 7 : 10;
 		}
 	}
-	short priority = hard ? 15 : 12;
-	short entry = function_20ba00(selection);
-	long tag_index = NONE;
+	tag_index = NONE;
+	priority = local_0 ? 15 : 12;
+	entry = function_20ba00(selection);
 	if (entry != NONE && function_114520(unit_index, entry, priority, NULL, &tag_index))
 	{
 		s_request_114b60 request;
@@ -1898,6 +1903,7 @@ bool function_1147e0(long unit_index, bool a, real b, real c, long definition_in
 				*(short *)(state + 0x40) = duration_ticks_1145f0(2.0f);
 		}
 	}
+local_2:
 	return result;
 }
 

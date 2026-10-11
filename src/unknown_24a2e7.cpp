@@ -435,18 +435,19 @@ void function_120e20(long *arg_1, long arg_0);
 // @retail 0x249fcc
 void function_249fcc(c_unknown_249fa3 *arg_0)
 {
-	c_list_24a64d *local_0 = (c_list_24a64d *)arg_0;
 	long local_1;
+	c_list_24a64d *local_0 = (c_list_24a64d *)arg_0;
 	function_120e20(&local_1, local_0->get_controller_index());
-	if (local_1 != NONE)
+	if (NONE != (long)local_1)
 	{
 		s_list_item_iterator local_2;
 		local_2.iterator.data = local_0->data;
-		local_2.iterator.datum_index = NONE;
 		local_2.iterator.index = NONE;
+		local_2.iterator.datum_index = NONE;
 		while (function_2b2327(&local_2))
 		{
-			if (((s_datum_24a763 *)local_2.item)->index == local_1)
+			byte *local_3 = local_2.item;
+			if (((s_datum_24a763 *)local_3)->index == local_1)
 			{
 				local_0->select_datum(local_2.iterator.datum_index);
 				break;

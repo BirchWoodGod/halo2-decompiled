@@ -116,6 +116,7 @@ void c_nearest_query_callback::query(s_node *node, s_query_hit const *hit)
 			if (excluded != NONE)
 			{
 				s_query_node *last = (s_query_node *)node->get_last();
+				distance = *(real const volatile *)&distance;
 				if (last->type == 1)
 					entity = last->entity;
 			}
