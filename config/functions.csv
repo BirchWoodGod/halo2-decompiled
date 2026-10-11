@@ -8949,7 +8949,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0024e0e0,565,game,speed,a16 pad,,,,src/unknown_072c70.cpp,todo
 0024e320,58,game,speed,a16 pad,,,,src/unknown_072c70.cpp,matched
 0024e360,295,game,speed,a16 pad,,,,src/unknown_072c70.cpp,matched
-0024e490,196,game,speed,a16 pad,,,001389c0 001523c0 0015cba0 00196780,src/unknown_072c70.cpp,near
+0024e490,196,game,speed,a16 pad,,,001389c0 001523c0 0015cba0 00196780,src/unknown_072c70.cpp,matched
 0024e554,75,game,size,packed,,,,src/unknown_24e554.cpp,matched
 0024e59f,1064,game,size,ebp packed,,,0002b400 0002b460 00030710 00030bf0 0003ea30 000baf80 00142570 0014ddc0 0014de70 0016a040 0024e554 0024e9c7 0024ecae 0024f0fc,,todo
 0024e9c7,743,game,size,ebp packed,,,0022a664,,todo

@@ -138,6 +138,16 @@ PRIVATE __forceinline void function_244de2(real thickness, short count, point3f 
 	}
 }
 
+PRIVATE __forceinline void function_244de4(point3f const *arg_0, real arg_1, point3f *arg_2)
+{
+    real local_0 = arg_0->z;
+    real local_1 = arg_0->y;
+    long local_2 = *(long const *)&arg_0->x;
+    *(long *)&arg_2->x = local_2;
+    arg_2->y = local_1;
+    arg_2->z = local_0 - arg_1;
+}
+
 // @retail 0x244de0
 void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 	real arg_3, long arg_4, long arg_5, long arg_6, byte arg_7,
@@ -168,19 +178,17 @@ void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 			local_0->field_0c = arg_7;
 			local_0->field_0d = arg_8;
 			local_0->field_0e = arg_9;
-			local_0->field_10.x = arg_0->x;
-			local_0->field_10.y = arg_0->y;
-			local_0->field_10.z = arg_0->z - arg_2;
+			function_244de4(arg_0, arg_2, &local_0->field_10);
 			local_0->field_1c = *arg_1;
 			local_0->field_28 = (*local_7);
 		}
 		point2f local_1 = { -arg_1->j, arg_1->i };
-		real local_2 = (real)sqrt(local_1.x * local_1.x + local_1.y * local_1.y);
+		real local_2 = (real)sqrt(*(real const volatile *)&local_1.x * local_1.x + local_1.y * local_1.y);
 		if (!(fabs(local_2) < 0.0001f))
 		{
 			real local_3 = 1.f / local_2;
-			local_1.x = local_3 * local_1.x;
-			local_1.y = local_3 * local_1.y;
+			*(real volatile *)&local_1.x = local_3 * local_1.x;
+			*(real volatile *)&local_1.y = local_3 * local_1.y;
 		}
 		else
 			local_2 = 0.f;
@@ -278,9 +286,8 @@ void function_245400(long index, s_source_245400 const *source,
 	function_244ca0(height, radius, list, field_00, field_04, material_index,
 		material->field_04, material->field_05, material->field_06, point);
 }
-// @retail 0x245540
-void function_245540(long arg_0, s_source_245400 const *arg_1,
-	transform4x3f const *arg_2, real arg_3, real arg_4,
+PRIVATE __forceinline void function_245545(long arg_0, s_source_245400 const *arg_1,
+	transform4x3f const *const &arg_2, real arg_3, real arg_4,
 	long arg_5, long arg_6, s_collection_245270 *arg_7)
 {
 	(void)&arg_2;
@@ -349,4 +356,12 @@ void function_245540(long arg_0, s_source_245400 const *arg_1,
 			arg_1->field_2c[local_1].field_04, arg_1->field_2c[local_1].field_05,
 			arg_1->field_2c[local_1].field_06, arg_7);
 	}
+}
+
+// @retail 0x245540
+void function_245540(long arg_0, s_source_245400 const *arg_1,
+	transform4x3f const *arg_2, real arg_3, real arg_4,
+	long arg_5, long arg_6, s_collection_245270 *arg_7)
+{
+	function_245545(arg_0, arg_1, arg_2, arg_3, arg_4, arg_5, arg_6, arg_7);
 }
