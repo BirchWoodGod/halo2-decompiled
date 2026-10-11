@@ -979,6 +979,7 @@ PRIVATE void function_271fd0(s_type_f17a25 *state, short node_index, short cost)
 PRIVATE short function_272020(s_pathfinding_data const *pathfinding,
 	s_path_node_key_view const *node, s_path_link_view *links, s_type_f17a25 const *state)
 {
+	/* retail keeps pathfinding on the stack */
 	s_pathfinding_data const *const *pathfinding_reference = &pathfinding;
 	s_path_links_data_view const *data = (s_path_links_data_view const *)*pathfinding_reference;
 	long node_index = node->node_index;

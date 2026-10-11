@@ -3006,6 +3006,7 @@ real function_1e20b0(long actor_index);
 // @retail 0xe2fa0
 void __stdcall function_e2fa0(long arg_159e6d, long object_index, void *unused)
 {
+	/* retail keeps this unused argument on the stack */
 	void *const *reference = &unused;
 	s_biped *biped = BIPED_GET(arg_159e6d);
 	char ticks = (char)biped->unknown398;
@@ -3496,6 +3497,7 @@ void function_e4330(long arg_159e6d, real height)
 	real time;
 	short kind;
 	bool forced = TEST_FIELD_BIT((biped->flags_348 >> 6) & 1);
+	/* retail keeps forced on the stack */
 	bool const *forced_reference = &forced;
 
 	if (!forced)

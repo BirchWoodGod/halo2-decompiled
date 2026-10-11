@@ -1063,6 +1063,7 @@ struct s_looping_promotion_table
 // @retail 0x21bd00
 void __stdcall looping_sound_fade_out(real duration, long first_sound_index)
 {
+	/* retail keeps duration on the stack */
 	real const *reference = &duration;
 	if (first_sound_index != NONE)
 	{
