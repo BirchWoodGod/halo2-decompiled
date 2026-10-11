@@ -248,14 +248,15 @@ long function_b5990(long tag_index, bool flag)
     switch (definition->kind)
     {
     case 0: result = 9; break;
-    case 1: result = flag ? 12 : 15; break;
     case 2:
-        if (!flag) return result;
-        result = 14;
+        if (flag) result = 14;
         break;
+    case 1: result = flag ? 12 : 15; break;
     case 3: result = 10; break;
     case 4: result = 10; break;
     case 5: result = 13; break;
+    case 7: result = 16; break;
+    case 8: result = 16; break;
     case 6:
         if (definition->model_index != NONE)
         {
@@ -264,11 +265,10 @@ long function_b5990(long tag_index, bool flag)
                 result = 11;
         }
         break;
-    case 7: result = 16; break;
-    case 8: result = 16; break;
+
     case 9: break;
     case 10: break;
-    case 11: result = 11; break;
+    case 11: return 11;
     }
     return result;
 }
@@ -295,12 +295,13 @@ void __stdcall function_b5a70(long player_index, long type, long count, long obj
     if (state == 4 || state == 5)
     {
         s_event_distribution *distribution = (s_event_distribution *)((byte *)world->data + 0xa0ac);
-        for (long i = 0; i < *count_reference; i++)
+        long *output = entities;
+        for (long i = 0; i < *count_reference; i++, ++output)
         {
             if (state != 3 && state != 5)
-                entities[i] = function_a5930(((long const *)*object_indices_reference)[i]);
+                *output = function_a5930(((long const *)*object_indices_reference)[i]);
             else
-                entities[i] = function_a5980(((long const *)*object_indices_reference)[i]);
+                *output = function_a5980(((long const *)*object_indices_reference)[i]);
         }
         if (*count_reference <= 0 || entities[0] != NONE)
         {
@@ -317,7 +318,9 @@ void __stdcall function_b5a70(long player_index, long type, long count, long obj
                         mask = ~(1 << index);
                 }
             }
-            function_8b4d0(distribution, type, *count_reference, *count_reference > 0 ? entities : 0, mask, size, data, timeout);
+            long const *entity_list = 0;
+            if (*count_reference > 0) entity_list = entities;
+            function_8b4d0(distribution, type, *count_reference, entity_list, mask, size, data, timeout);
         }
     }
 }

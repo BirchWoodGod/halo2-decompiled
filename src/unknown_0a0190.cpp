@@ -80,11 +80,17 @@ struct s_z_transform_state
 // @retail 0xab9f0
 bool function_ab9f0(s_z_transform_state const *state)
 {
-	if (state && state->identifier != NONE && function_a7570(&state->position) &&
-		function_a74c0(&state->up, &state->forward) && function_a7570(&state->linear_velocity) &&
-		function_a7570(&state->angular_velocity))
-		return true;
-	return false;
+    do
+    {
+        if (!state) break;
+        if (state->identifier == NONE) break;
+        if (!function_a7570(&state->position)) break;
+        if (!function_a74c0(&state->up, &state->forward)) break;
+        if (!function_a7570(&state->linear_velocity)) break;
+        if (!function_a7570(&state->angular_velocity)) break;
+        return true;
+    } while (false);
+    return false;
 }
 
 

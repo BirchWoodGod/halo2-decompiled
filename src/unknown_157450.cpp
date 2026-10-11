@@ -482,7 +482,7 @@ void function_158140(void)
 	dword old_playing_teams = globals->playing_teams;
 	word old_team_mask = globals->team_mask;
 	dword playing_teams = 0;
-	dword present_teams = 0;
+	volatile dword present_teams = 0;
 	s_record_pool_iterator iterator;
 	s_engine_player *player;
 
@@ -1383,28 +1383,31 @@ struct s_item_collection
 long function_15ac50(long index)
 {
 	s_scenario_netgame_equipment *equipment = &((s_scenario_netgame_equipment_view *)g_4e0350)->equipment[index];
-	real seconds = 30.0f;
-	short spawn_time = 0;
-	long result;
-
-	if (equipment->spawn_time)
-	{
-		spawn_time = equipment->spawn_time;
-	}
-	else if ((equipment->group_tag == 'itmc' || equipment->group_tag == 'vehc') && equipment->tag_index != NONE)
-	{
-		spawn_time = ((s_item_collection *)g_4e3b44[equipment->tag_index & 0xffff].bytes)->spawn_time;
-	}
+	struct { real seconds; long result; } rounding;
+	rounding.seconds = 30.0f;
+	short spawn_time = equipment->spawn_time;
+	long ticks;
 	if (spawn_time)
 	{
-		seconds = (real)spawn_time;
+		ticks = spawn_time;
 	}
+	else
+	{
+		if ((equipment->group_tag != 'itmc' && equipment->group_tag != 'vehc') || equipment->tag_index == NONE)
+			goto done;
+		short collection_time = ((s_item_collection *)g_4e3b44[equipment->tag_index & 0xffff].bytes)->spawn_time;
+		if (!collection_time)
+			goto done;
+		ticks = collection_time;
+	}
+	rounding.seconds = (real)ticks;
+done:
 	__asm
 	{
-		fld seconds
-		fistp result
+		fld rounding.seconds
+		fistp rounding.result
 	}
-	return result;
+	return rounding.result;
 }
 
 // @retail 0x15b1e0

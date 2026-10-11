@@ -904,8 +904,8 @@ void __stdcall function_2393ae(long controller_index, long rank)
 		}
 		friends_lists_get_user(xuid, &arg_a721be, &is_player, &flags, &title_id, &in_session, NULL);
 		may_change = (bool)((flags >> 11) & 1);
-		if (!have_member)
-		{
+		if (!(!have_member))
+		{} else {
 			if (may_change)
 			{
 				member.xuidTeamMember = *xuid;

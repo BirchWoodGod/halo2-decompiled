@@ -7,6 +7,7 @@
 #include "object_markers.h"
 #include "unknown_16d180.h"
 #include <math.h>
+#include <string.h>
 
 struct s_object_definition_view
 {
@@ -128,7 +129,7 @@ long function_b8ca0(long object_index)
 	{
 		{ result_value = function_b8ca0(object->parent_index); goto return_exit; }
 	}
-	if (TEST_FIELD_BIT(object->flag0) && ((1 << object->type) & 0x1c) && function_10cf50(object_index))
+	if (TEST_FIELD_BIT(object->flag0) && ((byte)(1u << object->type) & 0x1c) && function_10cf50(object_index))
 		{ result_value = object->unit_index; goto return_exit; }
 	{ result_value = object_index; goto return_exit; }
 
@@ -152,8 +153,8 @@ short function_b8d30(long object_index, long marker_name, s_object_marker *marke
         if (model_index != NONE)
         {
             byte const *region_permutations = (byte *)object + object->region_permutations_offset;
-            transform4x3f const *field_50 = (transform4x3f *)((byte *)object + object->node_matrices_offset);
             bool mirrored = TEST_FIELD_BIT(object->mirrored);
+            transform4x3f const *field_50 = (transform4x3f *)((byte *)object + object->node_matrices_offset);
             volatile long node_count = object->node_matrices_size / sizeof(transform4x3f);
             long render_model_index = TAG_DATA(s_model_definition_view, model_index)->render_model_index;
 
@@ -579,7 +580,7 @@ void function_b9a90(long object_index)
     s_record_pool *objects = g_4e0300;
     s_object_view *object = ((s_object_header_view *)objects->data)[object_index & 0xffff].object;
     s_object_view *parent = ((s_object_header_view *)objects->data)[object->parent_index & 0xffff].object;
-    bool connected = function_b9d20(object->parent_index);
+    byte connected = function_b9d20(object->parent_index) ? 1 : 0;
     s_object_view *node_parent = ((s_object_header_view *)objects->data)[object->parent_index & 0xffff].object;
     transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + node_parent->node_matrices_offset) + *(char *)((byte *)object + 0x18);
     if (connected)
