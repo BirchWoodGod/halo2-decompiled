@@ -16,6 +16,26 @@ in `src/unknown_17d9a0.cpp`; preserve it. The three missing bodies total 5,618
 retail bytes. All three bodies are implemented and their temporary stubs
 removed. No new exact matches are claimed.
 
+## Reproduce the synthetic comparison
+
+The optional emulator runner is included in this contribution:
+
+```sh
+python -m pip install -r tools/_decal_probe/requirements.txt
+python tools/decal_probe.py --retail /path/to/default.xbe
+```
+
+Build first using the normal repository instructions. The runner uses
+`build/halo2.exe` and its paired `build/halo2.map`; `--image` and `--map` override
+these paths. It verifies the retail hash and writes a fresh pass/fail report to
+`build/decal-probe.json`, including input hashes and emulator versions. The
+default suite is the 648-case full synthetic path described below. Optional
+`--suite physical`, `--suite portals` and `--suite buffer` reproduce the
+allocator, portal and command-generation checks. See
+[the probe README](../tools/_decal_probe/README.md) for boundaries and usage.
+The historical exploratory sweeps below have narrower or different fixtures;
+not every local exploratory mode is exposed by this runner.
+
 ## Independently observed flow at `0x17ee20`
 
 The entry aligns its stack to eight bytes and reserves `0x5938` bytes through
