@@ -52,7 +52,10 @@ c_screen_45a420::c_screen_45a420(long a, long b, word user_flags) :
 {
 	if (g_4e6948->state == 2)
 	{
-		function_221980("", function_2197f0(0.0f), 1.0f);
+		struct { long value; real duration; } fade;
+		fade.value = function_2197f0(0.0f);
+		fade.duration = 1.0f;
+		function_221980("", fade.value, fade.duration);
 	}
 }
 
@@ -61,7 +64,10 @@ c_screen_45a420::~c_screen_45a420()
 {
 	if (g_4e6948->state == 2)
 	{
-		function_221980("", function_2197f0(1.0f), 1.0f);
+		struct { long value; real duration; } fade;
+		fade.value = function_2197f0(1.0f);
+		fade.duration = 1.0f;
+		function_221980("", fade.value, fade.duration);
 	}
 }
 
