@@ -17,7 +17,7 @@ long network_connection_owner_active(s_network_connection *arg_0);
 
 struct s_75fc0
 {
-	byte field_0[0x470];
+	byte field_0[0x518];
 	long field_470;
 	byte field_474[4];
 	__int64 field_478;
@@ -55,28 +55,35 @@ static __forceinline long function_75fc1(real arg_0)
 	return local_0;
 }
 
+#pragma optimize("g", off)
+static __forceinline long function_75fc3(s_network_observer *arg_0, long arg_1)
+{
+    long local_0 = NONE;
+    for (long local_1 = 0; local_1 < MAXIMUM_OBSERVER_CHANNELS; local_1++)
+    {
+        s_network_observer_channel *local_2 = &arg_0->channels[local_1];
+        if (local_2->state && local_2->connection_index == arg_1)
+        {
+            local_0 = local_1;
+            break;
+        }
+    }
+    return local_0;
+}
+#pragma optimize("", on)
+
 // @retail 0x75fc0
-bool function_75fc0(s_network_observer *arg_0, long arg_1,
+bool s_network_observer::connection_v05(long arg_1,
 	bool arg_2, bool arg_3, bool arg_4, bool *arg_5, bool *arg_6,
 	long *arg_7, long *arg_8, long arg_9, byte *arg_10)
 {
-	long local_0 = NONE;
-	long local_1 = 0;
-	do
-	{
-		if (arg_0->channels[local_1].state &&
-			arg_0->channels[local_1].connection_index == arg_1)
-		{
-			local_0 = local_1;
-			break;
-		}
-		local_1++;
-	} while (local_1 < MAXIMUM_OBSERVER_CHANNELS);
+	s_network_observer *arg_0 = this;
+	long local_0 = function_75fc3(arg_0, arg_1);
 	bool local_2 = false;
 	if (local_0 == NONE)
 		return local_2;
 	s_network_connection *local_3 = function_x7665e0(arg_1);
-	s_75fc0 *local_4 = (s_75fc0 *)&arg_0->channels[local_0];
+	s_75fc0 *local_4 = (s_75fc0 *)((byte *)arg_0 + local_0 * sizeof(arg_0->channels[0]));
 	long local_5 = NONE;
 	long local_6 = NONE;
 	bool local_7 = false;
