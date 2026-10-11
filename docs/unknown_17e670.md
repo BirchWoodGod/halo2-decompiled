@@ -295,6 +295,32 @@ Geometry allocation, buffer lookup, lighting, BSP cluster search and record-pool
 allocation are still controlled. This does not establish actual resource
 management, eviction, asset streaming, GPU submission or gameplay.
 
+## Actual record-pool allocation
+
+The allocator and release routines execute without helper mocks in 24
+lifecycle sequences. All 2,715 allocation attempts and 2,189 releases agree
+with retail, including 340 full-pool returns. Capacities 1, 2, 31, 32, 33 and
+64 cover bitmap boundaries; starting salts 0x8000 and 0xfffd cover salt
+wraparound. The sweep compares handles, pool metadata, bitmap and all record
+bytes after every operation, with released-record poisoning both enabled and
+disabled. Pool backing memory is synthetic; no process or platform allocation
+is established by this test.
+
+The integrated flat-surface probe now also executes actual record-pool
+allocation. All 648 cases pass with a 10-record pool, producing 504 registered
+records through 1,512 pool allocation attempts. Another 648 cases pass with a
+2-record pool, producing 252 registered records through 882 allocation
+attempts. The small pool exercises failed secondary-reference allocation and
+failed initial-record allocation on later chain links. Metadata, bitmaps,
+record storage, cell lists, per-definition lookup, packed geometry and state
+are compared; both builds terminate the affected chains consistently.
+
+These runs use the same `cef349f7...` image identified above. No production
+source change was needed. Remaining controlled dependencies are geometry
+allocation, geometry-buffer lookup, lighting and BSP cluster search; texture
+availability is bypassed. Actual asset streaming, GPU submission and complete
+gameplay remain unverified.
+
 Shared changes are limited to the new header, the predicate definition and
 callers in `src/unknown_11cb00.cpp`, `src/unknown_1502e0.cpp`,
 `src/unknown_1689b0.cpp`, `src/unknown_17d9a0.cpp`, `src/ai.cpp`, and
