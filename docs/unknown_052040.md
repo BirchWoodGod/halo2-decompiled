@@ -734,3 +734,40 @@ void __stdcall function_52040(s_interface_draw_request const *request,
   testing, SDK or outside dataset. The later source recovery and behavioral
   checks are described above. Names are the repository's own, or describe
   behaviour.
+
+## Texture format data dependency
+
+Texture request validation exposed an initialized-data gap: `g_450768` was an
+uninitialized `long[8][24]`. The retail executable contains two 24-entry rows
+at `0x450768` and `0x4507c8`; unrelated data begins at `0x450828`. The first
+row supplies ordinary texture formats and the second supplies linear formats.
+Texture creation and `0x12d6d0` index these rows with a 96-byte stride.
+
+`src/unknown_0158f0.cpp` now defines both rows, with `-1` for unsupported
+formats. Its cache-side declaration in `src/unknown_12c0d0.cpp` agrees on the
+two-row extent. The values were independently read from the pinned retail
+executable, not from SDK source or external symbol data. All 48 compiled
+entries were compared directly with retail. No instructions or flags were
+changed. Other zero-initialized renderer tables remain separate recovery work.
+
+The first request case originally differed in the header's format byte:
+retail used `0x19`, while the compiled table supplied zero. After correction,
+960 comparisons of actual `0x12d5a0`, physical allocation, pool insertion,
+and texture header construction pass: 576 allocations/read requests and
+384 allocation failures. Cases cross three levels, widths 8/64, sizes
+1/511/512/513/4096, wait/restriction flags, priorities 1/5, two arena sizes,
+and a controlled read-completion flag. These header cases use bitmap format
+zero and the non-linear path; the table comparison covers both complete rows.
+
+Only asynchronous read submission at `0x213760` is replaced by a boundary
+that checks location, 512-byte rounding, destination, completion pointer,
+category and priority, and returns a controlled handle/completion state.
+Full synthetic bitmap, allocation/pool memory, callback arguments and request
+counter agree. This is not disk delivery, a real asynchronous queue, GPU
+sampling or gameplay proof.
+
+The checked image is
+`631dd56641056580d1ac5301f1beab74577429794e6489e4d58080100fae2bed`.
+The full function checker retains all 7,503 previously verified branch matches,
+with no gains or losses. This branch's baseline remains main `c17d5e05`;
+these results do not cover later main or the separate pending-PR integration.

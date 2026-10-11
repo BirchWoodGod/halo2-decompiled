@@ -684,7 +684,7 @@ void texture_cache_load_shared_data(void)
 	}
 }
 
-extern long g_450768[8][24];
+extern long g_450768[2][24];
 short bitmap_get_mipmap_count(short width, short height, short depth, short format, bool linear, short maximum_levels);
 long log2_floor(dword value);
 
