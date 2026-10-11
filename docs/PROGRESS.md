@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7594 functions match
+
+```
+matched 7594 of 11318 game functions (898266 of 2784283 bytes, 32.26%)
+```
+
+7 new matches, none lost:
+- The second machine's lanes C (+2, #331), U (+3, #332) and O (+1, #330).
+- 0x16ff10, from the permuter: two source edits, a declaration order and the grouping of one expression.
+
 ## 2026-10-11: 7587 functions match
 
 ```
