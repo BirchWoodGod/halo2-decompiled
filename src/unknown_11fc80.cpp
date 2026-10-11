@@ -25,6 +25,13 @@ extern short const g_440b94[6][3] =
 	{ 0, 1, 2 },
 };
 
+PRIVATE __forceinline void function_11fc81(point3f *arg_0, point3f const *arg_1, vector3f const *arg_2, real arg_3)
+{
+	arg_0->x = arg_2->i * arg_3 + arg_1->x;
+	arg_0->y = arg_3 * arg_2->j + arg_1->y;
+	arg_0->z = arg_3 * arg_2->k + arg_1->z;
+}
+
 // @retail 0x11fc80
 long function_11fc80(
 	plane3f const *plane,
@@ -55,13 +62,9 @@ long function_11fc80(
 				if (count >= maximum_count)
 					break;
 				vector3f delta;
-				delta.i = current->x - previous->x;
-				delta.j = current->y - previous->y;
-				delta.k = current->z - previous->z;
+				vector3d_from_points3d(previous, current, &delta);
 				real t = previous_distance / (previous_distance - distance);
-				out[count].x = delta.i * t + previous->x;
-				out[count].y = t * delta.j + previous->y;
-				out[count].z = t * delta.k + previous->z;
+				function_11fc81(&out[count], previous, &delta, t);
 				count++;
 			}
 			if (inside == keep_inside)
