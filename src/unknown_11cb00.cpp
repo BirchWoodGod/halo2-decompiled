@@ -2,6 +2,7 @@
 /* UNKNOWN_11CB00.CPP: language and region codes, quaternion and ray math */
 
 #include "unknown_11c920.h"
+#include "segment_sphere.h"
 #include "globals.h"
 #include "unknown_11cb00.h"
 #include "unknown_11cc90.h"
@@ -312,17 +313,17 @@ real function_11e000(
 
 // @retail 0x11e5e0
 bool function_11e5e0(
-	point3f const *origin,
-	point3f const *center,
+	point3f const *segment_start,
 	vector3f const *direction,
+	point3f const *sphere_center,
 	real radius)
 {
 	vector3f delta;
 	real c;
 
-	delta.i = origin->x - center->x;
-	delta.j = origin->y - center->y;
-	delta.k = origin->z - center->z;
+	delta.i = segment_start->x - sphere_center->x;
+	delta.j = segment_start->y - sphere_center->y;
+	delta.k = segment_start->z - sphere_center->z;
 	c = delta.k * delta.k + delta.j * delta.j + delta.i * delta.i - radius * radius;
 
 	if (c < 0.f)
@@ -408,8 +409,8 @@ long function_11ea30(point3f const *a, vector3f const *u, point3f const *b, vect
 				endpoint_a = point_11ea30(a, u, ta < 0.0f ? 0.0f : 1.0f);
 			if (outside_b)
 				endpoint_b = point_11ea30(b, v, tb < 0.0f ? 0.0f : 1.0f);
-			if ((outside_a && function_11e5e0(&endpoint_a, b, v, radius)) ||
-				(outside_b && function_11e5e0(&endpoint_b, a, u, radius)))
+			if ((outside_a && function_11e5e0(b, v, &endpoint_a, radius)) ||
+				(outside_b && function_11e5e0(a, u, &endpoint_b, radius)))
 				return 1;
 			return 0;
 		}

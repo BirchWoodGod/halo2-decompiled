@@ -64,7 +64,7 @@ void *function_439d0(long arg_0);
 bool __stdcall function_d47d0(s_cluster_query const *arg_0, color3f *arg_1);
 color3f *function_131c20(color3f const *arg_0, color3f const *arg_1, dword arg_2, real arg_3, color3f *arg_4);
 dword __cdecl pack_color3f(color3f const *arg_0);
-long function_17cfa0(long arg_0, long arg_1, short arg_2, short arg_3, bool arg_4);
+long function_17cfa0(long first_index, long definition_index, short cluster_index, short decal_type, bool permanent);
 void __stdcall function_180b60(s_cluster_query const *arg_0, real arg_1, long arg_2);
 dword vector3d_pack(vector3f const *arg_0);
 
@@ -159,7 +159,10 @@ long __stdcall function_180d80(s_180d84 const *arg_0, transform4x3f const *arg_1
                         real local_15 = local_0[local_12].field_0.y - arg_3->point.y;
                         real local_16 = local_0[local_12].field_0.z - arg_3->point.z;
                         real local_17 = local_0[local_12].field_0.x - arg_3->point.x;
-                        real local_18 = local_16 * local_16 + local_15 * local_15 + local_17 * local_17;
+                        /* Retail rounds z*z + y*y before adding x*x. Prevent /O2
+                           from reassociating the three terms and changing the radius. */
+                        volatile real partial_radius = local_16 * local_16 + local_15 * local_15;
+                        real local_18 = partial_radius + local_17 * local_17;
                         if (local_12 == 0 || local_18 > local_9) local_9 = local_18;
                     }
                     *(point3f *)(local_7 + 0xc) = arg_3->point;
