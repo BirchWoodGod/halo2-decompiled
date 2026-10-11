@@ -5169,7 +5169,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00173cb0,207,game,speed,a16 pad,,,00137bd0,src/unknown_173b90.cpp,todo
 00173d80,91,game,speed,a16 pad,,,00174f80,src/unknown_173b90.cpp,matched
 00173de0,242,game,speed,a16 pad,,,0016b5f0,src/unknown_173b90.cpp,matched
-00173ee0,226,game,speed,a16 pad,,,0014a280 00175180,src/unknown_173b90.cpp,todo
+00173ee0,226,game,speed,a16 pad,,,0014a280 00175180,src/unknown_173b90.cpp,matched
 00173fd0,430,game,speed,a16 pad,,,00137bd0 0016b840 00178af0 00178b30,src/unknown_173b90.cpp,todo
 00174180,156,game,speed,a16 pad,,,0016ba40 00174180 00175100 001753f0 00178b80,src/unknown_173b90.cpp,matched
 00174220,498,game,speed,a16 pad,,,0003eb20 00155760 0016bc00 00174420 001751d0 0017afd0,src/unknown_173b90.cpp,todo
