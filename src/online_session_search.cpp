@@ -572,7 +572,10 @@ bool __stdcall session_search_result_precedes(void const *a, void const *b, void
 	s_search_result const *first = (s_search_result const *)a;
 	s_search_result const *second = (s_search_result const *)b;
 	if (first->field1f8 < second->field1f8)
+	{
+local_0:
 		return true;
+	}
 	if (first->field1f8 > second->field1f8)
 		goto failed;
 	if (first->unknown74)
@@ -580,14 +583,14 @@ bool __stdcall session_search_result_precedes(void const *a, void const *b, void
 		if (first->field90 > second->field90)
 			return true;
 		if (first->field90 < second->field90)
-			goto failed;
+			return false;
 	}
 	if (first->field1fc > second->field1fc)
 		return true;
 	if (first->field1fc < second->field1fc)
-		goto failed;
+		return false;
 	if (first->field10c > second->field10c)
-		return true;
+		goto local_0;
 failed:
 	return false;
 }

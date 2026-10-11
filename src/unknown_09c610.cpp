@@ -14,11 +14,15 @@ extern byte *g_4ed280;
 
 static __forceinline long function_9c912(long arg_0, long arg_1, long arg_2)
 {
-    long local_0 = arg_2;
+    long local_0;
     if (arg_0 < arg_1)
         local_0 = arg_1;
-    else if (arg_0 <= arg_2)
-        local_0 = arg_0;
+    else
+    {
+        local_0 = arg_2;
+        if (arg_0 <= arg_2)
+            local_0 = arg_0;
+    }
     return local_0;
 }
 
@@ -27,11 +31,11 @@ bool c_damage_section_response_event_definition::v11(long arg_0, long const *arg
 {
     bool local_0 = false;
     volatile bool local_12 = local_0;
-    arg_0 = function_a58d0(arg_1[0]);
+    arg_1 = (long const *)function_a58d0(arg_1[0]);
     long const *local_2 = (long const *)arg_3;
-    if (arg_0 != NONE)
+    if ((long)arg_1 != NONE)
     {
-        byte *local_3 = (byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object;
+        byte *local_3 = (byte *)((s_object_header *)g_4e0300->data)[(long)arg_1 & 0xffff].object;
         byte *local_4 = g_4e3b44[*(long *)local_3 & 0xffff].bytes;
         long local_5 = *(long *)(local_4 + 0x38);
         if (local_5 != NONE)
@@ -44,7 +48,8 @@ bool c_damage_section_response_event_definition::v11(long arg_0, long const *arg
                 if (*(long *)(local_8 + 0x60) > 0)
                 {
                     byte *local_9 = *(byte **)(*(byte **)(local_8 + 0x64) + 0xc0) + local_7 * 0x38;
-                    long local_10 = local_2[1];
+                    arg_3 = (void const *)local_2[1];
+                    long local_10 = (long)arg_3;
                     if (local_10 >= 0 && local_10 < *(long *)(local_9 + 0xc))
                     {
                         long local_11 = local_2[2];
@@ -55,7 +60,7 @@ bool c_damage_section_response_event_definition::v11(long arg_0, long const *arg
                             {
                                 if (local_11 != 1 || *(long *)(*(byte **)(local_9 + 0x10) + local_14 * 0x50 + 0x34) != NONE)
                                 {
-                                    function_db760(local_7, local_10, *(volatile long *)&arg_0, local_11);
+                                    function_db760(local_7, *(volatile long *)&arg_3, *(volatile long *)&arg_1, local_11);
                                     local_0 = true;
                                 }
                                 else
@@ -90,6 +95,7 @@ struct s_9cca0
 // @retail 0x9cca0
 bool c_breakable_surface_damage_event_definition::v11(long arg_0, long const *arg_1, long arg_2, void const *arg_3)
 {
+    volatile bool local_2 = false;
     byte const *local_0 = (byte const *)arg_3;
     if (function_122c10(0x6a707421, *(long const *)(local_0 + 0x30)))
     {
@@ -105,7 +111,7 @@ bool c_breakable_surface_damage_event_definition::v11(long arg_0, long const *ar
         if (*g_4ed280 && local_1.field_0 != NONE)
             function_184440(*(long const *)local_0, *(long const *)(local_0 + 4), (s_18444a const *)&local_1, *(long const *)(local_0 + 8));
     }
-    return false;
+    return local_2;
 }
 #pragma inline_depth(255)
 
