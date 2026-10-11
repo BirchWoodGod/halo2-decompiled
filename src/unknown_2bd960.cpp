@@ -740,7 +740,10 @@ bool function_2be880(long player_index, s_polygon_2be *polygon)
 				real dx = polygon->center_x - position.x;
 				real dy = polygon->center_y - position.y;
 
-				if (dx * dx + dy * dy < polygon->radius * polygon->radius)
+				real radius_squared = polygon->radius * polygon->radius;
+				real center_distance_squared = dx * dx + dy * dy;
+				bool in_circle = center_distance_squared < radius_squared;
+				if (in_circle)
 				{
 					long crossings = 0;
 
