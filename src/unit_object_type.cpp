@@ -2942,7 +2942,7 @@ void function_c6810(long unit_index)
    handler, then the player's controller hears of it), from its second
    hand by request 0x13, else from its slot (0xce920) */
 // @retail 0xce520
-void function_ce520(long unit_index, long weapon_index, bool flag)
+void function_ce520(long weapon_index, long unit_index, bool flag)
 {
 	s_unit *unit = UNIT_GET(unit_index);
 	long slot = NONE;
@@ -3314,7 +3314,7 @@ void __stdcall function_d09c0(long unit_index, long slot_index, long definition_
 	}
 	if (weapon_index != NONE)
 	{
-		function_ce520(unit_index, weapon_index, false);
+		function_ce520(weapon_index, unit_index, false);
 		weapon_index = NONE;
 	}
 	if (definition_index != NONE)

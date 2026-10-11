@@ -5,10 +5,6 @@
 
 long const g_444ae0 = 0;
 
-// @stub 0x159ac0
-void function_159ac0(void)
-{
-}
 
 
 
