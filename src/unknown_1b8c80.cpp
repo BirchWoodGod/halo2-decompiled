@@ -834,7 +834,7 @@ short __stdcall function_1ba4e0(long actor_index, s_slot *slot, bool active)
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_4c *state = (s_slot_4c *)slot;
 	s_4c_element *element = (s_4c_element *)element_502424_get(state->element_index);
-	short result = g_46fbe8;
+	long result = g_46fbe8;
 
 	state->unknown24++;
 	if (element->object_index != NONE && state->unknown1c != NONE)
