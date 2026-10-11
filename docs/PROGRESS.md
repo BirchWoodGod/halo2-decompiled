@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7637 functions match
+
+```
+matched 7637 of 11318 game functions (905986 of 2784283 bytes, 32.54%)
+```
+
+4 new matches, none lost:
+- Deep lane 2, round 20 (the closest functions in group 2): 0x149f88, 0x155710, 0x252237 and 0x25229e.
+
 ## 2026-10-11: 7633 functions match
 
 ```
