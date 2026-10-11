@@ -14,10 +14,7 @@ long const g_444ae0 = 0;
 
 
 
-// @stub 0xbb670
-void __stdcall function_bb670(short name_index, bool flag)
-{
-}
+
 
 
 
