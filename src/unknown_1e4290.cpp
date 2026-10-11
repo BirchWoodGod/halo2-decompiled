@@ -74,18 +74,24 @@ void function_1e4260(long actor_index)
 // @retail 0x1e4290
 void function_1e4290(long actor_index, bool value)
 {
+	bool *enable = &value;
 	s_actor_view *actor = actor_get(actor_index);
-	bool volatile *enable = &value;
 
 	if (*enable)
 	{
-		if (!actor->unknown229 && actor->unknown26c != NONE)
+		byte unknown229 = actor->unknown229;
+		if (!unknown229)
 			{
-   bool allowed = 0 >= *(byte *)&ai_object_get(actor->unknown26c)->unknown34c;
-   *enable = allowed;
-   if (!allowed) return;
-  }
-		actor->flags810 |= 0x800;
+			long target_index = *(volatile long *)&actor->unknown26c;
+			if (NONE != target_index)
+			{
+	   bool allowed = 0 >= *(byte *)&ai_object_get(target_index)->unknown34c;
+	   *enable = allowed;
+	   if (!(bool)allowed) return;
+	  }
+		}
+		dword flags = actor->flags810;
+		actor->flags810 = flags | 0x800;
 	}
 	else
 	{

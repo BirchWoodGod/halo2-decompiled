@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "unknown_1523c0.h"
 #include "data_array.h"
+#include "game_engine_events.h"
 
 // @flags /O2 /arch:SSE /Gr
 
@@ -33,6 +34,8 @@ public:
 	virtual bool v5(long, long);
 	virtual long v7(long, byte *);
 };
+
+__declspec(noinline) bool function_2bc1b0(point3f *position, long index);
 
 // @retail 0x2bc1b0
 bool function_2bc1b0(point3f *position, long index)
@@ -99,7 +102,65 @@ long c_game_engine_45c7a8::v7(long player_index, byte *b)
 struct s_team_entry;
 struct s_spawn_influence_list;
 s_team_entry *function_15e410(short team);
+void __stdcall function_15e360(point3f const *point, long object_index);
+
+// @retail 0x2bc340
+void function_2bc340(long team)
+{
+	long *entry = (long *)function_15e410((short)team);
+	if (entry)
+	{
+		point3f position;
+		function_2bc1b0(&position, team);
+		function_15e360(&position, *entry);
+	}
+}
+
 void function_23ba10(long type, s_spawn_influence_list *list, point3f const *point);
+
+struct s_effect_owner;
+void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
+long __stdcall function_b7b40(void *creation);
+void function_15e050(long object_index, short team);
+void __stdcall function_a7870(long object_index);
+struct s_placement_2bc1
+{
+	byte field_0[0x1c];
+	point3f position;
+	byte field_28[0xc4 - 0x28];
+};
+
+// @retail 0x2bc1f0
+void function_2bc1f0(long team)
+{
+	if (g_55e4d0[g_4e9ae8->engine_index])
+	{
+		byte *definition = g_4e3b44[g_4e034c->index & 0xffff].bytes;
+		long tag_index = *(long *)(*(byte **)(definition + 0xc) + 0xc);
+		if (tag_index != NONE)
+		{
+			s_placement_2bc1 placement;
+			function_b7930(&placement, tag_index, NONE, 0);
+			if (function_2bc1b0(&placement.position, team))
+			{
+				long object_index = function_b7b40(&placement);
+				if (object_index != NONE)
+				{
+					function_15e050(object_index, (short)team);
+					char mode = g_4e6948->mode;
+					s_event event;
+					game_engine_event_initialize_inline(&event, 4, 1);
+					if (mode != 4)
+					{
+						function_a7c50(&event);
+						function_19eb30(&event);
+					}
+					function_a7870(object_index);
+				}
+			}
+		}
+	}
+}
 
 struct s_object_header_2bc1
 {
@@ -134,6 +195,68 @@ void c_game_engine_45c7a8::v2(long unused, long list_pointer)
 bool function_15b7c0(long delta, long player_index);
 long function_19fc70(dword player_index);
 void function_19f470(long player_index, long score);
+void function_10da60(long item_index, point3f *position);
+bool team_ball_away_from_home(long team);
+bool function_162b90(long item_index);
+void function_1972a0(long player_index, long value14, long value10);
+void function_2bce70(long player_index);
+
+// @retail 0x2bc990
+// Retail reuses the incoming stack team slot for the ball's object pointer.
+void __stdcall function_2bc990(long volatile team_argument)
+{
+	long team = team_argument;
+	byte *entry = (byte *)function_15e410((short)team);
+	if (!entry || *(long *)entry == NONE) return;
+	long object_index = *(long *)entry;
+	team_argument = (long)*(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
+	byte *object = (byte *)team_argument;
+	long maximum = g_510c54->field_2_3 * 40;
+	point3f position;
+	function_10da60(object_index, &position);
+	byte *state = (byte *)g_51ecc4;
+	if (*(long *)(entry + 0xc) == NONE && team_ball_away_from_home(team))
+	{
+		long ticks = *(short *)(state + team * 2 + 0x1e) + 1;
+		if ((dword)ticks > (dword)maximum) ticks = maximum;
+		*(short *)(state + team * 2 + 0x1e) = (short)ticks;
+	}
+	else *(short *)(state + team * 2 + 0x1e) = 0;
+	byte *current = *(byte **)(g_4e0300->data + (*(long *)entry & 0xffff) * 12 + 8);
+	byte *definition = g_4e3b44[*(long *)current & 0xffff].bytes;
+	if (*(short *)(definition + 0x290) == 2 && !(object[0x12c] & 1) &&
+		((dword)*(short *)(state + team * 2 + 0x1e) >= (dword)maximum || function_162b90(*(long *)entry)) &&
+		*(long *)(object + 0x14) == NONE && (*(dword *)(object + 4) & 0x100))
+	{
+		s_event event;
+		game_engine_event_initialize_inline(&event, 4, 4);
+		function_19eb90(&event);
+		function_2bc340(team);
+		state = (byte *)g_51ecc4;
+	}
+	if (*(long *)(entry + 0xc) != NONE)
+	{
+		char &timer = *(char *)(state + team + 0x18);
+		if (timer != NONE && --timer <= 0)
+		{
+			function_1972a0(*(long *)(entry + 0xc), 3, *(short *)(entry + 4));
+			function_2bce70(*(long *)(entry + 0xc));
+			state = (byte *)g_51ecc4;
+			state[team + 0x18] = (byte)g_510c54->field_2_3;
+			char &count = *(char *)(state + team + 0x1b);
+			++count;
+			function_15b930(*(long *)(entry + 0xc), function_15eaf0(), 0x17, 1);
+			if (count % 5 == 0)
+			{
+				s_event event;
+				game_engine_event_initialize_inline(&event, 4, 5);
+				game_engine_event_set_cause_player(&event, *(long *)(entry + 0xc));
+				function_19eb90(&event);
+			}
+		}
+	}
+	else state[team + 0x1b] = 0;
+}
 
 // @retail 0x2bce70
 void function_2bce70(long player_index)

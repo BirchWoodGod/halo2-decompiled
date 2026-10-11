@@ -95,7 +95,7 @@ Work only on the functions my claim covers.
 Work loop:
 1. Find candidates in my claim: the functions `python tools/ready.py` lists, and the near misses `python tools/near.py --list` lists. Start with the smallest.
 2. For each function, read retail's code with `python tools/disasm.py <va>`. Write or tune the C++ in the right `src/` file, with `// @retail 0x<va>` on the line above it, and stub callees that aren't decompiled yet as docs/DECOMPILING.md describes.
-3. After each change, run `python tools/check.py <va>` for the function and for its matched callers and callees.
+3. After each change, run `python tools/check.py --fast <va> ...` for the function and its matched callers and callees, in one command. It takes seconds, but only the plain check counts: before you keep a change and before you finish a function, run `python tools/check.py <va> ...` for them, and if a `CAVEAT` line appeared, trust the plain check (docs/DECOMPILING.md, "The fast check").
 4. When a function is down to a few differing instructions and your own edits stop helping, run `python tools/permute.py <va> --fast --anneal --jobs 1 --time-limit 600 --write-only-match`. Then move on; don't spend more than about 20 attempts on one function.
 5. Never keep a change that makes a function that matched before stop matching.
 

@@ -21,6 +21,7 @@ class MapSymbol:
     section: int
     static: bool
     object: str = ''  # the map's Lib:Object column: 'object.obj', or 'library:object.obj'
+    function: bool = False  # the map's 'f' flag: code, not data
 
 
 def _number(encoded):
@@ -78,7 +79,8 @@ class LinkMap:
             m = SYMBOL.match(line)
             if m and int(m.group(1), 16) != 0:
                 section, offset, va = int(m.group(1), 16), int(m.group(2), 16), int(m.group(4), 16)
-                self.symbols.append(MapSymbol(m.group(3), va, section, static, line.split()[-1]))
+                words = line.split()
+                self.symbols.append(MapSymbol(m.group(3), va, section, static, words[-1], 'f' in words[3:-1]))
                 starts.setdefault(section, va - offset)
         self._ends = {s: starts[s] + lengths[s] for s in starts if s in lengths}
         self._by_plain = {}

@@ -452,6 +452,82 @@ struct s_friend_session_2b642e
     short session_seconds;
 };
 
+#if 0
+// Disabled: the name lookup requires the shared presence-cache address.
+// @retail 0x2b6e55 disabled
+void function_2b6e55(c_y_menu_player_selected_screen *screen)
+{
+	word formatted[256], format[256], name[16], group_name[16];
+	formatted[0] = format[0] = 0;
+	if (!function_1490ec(4)) function_1a31ff();
+	screen->update_selection();
+	s_name_request selection;
+	function_14887e((s_screen_settings_54dc6c *)&selection);
+	XUID *user = selection_get_xuid(&selection);
+	function_13fc90(16, function_148956((s_window_manager_text *)&selection), name);
+	unsigned __int64 group;
+	word *displayed = name;
+	if (function_8c150(g_4771c8, 0, user, group_name, &group) && group)
+	{
+		function_23620d(0x220006bd, format);
+		function_1630e0(formatted, format, name, group_name);
+		displayed = formatted;
+	}
+	((c_widget *)((byte *)screen + 0x80))->function_22f52e()->set_text(displayed);
+	if (screen->task_index != NONE)
+	{
+		long state = function_6b5d0(screen->task_index);
+		if (state != 0 && state != 1)
+		{
+			if (state == 2)
+			{
+				s_match_result_data result;
+				if (function_90160(screen->task_index, &result))
+				{
+					s_qos_target target;
+					target.kid = result.id;
+					target.key = result.key;
+					target.xna = result.address;
+					screen->qos_handle = qos_lookup(1, 1, 0x10000, &target);
+				}
+			}
+			function_6b640(screen->task_index);
+			screen->task_index = NONE;
+		}
+	}
+	else if (screen->qos_handle != NONE && qos_is_complete(screen->qos_handle))
+	{
+		s_qos_result information;
+		if (qos_target_result(screen->qos_handle, &information, 0) &&
+			function_7c530(information.data, information.data_size, screen->unknown9c4))
+		{
+			screen->value10e4 = true;
+			screen->value10e0 = g_54d5b8;
+		}
+		qos_release(screen->qos_handle);
+		screen->qos_handle = NONE;
+	}
+	for (long i = 0; i < 8; ++i)
+	{
+		c_class_1a2c81 *widget = screen->find_child(6, (short)(i + 2), false);
+		if (widget) widget->value6e = false;
+	}
+	if (screen->value10e5)
+	{
+		function_14887e((s_screen_settings_54dc6c *)&selection);
+		s_friend_session_2b642e session;
+		bool present = function_8d230(&selection.field_xb3bdcf, &session);
+		if (function_8c540(selection.field_xb3bdcf.dwTitleID))
+			screen->update_friend_details(&selection.field_xb3bdcf, &session);
+		else if (present)
+			screen->update_friend_status(&selection.field_xb3bdcf, &session);
+		else function_2b635f(&selection.field_xb3bdcf, (c_widget *)screen);
+	}
+	else screen->update_join_text();
+	screen->c_class_1a2c81::v3();
+}
+#endif
+
 
 // @retail 0x2b642e
 void c_y_menu_player_selected_screen::update_friend_status(XONLINE_FRIEND const *friend_, s_friend_session_2b642e *session)

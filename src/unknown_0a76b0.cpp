@@ -671,7 +671,7 @@ struct s_unit_action_grenade
 void function_a7a30(long object_index, dword mask);
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
 long __stdcall function_b7b40(void *data);
-void __stdcall function_b93b0(long parent_index, long object_index, long node_index);
+void __stdcall function_b93b0(long parent_index, long object_index, short node_index);
 vector3f *function_11d000(vector3f const *v, vector3f *out);
 real function_30bf0(vector3f *v);
 
@@ -722,7 +722,7 @@ void __stdcall function_e7730(long unit_index)
 
 			if (projectile_index != NONE)
 			{
-				function_b93b0(unit_index, projectile_index, marker.node_index);
+				function_b93b0(unit_index, projectile_index, (short)(marker.node_index));
 				actions->grenade_projectile_index = projectile_index;
 				actions->grenade_type = unit->current_grenade_index;
 				actions->grenade_state = 2;
@@ -4501,3 +4501,56 @@ void function_ee7f0(long unit_index, long state)
 	function_168896(user_index, unit_action_weapon_get(UNIT_ACTION_UNIT_GET(unit_index), secondary),
 		secondary, state);
 }
+
+
+// Disabled: protected caller supplies flags without the required weapon index.
+#if 0
+void __stdcall function_104080(long object_index);
+void function_b7360(long object_index);
+long function_101f20(long weapon_index);
+bool function_cd660(long unit_index);
+bool function_1cd070(void *state, long animation, long first, long second, long third, long flags, long mode);
+long function_1039a0(long object_index, long tag_index, long effect_index, real scale_a, real scale_b);
+short function_1685a6(long weapon_index, long animation, bool ready);
+
+// Retail 0xfff40
+void __stdcall function_fff40(long weapon_index, bool silent, bool immediate)
+{
+    byte *object = *(byte **)(g_4e0300->data + (weapon_index & 0xffff) * 12 + 8);
+    byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+    function_104080(weapon_index);
+    byte *current = *(byte **)(g_4e0300->data + (weapon_index & 0xffff) * 12 + 8);
+    function_b7360(weapon_index);
+    byte *active = *(byte **)(g_4e0300->data + (weapon_index & 0xffff) * 12 + 8);
+    if (*(short *)(active + 0x12a) != NONE)
+    {
+        void *state = current + *(short *)(current + 0x12a);
+        long kind = 0x07000001;
+        long unit = function_101f20(weapon_index);
+        if (unit != NONE && function_cd660(unit)) kind = 0x0400054b;
+        if (function_1cd070(state, 0x05000024, 0x07000101, kind, 0x07000001, 0x82, 0x3f)
+            || (kind == 0x0400054b && function_1cd070(state, 0x05000024, 0x07000101, 0x07000001, 0x07000001, 0x82, 0x3f)))
+            *(long *)(current + 0x178) = 9;
+    }
+    active = *(byte **)(g_4e0300->data + (weapon_index & 0xffff) * 12 + 8);
+    volatile bool selected;
+    if ((active[0x12c] & 1) && *(long *)(active + 0x154) != NONE)
+    {
+        long unit = *(long *)(active + 0x154);
+        byte *owner = *(byte **)(g_4e0300->data + (unit & 0xffff) * 12 + 8);
+        short slot = *(signed char *)(owner + 0x212);
+        long selected_weapon = slot == NONE ? NONE : *(long *)(owner + slot * 4 + 0x218);
+        selected = weapon_index == selected_weapon;
+    }
+    if (!silent) function_1039a0(weapon_index, *(long *)(definition + 0x144), NONE, 0.0f, 0.0f);
+    if (immediate)
+        *(short *)(object + 0x17c) = 0;
+    else
+    {
+        object[0x16c] &= ~0x20;
+        *(short *)(object + 0x19e) = (short)real_to_long((real)*(short *)((byte *)g_510c54 + 2) * *(real *)(definition + 0x138));
+        *(short *)(object + 0x17c) = function_1685a6(weapon_index, 0x05000024, true);
+    }
+}
+#endif
+
