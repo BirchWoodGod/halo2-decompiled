@@ -4,13 +4,7 @@
 
 
 
-/* callees of the virtual keyboard (unknown_23760b.cpp) */
 
-struct s_player_profile_settings;
-
-
-
-/* lane L: a map's time (unknown_235b46.cpp) */
 
 /* callee of screen 0x24fd74's helpers (unknown_250155.cpp); lane H */
 
