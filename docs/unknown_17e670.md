@@ -199,8 +199,8 @@ intersection. All eight retail callers were inspected to establish these roles:
 | `0x1de2c0` | supplied sphere center | polygon edge start |
 
 `include/segment_sphere.h` now declares the explicit contract
-`(segment_start, direction, sphere_center, radius)`. The definition and every
-call site use that order, with duplicate local declarations removed. This
+`(segment_start, direction, arg_28f920, radius)`, where `arg_28f920` is
+the sphere's center. The definition and every call site use that order, with duplicate local declarations removed. This
 corrects reversed point roles in `0x11ea30`, `0x1691a0`, `0x17dd80`, and
 `0x1c8d20`; the other callers retain their established geometric inputs.
 The predicate's arithmetic and branch conditions are unchanged. This is a
