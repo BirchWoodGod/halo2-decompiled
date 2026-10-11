@@ -216,13 +216,51 @@ unmatched (271/271 bytes); equal sizes are not an exact-match claim.
 Validated image SHA-256:
 `bb565a283c842da5579964ceaf2c1e80427acffe2b8d5d878d870b752378f7d2`.
 These local differential probes establish synthetic geometry behavior only;
-real assets, final decal commit, GPU output and complete gameplay remain
-unverified. Angled-surface coverage is limited to the fixtures described above.
+real assets, GPU output and complete gameplay remain unverified. Actual commit
+is tested separately below. Angled-surface coverage is limited to the fixtures described above.
+
+## Actual commit and packed geometry
+
+A local differential probe now executes `0x180d80` and its actual packing,
+color and transformation helpers. Allocation, record creation, buffer lookup,
+lighting and spatial registration are controlled at independently disassembled
+call boundaries. The test compares return value, full synthetic memory, packed
+output and helper arguments, including the squared registration radius.
+
+The initial 1,024-case sweep found 131 radius mismatches while packed vertices
+and persistent memory agreed. Retail computes `(z*z + y*y) + x*x`; the compiled
+source reassociated this as `(x*x + z*z) + y*y`. A `volatile real` partial sum
+in `src/unknown_180d80.cpp` forces the intermediate single-precision rounding
+before the final term. No compiler flags change. The fix prioritizes the
+observed arithmetic contract; it is not a byte-match claim.
+
+All 1,024 cases then agree: 557 successful commits, 467 early or dependency
+failures, 334 transformed successes, 226 allocation-cleanup calls and 371
+lighting calls. Cases vary polygon sizes, texture coordinates, transforms,
+retained random state, color modes and allocation/record/buffer failure stages.
+
+The traversal/preparation/projection integration probe also runs with actual
+commit enabled. The 648 flat cases agree, with 900 commit calls and 504
+registered records. The 2,916 angled three-face cases agree, with 3,888 commit
+calls, 1,944 registered records, 5,400 polygons and 23,383 generated vertices.
+It compares final packed buffers, record and persistent state, seed, helper
+traces, and a hash of record/buffer bytes at every registration boundary.
+Secondary rotated projection executes in 656 cases, including 432 with at
+least three polygons. Unlike the earlier mock, actual empty commits terminate
+the chain and actual commits control random-state reuse; counts therefore
+differ from the mocked-commit sweeps.
+
+The full checker still preserves all 7,500 matches against `588746a4`, with no
+gains or losses. Commit remains unmatched at 2,690/2,683 compiled/retail bytes.
+The image used for all actual-commit tests has SHA-256
+`3c0520f37c68bf5ee68e2c74e7bf23a249e2597a00692a9791ac3c8bbe575db7`.
+This covers generated and packed synthetic geometry, not the actual allocator,
+lighting, spatial indexing, asset streaming, GPU submission or gameplay.
 
 Shared changes are limited to the new header, the predicate definition and
 callers in `src/unknown_11cb00.cpp`, `src/unknown_1502e0.cpp`,
 `src/unknown_1689b0.cpp`, `src/unknown_17d9a0.cpp`, `src/ai.cpp`, and
-`src/unknown_1ddda0.cpp`, plus the previously removed placement stub in
+`src/unknown_1ddda0.cpp`, the precision correction in `src/unknown_180d80.cpp`, and the previously removed placement stub in
 `src/stubs/lane_r.cpp`. No compiler flags or generated inventory are included.
 
 Sources: independent disassembly of the project's SHA-256-pinned retail
