@@ -8802,7 +8802,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00249f85,30,game,size,packed,,,0018f3f0 00321379,src/unknown_249f85.cpp,todo
 00249fa3,29,game,size,packed,,,00249fcc 0024a190 0024bb9c,src/unknown_249fa3.cpp,matched
 00249fc0,12,game,unknown,a16,,,0024bbd0,src/unknown_249fa3.cpp,matched
-00249fcc,83,game,size,ebp packed,,,00120e20 001a2c81 0024c515 002b2327,src/unknown_24a2e7.cpp,near
+00249fcc,83,game,size,ebp packed,,,00120e20 001a2c81 0024c515 002b2327,src/unknown_24a2e7.cpp,matched
 0024a01f,124,game,size,packed,,,0013ee20 0024a150 0024bd61,src/unknown_249fa3.cpp,matched
 0024a09b,181,game,size,ebp packed,,,0022edb8 0022f042 0024aae8 00253b1a,src/unknown_24a2e7.cpp,matched
 0024a150,64,game,unknown,a16,,,0016bb50 0024a190 0024c447 0024c515,src/unknown_24a150.cpp,matched
