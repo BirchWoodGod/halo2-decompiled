@@ -2019,7 +2019,7 @@ struct s_player_object_motion
  vector3f angular;
 };
 struct s_z_transform_state;
-bool function_ab9f0(const s_z_transform_state *state);
+__declspec(noinline) bool function_ab9f0(const s_z_transform_state *state);
 void function_82980(long player_index, s_player_object_motion *motion);
 bool __stdcall function_84990(s_simulation_controller *controller, s_player_action *output);
 bool __stdcall function_8b660(s_simulation_world_actor *actor, long *index, s_unit_state_c6ef0 *state);

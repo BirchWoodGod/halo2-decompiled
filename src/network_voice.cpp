@@ -143,52 +143,51 @@ bool voice_xhv_get_runtime_parameters(XHV_RUNTIME_PARAMS *parameters, c_voice_xh
 // @retail 0x55810
 bool voice_xhv_create(c_voice_xhv *xhv)
 {
-	XHV_RUNTIME_PARAMS parameters;
-	bool result = voice_xhv_get_runtime_parameters(&parameters, xhv);
-	if (result)
-	{
-		XHVEngine **engine = &xhv->engine;
-		if (SUCCEEDED(XHVEngineCreate(&parameters, engine)))
-		{
-			HRESULT error;
-			xhv->unknown0c = 0;
-			switch (xhv->mode)
-			{
-			case 1:
-				xhv->unknown0c = 0xb;
-				break;
-			default:
-				xhv->unknown0c = 0xf;
-				break;
-			}
-			for (DWORD mode = 0; mode < 4; mode++)
-			{
-				if (xhv->unknown0c & (1 << mode))
-					error = (*engine)->EnableProcessingMode(g_52731c[mode]);
-			}
-			if (SUCCEEDED(error))
-			{
-				error = (*engine)->SetCallbackInterface(xhv);
-				if (xhv->unknown0c & 4)
-					(*engine)->SetMaxPlaybackStreamsCount(15);
-				if (SUCCEEDED(error))
-				{
-					for (long port = 0; port != NONE; port = voice_port_next_index(port))
-					{
-						XHV_LOCAL_TALKER_STATUS status;
-						(*engine)->RegisterLocalTalker(port);
-						(*engine)->SetProcessingMode(port, g_52731c[xhv->port_modes[port]]);
-						(*engine)->GetLocalTalkerStatus(port, &status);
-						xhv->communicator_present[port] = status.communicatorStatus == XHV_VOICE_COMMUNICATOR_STATUS_INSERTED;
-						xhv->chat_data_ready[port] = false;
-						xhv->voice_mail_active[port] = false;
-					}
-					result = true;
-				}
-			}
-		}
-	}
-	return result;
+    XHV_RUNTIME_PARAMS parameters;
+    XHVEngine **engine = &xhv->engine;
+    HRESULT error;
+    bool result = voice_xhv_get_runtime_parameters(&parameters, xhv);
+    bool *local_0 = &result;
+    if (!result)
+        goto local_1;
+    error = XHVEngineCreate(&parameters, engine);
+    if (!SUCCEEDED(error))
+        goto local_1;
+    xhv->unknown0c = 0;
+    switch (xhv->mode)
+    {
+    case 1:
+        xhv->unknown0c = 0xb;
+        break;
+    default:
+        xhv->unknown0c = 0xf;
+        break;
+    }
+    for (DWORD mode = 0; mode < 4; mode++)
+    {
+        if (xhv->unknown0c & (1 << mode))
+            error = (*engine)->EnableProcessingMode(g_52731c[mode]);
+    }
+    if (!SUCCEEDED(error))
+        goto local_1;
+    error = (*engine)->SetCallbackInterface(xhv);
+    if (xhv->unknown0c & 4)
+        (*engine)->SetMaxPlaybackStreamsCount(15);
+    if (!SUCCEEDED(error))
+        goto local_1;
+    for (long port = 0; port != NONE; port = voice_port_next_index(port))
+    {
+        XHV_LOCAL_TALKER_STATUS status;
+        (*engine)->RegisterLocalTalker(port);
+        (*engine)->SetProcessingMode(port, g_52731c[xhv->port_modes[port]]);
+        (*engine)->GetLocalTalkerStatus(port, &status);
+        xhv->communicator_present[port] = status.communicatorStatus == XHV_VOICE_COMMUNICATOR_STATUS_INSERTED;
+        xhv->chat_data_ready[port] = false;
+        xhv->voice_mail_active[port] = false;
+    }
+    *(volatile bool *)local_0 = true;
+local_1:
+    return result;
 }
 
 // @retail 0x55080
@@ -2151,11 +2150,19 @@ static __forceinline bool voice_test_unknown110(long player, long other)
 	return result;
 }
 
+static __forceinline bool function_57d63(long arg_0, long arg_1)
+{
+    bool local_0 = false;
+    if (g_4c9878.initialized && g_476fc8.initialized)
+        local_0 = (g_4c9878.unknown110[arg_0] & (1 << arg_1)) != 0;
+    return local_0;
+}
+
 // @retail 0x57d60
 long function_57d60(long mode, long player, long other)
 {
 	long result = 0;
-	if (!voice_test_unknown110(player, other) && !voice_test_unknown110(other, player))
+	if (!function_57d63(player, other) && !function_57d63(other, player))
 	{
 		switch (mode)
 		{
@@ -2163,7 +2170,7 @@ long function_57d60(long mode, long player, long other)
 		case 1: result = (voice_get_unknownEE() & (1 << player)) ? 1 : 2; break;
 		case 2: result = 2; break;
 		case 3: result = 3; break;
-		default: return result;
+		default: goto done;
 		}
 		long controller = voice_get_player_unknown14(player);
 		if (controller == NONE)
@@ -2692,6 +2699,8 @@ void function_57eb0(s_voice_player_settings *settings, long talker,
 		g_476fc8.engine->SetPlaybackPriority(voice_xuid(talker), 4, (XHV_PLAYBACK_PRIORITY)-1);
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x57960
 void __stdcall function_57960(s_voice_player_settings *settings)
 {
@@ -2707,22 +2716,27 @@ void __stdcall function_57960(s_voice_player_settings *settings)
 			voice_xhv_has_remote_talker(&g_476fc8, talker))
 		{
 			s_voice_route_choice choices[16] = {0};
-			for (long player = 0; player < 16; player++)
+			long *local_0 = &choices[0].mode;
+			for (long player = 0; player < 16;)
 			{
 				long mode = 0;
 				if (local & (1 << player))
 				{
 					mode = voice_players_share_team(player, talker);
+					_ReadWriteBarrier();
 					mode = function_57d60(mode, player, talker);
 					if (mode) settings->unknownc4 |= bit;
 				}
-				choices[player].player = player;
-				choices[player].mode = mode;
+				local_0[-1] = player;
+				local_0[0] = mode;
+				local_0 += 3;
+				player++;
 			}
 			function_57eb0(settings, talker, choices, 16);
 		}
 	}
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x56df0
 void __stdcall function_56df0(s_voice_player_settings *settings, long talker, long mode)

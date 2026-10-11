@@ -96,12 +96,11 @@ void function_8bf70(s_presence_name_cache *cache)
 			{
 				if (cache->entries[i].state == 1)
 				{
-					s_presence_name_cache_entry *entry = &cache->entries[i];
-					cache->task_index = function_abc70(controller, (XUID *)entry);
+					cache->task_index = function_abc70(controller, &cache->entries[i].user);
 					if (cache->task_index != NONE)
 					{
-						cache->pending = entry;
-						entry->state = 2;
+						cache->pending = &cache->entries[i];
+						cache->entries[i].state = 2;
 					}
 					break;
 				}
@@ -131,11 +130,14 @@ bool __stdcall function_8c150(void *cache, long allow_stale, unsigned __int64 *u
 			if (entry->state == 3)
 			{
 				long duration = g_network_configuration.value1728 * 1000;
-				dword time = entry->time;
-				if (!allow_stale && (long)(presence_cache_time() - time) > duration)
+				if (!allow_stale)
 				{
-					entry->state = 1;
-					return result;
+					dword time = entry->time;
+					if ((long)(presence_cache_time() - time) > duration)
+					{
+						entry->state = 1;
+						return result;
+					}
 				}
 				wcsncpy((wchar_t *)name, entry->name, 15);
 				((wchar_t *)name)[15] = 0;

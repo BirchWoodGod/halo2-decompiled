@@ -2247,8 +2247,8 @@ struct s_type_1e6529
 #include "game_engine_events.h"
 #include "effects.h"
 void function_d6660(s_type_1e6529 *, long);
-void object_get_damage_owner(long, s_damage_owner *);
-void function_d7b80(s_type_1e6529 *, long, short, short, short, vector3f const *);
+void __stdcall object_get_damage_owner(long, s_damage_owner *);
+void __stdcall function_d7b80(s_type_1e6529 *, long, short, short, short, vector3f const *);
 bool __stdcall function_cc460(long);
 void function_b7360(long);
 void function_153cd0(long);
