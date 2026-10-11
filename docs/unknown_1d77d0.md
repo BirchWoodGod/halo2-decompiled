@@ -59,6 +59,9 @@ It uses the names of:
 - `src/damage.cpp`: `function_db4c0` and `function_db810`.
 - `src/unknown_1c25a0.cpp`: `g_51e9a4`, the physics world.
 - `include/globals.h`: `g_480118` (`c_allocator`), `g_4e3b44` and `g_45dbd8`.
+- `include/unknown_146a20.h`: `hkMemory` (`allocate16`).
+- `include/havok_reference.h`: `c_havok_reference_counted` (`allocation_size`,
+  `reference_count`).
 - For the callers and the owner: `src/unknown_1d5940.cpp` (`s_1d5941`),
   `src/unknown_1d6560.cpp` (`s_physics_model_owner`), `src/unknown_20aa70.cpp`
   (`s_type_1a7926`, `function_20a9a0`) and `src/stubs/lane_c.cpp`.
@@ -137,6 +140,22 @@ reloads it from `L+0x3c` (`0x1d7cfb`).
 - On one path it sets the component's `flag9` (`or eax, 0x200` at
   `0x1d6b51`), and on the other it clears it (`0x1d6b65`), just before the
   call.
+
+**What `0x1d6ad0` does first** (from a review of this document by @mrv777;
+checked against retail):
+1. It takes the component in `ecx` and the owner in `edi`. `edi` is read at
+   `0x1d6aff` without being set.
+2. It sets `unknown18` and `unknown19` to NONE (`0x1d6ada`, `0x1d6ade`). The
+   slot of its first push holds the smallest node so far, from `0x7fffffff`
+   (`0x1d6ae2`).
+3. For each rigid body with `node_count` above 0, it takes the `node` of the
+   physics model's `bodies[nodes[0]]`:
+   - **NONE:** the body becomes `unknown18`, `unknown19` gets NONE, and the
+     scan stops (`0x1d6b37`–`0x1d6b3c`).
+   - **Below the smallest so far:** the body becomes `unknown18`, and the
+     node becomes the new smallest and `unknown19` (`0x1d6b14`–`0x1d6b27`).
+4. It sets `flag9` when the component has exactly one rigid body and
+   `unknown19` is still NONE, and clears it otherwise (`0x1d6b40`–`0x1d6b4b`).
 - `0x1d6ad0` is called only by `0x1d5940` (`todo`, a draft in
   `src/unknown_1d5940.cpp`). It passes the component in `ecx` and the owner in
   `edi` (`0x1d5bb1`–`0x1d5bb7`).
@@ -236,7 +255,7 @@ The retail executable's strings include `hkHingeConstraint`,
 
 | Where | Use here |
 | --- | --- |
-| `g_480118` (`c_allocator`, `include/globals.h:504`) | Its fifth virtual slot (`+0x10`, `slot4` in the repository) is called with the size and `0x27` pushed, and returns the new block. It pops both (`ret 8`); the stack depth agrees at every join |
+| `g_480118` (`c_allocator`, `include/globals.h:504`) | Its fifth virtual slot (`+0x10`) is called with the size and `0x27` pushed, and returns the new block. It pops both (`ret 8`); the stack depth agrees at every join. `c_allocator` calls the slot `slot4`; the repository's `hkMemory` names it `allocate16(long size, long memory_class)` (`include/unknown_146a20.h:39`) |
 | `g_51e9a4` (`hkWorld *`, `src/unknown_1c25a0.cpp:520`) | The physics world. `function_30c170` (`third:havok`, 4 bytes) returns its `+0x38`: `mov eax, [ecx+0x38]`. `function_1d7ef0` makes that the second body when an element has no second body (`src/unknown_1cec30.cpp:2580`). This document calls it the world's body; that it is Havok's fixed body is inferred |
 | `0x45dc54` | π/180, which converts the angle limits to radians |
 | `g_45dbd8` (`include/globals.h:507`) | 0.0, compared with the override strength |
@@ -310,18 +329,25 @@ It sets `L+0x24` to 0.0 at `0x1d7935`.
    iterator's gives its `strength` (`+8`) to `L+0x24` (`0x1d7950`–`0x1d7974`).
 
 This runs for every element, but only kinds 1 and 2 read `L+0x24`.
+
 `function_1d35d0` (`src/unknown_1cec30.cpp:1788`, `todo`) runs the same search
-over every group.
+over every group. In retail its outer loop goes on after a match, so the last
+matching group wins (`0x1d3647`–`0x1d367f`).
 
 ### The kinds
 
 **The steps.** Each kind:
 1. Initializes its local with a library routine (`ecx` = the local).
 2. Fills it with a builder, except kind 4, which fills it inline.
-3. Allocates a block of its size from `g_480118`.
-4. Stores the size in the block's word `+4`.
+3. Allocates a block of its size from `g_480118` (`allocate16`).
+4. Stores the size in the block's word `+4`
+   (`c_havok_reference_counted::allocation_size`, `include/havok_reference.h:16`).
 5. Constructs the constraint in the block from the local (`ecx` = the block,
    the local pushed). The constructor returns the block.
+
+The draft of `0x1d7400` (`src/unknown_1d7400.cpp:123`–`125`, `todo`) writes
+the same allocate, size and construct sequence. Here retail has no null test
+between the allocation and the constructor, in any of the six kinds.
 
 **The builders' arguments** (kinds 0, 1, 2 and 5; kind 3's builder differs,
 below). The local in `eax`, the first body in `ecx` (`L+0x18`), and the
@@ -447,7 +473,8 @@ in 16-byte stores. For example, `0x313b30` zeroes the fields at `+0x10` to
 **The constructors.** Each calls `0x31bbd0` on the block with the local. That
 routine:
 - sets up an exception frame (`0x31bbd7`);
-- sets the block's word `+6` to 1;
+- sets the block's word `+6` to 1 (`reference_count`,
+  `include/havok_reference.h:17`);
 - stores the local's `+0`, the first body, at `+0xc` (`entity_a`), through
   `0x31bac0`;
 - stores the local's `+4`, the second body, at `+0x10` (`entity_b`), through
@@ -562,6 +589,11 @@ void __stdcall function_1d77d0(s_havok_component *component,
 - **Checks.** Three independent reviews checked the document: one against
   retail, one against the repository, and a final one of the finished
   document. Their corrections are applied.
+- **A second map.** @mrv777 mapped the function independently from their own
+  retail copy, and their map agrees wherever the two overlap. Their review
+  added `0x1d6ad0`'s setup, the last-match rule of `function_1d35d0` and the
+  `hkMemory` and reference-count names. Each was checked against retail and
+  the repository before it went in.
 - **Prior coverage.** No document covered this range before. Source line
   numbers are at `5d1a893`.
 - **Outside sources.** No emulator, runtime testing, SDK or outside dataset was
