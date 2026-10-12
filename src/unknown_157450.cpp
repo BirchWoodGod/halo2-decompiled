@@ -171,8 +171,9 @@ static inline s_engine_options *engine_options()
 static inline long local_player_next(long index)
 {
 	long result = NONE;
+	long start = index == NONE ? 0 : index + 1;
 
-	for (long i = index == NONE ? 0 : index + 1; i < 4; i++)
+	for (long i = start; i < 4; i++)
 	{
 		if (g_4e8c20->entries[i] != NONE)
 		{
@@ -531,15 +532,13 @@ void function_158140(void)
 void function_1584c0(long index)
 {
 	long player_index = NONE;
-	s_game_engine_globals *globals;
 
 	if (index != NONE)
 	{
 		player_index = g_4e8c20->entries[index];
 	}
-	globals = function_xaee93d();
-	globals->timers[index] = 1.0f;
-	globals->timer_flags |= 1 << index;
+	function_xaee93d()->timers[index] = 1.0f;
+	function_xaee93d()->timer_flags |= 1 << index;
 	if (player_index != NONE)
 	{
 		((s_engine_player *)g_4e8c24->data)[player_index & 0xffff].value170 = engine_options()->value1bc;
@@ -2903,11 +2902,10 @@ void function_157ed0(long player_index)
 		if (g_4e6948->mode != 4 && function_x340af0())
 			function_158140();
 		game_engine_get()->p8(player_index);
-		s_engine_player *players = (s_engine_player *)g_4e8c24->data;
 		s_event event;
 		game_engine_event_initialize_inline(&event, 0, 24);
 		event.cause_player_index = player_index;
-		event.cause_team = players[index].team;
+		event.cause_team = ((s_engine_player *)g_4e8c24->data)[index].team;
 		game_engine_event_send_inline(&event);
 		function_196470();
 		if (g_510ca0 && !g_510ca1)
