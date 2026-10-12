@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7871 functions match
+
+```
+matched 7871 of 11318 game functions (950609 of 2784283 bytes, 34.14%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 40 (+1): the multiplayer-settings preview update `0x2c8d7c`, one of the methods round 39 put into its retail vtable slot, keeps its child-model pointer addressable across both preview updates.
+
+## 2026-10-12: 7870 functions match
+
+```
+matched 7870 of 11318 game functions (950496 of 2784283 bytes, 34.14%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 30 (+2): `0x214f0` calls `0x211a0` directly instead of through a volatile function pointer, and `0x211a0` copies its final pass to its output parameter; with the indirect call gone, two of its callers match (`0x222a0`, `0x235756`).
+
 ## 2026-10-12: 7868 functions match
 
 ```
