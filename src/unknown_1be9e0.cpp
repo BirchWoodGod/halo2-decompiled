@@ -103,17 +103,18 @@ long __stdcall function_1bead0(long actor_index, s_slot *slot)
 			joint_decline(actor_index, iterator.reference.unknown0);
 		}
 	}
-	if (result != NONE)
-		return result;
-
-	long element_index = function_26e940(actor_index);
-
-	if (element_index != NONE)
+	if (result == NONE)
 	{
-		state->unknown0c = true;
-		state->element_index = element_index;
+		long element_index = function_26e940(actor_index);
+
+		if (element_index != NONE)
+		{
+			state->unknown0c = true;
+			state->element_index = element_index;
+		}
+		result = element_index;
 	}
-	return element_index;
+	return result;
 }
 
 /* invites the actor's clump members near enough, the nearest first */

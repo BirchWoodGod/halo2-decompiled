@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7847 functions match
+
+```
+matched 7847 of 11318 game functions (947790 of 2784283 bytes, 34.04%)
+```
+
+75 new matches, none lost:
+- The second machine's lanes (#345–#348, #350, #352–#363, #365, #367, #368): lane P +18 (0x134d20, its callers and the interpolator getters), lane D +16, lane B +11, lane M +11, lane O +5, lane J +4, lane K +2, lane AA +2, lanes U and Y +1 each, and the permuter lane +4.
+- @coldspear's maps of 0x1d3920 (#344), 0x25d020 (#364) and 0x119280 (#366), and the one-bit tests note in docs/DECOMPILING.md (#351).
+- @Banshee64's comments on the parameter-address references from #183 and #255 (#349).
+
 ## 2026-10-12: 7772 functions match
 
 ```

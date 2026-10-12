@@ -553,6 +553,7 @@ s_projectile_material_response g_547660;
 s_projectile_material_response *__stdcall projectile_get_material_response(s_projectile_definition const *definition,
 	short material_index)
 {
+	/* retail keeps material_index on the stack */
 	short const *reference = &material_index;
 	long response_count = definition->material_response_count;
 	byte *materials = (byte *)g_4e034c;

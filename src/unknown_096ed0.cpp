@@ -197,12 +197,12 @@ const char *function_99820()
 // @retail 0x98480
 long function_98480(long handle, c_handle_table_450cd0 *self)
 {
-	long result = NONE;
 	long i;
 	if (handle == NONE)
 		i = 0;
 	else
 		i = (handle & 0x3ff) + 1;
+	long result = NONE;
 	for (; i < 0x400; i++)
 	{
 		s_handle_entry *entry = &self->entries[i];
@@ -227,11 +227,10 @@ bool function_99640(c_handle_table_450cd0 *self, long handle)
 			byte flags = self->table->peers[index].flags;
 			if (flags & 4)
 			{
-				if (entry->state == 3 && !(flags & 2))
-					result = true;
+				if (entry->state != 3 || (flags & 2))
+					return false;
 			}
-			else
-				result = true;
+			result = true;
 		}
 	}
 	return result;

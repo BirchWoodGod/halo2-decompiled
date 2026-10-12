@@ -750,8 +750,7 @@ void __stdcall online_message_block_send_finished(c_online_task_screen *screen)
 {
 	s_message_task_screen *view = (s_message_task_screen *)screen;
 	long task_index = view->task_index;
-	volatile byte *local_0 = (volatile byte *)&screen;
-	*local_0 = 0;
+	bool local_0 = false;
 	long error = 0x39;
 
 	if (task_index != NONE)
@@ -764,7 +763,7 @@ void __stdcall online_message_block_send_finished(c_online_task_screen *screen)
 			s_type_9df9da *task = function_6b910(task_index);
 			if (task)
 				error = function_0b4a20(online_task_continue(task));
-			*local_0 = 1;
+			local_0 = true;
 		}
 	}
 	s_state_block *block = view->block;
@@ -772,7 +771,7 @@ void __stdcall online_message_block_send_finished(c_online_task_screen *screen)
 		friend_request_clear();
 	function_08fa30(block);
 	online_task_screen_finish_inline((c_online_task_screen *)view);
-	if (*local_0 && error != 0x90)
+	if (local_0 && error != 0x90)
 		dialog_ok_show(1, error, 4, view->user_flags, 0, 0);
 }
 

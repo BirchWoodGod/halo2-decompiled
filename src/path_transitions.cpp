@@ -386,6 +386,7 @@ bool function_2702a0(long actor_index, long mode, long set, long target_mode, lo
     point3f const *position, vector3f const *forward, point3f *out_position,
     long *location, vector3f *out_forward, long *node_index)
 {
+    /* retail keeps out_position and position on the stack */
     point3f *const *reference = &out_position;
     bool result = false;
     point3f const *const *position_reference = &position;
@@ -417,6 +418,7 @@ bool function_2702a0(long actor_index, long mode, long set, long target_mode, lo
 bool function_270400(long actor_index, long mode, long set, point3f const *position,
     vector3f const *forward, point3f *out_position, long *location, vector3f *out_forward, long *node_index)
 {
+    /* retail keeps position on the stack */
     point3f const *const *position_reference = &position;
     bool result = false;
     transform4x3f matrix;
