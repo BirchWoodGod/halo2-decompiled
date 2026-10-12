@@ -99,6 +99,35 @@ PRIVATE inline void function_x0ec080(box2f const *bounds,long flip,real *out)
 	out[0]=x; out[1]=y; out[2]=dx; out[3]=dy;
 }
 
+PRIVATE __forceinline dword function_224551(s_draw_sprite_seed const *arg_0,
+	s_draw_value_cache *arg_1, color4f const *arg_2, s_draw_sprite_definition const *arg_3)
+{
+	color4f tint;
+	function_246d80(&arg_3->color,arg_1->values,(color3f *)&tint.red);
+	tint.alpha=function_246cd0(&arg_3->alpha,arg_1->values)*arg_2->alpha;
+	if(arg_3->flags&0x180)
+	{
+		color3f seed_color;
+		unpack_color3f(arg_0->color,&seed_color);
+		tint.red=tint.red*seed_color.red*2.0f;
+		tint.green=tint.green*seed_color.green*2.0f;
+		tint.blue=tint.blue*seed_color.blue*2.0f;
+	}
+	tint.red=arg_2->red*tint.red;
+	tint.green=arg_2->green*tint.green;
+	tint.blue=arg_2->blue*tint.blue;
+	if(tint.alpha<0.0f) tint.alpha=0.0f;
+	else if(tint.alpha>1.0f) tint.alpha=1.0f;
+	if(tint.red<0.0f) tint.red=0.0f;
+	else if(tint.red>1.0f) tint.red=1.0f;
+	if(tint.green<0.0f) tint.green=0.0f;
+	else if(tint.green>1.0f) tint.green=1.0f;
+	if(tint.blue<0.0f) tint.blue=0.0f;
+	else if(tint.blue>1.0f) tint.blue=1.0f;
+	dword local_0=pack_color4f(&tint);
+	return local_0;
+}
+
 // @retail 0x224550
 void __stdcall function_224550(s_draw_sprite_seed const *seed,s_draw_value_cache *values,
 	point3f *position,point3f *direction,real scale,color4f const *color,s_draw_sprite_context *context)
@@ -110,29 +139,7 @@ void __stdcall function_224550(s_draw_sprite_seed const *seed,s_draw_value_cache
 	function_173ba0(~values->field_44&mask,values->field_48,values->field_4c,values->field_50,(*values_reference)->values);
 	values->field_44|=mask;
 	real angle=function_246cd0(&definition->angle,values->values)*6.2831854820251465f;
-	color4f tint;
-	function_246d80(&definition->color,values->values,(color3f *)&tint.red);
-	tint.alpha=function_246cd0(&definition->alpha,values->values)*color->alpha;
-	if(definition->flags&0x180)
-	{
-		color3f seed_color;
-		unpack_color3f(seed->color,&seed_color);
-		tint.red=tint.red*seed_color.red*2.0f;
-		tint.green=tint.green*seed_color.green*2.0f;
-		tint.blue=tint.blue*seed_color.blue*2.0f;
-	}
-	tint.red=color->red*tint.red;
-	tint.green=color->green*tint.green;
-	tint.blue=color->blue*tint.blue;
-	if(tint.alpha<0.0f) tint.alpha=0.0f;
-	else if(tint.alpha>1.0f) tint.alpha=1.0f;
-	if(tint.red<0.0f) tint.red=0.0f;
-	else if(tint.red>1.0f) tint.red=1.0f;
-	if(tint.green<0.0f) tint.green=0.0f;
-	else if(tint.green>1.0f) tint.green=1.0f;
-	if(tint.blue<0.0f) tint.blue=0.0f;
-	else if(tint.blue>1.0f) tint.blue=1.0f;
-	dword packed=pack_color4f(&tint);
+	dword packed=function_224551(seed,values,color,definition);
 	real geometry[4];
 	s_draw_sprite_uv uv_a,uv_b;
 	if(definition->flags&0x10000)

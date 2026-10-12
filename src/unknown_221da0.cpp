@@ -792,8 +792,9 @@ void __stdcall function_221a70(long arg_0, s_voice_position_batch *arg_1)
 	if (local_0 && local_0->index != NONE)
 	{
 		s_structure_bsp_view *local_1 = (s_structure_bsp_view *)g_4e0348;
-		real local_2[0x200];
-		memset(local_2, 0, sizeof(local_2));
+		dword local_13[0x200];
+		real *local_2 = (real *)local_13;
+		memset(local_13, 0, sizeof(local_13));
 		if (local_1->audibility_count > 0)
 		{
 			s_structure_audibility *local_3 = local_1->audibility;

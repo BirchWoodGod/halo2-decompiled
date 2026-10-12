@@ -147,15 +147,13 @@ void function_1a6340(vector3f const *a, vector3f const *b, point3f *out, point3f
 // @retail 0x1a62e0
 bool function_1a62e0(long object_index, point3f *out, vector3f const *direction, point3f const *origin)
 {
+	struct s_1a62e1 { real field_0; point3f field_4; vector3f field_10; };
+	s_1a62e1 local_0;
+	function_df6c0(&local_0.field_4, &local_0.field_10, object_index, &local_0.field_0);
 	bool result = false;
-	real radius;
-	point3f bottom;
-	vector3f axis;
-
-	function_df6c0(&bottom, &axis, object_index, &radius);
-	if (radius > 0.0001f)
+	if (local_0.field_0 > 0.0001f)
 	{
-		function_1a6340(&axis, direction, out, &bottom, origin, radius);
+		function_1a6340(&local_0.field_10, direction, out, &local_0.field_4, origin, local_0.field_0);
 		result = true;
 	}
 	return result;
@@ -695,7 +693,7 @@ void function_1a7430(long owner_index, s_action_request *request, short *out_id,
 		if (timer == -2 && context->time == time->game_time)
 		{
 		}
-		else if (timer >= 0 && timer < 14)
+		else if (request->timer >= 0 && request->timer < 14)
 		{
 			long last = owner->times[timer];
 
@@ -1361,12 +1359,14 @@ bool __stdcall function_1a5910(long object_index, long excluded_index, short tea
 	*has_hostile = false;
 	if (*local_object != *local_excluded)
 	{
-		s_object_header *header = OBJECT_HEADER(object_index);
 		result = true;
+		s_object_header *header = OBJECT_HEADER(object_index);
 		if ((1 << header->type) & 3)
 		{
 			s_target_link_view *object = (s_target_link_view *)header->object;
-			s_target_link_definition *definition = (s_target_link_definition *)((s_tag_instance volatile *)g_4e3b44)[object->definition_index & 0xffff].bytes;
+			s_target_link_definition *definition;
+			s_target_link_definition **local_2 = &definition;
+			*local_2 = (s_target_link_definition *)g_4e3b44[object->definition_index & 0xffff].bytes;
 			short object_team = object->field_138;
 			result = !(bool)object->field_10a.field_2 && !(bool)((definition->field_bc >> 21) & 1);
 			if (result)
@@ -1414,21 +1414,30 @@ bool function_1a59f0(long object_index, long excluded_index, short team, bool *h
 }
 
 
+#pragma optimize("g", off)
+PRIVATE __forceinline s_object_header *function_1a5b01(long arg_0)
+{
+    long local_0 = arg_0 & 0xffff;
+    byte *local_1 = (byte *)g_4e0300->data;
+    return (s_object_header *)(local_1 + local_0 * sizeof(s_object_header));
+}
+#pragma optimize("", on)
+
 // @retail 0x1a5b00
 bool function_1a5b00(long object_index, short team, bool *has_hostile)
 {
 	long object_offset = (object_index & 0xffff) * sizeof(s_object_header);
-	s_target_seats_definition *definition = (s_target_seats_definition *)g_4e3b44[((s_object_header *)(object_offset + (byte *)g_4e0300->data))->object->definition_index & 0xffff].bytes;
+	s_target_seats_definition *definition = (s_target_seats_definition *)g_4e3b44[function_1a5b01(object_index)->object->definition_index & 0xffff].bytes;
 	bool result = false;
 	s_unit_child_iterator iterator;
 	*has_hostile = false;
 	iterator.object_index = object_index;
 	iterator.unit_index = NONE;
 	iterator.seat_index = NONE;
-	iterator.next_index = ((s_target_occupant_view *)((s_object_header *)(object_offset + (byte *)g_4e0300->data))->object)->first_child_index;
+	iterator.next_index = ((s_target_occupant_view *)function_1a5b01(object_index)->object)->first_child_index;
 	while (function_d05c0(&iterator))
 	{
-		s_target_occupant_view *occupant = (s_target_occupant_view *)OBJECT_HEADER(iterator.unit_index)->object;
+		s_target_occupant_view *occupant = (s_target_occupant_view *)function_1a5b01(iterator.unit_index)->object;
 		if (iterator.seat_index != NONE)
 		{
 			if (!function_1df560(team, occupant->team))
@@ -1592,6 +1601,12 @@ struct s_candidate_scale_globals
 	s_candidate_scale_view *field_f4;
 };
 
+PRIVATE __forceinline s_target_link_definition *function_1a5c01(long object_index)
+{
+	s_target_link_view *object = (s_target_link_view *)OBJECT_HEADER(object_index)->object;
+	return (s_target_link_definition *)g_4e3b44[object->definition_index & 0xffff].bytes;
+}
+
 // @retail 0x1a5c00
 long function_1a5c00(s_sort_weight_view const *weights, long object_index, bool alternate,
 	point3f const *origin, vector3f const *direction, long count, s_sort_candidate_view *candidates)
@@ -1601,7 +1616,7 @@ long function_1a5c00(s_sort_weight_view const *weights, long object_index, bool 
 	byte *definition = g_4e3b44[object->definition_index & 0xffff].bytes;
 	real scale = 1.0f;
 	if (((1 << object->field_aa) & 3) &&
-		(bool)((((s_target_link_definition *)g_4e3b44[(*(long volatile *)&object->definition_index) & 0xffff].bytes)->field_bc >> 19) & 1))
+		(bool)((function_1a5c01(object_index)->field_bc >> 19) & 1))
 		scale = ((s_candidate_scale_globals *)g_4e034c)->field_f4->field_8;
 	if (local_0 < 64 && function_1a5e40(object_index, NONE, NULL, NULL, NULL, alternate,
 		origin, direction, &candidates[local_0]) && function_1a60f0(&candidates[local_0], weights, scale))

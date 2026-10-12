@@ -3599,6 +3599,7 @@ PRIVATE __forceinline real vehicle_larger(real a, real b)
 // @retail 0xf78e0
 real __stdcall function_f78e0(long vehicle_index, long limit)
 {
+	/* retail keeps limit on the stack */
 	long const *reference = &limit;
 	byte *definition = VEHICLE_DEFINITION_GET(VEHICLE_GET(vehicle_index));
 

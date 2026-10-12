@@ -809,13 +809,23 @@ inline void voice_stop_engine(void)
 	}
 }
 
+PRIVATE __forceinline s_loop_allocator *function_53421(c_memory_source *arg_0, long arg_1, const char *arg_2)
+{
+	if (!arg_0)
+		arg_0 = (c_memory_source *)g_468758;
+	s_loop_allocator *local_0 = (s_loop_allocator *)arg_0->allocate(arg_1 + 0x50);
+	if (local_0)
+		function_18e250(local_0, arg_1, arg_2, arg_0);
+	return local_0;
+}
+
 // @retail 0x53420
 void voice_initialize_menu_pool(void)
 {
 	if (g_4c9878.type == 1)
 	{
 		g_4c9878.use_pool2 = true;
-		g_4c9878.pool2 = function_18e1f0(g_46dd54, 0x61800, "voice y menu pool");
+		g_4c9878.pool2 = function_53421(g_46dd54, 0x61800, "voice y menu pool");
 		if (g_4c9878.pool2)
 		{
 			g_4c9878.pool2->field3c = true;
@@ -2525,10 +2535,11 @@ void __stdcall function_541a0(long player)
    g_4c9878.unknown110[player] &= ~4;
   if (TEST_FIELD_BIT(g_54e8e0[port].flag5))
   {
+   XONLINE_MUTELISTUSER *users = 0;
    long count = g_4c99c0.user_counts[port];
    if (count != NONE)
    {
-    XONLINE_MUTELISTUSER *users = g_4c99c0.users[port];
+    users = g_4c99c0.users[port];
     if (!users)
      goto publish_properties;
     dword player_mask = voice_get_player_mask();

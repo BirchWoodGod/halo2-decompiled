@@ -801,11 +801,17 @@ PRIVATE __forceinline long function_21ee82(real arg_0)
     long local_0 = -6400;
     if (!(0.0f > arg_0))
     {
+        volatile real local_1;
         if (arg_0 > 1.0f)
+        {
             arg_0 = 1.0f;
+            local_1 = arg_0;
+        }
+        else
+            local_1 = arg_0;
         if (arg_0 != 0.0f)
         {
-            local_0 = (long)(log10(arg_0) * 2000.0f);
+            local_0 = (long)(log10(local_1) * 2000.0f);
             if (local_0 < -6400)
                 local_0 = -6400;
             else if (local_0 > 0)
@@ -862,7 +868,7 @@ void function_21ee80(void)
 			local.angles[3][3] = -0.785398185f;
 			local.angles[3][4] = 0.0f;
 			local.angles[3][5] = 0.0f;
-			real const *ranges[4] = { local.angles[0], local.angles[2], local.angles[1], local.angles[3] };
+			real const *volatile ranges[4] = { local.angles[0], local.angles[2], local.angles[1], local.angles[3] };
 			real scale = SOUND_DRIVER_GLOBALS->reverb_scales[group];
 			s_sound_driver_occlusion const *occlusion = &SOUND_DRIVER_GLOBALS->occlusions[group];
 			for (long channel = 0; channel < 4; channel++)

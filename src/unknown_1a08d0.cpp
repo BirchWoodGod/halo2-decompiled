@@ -250,20 +250,20 @@ bool async_copy_file(s_file_handle source, s_file_handle destination, long categ
 long __stdcall function_1a0e70(s_async_task *task)
 {
 	s_read_position_task *read = &task->read_position;
-	LONG high = 0;
-	task = 0;
-	dword size = read->size - read->bytes_read > g_46e488 ? g_46e488 : read->size - read->bytes_read;
+	dword size = g_46e488;
 
-	if (SetFilePointer(read->file.handle, read->offset, &high, FILE_BEGIN) != INVALID_SET_FILE_POINTER)
+	if (read->size - read->bytes_read <= size)
+		size = read->size - read->bytes_read;
+	DWORD local_0 = 0;
+	if (function_1a08d0(read->file.handle, read->offset) != INVALID_SET_FILE_POINTER)
 	{
-		ReadFile(read->file.handle, (byte *)read->buffer + read->bytes_read, size, (DWORD *)&task, NULL);
-		dword local_0 = (dword)task;
+		ReadFile(read->file.handle, (byte *)read->buffer + read->bytes_read, size, &local_0, NULL);
 		read->bytes_read += local_0;
 		read->offset += local_0;
 		if (read->bytes_read_out)
 			*read->bytes_read_out = read->bytes_read;
 	}
-	if (read->size == read->bytes_read || (dword)task < size)
+	if (read->size == read->bytes_read || local_0 < size)
 		return 1;
 	return 0;
 }
@@ -297,17 +297,16 @@ long __stdcall function_1a0fb0(s_async_task *task)
 	long local_0 = 0;
 	s_write_position_task *write = &task->write_position;
 	DWORD bytes_written = NONE;
-	task = 0;
 
-	if (SetFilePointer(write->file.handle, write->offset, (LONG *)&task, FILE_BEGIN) != INVALID_SET_FILE_POINTER)
+	if (function_1a08d0(write->file.handle, write->offset) != INVALID_SET_FILE_POINTER)
 	{
 		dword size = g_46e48c;
 
 		if (write->size - write->bytes_written <= size)
 			size = write->size - write->bytes_written;
 		WriteFile(write->file.handle, (byte const *)write->buffer + write->bytes_written, size, &bytes_written, NULL);
-		write->offset += bytes_written;
 		write->bytes_written += bytes_written;
+		write->offset += bytes_written;
 		if (write->size != write->bytes_written && bytes_written >= size)
 			goto local_1;
 		if (write->bytes_written_out)
@@ -405,32 +404,25 @@ long async_copy_position(
 {
 	if (bytes_copied)
 		*bytes_copied = 0;
-	volatile s_async_task task;
+	s_async_task task;
 
-	memset((void *)&task, 0, sizeof(task));
+	memset(&task, 0, sizeof(task));
 
 	task.copy_position.source.handle = source.handle;
 	task.copy_position.destination.handle = destination.handle;
-	task.copy_position.bytes_copied_out = bytes_copied;
 	task.copy_position.buffer = buffer;
 	task.copy_position.size = size;
 	task.copy_position.source_offset = source_offset;
 	task.copy_position.destination_offset = destination_offset;
-	return function_120ba0(priority, (s_async_task *)&task, category, async_copy_position_callback, done);
+	task.copy_position.bytes_copied_out = bytes_copied;
+	return function_120ba0(priority, &task, category, async_copy_position_callback, done);
 }
 
-#pragma optimize("s", on)
 // @retail 0x1a12c0
 long __stdcall async_set_file_size_callback(s_async_task *task)
 {
 	s_set_file_size_task *set = &task->set_file_size;
-	bool success;
-
-	LONG local_2 = set->size;
-	HANDLE local_1 = set->file.handle;
-	LONG &local_0 = *(LONG *)&task;
-	local_0 = 0;
-	success = SetFilePointer(local_1, local_2, &local_0, FILE_BEGIN) != INVALID_SET_FILE_POINTER;
+	bool success = function_1a08d0(set->file.handle, set->size) != INVALID_SET_FILE_POINTER;
 
 	if (success)
 		success = SetEndOfFile(set->file.handle) != 0;
@@ -438,7 +430,6 @@ long __stdcall async_set_file_size_callback(s_async_task *task)
 		*set->success = success;
 	return 1;
 }
-#pragma optimize("", on)
 
 // @retail 0x1a1310
 long function_1a1310(s_file_handle file, dword size, long category, long priority, bool *success, bool volatile *done)
@@ -510,18 +501,18 @@ long function_1a1480(
 		*success = false;
 	if (size)
 		*size = 0;
-	volatile s_async_task task;
+	s_async_task task;
 
-	memset((void *)&task, 0, sizeof(task));
+	memset(&task, 0, sizeof(task));
 
 	task.read_entire_file.path = path;
-	task.read_entire_file.success = success;
-	task.read_entire_file.file.handle = INVALID_HANDLE_VALUE;
-	task.read_entire_file.size = NONE;
 	task.read_entire_file.buffer = buffer;
 	task.read_entire_file.buffer_size = buffer_size;
 	task.read_entire_file.size_out = size;
-	return function_120ba0(priority, (s_async_task *)&task, category, async_read_entire_file_callback, done);
+	task.read_entire_file.success = success;
+	task.read_entire_file.file.handle = INVALID_HANDLE_VALUE;
+	task.read_entire_file.size = NONE;
+	return function_120ba0(priority, &task, category, async_read_entire_file_callback, done);
 }
 
 // @retail 0x1a1530
