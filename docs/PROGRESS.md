@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7947 functions match
+
+```
+matched 7947 of 11318 game functions (965514 of 2784283 bytes, 34.68%)
+```
+
+3 new matches, none lost:
+- Claude lane 1, round 4 (+3): the two interpolator getters behind `0x2abc10` and `0x2abca0` set their default result after the lookup, as retail does, and `0xc12d0` reads its light definition through a volatile pointer to the tag data and writes its last clamp the other way round; `0xa3df0` is two differences closer.
+
 ## 2026-10-12: 7944 functions match
 
 ```
