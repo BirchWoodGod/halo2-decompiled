@@ -147,12 +147,8 @@ public:
 	virtual void v0(long, long, bool, long);
 	virtual void v2(long, long);
 	virtual bool v5(long, long);
-	virtual bool v23();
 	virtual bool v25();
-	virtual void v28(long);
 	virtual void v32(long);
-	virtual void v34();
-	virtual void v36(long);
 	virtual bool v38(long, long);
 	virtual void v40();
 	virtual void v43(long);
@@ -161,10 +157,70 @@ public:
 class c_game_engine_b : public c_game_engine
 {
 public:
-	virtual void v2(long, long);
 	virtual bool v5(long, long);
 	virtual long v20(long, long, long, long, long);
 };
+
+/* The complete retail table at 0x45c948 has its own slot numbering.
+   The legacy classes above retain their existing shared-layout overrides. */
+class c_game_engine_45c948
+{
+public:
+	virtual long v0() { return NONE; }
+	virtual bool v1();
+	virtual void v2() {  }
+	virtual bool v3() { return true; }
+	virtual bool v4(long) { return true; }
+	virtual void v5(long) {  }
+	virtual void v6(long);
+	virtual void v7(long) {  }
+	virtual void v8(long) {  }
+	virtual void v9(long, long) {  }
+	virtual void v10(long) {  }
+	virtual void v11() {  }
+	virtual void v12();
+	virtual void v13(long) {  }
+	virtual void v14(long);
+	virtual void v15(long) {  }
+	virtual bool v16(long, long) { return true; }
+	virtual void v17(long, long) {  }
+	virtual void v18() {  }
+	virtual real v19(long) { return 0.0f; }
+	virtual long v20(long) { return 0; }
+	virtual void v21(long) {  }
+	virtual void v22(long) {  }
+	virtual void v23(long, long) {  }
+	virtual void v24(long, long) {  }
+	virtual long v25(long, long, long) { return 0; }
+	virtual long v26() { return NONE; }
+	virtual bool v27(short, short) { return false; }
+	virtual void v28(long) {  }
+	virtual void v29() {  }
+	virtual void v30(long, long, bool, long) {  }
+	virtual long v31(long, long, long) { return 0; }
+	virtual void v32(long player_index, long list_pointer);
+	virtual bool v33(long, long) { return true; }
+	virtual bool v34(long) { return false; }
+	virtual bool v35(long, long) { return false; }
+	virtual void v36(long) {  }
+	virtual long v37(long, byte *) { return 0; }
+	virtual bool v38(long) { return false; }
+	virtual long v39() { return 0; }
+	virtual void v40() {  }
+	virtual void v41(s_engine_settings *) {  }
+	virtual void v42(byte, dword *, s_engine_settings *) {  }
+	virtual bool v43(byte, s_engine_settings *) { return false; }
+	virtual void v44(long, s_stats *) {  }
+	virtual void v45(long, long *, long) {  }
+	virtual bool v46(long, long) { return false; }
+	virtual void v47(long, long, real *) {  }
+	virtual bool v48(long, long, long, long) { return false; }
+	virtual bool v49(short, dword, long, s_player_update *) { return false; }
+	virtual long v50(long, long, long, long, long) { return 0; }
+};
+
+// Retail stores this engine object at 0x47fc8c.
+c_game_engine_45c948 g_47fc8c;
 
 /* slots 14 and 15 of the first, slot 14 of the second: wrappers that run on
    the peer object (see unknown_2bcdd0.cpp) */
@@ -774,13 +830,13 @@ bool function_2be880(long player_index, s_polygon_2be *polygon)
 }
 
 // @retail 0x2bf310
-bool c_game_engine_a::v23()
+bool c_game_engine_45c948::v1()
 {
 	s_state_2bf *state = (s_state_2bf *)((byte *)g_4e9ae8 + 0xfc);
 
 	memset(state, 0, 0x118);
-	for (long i = 0; i < 4; i++)
-		state->l60[i] = NONE;
+	for (long i = 0; i < 8; ++i)
+		state->w60[i] = (word)NONE;
 	for (long j = 0; j < 8; j++)
 		state->l70[j] = NONE;
 	g_51eccc = state;
@@ -941,22 +997,26 @@ PRIVATE __forceinline bool territory_holder_matches_player(long holder, long pla
 }
 
 // @retail 0x2bf740
-void c_game_engine_b::v2(long list_pointer, long player_index)
+void c_game_engine_45c948::v32(long player_index, long list_pointer)
 {
 	s_point_list_2bf *list = (s_point_list_2bf *)list_pointer;
 	s_state_2bf *state = g_51eccc;
 
 	for (long i = 0; i < (short)g_51eccc->w114; i++)
 	{
-		short marker = (short)state->w60[i];
+		long holder = state->l70[i];
+		long marker = (short)state->w60[i];
 
 		if (marker != NONE)
 		{
-			long holder = state->l70[i];
-
 			if (territory_holder_matches_player(holder, player_index, g_4e8c24))
 			{
-				point_list_add_2bf(list, g_4e0350->marker_entries[marker].position,
+				long bits[3];
+				point3f const *source = &g_4e0350->marker_entries[marker].position;
+				bits[0] = ((long const *)source)[0];
+				bits[1] = ((long const *)source)[1];
+				bits[2] = ((long const *)source)[2];
+				point_list_add_2bf(list, *(point3f const *)bits,
 					*(real *)&g_502258[35], *(real *)&g_502258[36], *(real *)&g_502258[0], *(real *)&g_502258[1], *(real *)&g_502258[37]);
 			}
 		}
@@ -981,7 +1041,7 @@ PRIVATE __forceinline void territory_marker_position_copy(point3f *destination, 
 }
 
 // @retail 0x2bf5b0
-void c_game_engine_a::v34()
+void c_game_engine_45c948::v12()
 {
 	s_state_2bf *state = g_51eccc;
 	s_palette_source_globals *globals = g_4e0350;
@@ -1016,7 +1076,7 @@ void c_game_engine_a::v34()
 }
 
 // @retail 0x2bf480
-void c_game_engine_a::v28(long a)
+void c_game_engine_45c948::v6(long a)
 {
 	s_event event;
 
@@ -1654,7 +1714,7 @@ void territory_marker_color(long player_index, long territory, s_color_bits *col
 }
 
 // @retail 0x2bf960
-void c_game_engine_a::v36(long local_player)
+void c_game_engine_45c948::v14(long local_player)
 {
 	long player_index = NONE;
 	if (local_player != NONE)
@@ -1669,8 +1729,8 @@ void c_game_engine_a::v36(long local_player)
 			s_marker_list list;
 			point3f const *position = &g_4e0350->marker_entries[(short)state->w60[i]].position;
 			long position_bits[3];
-			position_bits[0] = ((long const *)position)[0];
 			position_bits[1] = ((long const *)position)[1];
+			position_bits[0] = ((long const *)position)[0];
 			position_bits[2] = ((long const *)position)[2];
 			list.position = *(point3f const *)position_bits;
 			list.b0 = 0;
