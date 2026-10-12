@@ -204,25 +204,19 @@ void motion_sensor_add_nearby_object(s_motion_sensor_player *sensor, long object
 // @retail 0x1a1c8e
 void s_motion_sensor_player::motion_sensor_add_other_object(long object_index)
 {
-	s_motion_sensor_player *sensor = this;
-	long *local_0 = &sensor->other_count;
-	long count = local_0[-1];
-	long local_1 = *(volatile long *)local_0;
-	count += local_1;
-	if (count < 16)
+	if (nearby_count + other_count < 16)
 	{
-		sensor->objects[count] = object_index;
-		(*local_0)++;
+		objects[nearby_count + other_count] = object_index;
+		other_count++;
 	}
 }
 
 // @retail 0x1a1cb5
-void motion_sensor_remove_object(s_motion_sensor_player *sensor, long index)
+inline void motion_sensor_remove_object(s_motion_sensor_player *sensor, long index)
 {
 	if (index >= 0)
 	{
-		long count = sensor->nearby_count + sensor->other_count;
-		if (index < count)
+		if (index < sensor->nearby_count + sensor->other_count)
 		{
 			if (index < sensor->nearby_count)
 			{
@@ -234,8 +228,8 @@ void motion_sensor_remove_object(s_motion_sensor_player *sensor, long index)
 			}
 			else
 			{
-				if (index != count - 1)
-					sensor->objects[index] = sensor->objects[count - 1];
+				if (index != sensor->nearby_count + sensor->other_count - 1)
+					sensor->objects[index] = sensor->objects[sensor->nearby_count + sensor->other_count - 1];
 				sensor->other_count--;
 			}
 		}
