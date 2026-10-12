@@ -35,32 +35,32 @@ long function_181800(s_sphere_frustum const *frustum, point3f const *center, rea
 		return 0;
 	}
 
-	real distance0 = frustum->planes[0].k * center->z + frustum->planes[0].j * center->y + frustum->planes[0].i * center->x - frustum->planes[0].d;
+	real distance0 = plane_distance_to_point(&frustum->planes[0], center);
 	if (distance0 > radius)
 	{
 		return 0;
 	}
-	real distance1 = frustum->planes[1].k * center->z + frustum->planes[1].j * center->y + frustum->planes[1].i * center->x - frustum->planes[1].d;
+	real distance1 = plane_distance_to_point(&frustum->planes[1], center);
 	if (distance1 > radius)
 	{
 		return 0;
 	}
-	real distance2 = frustum->planes[2].k * center->z + frustum->planes[2].j * center->y + frustum->planes[2].i * center->x - frustum->planes[2].d;
+	real distance2 = plane_distance_to_point(&frustum->planes[2], center);
 	if (distance2 > radius)
 	{
 		return 0;
 	}
-	real distance3 = frustum->planes[3].k * center->z + frustum->planes[3].j * center->y + frustum->planes[3].i * center->x - frustum->planes[3].d;
+	real distance3 = plane_distance_to_point(&frustum->planes[3], center);
 	if (distance3 > radius)
 	{
 		return 0;
 	}
-	real distance4 = frustum->planes[4].k * center->z + frustum->planes[4].j * center->y + frustum->planes[4].i * center->x - frustum->planes[4].d;
+	real distance4 = plane_distance_to_point(&frustum->planes[4], center);
 	if (distance4 > radius)
 	{
 		return 0;
 	}
-	real distance5 = frustum->planes[5].k * center->z + frustum->planes[5].j * center->y + frustum->planes[5].i * center->x - frustum->planes[5].d;
+	real distance5 = plane_distance_to_point(&frustum->planes[5], center);
 	if (!(distance5 > radius))
 	{
 		return distance0 < -radius && distance1 < -radius && distance2 < -radius && distance3 < -radius && distance5 < -radius ? 2 : 1;

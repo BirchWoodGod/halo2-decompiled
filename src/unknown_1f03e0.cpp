@@ -1074,25 +1074,30 @@ void function_1f19c0(byte const *request, s_shape_state *history, byte *out)
             }
             if (*(long *)(contact + 0x14) != NONE || speed > 0.0f)
             {
-                bool accept;
                 if (supported)
                 {
-                    accept = (flying || normal->j * velocity->j + normal->i * velocity->i <= 0.5f) &&
-                        (!best_supported || speed > best_speed) && !(fabs(*(real *)(contact + 0x38)) < 0.0001f);
+                    if (!flying && normal->j * velocity->j + normal->i * velocity->i > 0.5f)
+                        goto local_10;
+                    if (best_supported && !(speed > best_speed))
+                        goto local_10;
+                    if (fabs(*(real *)(contact + 0x38)) < 0.0001f)
+                        goto local_10;
                 }
                 else if (flag)
-                    accept = !best_flag || normal->k > best_height;
-                else
-                    accept = !best_supported && !best_flag && normal->k > best_height;
-                if (accept)
                 {
-                    selected = i;
-                    best_height = normal->k;
-                    best_supported = supported;
-                    best_speed = speed;
-                    best_flag = flag;
+                    if (best_flag && !(normal->k > best_height))
+                        goto local_10;
                 }
+                else if (best_supported || best_flag || !(normal->k > best_height))
+                    goto local_10;
+                selected = i;
+                best_height = normal->k;
+                best_supported = supported;
+                best_speed = speed;
+                best_flag = flag;
             }
+local_10:
+            ;
         }
         if ((short)selected != NONE && best_supported)
         {
@@ -1122,6 +1127,7 @@ void function_1f19c0(byte const *request, s_shape_state *history, byte *out)
     }
     else
     {
+        flags = *(dword *)(request + 0x18);
         bool airborne = (flags & 0x18) != 0;
         if ((flags & 2) || airborne)
         {

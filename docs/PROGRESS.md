@@ -2,6 +2,52 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7951 functions match
+
+```
+matched 7951 of 11318 game functions (966210 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 34 (+2), writing this machine's unwritten functions: `0x24ba99` matches on its first draft, and `0x2c3b0` replaces its stub, which gives the second machine's caller `0x22a648` retail's call and matches it. Thirteen more render and UI functions are now written, some kept disabled where a draft would cost an existing match.
+
+## 2026-10-12: 7949 functions match
+
+```
+matched 7949 of 11318 game functions (966138 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 43 (+2), in the render range: `0x3f830` matches, and `0x36880` keeps its rectangle on the stack through a named reference, the third machine's lead from #375. That matches the third machine's caller `0x1634d0` and takes `0x36880` from 76 differences to 55; `0x15720` and `0x22c30` are each about ten closer.
+
+## 2026-10-12: 7947 functions match
+
+```
+matched 7947 of 11318 game functions (965514 of 2784283 bytes, 34.68%)
+```
+
+3 new matches, none lost:
+- Claude lane 1, round 4 (+3): the two interpolator getters behind `0x2abc10` and `0x2abca0` set their default result after the lookup, as retail does, and `0xc12d0` reads its light definition through a volatile pointer to the tag data and writes its last clamp the other way round; `0xa3df0` is two differences closer.
+
+## 2026-10-12: 7944 functions match
+
+```
+matched 7944 of 11318 game functions (964956 of 2784283 bytes, 34.66%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 42 (+2), in the render range: `0x36f50` sums its three squared lengths in single precision as retail does, and `0x2afa0` matches; `0x31590` is down to 2 differences, which wait on its callee `0xc17f0`, and `0x3ea60` to 5.
+
+## 2026-10-12: 7942 functions match
+
+```
+matched 7942 of 11318 game functions (964104 of 2784283 bytes, 34.63%)
+```
+
+64 new matches, none lost:
+- The third machine's first batch (#375, +25), over its lanes N, Q, R, S, T and H: among them `0x142eb0`, which now takes its two matrices in retail's order, and `0x1973f0`, through two input globals that now point into the record they belong to.
+- The second machine's lanes (#372–#374, #376–#381, +39): lane F +10 (the shared list base now has one declaration, which also matches lane O's `0x249f85` and this machine's `0x2b19bd`), lane P +8, lane M +6, lane D +9, lanes J and Y +2 each, lane B +1, and lane AC +1 (this machine's `0x2a56e0`, through its callee `0x275380`).
+
 ## 2026-10-12: 7878 functions match
 
 ```
