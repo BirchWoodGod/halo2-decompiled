@@ -123,7 +123,7 @@ long function_2078f0(long const *object_index, s_impact_data const *data, vector
 		real strength = impact_distance_squared_to_nearest_player(&data->position, 1);
 		function_2079f0(object_index, data->type, data->unknown38);
 		if (!havok_component_impact_make_room(NONE, component, strength))
-			return index;
+			goto local_0;
 		index = impact_new(data, 1);
 		s_component_impact_view *impact = &((s_component_impact_view *)g_51ebfc->data)[index & 0xffff];
 		havok_component_impact_add(component, index);
@@ -134,6 +134,7 @@ long function_2078f0(long const *object_index, s_impact_data const *data, vector
 		s_component_impact_view *impact = &((s_component_impact_view *)g_51ebfc->data)[index & 0xffff];
 		impact_set_contact((s_impact *)impact, data, vector, scale, flag);
 	}
+local_0:
 	return index;
 }
 

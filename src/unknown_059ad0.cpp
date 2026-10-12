@@ -2749,9 +2749,14 @@ void network_session_handle_join_abort_reply(c_class_58d20 *session, const s_typ
 {
 	if (session->state == 2)
 	{
-		const s_type_99af70 *host_address = &((s_session_state_leaving_join_data *)&session->value7420)->host_address;
-		short length = address->address_length < host_address->address_length ? address->address_length : host_address->address_length;
-		if (address->address_length > 0 && address->address_length == host_address->address_length && memcmp(address, host_address, length) == 0)
+		const s_type_99af70 *host_address;
+		host_address = &((s_session_state_leaving_join_data *)&session->value7420)->host_address;
+		byte local_0 = false;
+		unsigned long length;
+		length = !(address->address_length <= host_address->address_length) ? host_address->address_length : address->address_length;
+		if (address->address_length > 0)
+			local_0 = address->address_length == host_address->address_length && memcmp(address, host_address, length) == 0;
+		if (local_0 != 0)
 			network_session_close(session);
 	}
 }

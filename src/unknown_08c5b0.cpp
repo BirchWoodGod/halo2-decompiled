@@ -130,14 +130,16 @@ static inline XUID *user_settings_identity(XONLINE_USER *user)
 
 static __forceinline long user_settings_next_controller(long index)
 {
+ long result;
  switch (index + 1)
  {
- case 0: return 0;
- case 1: return 1;
- case 2: return 2;
- case 3: return 3;
- default: return NONE;
+ case 0: result = 0; break;
+ case 1: result = 1; break;
+ case 2: result = 2; break;
+ case 3: result = 3; break;
+ default: result = NONE; break;
  }
+ return result;
 }
 
 static __forceinline void user_settings_request(long controller, XUID *identity)
@@ -159,15 +161,14 @@ void function_8c660(void)
  if (signed_in) memcpy(users, signed_in, sizeof(users));
  for (long controller = 0; controller != NONE; controller = user_settings_next_controller(controller))
  {
-  XONLINE_USER *user = &users[controller];
-  HRESULT status = user->hr;
-  XUID *identity = user_settings_identity(user);
+  HRESULT status = users[controller].hr;
+  XUID *identity = user_settings_identity(&users[controller]);
   if (identity && identity->qwUserID && SUCCEEDED(status))
   {
-   if (!XOnlineIsUserGuest(identity->dwUserFlags))
+   if (!XOnlineIsUserGuest(users[controller].xuid.dwUserFlags))
    {
     if (controller_voice_view_get(controller)->voice_setting == 0)
-     user_settings_request(controller, identity);
+     user_settings_request(controller, user_settings_identity(&users[controller]));
    }
    else
    {

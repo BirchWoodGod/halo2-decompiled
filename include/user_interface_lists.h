@@ -645,7 +645,7 @@ class c_clan_member_privileges_list : public c_class_1474e8
 {
 public:
 	c_clan_member_privileges_list(word user_flags);
-	~c_clan_member_privileges_list();
+	virtual ~c_clan_member_privileges_list();
 
 	/* focuses the member's current privilege */
 	virtual void v1();

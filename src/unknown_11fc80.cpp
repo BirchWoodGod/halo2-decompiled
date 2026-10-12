@@ -27,9 +27,14 @@ extern short const g_440b94[6][3] =
 
 PRIVATE __forceinline void function_11fc81(point3f *arg_0, point3f const *arg_1, vector3f const *arg_2, real arg_3)
 {
-	arg_0->x = arg_2->i * arg_3 + arg_1->x;
-	arg_0->y = arg_3 * arg_2->j + arg_1->y;
-	arg_0->z = arg_3 * arg_2->k + arg_1->z;
+	real local_0 = arg_2->i * arg_3;
+	local_0 += arg_1->x;
+	arg_0->x = local_0;
+	local_0 = arg_3 * arg_2->j;
+	local_0 += arg_1->y;
+	arg_0->y = local_0;
+	arg_3 *= arg_2->k;
+	arg_0->z = arg_3 + arg_1->z;
 }
 
 // @retail 0x11fc80
@@ -54,7 +59,7 @@ long function_11fc80(
 		for (long i = 0; i < point_count; i++)
 		{
 			point3f const *current = &points[i];
-			real distance = plane->i * current->x + plane->j * current->y + plane->k * current->z - plane->d - offset;
+			real distance = plane->j * current->y + (plane->i * current->x + plane->k * current->z) - plane->d - offset;
 			bool inside = distance >= 0.f;
 
 			if (inside != previous_inside)
