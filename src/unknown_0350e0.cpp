@@ -1914,7 +1914,9 @@ void __stdcall function_3f830(byte const *tree, point3f const *center)
     g_509438 = NULL;
     if (*(long const *)(tree + 0x20) > 0)
     {
-        real tree_radius = (real)*(long const *)(tree + 0xc) * 8.0f * 0.5f;
+        real scaled_radius = (real)*(long const *)(tree + 0xc) * 8.0f;
+        dword scaled_bits = *(dword const *)&scaled_radius;
+        real tree_radius = *(real const *)&scaled_bits * 0.5f;
         ((c_octree_radius_view_ab const *)tree)->function_3f970( 0, (plane3f *)(context + 0x10c), (real *)&bounds,
             (point3f const *)tree, tree_radius);
     }

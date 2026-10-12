@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7949 functions match
+
+```
+matched 7949 of 11318 game functions (966138 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 43 (+2), in the render range: `0x3f830` matches, and `0x36880` keeps its rectangle on the stack through a named reference, the third machine's lead from #375. That matches the third machine's caller `0x1634d0` and takes `0x36880` from 76 differences to 55; `0x15720` and `0x22c30` are each about ten closer.
+
 ## 2026-10-12: 7947 functions match
 
 ```
