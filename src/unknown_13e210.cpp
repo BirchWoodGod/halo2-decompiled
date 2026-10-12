@@ -104,6 +104,7 @@ hash_node *function_13e2d0(hash_table *table, void *key)
 // @retail 0x13e320
 bool hash_table_remove(hash_table *table, void *key)
 {
+	bool result = false;
 	dword bucket = table->hash_proc(key) % table->bucket_count;
 	hash_node *previous = NULL;
 	for (hash_node *node = table->buckets[bucket]; node; node = node->next)
@@ -116,11 +117,12 @@ bool hash_table_remove(hash_table *table, void *key)
 				previous->next = node->next;
 			node->next = table->free_list;
 			table->free_list = node;
-			return true;
+			result = true;
+			break;
 		}
 		previous = node;
 	}
-	return false;
+	return result;
 }
 
 // @retail 0x13e3a0

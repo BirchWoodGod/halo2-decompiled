@@ -51,7 +51,7 @@ void __stdcall function_173ba0(dword mask, void *a, void *b, void const *c, real
 real function_246cd0(s_particle_property const *property, real const *values);
 real function_30bf0(vector3f *v);
 vector3f *function_11d000(vector3f const *v, vector3f *out);
-matrix3x3 *function_142eb0(matrix3x3 const *a, matrix3x3 const *b, matrix3x3 *out);
+matrix3x3 *function_142eb0(matrix3x3 const *right, matrix3x3 const *left, matrix3x3 *out);
 void function_1cf50();
 
 PRIVATE inline void draw_cross(vector3f const *a, vector3f const *b, vector3f *out)
@@ -135,7 +135,7 @@ void __stdcall function_224fd0(s_draw_mesh_seed const *seed, s_draw_value_cache 
 		draw_cross(&basis.left,&basis.up,&basis.forward);
 		break;
 	}
-	function_142eb0(&rotation,&basis,&rotation);
+	function_142eb0(&basis,&rotation,&rotation);
 	word *indices=definition->indices;
 	D3DDevice_SetVertexData4f(12,rotation.forward.i,rotation.left.i,rotation.up.i,position->x);
 	D3DDevice_SetVertexData4f(13,rotation.forward.j,rotation.left.j,rotation.up.j,position->y);

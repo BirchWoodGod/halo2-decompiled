@@ -686,6 +686,8 @@ HRESULT online_message_block_send_team_recruit(s_state_block *block, long contro
 			goto local_0;
 		}
 		function_6b640(task_index);
+		block->unknown218 = NONE;
+		goto local_0;
 	}
 	block->unknown218 = NONE;
 local_0:

@@ -10,8 +10,6 @@
 #include <string.h>
 #include <time.h>
 
-s_flagged_value g_511020;
-s_flagged_value g_511028;
 s_counter_bits g_46ddc0[86];
 s_input_address g_51e8d4[16];
 
@@ -59,22 +57,12 @@ void function_1968b0(long c, long a, long b, long value)
 		if (a != NONE)
 		{
 			s_input_counter *counter = &g_511bf4.all[a * 0x1b5 + b];
-			long clamped;
-			if (value < minimum)
-				clamped = minimum;
-			else
-				clamped = value > maximum ? maximum : value;
-			counter->value = clamped;
+			counter->value = value < minimum ? minimum : (value > maximum ? maximum : value);
 		}
 		if (c != NONE)
 		{
 			s_input_counter *counter = &g_511bf4.counters[0][c * 0x2d + b];
-			long clamped;
-			if (value < minimum)
-				clamped = minimum;
-			else
-				clamped = value > maximum ? maximum : value;
-			counter->value = clamped;
+			counter->value = value < minimum ? minimum : (value > maximum ? maximum : value);
 		}
 	}
 }
@@ -97,8 +85,9 @@ void function_197360(s_input_record *record)
 	record->flag1 = g_511020.flag;
 	if (record->flag1)
 		record->value4 = g_511020.value;
-	record->flag8 = g_511028.flag;
-	if (g_511028.flag)
+	byte flag8 = g_511028.flag;
+	record->flag8 = flag8;
+	if (flag8)
 		record->valuec = g_511028.value;
 	record->flag0 = g_510cb1;
 	memcpy(record->devices, input_device(0), sizeof(record->devices));

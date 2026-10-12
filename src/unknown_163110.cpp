@@ -801,17 +801,16 @@ void connection_widget_draw(s_text_widget_c const *widget)
 		bounds.bottom = widget->bounds.bottom - 1;
 		if (bar_count >= 4)
 		{
-			bar_color = g_4686dc;
+			color = *g_4686dc;
 		}
 		else if (bar_count >= 2)
 		{
-			bar_color = g_4686e8;
+			color = *g_4686e8;
 		}
 		else
 		{
-			bar_color = g_4686d8;
+			color = *g_4686d8;
 		}
-		color = *bar_color;
 		color.alpha = widget->color_b.alpha;
 		for (i = bar_count; i > 0; i--)
 		{

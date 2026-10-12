@@ -203,6 +203,8 @@ public:
 
 /* the vtable at 0x450cf4 (8 slots): an aggregate of three handle tables.
    v2 is 0x97a30, v3 0x97a70 and v4 0x97ab0 */
+struct s_request;
+
 class c_aggregate_450cf4
 {
 public:
@@ -211,7 +213,7 @@ public:
 	virtual bool v2(bool *a1) { return false; }
 	virtual long v3(long a1, long a2) { return 0; }
 	virtual bool v4(long a1, s_bitstream *stream, long a3, long reserved_bits);
-	virtual void v5() {}
+	virtual long function_97d80(dword *source, s_request *request);
 	virtual void v6() {}
 	virtual void v7() {}
 

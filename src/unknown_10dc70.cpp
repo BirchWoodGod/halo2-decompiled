@@ -539,11 +539,15 @@ struct s_weapon_state
 
 #define WEAPON_STATE(object) ((s_weapon_state *)((byte *)(object) + (object)->offset33e))
 
-static inline void trigger_initialize(s_trigger_state *trigger)
+static inline void trigger_head_initialize(s_trigger_state *trigger)
 {
 	trigger->unknown00 = NONE;
 	trigger->unknown04 = NONE;
 	trigger->unknown06 = NONE;
+}
+
+static inline void trigger_body_initialize(s_trigger_state *trigger)
+{
 	trigger->unknown1c = 0.0f;
 	trigger->unknown18 = 1.0f;
 	trigger->unknown08 = NONE;
@@ -564,9 +568,12 @@ void function_10f040(long object_index)
 
 	state->unknown98 = NONE;
 	state->unknown94 = NONE;
-	trigger_initialize(&state->triggers[0]);
-	trigger_initialize(&state->triggers[1]);
-	trigger_initialize(&state->triggers[2]);
+	trigger_head_initialize(&state->triggers[0]);
+	trigger_body_initialize(&state->triggers[0]);
+	trigger_head_initialize(&state->triggers[1]);
+	trigger_body_initialize(&state->triggers[1]);
+	trigger_head_initialize(&state->triggers[2]);
+	trigger_body_initialize(&state->triggers[2]);
 	state->unknown03 = 0;
 	s_short_pair *pair = &state->pairs0fc[0];
 	for (long i = 0; i < 7; i++)

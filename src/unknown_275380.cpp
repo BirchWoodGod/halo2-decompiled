@@ -70,10 +70,15 @@ __forceinline void function_275382(s_275380 *arg_0, long arg_1)
         arg_0->field_14 = arg_1 & 0xffff;
         function_204db0(&arg_0->field_0,arg_1 & 0xffff);
     }
+    else if ((dword)arg_1 >> 30 == 0)
+    {
+        arg_0->field_14 = NONE;
+        arg_0->field_1c = arg_1 & 0xffff;
+    }
     else
     {
         arg_0->field_14 = NONE;
-        arg_0->field_1c = ((dword)arg_1 >> 30 == 0) ? arg_1 & 0xffff : NONE;
+        arg_0->field_1c = NONE;
     }
 }
 __forceinline s_squad_datum *function_275383(s_275380 *arg_0)
@@ -99,6 +104,30 @@ __forceinline void function_275384(s_275382 const *arg_0, point3f *arg_1)
         *arg_1 = arg_0->field_4;
 }
 
+__forceinline void function_275385(s_squad_actor_iterator *arg_0, long arg_1)
+{
+    if (g_4f55d0->active)
+    {
+        arg_0->squad_index = arg_1;
+        arg_0->actor_index = NONE;
+        if (arg_1 == NONE)
+            arg_0->next_actor_index = g_4f55d0->unknown14;
+        else
+            arg_0->next_actor_index = squad_get(arg_1)->first_actor_index;
+    }
+}
+__forceinline s_275381 *function_275386(s_squad_actor_iterator *arg_0)
+{
+    s_275381 *local_0 = NULL;
+    if (g_4f55d0->active && arg_0->next_actor_index != NONE)
+    {
+        local_0 = function_275381(arg_0->next_actor_index);
+        arg_0->actor_index = arg_0->next_actor_index;
+        arg_0->next_actor_index = local_0->field_20;
+    }
+    return local_0;
+}
+
 // @retail 0x275380
 void function_275380(long arg_0)
 {
@@ -115,18 +144,16 @@ void function_275380(long arg_0)
                 short local_3 = 0;
                 dword local_4[1] = { 0 };
                 long local_5[256];
-                long local_6;
-                if (g_4f55d0->active)
-                    local_6 = local_0.field_18 == NONE ? g_4f55d0->unknown14 : squad_get(local_0.field_18)->first_actor_index;
-                while (g_4f55d0->active && local_6 != NONE)
+                s_squad_actor_iterator local_20;
+                function_275385(&local_20, local_0.field_18);
+                s_275381 *local_8;
+                while ((local_8 = function_275386(&local_20)) != NULL)
                 {
-                    long local_7 = local_6;
-                    s_275381 *local_8 = function_275381(local_7);
-                    local_6 = local_8->field_20;
+                    long local_7 = local_20.actor_index;
                     if (!function_1e13f0(local_7) && local_8->field_18 != NONE)
                         local_5[local_2++] = local_7;
                 }
-                local_6 = g_4f55d0->unknown14;
+                long local_6 = g_4f55d0->unknown14;
                 while (local_6 != NONE)
                 {
                     long local_7 = local_6;
