@@ -207,6 +207,7 @@ void function_e69c0(long unit_index, long type)
 // @retail 0xe6a20
 void function_e6a20(long unit_index, long name, bool active, bool keep)
 {
+	/* retail keeps active on the stack */
 	bool const *active_reference = &active;
 	if (active & 1)
 	{
@@ -3308,6 +3309,7 @@ void __stdcall function_b8890(long unit_index);
 // @retail 0xec0d0
 void __stdcall function_ec0d0(long unit_index, long state_name, long action_name)
 {
+	/* retail keeps these three arguments on the stack */
 	long const *unit_reference = &unit_index;
 	long const *state_reference = &state_name;
 	long const *action_reference = &action_name;

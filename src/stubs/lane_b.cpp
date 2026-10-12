@@ -30,8 +30,6 @@ struct s_location_view;
 
 struct s_prop_node_view;
 
-// @stub 0x1f4810
-bool __stdcall function_1f4810(long actor_index, long prop_index, real distance, long unknown) { return 0; }
 
 
 
@@ -60,8 +58,6 @@ struct s_squad_choice;
 
 
 
-// @stub 0x1b3a80
-bool __stdcall function_1b3a80(long actor_index, s_slot *slot) { return 0; }
 
 // @stub 0x1b3c60
 void __stdcall function_1b3c60(long actor_index, s_slot *slot) { }
@@ -90,8 +86,6 @@ short __stdcall function_1b99d0(long actor_index, s_slot *slot) { return 0; }
 // @stub 0x1bc850
 short __stdcall function_1bc850(long actor_index, s_slot *slot, bool active) { return 0; }
 
-// @stub 0x1bcfd0
-void __stdcall function_1bcfd0(long actor_index, s_slot *slot) { }
 
 
 // @stub 0x1bdad0

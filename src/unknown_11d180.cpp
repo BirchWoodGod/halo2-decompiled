@@ -25,7 +25,8 @@ void function_11d180(
 		*forward = *g_4687a8;
 	{
 		real local_0 = up->i * forward->j - up->j * forward->i;
-		real local_1 = forward->i * up->k - up->i * forward->k;
+		real local_3 = up->i * forward->k;
+		real local_1 = *(real const volatile *)&forward->i * up->k - local_3;
 		real local_2 = up->j * forward->k - up->k * forward->j;
 		left->i = local_2;
 		left->j = local_1;
@@ -51,8 +52,8 @@ void function_11d180(
 	}
 	{
 		real local_0 = left->j * forward->i - left->i * forward->j;
-		real local_1 = forward->k * left->i - forward->i * left->k;
-		real local_2 = forward->j * left->k - left->j * forward->k;
+		real local_1 = *(real const volatile *)&forward->k * left->i - forward->i * left->k;
+		real local_2 = *(real const volatile *)&forward->j * left->k - left->j * forward->k;
 		out->i = local_2;
 		out->j = local_1;
 		out->k = local_0;

@@ -14,6 +14,18 @@
 #include <math.h>
 #include <string.h>
 
+c_breakable_surface_group_entity_definition g_4797dc;
+c_breakable_surface_damage_event_definition g_4797d8;
+c_damage_section_response_event_definition g_4797d4;
+
+c_game_engine_player_entity_definition g_4797c8;
+
+c_vehicle_flip_event_definition g_479800;
+c_unit_exit_vehicle_event_definition g_4797e8;
+c_unit_melee_damage_event_definition g_4797fc;
+
+c_vehicle_trick_event_definition g_479804;
+
 #define OBJECT_HEADER(index) (&((s_object_header *)g_4e0300->data)[(index) & 0xFFFF])
 #define OBJECT(index) (OBJECT_HEADER(index)->object)
 #define UNIT_OBJECT(index) ((s_unit_object_view *)OBJECT(index))
@@ -378,11 +390,12 @@ void c_game_engine_player_entity_definition::v21(s_entity_slot *entity)
 	{
 		long *slot = &g_4e9ae8->slots[(short)index];
 
-		if (*slot != NONE)
+		long local_0 = *slot;
+		if (local_0 != NONE)
 		{
 			long id = entity->id;
-
-			if (((id ^ *slot) & 0x3ff) == 0)
+			local_0 ^= id;
+			if ((local_0 & 0x3ff) == 0)
 				*slot = id;
 		}
 	}
@@ -391,15 +404,16 @@ void c_game_engine_player_entity_definition::v21(s_entity_slot *entity)
 // @retail 0x9aeb0
 bool c_game_engine_player_entity_definition::v22(s_entity_slot *entity, long b, short *slot, long d, long e, long f)
 {
+	s_mp_globals *local_0 = g_4e9ae8;
 	short index = *slot;
-	c_engine_peer *manager = g_55e4d0[g_4e9ae8->engine_index];
+	c_engine_peer *manager = g_55e4d0[local_0->engine_index];
 
 	if (manager)
 	{
-		if (g_4e9ae8->slots[index] != NONE)
-			g_4e9ae8->slots[index] = NONE;
+		if (local_0->slots[index] != NONE)
+			local_0->slots[index] = NONE;
 	}
-	g_4e9ae8->slots[index] = entity->id;
+	local_0->slots[index] = entity->id;
 	return true;
 }
 
@@ -542,6 +556,7 @@ bool c_breakable_surface_group_entity_definition::v24(s_entity_slot *entity)
 	return true;
 }
 
+#pragma optimize("s", on)
 // @retail 0x9d1c0
 bool c_breakable_surface_group_entity_definition::v25(s_entity_slot *entity)
 {
@@ -558,6 +573,7 @@ bool c_breakable_surface_group_entity_definition::v25(s_entity_slot *entity)
 	}
 	return true;
 }
+#pragma optimize("", on)
 
 // ---- the event definitions ----
 
@@ -735,6 +751,18 @@ static inline long pin(long value, long lo, long hi)
 /* 0xf47d0, src/unknown_0f47d0.cpp */
 bool function_f47d0(long unit_index, long trick);
 
+static __forceinline short function_9fdb1(long arg_0, long arg_1, long arg_2)
+{
+    long local_0 = arg_1;
+    if (arg_0 >= arg_1)
+    {
+        local_0 = arg_2;
+        if (arg_0 <= local_0)
+            local_0 = arg_0;
+    }
+    return (short)local_0;
+}
+
 // @retail 0x9fdb0
 bool c_vehicle_trick_event_definition::v11(long a, long const *entities, long c, void const *data)
 {
@@ -743,15 +771,7 @@ bool c_vehicle_trick_event_definition::v11(long a, long const *entities, long c,
 	if (unit_index != NONE && ((1 << ((s_typed_object_header *)g_4e0300->data)[unit_index & 0xffff].type) & 2))
 	{
 		long trick = *(long const *)data;
-		short local_0;
-		if (trick < 0)
-			local_0 = 0;
-		else
-		{
-			local_0 = 3;
-			if (trick <= 3)
-				local_0 = (short)trick;
-		}
+		short local_0 = function_9fdb1(trick, 0, 3);
 		if (local_0 == trick)
 			result = function_f47d0(unit_index, trick);
 	}
@@ -1587,16 +1607,19 @@ bool c_breakable_surface_group_entity_definition::v20(s_entity_slot *entity, dwo
 {
 	if (*flags & 1)
 	{
+		long local_4 = entity->slot;
+		long index = local_4 * 32;
 		dword old_mask = *mask;
-		long index = entity->slot * 32;
-		s_slot_pair *pair = &g_4eca80[index];
-		for (long i = 0; i < 32; i++, pair++, index++)
+		long *local_1 = (long *)((byte *)g_4eca80 + (local_4 << 8) + 4);
+		for (long i = 0; i < 32; i++, local_1 += 2, index++)
 		{
 			if (index != NONE && index < 0x100)
 			{
-				if (pair->a != NONE || pair->b != pair->a)
+				long local_2 = local_1[-1];
+				long local_3 = *local_1;
+				if (local_2 != NONE || local_3 != local_2)
 				{
-					if (!function_184000(pair->b, pair->a))
+					if (!(byte)function_184000(local_3, local_2))
 					{
 						dword local_0 = *mask;
 						*mask = local_0 | (1 << i);

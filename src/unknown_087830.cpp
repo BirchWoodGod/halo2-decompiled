@@ -164,9 +164,14 @@ bool function_14d0a0(const s_player_action *action);
 
 static __forceinline real action_decode_real(long value, long maximum, real low, real high)
 {
- if (value == 0) return low;
- if (value >= maximum) return high;
- return ((real)(maximum - value) * low + (real)value * high) * (1.0f / (real)maximum);
+ real result;
+ if (value == 0)
+  result = low;
+ else if (value >= maximum)
+  result = high;
+ else
+  result = ((real)(maximum - value) * low + (real)value * high) * (1.0f / (real)maximum);
+ return result;
 }
 
 #pragma inline_depth(0)

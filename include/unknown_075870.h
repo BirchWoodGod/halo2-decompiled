@@ -109,7 +109,7 @@ public:
 	virtual void packet_received(long connection_index, long a, long size) {}
 	virtual void connection_v03(long connection_index, bool a, bool b) {}
 	virtual void connection_v04(long connection_index) {}
-	virtual bool connection_v05(long connection_index, bool a, bool b, bool c, long d, long e, long f, long g, long h, long i) { return false; }
+	virtual bool connection_v05(long connection_index, bool a, bool b, bool c, bool *arg_0, bool *arg_1, long *arg_2, long *arg_3, long arg_4, byte *arg_5) { return false; }
 };
 
 struct s_network_observer : public c_network_connection_listener
@@ -122,6 +122,7 @@ struct s_network_observer : public c_network_connection_listener
 	void connection_updated(long connection_index, long value);
 	void packet_received(long connection_index, long size, long delay);
 	void connection_v03(long connection_index, bool received, bool flag);
+	bool connection_v05(long arg_1, bool arg_2, bool arg_3, bool arg_4, bool *arg_5, bool *arg_6, long *arg_7, long *arg_8, long arg_9, byte *arg_10);
 	void *unknown04;
 	void *link;
 	void *unknown0c;

@@ -1355,7 +1355,7 @@ real function_0bff60(real a, real b);
 bool function_13cb40(void);
 real function_187420(long player_index);
 short function_187a40(long player_index);
-bool function_11eed0(real *velocity, real *position, volatile real dt, bool wrap, real target, real a, real b, real lo, real hi);
+bool function_11eed0(real *velocity, real *position, real dt, bool wrap, real target, real a, real b, real lo, real hi);
 bool function_c8a10(long unit_index);
 bool function_d03b0(long unit_index);
 void __stdcall function_16760c(long user_index, long field_x11c898);

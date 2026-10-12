@@ -49,7 +49,10 @@ long online_task_poll(long task_index)
 	else if (task->flag_bits.running)
 		status = 1;
 	else
-		status = task->flag_bits.started ? 0 : 4;
+		if (task->flag_bits.started)
+			status = 0;
+		else
+			status = 4;
 	return status;
 }
 

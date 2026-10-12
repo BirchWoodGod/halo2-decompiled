@@ -205,7 +205,7 @@ void s_motion_sensor_player::motion_sensor_add_other_object(long object_index)
 {
 	s_motion_sensor_player *sensor = this;
 	long *local_0 = &sensor->other_count;
-	long count = sensor->nearby_count;
+	long count = local_0[-1];
 	long local_1 = *(volatile long *)local_0;
 	count += local_1;
 	if (count < 16)
@@ -358,6 +358,17 @@ char motion_sensor_object_type(long local_player_index, long object_index)
 	return result;
 }
 
+#pragma optimize("g", off)
+__forceinline short function_1a1fb0(short arg_0)
+{
+	short local_0;
+	if (arg_0 < 0) local_0 = 0;
+	else if (arg_0 > 3) local_0 = 3;
+	else local_0 = arg_0;
+	return local_0;
+}
+#pragma optimize("", on)
+
 // @retail 0x1a1faf
 void motion_sensor_blip_set_type(long local_player_index, long object_index, s_motion_sensor_blip *blip)
 {
@@ -376,13 +387,10 @@ void motion_sensor_blip_set_type(long local_player_index, long object_index, s_m
 		s_sensor_object *object = SENSOR_OBJECT(object_index);
 		long mask = 1 << object->type;
 
-		if (mask & 3)
+		if ((byte)mask & 3)
 		{
 			short height = SENSOR_DEFINITION(object->definition_index)->height194;
-			if (height < 0)
-				height = 0;
-			else if (height > 3)
-				height = 3;
+			height = function_1a1fb0(height);
 			local_1 = *local_0;
 			local_1->height = (char)height;
 			if (g_4e6948->state == 2 && (local_2 == 7 || local_2 == 8))
@@ -391,10 +399,7 @@ void motion_sensor_blip_set_type(long local_player_index, long object_index, s_m
 		else if (mask & 0x1000)
 		{
 			short height = SENSOR_DEFINITION(object->definition_index)->heightc2;
-			if (height < 0)
-				height = 0;
-			else if (height > 3)
-				height = 3;
+			height = function_1a1fb0(height);
 			local_1 = *local_0;
 			local_1->height = (char)height;
 		}
@@ -705,7 +710,7 @@ bool motion_sensor_enemy_vehicle_ahead(long local_player_index)
 	if (player_index != NONE)
 	{
 		s_sensor_player *player = SENSOR_PLAYER(player_index);
-		if (((s_sensor_player volatile *)player)->unit_index != NONE)
+		if (player->unit_index != NONE)
 		{
 			long unit_index = player->unit_index;
 			s_motion_sensor_player *sensor = &g_51e994->players[local_player_index];
@@ -736,7 +741,7 @@ bool motion_sensor_enemy_vehicle_ahead(long local_player_index)
 								direction.j = object->position.y - unit->position.y;
 								direction.k = object->position.z - unit->position.z;
 								function_30bf0(&direction);
-								if (direction.k * unit->forward.k + direction.j * unit->forward.j + direction.i * unit->forward.i < cos(0.5235987715423107))
+								if (direction.k * unit->forward.k + direction.j * unit->forward.j + direction.i * unit->forward.i < (real)cos(0.5235987715423107))
 								{
 									s_sensor_definition *definition = SENSOR_DEFINITION(object->definition_index);
 									for (long j = 0; j < definition->block_count; j++)
