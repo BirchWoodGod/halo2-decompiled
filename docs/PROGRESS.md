@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7740 functions match
+
+```
+matched 7740 of 11318 game functions (925828 of 2784283 bytes, 33.25%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, round 23: 0x1008f0, which had 148 differing instructions two rounds earlier.
+
 ## 2026-10-12: 7739 functions match
 
 ```
