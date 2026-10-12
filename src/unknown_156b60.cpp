@@ -56,7 +56,7 @@ void function_23ecd0();
 void function_23ed30(point3f *a, point3f *b, real c, real d, dword color, real e, real *f, real *g, real *h);
 s_cache_record *function_1e2d0();
 matrix3x3 *function_142da0(real yaw, real pitch, real roll, matrix3x3 *out);
-vector3f *function_143070(vector3f const *v, matrix3x3 const *m, vector3f *out);
+vector3f *function_143070(matrix3x3 const *m, vector3f const *v, vector3f *out);
 typedef bool (__stdcall *t_record_fill)(long, void *, long, long, long, void *, s_sort_record *);
 void function_40e30(short group, long tag, real distance, long level, word kind,
 	dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context);
@@ -226,7 +226,7 @@ void function_156b60(s_effect_beam *beam, real progress, transform4x3f const *ma
 	{
 		matrix3x3 rotation;
 		function_142da0(yaw, pitch, 0.0f, &rotation);
-		function_143070(&entry->forward, &rotation, &entry->forward);
+		function_143070(&rotation, &entry->forward, &entry->forward);
 	}
 	if (flags & 0x8000)
 	{
