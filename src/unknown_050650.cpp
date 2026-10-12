@@ -487,6 +487,7 @@ static inline void actor_looking_rotate(vector3f *vector, vector3f const *axis, 
 PRIVATE bool function_296e60(point3f const *origin, vector3f const *forward, bool test_collision,
 	real yaw_lower, real yaw_upper, real pitch_lower, real pitch_upper, vector3f *direction)
 {
+	/* retail keeps test_collision on the stack */
 	bool const *test_collision_reference = &test_collision;
 	vector3f pitch_axis = { -forward->j, forward->i, 0.f };
 	if (actor_looking_normalize3d(&pitch_axis) == 0.f)

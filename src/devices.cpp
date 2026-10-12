@@ -1191,7 +1191,7 @@ bool function_107cc0(long device_index, s_device_motion *motion, c_animation_cha
 
 bool function_107cc0(long device_index, s_device_motion *motion, c_animation_channel *channel,
 	s_animation_state *state, real position, real *out_position);
-bool function_11eed0(real *velocity, real *position, volatile real dt, bool wrap, real target,
+bool function_11eed0(real *velocity, real *position, real dt, bool wrap, real target,
 	real speed, real acceleration, real lower, real upper);
 void __stdcall function_bd020(long object_index);
 void machine_keyframe_rigid_bodies(long object_index, bool value);

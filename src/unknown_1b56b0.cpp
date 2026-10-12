@@ -94,12 +94,13 @@ short __stdcall function_1b57f0(long actor_index, s_slot *slot)
 			long best_index = NONE;
 			long index = element_502420_get(actor->unknown07c)->first_actor_index;
 
-			while (index != NONE)
+			volatile long local_0;
+			for (; index != NONE; index = local_0)
 			{
 				s_actor_view *other = actor_get(index);
 				long other_index = index;
 
-				index = other->next_index;
+				local_0 = other->next_index;
 				if (other != actor && other->prop_index != NONE)
 				{
 					s_prop_node_view *other_node = prop_node_get(other->prop_index);

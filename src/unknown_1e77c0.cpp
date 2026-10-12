@@ -85,12 +85,12 @@ struct s_request_screen_bounds
 PRIVATE inline long next_request_player(long current)
 {
 	long result = NONE;
-	long index = current;
-	if (index == NONE)
-		index = 0;
+	long start;
+	if (current == NONE)
+		start = 0;
 	else
-		index++;
-	for (; index < 4; index++)
+		start = current + 1;
+	for (long index = start; index < 4; index++)
 	{
 		if (g_4e8c20->entries[index] != NONE)
 		{

@@ -1031,8 +1031,9 @@ static inline long local_player_first_index(void)
 static inline long local_player_next(long index)
 {
 	long result = NONE;
+	long start = index == NONE ? 0 : index + 1;
 
-	for (long i = index == NONE ? 0 : index + 1; i < 4; i++)
+	for (long i = start; i < 4; i++)
 	{
 		if (g_4e8c20->entries[i] != NONE)
 		{

@@ -152,17 +152,29 @@ s_balance_team::s_balance_team()
 	reset();
 }
 
+#pragma optimize("s", on)
 // @retail 0x91690
 void s_balance_team::add_party(s_balance_party const *party)
 {
-	parties[party_count] = *party;
+	s_balance_party const *local_0 = party;
+	parties[party_count] = *local_0;
 	party_count++;
-	for (long i = 0; i < party->count; i++)
-		players.add_player(&party->players[i]);
-	if (party->flagged)
+	long local_1 = 0;
+	s_balance_player const *local_2 = local_0->players;
+	for (;;)
+	{
+		if (local_1 >= *(long volatile *)&local_0->count)
+			break;
+		players.add_player(local_2);
+		local_1++;
+		local_2++;
+	}
+	if (local_0->flagged)
 		flagged_count++;
 }
+#pragma optimize("", on)
 
+#pragma optimize("s", on)
 // @retail 0x916e0
 void s_balance_team::remove_party(s_balance_party const *party)
 {
@@ -182,6 +194,7 @@ void s_balance_team::remove_party(s_balance_party const *party)
 	if (party->flagged)
 		flagged_count--;
 }
+#pragma optimize("", on)
 
 // @retail 0x91760
 void s_balance_team::remove_largest_party(s_balance_party *party)
@@ -389,6 +402,31 @@ bool s_balance_optimizer::optimize(s_balance_solution const *solution)
 	return result;
 }
 
+static __forceinline void function_91fc2(s_balance_party *arg_0, s_balance_player const *arg_1)
+{
+    long local_0 = arg_0->count;
+    while (local_0 > 0)
+    {
+        if (arg_0->players[local_0 - 1].weight >= arg_1->weight)
+            break;
+        arg_0->players[local_0] = arg_0->players[local_0 - 1];
+        --local_0;
+    }
+    arg_0->players[local_0] = *arg_1;
+    arg_0->count++;
+    arg_0->total += arg_1->weight;
+}
+
+static __forceinline void function_91fc1(s_balance_team *arg_0, s_balance_party const *arg_1)
+{
+    arg_0->parties[arg_0->party_count] = *arg_1;
+    arg_0->party_count++;
+    for (long local_0 = 0; local_0 < *(volatile long const *)&arg_1->count; ++local_0)
+        function_91fc2(&arg_0->players, &arg_1->players[local_0]);
+    if (arg_1->flagged)
+        arg_0->flagged_count++;
+}
+
 // @retail 0x91fc0
 bool balance_teams(long team_count, long maximum_team_size, bool flag_parties, long flag_minimum, long flag_maximum,
 	bool use_parties, long player_count, long const *party_indices, long const *weights, bool optimize, long *team_indices)
@@ -399,20 +437,20 @@ bool balance_teams(long team_count, long maximum_team_size, bool flag_parties, l
 	{
 		long party_index = use_parties ? party_indices[i] : i;
 		s_balance_player player;
-		player.weight = weights[i];
 		player.index = i;
+		player.weight = weights[i];
 		parties[party_index].add_player(&player);
 	}
 
 	s_balance_team pool;
 	for (i = 0; i < MAXIMUM_PARTIES; i++)
 	{
-		if (parties[i].count > 0)
+		if (*(volatile long *)&parties[i].count > 0)
 		{
 			parties[i].id = i;
 			if (flag_parties && parties[i].count >= flag_minimum && parties[i].count <= flag_maximum)
 				parties[i].flagged = true;
-			pool.add_party(&parties[i]);
+			function_91fc1(&pool, &parties[i]);
 		}
 	}
 

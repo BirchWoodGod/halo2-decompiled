@@ -630,38 +630,44 @@ long network_session_interface_get_value_90(long *value94)
 // @retail 0x652a0
 long network_session_interface_get_members_status(long *progress)
 {
+	c_class_58d20 *session = 0;
 	long status = 0;
 	long lowest = 0;
-	c_class_58d20 *session = 0;
 	if (network_session_get(&session) && SESSION_STATE_IS_LIVE(session->state))
 	{
 		long member_count = session->member_count;
-        long *local_0 = &session->members[0].unknown88;
 		status = 4;
 		lowest = 100;
-		for (long i = 0; i < member_count; i++, local_0 = (long *)((byte *)local_0 + 0x10c))
+		long i = 0;
+		if (member_count > 0)
 		{
-			long member_status = local_0[0];
-			if (member_status == 1)
+			long *local_0 = &session->members[0].unknown88;
+			do
 			{
-				status = 1;
-				lowest = 0;
-				break;
-			}
-			if (member_status != 4)
-			{
-				if (member_status == 3)
+				long member_status = local_0[0];
+				if (member_status == 1)
 				{
-					if (status == 4)
+					status = 1;
+					lowest = 0;
+					break;
+				}
+				if (member_status != 4)
+				{
+					if (member_status == 3)
+					{
+						if (status == 4)
+							status = member_status;
+					}
+					else if (member_status == 2)
+					{
 						status = member_status;
+						if (lowest > local_0[1])
+							lowest = local_0[1];
+					}
 				}
-				else if (member_status == 2)
-				{
-					status = member_status;
-					if (lowest > local_0[1])
-						lowest = local_0[1];
-				}
-			}
+				i++;
+				local_0 = (long *)((byte *)local_0 + 0x10c);
+			} while (i < member_count);
 		}
 	}
 	if (progress)
@@ -860,9 +866,8 @@ bool network_session_interface_set_value5dd0(short value)
 	if (network_session_interface_local_machine_is_host())
 	{
 		c_class_58d20 *session = network_session_get_current();
-		if (network_session_parameters_set_value5dd0(session, value) && network_session_start_countdown(session, 0, false, 0, 0))
-			return true;
-		return false;
+		result = network_session_parameters_set_value5dd0(session, value) &&
+			network_session_start_countdown(session, 0, false, 0, 0);
 	}
 	return result;
 }

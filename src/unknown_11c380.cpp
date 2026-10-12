@@ -74,22 +74,30 @@ bool function_11c380(long trigger_volume_index, transform4x3f *matrix)
 			s_object_11c380 *object = OBJECT_GET_11C380(object_index);
 			s_object_definition_11c380 *definition = (s_object_definition_11c380 *)g_4e3b44[object->definition_index & 0xffff].bytes;
 			long node_index = render_model_find_named_entry(definition->model_index, trigger_volume->node_name);
-			if (node_index == NONE)
-				return false;
-
-			function_1420f0(matrix, &trigger_volume->position, &trigger_volume->forward, &trigger_volume->up);
-			object = OBJECT_GET_11C380(object_index);
-			transform4x3f *field_50 = (transform4x3f *)((byte *)object + object->node_matrices_offset);
-			function_142a60(&field_50[(short)node_index], matrix, matrix);
-			return true;
+			if (node_index != NONE)
+			{
+				function_1420f0(matrix, &trigger_volume->position, &trigger_volume->forward, &trigger_volume->up);
+				object = OBJECT_GET_11C380(object_index);
+				transform4x3f *field_50 = (transform4x3f *)((byte *)object + object->node_matrices_offset);
+				function_142a60(&field_50[(short)node_index], matrix, matrix);
+				result = true;
+			}
 		}
 	}
 	else
 	{
 		function_1420f0(matrix, &trigger_volume->position, &trigger_volume->forward, &trigger_volume->up);
-		return true;
+		result = true;
 	}
 	return result;
+}
+
+PRIVATE __forceinline vector3f *function_11c471(real arg_0, vector3f const *arg_1, vector3f *arg_2)
+{
+	arg_2->i = arg_0 * arg_1->i;
+	arg_2->j = arg_0 * arg_1->j;
+	arg_2->k = arg_0 * arg_1->k;
+	return arg_2;
 }
 
 /* whether a point is inside a trigger volume */
@@ -97,7 +105,7 @@ bool function_11c380(long trigger_volume_index, transform4x3f *matrix)
 bool function_11c470(long trigger_volume_index, point3f const *point)
 {
 	transform4x3f matrix;
-	bool result = false;
+	volatile bool result = false;
 
 	if (function_11c380(trigger_volume_index, &matrix))
 	{
@@ -109,9 +117,7 @@ bool function_11c470(long trigger_volume_index, point3f const *point)
 			if (matrix.scale != 1.0f)
 			{
 				real inverse_scale = 1.0f / matrix.scale;
-				vector.i *= inverse_scale;
-				vector.j *= inverse_scale;
-				vector.k *= inverse_scale;
+				function_11c471(inverse_scale, &vector, &vector);
 			}
 			real x = dot3f(&vector, &matrix.forward);
 			real y = dot3f(&vector, &matrix.left);

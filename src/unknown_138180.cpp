@@ -304,27 +304,26 @@ void __stdcall function_138640(long count, s_session_options *options)
 	memset(options->players, 0, sizeof(options->players));
 	for (long i = 0; i < count; i++)
 	{
-		s_session_player *player = &options->players[i];
-		player->active = 1;
-		player->flag1 = 0;
-		player->machine = options->local_machine;
-		player->controller = order[i];
-		player->index = (short)i;
-		memset(&player->id, 0, 12);
-		player->id.index = (byte)i;
-		player->id.unknown1 = 0xff;
-		player->id.unknown2 = 0xff;
-		player->id.unknown3 = 0xff;
-		wcsncpy(player->name, L"", 0x1f);
-		player->name[0x1f] = 0;
-		memset(player->unknown5c, 0, sizeof(player->unknown5c));
+		options->players[i].active = 1;
+		options->players[i].flag1 = 0;
+		options->players[i].machine = options->local_machine;
+		options->players[i].controller = order[i];
+		options->players[i].index = (short)i;
+		memset(&options->players[i].id, 0, 12);
+		options->players[i].id.index = (byte)i;
+		options->players[i].id.unknown1 = 0xff;
+		options->players[i].id.unknown2 = 0xff;
+		options->players[i].id.unknown3 = 0xff;
+		wcsncpy(options->players[i].name, L"", 0x1f);
+		options->players[i].name[0x1f] = 0;
+		memset(options->players[i].unknown5c, 0, sizeof(options->players[i].unknown5c));
 		if (options->type == 2)
 		{
-			player->flag98 = (byte)i;
+			options->players[i].flag98 = (byte)i;
 		}
 		else
 		{
-			player->flag98 = 1;
+			options->players[i].flag98 = 1;
 		}
 	}
 }

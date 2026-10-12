@@ -903,7 +903,7 @@ inline void actor_reset_state(long actor_index)
 
 long function_c8f60(long unit_index, short seat_index);
 bool __stdcall function_110ab0(long unit_index);
-bool __stdcall function_1f4810(long actor_index, long prop_index, real distance, long unknown);
+bool __stdcall function_1f4810(long actor_index, long prop_index, real distance, bool unknown);
 bool function_25ab50(long reference);
 void __stdcall function_2628f0(long actor_index, s_reference reference);
 void function_26c180(long actor_index);
