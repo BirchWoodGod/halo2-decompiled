@@ -1028,15 +1028,16 @@ bool __stdcall network_session_boot_machine(c_class_58d20 *session, const s_sess
 // @retail 0x5ade0
 bool network_session_host_boot_member(c_class_58d20 *session, long member_index)
 {
+	bool local_0 = false;
 	if (session->function_058d20())
 	{
 		if (session->current_member == member_index)
 			network_session_disconnect(session, 1);
 		else
 			network_session_boot_member(session, member_index);
-		return true;
+		local_0 = true;
 	}
-	return false;
+	return local_0;
 }
 
 // @retail 0x5ae50
@@ -1313,39 +1314,41 @@ bool network_session_parameters_set_value49f8(c_class_58d20 *session, long unuse
 // @retail 0x5b650
 bool network_session_parameters_set_summary(c_class_58d20 *session, const s_session_summary *summary)
 {
+	bool local_0 = false;
 	if (session_state_is_live(session) && function_058d50(session))
 	{
-		if (summary && !session_summary_valid(summary))
-			return false;
-		if (session->function_058d20())
+		if (!summary || session_summary_valid(summary))
 		{
-			if (summary)
+			if (session->function_058d20())
 			{
-				session->flag49fd = true;
-				memcpy(session->data4a00, summary, sizeof(session->data4a00));
+				if (!summary)
+				{
+					session->flag49fd = false;
+					memset(session->data4a00, 0, sizeof(session->data4a00));
+				}
+				else
+				{
+					session->flag49fd = true;
+					memcpy(session->data4a00, summary, sizeof(session->data4a00));
+				}
+				session->update_count++;
 			}
 			else
 			{
-				session->flag49fd = false;
-				memset(session->data4a00, 0, sizeof(session->data4a00));
+				s_network_message_parameters_request request;
+				parameters_request_initialize(session, &request);
+				request.change_summary = true;
+				if (summary)
+				{
+					request.summary_valid = true;
+					memcpy(request.summary, summary, sizeof(request.summary));
+				}
+				network_session_send_to_host(session, _network_message_type_parameters_request, sizeof(request), &request);
 			}
-			session->update_count++;
+			local_0 = true;
 		}
-		else
-		{
-			s_network_message_parameters_request request;
-			parameters_request_initialize(session, &request);
-			request.change_summary = true;
-			if (summary)
-			{
-				request.summary_valid = true;
-				memcpy(request.summary, summary, sizeof(request.summary));
-			}
-			network_session_send_to_host(session, _network_message_type_parameters_request, sizeof(request), &request);
-		}
-		return true;
 	}
-	return false;
+	return local_0;
 }
 
 // @retail 0x5b790
@@ -1839,6 +1842,7 @@ bool network_session_host_set_data5ddc(c_class_58d20 *session, const s_parameter
 
 bool network_session_channel_is_host_address(c_class_58d20 *session, const s_type_99af70 *address);
 
+#pragma inline_depth(0)
 // @retail 0x5f7c0
 bool network_session_address_is_peer(c_class_58d20 *session, const s_type_99af70 *address)
 {
@@ -1846,7 +1850,8 @@ bool network_session_address_is_peer(c_class_58d20 *session, const s_type_99af70
 
 	if (network_session_channel_is_host_address(session, address))
 		return true;
-	if (session_state_is_live(session) || session->state == 1)
+	long local_0 = session->state;
+	if ((local_0 > 2 && local_0 <= 8) || local_0 == 1)
 	{
 		long member_index = network_session_find_member_by_address(session, address);
 		if (member_index != NONE && member_index != session->current_member && member_index == session->member_index)
@@ -1854,6 +1859,7 @@ bool network_session_address_is_peer(c_class_58d20 *session, const s_type_99af70
 	}
 	return result;
 }
+#pragma inline_depth()
 
 /* the time synchronization between a peer and the host (type 0x18, 0x1c
    bytes): the peer sends type 0, the host echoes it as type 1, and the peer
@@ -1930,7 +1936,9 @@ bool __stdcall network_session_handle_time_synchronize(const s_session_id *data,
 		}
 		else if (network_session_address_is_peer(session, address) && message->type == 1)
 		{
-			session->time78b0 = (message->times[2] - message->times[0] + message->times[3] - message->times[1]) / 2;
+			long local_0 = message->times[2] - message->times[0];
+			long local_1 = message->times[3] - message->times[1];
+			session->time78b0 = (local_0 + local_1) / 2;
 			session->flag78ac = true;
 			session->value7654 = network_session_time_now();
 			result = true;
@@ -2337,22 +2345,16 @@ bool network_session_handle_countdown_timer(const s_network_message_countdown_ti
 bool network_session_handle_session_disband(c_class_58d20 *session, const s_type_99af70 *address)
 {
 	bool result = false;
-
 	if (network_session_address_is_peer(session, address))
 	{
 		if (network_session_channel_is_host_address(session, address))
 		{
 			if (network_session_channel_is_host_address(session, address))
-			{
 				network_session_close(session);
-				return true;
-			}
 		}
 		else
-		{
 			network_session_host_lost(session);
-		}
-		return true;
+		result = true;
 	}
 	return result;
 }
@@ -2361,22 +2363,16 @@ bool network_session_handle_session_disband(c_class_58d20 *session, const s_type
 bool network_session_handle_session_boot(c_class_58d20 *session, const s_type_99af70 *address)
 {
 	bool result = false;
-
 	if (network_session_address_is_peer(session, address))
 	{
 		if (network_session_channel_is_host_address(session, address))
 		{
 			if (network_session_channel_is_host_address(session, address))
-			{
 				network_session_close(session);
-				return true;
-			}
 		}
 		else
-		{
 			network_session_disconnect(session, 1);
-		}
-		return true;
+		result = true;
 	}
 	return result;
 }
@@ -4189,6 +4185,7 @@ void __stdcall function_609e0(c_class_58d20 *session, const byte *current, s_609
   wcsncpy(local_6, (const wchar_t *)(current + 0x568), 31);
   local_6[31] = 0;
  }
+ const byte *local_11;
  if (arg_0.field_0)
  {
   const byte *local_4 = *(const byte *volatile *)&arg_0.field_0;
@@ -4196,27 +4193,31 @@ void __stdcall function_609e0(c_class_58d20 *session, const byte *current, s_609
   {
    local_4 = *(const byte *volatile *)&arg_0.field_0;
    if (!memcmp(current + 0x5ac, local_4 + 0x5ac, 0x6c) && !memcmp(current + 0x618, local_4 + 0x618, 0xe40))
+   {
+    local_11 = local_4;
     goto local_5;
+   }
   }
  }
  {
   update[0x5b6] = true;
   update[0x5b7] = current[0x5a8];
+  local_11 = *(const byte *volatile *)&arg_0.field_0;
   memcpy(update + 0x5b8, current + 0x5ac, 0x6c);
   memcpy(update + 0x624, current + 0x618, 0xe40);
  }
 local_5:
- if (!arg_0.field_0 || memcmp(current + 0x29, arg_0.field_0 + 0x29, 0x1))
+ if (!local_11 || memcmp(current + 0x29, local_11 + 0x29, 0x1))
  {
   update[0x1464] = true;
   memcpy(update + 0x1465, current + 0x29, 0x1);
  }
- if (!arg_0.field_0 || memcmp(current + 0x1458, arg_0.field_0 + 0x1458, 0x2))
+ if (!local_11 || memcmp(current + 0x1458, local_11 + 0x1458, 0x2))
  {
   update[0x1466] = true;
   memcpy(update + 0x1468, current + 0x1458, 0x2);
  }
- if (!arg_0.field_0 || current[0x30] != arg_0.field_0[0x30] || (*(const long *)(current + 0x34) != *(const long *)(arg_0.field_0 + 0x34) || *(const long *)(current + 0x38) != *(const long *)(arg_0.field_0 + 0x38) || *(const long *)(current + 0x3c) != *(const long *)(arg_0.field_0 + 0x3c) || memcmp(current + 0x40, arg_0.field_0 + 0x40, 0xc)))
+ if (!local_11 || current[0x30] != local_11[0x30] || (*(const long *)(current + 0x34) != *(const long *)(local_11 + 0x34) || *(const long *)(current + 0x38) != *(const long *)(local_11 + 0x38) || *(const long *)(current + 0x3c) != *(const long *)(local_11 + 0x3c) || memcmp(current + 0x40, local_11 + 0x40, 0xc)))
  {
   update[0x146a] = true;
   update[0x146b] = current[0x30];
@@ -4225,13 +4226,13 @@ local_5:
   *(long *)(update + 0x1474) = *(const long *)(current + 0x3c);
   memcpy(update + 0x1478, current + 0x40, 0xc);
  }
- if (!arg_0.field_0 || current[0x1460] != arg_0.field_0[0x1460] || memcmp(current + 0x1464, arg_0.field_0 + 0x1464, 0x44))
+ if (!local_11 || current[0x1460] != local_11[0x1460] || memcmp(current + 0x1464, local_11 + 0x1464, 0x44))
  {
   update[0x1484] = true;
   update[0x1485] = current[0x1460];
   memcpy(update + 0x1488, current + 0x1464, 0x44);
  }
- if (!arg_0.field_0 || memcmp(current + 0x14a8, arg_0.field_0 + 0x14a8, 0x4))
+ if (!local_11 || memcmp(current + 0x14a8, local_11 + 0x14a8, 0x4))
  {
   update[0x14cc] = true;
   memcpy(update + 0x14d0, current + 0x14a8, 0x4);
