@@ -6074,7 +6074,7 @@ void c_class_2b0b5e::v4(long frame)
             outline.right += x;
             outline.top += y;
             outline.bottom += y;
-            function_235d69((short_rectangle2d const *)&outline, alpha, screen, g_4686d8);
+            function_235d69((short_rectangle2d const *)&outline, depth, screen, g_4686d8);
         }
     }
 }
@@ -6092,7 +6092,9 @@ void c_multiplayer_settings_screen::v3()
 	item.flags = 3;
 	function_22f042(&item, this, 1);
 	c_class_2b0b5e *model = (c_class_2b0b5e *)find_child(7, 0, false);
-	function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 0);
+	// Keep the child pointer addressable across both preview updates.
+	c_class_2b0b5e **model_reference = &model;
+	function_2b10a3((dword const *)g_54e5d0.settings.colors, *model_reference, 0);
 	model = (c_class_2b0b5e *)find_child(7, 1, false);
-	function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 1);
+	function_2b10a3((dword const *)g_54e5d0.settings.colors, *model_reference, 1);
 }
