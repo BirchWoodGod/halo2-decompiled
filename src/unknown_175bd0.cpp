@@ -726,12 +726,7 @@ void function_177260(long effect_index, bool flag)
 
 	if (effect)
 	{
-		if (effect->looping_sound_index != NONE)
-		{
-			s_effect_looping_sound *sound = DATUM(g_4ed28c, s_effect_looping_sound, effect->looping_sound_index);
-			sound->flag1 = true;
-			effect->looping_sound_index = NONE;
-		}
+		effect_stop_looping_sound(effect);
 		function_1771a0(effect);
 		if (((byte)effect->flags >> 1) & 1)
 		{
@@ -2589,9 +2584,9 @@ long __stdcall function_177040(long particle_system_index, long effect_index)
 {
 	long const *effect_index_argument = &effect_index;
 	effect_index = *effect_index_argument;
-	s_particle_system_datum *particle_system = DATUM(g_510c74, s_particle_system_datum, particle_system_index);
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
-	long next_index = particle_system->next_index;
+	s_particle_system_datum *particle_system = DATUM(g_510c74, s_particle_system_datum, particle_system_index);
+	volatile long next_index = particle_system->next_index;
 	s_effect_particle_system_definition *definition = particle_system->function_1751d0();
 	long location_index = effect->location_indices[definition->location_index];
 
