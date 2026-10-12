@@ -1775,6 +1775,7 @@ class c_multiplayer_settings_screen : public c_screen_with_menu
 {
 public:
 	c_multiplayer_settings_screen(long a, long b, word user_flags);
+	virtual void v3();
 
 	virtual screen_load_proc get_load_proc();
 
@@ -5947,8 +5948,6 @@ void c_class_2b01eb::v3()
  value78 = now;
 }
 
-#if 0
-// Disabled: the shared visibility context escapes to the collection helper.
 struct s_model_render_definition_2b
 {
     byte field_0[0xc];
@@ -5964,26 +5963,37 @@ struct s_model_render_definition_2b
 };
 
 struct s_visibility_object_lists;
-extern s_visibility_object_lists *g_4c0b80;
-extern color3f const *g_46871c;
-extern color4f const *g_4686d8;
+struct s_2cb30_state;
+struct s_2cb30_entry { dword values[9]; };
+struct s_2cb30_globals
+{
+    long current, previous;
+    s_2cb30_state *state;
+    byte unknown0c[0x9b0 - 0xc];
+    long count;
+    s_2cb30_entry entries[32];
+    long entry_count;
+};
+extern s_2cb30_globals g_4c0b78;
+extern color3f *g_46871c;
+extern color4f *g_4686d8;
+static s_visibility_object_lists *const model_visibility_lists = (s_visibility_object_lists *)((byte *)g_547f88.lists - offsetof(s_bit_vector_pool, lists));
 void visibility_object_lists_add(long const *, long, s_visibility_object_lists *, long const *, long, bool);
 void function_bbf40(long object_index, bool flag);
 long function_c38e0(short index);
 real function_30bf0(vector3f *v);
-void function_2cbc0(bool enabled);
+void __stdcall function_2cbc0(bool enabled);
 void function_44720();
 void function_2c560(point3f const *position, vector3f const *forward,
     short left, short top, short right, short bottom, vector3f const *up, real angle);
 
-// Requires the added declaration virtual void c_class_2b0b5e::v4(long frame).
-// @retail 0x2b0baa disabled
+// @retail 0x2b0baa
 void c_class_2b0b5e::v4(long frame)
 {
     if (*(long *)g_54d598.unknown00 != 4)
         return;
     long object_indices[32];
-    long extra_indices[32];
+    long extra_indices[8];
     long object_count = 0;
     long extra_count = 0;
     for (long i = 0; i < ((s_model_render_definition_2b *)definition)->object_count; ++i)
@@ -6019,31 +6029,32 @@ void c_class_2b0b5e::v4(long frame)
     }
     if (object_count > 0)
     {
+        s_widget_bounds const *frame_bounds = (s_widget_bounds const *)frame;
         short_rectangle2d const *screen = (short_rectangle2d const *)frame;
-        long half_width = (screen->x1 - screen->x0) >> 1;
-        long half_height = (screen->y1 - screen->y0) >> 1;
-        s_model_render_definition_2b const *model = (s_model_render_definition_2b const *)definition;
-        long left = half_width + model->bounds.left;
-        long top = half_height - model->bounds.top;
-        long right = half_width + model->bounds.right;
-        long bottom = half_height - model->bounds.bottom;
-        real degrees = 1.0f > model->angle ? 1.0f :
-            (model->angle > 359.0f ? 359.0f : model->angle);
+        long half_width = (frame_bounds->right - frame_bounds->left) >> 1;
+        long half_height = (frame_bounds->bottom - frame_bounds->top) >> 1;
+        long left = half_width + ((s_model_render_definition_2b const *)definition)->bounds.left;
+        long top = half_height - ((s_model_render_definition_2b const *)definition)->bounds.top;
+        long right = half_width + ((s_model_render_definition_2b const *)definition)->bounds.right;
+        long bottom = half_height - ((s_model_render_definition_2b const *)definition)->bounds.bottom;
+        real degrees = 1.0f > ((s_model_render_definition_2b const *)definition)->angle ? 1.0f :
+            (((s_model_render_definition_2b const *)definition)->angle > 359.0f ? 359.0f : ((s_model_render_definition_2b const *)definition)->angle);
         real angle = degrees * 0.008726646192371845f;
         bool show_label = g_54d59f && has_screen() && v11() != 6;
-        short x, y;
+        short y, x;
         function_2363d4(screen, &x, &y);
         vector3f animation_translation = *(vector3f const *)((byte const *)this + 0x58);
         point3f position;
-        position.x = model->position.x - model->distance[0] * animation_translation.i;
-        position.y = model->position.y - model->distance[1] * animation_translation.k;
-        position.z = model->position.z - model->distance[2] * animation_translation.j;
+        position.x = ((s_model_render_definition_2b const *)definition)->position.x - ((s_model_render_definition_2b const *)definition)->distance[0] * animation_translation.i;
+        position.y = ((s_model_render_definition_2b const *)definition)->position.y - ((s_model_render_definition_2b const *)definition)->distance[1] * animation_translation.k;
+        position.z = ((s_model_render_definition_2b const *)definition)->position.z - ((s_model_render_definition_2b const *)definition)->distance[2] * animation_translation.j;
         vector3f up = { 0.0f, 1.0f, 0.0f };
         vector3f forward = { 0.0f, 0.0f, 1.0f };
         function_30bf0(&up);
         function_30bf0(&forward);
-        g_4c0b80 = &g_547f88;
-        visibility_object_lists_add(object_indices, object_count, &g_547f88, extra_indices, extra_count, false);
+        g_4c0b78.state = (s_2cb30_state *)model_visibility_lists;
+        // The second name lookup fills the first list in the pass storage.
+        visibility_object_lists_add(extra_indices, extra_count, model_visibility_lists, object_indices, object_count, false);
         function_2cbc0(true);
         function_44720();
         function_2c560(&position, &forward, (short)(left + x), (short)(top + y),
@@ -6068,4 +6079,20 @@ void c_class_2b0b5e::v4(long frame)
     }
 }
 
-#endif
+
+
+void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
+// @retail 0x2c8d7c
+void c_multiplayer_settings_screen::v3()
+{
+	c_class_1a2c81::v3();
+	s_widget_item item;
+	memcpy(item.value48, g_54e5d0.settings.colors, sizeof(item.value48));
+	item.value4 = (long)g_54e5d0.settings.name;
+	item.flags = 3;
+	function_22f042(&item, this, 1);
+	c_class_2b0b5e *model = (c_class_2b0b5e *)find_child(7, 0, false);
+	function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 0);
+	model = (c_class_2b0b5e *)find_child(7, 1, false);
+	function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 1);
+}

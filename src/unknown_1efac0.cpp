@@ -669,17 +669,15 @@ long function_1ef810(long index)
 }
 
 // @retail 0x1ef6d0
-dword function_1ef6d0(dword key)
+dword c_shape_global_owner::next_key(dword key)
 {
- // Retail keeps the key on the stack while traversing the surface groups.
- const dword *key_reference = &key;
  s_surface_list *world = (s_surface_list *)g_4e0340;
  long count = *(long *)((byte *)world + 0x28);
- if (count > 0 && (world->surfaces[count - 1].flags & 0x10)) --count;
+ long volatile last = count;
+ if (count > 0 && (world->surfaces[last - 1].flags & 0x10)) --count;
  long *objects = g_51e9cc;
- long index = *key_reference & 0xffff;
+ long index = key & 0xffff;
  long position = (key >> 16) & 0x1fff;
- long const *position_reference = &position;
  long kind = key >> 29;
  if (kind == 1)
  {
@@ -701,12 +699,12 @@ dword function_1ef6d0(dword key)
   index = NONE;
  }
  long object_index;
- long volatile next_position = NONE;
+ long next_position = NONE;
  if (index != NONE)
  {
   object_index = objects[index];
   if (object_index != NONE)
-   next_position = function_1ef500(object_index, *position_reference);
+   next_position = function_1ef500(object_index, position);
  }
  if (next_position == NONE)
  {
