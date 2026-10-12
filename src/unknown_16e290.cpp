@@ -552,6 +552,11 @@ struct s_16e290_bitmap_group
 
 bool texture_cache_bitmap_request(s_bitmap_data *bitmap);
 
+static inline s_bitmap_data *bitmap_group_get_bitmap(s_16e290_bitmap_group *group, short bitmap_index)
+{
+	return (s_bitmap_data *)(group->bitmaps + bitmap_index * 0x74);
+}
+
 // @retail 0x16e7b0
 bool function_16e7b0(long index)
 {
@@ -563,13 +568,13 @@ bool function_16e7b0(long index)
 
 		if (*(volatile long *)&bsp->unknown1c != NONE && bsp->checksum == ((s_16e290_match_view *)g_4e0348)->checksum)
 		{
-			short bitmap_index = bsp->bitmaps2c[index].bitmap_index;
+			long bitmap_index = bsp->bitmaps2c[index].bitmap_index;
 
 			if (bitmap_index != NONE)
 			{
 				s_16e290_bitmap_group *group = (s_16e290_bitmap_group *)g_4e3b44[bsp->unknown1c & 0xffff].bytes;
 
-				s_bitmap_data *bitmap = (s_bitmap_data *)(group->bitmaps + bitmap_index * 0x74);
+				s_bitmap_data *bitmap = bitmap_group_get_bitmap(group, (short)bitmap_index);
 
 				result = texture_cache_bitmap_request(bitmap);
 			}
@@ -595,7 +600,7 @@ bool function_16e820(long index)
 			{
 				s_16e290_bitmap_group *group = (s_16e290_bitmap_group *)g_4e3b44[bsp->unknown1c & 0xffff].bytes;
 
-				s_bitmap_data *bitmap = (s_bitmap_data *)(group->bitmaps + bitmap_index * 0x74);
+				s_bitmap_data *bitmap = bitmap_group_get_bitmap(group, (short)bitmap_index);
 
 				result = texture_cache_bitmap_request(bitmap);
 			}
@@ -1072,9 +1077,15 @@ void function_16e330(long tag_index, long section_index)
 /* a list of bitmap tags to predict (8 bytes each) */
 struct s_16eb20_entry
 {
-	byte unknown00[4];
+	dword group_tag;
 	long bitmap_tag_index;
 };
+
+/* a tag's definition from its group and index (the group is not checked here) */
+static inline void *tag_get_16eb20(dword group_tag, long tag_index)
+{
+	return g_4e3b44[tag_index & 0xffff].bytes;
+}
 
 struct s_16eb20_block
 {
@@ -1089,11 +1100,11 @@ void function_16eb20(s_16eb20_block const *block)
 
 	for (i = 0; i < block->count; i++)
 	{
-		long bitmap_tag_index = block->entries[i].bitmap_tag_index;
+		s_16eb20_entry const *entry = &block->entries[i];
 
-		if (bitmap_tag_index != NONE)
+		if (entry->bitmap_tag_index != NONE)
 		{
-			s_16e330_bitmap_group *group = (s_16e330_bitmap_group *)g_4e3b44[bitmap_tag_index & 0xffff].bytes;
+			s_16e330_bitmap_group *group = (s_16e330_bitmap_group *)tag_get_16eb20(entry->group_tag, entry->bitmap_tag_index);
 			long bitmap_index;
 
 			for (bitmap_index = 0; bitmap_index < group->bitmap_count; bitmap_index++)
@@ -1385,7 +1396,7 @@ void function_16fe90(long user_index)
 {
 	byte *state = (byte *)&g_4e9bd4[user_index];
 	real *time = (real *)(state + 0x9c);
-	if (!((*(s_observer_command **)(state + 4))->flags & 0x20))
+	if (!(((s_16f190_observer *)g_4e9bd4)[user_index].command->flags & 0x20))
 	{
 		function_170bb0((real *)(state + 0xc), (real *)(state + 0x10c), (real *)(state + 0x320));
 		function_16ff10(user_index);
@@ -1535,17 +1546,6 @@ struct s_16f280_flags
 	bool active;
 };
 
-static inline s_16f190_observer *function_xd356b3(long byte_offset)
-{
-	s_16f190_observer *result = NULL;
-
-	if (byte_offset != -(long)sizeof(s_16f190_observer))
-	{
-		result = (s_16f190_observer *)((byte *)g_4e9bd4 + byte_offset);
-	}
-	return result;
-}
-
 static inline bool local_user_exists(long user_index)
 {
 	return g_4e8c20->entries[user_index] != NONE;
@@ -1558,19 +1558,18 @@ void __stdcall function_16f280(real dt)
 	long user_index;
 
 	g_4e9bd0 = g_468d28 * dt;
-	s_16f190_observer *cursor = (s_16f190_observer *)g_4e9bd4;
-	for (user_index = 0; user_index < 4; user_index++, cursor++)
+	for (user_index = 0; user_index < 4; user_index++)
 	{
-		long byte_offset = user_index * sizeof(s_16f190_observer);
-		s_16f190_observer *observer = function_xd356b3(byte_offset);
-
 		bool available = false;
-		if (byte_offset != -(long)sizeof(s_16f190_observer)) available = local_user_exists(user_index);
+
+		if (user_index != NONE)
+			available = local_user_exists(user_index);
 		if (available)
 		{
-			word cluster_index;
+			s_16f190_observer *observer = &((s_16f190_observer *)g_4e9bd4)[user_index];
+			short cluster_index;
 
-			cursor->unknown0b4 = available;
+			observer->unknown0b4 = true;
 			function_16f570(user_index);
 			if (g_4e9bd0 != 0.0f)
 			{
@@ -1578,10 +1577,10 @@ void __stdcall function_16f280(real dt)
 			}
 			function_170fd0(user_index);
 			function_16ebf0(user_index);
-			cluster_index = (word)NONE;
+			cluster_index = NONE;
 			if (g_4686c4 != NONE)
 			{
-				long leaf_index = function_14a280(g_4e033c, 0, (point3f *)((byte *)cursor + 0xb8));
+				long leaf_index = function_14a280(g_4e033c, 0, (point3f *)((byte *)observer + 0xb8));
 
 				if (leaf_index != NONE)
 				{
@@ -1589,21 +1588,21 @@ void __stdcall function_16f280(real dt)
 				}
 				else
 				{
-					cluster_index = (word)NONE;
+					cluster_index = NONE;
 				}
 			}
 			if (!g_510c50 || !((s_16f280_flags *)g_510c50)->active)
 			{
 				if (g_4ea934)
 				{
-					if (cluster_index != (word)NONE)
+					if (cluster_index != NONE)
 					{
-						function_3f450((short)cluster_index);
+						function_3f450(cluster_index);
 					}
 				}
 				else
 				{
-					function_3f500((short)cluster_index);
+					function_3f500(cluster_index);
 				}
 			}
 		}
