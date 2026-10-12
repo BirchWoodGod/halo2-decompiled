@@ -979,9 +979,10 @@ void function_103f60(long weapon_index, short barrel_index)
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
 	s_weapon_barrel_definition *barrel_definition = &definition->barrels[barrel_index];
 	s_weapon_barrel *barrel = &weapon->barrels[barrel_index];
-	long ticks = (long)floor(g_510c54->field_2_3 * barrel_definition->value_20);
+	long total_ticks = (long)floor(g_510c54->field_2_3 * barrel_definition->value_20);
+	long skipped_ticks = (long)floor((1.0f - barrel_definition->value_24) * g_510c54->field_2_3 * barrel_definition->value_20);
+	long ticks = total_ticks - skipped_ticks;
 
-	ticks -= (long)floor((1.0f - barrel_definition->value_24) * g_510c54->field_2_3 * barrel_definition->value_20);
 	barrel->state = 3;
 	barrel->ticks = (short)ticks;
 	if (!ticks)
@@ -1103,7 +1104,7 @@ void function_1060a0(long weapon_index, long unit_index)
 	{
 		s_weapon_unit *unit = WEAPON_UNIT_GET(unit_index);
 
-		if (unit->animation_state_offset != NONE)
+		if (WEAPON_UNIT_GET(unit_index)->animation_state_offset != NONE)
 		{
 			s_animation_state *state = (s_animation_state *)((byte *)unit + unit->animation_state_offset);
 
@@ -1118,9 +1119,10 @@ void function_1060a0(long weapon_index, long unit_index)
 
 					if (character_index >= 0 && character_index < definition->player_animation_count)
 					{
-						long graph_index = definition->player_animations[character_index].graph_index;
-						if (graph_index != NONE)
-							function_1ddaf0((s_graph_tag *)g_4e3b44[graph_index & 0xffff].bytes);
+						s_weapon_player_animation *player_animation = &definition->player_animations[character_index];
+
+						if (player_animation->graph_index != NONE)
+							function_1ddaf0((s_graph_tag *)g_4e3b44[player_animation->graph_index & 0xffff].bytes);
 					}
 				}
 			}
@@ -1205,9 +1207,14 @@ void function_ee680(long user_index, long state, long secondary, long weapon_ind
 
 static inline long user_get_unit_index(long user_index)
 {
-	long player_index = g_4e8c20->entries[user_index];
-	bool valid = player_index != NONE;
+	bool valid = false;
+	long player_index;
 
+	if (user_index != NONE)
+	{
+		player_index = g_4e8c20->entries[user_index];
+		valid = player_index != NONE;
+	}
 	if (valid)
 		return WEAPON_PLAYER_GET(player_index)->unit_index;
 	return NONE;
@@ -1217,14 +1224,17 @@ static inline long user_get_unit_index(long user_index)
 void function_105fa0(long weapon_index, long state)
 {
 	long user_index = function_166244(weapon_index);
-	long unit_index = user_index != NONE ? user_get_unit_index(user_index) : NONE;
+	long unit_index = user_get_unit_index(user_index);
 	long secondary = 0;
 
 	if (unit_index != NONE)
 	{
 		s_weapon_unit *unit = WEAPON_UNIT_GET(unit_index);
 		short slot = unit->current_weapon_slot;
-		long current_weapon_index = slot != NONE ? unit->weapon_indices[slot] : NONE;
+		long current_weapon_index = NONE;
+
+		if (slot != NONE)
+			current_weapon_index = unit->weapon_indices[slot];
 		secondary = current_weapon_index != weapon_index;
 	}
 	function_ee680(user_index, state, secondary, weapon_index);
@@ -1259,11 +1269,11 @@ bool function_fa6a0(long definition_index, real const *speed_override, point3f c
 
 // @retail 0x100dd0
 bool weapon_barrel_aim(long weapon_index, short barrel_index, point3f const *origin, point3f const *target,
-	real const *unknown3, bool unknown5, vector3f *direction, real *speed_out, real *time, real *distance, bool *linear)
+	real const *unknown3, bool unknown5, vector3f *direction, real *time, real *speed_out, real *distance, bool *linear)
 {
+	bool result = false;
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
-	bool result = false;
 
 	if (barrel_index >= 0 && barrel_index < definition->barrel_count)
 	{

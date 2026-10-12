@@ -7673,7 +7673,12 @@ bool function_1eff0()
 extern long g_4e28f4[11];
 struct s_font_character_header;
 long font_cache_find_character(long font_index, long character);
-s_font_character_header *font_cache_get_character_header(long font_index, long character, dword flags);
+struct s_font_cache_flags
+{
+    dword wait : 1;
+    dword create : 1;
+};
+s_font_character_header *font_cache_get_character_header(long font_index, long character, s_font_cache_flags flags);
 void __stdcall function_1f5c0(long character);
 
 // @retail 0x1f490
@@ -7684,7 +7689,8 @@ void __stdcall function_1f490(long unused, long font, long character, long color
     long index = font_cache_find_character(g_4e28f4[font], character);
     if (index == NONE)
     {
-        font_cache_get_character_header(font, character, 3);
+        s_font_cache_flags flags = { true, true };
+        font_cache_get_character_header(font, character, flags);
         index = font_cache_find_character(g_4e28f4[font], character);
         if (index == NONE) return;
     }
