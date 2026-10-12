@@ -127,7 +127,7 @@ struct c_entry_table
 	struct { long count; c_entry_handler *handlers[1]; } *handlers;
 	s_entry entries[1024];
 
-	void function_08ae80(dword identifier, short handler_index, long a, long b, long c, long d);
+	void function_08ae80(dword identifier, long handler_index, long a, long b, long c, long d);
 	void function_08aed0(dword identifier);
 	bool function_08af70(long handler_index, long *size, void **data);
 	bool function_08b010(long handler_index, long *size, void **data);
@@ -241,7 +241,7 @@ PRIVATE void free_block(void *block)
 	long dummy;
 	g_4d87f8->allocator->get_info(block, &dummy);
 	s_allocator_globals *globals = g_4d87f8;
-	globals->allocator->release(block, -1);
+	g_4d87f8->allocator->release(block, -1);
 	if (block)
 	{
 		globals->count--;
@@ -251,34 +251,55 @@ PRIVATE void free_block(void *block)
 // @retail 0x8aed0
 void c_entry_table::function_08aed0(dword identifier)
 {
- byte local_0 = *(volatile byte *)&this->busy;
-	s_entry *entry = &entries[ENTRY_INDEX(identifier)];
-	if (entry->data)
+	/* both arms are the same code; retail still reads busy (a dead load) */
+	if (busy)
 	{
-		free_block(entry->data);
-		entry->data = 0;
-		entry->data_size = 0;
+		s_entry *entry = &entries[ENTRY_INDEX(identifier)];
+		if (entry->data)
+		{
+			free_block(entry->data);
+			entry->data_size = 0;
+			entry->data = 0;
+		}
+		if (entry->state)
+		{
+			free_block(entry->state);
+			entry->state_size = 0;
+			entry->state = 0;
+		}
+		entry->identifier = NONE;
+		entry->handler_index = -1;
 	}
-	if (entry->state)
+	else
 	{
-		free_block(entry->state);
-		entry->state = 0;
-		entry->state_size = 0;
+		s_entry *entry = &entries[ENTRY_INDEX(identifier)];
+		if (entry->data)
+		{
+			free_block(entry->data);
+			entry->data_size = 0;
+			entry->data = 0;
+		}
+		if (entry->state)
+		{
+			free_block(entry->state);
+			entry->state_size = 0;
+			entry->state = 0;
+		}
+		entry->identifier = NONE;
+		entry->handler_index = -1;
 	}
-	entry->identifier = NONE;
-	entry->handler_index = -1;
 }
 
 // @retail 0x8ae80
-void c_entry_table::function_08ae80(dword identifier, short handler_index, long a, long b, long c, long d)
+void c_entry_table::function_08ae80(dword identifier, long handler_index, long a, long b, long c, long d)
 {
 	s_entry *entry = &entries[ENTRY_INDEX(identifier)];
 	entry->identifier = identifier;
-	entry->handler_index = handler_index;
+	entry->handler_index = (short)handler_index;
 	entry->unknown06 = 0;
+	entry->unknown08 = NONE;
 	entry->unknown0c = 0;
 	entry->unknown07 = 0;
-	entry->unknown08 = NONE;
 	entry->data_size = a;
 	entry->data = (void *)b;
 	entry->state_size = c;
@@ -509,7 +530,7 @@ void c_entry_table::create(dword identifier, long handler_index, long a, long co
 	void *state = blocks[1].block;
 	memset(blocks, 0, count * sizeof(s_update_block));
 	c_entry_handler *handler = handlers->handlers[handler_index];
-	function_08ae80(identifier, (short)handler_index, data_size, (long)data, state_size, (long)state);
+	function_08ae80(identifier, handler_index, data_size, (long)data, state_size, (long)state);
 	s_entry *entry = &entries[ENTRY_INDEX(identifier)];
 	entry->unknown06 = handler->v22(entry, entry->data_size, entry->data, a, entry->state_size, entry->state) != false;
 }
@@ -781,7 +802,7 @@ long entity_table_new_entity(c_entry_table *table, long handler_index)
 		result = identifier;
 		if (identifier != NONE)
 		{
-			local_2->function_08ae80(identifier, (short)handler_index, data_size, (long)data, state_size, (long)state);
+			local_2->function_08ae80(identifier, handler_index, data_size, (long)data, state_size, (long)state);
 			goto local_3;
 		}
 	}
@@ -797,12 +818,17 @@ local_3:
 // @retail 0x8a210
 bool entity_table_new_entities(long *identifiers, c_entry_table *table, long count, long const *handler_indices)
 {
-	void *datas[4] = { 0 };
-	void *states[4] = { 0 };
-	long field_34[4] = { 0 };
-	long state_sizes[4] = { 0 };
-	bool result = true;
+	void *datas[4];
+	void *states[4];
+	long field_34[4];
+	long state_sizes[4];
+	volatile bool result = true;
 	long i;
+
+	memset(field_34, 0, sizeof(field_34));
+	memset(datas, 0, sizeof(datas));
+	memset(state_sizes, 0, sizeof(state_sizes));
+	memset(states, 0, sizeof(states));
 
 	for (i = 0; i < count; i++)
 	{
@@ -815,7 +841,7 @@ bool entity_table_new_entities(long *identifiers, c_entry_table *table, long cou
 	if (replication_table_create_chain((s_handle_peers *)table->unknown0c, count, identifiers))
 	{
 		for (i = 0; i < count; i++)
-			table->function_08ae80(identifiers[i], (short)handler_indices[i], field_34[i], (long)datas[i], state_sizes[i], (long)states[i]);
+			table->function_08ae80(identifiers[i], handler_indices[i], field_34[i], (long)datas[i], state_sizes[i], (long)states[i]);
 		return result;
 	}
 
