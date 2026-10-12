@@ -2,13 +2,13 @@
 #include "globals.h"
 #include "unknown_0820f0.h"
 // @flags /O2 /Gr
+#include "counters_storage.h"
 
 struct s_structure_bsp_reference;
 struct s_bsp3d;
 struct s_slot_entry_list;
 extern s_bsp3d *g_4e033c;
 extern s_slot_entry_list *g_4e0340;
-extern s_connection_counter g_485ab0;
 extern s_connection_counter g_4e6398;
 
 void function_d4e60(short arg_0);

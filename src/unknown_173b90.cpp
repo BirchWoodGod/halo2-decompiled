@@ -1,8 +1,13 @@
 // @flags /O2 /arch:SSE /Gr
+#include "cluster_mask_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_173B90.CPP: the particle systems effects start (g_510c74) and
    their particles, emitters and locations */
 
 #include "unknown_11c920.h"
+#include "visibility_storage.h"
+#include "camera_storage.h"
+#include "frame_storage.h"
 #include "globals.h"
 #include "data_array.h"
 #include "effects.h"
@@ -99,8 +104,6 @@ bool __stdcall function_173cb0(long tag_index, long unused, long first, long sec
 	return true;
 }
 
-extern long g_4b9f8c;
-extern real g_4b9fa4, g_4b9ff8, g_4b9f18, g_4b9f9c;
 bool function_16e210(long cluster_index, long value);
 void function_25ca0(bool enabled);
 
@@ -762,7 +765,6 @@ void function_175a80(bool tinted, dword color_a, dword color_b, s_particle_syste
 	}
 }
 
-extern dword g_4c56c0[64];
 extern vector3f *g_4687bc;
 extern vector3f *g_4687b4;
 real function_30bf0(vector3f *vector);
@@ -930,41 +932,10 @@ bool function_174a30(s_particle_system_datum *particle_system, real dt)
 
 #include <math.h>
 struct c_entry_list;
-struct s_bit_vector_pool_sizes { short unknown0, list_sizes[4], record_count; };
-struct s_bit_vector_pool
-{
-    void *context;
-    s_location location;
-    c_entry_list *lists[4];
-    long indices[0x80];
-    dword flags[0x10], pool[0x200];
-    word pool_used, entry_count;
-    dword entries[0x200][4], flags2a60;
-    short frustum_count;
-    byte unknown2a66[2];
-    point3f center;
-    real radius;
-    long mode, query_type;
-    byte unknown2a80[4];
-    real plane_offset;
-    plane3f plane;
-    long counters[13];
-    byte *records;
-    void *filter;
-    s_bit_vector_pool_sizes sizes;
-};
-extern s_bit_vector_pool g_547f88;
-extern point3f g_4b9da0;
-extern vector3f g_4b9dac, g_4b9db8;
-extern real g_4b9dcc;
+
+
 extern dword g_4ba034;
-struct s_frame_offset
-{
-    point3f position;
-    vector3f forward;
-    vector3f up;
-};
-extern s_frame_offset g_485618;
+
 struct s_frustum_set_view;
 struct s_sphere_frustum;
 struct s_distance_fade;
@@ -1088,7 +1059,6 @@ void __stdcall function_174420(long system_index, bool view_pass, bool camera_re
 
 
 
-extern long g_4b9ed8;
 long function_155760(long index);
 bool function_17afd0(long effect_index, long value);
 

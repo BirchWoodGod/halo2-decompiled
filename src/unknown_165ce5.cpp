@@ -1,4 +1,6 @@
 // @flags /O1 /Oi /arch:SSE /Gr
+#include "orientations_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_165CE5.CPP: the first person weapons of the four local
    users (0x165ce5..0x1689a6, built for size; the same object as
    unknown_165cc3.cpp, unknown_16658d.cpp and lane R's unknown_166244.cpp).
@@ -8,6 +10,7 @@
    matrices last built for it. */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include "unknown_0259d0.h"
 #include "unknown_1c62f0.h"
@@ -283,11 +286,6 @@ extern void *g_165cc3_aligned_data;
 #define first_person_orientations ((byte *)g_165cc3_aligned_data)
 
 extern transform4x3f *g_4687d0;
-extern long g_4b9ed8;
-extern point3f g_4b9da0;
-extern vector3f g_4b9dac;
-extern vector3f g_4b9db8;
-real g_4b9db4;
 
 /* callees in other files */
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);

@@ -109,7 +109,8 @@ bool function_109fd0(long object_index, vector3f *velocity)
 		{
 			if (state->object_indices[i] == (*object_index_reference))
 			{
-				*velocity = state->entries[i].linear_velocity;
+				s_object_list_entry const *entry = state->entries + i;
+				*velocity = entry->linear_velocity;
 				result = true;
 				break;
 			}

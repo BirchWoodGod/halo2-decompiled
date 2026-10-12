@@ -326,6 +326,8 @@ void function_a99f0(long index, long *block)
 		long identifier = ((s_object_header *)g_4e0300->data)[index & 0xffff].object->field_d4;
 		if (identifier != NONE)
 		{
+			// Read the shared world through its const pointer at the later use.
+			world = (s_z_state_world *)*(s_simulation_world *const *)&g_4cf77c;
 			s_z_entity_record *entity = &world->database->entities[identifier & 0x3ff];
 			if (entity->active)
 			{

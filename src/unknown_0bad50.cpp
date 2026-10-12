@@ -6,6 +6,9 @@
 #include <string.h>
 
 // @flags /O2 /Gr
+#include "object_masks_storage.h"
+#include "partition_colliding_storage.h"
+#include "partition_noncolliding_storage.h"
 
 struct s_object_blocks_ab
 {
@@ -410,13 +413,6 @@ bool function_bacc0(long object_index, long index, point3f const *point)
 }
 
 #include <xmmintrin.h>
-extern void *g_4de2e0;
-extern void *g_4de2e4;
-extern void *g_4de2d4;
-extern void *g_4de2d8;
-extern bool g_4de2f8;
-extern long g_4de2fc;
-extern long g_4de300[0x800];
 
 struct s_cluster_link_ab
 {
@@ -636,7 +632,8 @@ void __stdcall function_ba7f0(long object_index, long region_index, long bit_ind
 {
     char previous[16];
     s_object_blocks_ab *object = ((s_object_blocks_header_ab *)g_4e0300->data)[object_index & 0xffff].object;
-    long model_index = ((s_object_variant_definition_ab *)g_4e3b44[object->tag_index & 0xffff].bytes)->model_index;
+    s_object_variant_definition_ab *definition = (s_object_variant_definition_ab *)g_4e3b44[object->tag_index & 0xffff].bytes;
+    long model_index = *(long volatile *)&definition->model_index;
     if (model_index != NONE)
     {
         char *regions = (char *)object + object->regions_offset;

@@ -1,4 +1,7 @@
 // @flags /O2 /arch:SSE /Gr
+#include "object_masks_storage.h"
+#include "partition_colliding_storage.h"
+#include "projection_storage.h"
 /* UNKNOWN_1689B0.CPP: collision queries (0x1689b0..0x16b569): the flag
    conversions between the query flags and the collision tests' own, and the
    test of a surface against the query */
@@ -680,9 +683,6 @@ extern bool g_4e7411;
 extern long g_4e7418[0x200];
 long g_4e7c1c;
 bool g_4e7c18;
-long g_4de2fc;
-bool g_4de2f8;
-long g_4de300[0x800];
 extern s_bsp3d *g_4e033c;
 
 static inline long collision_leaf_cluster(long leaf_index)
@@ -1376,8 +1376,6 @@ struct s_shape_counts
 };
 
 #include <xmmintrin.h>
-extern void *g_4de2e0;
-extern void *g_4de2e4;
 
 PRIVATE __forceinline long shape_cluster_next(long *next)
 {
@@ -1745,3 +1743,5 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 	}
 	return result;
 }
+
+s_object_masks_storage g_object_masks_storage;

@@ -619,6 +619,9 @@ struct s_downward_collision_result
 long __stdcall function_26d0e0(point3f const *point, s_type_c3b527 *output, long unused)
 {
     s_downward_collision_result collision;
+    // retail keeps the unused third parameter, so it returns with ret 4
+    long const *unused_reference = &unused;
+    (void)unused_reference;
     *(short *)((byte *)&collision + 0x24) = NONE;
     return function_26d100(g_4687b0, (long *)output, (s_collision_result_1697c0 *)&collision, point);
 }

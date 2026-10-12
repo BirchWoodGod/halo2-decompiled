@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /Gr
+#include "object_masks_storage.h"
 /* UNKNOWN_0BBF40.CPP: object flag setters of the script functions */
 
 #include "unknown_11c920.h"
@@ -503,8 +504,6 @@ bool function_bf5d0(long object_index)
 	return result != 0;
 }
 
-extern long g_4de2fc;
-extern long g_4de300[0x800];
 
 static __forceinline bool object_stamp_ab(long index, long stamp)
 {
@@ -978,10 +977,8 @@ void __stdcall function_bc820(long object_index)
         }
     }
     function_108cd0(object_index);
-    if ((bool)(((dword)((volatile byte *)object)[0xc0] >> 2) & 1))
-        ((byte *)object)[0xc0] |= 2;
-    else
-        ((byte *)object)[0xc0] &= ~2;
+    ((byte *)object)[0xc0] = ((bool)(((dword)((volatile byte *)object)[0xc0] >> 2) & 1))
+        ? (((byte *)object)[0xc0] | 2) : (((byte *)object)[0xc0] & ~2);
     object->flag2 = false;
     bool moved = function_bdef0(object_index);
     if ((header->flags & 0x40) && !moved)

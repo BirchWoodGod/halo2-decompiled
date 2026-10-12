@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /arch:SSE /Gr
+#include "orientations_storage.h"
 /* UNKNOWN_1CEC30.CPP: the havok components (0x1cec30..0x1cffxx): a data
    array of 0x200 components of 0xa0 bytes, one per object with a Havok
    rigid body, and the properties the game keeps on the rigid bodies */
@@ -1609,12 +1610,7 @@ void __stdcall function_1d01c0(s_havok_component *component)
 }
 
 
-struct rigid_transform_scaled
-{
- quaternionf rotation;
- point3f position;
- real scale;
-};
+
 
 struct s_component_node_object
 {

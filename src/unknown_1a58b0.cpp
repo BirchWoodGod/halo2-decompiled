@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "object_masks_storage.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1689,9 +1690,6 @@ long __stdcall function_1a56c0(s_sort_weight_view const *weights, long object_in
 	return count;
 }
 
-extern bool g_4de2f8;
-extern long g_4de2fc;
-extern long g_4de300[0x800];
 
 short function_14a6d0(short arg_0, real arg_1, point3f const *arg_2, vector3f const *arg_3,
 	real arg_4, real arg_5, short arg_6, short *arg_7, short *arg_8);

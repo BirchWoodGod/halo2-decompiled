@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "pool_storage.h"
 /* UNKNOWN_124F90.CPP: the playing sounds and their definitions: per-sound
    overrides of the definition's class (distances, cone angles and gain) and
    the random gain and pitch drawn from the class. */
@@ -597,9 +598,6 @@ void bit_vector_fill(dword *vector, long count, byte value)
 	memset(vector, value, ((count + 31) >> 5) * sizeof(dword));
 }
 
-extern dword g_510800_pool_base;
-extern long g_510804_pool_size;
-extern dword g_510808_pool_checksum;
 s_record_pool *function_11cc20(long maximum_count, char const *name, long size);
 void sound_cache_initialize(void);
 bool looping_sound_controllers_initialize(void);

@@ -1,3 +1,4 @@
+#include "filter_storage.h"
 // @flags /O1 /Oi /arch:SSE /Gr
 /* UNKNOWN_234C64.CPP: the window manager's screen channels: each holds the
    current screen, the next one, the previous one and a pending request */
@@ -15,7 +16,6 @@
 /* ---- globals ---- */
 
 char g_54d5a8;
-byte g_4670cd;
 extern dword g_54d5b8;
 real g_54d5ac;
 real g_54d5b0;

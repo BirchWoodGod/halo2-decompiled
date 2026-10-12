@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "orientations_storage.h"
 /* DEVICES.CPP: devices (object types 7..9: machines, controls and light
    fixtures) and the device groups that drive their position and power.
    device_groups_initialize and device_groups_dispose (0x106460, 0x106490)

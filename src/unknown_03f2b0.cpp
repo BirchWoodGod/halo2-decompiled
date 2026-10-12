@@ -1,7 +1,17 @@
 // @flags /O2 /Gr
+#include "cluster_mask_storage.h"
+#include "material_records_storage.h"
+#include "target_cache_storage.h"
+#include "shader_storage.h"
+#include "projection_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_03F2B0.CPP: visibility lists, resource prediction and index caches */
 
 #include "unknown_11c920.h"
+#include "visibility_storage.h"
+#include "camera_storage.h"
+#include "frame_storage.h"
+#include "reset_storage.h"
 #include "globals.h"
 #include "index_cache_storage.h"
 #include "physical_memory.h"
@@ -171,34 +181,9 @@ private:
 	long *longs_c;
 	short *shorts_d;
 };
-struct s_bit_vector_pool_sizes
-{
-	short unknown0;
-	short list_sizes[4];
-	short record_count;
-};
 
-struct s_bit_vector_pool
-{
-	void *context;
-	byte unknown004[8];
-	c_entry_list *lists[4];
-	long indices[0x80];
-	dword flags[0x10];
-	dword pool[0x200];
-	word pool_used;
-	word entry_count;
-	dword entries[0x200][4];
-	dword flags2a60;
-	byte unknown2a64[0x2a88 - 0x2a64];
-	plane3f plane;
-	byte unknown2a98[0x2acc - 0x2a98];
-	byte *records;
-	byte unknown2ad0[4];
-	s_bit_vector_pool_sizes sizes;
-};
-extern s_bit_vector_pool g_547f88;
-extern dword g_4c56c0[64];
+
+
 
 struct s_parent_render_object
 {
@@ -573,7 +558,6 @@ bool function_2b720(point3f *point, long *cluster, long *leaf)
 
 long function_baf80(long object_index);
 long function_155760(long index);
-extern long g_4b9ed8;
 
 struct s_inactive_object_header
 {
@@ -755,7 +739,6 @@ void function_2cb30(void)
 }
 
 
-s_44940_entry g_4ba138[850];
 
 // @retail 0x44940
 void *function_44940(short index, bool instance)
@@ -954,14 +937,7 @@ void function_45a80(short index, bool ranges, s_geometry_visibility_list const *
 		mark_visible_part(geometry, second->indices[i], mask);
 }
 
-struct s_3d4f0_entry
-{
-	long tag;
-	long object_index;
-	long flags;
-	transform4x3f transforms[64];
-};
-s_3d4f0_entry g_4c1bd8[4];
+
 
 #include "unknown_03bcb0.h"
 
@@ -1016,7 +992,6 @@ void __stdcall function_133520(s_bit_vector_pool *data);
 void function_133720(s_bit_vector_pool *data, bool enabled);
 void function_44720(void);
 void function_2cb30(void);
-long g_4b9ee4;
 
 // @retail 0x2cbc0
 void __stdcall function_2cbc0(bool enabled)
@@ -1076,11 +1051,7 @@ void function_3f2c0(s_planar_camera_source const *source, byte const *view, long
 	function_44720();
 }
 
-extern vector3f g_4b9dac, g_4b9db8;
 extern byte g_4ba025;
-extern s_camera g_4b9e14;
-extern point3f g_4b9da0;
-real g_4b9de0, g_4b9de4;
 void __stdcall function_3f830(byte const *tree, point3f const *center);
 long function_155760(long index);
 void function_3f3f0(void);
@@ -1258,7 +1229,6 @@ bool function_4c2b0(long tag, byte const *wanted, signed char *current, long lev
 struct s_light_shape_ab;
 bool function_c3140(long index);
 bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engine);
-extern short g_485602;
 
 // @retail 0x31590
 bool function_31590(long index, s_light_shape_ab *shape)
@@ -1346,9 +1316,6 @@ struct s_bit_vector_pool;
 dword *function_1332b0(long bit_count, s_bit_vector_pool *data);
 long function_016ae0(real value);
 void function_30290(point3f const *point, s_view const *view, s_camera const *camera, real radius, box2f *bounds);
-extern point3f g_4b9da0;
-extern s_camera g_4b9e14;
-extern short g_4b9dd0, g_4b9dd2, g_4b9dd4, g_4b9dd6;
 byte g_509410, g_509411;
 
 struct s_42760_entry
@@ -1950,11 +1917,10 @@ bool function_4c190(long *count, long object_index, bool defaults, long tag,
     return result;
 }
 
-extern byte g_4670bc, g_485b48[];
+extern byte g_4670bc;
 extern long g_4858b8;
 extern D3DPIXELSHADERDEF g_484f68;
 extern D3DResource *g_509444;
-extern byte g_51f0f0[0x2d8];
 struct s_render_reset_state;
 struct s_shader_cache;
 struct s_coefficient_layout;
@@ -2227,7 +2193,6 @@ void __stdcall function_43a40(long mode)
 
 struct s_masked_list;
 typedef void (__stdcall *masked_list_proc)(long value, short mask);
-s_masked_list *g_547f94;
 extern dword g_4b8340;
 void masked_list_iterate(s_masked_list const *list, long mask, masked_list_proc proc);
 
@@ -2239,3 +2204,7 @@ void function_2c370(long mode)
     g_4b8340 = 0;
     D3DDevice_SetRenderState(D3DRS_SOLIDOFFSETENABLE, 0);
 }
+
+s_target_cache_storage g_target_cache_storage;
+
+s_material_records_storage g_material_records_storage;

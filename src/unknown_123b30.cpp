@@ -10,6 +10,7 @@ it from callers optimized for size.
   lea eax, [ecx + ebx]. */
 
 #include "unknown_11c920.h"
+#include "counters_storage.h"
 #include "unknown_123b30.h"
 #include "crc.h"
 #include "data_array.h"
@@ -23,7 +24,7 @@ it from callers optimized for size.
 
 void function_18e250(s_loop_allocator *loop, long size, const char *name, c_memory_source *source);
 
-s_game_state_globals game_state_globals;
+s_allocator_storage g_allocator_storage;
 
 // @retail 0x123d40
 void *function_123d40(
@@ -98,7 +99,6 @@ void game_state_cache_write(short slot);
 extern bool g_5020d8;
 
 /* the time of the last save (copied to the network connection timers) */
-s_connection_counter g_485ab0;
 extern s_connection_counter g_4e6398;
 
 // @retail 0x123b30
@@ -441,3 +441,5 @@ void function_1241b0(s_saved_game_read *arg_0)
 		function_19048c(local_0);
 	}
 }
+
+s_counters_storage g_counters_storage;

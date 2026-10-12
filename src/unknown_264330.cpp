@@ -6,6 +6,7 @@
 #include <string.h>
 
 // @flags /O2 /arch:SSE /Gr
+#include "object_masks_storage.h"
 
 struct s_object;
 s_object *function_badc0(long object_index, dword type_mask);
@@ -365,9 +366,6 @@ void __stdcall function_264330(long actor_index, long prop_ref_index, s_2641c0 *
 	if (view) *(real *)((byte *)view + 0x3c) = function_265d30(actor_index, prop_ref_index);
 }
 
-extern long g_4de2fc;
-extern bool g_4de2f8;
-extern long g_4de300[0x800];
 int __cdecl function_2631f0(void const *first, void const *second);
 void function_25c780(long actor_index, long prop_ref_index);
 bool function_25db60();

@@ -142,10 +142,11 @@ c_dialog_screen::c_dialog_screen(long screen_id, long a, long b, word user_flags
 	c_class_1473c9(screen_id, a, b, user_flags),
 	dialog_id(0)
 {
-	title[0] = 0;
-	message[0] = 0;
-	first_choice[0] = 0;
-	second_choice[0] = 0;
+	struct { word *title; word *message; word *first; word *second; } buffers = { title, message, first_choice, second_choice };
+	buffers.title[0] = 0;
+	buffers.message[0] = 0;
+	buffers.first[0] = 0;
+	buffers.second[0] = 0;
 	closed = 0;
 	choices = 0;
 }

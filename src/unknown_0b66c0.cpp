@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /Gr
+#include "transaction_storage.h"
 #include "unknown_11c920.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -157,24 +158,7 @@ struct s_upload_file_ab
     dword position;
 };
 
-struct s_upload_ab
-{
-    long kind;
-    char path[0x80];
-    char header[0x400];
-    char part[0x100];
-    char ending[0x80];
-    long header_length;
-    long part_length;
-    long ending_length;
-    char content_type[0x20];
-    char filename[0x104];
-    char extra_headers[0x200];
-    byte const *memory;
-    s_upload_file_ab *file;
-    long file_length;
-    long position;
-};
+
 
 static __forceinline char *upload_copy_ab(char *destination, char const *source, long size)
 {
