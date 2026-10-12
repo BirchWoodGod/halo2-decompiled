@@ -94,19 +94,25 @@ void function_22b8e2(s_22b8e2 const *arg_0, long arg_1, color4f const *arg_2)
 		}
 	}
 	function_1396c7(arg_0->field_1c, &local_4);
+	real local_26;
+	real local_27;
 	switch (local_0)
 	{
 	case 0:
-		local_4.x += (real)arg_0->field_44[0];
-		local_4.y += (real)arg_0->field_44[1];
+		local_26 = (real)arg_0->field_44[0] + local_4.x;
+		local_27 = (real)arg_0->field_44[1] + local_4.y;
 		break;
 	case 1:
-		local_4.x += (real)arg_0->field_44[2];
-		local_4.y += (real)arg_0->field_44[3];
+		local_26 = (real)arg_0->field_44[2] + local_4.x;
+		local_27 = (real)arg_0->field_44[3] + local_4.y;
 		break;
 	case 2:
-		local_4.x += (real)arg_0->field_44[4];
-		local_4.y += (real)arg_0->field_44[5];
+		local_26 = (real)arg_0->field_44[4] + local_4.x;
+		local_27 = (real)arg_0->field_44[5] + local_4.y;
+		break;
+	default:
+		local_26 = local_4.x;
+		local_27 = local_4.y;
 		break;
 	}
 	real local_11 = (real)g_4b9dd2;
@@ -115,20 +121,20 @@ void function_22b8e2(s_22b8e2 const *arg_0, long arg_1, color4f const *arg_2)
 	real local_14 = (real)g_4b9dd4;
 	real local_15 = 0.5f / (g_4b9dd6 - g_4b9dd2);
 	real local_16 = 0.5f / (g_4b9dd4 - g_4b9dd0);
-	real local_17 = 1.0f - (local_4.x - local_11) * local_15;
-	real local_18 = 1.0f - (local_13 - local_4.x) * local_15;
-	real local_19 = 1.0f - (local_4.y - local_12) * local_16;
-	real local_20 = 1.0f - (local_14 - local_4.y) * local_16;
+	real local_17 = 1.0f - (local_26 - local_11) * local_15;
+	real local_18 = 1.0f - (local_13 - local_26) * local_15;
+	real local_19 = 1.0f - (local_27 - local_12) * local_16;
+	real local_20 = 1.0f - (local_14 - local_27) * local_16;
 	real local_21[9][4] =
 	{
 		{ local_11, local_12, local_17, local_19 },
-		{ local_4.x, local_12, 1.0f, local_19 },
+		{ local_26, local_12, 1.0f, local_19 },
 		{ local_13, local_12, local_18, local_19 },
-		{ local_11, local_4.y, local_17, 1.0f },
-		{ local_4.x, local_4.y, 1.0f, 1.0f },
-		{ local_13, local_4.y, local_18, 1.0f },
+		{ local_11, local_27, local_17, 1.0f },
+		{ local_26, local_27, 1.0f, 1.0f },
+		{ local_13, local_27, local_18, 1.0f },
 		{ local_11, local_14, local_17, local_20 },
-		{ local_4.x, local_14, 1.0f, local_20 },
+		{ local_26, local_14, 1.0f, local_20 },
 		{ local_13, local_14, local_18, local_20 }
 	};
 	g_4e6950.field_28 = arg_0->field_24;

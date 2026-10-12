@@ -39,13 +39,16 @@ struct s_22aff3
     point2f field_0;
     real field_8;
     point2f field_c[4];
-    byte field_2c[4];
-    point2f field_30;
+    union
+    {
+        struct { byte field_2c[4]; point2f field_30; };
+        color3f field_2c_1;
+    };
     union { long field_38; real field_38_1; };
     point2f field_3c;
     long field_44;
     point2f field_48;
-    union { long field_50; real field_50_1; };
+    union { long field_50; real field_50_1; dword const *field_50_2; };
     box2f field_54;
     byte field_64[3];
     bool field_67;
@@ -61,6 +64,7 @@ PRIVATE __forceinline real function_22aff5(real arg_0)
     return local_0;
 }
 
+#pragma intrinsic(memcpy)
 // @retail 0x22aff1
 void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real const *arg_3)
 {
@@ -150,14 +154,17 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 				byte const *local_20 = (byte const *)g_510c4c + arg_0 * 0x6c;
 				dword local_21[5] = {0, 0xff0000, 0xff00, 0xffff00, 0x7f00ff};
 				local_45.field_67 = true;
-				for (long local_22 = 0; local_22 <= 4; ++local_22)
+				local_45.field_50_2 = local_21;
+				for (long local_22 = 0; local_22 <= 4; ++local_45.field_50_2, ++local_22)
 				{
+					bool local_47 = local_22 == 0;
 					real local_23 = function_22aff5(*(real const *)(arg_1 + 0x2c) - local_22);
 					real local_24 = function_22aff5(*(real const *)local_20 - local_22);
 					bool local_25 = local_24 > local_23;
 					real local_26 = local_25 ? *(real const *)(local_20 + 4) : -1.0f;
 					real local_27 = local_26 < 0.0f ? 0.0f : function_22aff5(1.0f - local_26);
-					color3f local_28 = *(color3f const *)g_468710;
+					color3f &local_28 = local_45.field_2c_1;
+					local_28 = *(color3f const *)g_468710;
 					local_28.red *= local_27;
 					local_28.green *= local_27;
 					local_28.blue *= local_27;
@@ -168,7 +175,7 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 					g_4e6950.field_40.alpha = local_24;
 					g_4e6950.field_40.red = local_23;
 					g_4e6950.field_50 = local_28;
-					if (local_22 == 0)
+					if (local_47)
 					{
 						if (function_22acb4(arg_0))
 						{
@@ -183,8 +190,8 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 					}
 					else
 					{
-						unpack_color3f(local_21[local_22], &g_4e6950.field_5c);
-						unpack_color3f(local_21[local_22], &g_4e6950.field_68);
+						unpack_color3f(*local_45.field_50_2, &g_4e6950.field_5c);
+						unpack_color3f(*local_45.field_50_2, &g_4e6950.field_68);
 					}
 					function_22a664((s_widget_quad_2b11 const *)&local_45.field_54, (s_float_rect const *)local_45.field_c,
 						*(long const *)(arg_2 + 0x24), local_45.field_44, *(long const *)(arg_2 + 0x2c));
@@ -221,9 +228,10 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 				real local_36 = local_45.field_c[2].y - local_45.field_c[1].y;
 				for (long local_37 = 0; local_37 < 4; ++local_37)
 				{
+					bool local_46 = local_37 > 1;
 					if (local_37 != 1 && local_37 != 2)
 						local_45.field_c[local_37].x -= local_35 * 10.0f;
-					if (local_37 <= 1)
+					if (!local_46)
 						local_45.field_c[local_37].y -= local_36 * 10.0f;
 				}
 				local_45.field_54.x0 -= (local_45.field_54.x1 - local_45.field_54.x0) * 10.0f;
@@ -259,9 +267,10 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 				{
 					for (long local_43 = 0; local_43 < 4; ++local_43)
 					{
+						bool local_46 = local_43 > 1;
 						if (local_43 != 1 && local_43 != 2)
 							local_45.field_c[local_43].x += local_38 * 2.0f;
-						if (local_43 <= 1)
+						if (!local_46)
 							local_45.field_c[local_43].y += local_39 * 2.0f;
 					}
 					function_22a664((s_widget_quad_2b11 const *)&local_45.field_54, (s_float_rect const *)local_45.field_c,
@@ -271,3 +280,4 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 		}
 	}
 }
+#pragma function(memcpy)
