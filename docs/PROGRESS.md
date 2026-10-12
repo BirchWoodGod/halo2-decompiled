@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7751 functions match
+
+```
+matched 7751 of 11318 game functions (927576 of 2784283 bytes, 33.31%)
+```
+
+3 new matches, none lost:
+- Deep lane 3, round 35: all 41 shared storage blocks of the renderer and object system take retail's layout; 0x12080, 0x1eff0 and 0x43890, which had waited on that storage, match.
+
+## 2026-10-12: 7748 functions match
+
+```
+matched 7748 of 11318 game functions (927059 of 2784283 bytes, 33.30%)
+```
+
+2 new matches, none lost:
+- Deep lane 1, rounds 33 and 34: 0x1e98e0 and 0x2a9e60.
+
 ## 2026-10-12: 7746 functions match
 
 ```
