@@ -143,7 +143,8 @@ void function_19ce10(s_marker_pair *pair)
 {
 	if (!pair->unknown08)
 	{
-		point3f position = g_4e0350->marker_entries[pair->first].position;
+		s_marker_entry const &entry = g_4e0350->marker_entries[pair->first];
+		point3f position = entry.position;
 		s_marker_player_iterator iterator;
 
 		iterator.data = g_4e8c24;
