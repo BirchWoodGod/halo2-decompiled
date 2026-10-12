@@ -1079,7 +1079,7 @@ bool function_151b80(long player_index, bool primary)
 	if (player->unit_index != NONE)
 	{
 		long hand = !primary;
-		s_player_pickup_unit *unit = (s_player_pickup_unit *)tail_object_get(*(long volatile *)&player->unit_index);
+		s_player_pickup_unit *unit = (s_player_pickup_unit *)tail_object_get(player->unit_index);
 		short slot = unit->held_slots[hand];
 		if (slot != NONE && unit->weapons[slot] != NONE)
 		{
@@ -1125,7 +1125,7 @@ bool function_151aa0(long player_index, bool primary)
 	if (player->unit_index != NONE)
 	{
 		long hand = !primary;
-		s_player_pickup_unit *unit = (s_player_pickup_unit *)tail_object_get(*(long volatile *)&player->unit_index);
+		s_player_pickup_unit *unit = (s_player_pickup_unit *)tail_object_get(player->unit_index);
 		short slot = unit->held_slots[hand];
 		if (slot != NONE)
 		{
