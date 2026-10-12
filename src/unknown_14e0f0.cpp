@@ -115,7 +115,7 @@ void function_14ee20(long player_index, long target_index)
     long unit_index = *(long *)(player + 0x2c);
     if (unit_index != NONE)
     {
-        *(long *)(player + 0x30) = unit_index;
+        *(long *)(g_4e8c24->data + (player_index & 0xffff) * 0x21c + 0x30) = unit_index;
         byte *unit = attachment_object(unit_index);
         function_14cad0(player_index, NONE);
         function_152340();
