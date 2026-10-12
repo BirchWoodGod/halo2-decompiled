@@ -151,9 +151,13 @@ static inline long camera_seconds_to_ticks_round(real seconds)
 
 static inline void cross3f(vector3f const *a, vector3f const *b, vector3f *out)
 {
-	out->i = a->j * b->k - a->k * b->j;
-	out->j = a->k * b->i - a->i * b->k;
-	out->k = a->i * b->j - a->j * b->i;
+	real k = a->i * b->j - a->j * b->i;
+	real j = a->k * b->i - a->i * b->k;
+	real i = b->k * a->j - b->j * a->k;
+
+	out->i = i;
+	out->j = j;
+	out->k = k;
 }
 
 // @retail 0x16bd10
@@ -387,9 +391,17 @@ void function_16c2f0(short camera_point_index, short ticks, long object_index)
 				function_142640(&matrix, &camera->forward, &camera->forward);
 				function_142640(&matrix, &camera->up, &camera->up);
 				function_142640(&matrix, (vector3f *)&camera->position, (vector3f *)&camera->position);
-				camera->point.offset = *(vector3f *)&matrix.position;
-				cross3f(&camera->forward, &camera->up, &camera->point.left);
-				function_30bf0(&camera->point.left);
+			{
+				/* retail derives the left vector's address from the offset's
+				   (left directly follows offset in s_camera_point_state) */
+				vector3f *offset = &camera->point.offset;
+				vector3f *left;
+
+				*offset = *(vector3f *)&matrix.position;
+				left = offset + 1;
+				cross3f(&camera->forward, &camera->up, left);
+				function_30bf0(left);
+			}
 				break;
 			default:
 				__assume(0);

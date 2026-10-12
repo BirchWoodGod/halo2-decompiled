@@ -2,6 +2,43 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7944 functions match
+
+```
+matched 7944 of 11318 game functions (964956 of 2784283 bytes, 34.66%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 42 (+2), in the render range: `0x36f50` sums its three squared lengths in single precision as retail does, and `0x2afa0` matches; `0x31590` is down to 2 differences, which wait on its callee `0xc17f0`, and `0x3ea60` to 5.
+
+## 2026-10-12: 7942 functions match
+
+```
+matched 7942 of 11318 game functions (964104 of 2784283 bytes, 34.63%)
+```
+
+64 new matches, none lost:
+- The third machine's first batch (#375, +25), over its lanes N, Q, R, S, T and H: among them `0x142eb0`, which now takes its two matrices in retail's order, and `0x1973f0`, through two input globals that now point into the record they belong to.
+- The second machine's lanes (#372–#374, #376–#381, +39): lane F +10 (the shared list base now has one declaration, which also matches lane O's `0x249f85` and this machine's `0x2b19bd`), lane P +8, lane M +6, lane D +9, lanes J and Y +2 each, lane B +1, and lane AC +1 (this machine's `0x2a56e0`, through its callee `0x275380`).
+
+## 2026-10-12: 7878 functions match
+
+```
+matched 7878 of 11318 game functions (951983 of 2784283 bytes, 34.19%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, rounds 31 to 33 (+1): `0x24c5f2` matches, callee first, so its caller `0x2b225a` now gets retail's call registers; the `cache_files_windows` family `0x213e30`, `0x213e90`, `0x213f10` and `0x214100` is down to 3 differences each, and eight UI-core functions are closer.
+
+## 2026-10-12: 7877 functions match
+
+```
+matched 7877 of 11318 game functions (951953 of 2784283 bytes, 34.19%)
+```
+
+5 new matches, none lost:
+- Claude lane 1, round 3 (+5): two lookups into one table read the table global a second time, as retail does (`0x1e8cb0`, `0x1e8d50`); `0x2cb001` keeps its unused argument, so it returns with `ret 4`; `0x1e3a00` copies the sample's center from the slot after its point, so the compiler loads before it stores; and `0x2b178e` stores its flag before it fills the message parameters.
+
 ## 2026-10-12: 7872 functions match
 
 ```

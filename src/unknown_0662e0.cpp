@@ -579,7 +579,7 @@ void network_configuration_set_defaults()
 	g_network_configuration.value180 = 3000;
 	g_network_configuration.value184 = 100;
 	g_network_configuration.value188 = 100;
-	g_network_configuration.value18c = 65536;
+	g_network_configuration.value18c = g_network_configuration.value2c;
 	g_network_configuration.value190 = 10000;
 	g_network_configuration.value194 = 60000;
 	g_network_configuration.value198 = 240000;
@@ -588,7 +588,7 @@ void network_configuration_set_defaults()
 	g_network_configuration.value1a4 = 8;
 	g_network_configuration.value1a8 = 10000;
 	g_network_configuration.flag1ac = false;
-	g_network_configuration.value1b0 = 5;
+	g_network_configuration.value1b0 = g_network_configuration.value28;
 	g_network_configuration.value1b8 = 150;
 	g_network_configuration.value1bc = 3;
 	g_network_configuration.value1c8 = 50;
@@ -637,11 +637,11 @@ void network_configuration_set_defaults()
 	}
 
 	g_network_configuration.value354 = 5000;
-	g_network_configuration.value358 = 65536;
+	g_network_configuration.value358 = g_network_configuration.value2c;
 	g_network_configuration.value35c = 20000;
 	g_network_configuration.value360 = 10000;
 	g_network_configuration.value364 = 100;
-	g_network_configuration.value368 = 5;
+	g_network_configuration.value368 = g_network_configuration.value28;
 	g_network_configuration.value36c = 100;
 	g_network_configuration.value370 = 50;
 	g_network_configuration.value374 = 300;
@@ -839,7 +839,7 @@ void network_configuration_set_defaults()
 	g_network_configuration.value1718 = 2;
 	g_network_configuration.real171c = 0.5f;
 	g_network_configuration.value1720 = 1048576;
-	g_network_configuration.value1724 = 65536;
+	g_network_configuration.value1724 = g_network_configuration.value2c;
 	g_network_configuration.value1728 = 600;
 	g_network_configuration.value172c = 600;
 }

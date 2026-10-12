@@ -94,7 +94,7 @@ bool function_15d770(long player_index)
 			long needed_count = g_4e6948->value1b4 - living_count;
 			long waiting_count = 0;
 
-			iterator.data = players;
+			iterator.data = g_4e8c24;
 			iterator.index = NONE;
 			iterator.datum_index = NONE;
 			while (function_19f240((long *)&iterator))
@@ -104,18 +104,19 @@ bool function_15d770(long player_index)
 				if ((!function_x340af0() || player->team == other->team) &&
 					other->unit_index == NONE && other != player &&
 					!function_15db30(iterator.datum_index) &&
-					(other->respawn_time < player->respawn_time ||
-					other->respawn_time == player->respawn_time && absolute_index >= (iterator.datum_index & 0xffff)))
+					other->respawn_time <= player->respawn_time &&
+					(other->respawn_time != player->respawn_time || absolute_index >= (iterator.datum_index & 0xffff)))
 				{
 					waiting_count++;
 				}
 			}
 
 			if (waiting_count < needed_count)
-				return false;
+				goto done;
 		}
 		result = true;
 	}
+done:
 	return result;
 }
 

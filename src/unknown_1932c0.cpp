@@ -449,6 +449,12 @@ struct s_game_variants_file
 	s_game_variant_block blocks[16];
 };
 
+/* size before buffer: the order the arguments are set up in */
+PRIVATE inline bool file_write_sized(s_type_acf665 *file, dword size, void const *buffer)
+{
+	return function_136d00(file, buffer, size);
+}
+
 // @retail 0x193ff0
 bool game_variants_file_write(s_game_variants_file *variants_file)
 {
@@ -462,7 +468,7 @@ bool game_variants_file_write(s_game_variants_file *variants_file)
 
 		if (function_136970(&file, 2, &error))
 		{
-			if (function_136d00(&file, variants_file, sizeof(*variants_file)))
+			if (file_write_sized(&file, sizeof(*variants_file), variants_file))
 				result = true;
 			function_136bb0(&file);
 		}

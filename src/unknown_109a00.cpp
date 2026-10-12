@@ -183,8 +183,8 @@ void function_109580(long object_index)
 			s_carried_object *child = header->object;
 			if (!TEST_FIELD_BIT(child->flag2))
 			{
-				*(byte *)((byte *)child + 0xc0) |= 4;
-				child->platform_index = object_index;
+				*(byte *)((byte *)header->object + 0xc0) |= 4;
+				header->object->platform_index = object_index;
 				function_b7360(index);
 				if ((1 << header->type) & 0x3c)
 				{

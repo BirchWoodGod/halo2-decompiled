@@ -840,9 +840,10 @@ void c_campaign_options_list::v3()
 			long level = header.level;
 			g_54e7c0 = 1;
 			g_54e7c4 = level;
-			parameters.field_c = 0;
 			function_148d42(difficulty);
-			g_54e7cc = true;
+			/* retail stores this flag before it reads user_flags, and fills field_c just before the call */
+			*(bool volatile *)&g_54e7cc = true;
+			parameters.field_c = 0;
 			function_149f49((s_message *)&parameters, 0, 0, user_flags, 5, 4, (long)function_2b1467);
 			screen = (c_campaign_options_screen *)parameters.load(&parameters);
 			screen->value610 = 0;
@@ -2832,32 +2833,6 @@ long c_campaign_options_list::get_item_count()
 {
 	return data->actual_count;
 }
-
-class c_list_24a64d : public c_list_widget_with_items
-{
-public:
-	c_list_24a64d(word arg_0);
-	virtual void v20(c_class_1a2c81 *item, long);
-	virtual void *function_24a64d(long index);
-	virtual void v24();
-	virtual word const *function_24a691(long index, bool append);
-	bool function_24a2e7(long controller);
-	void function_24a30e(s_controller_reference **arg_0, long *arg_1);
-	byte field_88;
-	bool field_89;
-	bool field_8a;
-	long field_8c;
-	c_list_item_handler field_90;
-};
-
-struct s_profile_list_entry
-{
-	s_profile_list_entry();
-	long profile_index;
-	s_player_profile_settings settings;
-	byte unknown1e4[0x248 - 0x1e4];
-};
-
 
 /* the 26-slot list at 0x45af88; its item count (6) is shared by the lists at
    0x45b370, 0x45bb78, 0x45bdb8, 0x45bea0, 0x45d020 and 0x45d240 */

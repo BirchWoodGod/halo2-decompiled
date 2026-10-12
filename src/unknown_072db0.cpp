@@ -661,7 +661,7 @@ long online_round_register(bool free_for_all, XNKID const *session_id, ULONGLONG
 
 // @retail 0x73bc0
 void function_73bc0(const s_session_id *session_id, const s_session_id *round_key,
-	long first, long second, bool free_for_all)
+	__int64 arg_2, bool free_for_all)
 {
 	if (g_510518)
 	{
@@ -677,8 +677,7 @@ void function_73bc0(const s_session_id *session_id, const s_session_id *round_ke
 		(const ULONGLONG *)round_key, g_network_configuration.value374);
 	g_510528 = *session_id;
 	g_510520 = *round_key;
-	g_510540.a = first;
-	g_510540.b = second;
+	g_510540 = *(const s_session_id *)&arg_2;
 	g_510514 = 4;
 	g_510534 = 0;
 	g_510538 = NONE;
@@ -1203,6 +1202,7 @@ void function_73530(c_helper_a *helper, void *description)
 		variant_index = *(long *)((byte *)session + 0x49c8);
 	s_surface_description *variant = function_192e60(variant_index);
 	byte *output = (byte *)description;
+	volatile long *local_1 = (long *)output;
 	memset(output, 0, 0x14c);
 	*(word *)(output + 2) = 0;
 	*(long *)(output + 8) = 0x2651;
@@ -1240,12 +1240,12 @@ void function_73530(c_helper_a *helper, void *description)
 		if (session->state > 2 && session->state <= 8)
 			available = *(long *)((byte *)session + 0x4994);
 		available -= ratings[3];
-		*(long *)(output + 0x78) = ratings[0];
-		*(long *)(output + 0x68) = ratings[0x35c / 4];
-		*(long *)(output + 0x60) = available;
-		*(long *)(output + 0x7c) = ratings[1];
-		*(long *)(output + 0x80) = local_0;
-		*(long *)(output + 0x6c) = ratings[0x360 / 4];
+		local_1[0x78 / 4] = ratings[0];
+		local_1[0x68 / 4] = ratings[0x35c / 4];
+		local_1[0x60 / 4] = available;
+		local_1[0x7c / 4] = ratings[1];
+		local_1[0x80 / 4] = local_0;
+		local_1[0x6c / 4] = ratings[0x360 / 4];
 		if (local_0 != NONE)
 			*(long *)(output + 0x84) = local_0 > function_1931a0(ratings[1], variant) ? local_0 : function_1931a0(ratings[1], variant);
 		else
