@@ -38,11 +38,18 @@ void __stdcall function_1a4900(long arg_0, s_186ab2 *arg_1, vector3f *arg_2) { }
 
 struct s_cluster_query;
 
-class c_18f4bb
+class c_2def90
 {
 public:
-    c_18f4bb(long arg_0, long arg_1, word arg_2);
+ c_2def90(real arg_0);
 };
+// @stub 0x2def90
+c_2def90::c_2def90(real arg_0) {}
 
-// @stub 0x18f4bb
-c_18f4bb::c_18f4bb(long arg_0, long arg_1, word arg_2) { }
+class c_contact_query_transform_volume
+{
+public:
+ ~c_contact_query_transform_volume();
+};
+// @stub 0x30bb90
+c_contact_query_transform_volume::~c_contact_query_transform_volume() {}
