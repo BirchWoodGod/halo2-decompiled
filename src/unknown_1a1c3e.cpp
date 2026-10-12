@@ -710,7 +710,7 @@ bool motion_sensor_enemy_vehicle_ahead(long local_player_index)
 	if (player_index != NONE)
 	{
 		s_sensor_player *player = SENSOR_PLAYER(player_index);
-		if (((s_sensor_player volatile *)player)->unit_index != NONE)
+		if (player->unit_index != NONE)
 		{
 			long unit_index = player->unit_index;
 			s_motion_sensor_player *sensor = &g_51e994->players[local_player_index];
@@ -741,7 +741,7 @@ bool motion_sensor_enemy_vehicle_ahead(long local_player_index)
 								direction.j = object->position.y - unit->position.y;
 								direction.k = object->position.z - unit->position.z;
 								function_30bf0(&direction);
-								if (direction.k * unit->forward.k + direction.j * unit->forward.j + direction.i * unit->forward.i < cos(0.5235987715423107))
+								if (direction.k * unit->forward.k + direction.j * unit->forward.j + direction.i * unit->forward.i < (real)cos(0.5235987715423107))
 								{
 									s_sensor_definition *definition = SENSOR_DEFINITION(object->definition_index);
 									for (long j = 0; j < definition->block_count; j++)
