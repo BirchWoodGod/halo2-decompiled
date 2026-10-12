@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7872 functions match
+
+```
+matched 7872 of 11318 game functions (951426 of 2784283 bytes, 34.17%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 41 (+1), in the render range: `0x48b00`, the screen-space bounds of a sphere, groups one projected product the way retail does and writes its depth clamp the other way round; `0x23600` and `0x3e9c0` are each one difference closer.
+
 ## 2026-10-12: 7871 functions match
 
 ```
