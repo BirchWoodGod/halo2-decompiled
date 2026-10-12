@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 /* UNKNOWN_23BC90.CPP: the cameras that follow a unit: the first person
    camera, the camera of a unit's seat and the following camera
    (0x23bc90..0x23cea0) */

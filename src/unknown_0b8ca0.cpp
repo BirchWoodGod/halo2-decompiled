@@ -1,4 +1,6 @@
 // @flags /O2 /arch:SSE /Gr
+#include "partition_colliding_storage.h"
+#include "partition_noncolliding_storage.h"
 /* object markers and object physics state (0xb8ca0-0xb9c60) */
 
 #include "unknown_11c920.h"
@@ -817,8 +819,6 @@ struct s_cluster_partition
     s_record_pool *data_references;
     s_record_pool *cluster_references;
 };
-extern void *g_4de2d4, *g_4de2d8, *g_4de2dc;
-extern void *g_4de2e0, *g_4de2e4, *g_4de2e8;
 void function_1cae40(s_cluster_partition *partition, long data_index, long *first_cluster_reference);
 
 // @retail 0xb87b0

@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 /* UNKNOWN_16BD10.CPP: the scripted camera (0x16bd10..0x16c6ea): the
    velocity profile of a camera pan, cutscene camera points, animated
    cameras. The state lives at g_510c6c (unknown_1552e0.cpp); its mode

@@ -1,4 +1,7 @@
 // @flags /O2 /Gr
+#include "object_masks_storage.h"
+#include "partition_colliding_storage.h"
+#include "partition_noncolliding_storage.h"
 /* UNKNOWN_0B68C0.CPP: function_b68c0 (entry 27, dispose) */
 
 #include "unknown_11c920.h"
@@ -28,12 +31,6 @@ void *g_4e0314;
 void *g_4e0318;
 bool g_4de2f0;
 s_data_header_40 *g_4de2ec;
-void *g_4de2e0;
-void *g_4de2e4;
-void *g_4de2e8;
-void *g_4de2d4;
-void *g_4de2d8;
-void *g_4de2dc;
 
 // @retail 0xb68c0
 void function_b68c0(void)
@@ -474,7 +471,6 @@ void *function_123dd0(long size, char const *name);
 void *game_state_malloc_aligned(long size, long alignment);
 struct s_cluster_partition;
 void function_1cabc0(s_cluster_partition *partition, char const *name, long payload_size);
-extern byte g_4de2f8[0x2008];
 
 // Retail 0xb67c0
 void function_b67c0()
@@ -495,3 +491,7 @@ void function_b67c0()
 }
 #endif
 
+
+s_partition_noncolliding_storage g_partition_noncolliding_storage;
+
+s_partition_colliding_storage g_partition_colliding_storage;

@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "shader_storage.h"
 #include "unknown_11c920.h"
 #include "unknown_0259d0.h"
 #include "globals.h"
@@ -136,7 +137,6 @@ struct s_shader_cache;
 struct s_geometry_block_info;
 struct s_draw_mesh_seed;
 struct s_draw_mesh_context;
-extern byte g_51f0f0[0x2d8];
 byte const g_43f408[63][21] =
 {
 	{ 0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },

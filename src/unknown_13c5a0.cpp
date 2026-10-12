@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "object_masks_storage.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "object_markers.h"
@@ -18,9 +19,6 @@ struct s_13c5a1
 	s_13c5a0 *field_8;
 };
 
-extern long g_4de2fc;
-extern bool g_4de2f8;
-extern long g_4de300[0x800];
 short function_b8d30(long arg_1, long arg_2, s_object_marker *arg_3, short arg_4, bool arg_5);
 void function_b9a90(long arg_1);
 void __stdcall function_b8ee0(long arg_1, long arg_2, long arg_3, long arg_4);

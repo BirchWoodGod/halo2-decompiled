@@ -1,4 +1,5 @@
 #include <string.h>
+#include "visibility_storage.h"
 #include "unknown_11c920.h"
 #include <xtl.h>
 #include "globals.h"
@@ -2045,10 +2046,11 @@ c_feedback_list::c_feedback_list(word user_flags, long mode) :
 		byte buffer[0x20];
 		s_feedback_target target;
 		unsigned __int64 clan_id;
-		bool in_clan;
+		dword unknown_tail;
 	};
 #pragma pack(pop)
 	s_feedback_scratch scratch;
+	bool in_clan;
 	unsigned __int64 *xuid;
 
 	this->mode = mode;
@@ -2056,11 +2058,11 @@ c_feedback_list::c_feedback_list(word user_flags, long mode) :
 	xuid = feedback_target_xuid(&scratch.target);
 	if (function_8c150(g_4771c8, 0, xuid, scratch.buffer, &scratch.clan_id) && scratch.clan_id)
 	{
-		scratch.in_clan = true;
+		in_clan = true;
 	}
 	else
 	{
-		scratch.in_clan = false;
+		in_clan = false;
 	}
 	data = user_interface_data_new("feedback list", 10, 4);
 	function_16b790(data);
@@ -2073,7 +2075,7 @@ c_feedback_list::c_feedback_list(word user_flags, long mode) :
 		list_item_add(this, 4);
 		list_item_add(this, 5);
 		list_item_add(this, 6);
-		if (scratch.in_clan)
+		if (in_clan)
 		{
 			list_item_add(this, 7);
 		}
@@ -5962,7 +5964,6 @@ struct s_model_render_definition_2b
 };
 
 struct s_visibility_object_lists;
-extern s_visibility_object_lists g_547f88;
 extern s_visibility_object_lists *g_4c0b80;
 extern color3f const *g_46871c;
 extern color4f const *g_4686d8;

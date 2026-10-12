@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 /* UNKNOWN_16E290.CPP: requests for the geometry blocks of the structure bsp
    and of render models (geometry_cache.h), and two small initializers */
 

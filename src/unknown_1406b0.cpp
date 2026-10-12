@@ -1,4 +1,6 @@
 // @flags /O2 /Gr
+#include "font_loading_storage.h"
+#include "glyphs_storage.h"
 /* UNKNOWN_1406B0.CPP: the font character cache. Characters are looked up by
    (font file, character) in a hash table, loaded asynchronously from the font
    cache file in three steps (the offset of the character's header, the
@@ -128,7 +130,6 @@ s_physical_object *g_54d580;
 byte *g_54d584;
 long g_54d588;
 
-s_font_render_entry g_4b62b0[512];
 
 #define FONT_CHARACTER(datum_index) (&((s_font_character *)g_54d574->data)[(datum_index) & 0xffff])
 #define FONT_PIXELS(datum_index) (&((s_font_pixels *)g_54d57c->data)[(datum_index) & 0xffff])

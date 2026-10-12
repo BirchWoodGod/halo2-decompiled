@@ -1,4 +1,6 @@
+#include "render_source_storage.h"
 // @flags /O2 /Gr
+#include "material_records_storage.h"
 /* UNKNOWN_03FDF0.CPP: cached light geometry and material pass dispatch */
 
 #include "unknown_11c920.h"
@@ -9,15 +11,6 @@
 #include <xtl.h>
 
 struct s_record_source;
-struct s_record_sources
-{
-    dword unknown00;
-    long count;
-    dword flags;
-    long first;
-    dword unknown10;
-    s_record_source *sources;
-};
 struct s_2cb30_state;
 struct s_2cb30_entry { dword values[9]; };
 struct s_2cb30_globals
@@ -84,14 +77,12 @@ struct s_light_shape_ab
 
 /* The first cached record block precedes the existing metadata array.
    Later blocks occupy the preceding metadata entry's values storage. */
-extern s_44940_entry g_4ba138[850];
 extern s_2cb30_globals g_4c0b78;
-extern s_record_sources g_4c1a48[3];
+
 extern s_cache_record_state g_4b6280;
 extern s_record_pool *g_4e030c;
 extern dword g_4b843c;
 extern long g_50943c, g_509440;
-extern dword g_4c1a80;
 extern long g_467130, g_4858b4;
 extern void *g_467134;
 extern s_record_sources *g_467138;

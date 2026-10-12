@@ -1,4 +1,5 @@
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include <string.h>
 #include <math.h>
@@ -6,12 +7,12 @@
 #include "unknown_123b30.h"
 #include "crc.h"
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 
 /* Light pool queries and the shapes copied from definitions and placements. */
 s_record_pool *g_4e030c;
 long g_4e0308;
 
-extern point3f g_4b9da0;
 
 // @retail 0xc0a50
 real function_c0a50(point3f const *point, long index, real range, real radius, real const *table)

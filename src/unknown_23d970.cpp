@@ -1,9 +1,12 @@
 // @flags /O2 /arch:SSE /Gr
+#include "shader_storage.h"
+#include "projection_storage.h"
 /* UNKNOWN_23D970.CPP: a view state and its default direction, player and
    object searches, and the vertex shader constant table / full screen quad
    push buffer writers (batch 55-1) */
 
 #include "unknown_11c920.h"
+#include "frame_storage.h"
 #include <xtl.h>
 #include <math.h>
 #include <string.h>
@@ -124,7 +127,6 @@ byte g_4e61b9;
 s_input_state g_4e61dc[3];
 s_input_state g_4e630c;
 byte g_485af0;
-real g_4856c4[9];
 long g_470a3c[8];
 byte g_470a38;
 
@@ -748,7 +750,6 @@ void function_1c590(s_shader_cache *state, long tag, long index);
 void function_1c6b0(void *state);
 void __stdcall function_1c710(void *state);
 void function_1ccb0(long format);
-extern byte g_51f0f0[0x2d8];
 PRIVATE byte const g_43f77a[20] =
 {
 	0x2a, 0x00, 0x03, 0x01, 0x02, 0x02, 0x00, 0x03, 0x03, 0x04,

@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "handles_storage.h"
 /* UNKNOWN_17D2A0.CPP: the decals (entry 37 of the lifecycle table) */
 
 #include "unknown_11c920.h"
@@ -62,7 +63,6 @@ struct s_decal_globals
 s_decal_globals *g_4ea94c;
 
 /* the first decal of each decal definition (unknown_03d380.cpp) */
-extern dword g_4c8798[256];
 
 void function_163ba0(dword *crc_reference, void const *buffer, long buffer_size);
 void function_43890(void);
