@@ -1,4 +1,6 @@
 // @flags /O2 /Gr
+#include "font_loading_storage.h"
+#include "glyphs_storage.h"
 /* UNKNOWN_1406B0.CPP: the font character cache. Characters are looked up by
    (font file, character) in a hash table, loaded asynchronously from the font
    cache file in three steps (the offset of the character's header, the
@@ -128,7 +130,6 @@ s_physical_object *g_54d580;
 byte *g_54d584;
 long g_54d588;
 
-s_font_render_entry g_4b62b0[512];
 
 #define FONT_CHARACTER(datum_index) (&((s_font_character *)g_54d574->data)[(datum_index) & 0xffff])
 #define FONT_PIXELS(datum_index) (&((s_font_pixels *)g_54d57c->data)[(datum_index) & 0xffff])
@@ -385,13 +386,15 @@ void font_cache_dispose(void)
 
 	if (g_54d578)
 	{
-		data_dispose(g_54d578);
+		// Read the pool receiver through a const pointer at this later use.
+		data_dispose(*(s_record_pool *const *)&g_54d578);
 		g_54d578 = NULL;
 	}
 
 	if (g_54d574)
 	{
-		data_dispose(g_54d574);
+		// Read the second pool through a const pointer at this later use.
+		data_dispose(*(s_record_pool *const *)&g_54d574);
 		g_54d574 = NULL;
 	}
 }
@@ -666,9 +669,11 @@ void font_cache_pixels_initialize(void)
 
 	s_physical_object *physical = font_pixels_memory_create(g_468758);
 	g_54d580 = physical;
-	physical->state = 2;
+	// Read the physical receiver through a const pointer at this later use.
+	(*(s_physical_object *const *)&g_54d580)->state = 2;
 
-	g_54d57c->valid = true;
+	// Read the pool through a const pointer at this later use.
+	(*(s_record_pool *const *)&g_54d57c)->valid = true;
 	record_pool_release_all(g_54d57c);
 }
 

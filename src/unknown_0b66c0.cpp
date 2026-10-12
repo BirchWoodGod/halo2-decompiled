@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /Gr
+#include "transaction_storage.h"
 #include "unknown_11c920.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -157,24 +158,7 @@ struct s_upload_file_ab
     dword position;
 };
 
-struct s_upload_ab
-{
-    long kind;
-    char path[0x80];
-    char header[0x400];
-    char part[0x100];
-    char ending[0x80];
-    long header_length;
-    long part_length;
-    long ending_length;
-    char content_type[0x20];
-    char filename[0x104];
-    char extra_headers[0x200];
-    byte const *memory;
-    s_upload_file_ab *file;
-    long file_length;
-    long position;
-};
+
 
 static __forceinline char *upload_copy_ab(char *destination, char const *source, long size)
 {
@@ -395,14 +379,16 @@ s_http_connection_ab *function_b5cd0(s_http_connection_ab *connection)
     *(volatile char *)connection->hostname = 0;
     function_b62b0((s_upload_ab *)((byte *)connection + 0x30));
     s_transport_endpoint *endpoint = &connection->internal_endpoint;
-    memset(endpoint, 0, sizeof(*endpoint));
+    ((dword *)endpoint)[0] = 0;
+    ((dword *)endpoint)[1] = 0;
     connection->endpoint = endpoint;
     connection->state = 0;
-    g_4d8b1c.values[g_4d8b1c.count] = 0;
+    g_4d8b1c.values[g_4d8b1c.count] = connection->state;
     g_4d8b1c.callbacks[g_4d8b1c.count] = function_b6180;
-    g_4d8b1c.stages[g_4d8b1c.count] = 0;
+    g_4d8b1c.stages[g_4d8b1c.count] = connection->state;
     g_4d8b1c.blocks[g_4d8b1c.count] = connection;
-    g_4d8b1c.count++;
+    // Keep the final registry count read at its later use.
+    g_4d8b1c.count = *(long const *)&g_4d8b1c.count + 1;
     return connection;
 }
 

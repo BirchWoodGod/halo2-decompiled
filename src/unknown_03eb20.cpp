@@ -1,12 +1,11 @@
 // @flags /O2 /Gr
+#include "view_context_storage.h"
 /* UNKNOWN_03EB20.CPP: whether a cluster is the one the current zone is in.
    Decompiled by lane R for the effects (0x178bc0, 0x1785c0, 0x179730). */
 
 #include "unknown_11c920.h"
 #include "globals.h"
 
-bool g_4b9ee9;
-long g_4b9eec;
 
 struct s_3eb20_bsp
 {

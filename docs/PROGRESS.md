@@ -2,6 +2,177 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7772 functions match
+
+```
+matched 7772 of 11318 game functions (930371 of 2784283 bytes, 33.42%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 38: 0x22590, after retail's table of 68 subsystem records (startup, shutdown and per-map callbacks) was written as data, so the functions it holds are referenced from data as in retail.
+
+## 2026-10-12: 7771 functions match
+
+```
+matched 7771 of 11318 game functions (930101 of 2784283 bytes, 33.41%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 29 (functions at retail's exact length): 0x1588b0 and 0x15a5b0.
+
+## 2026-10-12: 7769 functions match
+
+```
+matched 7769 of 11318 game functions (929740 of 2784283 bytes, 33.39%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 37: 0x2bf310, once it and four sibling methods occupy their retail vtable slots.
+
+## 2026-10-12: 7768 functions match
+
+```
+matched 7768 of 11318 game functions (929549 of 2784283 bytes, 33.39%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 37: 0x249f0.
+
+## 2026-10-12: 7767 functions match
+
+```
+matched 7767 of 11318 game functions (929424 of 2784283 bytes, 33.38%)
+```
+
+3 new matches, none lost:
+- Deep lane 2, round 28 (functions at retail's exact length): 0x199d7c, 0x10ad90 and 0x176f60.
+
+## 2026-10-12: 7764 functions match
+
+```
+matched 7764 of 11318 game functions (928920 of 2784283 bytes, 33.36%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 35: 0xb5990.
+
+## 2026-10-12: 7763 functions match
+
+```
+matched 7763 of 11318 game functions (928696 of 2784283 bytes, 33.35%)
+```
+
+12 new matches, none lost:
+- Deep lane 2, round 26: 0x192129, 0x101d20, 0x140aa0 and 0x23169c; and eight screen functions (0x231865, 0x231995, 0x2319d6, 0x2b1942, 0x2b19dc, 0x2b2d9a, 0x2b2e6b, 0x2b3f15) once the list widget's constructor is inlined, as retail inlines it.
+
+## 2026-10-12: 7751 functions match
+
+```
+matched 7751 of 11318 game functions (927576 of 2784283 bytes, 33.31%)
+```
+
+3 new matches, none lost:
+- Deep lane 3, round 35: all 41 shared storage blocks of the renderer and object system take retail's layout; 0x12080, 0x1eff0 and 0x43890, which had waited on that storage, match.
+
+## 2026-10-12: 7748 functions match
+
+```
+matched 7748 of 11318 game functions (927059 of 2784283 bytes, 33.30%)
+```
+
+2 new matches, none lost:
+- Deep lane 1, rounds 33 and 34: 0x1e98e0 and 0x2a9e60.
+
+## 2026-10-12: 7746 functions match
+
+```
+matched 7746 of 11318 game functions (926472 of 2784283 bytes, 33.28%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 25: 0x101fb0 and 0x10a2f0.
+
+## 2026-10-12: 7744 functions match
+
+```
+matched 7744 of 11318 game functions (926140 of 2784283 bytes, 33.26%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, round 24: 0x19b62e.
+
+## 2026-10-12: 7743 functions match
+
+```
+matched 7743 of 11318 game functions (926056 of 2784283 bytes, 33.26%)
+```
+
+3 new matches, none lost:
+- Deep lane 1, round 32: 0x265c30, 0x2684f0 and 0x2a2e00.
+
+## 2026-10-12: 7740 functions match
+
+```
+matched 7740 of 11318 game functions (925828 of 2784283 bytes, 33.25%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, round 23: 0x1008f0, which had 148 differing instructions two rounds earlier.
+
+## 2026-10-12: 7739 functions match
+
+```
+matched 7739 of 11318 game functions (925241 of 2784283 bytes, 33.23%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 31: 0x1e3920.
+
+## 2026-10-11: 7738 functions match
+
+```
+matched 7738 of 11318 game functions (925029 of 2784283 bytes, 33.22%)
+```
+
+3 new matches, none lost:
+- Deep lane 1, round 30 (the closest functions in groups 1 and 3): 0x2acf80, 0x2b1ed5 and 0x2b1eef.
+
+## 2026-10-11: 7735 functions match
+
+```
+matched 7735 of 11318 game functions (924736 of 2784283 bytes, 33.21%)
+```
+
+4 new matches, none lost:
+- Deep lane 3, round 34: eight shared storage blocks of the renderer and the object system take retail's layout. 0xb3ed0, whose body had waited on that storage, matches, with its caller 0xb3e90; 0x243ed0 and 0x24da7d match as side effects.
+
+## 2026-10-11: 7731 functions match
+
+```
+matched 7731 of 11318 game functions (923546 of 2784283 bytes, 33.17%)
+```
+
+8 new matches, none lost:
+- A trial lane run by Claude Sonnet instead of Codex, on the closest functions in group 3: 0x1ed340, 0x26d0e0, 0x2c6431, 0x2c66b5, 0x2c67d7, 0x2a07c0, 0x2a06a0 and 0x2b86fa.
+
+## 2026-10-11: 7723 functions match
+
+```
+matched 7723 of 11318 game functions (922319 of 2784283 bytes, 33.13%)
+```
+
+3 new matches, none lost:
+- Deep lane 1, round 26: the object types' vtables now hold the real methods in the slots that held placeholders, as retail's do; 0xa0520 and 0xa26d0 match with that alone, and 0xa0640 with them.
+
+## 2026-10-11: 7720 functions match
+
+```
+matched 7720 of 11318 game functions (921933 of 2784283 bytes, 33.11%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 25: 0xbeca0.
+
 ## 2026-10-11: 7719 functions match
 
 ```

@@ -1,4 +1,6 @@
 // @flags /O2 /Gr
+#include "target_cache_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_02B5A0.CPP: pool and caption-cache lifecycle */
 
 #include "unknown_11c920.h"
@@ -410,7 +412,6 @@ s_lighting_record *function_3db00(long object_index, real priority)
 // Disabled: camera fallback passes shared cache storage to an outside-owner producer.
 #if 0
 extern long g_4c1bd4;
-extern long g_4c1bd8[4];
 extern long g_4b72c0;
 struct s_unknown_78;
 extern s_unknown_78 *g_510c6c;
@@ -445,3 +446,37 @@ void function_3d2c0()
 }
 #endif
 
+
+extern long g_4c1bd4;
+struct s_first_person_model;
+struct s_unknown_78;
+extern s_unknown_78 *g_510c6c;
+long function_155760(long player_index);
+long __stdcall first_person_weapons_get_models(long user_index, long unit_index, long maximum, s_first_person_model *models);
+long g_4b72c0;
+
+// @retail 0x3d2c0
+void function_3d2c0()
+{
+    g_4c1bd0 = NONE;
+    g_4c1bd4 = 0;
+    long object_index = NONE;
+    byte *camera = (byte *)g_510c6c;
+    if (camera[0] && *(short *)(camera + 2) == 4)
+    {
+        long target = *(long *)(camera + 0x3c);
+        if (function_badc0(target, 3)) object_index = target;
+    }
+    g_4c1bd0 = object_index;
+    if (object_index == NONE)
+    {
+        g_4c1bd0 = g_4b72c0;
+        if (g_4c1bd0 == NONE && g_4b9ed8 != NONE && !function_155760(g_4b9ed8))
+        {
+            long player = g_4e8c20->entries[g_4b9ed8];
+            long unit = player != NONE ? *(long *)(g_4e8c24->data + (player & 0xffff) * 0x21c + 0x2c) : NONE;
+            g_4c1bd0 = unit;
+            g_4c1bd4 = first_person_weapons_get_models(g_4b9ed8, unit, 4, (s_first_person_model *)g_4c1bd8);
+        }
+    }
+}

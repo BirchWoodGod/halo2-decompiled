@@ -1,8 +1,10 @@
 // @flags /O2 /arch:SSE /Gr
+#include "view_context_storage.h"
 /* UNKNOWN_1E9700.CPP: a value of the difficulty table for the current
    campaign difficulty (lane M; called by the behaviors of 0x1a8000..0x1affff) */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include <string.h>
 #include <float.h>
@@ -390,22 +392,33 @@ void __stdcall function_1e98e0(void *state, long mask_address, void *data)
 	dword changed = 0;
 	for (long i = 0; i < 16; i++)
 	{
-		if ((1 << i) & *mask)
+		dword selected = 1u << i;
+		if (selected & *mask)
 		{
 			if (!update_value_row(packet->values[i], table->values[i]))
-				changed |= 1 << i;
+				changed |= selected;
 			else
-				changed &= ~(1 << i);
+				changed &= ~selected;
 		}
 	}
-	for (long team = 0; team < 8; team++)
+	short const *source = table->team_values[0] + 2;
+	for (long team = 0; team < 8; source += 9, team++)
 	{
 		if (*mask & (1 << (team + 16)))
 		{
-			if (!update_team_value_row((s_team_value_row *)packet->team_values[team], table->team_values[team]))
-				changed |= 1 << (team + 16);
-			else
-				changed &= ~(1 << (team + 16));
+			short *destination = packet->team_values[team] + 8;
+			bool same = true;
+			if (destination[-8] != source[-2]) { destination[-8] = source[-2]; same = false; }
+			if (destination[-7] != source[-1]) { destination[-7] = source[-1]; same = false; }
+			if (destination[-6] != source[0]) { destination[-6] = source[0]; same = false; }
+			if (destination[-5] != source[1]) { destination[-5] = source[1]; same = false; }
+			if (destination[-4] != source[2]) { destination[-4] = source[2]; same = false; }
+			if (destination[-3] != source[3]) { destination[-3] = source[3]; same = false; }
+			if (destination[-2] != source[4]) { destination[-2] = source[4]; same = false; }
+			if (destination[-1] != source[5]) { destination[-1] = source[5]; same = false; }
+			if (destination[0] != source[6]) { destination[0] = source[6]; same = false; }
+			if (!same) changed |= 1 << (team + 16);
+			else changed &= ~(1 << (team + 16));
 		}
 	}
 	*mask = changed;
@@ -633,8 +646,6 @@ struct s_request_screen_bounds
 
 void function_1e90b0(long first, point2f *points, s_request_screen_bounds const *bounds);
 
-extern long g_4b9ed8;
-extern short g_4b9dd0, g_4b9dd2;
 struct s_bitmap_data;
 struct D3DTexture;
 struct s_widget_quad_2b11;
@@ -787,7 +798,6 @@ struct s_33a0b_default;
 extern s_33a0b_default *g_4686d4;
 extern real g_4e69c0[4];
 extern long g_4ba04c;
-extern short_rectangle2d g_4b9dd8;
 void function_13925f(long string_handle, word *buffer);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 void function_22d2ee(word *string, long maximum_length);

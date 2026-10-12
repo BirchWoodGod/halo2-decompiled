@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "reset_storage.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 #include <xmmintrin.h>
@@ -211,6 +212,7 @@ word g_485ac0;
 dword g_467014, g_467018;
 __int64 g_485aa0;
 
+__declspec(noinline) void function_0169f0();
 // @retail 0x169f0
 void function_0169f0()
 {
@@ -321,6 +323,7 @@ void function_2f6b0(s_2f6b0_point const *position, s_2f6b0_point const *grid,
 		inner->v2 -= 4;
 }
 
+__declspec(noinline) void function_016a30(real scale, short y, short x);
 // @retail 0x16a30
 void function_016a30(real scale, short y, short x)
 {
@@ -368,7 +371,6 @@ long function_016ae0(real value)
 	}
 }
 
-dword g_485b78[5];
 
 // @retail 0x1bdf0
 void function_1bdf0(void)

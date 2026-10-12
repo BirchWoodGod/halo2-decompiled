@@ -1,30 +1,15 @@
+#include "unknown_4e8c38.h"
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 /* UNKNOWN_155760.CPP: entry classification */
 
 #include "unknown_11c920.h"
 #include "globals.h"
 #include <string.h>
 
-struct s_entry_155760
-{
-	byte unknown00[4];
-	real value;
-	byte unknown08[4];
-	void *proc;
-	real value10;
-	real value14;
-	byte unknown18[0x58 - 0x18];
-	word word58;
-	byte unknown5a[0x108 - 0x5a];
-	byte flag108;
-	byte unknown109[3];
-	real value10c;
-	byte unknown110[0x140 - 0x110];
-};
 
-s_entry_155760 g_4e8c44[4];
+
 byte g_51ec10;
-long g_4e8c3c;
 
 struct s_observer_command;
 void __stdcall function_23c110(void *state, void *input, s_observer_command *command);
@@ -438,8 +423,6 @@ void function_155b60(long unit_index)
     }
 }
 
-extern dword g_4e8c38[0x143];
-bool g_4e8c40;
 dword g_47fca0[4][8] =
 {
     { 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -466,14 +449,18 @@ void function_155380(void)
         s_entry_155760 *entry = &g_4e8c44[index];
         if (!entry->unknown00[0])
         {
-            ((byte *)entry)[0x54] = 0;
-            *(long *)((byte *)entry + 0x50) = 0;
+            long *field = (long *)((byte *)entry + 0x50);
+            ((byte *)field)[4] = 0;
+            *field = 0;
             entry->value = 0.0f;
             switch (g_4e8c3c)
             {
             case 0:
+                entry->value10 = 0.0f;
+                entry->value14 = 0.0f;
+                function_155dd0(index, function_23c110, false);
+                break;
             case 1:
-            case 4:
                 entry->value10 = 0.0f;
                 entry->value14 = 0.0f;
                 function_155dd0(index, function_23c110, false);
@@ -482,16 +469,25 @@ void function_155380(void)
                 function_23cea0((s_view_state *)&entry->value10, index);
                 function_155dd0(index, function_23d090, false);
                 break;
+            case 4:
+                entry->value10 = 0.0f;
+                entry->value14 = 0.0f;
+                function_155dd0(index, function_23c110, false);
+                break;
             case 3:
                 break;
             }
-            s_camera_slot_155380 *slot = (s_camera_slot_155380 *)((byte *)entry + 0x110);
-            for (long i = 0; i < 4; i++)
+            real *target = (real *)((byte *)entry + 0x118);
+            dword const *value = g_47fca0[0];
+            long remaining = 4;
+            do
             {
-                slot[i].value = g_47fca0[i][0];
-                slot[i].target = 0.0f;
-                slot[i].current = 0.0f;
-            }
+                *(dword *)(target - 2) = *value;
+                *target = 0.0f;
+                target[-1] = 0.0f;
+                value += 8;
+                target += 3;
+            } while (--remaining);
             entry->unknown00[0] = 1;
         }
     }

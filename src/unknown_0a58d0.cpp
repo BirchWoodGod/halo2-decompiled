@@ -326,6 +326,8 @@ void function_a99f0(long index, long *block)
 		long identifier = ((s_object_header *)g_4e0300->data)[index & 0xffff].object->field_d4;
 		if (identifier != NONE)
 		{
+			// Read the shared world through its const pointer at the later use.
+			world = (s_z_state_world *)*(s_simulation_world *const *)&g_4cf77c;
 			s_z_entity_record *entity = &world->database->entities[identifier & 0x3ff];
 			if (entity->active)
 			{
@@ -528,15 +530,18 @@ void function_a7cd0(long index)
 void function_a9a70(long index, s_z_copy_state *state)
 {
 	byte *object = (byte *)((s_object_header *)g_4e0300->data)[index & 0xffff].object;
+	struct { vector3f difference; } geometry;
 	vector3f const *position = (vector3f const *)(object + 0x64);
 	vector3f *saved = &state->position;
-	vector3f difference;
-	vector3d_from_points3d((point3f const *)saved, (point3f const *)position, &difference);
+	vector3f &difference = geometry.difference;
+	difference.i = *(real const *)(object + 0x64) - state->position.i;
+	difference.j = position->j - saved->j;
+	difference.k = position->k - saved->k;
 	if (sqrt(difference.i * difference.i + (difference.j * difference.j + difference.k * difference.k)) > 0.05000000074505806f)
 	{
-		saved->i = saved->i * 0.550000011920929f + position->i * 0.44999998807907104f;
-		saved->j = saved->j * 0.550000011920929f + position->j * 0.44999998807907104f;
-		saved->k = saved->k * 0.550000011920929f + position->k * 0.44999998807907104f;
+		saved->i = ((real volatile *)saved)[0] * 0.550000011920929f + ((real const volatile *)position)[0] * 0.44999998807907104f;
+		saved->j = ((real volatile *)saved)[1] * 0.550000011920929f + position->j * 0.44999998807907104f;
+		saved->k = ((real volatile *)saved)[2] * 0.550000011920929f + position->k * 0.44999998807907104f;
 	}
 	else
 	{

@@ -2,8 +2,7 @@
 struct s_saved_game_read;
 
 
-// @stub 0x14280
-long __fastcall function_14280(void const *arg_0) { return 0; }
+
 
 
 
@@ -28,3 +27,9 @@ void function_8dd70(void) { }
 
 // @stub 0x12b450
 void function_12b450(void) { }
+
+// @stub 0x8d9f0
+void function_8d9f0() { }
+
+// @stub 0x3361a4
+void function_3361a4() { }

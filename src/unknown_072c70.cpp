@@ -9,6 +9,7 @@
 #include "unknown_13927e.h"
 
 // @flags /O2 /arch:SSE /Gr
+#include "view_context_storage.h"
 
 /* The table at 0x45c750 is the vtable of a game engine class; the other
    engine objects (reached through g_55e4d0) are viewed through c_engine_peer. */
@@ -209,7 +210,6 @@ static inline bool game_is_team_game()
 }
 
 extern color3f *g_468714;
-extern long g_4b9ed8;
 color3f *function_7f720(color3f *color, short team_index);
 void function_10da60(long item_index, point3f *position);
 
@@ -374,7 +374,6 @@ long c_game_engine::v22()
 	return 3;
 }
 
-// @retail 0x175f40
 void c_game_engine::v10()
 {
 }

@@ -1,4 +1,6 @@
 // @flags /O2 /arch:SSE /Gr
+#include "cluster_mask_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_175BD0.CPP: the effects (entry 40 of the lifecycle table) */
 
 #include "unknown_11c920.h"
@@ -157,8 +159,8 @@ struct s_effect_color_query
 
 long function_d2bb0(void *source, s_effect_color_query *query);
 long __stdcall function_d2a50(long a, long b, long c, s_effect_color_query *query, long d, point3f const *point);
-bool function_11c050(s_location const *location);
-bool function_11c080(s_location const *location);
+__declspec(noinline) bool function_11c050(s_location const *location);
+__declspec(noinline) bool function_11c080(s_location const *location);
 bool function_11c120(s_location const *location, point3f const *point, short *zone_index);
 bool function_3eb20(long cluster_index);
 bool __stdcall function_3ebd0(vector3f const *offset, transform4x3f const *matrices, transform4x3f *out, long count);
@@ -179,7 +181,6 @@ struct s_unknown_13bf00;
 extern s_unknown_13bf00 *g_510c50;
 
 /* the clusters whose effects are visible */
-dword g_4c56c0[64];
 
 #define OBJECT_GET(index) ((s_effect_object *)((s_effect_object_header *)g_4e0300->data)[(index) & 0xffff].object)
 
@@ -574,41 +575,35 @@ void function_175d70(void)
 	while (datum != NONE)
 	{
 		s_effect_datum *effect = DATUM(array, s_effect_datum, datum);
-		if (effect->object_index != NONE)
-		{
-			s_effect_object *object = (s_effect_object *)function_badc0(effect->object_index, (dword)NONE);
-			if (!object)
-			{
-				effect->object_index = NONE;
-				effect->location.leaf_index = NONE;
-				effect->location.cluster_index = NONE;
-				effect->location.bsp_index = g_4686c4;
-				function_1774f0(datum);
-			}
-			else
-			{
-				effect->location = object->location;
-				long index = effect->first_particle_system_index;
-				while (index != NONE)
-				{
-					s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, index);
-					index = system->next_index;
-					system->set_location(&effect->location);
-				}
-			}
-		}
-		else if (function_1789f0(effect))
-		{
-			long index = effect->first_particle_system_index;
-			while (index != NONE)
-			{
-				s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, index);
-				index = system->next_index;
-				system->set_location(&effect->location);
-			}
-		}
-		else
-			function_1774f0(datum);
+        if (effect->object_index != NONE)
+        {
+            s_effect_object *object = (s_effect_object *)function_badc0(effect->object_index, (dword)NONE);
+            if (!object)
+            {
+                effect->object_index = NONE;
+                effect->location.leaf_index = NONE;
+                effect->location.cluster_index = NONE;
+                effect->location.bsp_index = g_4686c4;
+                function_1774f0(datum);
+                goto next;
+            }
+            effect->location = object->location;
+        }
+        else if (!function_1789f0(effect))
+        {
+            function_1774f0(datum);
+            goto next;
+        }
+        {
+            long index = effect->first_particle_system_index;
+            while (index != NONE)
+            {
+                s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, index);
+                index = system->next_index;
+                system->set_location(&effect->location);
+            }
+        }
+next:
 		array = g_4ea93c;
 		datum = data_datum_index(array, data_find_index(array, datum == NONE ? 0 : (datum & 0xffff) + 1));
 	}
@@ -725,12 +720,7 @@ void function_177260(long effect_index, bool flag)
 
 	if (effect)
 	{
-		if (effect->looping_sound_index != NONE)
-		{
-			s_effect_looping_sound *sound = DATUM(g_4ed28c, s_effect_looping_sound, effect->looping_sound_index);
-			sound->flag1 = true;
-			effect->looping_sound_index = NONE;
-		}
+		effect_stop_looping_sound(effect);
 		function_1771a0(effect);
 		if (((byte)effect->flags >> 1) & 1)
 		{
@@ -2202,6 +2192,7 @@ bool __stdcall function_1794e0(long effect_index)
 // @retail 0x179730
 bool function_179730(long effect_index)
 {
+	bool result = false;
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 	s_effect_definition *definition = TAG_GET(s_effect_definition, effect->tag_index);
 	bool hidden = true;
@@ -2230,7 +2221,8 @@ bool function_179730(long effect_index)
 			effect->flag3 = false;
 		}
 	}
-	return effect == 0;
+	result = effect == 0;
+	return result;
 }
 
 // @retail 0x179810
@@ -2588,9 +2580,9 @@ long __stdcall function_177040(long particle_system_index, long effect_index)
 {
 	long const *effect_index_argument = &effect_index;
 	effect_index = *effect_index_argument;
-	s_particle_system_datum *particle_system = DATUM(g_510c74, s_particle_system_datum, particle_system_index);
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
-	long next_index = particle_system->next_index;
+	s_particle_system_datum *particle_system = DATUM(g_510c74, s_particle_system_datum, particle_system_index);
+	volatile long next_index = particle_system->next_index;
 	s_effect_particle_system_definition *definition = particle_system->function_1751d0();
 	long location_index = effect->location_indices[definition->location_index];
 
@@ -2688,7 +2680,6 @@ bool function_1778d0(void)
 	return result;
 }
 
-extern long g_4b9ed8;
 bool function_3e9c0(long object_index);
 bool function_2dba0(long tag, vector3f const *direction, long c, long d, long e, point3f const *position, color3f const *color, real alpha, real amount, real scale, bool alternate);
 void function_42850(long a, long b, point3f const *position, vector3f const *first,
@@ -3224,3 +3215,5 @@ void function_176cb0(void)
     }
 }
 
+
+s_cluster_mask_storage g_cluster_mask_storage;

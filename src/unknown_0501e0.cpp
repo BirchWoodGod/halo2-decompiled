@@ -1,13 +1,12 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "unknown_0259d0.h"
 #include "unknown_030290.h"
 #include <math.h>
 #include <string.h>
 
-extern point3f g_4b9da0;
-extern vector3f g_4b9dac;
-extern s_camera g_4b9e14;
 real function_30bf0(vector3f *arg_0);
 
 struct s_501e0

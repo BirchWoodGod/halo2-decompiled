@@ -1,9 +1,12 @@
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include "object_markers.h"
 #include "data_array.h"
 
 // @flags /O1 /arch:SSE /Gr
+#include "projection_storage.h"
+#include "view_context_storage.h"
 
 /* UNKNOWN_1916DC.CPP: the messages the HUD shows about the player's weapons */
 
@@ -318,7 +321,6 @@ void function_19188c(long user_index)
 void function_192129(long local_player_index);
 struct s_view_globals;
 extern s_view_globals *g_510c98;
-extern long g_4b9ed8;
 bool function_159170(long player_index);
 long function_155760(long local_player_index);
 void function_24da7d(long local_player_index);
@@ -326,8 +328,6 @@ void function_24cf66(long local_player_index);
 void function_13954b(void);
 void function_191fd8(long player_index);
 
-// Disabled: split shared camera globals cannot supply retail's storage binding safely.
-#if 0
 #include "unknown_030290.h"
 struct s_bitmap_view;
 struct D3DTexture;
@@ -342,12 +342,13 @@ s_type_7ba8e9 *function_137610(long group_index, short frame_index, short sequen
 D3DTexture *function_12360(s_bitmap_view *bitmap, real priority);
 void function_13e703(byte const *bitmap, s_13e703 const *position, box2f const *bounds,
 	real scale, real angle, real alpha);
-extern short g_4b9dd0, g_4b9dd2;
-extern real g_4b9de0, g_4b9de4;
 
-// Retail 0x191fd8; camera/view arguments expose the unresolved storage binding.
-void function_191fd8(long player_index, s_camera const *camera, s_view const *view)
+// @retail 0x191fd8
+void function_191fd8(long player_index)
 {
+	// Read the later camera and view values through const pointer views.
+	s_camera const *camera = (s_camera const *)&g_4b9e14;
+	s_view const *view = (s_view const *)&g_camera_storage;
 	byte *player = g_4e8c24->data + (player_index & 0xffff) * 0x21c;
 	point3f position, transformed;
 	point2f projected;
@@ -378,7 +379,7 @@ void function_191fd8(long player_index, s_camera const *camera, s_view const *vi
 		}
 	}
 }
-#endif
+
 bool function_13cb40(void);
 bool function_15e020(short first, short second);
 

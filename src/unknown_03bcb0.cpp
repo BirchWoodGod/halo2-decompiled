@@ -1,4 +1,14 @@
+#include "render_source_storage.h"
+#include "camera_storage.h"
+#include "frame_storage.h"
+#include "reset_storage.h"
 // @flags /O2 /arch:SSE /Ob1 /Gr
+#include "material_records_storage.h"
+#include "material_shader_storage.h"
+#include "material_constants_storage.h"
+#include "shader_storage.h"
+#include "projection_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_03BCB0.CPP: predicting one bitmap's texture (unknown_03bcb0.h);
    its own /Ob1 file because retail calls it out of line from 0x16e5e0 */
 
@@ -20,7 +30,6 @@ bool function_3bf00(byte const *state)
 }
 
 extern byte g_4670bc;
-extern byte g_485b48[0x1fc0];
 extern long g_4858b8;
 struct s_render_reset_state;
 void function_16b10(s_render_reset_state *state);
@@ -188,16 +197,6 @@ struct s_record_source
 	byte value14;
 	byte value15;
 	word unknown16;
-};
-
-struct s_record_sources
-{
-	dword unknown00;
-	long count;
-	dword flags;
-	long first;
-	dword unknown10;
-	s_record_source *sources;
 };
 
 class c_type_4e7709;
@@ -384,7 +383,7 @@ bool function_3b9d0(s_record_sources *data, long tag_index, long pass, dword and
 	return result;
 }
 
-s_record_sources g_4c1a48[3];
+s_render_source_storage g_render_source_storage;
 
 // @retail 0x3b8a0
 void function_3b8a0(void)
@@ -572,10 +571,9 @@ void __stdcall function_41020(void *submission)
 extern long g_467130;
 void *g_467134 = (void *)NONE;
 s_record_sources *g_467138;
-long g_4858b0, g_48574c;
+long g_4858b0;
 byte g_485a75, g_485a76;
 extern byte g_4670bc;
-extern byte g_485b48[0x1fc0];
 struct s_render_reset_state;
 void function_16b10(s_render_reset_state *state);
 
@@ -715,13 +713,7 @@ struct s_cache_record;
 s_cache_record *function_1e2d0(void);
 long function_40e10(bool first, bool second);
 
-struct s_frame_offset
-{
-    point3f position;
-    vector3f forward;
-    vector3f up;
-};
-extern s_frame_offset g_485618;
+
 
 typedef void (__stdcall *t_41490_callback)(void *);
 
@@ -831,7 +823,6 @@ void function_3d000(real const *state)
 #include <string.h>
 #include "visibility_slot.h"
 struct s_shader_cache;
-extern byte g_51f0f0[0x2d8];
 extern byte *g_485a80;
 extern long g_4858b8;
 void function_1c590(s_shader_cache *state, long tag, long index);
@@ -909,7 +900,6 @@ long __stdcall function_3bf20(s_slot *slot, byte *data)
 
 
 #include <math.h>
-extern vector3f g_4b9dac;
 s_3c9a0_matrix g_4c1b9c;
 
 PRIVATE __forceinline void set_bump_component(long stage, D3DTEXTURESTAGESTATETYPE component, real value)
@@ -961,9 +951,6 @@ void function_3c650(byte const *state)
 
 
 extern byte g_485ac2;
-extern word g_485648, g_48564a, g_48564c, g_48564e;
-real g_485640;
-real g_4c1b38[3][4];
 s_3c9a0_matrix g_4c1b68;
 
 // @retail 0x3ca90
@@ -1025,23 +1012,11 @@ void function_3ca90(byte const *state)
 	memcpy(g_4c1b08, corners, sizeof(corners));
 }
 
-struct s_44940_entry
-{
-    dword unknown00;
-    long tag;
-    dword unknown08;
-    dword flags;
-    byte unknown10[0x10];
-};
-extern s_44940_entry g_4ba138[850];
+
 void *function_44940(short index, bool instance);
 long function_1cb20(long mode, dword index, long tag);
 extern byte *g_485a80;
-extern long g_4b9f5c;
-extern bool g_4ba004;
 extern byte g_485a75, g_485a76;
-real g_4b9f78, g_4b9f7c;
-byte g_4b9f88;
 
 struct s_render_part_context
 {
@@ -1270,9 +1245,6 @@ struct s_projection_copy_3bd00
     transform4x3f inverse;
     byte unknown68[0xc0 - 0x68];
 };
-extern s_camera_copy_3bd00 g_485618;
-extern s_projection_copy_3bd00 g_48568c;
-extern byte g_485607;
 void function_14ac0(void);
 void function_12fa0(real const *projection, byte const *camera, bool scaled, long mode);
 void function_3ede0(void);
@@ -1551,3 +1523,177 @@ bool __stdcall function_3c3c0(bool render, bool clear)
 }
 #endif
 
+
+
+// @retail 0x40e30
+void function_40e30(short group, long tag, real distance, long level, word kind,
+    dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context)
+{
+    if (group != NONE && function_1bf50(tag, level, distance, (long *)&distance))
+        function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
+}
+
+s_material_constants_storage g_material_constants_storage;
+
+s_material_shader_storage g_material_shader_storage;
+
+struct s_render_transform_record;
+struct s_primitive_definition;
+struct s_primitive_header;
+struct s_24490_definition;
+struct s_1c8c0_stream;
+void function_1c0d0(long tag, long stage);
+void function_4d830(s_render_transform_record const *record);
+void function_4d7c0(dword const *record, word const *kind);
+struct s_surface_size;
+void function_024040(long key, s_surface_size const *size, long index);
+void *function_24490(long key, s_24490_definition *definition, long entry);
+s_primitive_header *function_4dc60(s_primitive_definition *, long, bool, long);
+void function_015c90(long stage, long index);
+bool function_1caa0(long, byte const *, word const *, byte const *,
+    s_1c8c0_stream const *, s_1c8c0_stream const *, s_1c8c0_stream const *);
+void function_4d9c0(byte const *, long, byte, short, long, long, long, long);
+void __stdcall function_4d640(short, long, bool);
+void function_4d720(short, long);
+extern long g_485a60;
+
+
+// @retail 0x4d0b0
+void __stdcall function_4d0b0(long tag, long first, long second, long mode,
+    long packed, long fourth, void *record_address)
+{
+    byte *definition = g_4e3b44[tag & 0xffff].bytes;
+    long part_index = packed & 0xff;
+    short index = (short)(packed >> 8);
+    byte value = (byte)(packed >> 24);
+    *(long *)(g_485b48 + 8) = tag;
+    if ((mode == 18 || mode == 19) && !(definition[0x16] & 4))
+    {
+        tag = *(long *)(g_485a80 + 0xd0);
+        second = 0;
+    }
+    bool compound = (definition[0x16] & 1) != 0;
+    s_44940_entry *entry = &g_4ba138[index];
+    if ((entry->unknown00 & 0x4000) && mode == 16) return;
+    long section = (entry->flags >> 9) & 0x1ff;
+    short primitive = (entry->flags >> 18) & 0x7ff;
+    byte *geometry;
+    if (entry->tag != NONE)
+        geometry = *(byte **)(*(byte **)(g_4e3b44[entry->tag & 0xffff].bytes + 0x28) + section * 0x5c + 0x34);
+    else if (!(entry->unknown00 & 0x1000))
+        geometry = *(byte **)(*(byte **)((byte *)g_4e0348 + 0xa0) + section * 0xb0 + 0x50);
+    else
+    {
+        short cluster = *(short *)(*(byte **)((byte *)g_4e0348 + 0x144) + primitive * 0x58 + 0x34);
+        geometry = *(byte **)(*(byte **)((byte *)g_4e0348 + 0x13c) + cluster * 0xc8 + 0x50);
+    }
+    byte *part = *(byte **)(geometry + 4) + part_index * 0x48;
+    function_1c0d0(tag, mode);
+    function_4d830((s_render_transform_record *)entry);
+    function_4d7c0((dword *)entry, (word *)part);
+    byte const *selection = (byte const *)function_44940(index, (entry->unknown00 & 0x1000) != 0);
+    void *extra = 0, *stream = 0, *mask = 0;
+    if (mode == 5 && entry->tag != NONE && !compound)
+    {
+        byte *model = g_4e3b44[entry->tag & 0xffff].bytes;
+        if (*(long *)(model + 0x74) > 0)
+        {
+            s_24490_definition *resource = *(s_24490_definition **)(model + 0x78);
+            long key = **(long **)entry->unknown10;
+            function_024040(key, (s_surface_size const *)resource, entry->flags & 15);
+            extra = function_24490(key, resource, section);
+        }
+    }
+    bool setup = false;
+    if (mode == 3 && (entry->unknown00 >> 29) != 3 && !compound)
+    {
+        long bitmap = NONE;
+        long texture = NONE;
+        byte *data = *(byte **)((byte *)g_4e0344 + 0x84);
+        if (primitive != 0x7ff)
+        {
+            if (entry->tag != NONE)
+            {
+                if ((entry->unknown00 >> 29) != 2)
+                {
+                    byte *group = *(byte **)(data + 0x64) + primitive * 12;
+                    byte *buffer = *(byte **)(data + 0x44) + *(word *)(group + 2) * 0x38;
+                    long size = ((word *)*(byte **)(group + 8))[section] * 4;
+                    if (buffer[0] & 1)
+                    {
+                        mask = *(void **)(*(byte **)(buffer + 0x34) + 4);
+                        ((long *)mask)[1] = size;
+                        ((long *)mask)[2] = size;
+                    }
+                    stream = function_4dc60((s_primitive_definition *)data, primitive, false, section);
+                }
+            }
+            else
+            {
+                byte *group = *(byte **)(data + 0x54) + primitive * 12;
+                byte *buffer = *(byte **)(data + 0x44) + *(word *)(group + 2) * 0x38;
+                long size = **(word **)(group + 8) * 4;
+                if (buffer[0] & 1)
+                {
+                    mask = *(void **)(*(byte **)(buffer + 0x34) + 4);
+                    ((long *)mask)[1] = size;
+                    ((long *)mask)[2] = size;
+                }
+                stream = function_4dc60((s_primitive_definition *)data, primitive, true, NONE);
+                byte *mapping = *(byte **)(data + 0x4c) + primitive * 4;
+                bitmap = *(short *)mapping;
+                texture = *(signed char *)(mapping + 2);
+            }
+        }
+        else if (entry->tag == NONE)
+        {
+            byte *mapping = *(byte **)(data + 0x2c) + section * 4;
+            bitmap = *(short *)mapping;
+            texture = *(signed char *)(mapping + 2);
+        }
+        if (texture != NONE)
+        {
+            function_015c90(3, texture);
+            setup = true;
+        }
+        g_485a60 = bitmap;
+    }
+    for (short i = 0; i < *(long *)(geometry + 0x38); ++i)
+        _mm_prefetch((char *)(geometry + 0x3c + i * 32), _MM_HINT_T0);
+    _mm_prefetch((char *)selection, _MM_HINT_T0);
+    _mm_prefetch((char *)mask, _MM_HINT_T0);
+    _mm_prefetch((char *)part, _MM_HINT_T0);
+    _mm_prefetch((char *)geometry, _MM_HINT_T0);
+    _mm_prefetch((char *)extra, _MM_HINT_T0);
+    _mm_prefetch((char *)stream, _MM_HINT_T0);
+    byte *record = (byte *)record_address;
+    if (compound)
+    {
+        byte *references = *(byte **)(definition + 0x24);
+        for (long i = 0; i < *(long *)(references + 4); ++i)
+        {
+            long bitmap_tag = *(long *)(*(byte **)(references + 8) + i * 12);
+            if (bitmap_tag == NONE) continue;
+            byte *bitmap_definition = g_4e3b44[bitmap_tag & 0xffff].bytes;
+            for (long j = 0; j < *(long *)(bitmap_definition + 0x44); ++j)
+            {
+                s_bitmap_predict_view *bitmap = (s_bitmap_predict_view *)(*(byte **)(bitmap_definition + 0x48) + j * 0x74);
+                if (bitmap) bitmap_predict_inline(bitmap, 14);
+            }
+        }
+        if (*(dword *)(*(byte **)(record + 0x10) + 0x118) & 0x100000)
+            function_3bea0();
+    }
+    long shader = *(long *)(*(byte **)(record + 0x10) + 0x100);
+    if (function_1caa0(shader, selection, (word *)part, geometry,
+        (s_1c8c0_stream *)extra, (s_1c8c0_stream *)mask, (s_1c8c0_stream *)stream))
+    {
+        function_4d9c0(part, mode, value, index, first, second, fourth, record[4]);
+        function_4d640(index, mode, setup);
+        bool filtered = (entry->unknown00 & 0x200) && !(part[2] & 8);
+        bool strip = (entry->unknown00 & 0x40) && *(long *)(entry->unknown10 + 4) && *(long *)(geometry + 8);
+        function_4daa0(filtered, strip, (s_4daa0_geometry *)geometry,
+            (s_4daa0_part *)part, *(dword **)(entry->unknown10 + 4));
+        function_4d720(index, mode);
+    }
+}

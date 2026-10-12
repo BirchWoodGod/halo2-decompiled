@@ -1,4 +1,6 @@
+#include "unknown_4e8c38.h"
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 /* UNKNOWN_23D030.CPP: the camera that flies freely, and the point it keeps
    relative to an object (0x23d030..0x23d970) */
 
@@ -16,24 +18,8 @@ struct s_player_control_camera
 	point3f position;
 };
 
-struct s_entry_155760
-{
-	byte unknown00[4];
-	real value;
-	byte unknown08[4];
-	void *proc;
-	real value10;
-	real value14;
-	byte unknown18[0x58 - 0x18];
-	word word58;
-	byte unknown5a[0x108 - 0x5a];
-	byte flag108;
-	byte unknown109[3];
-	real value10c;
-	byte unknown110[0x140 - 0x110];
-};
 
-extern s_entry_155760 g_4e8c44[];
+
 extern real g_54e854;
 void player_control_get_camera(long player_index, s_player_control_camera *camera);
 vector3f *function_11d090(vector3f const *v, vector3f *out);

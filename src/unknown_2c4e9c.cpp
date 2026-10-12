@@ -2647,17 +2647,22 @@ void c_invert_look_settings_edit_list::v20(c_class_1a2c81 *widget, long index)
 // @retail 0x2c6431
 void c_invert_look_settings_edit_list::handle_item(s_controller_reference **controller, long *item)
 {
+	bool invert;
 	switch (*(short *)item)
 	{
-	case 1:
-		g_54e5d0.settings.controller_flags.invert_look = false;
-		break;
 	case 0:
-		g_54e5d0.settings.controller_flags.invert_look = true;
+		invert = true;
+		break;
+	case 1:
+		invert = false;
 		break;
 	default:
 		__assume(0);
 	}
+	if (invert)
+		g_54e5d0.settings.controller_flags.invert_look = true;
+	else
+		g_54e5d0.settings.controller_flags.invert_look = false;
 	if (value188)
 	{
 		profile_edit_save();
@@ -2760,17 +2765,22 @@ c_auto_level_settings_edit_list::c_auto_level_settings_edit_list(word user_flags
 // @retail 0x2c66b5
 void c_auto_level_settings_edit_list::handle_item(s_controller_reference **controller, long *item)
 {
+	bool auto_level;
 	switch (*(short *)item)
 	{
-	case 1:
-		g_54e5d0.settings.controller_flags.auto_level = false;
-		break;
 	case 0:
-		g_54e5d0.settings.controller_flags.auto_level = true;
+		auto_level = true;
+		break;
+	case 1:
+		auto_level = false;
 		break;
 	default:
 		__assume(0);
 	}
+	if (auto_level)
+		g_54e5d0.settings.controller_flags.auto_level = true;
+	else
+		g_54e5d0.settings.controller_flags.auto_level = false;
 	if (value188)
 	{
 		profile_edit_save();
@@ -2821,18 +2831,23 @@ void c_vibration_settings_edit_list::v20(c_class_1a2c81 *widget, long index)
 // @retail 0x2c67d7
 void c_vibration_settings_edit_list::handle_item(s_controller_reference **controller, long *item)
 {
+	bool vibration;
 	switch (*(short *)item)
 	{
 	case 0:
-		g_54e5d0.settings.controller_flags.vibration = false;
+		vibration = false;
 		break;
 	case 1:
-		g_54e5d0.settings.controller_flags.vibration = true;
+		vibration = true;
 		break;
 	default:
-		g_54e5d0.settings.controller_flags.vibration = true;
+		vibration = true;
 		break;
 	}
+	if (vibration)
+		g_54e5d0.settings.controller_flags.vibration = true;
+	else
+		g_54e5d0.settings.controller_flags.vibration = false;
 	if (value188)
 	{
 		profile_edit_save();
@@ -3332,11 +3347,15 @@ c_campaign_level_handles_list::c_campaign_level_handles_list(word user_flags, bo
 {
 	this->alternate = alternate;
 	*(volatile bool *)&unlocked = false;
-	c_campaign_level_handles_list *volatile receiver = this;
+	struct
+	{
+		c_campaign_level_handles_list *receiver;
+		s_data_datum_iterator iterator;
+	} scan;
+	scan.receiver = this;
 
 	s_record_pool *levels = function_19c670();
 	long last_level = function_190565();
-	s_data_datum_iterator iterator;
 
 	bool const *alternate_reference = &alternate;
 	if (*alternate_reference && last_level <= 0x68)
@@ -3346,14 +3365,14 @@ c_campaign_level_handles_list::c_campaign_level_handles_list(word user_flags, bo
 	g_54e7c0 = 1;
 	data = user_interface_data_new("campaign level handles", levels->high_water_index, 8);
 	function_16b790(data);
-	iterator.index = NONE;
-	iterator.datum_index = NONE;
-	iterator.data = levels;
-	while (data_datum_iterator_next(&iterator))
+	scan.iterator.index = NONE;
+	scan.iterator.datum_index = NONE;
+	scan.iterator.data = levels;
+	while (data_datum_iterator_next(&scan.iterator))
 	{
-		s_map_entry *level = (s_map_entry *)iterator.datum;
+		s_map_entry *level = (s_map_entry *)scan.iterator.datum;
 
-		if (!receiver->alternate || level->map_id >= 0x69)
+		if (!scan.receiver->alternate || level->map_id >= 0x69)
 		{
 			s_map_entry *item = &((s_map_entry *)data->data)[record_pool_allocate(data) & 0xffff];
 			s_campaign_level *definition = (s_campaign_level *)function_19c1f0(level->map_id);

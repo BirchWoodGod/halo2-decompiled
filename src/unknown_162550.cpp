@@ -5,6 +5,7 @@
 #include "unknown_13927e.h"
 
 // @flags /O2 /arch:SSE /Gr
+#include "view_context_storage.h"
 
 /* UNKNOWN_162550.CPP: the marker list the multiplayer engines show over a
    player: placed at the head marker of the player's unit and colored by team,
@@ -34,7 +35,6 @@ bool g_4c99b8;
 bool g_476fcc;
 long g_4c9888;
 extern long g_4ba04c;
-extern long g_4b9ed8;
 
 /* not decompiled yet (src/stubs/lane_h.cpp) */
 bool function_53750(long player_index);

@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "allocator_storage.h"
 /* UNKNOWN_12DE70.CPP: geometry blocks streamed from the cache file: a request
    queues a read job for the block, and the block is linked (its fixups
    applied) once the read is done. Decompiled by lane F for the sound
@@ -204,7 +205,6 @@ struct s_pending_block
 };
 
 s_record_pool *g_4e6490;
-bool g_4e6098;
 dword g_55e728;
 
 // @retail 0x12dcb0
