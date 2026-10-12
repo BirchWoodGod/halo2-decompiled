@@ -174,8 +174,6 @@ void function_14b6a0()
 						position.z += offset.k;
 						function_b75a0(root, &position, NULL, NULL, NULL, false);
 					}
-					player = players->data + (player_index & 0xffff) * 0x21c;
-					scenario = (byte *)g_4e0350;
 					players = g_4e8c24;
 				}
 			}

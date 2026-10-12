@@ -1,3 +1,4 @@
+#include "unknown_4e8c38.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "network_message_types.h"
@@ -6,9 +7,7 @@
 // @flags /O2 /Ob1 /arch:SSE /Gr
 
 struct s_unknown_13bf00;
-struct s_entry_155760;
 extern s_unknown_13bf00 *g_510c50;
-extern s_entry_155760 g_4e8c44[4];
 struct s_186ab0
 {
     byte field_0[0x24];
