@@ -182,11 +182,9 @@ void c_vtable_450cb8::v4(s_message_450cb8 *a1, s_context_450cb8 *a2, real *a3, l
 {
 	c_handler_450cb8 *handler = handlers->handlers[a1->type];
 	long count = handler->v3();
-	long i;
-	long *handle_pointer;
-	for (i = 0, handle_pointer = a1->handles; i < count; i++, handle_pointer++)
+	for (long i = 0; i < count; i++)
 	{
-		long handle = *handle_pointer;
+		long handle = a1->handles[i];
 		if (handle != NONE)
 		{
 			s_table_450cb8 *table = &a2->world->a->block->table;
@@ -204,22 +202,24 @@ void c_vtable_450cb8::v4(s_message_450cb8 *a1, s_context_450cb8 *a2, real *a3, l
 		}
 	}
 
-	if (!handler->v5(a1, a2))
-		goto fail;
-	handler->v6(a1, a2, a4);
-
+	if (handler->v5(a1, a2))
 	{
+		handler->v6(a1, a2, a4);
 		s_definition_4ced60 *definition = &g_4ced60[a1->type];
+		real value;
 		if (definition->unknown00 > 0.0f)
 		{
-			*a3 = definition->unknown00;
-			return;
+			value = definition->unknown00;
 		}
-		real difference = definition->unknown10 - definition->unknown0c;
-		real fraction = 0.0f;
-		if (difference > 0.0f)
-			fraction = handler->v7(a1, a2, definition->unknown08);
-		*a3 = fraction * difference + definition->unknown0c;
+		else
+		{
+			real difference = definition->unknown10 - definition->unknown0c;
+			real fraction = 0.0f;
+			if (difference > 0.0f)
+				fraction = handler->v7(a1, a2, definition->unknown08);
+			value = fraction * difference + definition->unknown0c;
+		}
+		*a3 = value;
 		return;
 	}
 
