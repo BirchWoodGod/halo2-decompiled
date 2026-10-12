@@ -1069,15 +1069,17 @@ void c_game_engine_markers::v30(long killer, long victim, bool suicide, long)
 	if (killer != NONE && victim != NONE && !suicide && function_19f3c0(victim, 1) != NONE)
 	{
 		long absolute_index = killer & 0xffff;
-		long team = ctf_player_get(killer)->team;
+		s_player_view const *local_0 = ctf_player_get(killer);
 
 		if (ctf_options()->engine_type == 9)
 		{
+			long team = local_0->team;
 			function_1967d0(absolute_index, team, 0x14, 1);
 			function_1970a0(absolute_index, 0x16, 1);
 		}
 		else
 		{
+			long team = local_0->team;
 			function_1967d0(absolute_index, team, 0x10, 1);
 			function_1970a0(absolute_index, 0x13, 1);
 		}
