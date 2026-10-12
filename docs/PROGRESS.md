@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7951 functions match
+
+```
+matched 7951 of 11318 game functions (966210 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 34 (+2), writing this machine's unwritten functions: `0x24ba99` matches on its first draft, and `0x2c3b0` replaces its stub, which gives the second machine's caller `0x22a648` retail's call and matches it. Thirteen more render and UI functions are now written, some kept disabled where a draft would cost an existing match.
+
 ## 2026-10-12: 7949 functions match
 
 ```
