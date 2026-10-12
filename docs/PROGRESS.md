@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7944 functions match
+
+```
+matched 7944 of 11318 game functions (964956 of 2784283 bytes, 34.66%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 42 (+2), in the render range: `0x36f50` sums its three squared lengths in single precision as retail does, and `0x2afa0` matches; `0x31590` is down to 2 differences, which wait on its callee `0xc17f0`, and `0x3ea60` to 5.
+
 ## 2026-10-12: 7942 functions match
 
 ```
