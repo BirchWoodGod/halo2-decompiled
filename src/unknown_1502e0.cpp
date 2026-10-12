@@ -1074,22 +1074,22 @@ bool function_151c10(long player_index, s_target_candidate *candidate)
 // @retail 0x151b80
 bool function_151b80(long player_index, bool primary)
 {
-	long unit_index = tail_player_get(player_index)->unit_index;
+	s_tail_player *player = tail_player_get(player_index);
 	bool result = false;
-	if (unit_index != NONE)
+	if (player->unit_index != NONE)
 	{
 		long hand = !primary;
-		s_player_pickup_unit *unit = (s_player_pickup_unit *)tail_object_get(unit_index);
+		s_player_pickup_unit *unit = (s_player_pickup_unit *)tail_object_get(*(long volatile *)&player->unit_index);
 		short slot = unit->held_slots[hand];
 		if (slot != NONE && unit->weapons[slot] != NONE)
 		{
 			if (g_4e6948->mode == 4)
 			{
-				function_a9030(unit_index, hand);
+				function_a9030(player->unit_index, hand);
 				result = true;
 			}
 			else
-				result = function_e68c0(primary ? 9 : 0x13, unit_index);
+				result = function_e68c0(primary ? 9 : 0x13, player->unit_index);
 		}
 	}
 	return result;
@@ -1125,7 +1125,7 @@ bool function_151aa0(long player_index, bool primary)
 	if (player->unit_index != NONE)
 	{
 		long hand = !primary;
-		s_player_pickup_unit *unit = (s_player_pickup_unit *)tail_object_get(player->unit_index);
+		s_player_pickup_unit *unit = (s_player_pickup_unit *)tail_object_get(*(long volatile *)&player->unit_index);
 		short slot = unit->held_slots[hand];
 		if (slot != NONE)
 		{
@@ -1138,8 +1138,8 @@ bool function_151aa0(long player_index, bool primary)
 					function_a8f80(player->unit_index, hand);
 					result = true;
 				}
-				else if (function_cd4e0(player->unit_index, hand, false))
-					result = true;
+				else
+					result = function_cd4e0(player->unit_index, hand, false) ? true : result;
 			}
 		}
 	}
