@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7723 functions match
+
+```
+matched 7723 of 11318 game functions (922319 of 2784283 bytes, 33.13%)
+```
+
+3 new matches, none lost:
+- Deep lane 1, round 26: the object types' vtables now hold the real methods in the slots that held placeholders, as retail's do; 0xa0520 and 0xa26d0 match with that alone, and 0xa0640 with them.
+
 ## 2026-10-11: 7720 functions match
 
 ```
