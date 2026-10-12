@@ -555,8 +555,12 @@ long function_113df0(long unit_index)
 {
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
-	if (control->slots[2].unknown1 && (control->slots[2].unknown3 & 1) && (control->slots[2].unknown3 & 2))
-		return 1;
+	if (control->slots[2].unknown1)
+	{
+		long local_0 = control->slots[2].unknown3;
+		if ((local_0 & 1) && (local_0 & 2))
+			return 1;
+	}
 	return 0;
 }
 
@@ -1951,7 +1955,13 @@ void function_1132f0(long arg_0, dword const *arg_1, long arg_2, transform4x3f *
     {
         s_unit_animation_object *local_0 = UNIT_ANIMATION_OBJECT(arg_0);
         point3f const *local_1;
-        if ((short)local_0->flags148 < 0)
+        union
+        {
+            long field_0;
+            char field_4[4];
+        } local_6;
+        local_6.field_0 = local_0->flags148;
+        if ((local_6.field_4[1] & (char)0x80) != 0)
             local_1 = (point3f *)((byte *)local_0 + 0x1a4);
         else
         {

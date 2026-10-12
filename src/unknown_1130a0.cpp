@@ -59,7 +59,7 @@ long function_114440(long unit_index)
 {
 	long result = 0;
 	s_unit_1130a0 *unit = ((s_object_header_1130a0 *)g_4e0300->data)[unit_index & 0xffff].object;
-	long index = *unit_state_handle_114440(unit);
+	long const &index = *unit_state_handle_114440(unit);
 	if (index != NONE)
 		result = *(long *)(g_4e3b44[index & 0xffff].bytes + 0x14);
 	return result;
