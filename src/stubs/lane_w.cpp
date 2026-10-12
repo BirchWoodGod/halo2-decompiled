@@ -56,11 +56,7 @@ s_bit_vector_pool *function_1320f0(long, long, bool, long, unsigned char const *
 }
 
 
-// @stub 0x1f490
-void __stdcall function_1f490(long, long, long, long, long,
-    float, float, float, float, float, float, float, long, long)
-{
-}
+
 
 // @stub 0x41cc0
 void __stdcall function_41cc0(void *payload)
@@ -95,8 +91,7 @@ void __cdecl function_2ddbd0(void *data, s_visibility_sphere_query const *query,
 
 
 
-// @stub 0x12560
-void function_12560() {  }
+
 
 // @stub 0x32350
 bool __stdcall function_32350(long index, real alpha) { return false; }

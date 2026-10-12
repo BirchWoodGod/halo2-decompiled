@@ -262,13 +262,16 @@ long function_b5990(long tag_index, bool flag)
         {
             s_entity_model_ab *model = (s_entity_model_ab *)g_4e3b44[definition->model_index & 0xffff].bytes;
             if (model->count > 0 && (*(long *)(model->entries + 0xbc) > 0 || *(long *)(model->entries + 0xe0) > 0))
-                result = 11;
+                goto model_kind;
         }
         break;
 
     case 9: break;
     case 10: break;
-    case 11: return 11;
+    case 11:
+model_kind:
+        result = 11;
+        break;
     }
     return result;
 }

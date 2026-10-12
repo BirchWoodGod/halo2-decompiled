@@ -379,14 +379,16 @@ s_http_connection_ab *function_b5cd0(s_http_connection_ab *connection)
     *(volatile char *)connection->hostname = 0;
     function_b62b0((s_upload_ab *)((byte *)connection + 0x30));
     s_transport_endpoint *endpoint = &connection->internal_endpoint;
-    memset(endpoint, 0, sizeof(*endpoint));
+    ((dword *)endpoint)[0] = 0;
+    ((dword *)endpoint)[1] = 0;
     connection->endpoint = endpoint;
     connection->state = 0;
-    g_4d8b1c.values[g_4d8b1c.count] = 0;
+    g_4d8b1c.values[g_4d8b1c.count] = connection->state;
     g_4d8b1c.callbacks[g_4d8b1c.count] = function_b6180;
-    g_4d8b1c.stages[g_4d8b1c.count] = 0;
+    g_4d8b1c.stages[g_4d8b1c.count] = connection->state;
     g_4d8b1c.blocks[g_4d8b1c.count] = connection;
-    g_4d8b1c.count++;
+    // Keep the final registry count read at its later use.
+    g_4d8b1c.count = *(long const *)&g_4d8b1c.count + 1;
     return connection;
 }
 

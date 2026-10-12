@@ -8,7 +8,7 @@
 #include "globals.h"
 #include <xtl.h>
 
-void function_12b400(void);
+__declspec(noinline) void function_12b400(void);
 
 /* the bytes left in the current stage */
 __forceinline long physical_memory_available(void)
