@@ -5123,7 +5123,7 @@ struct c_entry_table
 	struct { long count; c_entry_handler *handlers[1]; } *handlers;
 	s_entry entries[1024];
 
-	void function_08ae80(dword identifier, short handler_index, long a, long b, long c, long d);
+	void function_08ae80(dword identifier, long handler_index, long a, long b, long c, long d);
 	void function_08aed0(dword identifier);
 	bool function_08af70(long handler_index, long *size, void **data);
 	bool function_08b010(long handler_index, long *size, void **data);
