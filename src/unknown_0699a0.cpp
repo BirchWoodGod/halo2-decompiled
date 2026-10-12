@@ -60,6 +60,14 @@ struct s_replication_sender_view
 
 static __forceinline void function_89eb3(s_allocator_globals *arg_0, void *arg_1);
 
+static __forceinline void release_block(void *block)
+{
+	long local_0;
+	if (!g_4d87f8->allocator->get_info(block, &local_0))
+		local_0 = NONE;
+	function_89eb3(g_4d87f8, block);
+}
+
 // @retail 0x89f20
 void replication_node_start(s_node_450d1c *node, s_owner_450d1c *owner, dword mask)
 {
@@ -99,14 +107,8 @@ void replication_node_start(s_node_450d1c *node, s_owner_450d1c *owner, dword ma
 			} while (*link);
 		}
 		owner->count--;
-		void *data = node->data;
-		if (data)
-		{
-			long info;
-			if (!g_4d87f8->allocator->get_info(data, &info))
-				info = NONE;
-			function_89eb3(g_4d87f8, data);
-		}
+		if (node->data)
+			release_block(node->data);
 		long info;
 		if (!g_4d87f8->allocator->get_info(node, &info))
 			info = NONE;
@@ -170,24 +172,20 @@ static __forceinline void function_89eb3(s_allocator_globals *arg_0, void *arg_1
 }
 #pragma optimize("", on)
 
+static __forceinline void free_block(void *block)
+{
+	long local_0;
+	g_4d87f8->allocator->get_info(block, &local_0);
+	function_89eb3(g_4d87f8, block);
+}
+
 // @retail 0x89eb0
 s_node_450d1c *function_89eb0(s_node_450d1c *node, long flags)
 {
-	void *data = node->data;
-	if (data)
-	{
-		long info;
-		g_4d87f8->allocator->get_info(data, &info);
-		function_89eb3(g_4d87f8, data);
-	}
+	if (node->data)
+		free_block(node->data);
 	if (flags & 1)
-	{
-		long info;
-		g_4d87f8->allocator->get_info(node, &info);
-		s_allocator_globals *globals = g_4d87f8;
-		globals->allocator->release(node, NONE);
-		globals->count--;
-	}
+		free_block(node);
 	return node;
 }
 
