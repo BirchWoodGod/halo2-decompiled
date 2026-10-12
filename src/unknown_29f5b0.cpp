@@ -974,8 +974,8 @@ void damage_at_cutscene_flag(short cutscene_flag_index, long definition_index)
 	{
 		s_scenario_cutscene_flag_view *const &flag = &((s_scenario_cutscene_flags_view *)g_4e0350)->cutscene_flags[cutscene_flag_index];
 		s_damage_data_view data;
-		function_d6660((s_type_1e6529 *)&data, definition_index);
 		data.unknown7c = NONE;
+		function_d6660((s_type_1e6529 *)&data, definition_index);
 		point3f *position = &flag->position;
 		data.origin = *position;
   data.position = data.origin;
@@ -991,8 +991,8 @@ void function_2a07c0(long definition_index, long object_index)
 	if (g_4e6948->mode != 4 && object_index != NONE)
 	{
 		s_damage_data_view data;
-		function_d6660((s_type_1e6529 *)&data, definition_index);
 		data.unknown7c = NONE;
+		function_d6660((s_type_1e6529 *)&data, definition_index);
 		function_b9dd0(object_index, &data.position);
 		data.origin = data.position;
 		function_11bed0(&data.location, &data.position);
@@ -1066,8 +1066,8 @@ void function_2a0840(long definition_index)
 				if (unit_index != NONE)
 				{
 					s_damage_data_view data;
-					function_d6660((s_type_1e6529 *)&data, definition_index);
 					data.unknown7c = NONE;
+					function_d6660((s_type_1e6529 *)&data, definition_index);
 					function_b9dd0(unit_index, &data.position);
 					data.origin = data.position;
 					function_11bed0(&data.location, &data.position);
