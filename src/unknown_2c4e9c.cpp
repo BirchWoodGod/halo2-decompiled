@@ -3347,11 +3347,15 @@ c_campaign_level_handles_list::c_campaign_level_handles_list(word user_flags, bo
 {
 	this->alternate = alternate;
 	*(volatile bool *)&unlocked = false;
-	c_campaign_level_handles_list *volatile receiver = this;
+	struct
+	{
+		c_campaign_level_handles_list *receiver;
+		s_data_datum_iterator iterator;
+	} scan;
+	scan.receiver = this;
 
 	s_record_pool *levels = function_19c670();
 	long last_level = function_190565();
-	s_data_datum_iterator iterator;
 
 	bool const *alternate_reference = &alternate;
 	if (*alternate_reference && last_level <= 0x68)
@@ -3361,14 +3365,14 @@ c_campaign_level_handles_list::c_campaign_level_handles_list(word user_flags, bo
 	g_54e7c0 = 1;
 	data = user_interface_data_new("campaign level handles", levels->high_water_index, 8);
 	function_16b790(data);
-	iterator.index = NONE;
-	iterator.datum_index = NONE;
-	iterator.data = levels;
-	while (data_datum_iterator_next(&iterator))
+	scan.iterator.index = NONE;
+	scan.iterator.datum_index = NONE;
+	scan.iterator.data = levels;
+	while (data_datum_iterator_next(&scan.iterator))
 	{
-		s_map_entry *level = (s_map_entry *)iterator.datum;
+		s_map_entry *level = (s_map_entry *)scan.iterator.datum;
 
-		if (!receiver->alternate || level->map_id >= 0x69)
+		if (!scan.receiver->alternate || level->map_id >= 0x69)
 		{
 			s_map_entry *item = &((s_map_entry *)data->data)[record_pool_allocate(data) & 0xffff];
 			s_campaign_level *definition = (s_campaign_level *)function_19c1f0(level->map_id);

@@ -98,7 +98,8 @@ void function_20adf0(s_anim_data *data, byte *dest);
 void function_10ec00(long object_index, s_animation_state *state, long unused, dword const *node_mask,
 	long node_count, real_quaternion_transform *transforms, byte *dest)
 {
-	(void)&unused;
+	long const &unused_reference = unused;
+	(void)&unused_reference;
 	s_vibration_object_view *object = ((s_vibration_object_header *)g_4e0300->data)[object_index & 0xffff].object;
 	s_vibration_sample_view *vibration = (s_vibration_sample_view *)((byte *)object + object->vibration_offset);
 	c_type_709360 animation_id = vibration->animation_id;
