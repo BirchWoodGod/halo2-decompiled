@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7771 functions match
+
+```
+matched 7771 of 11318 game functions (930101 of 2784283 bytes, 33.41%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 29 (functions at retail's exact length): 0x1588b0 and 0x15a5b0.
+
 ## 2026-10-12: 7769 functions match
 
 ```
