@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7735 functions match
+
+```
+matched 7735 of 11318 game functions (924736 of 2784283 bytes, 33.21%)
+```
+
+4 new matches, none lost:
+- Deep lane 3, round 34: eight shared storage blocks of the renderer and the object system take retail's layout. 0xb3ed0, whose body had waited on that storage, matches, with its caller 0xb3e90; 0x243ed0 and 0x24da7d match as side effects.
+
 ## 2026-10-11: 7731 functions match
 
 ```
