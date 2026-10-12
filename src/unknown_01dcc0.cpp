@@ -358,4 +358,4 @@ initial_done:
     return true;
 }
 
-s_launch_stack_storage g_launch_stack_storage;
+

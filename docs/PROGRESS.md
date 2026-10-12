@@ -2,6 +2,78 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7769 functions match
+
+```
+matched 7769 of 11318 game functions (929740 of 2784283 bytes, 33.39%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 37: 0x2bf310, once it and four sibling methods occupy their retail vtable slots.
+
+## 2026-10-12: 7768 functions match
+
+```
+matched 7768 of 11318 game functions (929549 of 2784283 bytes, 33.39%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 37: 0x249f0.
+
+## 2026-10-12: 7767 functions match
+
+```
+matched 7767 of 11318 game functions (929424 of 2784283 bytes, 33.38%)
+```
+
+3 new matches, none lost:
+- Deep lane 2, round 28 (functions at retail's exact length): 0x199d7c, 0x10ad90 and 0x176f60.
+
+## 2026-10-12: 7764 functions match
+
+```
+matched 7764 of 11318 game functions (928920 of 2784283 bytes, 33.36%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 35: 0xb5990.
+
+## 2026-10-12: 7763 functions match
+
+```
+matched 7763 of 11318 game functions (928696 of 2784283 bytes, 33.35%)
+```
+
+12 new matches, none lost:
+- Deep lane 2, round 26: 0x192129, 0x101d20, 0x140aa0 and 0x23169c; and eight screen functions (0x231865, 0x231995, 0x2319d6, 0x2b1942, 0x2b19dc, 0x2b2d9a, 0x2b2e6b, 0x2b3f15) once the list widget's constructor is inlined, as retail inlines it.
+
+## 2026-10-12: 7751 functions match
+
+```
+matched 7751 of 11318 game functions (927576 of 2784283 bytes, 33.31%)
+```
+
+3 new matches, none lost:
+- Deep lane 3, round 35: all 41 shared storage blocks of the renderer and object system take retail's layout; 0x12080, 0x1eff0 and 0x43890, which had waited on that storage, match.
+
+## 2026-10-12: 7748 functions match
+
+```
+matched 7748 of 11318 game functions (927059 of 2784283 bytes, 33.30%)
+```
+
+2 new matches, none lost:
+- Deep lane 1, rounds 33 and 34: 0x1e98e0 and 0x2a9e60.
+
+## 2026-10-12: 7746 functions match
+
+```
+matched 7746 of 11318 game functions (926472 of 2784283 bytes, 33.28%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 25: 0x101fb0 and 0x10a2f0.
+
 ## 2026-10-12: 7744 functions match
 
 ```

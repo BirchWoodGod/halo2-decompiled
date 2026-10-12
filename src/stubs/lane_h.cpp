@@ -62,10 +62,6 @@ void function_13954b(void)
 {
 }
 
-// @stub 0x191fd8
-void function_191fd8(long player_index)
-{
-}
 
 // @stub 0x195ed0
 void function_195ed0(void)
