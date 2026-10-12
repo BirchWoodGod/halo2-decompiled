@@ -657,6 +657,8 @@ bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority)
 // @retail 0x14480
 bool function_14480(long tag, short stage, short index)
 {
+    // Keep the stage in its stack slot across the bitmap lookup.
+    short const *stage_reference = &stage;
     bool result = false;
     if (tag != NONE)
     {
@@ -668,7 +670,7 @@ bool function_14480(long tag, short stage, short index)
             if (bitmap)
             {
                 if (function_12360((s_bitmap_view *)bitmap, 0.0f))
-                    function_14390(stage, bitmap, 0.0f);
+                    function_14390(*stage_reference, bitmap, 0.0f);
                 else result = true;
             }
         }
@@ -3333,7 +3335,7 @@ bool function_12420()
         D3DDevice_Swap(0);
         if (g_5093b0)
         {
-            D3DDevice_Release();
+            ((D3DDevice *)g_5093b0)->Release();
             g_5093b0 = NULL;
         }
     }
