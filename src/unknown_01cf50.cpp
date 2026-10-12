@@ -7597,7 +7597,13 @@ void function_12190()
 {
     function_12420();
     function_12b400();
-    function_xe0ae94();
+    int depth = g_4e6420;
+    long next = depth + 1;
+    g_4e642c[depth + 1] = g_4e642c[depth];
+    // Retail reloads the stage before reading the second bound.
+    long later = *(long const *)&g_4e6420;
+    g_4e6440[later + 1] = g_4e6440[later];
+    g_4e6420 = next;
     if (function_12000())
     {
         function_12b690();
@@ -7669,6 +7675,7 @@ void __stdcall function_1f5c0(long character);
 void __stdcall function_1f490(long unused, long font, long character, long color, long shadow,
     real x, real y, real u, real v, real width, real height, real scale, long callback, long context)
 {
+    volatile real positions[2];
     long index = font_cache_find_character(g_4e28f4[font], character);
     if (index == NONE)
     {
@@ -7684,8 +7691,9 @@ void __stdcall function_1f490(long unused, long font, long character, long color
     bool draw_shadow = ((dword)shadow & 0xff000000) > 0;
     do
     {
-        real offset = draw_shadow ? scale : 0.0f;
-        function_1f3a0((short const *)rectangle, x + offset, y + offset, (long)width, (long)height,
+        positions[0] = x + (draw_shadow ? scale : 0.0f);
+        positions[1] = y + (draw_shadow ? scale : 0.0f);
+        function_1f3a0((short const *)rectangle, positions[0], positions[1], (long)width, (long)height,
             (short)(long)u, (short)(long)v, scale, draw_shadow ? shadow : color,
             (t_1f3a0_callback)callback, (void *)context);
         if (!draw_shadow) break;
