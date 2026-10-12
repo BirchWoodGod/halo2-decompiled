@@ -883,11 +883,12 @@ viewport_ready:
 // @retail 0x14f60
 void function_14f60(short stage, short index)
 {
+	long texture_stage = stage;
+	struct { long width; long height; } dimensions = { 0, 0 };
+	function_01dd60(index, &dimensions.width, &dimensions.height);
+	g_485af4[texture_stage] = dimensions.width;
+	g_485b04[texture_stage] = dimensions.height;
 	D3DBaseTexture *texture = NULL;
-	long width = 0, height = 0;
-	function_01dd60(index, &width, &height);
-	g_485af4[stage] = width;
-	g_485b04[stage] = height;
 	switch (index)
 	{
 	case 0: texture = g_509354[(g_485aa0 - 1) % 2]; break;
@@ -908,7 +909,7 @@ void function_14f60(short stage, short index)
 	case 14: break;
 	default: __assume(0);
 	}
-	g_51f3c8[1][stage] = texture;
+	g_51f3c8[1][texture_stage] = texture;
 }
 
 struct s_mask_offset
