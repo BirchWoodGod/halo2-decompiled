@@ -774,14 +774,39 @@ static __forceinline void function_94ae1(s_type_2c88a0 const *arg_0, s_network_c
 	}
 }
 
+static __forceinline void function_94ae2(s_network_connection *arg_0, long arg_1)
+{
+	switch (arg_1)
+	{
+	case 0:
+	case 1:
+	case 2:
+	case 5:
+	case 6:
+		network_connection_close(arg_0, 5);
+		break;
+	case 3:
+	case 4:
+	case 7:
+		break;
+	default:
+		__assume(0);
+	}
+}
+
 // @retail 0x94ae0
 void network_message_handle_connect_refuse(long connection_index, const s_type_2c88a0 *message)
 {
 	s_network_connection *connection = CONNECTION(connection_index);
 	long state = connection->state;
-	if (state > 2 && state != 5 && connection->local_sequence == message->identifier)
+	if (state > 2 && state != 5)
 	{
-		function_94ae1(message, connection);
+		state = connection->local_sequence;
+		if (state == message->identifier)
+		{
+			state = message->reason;
+			function_94ae2(connection, state);
+		}
 	}
 }
 
