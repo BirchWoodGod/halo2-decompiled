@@ -10,7 +10,7 @@ extern s_unknown_13bf00 *g_510c50;
 struct s_13cbb0;
 real function_13cbb0(s_13cbb0 const *arg_1);
 bool function_13cbf0(void);
-void function_13ccf0(short_rectangle2d *arg_1, short_rectangle2d *arg_2, short_rectangle2d *arg_3);
+void function_13ccf0(short_rectangle2d *arg_2, short_rectangle2d *arg_3, short_rectangle2d *arg_1);
 void function_13e8a0(void);
 void function_1a0180(long arg_1, long arg_2, word *arg_3);
 bool function_13ee20(word const *arg_1, long arg_2);
@@ -44,7 +44,7 @@ void function_13cf00(void)
 		{
 			byte *local_5 = (byte *)g_510c50 + 0x18;
 			short_rectangle2d local_6, local_7, local_8;
-			function_13ccf0(&local_8, &local_6, &local_7);
+			function_13ccf0(&local_6, &local_7, &local_8);
 			if (local_6.left <= 48)
 				local_6.left = 48;
 			if (local_6.right > 592)
@@ -138,7 +138,7 @@ void function_13c780(void)
 			dword local_2 = (dword)(function_13c781(*(real *)local_1 * 255.0f) < 0 ? 0 :
 				function_13c781(*(real *)local_1 * 255.0f) > 255 ? 255 : function_13c781(*(real *)local_1 * 255.0f)) << 24;
 			short_rectangle2d local_3, local_4, local_5;
-			function_13ccf0(&local_5, &local_3, &local_4);
+			function_13ccf0(&local_3, &local_4, &local_5);
 			function_13c050((s_13c051 *)&local_4, local_2);
 			function_13c050((s_13c051 *)&local_5, local_2);
 		}

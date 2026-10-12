@@ -196,7 +196,7 @@ bool function_136bf0(s_type_acf665 *file, dword position, bool silent)
 // @retail 0x136c40
 bool function_136c40(s_type_acf665 *file, dword position)
 {
-	bool result = false;
+	bool result;
 	bool success = true;
 	if (file->position != position)
 	{
@@ -209,15 +209,16 @@ bool function_136c40(s_type_acf665 *file, dword position)
 			SetLastError(0);
 		}
 	}
-	if (success)
+	if (success && SetEndOfFile(file->handle))
 	{
-		if (SetEndOfFile(file->handle))
-		{
-			return true;
-		}
+		result = true;
 	}
-	GetLastError();
-	SetLastError(0);
+	else
+	{
+		result = false;
+		GetLastError();
+		SetLastError(0);
+	}
 	return result;
 }
 
