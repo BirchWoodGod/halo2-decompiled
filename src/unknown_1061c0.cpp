@@ -183,13 +183,12 @@ bool function_106320(s_entry_pair *pair)
 					dword flags = tag->entries[pair->entry_index].flags;
 
 					if ((flags & 2) && positive || (flags & 0x10))
-						return true;
+						result = true;
 				}
 			}
-			return result;
 		}
 	}
-	return false;
+	return result;
 }
 
 // @retail 0x106400

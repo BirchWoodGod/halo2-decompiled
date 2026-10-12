@@ -206,7 +206,7 @@ public:
 struct s_object_246eb0;
 struct s_particle_impact;
 void function_249170(real const *arg_0, s_particle_spawn_state *arg_1, s_particle_spawn_definition const *arg_2, s_particle_system_datum const *arg_3);
-vector3f *function_143070(vector3f const *arg_0, matrix3x3 const *arg_1, vector3f *arg_2);
+vector3f *function_143070(matrix3x3 const *arg_1, vector3f const *arg_0, vector3f *arg_2);
 void placement_set(s_placement *arg_0, vector3f const *arg_1, point3f const *arg_2, vector3f const *arg_3, short arg_4);
 void function_246e60(long arg_0, dword arg_1, s_particle_impact const *arg_2, s_object_246eb0 const *arg_3, long arg_4);
 
@@ -271,11 +271,11 @@ void function_247950(s_particle_system_datum *arg_2, s_particle_spawn_definition
 			local_23.field_0.x = arg_1->field_34.x * arg_5 + arg_1->field_40.x * (1.f - arg_5);
 			local_23.field_0.y = arg_1->field_40.y * (1.f - arg_5) + arg_1->field_34.y * arg_5;
 			local_23.field_0.z = arg_1->field_40.z * (1.f - arg_5) + arg_1->field_34.z * arg_5;
-			function_143070((vector3f *)&local_2->field_1c, &arg_1->field_10, (vector3f *)&local_2->field_1c);
+			function_143070(&arg_1->field_10, (vector3f *)&local_2->field_1c, (vector3f *)&local_2->field_1c);
 			local_2->field_1c.x = local_23.field_0.x + local_2->field_1c.x;
 			local_2->field_1c.y = local_23.field_0.y + local_2->field_1c.y;
 			local_2->field_1c.z = local_23.field_0.z + local_2->field_1c.z;
-			function_143070(&local_2->field_28, &arg_1->field_10, &local_2->field_28);
+			function_143070(&arg_1->field_10, &local_2->field_28, &local_2->field_28);
 			if (*(long *)((byte const *)arg_3 + 0x78) == 8)
 			{
 				local_23.field_c = local_2->field_1c;
