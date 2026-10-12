@@ -29,8 +29,7 @@ struct s_1870a0;
 struct s_player_action;
 
 struct s_packed_clc;
-// @stub 0xb3ed0
-void __stdcall function_b3ed0(s_packed_clc const *arg_0, long arg_1, char const *arg_2) { }
+
 
 
 struct s_186ab2;

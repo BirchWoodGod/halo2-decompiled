@@ -1,5 +1,16 @@
 // @flags /O2 /arch:SSE /Gr
+#include "cluster_mask_storage.h"
+#include "function_context_storage.h"
+#include "filter_buffer_storage.h"
+#include "shader_storage.h"
+#include "render_state_storage.h"
+#include "saved_frames_storage.h"
+#include "projection_storage.h"
+#include "view_context_storage.h"
 #include "unknown_11c920.h"
+#include "camera_storage.h"
+#include "frame_storage.h"
+#include "reset_storage.h"
 #include "globals.h"
 #include <xmmintrin.h>
 #include <string.h>
@@ -228,9 +239,8 @@ struct s_frame_parameters_12a50
     dword unknown10, unknown14;
 };
 extern double g_4ba040;
-extern long g_4ba048, g_4ba04c, g_4ba030, g_5234c4;
-extern dword g_4ba034, g_4c56c0[64];
-extern vector3f g_4b9dac;
+extern long g_4ba048, g_4ba04c, g_4ba030;
+extern dword g_4ba034;
 long g_4aeb1c, g_4aeb28;
 real g_4aeb4c;
 vector3f g_485b14;
@@ -677,8 +687,6 @@ bool __stdcall function_0254c0(
 real g_509400;
 extern real g_485ae0;
 
-real g_48565c;
-real g_485778, g_48577c, g_485790, g_485794;
 real g_4b9c74[5][14];
 real g_4b9d90, g_4b9d94;
 void function_350e0(real *out, real const *a, real const *b, real x);
@@ -1197,7 +1205,6 @@ void __cdecl function_24970(s_histogram_state *state)
 }
 
 bool g_4b9d9c;
-real g_4857dc, g_4857e0;
 
 // @retail 0x27520
 bool __stdcall function_27520(long mode, real const *bounds, real const *t, real *out, long unused)
@@ -1247,7 +1254,6 @@ scaled:
     }
 }
 
-extern byte g_4b99b0[0x4c];
 
 // @retail 0x298f0
 bool __stdcall function_298f0(long mode, real const *bounds, real const *t, real *out, long unused)
@@ -1306,9 +1312,6 @@ bool __stdcall function_298f0(long mode, real const *bounds, real const *t, real
 extern D3DPIXELSHADERDEF g_484f68;
 extern long g_4858b8;
 extern byte *g_485a80;
-extern byte g_51f0f0[0x2d8];
-color3f g_4857a8;
-real g_4857b4;
 void function_14bc0(short index, short element, bool use_depth);
 void function_0222d0(D3DRENDERSTATETYPE state, dword value);
 bool function_1ccf0(D3DPIXELSHADERDEF const *program);
@@ -1424,7 +1427,6 @@ bool __stdcall function_296c0(void *context)
     return true;
 }
 
-color3f g_4857bc;
 dword __cdecl pack_color3f(color3f const *color);
 
 // @retail 0x276d0
@@ -1672,9 +1674,7 @@ bool __stdcall function_29370(void *context)
 }
 
 
-extern word g_485648, g_48564a, g_48564c, g_48564e;
-extern byte g_485607, g_4670bc;
-extern byte g_485b48[0x1fc0];
+extern byte g_4670bc;
 struct s_render_reset_state;
 void function_16b10(s_render_reset_state *state);
 void function_1cf50();
@@ -1856,8 +1856,6 @@ void function_249f0(void)
 }
 
 extern byte g_485a75;
-extern long g_48574c;
-byte g_485860;
 extern dword g_4b8344;
 bool __stdcall function_25e50(void *context);
 
@@ -1875,8 +1873,6 @@ void function_25d50(void)
     }
 }
 
-long g_4857b8;
-real g_4857d8;
 byte g_5093fd, g_5093fe;
 bool function_143c0(long tag, short index, short stage, real priority);
 
@@ -2056,7 +2052,6 @@ void function_24ee0(s_24ee0_state const *state, short mode)
     }
 }
 
-extern short g_4b9dd0, g_4b9dd2, g_4b9dd4, g_4b9dd6;
 extern long g_485af4[4], g_485b04[4];
 extern dword g_4b8308, g_4b8438, g_4b8450, g_4b82ec, g_4b8448, g_4b843c;
 extern dword g_4b82e0, g_4b82fc;
@@ -2806,7 +2801,6 @@ void __stdcall function_2a2f0(volatile long tag, volatile real alpha)
 }
 #pragma inline_depth(255)
 
-real g_485658;
 extern dword g_4b82e8;
 __declspec(noinline) double __stdcall function_2b480(real value);
 dword __cdecl pack_color4f(color4f const *color);
@@ -3151,9 +3145,6 @@ void function_25a10(vector3f const *direction, point3f const *position, byte con
     function_27aa0();
 }
 
-extern vector3f g_485768, g_485780;
-extern real g_485774, g_48578c, g_485868;
-byte g_48575d;
 extern dword g_4b8308, g_4b82e8, g_4b82f4, g_4b82f8, g_4b8324, g_4b82ec, g_4b8448, g_4b843c, g_4b8438, g_4b8450;
 dword __cdecl pack_color4f(color4f const *color);
 
@@ -3262,7 +3253,6 @@ bool __stdcall function_25e50(void *context)
     return true;
 }
 
-real g_4857d4;
 extern dword g_4b8308, g_4b82e8, g_4b82f4, g_4b8448, g_4b843c, g_4b8438, g_4b8450;
 dword __cdecl pack_color4f(color4f const *color);
 

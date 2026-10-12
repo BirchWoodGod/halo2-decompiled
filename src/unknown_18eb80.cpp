@@ -1,6 +1,7 @@
 #include "unknown_11c920.h"
 #include "globals.h"
 // @flags /O2 /Gr
+#include "launch_stack_storage.h"
 
 class c_class_6a600;
 struct s_18eb80
@@ -11,7 +12,6 @@ struct s_18eb80
 extern byte g_4cf77a;
 extern bool g_4ed39c;
 extern long g_4ed294;
-extern long g_4e6420;
 void __stdcall function_693a0(c_class_6a600 *arg_0);
 bool __stdcall function_11c1b0(short arg_0, bool arg_1);
 void function_137d00(void);

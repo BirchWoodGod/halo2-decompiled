@@ -1,3 +1,4 @@
+#include "filter_storage.h"
 // @flags /O1 /Oi /Gr
 /* UNKNOWN_1490EC.CPP: queries of the window manager's channels (the rest of
    the window manager is in unknown_147f6d.cpp) */
@@ -25,7 +26,6 @@ long function_18fa4d(long mode);
 void __stdcall function_238ea7(long user_index);
 void __stdcall function_238eb5(long user_index, long type);
 
-extern byte g_4670cd;
 
 /* the fields of a screen read here */
 struct s_screen_view

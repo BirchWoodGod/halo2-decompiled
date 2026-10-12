@@ -720,8 +720,11 @@ bool c_projectile_impact_effect_event::v11(long a, long const *entities, long c,
  s_z_impact_payload const *event = (s_z_impact_payload const *)data;
  if (event->object_name != NONE && function_122c10(0x70726f6a, event->object_name) &&
   !(event->scale_a < 0.0f || event->scale_a > 1.0f || event->scale_b < 0.0f || event->scale_b > 1.0f))
+ {
+  volatile word node = event->field_30;
   function_fd0e0(event->object_name, event->scale_a, event->scale_b, &event->direction,
-   (point3f const *)&event->position, &event->normal, event->field_30, false, NONE, NONE, false);
+   (point3f const *)&event->position, &event->normal, node, false, NONE, NONE, false);
+ }
  return true;
 }
 
@@ -737,7 +740,7 @@ long c_weapon_type::v27(long a, long b, long c, long d)
  dword requested = b;
  s_object_view *updated_object = OBJECT(a);
  s_tag_instance *tags = g_4e3b44;
- byte *definition = tags[updated_object->definition_index & 0xffff].bytes;
+ byte *definition = tags[*(volatile long *)&updated_object->definition_index & 0xffff].bytes;
  if (*(short *)(definition + 0x290))
  {
   if (requested & 0x800)

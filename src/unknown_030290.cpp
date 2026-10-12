@@ -5,6 +5,8 @@
 #include <math.h>
 
 // @flags /O2 /Ob1 /Gr /arch:SSE
+#include "flags_storage.h"
+#include "projection_storage.h"
 
 #define k_real_epsilon 0.0001f
 #define k_real_max 3.4028234663852886e+38f
@@ -65,10 +67,7 @@ void __stdcall function_31f50(long index, point3f const *origin, vector3f const 
 /* ---- globals ---- */
 #define BIT(n) ((bool)((g_4ba014 >> (n)) & 1))
 byte *g_4858c4;
-s_flag_entry g_4ba074[16];
 long g_4ba134;
-s_camera g_4b9e14;
-point2f g_4b9ecc;
 
 // @retail 0x30290
 void function_30290(point3f const *p, s_view const *view, s_camera const *camera, real radius, box2f *bounds)
@@ -545,3 +544,7 @@ void function_31660(long index, long tag, s_index_state_31660 *state,
         }
     }
 }
+
+s_projection_storage g_projection_storage;
+
+s_flags_storage g_flags_storage;

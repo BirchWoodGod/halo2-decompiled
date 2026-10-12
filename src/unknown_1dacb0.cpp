@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /arch:SSE /Gr
+#include "orientations_storage.h"
 /* UNKNOWN_1DACB0.CPP: the animation graph tag's lookups (0x1dacb0..0x1ddea0) */
 
 #include "unknown_11c920.h"
@@ -699,12 +700,7 @@ c_type_709360 function_1dd0b0(s_graph_tag *graph, long name)
 }
 
 /* an orientation (as unknown_141590.cpp declares it) */
-struct rigid_transform_scaled
-{
-	quaternionf rotation;
-	point3f position;
-	real scale;
-};
+
 
 void __stdcall function_1421f0(transform4x3f *out, rigid_transform_scaled const *orientation);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);

@@ -998,7 +998,7 @@ void game_engine_boot_player(long player_index);
 // @retail 0xa5850
 bool c_game_engine_request_boot_player_event::v11(long a, long const *entities, long c, void const *data)
 {
- long const *values = (long const *)data;
+ long const *volatile values = (long const *)data;
  volatile bool result = false;
  long first = values[0];
  if (first != NONE && first >= 0 && first < g_4e8c24->high_water_index)
@@ -1284,10 +1284,9 @@ bool c_projectile_attached_event::v11(long a, long const *entities, long c, void
             byte const *event = (byte const *)data;
             vector3f const *forward = (vector3f const *)(event + 0x10);
             if (*(short const *)(event + 0x14) == NONE && *(long const *)(event + 0x10) == NONE) forward = 0;
-            short node = *(short const *)(event + 2);
-            if ((event[0] && node != NONE) || (!event[0] && node == NONE))
+            if ((event[0] && *(short const *)(event + 2) != NONE) || (!event[0] && *(word const *)(event + 2) == 0xffff))
             {
-                function_fd560(projectile, target, (word)node, (point3f const *)(event + 4), forward);
+                function_fd560(projectile, target, *(word const *)(event + 2), (point3f const *)(event + 4), forward);
                 result = true;
             }
         }

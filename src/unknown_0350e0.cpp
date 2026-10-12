@@ -1,4 +1,18 @@
+#include "filter_storage.h"
+#include "render_source_storage.h"
+#include "visibility_storage.h"
+#include "camera_storage.h"
+#include "frame_storage.h"
+#include "reset_storage.h"
 // @flags /O2 /arch:SSE /Gr
+#include "flags_storage.h"
+#include "filter_buffer_storage.h"
+#include "light_visibility_storage.h"
+#include "light_definition_storage.h"
+#include "light_frame_storage.h"
+#include "orientations_storage.h"
+#include "projection_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_0350E0.CPP: format conversion and geometry helpers */
 
 #include "unknown_11c920.h"
@@ -12,13 +26,7 @@
 #include "unknown_0494b0.h"
 
 
-struct s_frame_offset
-{
-    point3f position;
-    vector3f forward;
-    vector3f up;
-};
-extern s_frame_offset g_485618;
+
 matrix3x3 g_467104 = {
     { 1.0f, 0.0f, 0.0f },
     { 0.0f, 1.0f, 0.0f },
@@ -481,27 +489,11 @@ real function_33670(long index)
     return result;
 }
 
-union s_transition_scalar
-{
-	real value;
-	long bits;
-};
 
-struct s_transition_state
-{
-	union
-	{
-		long flags;
-		struct { byte active; byte changed; word unknown02; };
-	};
-	long index;
-	long unknown08;
-	s_transition_scalar start;
-	s_transition_scalar elapsed;
-	s_transition_scalar output;
-};
 
-s_transition_state g_4670cc = {0, 0, 0, {0.0f}, {-1.0f}, {0.0f}};
+
+
+s_filter_storage g_filter_storage = {{0, 0, 0, {0.0f}, {-1.0f}, {0.0f}}};
 struct s_transition_filter
 {
 	long unknown00;
@@ -509,7 +501,6 @@ struct s_transition_filter
 	s_transition_scalar delta;
 };
 s_transition_filter g_4b99a0;
-byte g_4b99b0[0x4c];
 
 // @retail 0x28950
 void function_28950(void)
@@ -535,8 +526,6 @@ void function_28980(long index)
 	g_4670cc.output.value = 0.0f;
 }
 
-extern bool g_4b9ee9;
-extern long g_4b9eec;
 
 struct s_cluster_tag_entry
 {
@@ -551,12 +540,7 @@ struct s_cluster_tag_table
 	s_cluster_tag_entry *entries;
 };
 
-struct rigid_transform_scaled
-{
-	quaternionf rotation;
-	point3f position;
-	real scale;
-};
+
 
 struct s_render_model_definition;
 void render_model_get_default_orientations(s_render_model_definition const *definition, rigid_transform_scaled *orientations);
@@ -1125,12 +1109,8 @@ void function_4b3d0(s_vector_perturbation *state)
 
 struct s_33a0b_view;
 extern s_33a0b_view *g_485a58;
-extern real g_485774, g_485a6c;
-extern long g_4b9ed8;
-real g_485a30, g_4857f8, g_485864, g_485858;
-real g_48578c, g_485868, g_4857a4;
-long g_4b9f5c;
-real g_4b9f84, g_4b9f80;
+extern real g_485a6c;
+real g_485a30;
 real g_4e69c0[4];
 real g_4c19b0, g_4c19b4;
 
@@ -1201,9 +1181,6 @@ struct s_slot_key
 };
 long function_0209b0(s_slot_key *key, void const *data, long size);
 void function_020b40(long value, long index);
-extern point3f g_4b9da0;
-extern vector3f g_4b9dac;
-long g_4b9ed4;
 
 // @retail 0x2dba0
 bool function_2dba0(long tag, vector3f const *direction, long c, long d, long e, point3f const *position, color3f const *color, real alpha, real amount, real scale, bool alternate)
@@ -1386,31 +1363,8 @@ bool function_3d480(long object_index, long count, transform4x3f const *matrices
 
 #include "unknown_11cb00.h"
 struct c_entry_list;
-struct s_bit_vector_pool_sizes
-{
-    short unknown0;
-    short list_sizes[4];
-    short record_count;
-};
-struct s_bit_vector_pool
-{
-    void *context;
-    union { byte unknown004[8]; struct { long leaf_index; short cluster_index, bsp_index; } location; };
-    c_entry_list *lists[4];
-    long indices[0x80];
-    dword flags[0x10];
-    dword pool[0x200];
-    word pool_used, entry_count;
-    dword entries[0x200][4];
-    dword flags2a60;
-    byte unknown2a64[0x2a88 - 0x2a64];
-    plane3f plane;
-    byte unknown2a98[0x2acc - 0x2a98];
-    byte *records;
-    byte unknown2ad0[4];
-    s_bit_vector_pool_sizes sizes;
-};
-extern s_bit_vector_pool g_547f88;
+
+
 struct s_view;
 struct s_bounds3d { real x0, x1, y0, y1, z0, z1; };
 typedef point3f rectangle3d_edge[2];
@@ -1596,8 +1550,6 @@ bool __stdcall function_34100(long mode, real const *rectangle, real const *coor
     }
 }
 
-vector3f g_4b9e4c;
-vector3f g_4b9e64;
 
 // @retail 0x2f2d0
 real function_2f2d0(vector3f const *direction, point3f const *position, long mode, real scale)
@@ -1657,9 +1609,6 @@ real function_2f2d0(vector3f const *direction, point3f const *position, long mod
 }
 
 extern real g_5234c8;
-extern point3f g_4b9da0;
-extern vector3f g_4b9dac;
-vector3f g_4b9e58;
 byte g_4c19c0, g_55e6c6;
 struct s_2e9e0_saved { long tag; point3f position; };
 s_2e9e0_saved g_4c19c4[4];
@@ -1816,9 +1765,6 @@ long __stdcall function_2e9e0(byte const *context, s_2e3f0_record const *record)
 }
 
 
-extern real g_48568c[46];
-extern word g_485648, g_48564a, g_48564c, g_48564e;
-extern real g_48565c;
 
 // @retail 0x48b00
 bool function_48b00(point3f const *point, real radius, real *screen, real *extent)
@@ -1863,11 +1809,9 @@ bool function_48b00(point3f const *point, real radius, real *screen, real *exten
 
 
 extern byte g_4670bc;
-extern byte g_485b48[0x1fc0];
 struct s_render_reset_state;
 void function_16b10(s_render_reset_state *state);
 vector3f *function_11d000(vector3f const *v, vector3f *out);
-real g_4b9f58;
 
 // @retail 0x3eec0
 void function_3eec0()
@@ -2165,7 +2109,6 @@ struct s_cached_input_list
 };
 
 struct s_masked_list;
-extern s_masked_list *g_547f98;
 struct s_light_shape_ab;
 bool function_31590(long index, s_light_shape_ab *shape);
 bool function_3e9c0(long object_index);
@@ -2173,7 +2116,6 @@ extern s_record_pool *g_4e030c;
 void function_4a7c0(s_cached_input_list *state, s_cached_input const *inputs, long count);
 long __stdcall function_4ac30(s_cached_input_list *state, s_cached_input *output, long limit, real step);
 s_cached_input_list g_5234e8[4];
-real g_4b9e20, g_4b9e2c, g_4b9e38, g_4b9e44, g_4b9ed0;
 
 // @retail 0x31910
 long __stdcall function_31910(s_cached_input *output)
@@ -2415,8 +2357,6 @@ long __stdcall function_4ac30(s_cached_input_list *state, s_cached_input *output
 	return state->count;
 }
 
-extern real g_485640;
-short g_485600;
 
 PRIVATE __forceinline real motion_random_step(real value, real step)
 {
@@ -2718,7 +2658,6 @@ void __stdcall function_41980(short type, long object_index)
 }
 
 void function_30c60(dword handle, point3f *position, long *out);
-real g_4b9dcc;
 
 PRIVATE inline real object_view_distance(point3f const *position)
 {
@@ -3090,7 +3029,6 @@ void function_4a1e0(s_view_source *source, s_view_camera *camera, long resource_
 
 extern double g_4858a0;
 struct s_masked_list;
-extern s_masked_list *g_547f94;
 bool __stdcall function_38450(byte *state, byte const *definition, real remaining);
 bool __stdcall function_37a60(void *state);
 bool __stdcall function_391f0(void *state);
@@ -3324,11 +3262,7 @@ void __stdcall function_335e0(long mode)
 // Disabled: these passes publish persistent addresses of shared record-source groups; clear 14b60 also retains its incomplete protected interface.
 #if 0
 struct s_record_source;
-struct s_record_sources
-{
-    dword unknown00; long count; dword flags; long first; dword unknown10; s_record_source *sources;
-};
-extern s_record_sources g_4c1a48[3];
+
 extern s_record_sources *g_467138;
 extern long g_467130, g_467134;
 extern byte g_485a75, g_485a76, g_4ba022, g_4ba023;
@@ -3572,8 +3506,6 @@ void function_31c80()
 
 // Disabled: shadow rendering requires persistent shared light-frame/definition storage and visibility/global-source addresses.
 #if 0
-extern byte g_47fd18[0x88], g_47fda0[0xb8];
-extern s_bit_vector_pool g_54aa68;
 PRIVATE inline vector3f shadow_cross_r18(vector3f const &a, vector3f const &b)
 {
     vector3f c;
@@ -3953,3 +3885,11 @@ void function_4ff50(byte const *definition, byte const *state, bool facing, real
         }
     }
 }
+
+s_frame_storage g_frame_storage;
+
+s_light_frame_storage g_light_frame_storage;
+
+s_light_definition_storage g_light_definition_storage;
+
+s_filter_buffer_storage g_filter_buffer_storage;

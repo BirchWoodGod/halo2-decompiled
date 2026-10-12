@@ -1,4 +1,5 @@
 #include "unknown_11c920.h"
+#include "frame_storage.h"
 #include "effects.h"
 
 // @flags /O2 /arch:SSE /Gr
@@ -15,13 +16,7 @@ struct s_248df0
 	real field_38;
 };
 
-struct s_frame_offset
-{
-	point3f position;
-	vector3f forward;
-	vector3f up;
-};
-extern s_frame_offset g_485618;
+
 vector3f *function_4efb0(vector3f *arg_0);
 
 PRIVATE __forceinline real function_248eff(real arg_0)
