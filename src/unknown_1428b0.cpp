@@ -62,33 +62,34 @@ matrix3x3 *function_142d10(
 	return out;
 }
 
-static __forceinline void matrix_row_product(vector3f const *row, matrix3x3 const *b, vector3f *out)
-{
-	out->i = b->forward.i * row->i + b->left.i * row->j + b->up.i * row->k;
-	out->j = b->forward.j * row->i + b->left.j * row->j + b->up.j * row->k;
-	out->k = b->forward.k * row->i + b->left.k * row->j + b->up.k * row->k;
-}
-
+/* out = left * right; the right matrix comes first, which gives retail's
+   operand order in the products */
 // @retail 0x142eb0
 matrix3x3 *function_142eb0(
-	matrix3x3 const *a,
-	matrix3x3 const *b,
+	matrix3x3 const *right,
+	matrix3x3 const *left,
 	matrix3x3 *out)
 {
 	matrix3x3 temp;
-	if (b == out)
+	if (right == out)
 	{
-		temp = *b;
-		b = &temp;
+		temp = *right;
+		right = &temp;
 	}
-	if (a == out)
+	if (left == out)
 	{
-		temp = *a;
-		a = &temp;
+		temp = *left;
+		left = &temp;
 	}
-	matrix_row_product(&a->forward, b, &out->forward);
-	matrix_row_product(&a->left, b, &out->left);
-	matrix_row_product(&a->up, b, &out->up);
+	out->forward.i = right->forward.i * left->forward.i + right->left.i * left->forward.j + right->up.i * left->forward.k;
+	out->forward.j = right->forward.j * left->forward.i + right->left.j * left->forward.j + right->up.j * left->forward.k;
+	out->forward.k = right->forward.k * left->forward.i + right->left.k * left->forward.j + right->up.k * left->forward.k;
+	out->left.i = right->forward.i * left->left.i + right->left.i * left->left.j + right->up.i * left->left.k;
+	out->left.j = right->forward.j * left->left.i + right->left.j * left->left.j + right->up.j * left->left.k;
+	out->left.k = right->forward.k * left->left.i + right->left.k * left->left.j + right->up.k * left->left.k;
+	out->up.i = right->forward.i * left->up.i + right->left.i * left->up.j + right->up.i * left->up.k;
+	out->up.j = right->forward.j * left->up.i + right->left.j * left->up.j + right->up.j * left->up.k;
+	out->up.k = right->forward.k * left->up.i + right->left.k * left->up.j + right->up.k * left->up.k;
 	return out;
 }
 
@@ -132,12 +133,12 @@ matrix3x3 *function_142da0(
 	real sin_pitch = (real)sin(pitch);
 	real cos_yaw = (real)cos(yaw);
 	real sin_yaw = (real)sin(yaw);
+	out->forward.i = cos_yaw * cos_pitch;
+	out->forward.j = sin_yaw * cos_pitch;
 	real cc = cos_yaw * cos_roll;
 	real cs = cos_yaw * sin_roll;
 	real sc = sin_yaw * cos_roll;
 	real ss = sin_yaw * sin_roll;
-	out->forward.i = cos_yaw * cos_pitch;
-	out->forward.j = sin_yaw * cos_pitch;
 	out->left.i = 0.f - cs * sin_pitch - sc;
 	out->left.j = cc - ss * sin_pitch;
 	out->forward.k = sin_pitch;

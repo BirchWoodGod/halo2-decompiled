@@ -2639,7 +2639,7 @@ void havok_component_rigid_body_matrix_set(long rigid_body_index, s_havok_compon
 void havok_component_contact_properties_get(s_havok_component const *component, long contact_index, long *property_a,
 	long *property_b);
 void function_1cff80(s_havok_component_element0c const *constraint, point3f *pivot_a, point3f *pivot_b);
-matrix3x3 *function_142eb0(matrix3x3 const *a, matrix3x3 const *b, matrix3x3 *out);
+matrix3x3 *function_142eb0(matrix3x3 const *right, matrix3x3 const *left, matrix3x3 *out);
 
 /* a point in a matrix's frame, scaled */
 PRIVATE inline void biped_matrix_transform(transform4x3f const *matrix, point3f const *point, point3f *result)
@@ -2749,7 +2749,7 @@ bool __stdcall function_e1c40(long arg_159e6d, point3f const *point, real value,
 				transform4x3f rotation;
 
 				matrix4x3_rotation_between_vectors(&rotation, &delta, &back);
-				function_142eb0(&matrix.rotation, &rotation.rotation, &matrix.rotation);
+				function_142eb0(&rotation.rotation, &matrix.rotation, &matrix.rotation);
 				function_30bf0(&matrix.forward);
 				function_30bf0(&matrix.left);
 				function_30bf0(&matrix.up);

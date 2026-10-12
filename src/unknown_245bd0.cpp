@@ -14,7 +14,7 @@
 real function_30bf0(vector3f *v);
 void record_pool_release(s_record_pool *data, long datum_index);
 matrix3x3 *function_142da0(real yaw, real pitch, real roll, matrix3x3 *out);
-matrix3x3 *function_142eb0(matrix3x3 const *a, matrix3x3 const *b, matrix3x3 *out);
+matrix3x3 *function_142eb0(matrix3x3 const *right, matrix3x3 const *left, matrix3x3 *out);
 vector3f *function_143070(vector3f const *v, matrix3x3 const *m, vector3f *out);
 
 /* what a shape belongs to (copied into a test's result) */
@@ -712,7 +712,7 @@ void function_2477b0(
 		{
 			matrix3x3 rotation;
 			function_142da0(object->unknowna8, object->unknownac, 0.f, &rotation);
-			function_142eb0(&rotation, &frame->rotation, &frame->rotation);
+			function_142eb0(&frame->rotation, &rotation, &frame->rotation);
 		}
 		real local_0 = offset.i + frame->position.x;
 		real local_1 = offset.j + frame->position.y;

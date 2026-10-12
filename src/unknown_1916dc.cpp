@@ -361,21 +361,26 @@ void function_191fd8(long player_index)
 		if (function_12360((s_bitmap_view *)bitmap, 0.0f))
 		{
 			long x, y;
+			s_13e703 screen;
 			__asm
 			{
 				fld projected.x
 				fistp x
+			}
+			screen.field_0 = (short)(x - g_4b9dd2);
+			__asm
+			{
 				fld projected.y
 				fistp y
 			}
-			s_13e703 screen;
-			screen.field_0 = (short)(x - g_4b9dd2);
 			screen.field_2 = (short)(y - g_4b9dd0);
 			real fraction = 1.0f - ((-transformed.z - g_4b9de0) * 100.0f) / (g_4b9de4 - g_4b9de0);
 			if (fraction < 0.075f) fraction = 0.075f;
 			else if (fraction > 1.0f) fraction = 1.0f;
-			box2f bounds = { 0.0f, 1.0f, (1.0f - fraction) * 0.5f, 1.0f };
-			function_13e703((byte const *)bitmap, &screen, &bounds, 1.0f, 0.0f, 1.0f);
+			{
+				box2f bounds = { 0.0f, 1.0f, (1.0f - fraction) * 0.5f, 1.0f };
+				function_13e703((byte const *)bitmap, &screen, &bounds, 1.0f, 0.0f, 1.0f);
+			}
 		}
 	}
 }
