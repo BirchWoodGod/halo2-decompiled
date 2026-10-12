@@ -1,7 +1,11 @@
 // @flags /O2 /arch:SSE /Gr
+#include "saved_frames_storage.h"
+#include "projection_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_02C560.CPP: nested view setup and auxiliary rendering */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include "unknown_030290.h"
 #include "unknown_234c64.h"
@@ -19,49 +23,19 @@ struct s_frame_parameters_12a50
     double time;
     dword unknown10, unknown14;
 };
-struct s_frame_view_2c560
-{
-    short index, mode;
-    word unknown04;
-    byte flag06, unknown07;
-    short location;
-    byte unknown0a[2];
-    point3f position;
-    byte view[0x74];
-    byte projection[0xc0];
-    byte records[0x120];
-    byte unknown26c[0x2c];
-};
+
 struct short_rect { short v0, v1, v2, v3; };
 struct short_rect_pair { short_rect a, b; };
 
-extern point3f g_4b9da0;
-extern vector3f g_4b9dac, g_4b9db8;
-extern real g_4b9db4, g_4b9dcc, g_4b9de0, g_4b9de4;
-extern short g_4b9dd0, g_4b9dd2, g_4b9dd4, g_4b9dd6;
-extern short_rectangle2d g_4b9dd8;
-extern s_camera g_4b9e14;
-extern point2f g_4b9ecc;
-extern real g_4b9e20, g_4b9e2c, g_4b9e38, g_4b9e44, g_4b9ed0;
-extern long g_4b9ed4, g_4b9ed8, g_4b9eec, g_4b9ee4, g_4b9ef0;
-extern bool g_4b9ee9, g_4ba019;
+extern bool g_4ba019;
 extern long g_4ba038;
 extern dword g_4ba034, g_467014, g_467018;
 extern point3f *g_468718;
 extern short_rect_pair g_485a8a;
 extern char const *g_4e9bb8;
-dword g_4b9dc4;
-real g_4b9dc8;
-dword g_4b9de8[4], g_4b9df8;
-real g_4b9dfc, g_4b9e00, g_4b9e04, g_4b9e08, g_4b9e0c, g_4b9e10;
-byte g_4b9eb4[0x18];
-long g_4b9edc, g_4b9ee0;
-bool g_4b9ee8;
-byte g_4b9ef4[0x11c];
 bool g_4ba010;
 long g_4ba030;
 long g_46701c = NONE;
-s_frame_view_2c560 g_4850d0[2];
 long g_4e9194;
 
 void function_2fd90(s_2f800_view const *view, box2f const *clip, byte *out);
@@ -264,3 +238,7 @@ void function_2c560(point3f const *position, vector3f const *forward,
     function_13c20();
     g_4ba010 = false;
 }
+
+s_view_context_storage g_view_context_storage;
+
+s_saved_frames_storage g_saved_frames_storage;

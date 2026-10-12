@@ -1,4 +1,6 @@
 // @flags /O2 /arch:SSE /Gr
+#include "cluster_mask_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_175BD0.CPP: the effects (entry 40 of the lifecycle table) */
 
 #include "unknown_11c920.h"
@@ -179,7 +181,6 @@ struct s_unknown_13bf00;
 extern s_unknown_13bf00 *g_510c50;
 
 /* the clusters whose effects are visible */
-dword g_4c56c0[64];
 
 #define OBJECT_GET(index) ((s_effect_object *)((s_effect_object_header *)g_4e0300->data)[(index) & 0xffff].object)
 
@@ -2688,7 +2689,6 @@ bool function_1778d0(void)
 	return result;
 }
 
-extern long g_4b9ed8;
 bool function_3e9c0(long object_index);
 bool function_2dba0(long tag, vector3f const *direction, long c, long d, long e, point3f const *position, color3f const *color, real alpha, real amount, real scale, bool alternate);
 void function_42850(long a, long b, point3f const *position, vector3f const *first,
@@ -3224,3 +3224,5 @@ void function_176cb0(void)
     }
 }
 
+
+s_cluster_mask_storage g_cluster_mask_storage;

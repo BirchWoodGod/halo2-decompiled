@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "reset_storage.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 #include <xmmintrin.h>
@@ -368,7 +369,6 @@ long function_016ae0(real value)
 	}
 }
 
-dword g_485b78[5];
 
 // @retail 0x1bdf0
 void function_1bdf0(void)

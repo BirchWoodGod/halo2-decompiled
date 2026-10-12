@@ -1,7 +1,14 @@
 // @flags /O2 /arch:SSE /Gr
+#include "object_masks_storage.h"
+#include "light_visibility_storage.h"
+#include "partition_colliding_storage.h"
+#include "partition_noncolliding_storage.h"
+#include "projection_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_1321F0.CPP */
 
 #include "unknown_11c920.h"
+#include "visibility_storage.h"
 #include "unknown_0259d0.h"
 #include "globals.h"
 #include "object_queries.h"
@@ -128,39 +135,9 @@ public:
 	short *shorts_d;
 };
 
-struct s_bit_vector_pool_sizes
-{
-	short unknown0;
-	short list_sizes[4];
-	short record_count;
-};
 
-struct s_bit_vector_pool
-{
-	void *context;
-	s_location location;
-	c_entry_list *lists[4];
-	long indices[0x80];
-	dword flags[0x10];
-	dword pool[0x200];
-	word pool_used;
-	word entry_count;
-	dword entries[0x200][4];
-	dword flags2a60;
-	short frustum_count;
-	byte unknown2a66[2];
-	point3f center;
-	real radius;
-	long mode;
-	long query_type;
-	byte unknown2a80[4];
-	real plane_offset;
-	plane3f plane;
-	long counters[13];
-	byte *records;
-	void *filter;
-	s_bit_vector_pool_sizes sizes;
-};
+
+
 
 /* the records are 0x9c bytes each */
 #define k_bit_vector_pool_record_size 0x9c
@@ -423,8 +400,6 @@ void function_134b20(s_bit_vector_pool *data)
 /* the two bit vector pools, each with a scratch buffer carved from one
    virtual allocation (ai.cpp borrows the same buffer) */
 extern byte *g_510c44;
-s_bit_vector_pool g_547f88;
-s_bit_vector_pool g_54aa68;
 
 // @retail 0x131ff0
 void function_131ff0(void)
@@ -579,10 +554,6 @@ void function_132fd0(s_bit_vector_pool const *data, point3f const *center, bool 
 	}
 }
 
-long g_4b9ef0;
-long g_4b9f8c;
-real g_4b9ffc;
-bool g_4ba004;
 
 /* the render flags of an entry from its own flags and the pool's */
 // @retail 0x1332f0
@@ -613,8 +584,6 @@ dword function_1332f0(s_bit_vector_pool const *data, word flags)
 	return result;
 }
 
-extern long g_4de2fc;
-extern long g_4de300[0x800];
 bool function_bec70(long object_index);
 
 struct s_visibility_object
@@ -757,7 +726,6 @@ struct s_visibility_bsp
 	s_visible_instance *instances;
 };
 
-extern real g_4b9e20, g_4b9e2c, g_4b9e38, g_4b9e44, g_4b9ed0;
 short function_2cbf0(long arg_1, byte arg_2, long arg_3, dword arg_4,
     long arg_5, dword arg_6, long arg_7, byte *arg_8, short arg_9, byte arg_10,
     void *arg_11, long arg_12, real arg_13, long arg_14, long arg_15,
@@ -966,15 +934,8 @@ void __stdcall function_134390(s_bit_vector_pool *data)
 }
 
 #include <xmmintrin.h>
-extern void *g_4de2e0;
-extern void *g_4de2e4;
-extern void *g_4de2d4;
-extern void *g_4de2d8;
 extern void *g_4e0310;
 extern void *g_4e0314;
-extern bool g_4b9ee9;
-extern long g_4b9eec;
-extern long g_4b9ed4;
 long function_c3950(long object_index, long *indices, long maximum);
 
 struct s_visibility_link
@@ -1145,3 +1106,7 @@ void function_132900(s_bit_vector_pool *arg_1, s_sort_context const *arg_2, s_so
 		}
 	}
 }
+
+s_visibility_pool_storage g_visibility_pool_storage;
+
+s_light_visibility_storage g_light_visibility_storage;

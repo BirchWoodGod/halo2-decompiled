@@ -1,4 +1,5 @@
 // @flags /O1 /arch:SSE /Gr
+#include "view_context_storage.h"
 /* UNKNOWN_033A0B.CPP: vector getters */
 
 /* Not functions of their own: each is a case body of the switch that starts
@@ -6,6 +7,8 @@
    folding into that function. */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
+#include "frame_storage.h"
 #include "unknown_0259d0.h"
 #include "globals.h"
 
@@ -43,9 +46,6 @@ s_33a0b_view *g_485a58;
 s_33a0b_default *g_4686d4;
 real g_485a6c;
 real g_485a70;
-vector3f g_485768;
-real g_485774;
-vector3f g_485780;
 
 inline PRIVATE real pin_unit(real value)
 {
@@ -124,18 +124,7 @@ void function_033d36(vector3f *out)
 
 color3f *unpack_color3f(dword pixel, color3f *color);
 real function_33670(long selector);
-extern real g_48578c, g_4857a4, g_4857f8;
-extern long g_4b9f5c;
-extern real g_4b9f80, g_4b9f84;
-extern vector3f g_4b9dac;
-vector3f g_485798, g_4857ec;
-struct s_frame_offset
-{
-	point3f position;
-	vector3f forward;
-	vector3f up;
-};
-extern s_frame_offset g_485618;
+
 struct s_4e6950
 {
 	byte unknown00[0x70];

@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "font_loading_storage.h"
 /* FONT_LOADING.CPP: the fonts: the font table (font_table[_<language>].txt)
    names up to 11 font files, which are copied from the DVD (d:\maps\fonts\)
    to the utility drive (z:\fonts\) when the language or the files change, and
@@ -41,7 +42,6 @@ long g_4687f8 = NONE;
 char const *g_55e718;
 
 long g_4e28f4[11];
-s_font_cache_entry g_4e2920[k_maximum_font_count];
 bool g_4e3b40;
 
 static inline void csstrncpy(char *destination, char const *source, long size)
@@ -616,3 +616,5 @@ long function_122610(long size, void *destination, void const *pixels)
 	}
 	return count;
 }
+
+s_font_loading_storage g_font_loading_storage;

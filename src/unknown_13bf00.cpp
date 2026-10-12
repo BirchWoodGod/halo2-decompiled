@@ -2,6 +2,7 @@
 /* UNKNOWN_13BF00.CPP: the lifecycle callbacks of entry 53 */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "unknown_123b30.h"
 #include "globals.h"
 #include "unknown_030290.h"
@@ -228,10 +229,6 @@ void function_13cb50(long string_handle, real seconds)
 }
 
 /* the window bounds (unknown_1a1c3e.cpp, unknown_139296.cpp) */
-extern short g_4b9dd0;
-extern short g_4b9dd2;
-extern short g_4b9dd4;
-extern short g_4b9dd6;
 
 bool g_485ac2;
 

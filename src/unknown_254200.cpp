@@ -1,4 +1,6 @@
 // @flags /O2 /arch:SSE /Gr
+#include "shader_storage.h"
+#include "view_context_storage.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 #include <xtl.h>
@@ -14,7 +16,6 @@ dword function_1cc30(long arg_0);
 void __stdcall function_1c710(void *arg_0);
 void function_15180(D3DPIXELSHADERDEF const *arg_0);
 extern long g_4858b8;
-extern byte g_51f0f0[0x2d8];
 extern D3DPIXELSHADERDEF g_484f68;
 extern dword g_4b8448, g_4b8308, g_4b82e8, g_4b82f4, g_4b82f8;
 extern dword g_4b8324, g_4b82ec, g_4b82e0, g_4b8450;
@@ -27,7 +28,7 @@ void function_14f60(short arg_0, short arg_1);
 void function_0222d0(D3DRENDERSTATETYPE arg_0, dword arg_1);
 void function_0224f0(dword arg_0, D3DTEXTURESTAGESTATETYPE arg_1, dword arg_2);
 real function_1392a9(long arg_0);
-extern long g_4b9ed8, g_4ba04c;
+extern long g_4ba04c;
 
 PRIVATE __forceinline byte *function_254201(void)
 {

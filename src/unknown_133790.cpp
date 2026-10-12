@@ -1,44 +1,17 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 #include "unknown_11c920.h"
+#include "visibility_storage.h"
+#include "camera_storage.h"
 #include "unknown_0259d0.h"
 #include "globals.h"
 #include "object_queries.h"
 #include <math.h>
 
 class c_entry_list;
-struct s_bit_vector_pool_sizes
-{
-	short unknown0;
-	short list_sizes[4];
-	short record_count;
-};
 
-struct s_bit_vector_pool
-{
-	void *context;
-	s_location location;
-	c_entry_list *lists[4];
-	long indices[0x80];
-	dword flags[0x10];
-	dword pool[0x200];
-	word pool_used;
-	word entry_count;
-	dword entries[0x200][4];
-	dword flags2a60;
-	short frustum_count;
-	byte unknown2a66[2];
-	point3f center;
-	real radius;
-	long mode;
-	long query_type;
-	byte unknown2a80[4];
-	real plane_offset;
-	plane3f plane;
-	long counters[13];
-	byte *records;
-	void *filter;
-	s_bit_vector_pool_sizes sizes;
-};
+
+
 
 struct s_133f70
 {
@@ -122,10 +95,7 @@ struct s_133792
     s_133791 *field_8;
 };
 
-extern real g_4b9e20, g_4b9e2c, g_4b9e38, g_4b9e44, g_4b9ed0;
-extern point3f g_4b9da0;
-extern vector3f g_4b9dac;
-extern real g_4b9dcc, g_4ba028;
+extern real g_4ba028;
 void function_134240(s_bit_vector_pool *arg_1);
 dword function_1332f0(s_bit_vector_pool const *arg_1, word arg_2);
 void function_133f70(s_133f70 const *arg_1, bool arg_2);

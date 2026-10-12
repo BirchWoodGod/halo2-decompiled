@@ -1,4 +1,5 @@
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include "unknown_0259d0.h"
 #include "engine_peer.h"
@@ -307,7 +308,6 @@ void __stdcall function_19ef40(long unit_index, long *first_count, long *second_
 #include <math.h>
 #include "effects.h"
 #include "flexible_surface_calls.h"
-extern point3f g_4b9da0;
 extern byte *g_485a80;
 void function_1ccb0(long format);
 void function_1cd90();

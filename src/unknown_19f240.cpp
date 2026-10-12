@@ -1,4 +1,5 @@
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include "slot_owner.h"
 #include "game_engine_events.h"
@@ -81,7 +82,6 @@ static inline byte *player_iterator_first(s_record_pool_iterator *iterator)
 #include "effects.h"
 #include "flexible_surface_calls.h"
 
-extern point3f g_4b9da0;
 extern byte *g_485a80;
 void function_1ccb0(long format);
 void function_1cd90();

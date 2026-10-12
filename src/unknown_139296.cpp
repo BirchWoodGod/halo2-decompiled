@@ -1,7 +1,9 @@
 // @flags /O1 /Oi /arch:SSE /Gr
+#include "view_context_storage.h"
 /* UNKNOWN_139296.CPP: per-player interface state (built for size) */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include "unknown_0259d0.h"
 #include "unknown_07f720.h"
@@ -520,7 +522,6 @@ void function_13934d(s_name_buffer *buffer, long string_handle)
 
 long function_155760(long index);
 bool function_155d60(long index);
-extern long g_4b9ed8;
 bool g_4f55e2;
 
 // @retail 0x13939b
@@ -533,10 +534,6 @@ bool function_13939b()
 		!(g_4e6948->state == 1 ? g_4f55e2 : false);
 }
 
-short g_4b9dd4;
-short g_4b9dd6;
-extern short g_4b9dd0;
-extern short g_4b9dd2;
 byte function_016a90();
 
 // @retail 0x13a690

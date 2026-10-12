@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 /* UNKNOWN_23D030.CPP: the camera that flies freely, and the point it keeps
    relative to an object (0x23d030..0x23d970) */
 

@@ -7,6 +7,7 @@
 #include <float.h>
 
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 
 /* limits read by the range checks below (zero in the retail image; set at run time) */
 real g_54e854;
