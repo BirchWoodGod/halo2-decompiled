@@ -288,7 +288,11 @@ struct s_item_definition
 	byte unknown000[0xbc];
 	dword flag0 : 1;
 	dword flag1 : 1;
-	dword : 30;
+	dword flag2 : 1;
+	dword flag3 : 1;
+	dword flag4 : 1;
+	dword flag5 : 1;
+	dword : 26;
 	byte unknown0c0[4];
 	real scale_multiplayer;
 	real scale;
@@ -358,12 +362,12 @@ void function_10ccc0(long item_index)
 	s_item *item = ITEM_GET(item_index);
 	bool held_by_player = false;
 
-	if (item->flags_12c & 1)
+	if (TEST_FIELD_BIT(item->flag0))
 		held_by_player = ((s_item_unit *)ITEM_GET(item->unit_index))->player_index != NONE;
 	if (held_by_player)
-		item->flags_12c |= 8;
+		item->flag3 = true;
 	else
-		item->flags_12c &= ~8;
+		item->flag3 = false;
 	if (((1 << ((s_item_header *)g_4e0300->data)[item_index & 0xffff].type) & 4) && TEST_FIELD_BIT(item->flag16c_6))
 		function_15e300(item_index);
 }
@@ -844,15 +848,15 @@ void function_10d710(vector3f const *facing, long object_index, point3f const *o
 
 void __stdcall function_b8ee0(long parent_index, long marker_name, long object_index, long a);
 // @retail 0x10cec0
-void function_10cec0(long unit_index, long weapon_index, long parent_marker_name, long marker_name)
+void function_10cec0(long weapon_index, long unit_index, long parent_marker_name, long marker_name)
 {
     (void)&parent_marker_name;
     (void)&marker_name;
     function_10cdf0(weapon_index);
     function_b8ee0(unit_index, parent_marker_name, weapon_index, marker_name);
     byte *unit = (byte *)ITEM_GET(unit_index);
-    byte *definition = g_4e3b44[*(long *)unit & 0xffff].bytes;
-    if ((*(dword *)(definition + 0xbc) >> 5) & 1)
+    s_item_definition *definition = (s_item_definition *)g_4e3b44[*(long *)unit & 0xffff].bytes;
+    if (TEST_FIELD_BIT(definition->flag5))
     {
         s_item *item = ITEM_GET(weapon_index);
         if (!(*(byte *)&item->object_flags & 1))
