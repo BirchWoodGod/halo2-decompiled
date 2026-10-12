@@ -621,7 +621,7 @@ bool function_243ed0(s_marker_list *list, point3f const *position)
 #pragma inline_depth(255)
 
 // @retail 0x2440a0
-bool function_2440a0(s_marker_list *list, point3f const *point, long object_index)
+bool function_2440a0(s_marker_list *list, long object_index, point3f const *point)
 {
 	s_slot_object *object = ((s_slot_object_header *)g_4e0300->data)[object_index & 0xffff].object;
 
@@ -2447,10 +2447,15 @@ bool function_244240(s_marker_list *list, long object_index, point3f const *poin
 	list->l4 = 1;
 	function_10da60(object_index, &list->position);
 	if (ctf_options()->engine_type == 9)
+	{
 		list->r14 = 0.1f;
+		list->r18 = 0.1f;
+	}
 	else
+	{
 		list->r14 = 0.8f;
-	list->r18 = 0.1f;
+		list->r18 = 0.1f;
+	}
 	list->r1c = 0.0f;
 	list->l20 = object_index;
 	list->color24 = *(s_color_bits const *)point;
@@ -2458,7 +2463,7 @@ bool function_244240(s_marker_list *list, long object_index, point3f const *poin
 	list->r3c = 1.0f;
 	list->r40 = 1.0f;
 	list->count = 0;
-	function_2440a0(list, point, object_index);
+	function_2440a0(list, object_index, point);
 	return true;
 }
 
@@ -2659,7 +2664,7 @@ void __stdcall function_244610(void *arg_0)
 }
 
 // @retail 0x244630
-void function_244630(point3f const *arg_0, long arg_1)
+void function_244630(long arg_1, point3f const *arg_0)
 {
 	byte *local_0 = (byte *)g_4e3b44[g_4e034c->index & 0xffff].data;
 	byte *local_1 = *(byte **)(local_0 + 0xc);
@@ -2701,13 +2706,13 @@ void c_game_engine_markers::v13(long arg_0)
 				if (local_4 != NONE)
 				{
 					function_2417a1(g_4e0350->marker_entries, local_4, &local_5);
-					function_244630(&local_5, local_2);
+					function_244630(local_2, &local_5);
 				}
 				local_4 = g_51ec80->c[local_2];
 				if (local_4 != NONE)
 				{
 					function_2417a1(g_4e0350->marker_entries, local_4, &local_5);
-					function_244630(&local_5, -1 - local_2);
+					function_244630(-1 - local_2, &local_5);
 				}
 			}
 		}
@@ -2888,7 +2893,7 @@ void c_game_engine_markers::v14(long arg_0)
 							{
 								color3f local_37;
 								s_color_bits local_38 = *(s_color_bits *)(local_36 == 8 ? g_468714 : function_7f720(&local_37, (short)local_36));
-								function_2440a0(&local_14, (point3f *)&local_38, local_35);
+								function_2440a0(&local_14, local_35, (point3f *)&local_38);
 							}
 						}
 						function_24e59f(&local_14);
