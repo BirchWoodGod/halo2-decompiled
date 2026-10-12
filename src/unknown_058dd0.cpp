@@ -367,18 +367,21 @@ bool c_session_state_in_match::update()
 				{
 					network_session_leave(a, false);
 				}
-				return true;
+				result = true;
+				goto local_0;
 			}
 			if (function_138a10() && b->function_058d20())
 			{
 				network_session_set_mode(b, 5);
-				return true;
+				result = true;
+				goto local_0;
 			}
 		}
 		else if (b->type == 5)
 		{
 			function_06df60(o, 9, 0, 0);
-			return true;
+			result = true;
+			goto local_0;
 		}
 		else
 		{
@@ -386,6 +389,7 @@ bool c_session_state_in_match::update()
 			result = true;
 		}
 	}
+local_0:
 	return result;
 }
 
@@ -1043,7 +1047,7 @@ extern bool g_51051c;
 extern bool g_51051d;
 long __stdcall function_73b10(long a, long b);
 void function_73bc0(const s_session_id *session_id, const s_session_id *round_key,
-	long first, long second, bool free_for_all);
+	__int64 arg_2, bool free_for_all);
 
 #pragma inline_depth(0)
 PRIVATE __forceinline __int64 function_72170(c_class_58d20 *arg_0)
@@ -1051,6 +1055,11 @@ PRIVATE __forceinline __int64 function_72170(c_class_58d20 *arg_0)
 	return arg_0->get_values_4da0();
 }
 #pragma inline_depth(255)
+
+PRIVATE __forceinline bool function_72170(s_session_id arg_0, s_session_id arg_1)
+{
+	return *(__int64 *)&arg_0 != *(__int64 *)&arg_1;
+}
 
 // @retail 0x72170
 void function_72170(c_session_state_matchmaking *state)
@@ -1063,15 +1072,17 @@ void function_72170(c_session_state_matchmaking *state)
 			s_session_id key;
 			key.a = session->value49f0;
 			key.b = session->value49f4;
-			if (g_510520.a != key.a || g_510520.b != key.b ||
+			if (function_72170(g_510520, key) ||
 				!function_73b10(g_510540.a, g_510540.b))
 			{
-				byte *variant = session_state_is_live(session) ? session->data4db0 : NULL;
+				byte *variant = NULL;
+				if (session_state_is_live(session))
+					variant = session->data4db0;
 				bool free_for_all = (variant[0x48] & 1) != 0;
-				const s_session_id *id = session->state && session->flag24 ?
-					(const s_session_id *)&session->unknown1c : NULL;
-				__int64 values = function_72170(session);
-				function_73bc0(id, &key, (long)values, (long)(values >> 32), free_for_all);
+				const s_session_id *id = NULL;
+				if (session->state && session->flag24)
+					id = (const s_session_id *)&session->unknown1c;
+				function_73bc0(id, &key, function_72170(session), free_for_all);
 			}
 		}
 		else if (g_510518)
