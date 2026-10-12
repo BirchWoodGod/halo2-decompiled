@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-11: 7731 functions match
+
+```
+matched 7731 of 11318 game functions (923546 of 2784283 bytes, 33.17%)
+```
+
+8 new matches, none lost:
+- A trial lane run by Claude Sonnet instead of Codex, on the closest functions in group 3: 0x1ed340, 0x26d0e0, 0x2c6431, 0x2c66b5, 0x2c67d7, 0x2a07c0, 0x2a06a0 and 0x2b86fa.
+
 ## 2026-10-11: 7723 functions match
 
 ```
