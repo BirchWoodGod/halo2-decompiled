@@ -36,14 +36,13 @@ PRIVATE __forceinline real function_248eff(real arg_0)
 PRIVATE __forceinline real function_248ef0(real const *arg_0)
 {
 	long local_0 = real_truncate(*arg_0);
-	real local_1 = *(real const volatile *)arg_0 - (real)local_0;
+	real local_1 = *arg_0 - (real)local_0;
 	if (local_1 < 0.f)
 		local_1 += 1.f;
 	return local_1;
 }
 
-// @retail 0x248df0
-real function_248df0(long arg_0, void *arg_1, void *arg_2, void const *arg_3)
+PRIVATE __forceinline real function_248df1(long arg_0, void *arg_1, void const *const &arg_3, void *arg_2)
 {
 	real local_0 = 0.f;
 	s_248df0 const *local_1 = (s_248df0 const *)arg_3;
@@ -119,4 +118,10 @@ real function_248df0(long arg_0, void *arg_1, void *arg_2, void const *arg_3)
 		break;
 	}
 	return local_0;
+}
+
+// @retail 0x248df0
+real function_248df0(long arg_0, void *arg_1, void *arg_2, void const *arg_3)
+{
+	return function_248df1(arg_0, arg_1, arg_3, arg_2);
 }
