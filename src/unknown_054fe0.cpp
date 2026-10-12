@@ -866,9 +866,8 @@ bool network_session_interface_set_value5dd0(short value)
 	if (network_session_interface_local_machine_is_host())
 	{
 		c_class_58d20 *session = network_session_get_current();
-		if (network_session_parameters_set_value5dd0(session, value) && network_session_start_countdown(session, 0, false, 0, 0))
-			return true;
-		return false;
+		result = network_session_parameters_set_value5dd0(session, value) &&
+			network_session_start_countdown(session, 0, false, 0, 0);
 	}
 	return result;
 }

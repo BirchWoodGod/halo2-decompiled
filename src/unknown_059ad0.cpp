@@ -4102,7 +4102,7 @@ void __stdcall function_609e0(c_class_58d20 *session, const byte *current, s_609
  if (!local_0 || memcmp(current + 0x54, local_0 + 0x54, 0x1c))
  {
   update[0x52] = true;
-  unsigned __int64 kind = *(const dword *)(current + 0x54);
+  dword kind = *(const dword *)(current + 0x54);
   *(long *)(update + 0x54) = (long)kind;
   *(long *)(update + 0x68) = 0;
   *(long *)(update + 0x6c) = 0;
@@ -4110,15 +4110,18 @@ void __stdcall function_609e0(c_class_58d20 *session, const byte *current, s_609
   *(long *)(update + 0x60) = 0;
   *(long *)(update + 0x5c) = 0;
   *(long *)(update + 0x64) = 0;
-  if (kind == 1)
+  switch (kind - 1)
   {
+  case 0:
    *(long *)(update + 0x58) = *(const long *)(current + 0x58);
    *(long *)(update + 0x60) = *(const long *)(current + 0x60);
    *(long *)(update + 0x5c) = *(const long *)(current + 0x5c);
    *(long *)(update + 0x64) = *(const long *)(current + 0x64);
+   break;
+  case 1: memcpy(update + 0x68, current + 0x68, 4); break;
+  case 2: memcpy(update + 0x6c, current + 0x6c, 4); break;
+  default: break;
   }
-  else if (kind == 2) memcpy(update + 0x68, current + 0x68, 4);
-  else if (kind == 3) memcpy(update + 0x6c, current + 0x6c, 4);
  }
  if (!local_0 || current[0x85] != local_0[0x85] || memcmp(current + 0x88, local_0 + 0x88, 0x308))
  {
