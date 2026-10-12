@@ -374,7 +374,6 @@ long c_game_engine::v22()
 	return 3;
 }
 
-// @retail 0x175f40
 void c_game_engine::v10()
 {
 }
