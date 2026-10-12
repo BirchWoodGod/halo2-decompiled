@@ -3011,7 +3011,8 @@ void __stdcall function_2a2e00(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		s_recorded_animation *animation = recorded_animation_find(NULL, arguments[0]);
+		long object_index = arguments[0];
+		s_recorded_animation *animation = recorded_animation_find(NULL, object_index);
 		if (animation)
 			animation->flags |= 3;
 		function_209ae0(thread_index, 0);
