@@ -643,10 +643,17 @@ bool function_1029d0(long weapon_index, short magazine_index)
 	return weapon->magazines[magazine_index].state == 2;
 }
 
+static inline s_weapon *weapon_get_102e10(long weapon_index)
+{
+	long index = weapon_index & 0xffff;
+	s_weapon_header *headers = (s_weapon_header *)g_4e0300->data;
+	return headers[index].weapon;
+}
+
 // @retail 0x102e10
 void function_102e10(long weapon_index, short trigger_index)
 {
-	s_weapon *weapon = WEAPON_GET(weapon_index);
+	s_weapon *weapon = weapon_get_102e10(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
 	s_weapon_trigger_definition *local_172694 = &definition->triggers[trigger_index];
 
@@ -659,7 +666,7 @@ void function_102e10(long weapon_index, short trigger_index)
 			fld ticks_real
 			fistp ticks
 		}
-		weapon = WEAPON_GET(weapon_index);
+		weapon = weapon_get_102e10(weapon_index);
 		weapon->triggers[trigger_index].state = 4;
 		weapon->triggers[trigger_index].timer = (short)ticks;
 	}
@@ -671,10 +678,10 @@ void function_102e10(long weapon_index, short trigger_index)
 			s_weapon_barrel *barrel = &weapon->barrels[barrel_index];
 			barrel->flag0 = true;
 		}
-		weapon = WEAPON_GET(weapon_index);
+		weapon = weapon_get_102e10(weapon_index);
 		weapon->triggers[trigger_index].state = 0;
 		weapon->triggers[trigger_index].timer = 0;
-		s_weapon_trigger *trigger = &WEAPON_GET(weapon_index)->triggers[trigger_index];
+		s_weapon_trigger *trigger = &weapon_get_102e10(weapon_index)->triggers[trigger_index];
 		trigger->flag3 = false;
 		trigger->flag4 = false;
 	}
