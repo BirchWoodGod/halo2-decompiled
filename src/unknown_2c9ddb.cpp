@@ -652,6 +652,9 @@ void __stdcall function_148b27(long index);
 // @retail 0x2cb001
 bool __stdcall function_2cb001(long unused)
 {
+    /* retail keeps the unused argument, so it returns with ret 4 */
+    long const *unused_reference = &unused;
+    (void)unused_reference;
     function_148b27(g_50933c);
     g_50933c = NONE;
     return true;

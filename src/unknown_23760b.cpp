@@ -1293,7 +1293,9 @@ bool finish_profile_create(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		function_148ca8(g_55c154, keyboard->user_flags);
+		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
+		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
+		function_148ca8(g_55c154, controller_flags);
 	}
 	return true;
 }
@@ -1312,7 +1314,9 @@ bool finish_profile_create_1(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		function_148ca8(g_55c154, keyboard->user_flags);
+		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
+		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
+		function_148ca8(g_55c154, controller_flags);
 	}
 	return true;
 }
@@ -1355,7 +1359,9 @@ bool finish_profile_create_3(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		function_148ca8(g_55c154, keyboard->user_flags);
+		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
+		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
+		function_148ca8(g_55c154, controller_flags);
 	}
 	return true;
 }
