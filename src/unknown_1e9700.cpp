@@ -392,12 +392,13 @@ void __stdcall function_1e98e0(void *state, long mask_address, void *data)
 	dword changed = 0;
 	for (long i = 0; i < 16; i++)
 	{
-		if ((1 << i) & *mask)
+		dword selected = 1u << i;
+		if (selected & *mask)
 		{
 			if (!update_value_row(packet->values[i], table->values[i]))
-				changed |= 1 << i;
+				changed |= selected;
 			else
-				changed &= ~(1 << i);
+				changed &= ~selected;
 		}
 	}
 	for (long team = 0; team < 8; team++)
