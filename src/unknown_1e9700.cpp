@@ -1,8 +1,10 @@
 // @flags /O2 /arch:SSE /Gr
+#include "view_context_storage.h"
 /* UNKNOWN_1E9700.CPP: a value of the difficulty table for the current
    campaign difficulty (lane M; called by the behaviors of 0x1a8000..0x1affff) */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include <string.h>
 #include <float.h>
@@ -633,8 +635,6 @@ struct s_request_screen_bounds
 
 void function_1e90b0(long first, point2f *points, s_request_screen_bounds const *bounds);
 
-extern long g_4b9ed8;
-extern short g_4b9dd0, g_4b9dd2;
 struct s_bitmap_data;
 struct D3DTexture;
 struct s_widget_quad_2b11;
@@ -787,7 +787,6 @@ struct s_33a0b_default;
 extern s_33a0b_default *g_4686d4;
 extern real g_4e69c0[4];
 extern long g_4ba04c;
-extern short_rectangle2d g_4b9dd8;
 void function_13925f(long string_handle, word *buffer);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 void function_22d2ee(word *string, long maximum_length);

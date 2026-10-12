@@ -1,5 +1,7 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "unknown_0259d0.h"
 #include "globals.h"
 #include "unknown_13fd90.h"
@@ -14,7 +16,6 @@
 struct s_22bbca { short top, left, bottom, right; };
 void function_22bbca(s_22bbca const *bounds, long tag_index, long first, long second,
 	long text_index, real alpha);
-extern short g_4b9dd0, g_4b9dd2;
 
 // @retail 0x163400
 void function_163400(s_text_widget_a const *widget)

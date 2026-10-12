@@ -1,10 +1,13 @@
 #include "unknown_11c920.h"
+#include "frame_storage.h"
 #include "globals.h"
 #include "effects.h"
 #include <xtl.h>
 #include <d3d8.h>
 
 // @flags /O2 /arch:SSE /Gr
+#include "function_context_storage.h"
+#include "shader_storage.h"
 
 struct s_render_entry_156b60
 {
@@ -28,17 +31,14 @@ struct s_material_156b60
 };
 
 s_render_entry_156b60 g_4e92e8[64];
-long g_4e9268;
 long g_4e92e0;
 
 struct s_tag_data { long size; byte *address; };
 struct s_shader_cache;
 struct s_cache_record;
 struct s_sort_record;
-struct s_frame_offset { point3f position; vector3f forward; vector3f up; };
-extern s_frame_offset g_485618;
+
 extern dword g_4b8348;
-extern byte g_51f0f0[0x2d8];
 byte const g_43f78f[] = {43, 0, 11, 255};
 
 real function_13b390(void const *function, real input, real range);
@@ -249,3 +249,5 @@ void function_156b60(s_effect_beam *beam, real progress, transform4x3f const *ma
 			(t_record_fill)function_156ed0, (dword)function_156fe0, (void *)g_4e92e0);
 	++g_4e92e0;
 }
+
+s_function_context_storage g_function_context_storage;

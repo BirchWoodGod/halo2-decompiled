@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "allocator_storage.h"
 /* UNKNOWN_223080.CPP: the loading screen (the progress text in the
    language of the console) */
 
@@ -120,7 +121,6 @@ struct s_223081
 extern vector3f *g_4687bc;
 extern short_rect_pair g_485a8a;
 extern long g_4e64a0;
-extern bool g_4e6098;
 
 long function_14a250(void);
 void function_2f600(long arg_0, long arg_1, s_grid_pair *arg_2);

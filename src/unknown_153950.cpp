@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /arch:SSE /Gr
+#include "projection_storage.h"
 /* UNKNOWN_153950.CPP: the game speed (time dilation and camera shake) slots */
 
 #include "unknown_11c920.h"

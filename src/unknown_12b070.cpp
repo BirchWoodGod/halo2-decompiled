@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "counters_storage.h"
 /* UNKNOWN_12B070.CPP: the main loop's timing: the time it started, and the
    lengths of the last 15 vertical blanks reported by the rasterizer */
 
@@ -50,7 +51,6 @@ void function_12b070(void)
 }
 
 /* the vertical blank count (unknown_123b30.cpp) and the one of the last frame */
-extern s_connection_counter g_485ab0;
 
 #define VBLANK_COUNT (*(__int64 volatile *)&g_485ab0)
 #define LAST_FRAME_VBLANK_COUNT (*(__int64 *)&g_4e6398)

@@ -272,8 +272,8 @@ s_saved_game_file *saved_game_file_new_from_id(s_saved_game_file *file, long fla
 	const s_saved_game_file_location *const *location_reference = &location;
 	file->flags = flags;
 	s_saved_game_file_location *file_location = &file->location;
-	file_location->name[0] = 0;
-	file_location->display_name[0] = 0;
+	memset(file_location->name, 0, sizeof(file_location->name[0]));
+	memset(file_location->display_name, 0, sizeof(file_location->display_name[0]));
 	saved_game_file_copy_display_name(file->display_name, display_name);
 	file->id = *(const s_saved_game_file_id *)*location_reference;
 	file->done = done;
