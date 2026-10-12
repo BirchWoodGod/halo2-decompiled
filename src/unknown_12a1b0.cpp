@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /arch:SSE /Gr
+#include "pool_storage.h"
 /* UNKNOWN_12A1B0.CPP: controllers and looping playback. */
 
 #include "unknown_11c920.h"
@@ -225,9 +226,6 @@ long function_14de10(long index);
 real function_12a9d0(long listener_index, s_sound_position const *position);
 void __stdcall function_21f430(long controller_index);
 
-extern dword g_510800_pool_base;
-extern long g_510804_pool_size;
-extern dword g_510808_pool_checksum;
 
 // @retail 0x219a90
 long function_219a90(long definition_index)

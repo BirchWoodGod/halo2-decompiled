@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 /* UNKNOWN_155760.CPP: entry classification */
 
 #include "unknown_11c920.h"

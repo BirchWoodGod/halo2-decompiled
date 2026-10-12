@@ -1,4 +1,6 @@
 // @flags /O2 /Gr
+#include "palette_cache_storage.h"
+#include "palette_storage.h"
 /* UNKNOWN_0158F0.CPP: D3D texture and palette creation (the D3D header
    allocation is inlined from the SDK's D3DDevice_CreateTexture2) */
 
@@ -96,9 +98,7 @@ struct s_palette_source
 };
 
 
-D3DPalette *g_484dbc;
 long g_484dc0[4];
-D3DPalette g_484dd0[32];
 long g_467000;
 long g_5093ac;
 dword **g_407488;
@@ -256,3 +256,7 @@ bool function_015d00(long count, dword **out)
 	*out = D3DDevice_BeginPush(count);
 	return true;
 }
+
+s_palette_storage g_palette_storage;
+
+s_palette_cache_storage g_palette_cache_storage;

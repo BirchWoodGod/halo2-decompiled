@@ -1,4 +1,6 @@
 // @flags /O2 /arch:SSE /Gr
+#include "shader_storage.h"
+#include "view_context_storage.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "object_markers.h"
@@ -75,7 +77,6 @@ void function_ba1d0(long, vector3f *, vector3f *);
 real function_30bf0(vector3f *);
 long function_155760(long);
 void object_widget_delete(long, long);
-extern long g_4b9ed8;
 extern dword g_4ba034;
 long g_55e710;
 bool g_55e714;
@@ -438,7 +439,6 @@ long __stdcall function_3ddd0(long);
 void function_1cf50();
 byte *g_485a80;
 // Render-state storage read by the two external state helpers.
-byte g_51f0f0[0x2d8];
 // Attribute pairs terminated by 255, as consumed by the retail state helper.
 byte g_43f8df[] = {59, 0, 2, 4, 2, 6, 2, 5, 2, 3, 1, 255};
 
@@ -525,3 +525,5 @@ void __stdcall function_117060(void *submission)
 {
 	function_40f60(submission, function_d4bc0, function_116b00);
 }
+
+s_shader_storage g_shader_storage;

@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /Gr /arch:SSE
+#include "orientations_storage.h"
 /* UNKNOWN_141590.CPP: transform4x3f and quaternion math */
 
 #include "unknown_11c920.h"
@@ -6,12 +7,7 @@
 #include <math.h>
 #include <string.h>
 
-struct rigid_transform_scaled
-{
-	quaternionf rotation;
-	point3f position;
-	real scale;
-};
+
 
 vector3f *function_11d000(vector3f const *v, vector3f *out);
 

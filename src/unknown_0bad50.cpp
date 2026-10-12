@@ -6,6 +6,9 @@
 #include <string.h>
 
 // @flags /O2 /Gr
+#include "object_masks_storage.h"
+#include "partition_colliding_storage.h"
+#include "partition_noncolliding_storage.h"
 
 struct s_object_blocks_ab
 {
@@ -410,13 +413,6 @@ bool function_bacc0(long object_index, long index, point3f const *point)
 }
 
 #include <xmmintrin.h>
-extern void *g_4de2e0;
-extern void *g_4de2e4;
-extern void *g_4de2d4;
-extern void *g_4de2d8;
-extern bool g_4de2f8;
-extern long g_4de2fc;
-extern long g_4de300[0x800];
 
 struct s_cluster_link_ab
 {

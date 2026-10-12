@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "pool_storage.h"
 #include "unknown_11c920.h"
 #include <xtl.h>
 #include <string.h>
@@ -87,9 +88,6 @@ PRIVATE inline long sound_gain_to_volume(real gain)
 	return volume;
 }
 
-dword g_510800_pool_base;
-long g_510804_pool_size;
-dword g_510808_pool_checksum;
 
 s_sound_class_fade *g_502118;
 bool g_50211c;

@@ -1,4 +1,5 @@
 #include "unknown_11c920.h"
+#include "frame_storage.h"
 #include "globals.h"
 #include <xtl.h>
 #include <math.h>
@@ -43,8 +44,7 @@ struct s_draw_mesh_definition
 };
 struct s_draw_mesh_context { s_draw_mesh_definition const *definition; long constant_index; };
 struct s_draw_mesh_seed { byte field_0[0x1a]; word field_1a; };
-struct s_frame_offset { point3f position; vector3f forward; vector3f up; };
-extern s_frame_offset g_485618;
+
 typedef char check_draw_mesh_mask[offsetof(s_draw_mesh_definition, field_d8)==0xd8?1:-1];
 
 void __stdcall function_173ba0(dword mask, void *a, void *b, void const *c, real *values);

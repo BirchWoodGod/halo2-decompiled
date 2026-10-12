@@ -12,4 +12,4 @@ struct s_font_render_entry
 	};
 };
 
-extern s_font_render_entry g_4b62b0[512];
+#include "glyphs_storage.h"

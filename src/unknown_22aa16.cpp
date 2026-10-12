@@ -1,5 +1,6 @@
 // @flags /O1 /arch:SSE /Gr
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "unknown_0259d0.h"
 #include "unknown_030290.h"
 #include "globals.h"
@@ -11,7 +12,6 @@ struct s_interface_function_context;
 struct s_33a0b_default;
 extern s_interface_function_context g_5021d0;
 extern s_33a0b_default *g_4686d4;
-extern short g_4b9dd0, g_4b9dd2;
 struct s_4e6950;
 extern s_4e6950 g_4e6950;
 class c_1fa50

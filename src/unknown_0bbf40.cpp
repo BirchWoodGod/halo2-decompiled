@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /Gr
+#include "object_masks_storage.h"
 /* UNKNOWN_0BBF40.CPP: object flag setters of the script functions */
 
 #include "unknown_11c920.h"
@@ -503,8 +504,6 @@ bool function_bf5d0(long object_index)
 	return result != 0;
 }
 
-extern long g_4de2fc;
-extern long g_4de300[0x800];
 
 static __forceinline bool object_stamp_ab(long index, long stamp)
 {

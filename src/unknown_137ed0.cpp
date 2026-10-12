@@ -1,13 +1,9 @@
 // @flags /O2 /arch:SSE /Gr
+#include "device_setup_storage.h"
 #include "unknown_11c920.h"
 #include "unknown_0259d0.h"
 
-struct s_128c0_settings
-{
-	byte depth_format, interval_flag;
-	short interval;
-	long quality, extra;
-};
+
 
 extern word g_485ac8;
 extern short g_485aca;

@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "orientations_storage.h"
 /* UNKNOWN_1CAFC0.CPP: the object that drives three animation channels of
    one graph (0x1cafc0..0x1ce1e0) */
 

@@ -1,4 +1,5 @@
 #include <string.h>
+#include "visibility_storage.h"
 #include "unknown_11c920.h"
 #include <xtl.h>
 #include "globals.h"
@@ -5970,7 +5971,6 @@ struct s_model_render_definition_2b
 };
 
 struct s_visibility_object_lists;
-extern s_visibility_object_lists g_547f88;
 extern s_visibility_object_lists *g_4c0b80;
 extern color3f const *g_46871c;
 extern color4f const *g_4686d8;

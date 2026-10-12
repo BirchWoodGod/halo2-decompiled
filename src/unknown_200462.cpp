@@ -1,4 +1,5 @@
 // @flags /O1 /Oi /Oy- /arch:SSE /Gr
+#include "view_context_storage.h"
 #include "unknown_11c920.h"
 #include "unknown_0259d0.h"
 #include "unknown_13927e.h"
@@ -7,7 +8,6 @@
 
 struct s_510c4c;
 extern s_510c4c *g_510c4c;
-extern long g_4b9ed8;
 extern point3f *g_468720;
 extern real g_4e69c0[4];
 extern real g_4e696c;

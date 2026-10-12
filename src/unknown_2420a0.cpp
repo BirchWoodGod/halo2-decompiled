@@ -11,10 +11,10 @@
 #include "game_engine_events.h"
 
 // @flags /O2 /arch:SSE /Gr
+#include "view_context_storage.h"
 
 /* ---- globals ---- */
 s_slot_table *g_51ec80;
-long g_4b9ed8;
 
 /* the two colors (alpha, then red, green and blue) of the markers drawn by
    function_243ed0 */

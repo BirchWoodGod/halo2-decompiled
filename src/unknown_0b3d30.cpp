@@ -1,4 +1,6 @@
 // @flags /O2 /Gr
+#include "transaction_storage.h"
+#include "upload_storage.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_053310.h"
@@ -7,11 +9,6 @@
 #include <xonline.h>
 #include <wchar.h>
 
-dword g_547610;
-long g_547614;
-long g_547618;
-byte g_54761c;
-long g_547620;
 byte g_546a8c[1];
 
 bool __stdcall function_b5e40(void *block);
@@ -202,7 +199,6 @@ bool function_b40b0()
     return result;
 }
 
-dword g_547624;
 bool function_b5e90(s_http_connection_ab *connection, bool *complete);
 
 // @retail 0xb3fc0
@@ -451,10 +447,6 @@ long function_b42b0(long kind, long controller, struct _XUID owner, wchar_t cons
 // Disabled: retail passes shared upload-state addresses to the serializer and publisher.
 #if 0
 extern byte g_546a88;
-extern long g_546abc;
-extern dword g_5473f0;
-extern long g_5473f8, g_547624;
-extern char g_5470cc[32];
 bool __stdcall function_1995a0(void const *data, void *buffer, long *size, long capacity, long mode, long kind);
 void function_b6570(long *state);
 
@@ -491,7 +483,7 @@ struct s_grs_source;
 struct s_packed_grs;
 struct s_packed_clc;
 void packed_grs_write(s_grs_source const *source, s_packed_grs *packed);
-void __stdcall function_b3ed0(s_packed_clc const *data, long kind, char const *name);
+bool __stdcall function_b3ed0(s_packed_clc const *data, long kind, char const *name);
 
 // @retail 0xb3e90
 void __stdcall function_b3e90(byte *results)
@@ -499,4 +491,39 @@ void __stdcall function_b3e90(byte *results)
     byte packed[0x150bc];
     packed_grs_write((s_grs_source const *)results, (s_packed_grs *)packed);
     function_b3ed0((s_packed_clc const *)packed, sizeof(packed), "application/x-halo2pcr");
+}
+
+s_upload_storage g_upload_storage;
+
+s_transaction_storage g_transaction_storage;
+
+byte g_546a88;
+bool function_1995a0(byte const *source, dword source_size, byte *destination, long *compressed_size, dword capacity, long level);
+bool function_b6570(s_upload_ab *upload);
+
+// @retail 0xb3ed0
+bool __stdcall function_b3ed0(s_packed_clc const *data, long kind, char const *name)
+{
+    bool result = false;
+    if (g_547610 && !g_54761c && !g_546a88)
+    {
+        if (function_1995a0((byte const *)data, (dword)kind, (byte *)(g_547610 + 8), &g_547618, g_547614 - 8, 3))
+        {
+            long *header = (long *)g_547610;
+            header[0] = g_547618 + 8;
+            header[1] = 1;
+            g_547618 += 8;
+            g_546abc = 1;
+            g_5473f0 = (byte *)g_547610;
+            g_5473f8 = g_547618;
+            function_b6570((s_upload_ab *)&g_546abc);
+            strncpy(g_5470cc, name, 32);
+            g_5470cc[31] = 0;
+            g_547620 = 0;
+            g_547624 = GetTickCount() + 120000;
+            g_54761c = true;
+            result = true;
+        }
+    }
+    return result;
 }

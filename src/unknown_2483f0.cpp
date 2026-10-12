@@ -3,6 +3,7 @@
    emitters chained to each (g_51ec88) */
 
 #include "unknown_11c920.h"
+#include "frame_storage.h"
 #include "unknown_0259d0.h"
 #include "data_array.h"
 #include "globals.h"
@@ -119,14 +120,8 @@ struct s_particle_frame
 
 /* the offset of first person particles: a point, then a forward and an up
    vector */
-struct s_frame_offset
-{
-	point3f position;
-	vector3f forward;
-	vector3f up;
-};
 
-s_frame_offset g_485618;
+
 
 matrix3x3 *function_142eb0(matrix3x3 const *a, matrix3x3 const *b, matrix3x3 *out);
 
