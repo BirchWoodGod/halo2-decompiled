@@ -331,7 +331,7 @@ void function_190eb3(long index)
 {
 	s_controller *controller = controller_get(index);
 
-	if (TEST_FIELD_BIT(controller->active))
+	if (TEST_FIELD_BIT(controller_get(index)->active))
 	{
 		XONLINE_USER *user = &controller->user;
 		XUID const *xuid = online_user_get_xuid(user);
@@ -350,7 +350,7 @@ void function_190eb3(long index)
 			unicode_string_snprintf(controller->name, 0x20, (const word *)L"%hs", online_user_get_gamertag(user));
 		}
 	}
-	else if (TEST_FIELD_BIT(controller->signed_in))
+	else if (TEST_FIELD_BIT(controller_get(index)->signed_in))
 	{
 		unicode_string_copy(controller->name, controller->profile.name, 0x20);
 	}
@@ -449,7 +449,7 @@ short function_1900ff(long controller)
 			{
 				s_controller *other = controller_get(index);
 
-				if (TEST_FIELD_BIT(other->active))
+				if (TEST_FIELD_BIT(controller_get(index)->active))
 				{
 					XUID const *a = online_user_get_xuid(&controller_get(controller)->user);
 					XUID const *b = online_user_get_xuid(&other->user);
@@ -476,14 +476,19 @@ void function_190186(long controller)
 
 		for (index = 0; index != NONE; index = function_190262(index))
 		{
-			if (index != controller && TEST_FIELD_BIT(controller_get(index)->active))
+			if (index != controller)
 			{
-				XUID const *a = online_user_get_xuid(&controller_get(controller)->user);
-				XUID const *b = online_user_get_xuid(&controller_get(index)->user);
+				s_controller *other = controller_get(index);
 
-				if (a && b && a->qwUserID == b->qwUserID)
+				if (TEST_FIELD_BIT(controller_get(index)->active))
 				{
-					function_190d4b(index);
+					XUID const *a = online_user_get_xuid(&controller_get(controller)->user);
+					XUID const *b = online_user_get_xuid(&other->user);
+
+					if (a && b && a->qwUserID == b->qwUserID)
+					{
+						function_190d4b(index);
+					}
 				}
 			}
 		}
@@ -582,7 +587,7 @@ void function_19034d(long index, long state, long unknown08, long unknown04, sho
 {
 	s_controller *controller = controller_get(index);
 
-	if (TEST_FIELD_BIT(controller->active))
+	if (TEST_FIELD_BIT(controller_get(index)->active))
 	{
 		s_online_presence_source source;
 		s_online_presence presence;
@@ -871,7 +876,7 @@ void function_190728(long index)
 	}
 	memset(&controller->identity, 0, sizeof(controller->identity));
 	memset(controller->unknownb82, 0, sizeof(controller->unknownb82));
-	if (TEST_FIELD_BIT(controller->active) && !function_1900a5(index))
+	if (TEST_FIELD_BIT(controller_get(index)->active) && !function_1900a5(index))
 	{
 		controller->task_c14 = function_abc70(index, online_user_get_xuid(&controller->user));
 	}

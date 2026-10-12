@@ -645,30 +645,41 @@ struct s_location;
 extern short g_4686c4;
 void function_11bed0(s_location *location, point3f const *point);
 
+PRIVATE inline void collision_location_reset_1696d0(s_collision_location *location)
+{
+	location->leaf_index = NONE;
+	location->cluster_index = NONE;
+	location->bsp_index = g_4686c4;
+}
+
+PRIVATE inline void point_along_vector_1696d0(point3f const *point, vector3f const *vector, real t, point3f *result)
+{
+	result->x = point->x + vector->i * t;
+	result->y = point->y + vector->j * t;
+	result->z = point->z + vector->k * t;
+}
+
 // @retail 0x1696d0
 bool function_1696d0(long flags, s_biped_ground_collision *output, long object_index,
 	point3f const *point, vector3f const *vector, long ignore_object_index, long ignore_unit_index)
 {
+	/* retail keeps the point on the stack */
+	point3f const *const *point_reference = &point;
 	s_collision_result_1697c0 *collision = (s_collision_result_1697c0 *)output;
 	collision->type = 0;
 	collision->t = 1.0f;
-	collision->start_location.leaf_index = NONE;
-	collision->start_location.cluster_index = NONE;
-	collision->start_location.bsp_index = g_4686c4;
-	collision->end_location.leaf_index = NONE;
-	collision->end_location.cluster_index = NONE;
-	collision->end_location.bsp_index = g_4686c4;
+	collision_location_reset_1696d0(&collision->start_location);
+	collision_location_reset_1696d0(&collision->end_location);
+	bool found = false;
 	collision->instance_index = NONE;
 	collision->unknown3c = NONE;
 	collision->unknown40 = NONE;
-	bool found = false;
 	if ((flags & 8) && !(flags & 0x1fff0)) flags |= 0x1fff0;
-	if (!object_or_parent_hidden(object_index))
-		found = function_169510(object_index, false, flags, collision_flags_to_test_flags(flags),
-			point, vector, ignore_object_index, ignore_unit_index, collision);
-	collision->point.x = point->x + vector->i * collision->t;
-	collision->point.y = point->y + vector->j * collision->t;
-	collision->point.z = point->z + vector->k * collision->t;
+	if (!object_or_parent_hidden(object_index) &&
+		function_169510(object_index, false, flags, collision_flags_to_test_flags(flags),
+			*point_reference, vector, ignore_object_index, ignore_unit_index, collision))
+		found = true;
+	point_along_vector_1696d0(*point_reference, vector, collision->t, &collision->point);
 	function_11bed0((s_location *)&collision->end_location, &collision->point);
 	return found;
 }
@@ -1294,9 +1305,12 @@ bool function_1691a0(long instance_index, dword flags, dword test_flags, point3f
         {
             collision->type = 3;
             short surface_index = hit.surface_index;
-            short material = surface_index != NONE ?
-                ((s_1697c0_bsp *)g_4e0348)->materials[surface_index].material_type : g_47d8e0;
-            collision->material_type = material;
+            short const *material_type;
+            if (surface_index != NONE)
+                material_type = &((s_1697c0_bsp *)g_4e0348)->materials[surface_index].material_type;
+            else
+                material_type = &g_47d8e0;
+            collision->material_type = *material_type;
             collision->instance_index = NONE;
             collision->unknown3c = instance_index;
             collision->unknown40 = NONE;

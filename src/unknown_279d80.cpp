@@ -1906,7 +1906,21 @@ void function_283600(void)
 // @retail 0x2839d0
 void function_2839d0(void)
 {
-	compute_orientations(2, 2, false, true);
+	struct
+	{
+		long field_0;
+		long field_4;
+		byte const *field_8;
+	} local_0;
+	local_0.field_4 = g_sampling_settings.node_count;
+	g_5044b4 = 0;
+	g_5044b8 = 0;
+	g_5044bc = 0;
+	compute_component_orientations(2, 2, false, true, 0, local_0.field_0, local_0.field_8, local_0.field_4, g_sampling_settings.inheritance);
+	if (local_0.field_4 > 1)
+		local_0.field_4 = 1;
+	compute_component_orientations(2, 2, false, true, 1, local_0.field_0, local_0.field_8, local_0.field_4, g_sampling_settings.inheritance);
+	compute_component_orientations(2, 2, false, true, 2, local_0.field_0, local_0.field_8, local_0.field_4, g_sampling_settings.inheritance);
 }
 
 // @retail 0x284010

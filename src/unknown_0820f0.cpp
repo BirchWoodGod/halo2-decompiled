@@ -314,8 +314,8 @@ public:
 	virtual void v0() {}
 	virtual bool v1(long *reason) { return false; }
 	virtual bool v2(bool *reliable) { return false; }
-	virtual void v3() {}
-	virtual void v4() {}
+	virtual long v3(long capacity, long available) { return 0; }
+	virtual bool v4(long sequence, s_bitstream *stream, long bits, long remaining) { return false; }
 	virtual long read_packet(long *sequence, s_bitstream *stream) { return 0; }
 	virtual void message_delivered(long sequence) {}
 	virtual void message_lost(long sequence, bool resent) {}
@@ -324,7 +324,7 @@ public:
 class c_connection_owner
 {
 public:
-	virtual void v0() {}
+	virtual void v0(long connection_id, long size, bool wrote) {}
 	virtual void packet_received(long connection_id, long packet_size) {}
 	virtual void message_acknowledged(long connection_id, long size, long time) {}
 	virtual void message_lost(long connection_id, bool resent, bool late) {}
@@ -338,6 +338,7 @@ class c_network_reliable_stream
 {
 public:
 	long function_965e0(long *sequence, long *size, long *time);
+	long allocate_sequence(long time);
 	void mark_received(long sequence);
 };
 bool __stdcall function_096ce0(c_network_reliable_stream *stream, bool force, long *type, long *sequence);
@@ -411,8 +412,8 @@ bool network_connection_next_client(s_network_connection *connection, s_connecti
 			if (!started)
 			{
 				local_index++;
-				index = local_index & 0x7fffffff;
 				started = true;
+				index = local_index & 0x7fffffff;
 				absolute_index = local_index;
 			}
 			if (local_index >= 0 && local_index < connection->handler_count)
@@ -428,9 +429,9 @@ bool network_connection_next_client(s_network_connection *connection, s_connecti
 		}
 		if (!handler && (index & 0x80000000))
 		{
-			long local_index = index & 0x7fffffff;
 			s_connection_handler *handlers = NULL;
 			long count = 0;
+			long local_index = index & 0x7fffffff;
 			if (!started)
 			{
 				absolute_index = connection->handler_count;
@@ -440,8 +441,8 @@ bool network_connection_next_client(s_network_connection *connection, s_connecti
 			}
 			if (connection->callback)
 			{
-				count = connection->callback->handler_count;
 				handlers = connection->callback->handlers;
+				count = connection->callback->handler_count;
 			}
 			if (local_index >= 0 && local_index < count)
 			{
@@ -772,119 +773,157 @@ void network_connection_callback_initialize(s_connection_callback *callback, c_c
 	callback->unknown31 = false;
 }
 
-// Disabled: enabling this writer changes previously matched stream callers.
-#if 0
 class c_class_93590;
 void network_link_send_connection_packet(c_class_93590 *link, long connection_index, const s_bitstream *stream,
- long extra_size, const void *extra, long *size_out);
+	long extra_size, const void *extra, long *size_out);
 void reliable_stream_set_message_size(c_network_reliable_stream *stream, long sequence, long size);
 
-// Disabled retail 0x88980
-void function_88980(bool reliable, s_network_connection *connection, s_bitstream *stream, bool pad,
- long extra_size, const void *extra, long *packet_size, long *stream_size, long *sent_extra_size)
+static __forceinline void function_889ee(s_bitstream *stream)
 {
- long sequence = NONE;
- bool wrote = false;
- long sent = 0;
- long bytes = 0;
- long extra_bytes = 0;
- if (reliable)
- {
-  sequence = ((c_network_reliable_stream *)network_reliable_stream_get(connection->reliable_stream_index))->allocate_sequence(network_time_now());
-  if (sequence == NONE)
-   goto done;
- }
- {
-  stream->mode = 1;
-  stream->unknown08 = 8;
-  memset(stream->data, 0, stream->size_in_bytes);
-  stream->bit_position = 0;
-  stream->checkpoint_count = 0;
-  stream->error = false;
-  stream->unknown2c = 0;
-  stream->unknown30 = 0;
-  long capacity = (stream->size_in_bytes << 3) - stream->bit_position;
-  dword type;
-  if (connection->callback && connection->callback->unknown31)
-  {
-   type = 0;
-   connection->unknown1c = true;
-  }
-  else
-  {
-   type = 1;
-   connection->unknown1c = false;
-  }
-  long reserved[7] = { 0 };
-  long total = 0;
-  s_connection_client_iterator iterator;
-  connection_client_iterator_new(&iterator, type);
-  while (network_connection_next_client(connection, &iterator))
-  {
-   long bits = iterator.client->v3(capacity, capacity - total);
-   total += bits;
-   reserved[iterator.absolute_index] = bits;
-  }
-  total++;
-  if (total > capacity)
-   goto done;
-  connection_client_iterator_new(&iterator, type);
-  while (network_connection_next_client(connection, &iterator))
-  {
-   long bits = reserved[iterator.absolute_index];
-   total -= bits;
-   if (iterator.client->v4(sequence, stream, bits, total))
-    wrote = true;
-   if ((stream->size_in_bytes << 3) - stream->bit_position < total)
-    goto done;
-  }
-  long remaining = (stream->size_in_bytes << 3) - stream->bit_position;
-  if (pad && remaining > 15)
-  {
-   long bits = remaining - 15;
-   long count = (bits + 7) / 8;
-   stream_write_bit(stream, true);
-   stream_write_checked(stream, bits, 14);
-   __declspec(align(8)) byte padding[0x600];
-   memset(padding, 0, count);
-   function_1955d0(stream, padding, bits);
-  }
-  else
-   stream_write_bit(stream, false);
-  long count = (stream->bit_position + 7) / 8;
-  long alignment = stream->unknown08;
-  stream->size_in_bytes = count;
-  if (count % alignment)
-   stream->size_in_bytes = count + alignment - count % alignment;
-  stream->mode = 2;
-  network_link_send_connection_packet((c_class_93590 *)connection->link_list, connection->id, stream, extra_size, extra, &sent);
-  if (sent > 0)
-  {
-   bytes = stream->size_in_bytes;
-   extra_bytes = extra_size;
-  }
-  if (sequence != NONE)
-   reliable_stream_set_message_size((c_network_reliable_stream *)network_reliable_stream_get(connection->reliable_stream_index), sequence, sent);
-  if (connection->owner)
-   connection->owner->v0(connection->id, sent, wrote);
- }
- done:
- if (packet_size) *packet_size = sent;
- if (stream_size) *stream_size = bytes;
- if (sent_extra_size) *sent_extra_size = extra_bytes;
+	stream->mode = 1;
+	stream->unknown08 = 8;
+	memset(stream->data, 0, stream->size_in_bytes);
+	stream->bit_position = 0;
+	stream->checkpoint_count = 0;
+	stream->error = false;
+	if (stream->mode == 1)
+	{
+		stream->unknown2c = 0;
+		stream->unknown30 = 0;
+	}
+	else if (stream->mode == 3 || stream->mode == 4)
+	{
+		if (function_1959c0(stream, 32) == 0x64656267)
+		{
+			stream->error = true;
+		}
+		else
+		{
+			stream->bit_position = 0;
+			stream->error = false;
+		}
+	}
 }
 
-#endif
+static __forceinline void function_88bbf(s_bitstream *stream, bool value)
+{
+	if ((stream->size_in_bytes << 3) - stream->bit_position >= 1 && value)
+		stream->data[stream->bit_position / 8] |= (byte)(1 << (stream->bit_position % 8));
+	stream->bit_position++;
+}
 
-void __stdcall function_88980(bool reliable, s_network_connection *connection, s_bitstream *stream,
- bool pad, long extra_size, const void *extra, long *packet_size, long *stream_size, long *sent_extra_size);
+static __forceinline void function_88bef(s_bitstream *stream, dword value, long bits)
+{
+	if (bits < 32 && value >= (dword)(1 << bits))
+	{
+		char message[256];
+		message[0] = 0;
+		csprintf_256(message, "%u exceeds max value of %u", value, 1 << bits);
+	}
+	function_195720(stream, value, bits);
+}
+
+// @retail 0x88980
+void function_88980(bool reliable, s_network_connection *connection, s_bitstream *stream, bool pad,
+	long extra_size, const void *extra, long *packet_size, long *stream_size, long *sent_extra_size)
+{
+	long sequence = NONE;
+	bool wrote = false;
+	long sent = 0;
+	long bytes = 0;
+	long extra_bytes = 0;
+	bool ready = true;
+	if (reliable)
+	{
+		c_network_reliable_stream *reliable_stream = (c_network_reliable_stream *)network_reliable_stream_get(connection->reliable_stream_index);
+		sequence = reliable_stream->allocate_sequence(network_time_now());
+		ready = sequence != NONE;
+	}
+	if (ready)
+	{
+		long total = 0;
+		function_889ee(stream);
+		long capacity = (stream->size_in_bytes << 3) - stream->bit_position;
+		dword type;
+		if (connection->callback && connection->callback->unknown31)
+		{
+			type = 0;
+			connection->unknown1c = true;
+		}
+		else
+		{
+			type = 1;
+			connection->unknown1c = false;
+		}
+		long reserved[7];
+		s_connection_client_iterator iterator;
+		connection_client_iterator_new(&iterator, type);
+		memset(reserved, 0, sizeof(reserved));
+		while (network_connection_next_client(connection, &iterator))
+		{
+			long bits = iterator.client->v3(capacity, capacity - total);
+			total += bits;
+			reserved[iterator.absolute_index] = bits;
+		}
+		total++;
+		if (total > capacity)
+			goto done;
+		connection_client_iterator_new(&iterator, type);
+		while (network_connection_next_client(connection, &iterator))
+		{
+			long bits = reserved[iterator.absolute_index];
+			total -= bits;
+			if (iterator.client->v4(sequence, stream, bits, total))
+				wrote = true;
+			if ((stream->size_in_bytes << 3) - stream->bit_position < total)
+				goto done;
+		}
+		if (pad && (stream->size_in_bytes << 3) - stream->bit_position > 15)
+		{
+			long bits = (stream->size_in_bytes << 3) - stream->bit_position - 15;
+			long count = (bits + 7) / 8;
+			byte padding[0x600];
+			function_88bbf(stream, true);
+			function_88bef(stream, bits, 14);
+			memset(padding, 0, count);
+			function_1955d0(stream, padding, bits);
+		}
+		else
+		{
+			function_88bbf(stream, false);
+		}
+		long size = (stream->bit_position + 7) / 8;
+		long alignment = stream->unknown08;
+		stream->size_in_bytes = size;
+		if (size % alignment)
+			stream->size_in_bytes = size + alignment - size % alignment;
+		stream->mode = 2;
+		network_link_send_connection_packet((c_class_93590 *)connection->link_list, connection->id, stream, extra_size, extra, &sent);
+		if (sent > 0)
+		{
+			bytes = stream->size_in_bytes;
+			extra_bytes = extra_size;
+		}
+		if (sequence != NONE)
+			reliable_stream_set_message_size((c_network_reliable_stream *)network_reliable_stream_get(connection->reliable_stream_index), sequence, sent);
+		if (connection->owner)
+			connection->owner->v0(connection->id, sent, wrote);
+	}
+done:
+	if (packet_size)
+		*packet_size = sent;
+	if (stream_size)
+		*stream_size = bytes;
+	if (sent_extra_size)
+		*sent_extra_size = extra_bytes;
+}
 
 // @retail 0x883c0
 void __stdcall function_0883c0(s_network_connection *connection)
 {
  if (connection->state == 3 && connection->initiator)
   network_connection_update_handshake(connection);
- if (connection->state == 4 && network_time_now() - connection->establish_time > connection->config->establish_timeout)
+ if (connection->state == 4 && function_75890(connection->establish_time) > connection->config->establish_timeout)
   network_connection_close(connection, 7);
  if (connection->state >= 4)
  {

@@ -466,15 +466,6 @@ void *c_unknown_249fa3::get_items(long *count)
 c_class_1473c9 *__stdcall function_18f42d(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_18f474(s_screen_parameters *parameters);
 
-class c_profile_mode_screen : public c_screen_with_menu
-{
-public:
-	virtual void v17();
-	virtual screen_load_proc get_load_proc();
-	c_unknown_249fa3 menu;
-	bool mode;
-};
-
 // @retail 0x18f4f6
 void c_profile_mode_screen::v17()
 {
@@ -489,9 +480,19 @@ screen_load_proc c_profile_mode_screen::get_load_proc()
 
 // @retail 0x18f533 destructor c_profile_mode_screen
 
-// @retail 0x18f3f0
-c_unknown_249fa3_base::~c_unknown_249fa3_base()
+// @retail 0x18f517 deleting c_profile_mode_screen
+
+// @retail 0x18f3f0 destructor c_list_24a64d
+
+// @retail 0x18f372
+c_unknown_249fa3::c_unknown_249fa3(word arg_0) : c_list_24a64d(arg_0)
 {
 }
 
-// @retail 0x18f517 deleting c_profile_mode_screen
+// @retail 0x18f4bb
+c_profile_mode_screen::c_profile_mode_screen(long arg_0, long arg_1, word arg_2) :
+ c_screen_with_menu(0xa, arg_0, arg_1, arg_2, &menu),
+ menu(arg_2),
+ mode(false)
+{
+}

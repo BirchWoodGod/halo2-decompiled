@@ -123,7 +123,7 @@ struct s_particle_frame
 
 
 
-matrix3x3 *function_142eb0(matrix3x3 const *a, matrix3x3 const *b, matrix3x3 *out);
+matrix3x3 *function_142eb0(matrix3x3 const *right, matrix3x3 const *left, matrix3x3 *out);
 
 static inline void particle_cross_product3d(vector3f const *a, vector3f const *b, vector3f *result)
 {
@@ -147,7 +147,7 @@ void function_248450(matrix3x3 *rotation, s_particle_frame const *frame, point3f
 		offset.forward = g_485618.forward;
 		offset.up = g_485618.up;
 		particle_cross_product3d(&g_485618.up, &g_485618.forward, &offset.left);
-		function_142eb0(rotation, &offset, rotation);
+		function_142eb0(&offset, rotation, rotation);
 
 		point = *position;
 		position->x = point.y * offset.left.i + point.z * offset.up.i + point.x * offset.forward.i;
