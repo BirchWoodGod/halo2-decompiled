@@ -9,6 +9,7 @@
 #include "unknown_0259d0.h"
 #include "unknown_2626b0.h"
 #include <string.h>
+#include "props.h"
 
 void function_1f86a0(long index);
 bool __stdcall function_1f8a70(long actor_index, long unknown);
@@ -390,4 +391,78 @@ void function_1f40b0(long actor_index, real *stopping_distance, real *round_trip
 		*round_trip_distance = (maximum_speed * maximum_speed - speed * speed) / (acceleration * 2.0f) +
 			maximum_speed * maximum_speed / (deceleration * 2.0f);
 	}
+}
+
+
+PRIVATE __forceinline void function_1f4811(s_1f45c1 *arg_0)
+{
+	arg_0->field_0 = 0;
+	arg_0->field_2 = false;
+	arg_0->field_4 = 0.0f;
+	arg_0->field_8 = 0.0f;
+	arg_0->field_20 = 0.0f;
+	arg_0->field_24 = 0.0f;
+	arg_0->field_28 = false;
+	arg_0->field_29 = false;
+	arg_0->field_38 = NONE;
+	arg_0->field_3c = false;
+}
+
+
+void __stdcall function_26c2d0(long arg_0);
+void function_265c30(long arg_0, long arg_1, bool arg_2);
+
+// @retail 0x1f4810
+bool __stdcall function_1f4810(long arg_0, long arg_1, real arg_2, bool arg_3)
+{
+	long const *local_0 = &arg_0;
+	long const *local_1 = &arg_1;
+	real const *local_2 = &arg_2;
+	bool const *local_3 = &arg_3;
+	s_actor_view *local_5 = actor_get(*local_0);
+	long local_16 = *local_1;
+	bool local_6 = false;
+	bool local_4 = local_6;
+	function_2628f0(*local_0, g_470fa0);
+	local_5->unknown4ae = *local_3;
+	if (local_5->unknown4ac == 7 && *(long *)&local_5->unknown4b8 == local_16 && local_5->unknown4d0 == *local_2)
+	{
+		real local_7 = 0.0f;
+		s_type_5cfb45 *local_8 = function_25d690((s_prop_datum *)prop_node_get(local_16));
+		function_26c2d0(local_16);
+		if (local_5->unknown229)
+			local_7 = function_210ac0((s_type_c3b527 *)((byte *)local_5 + 0x4ec), (point3f *)((byte *)local_8 + 0x10));
+		else
+		{
+			s_type_c3b527 *local_9 = (s_type_c3b527 *)((byte *)local_5 + 0x4ec);
+			*local_9 = *(s_type_c3b527 *)&local_8->unknown48;
+			if (local_5->unknown510.output_index == local_8->unknown54 && *(long *)((byte *)local_5 + 0x520) == local_8->unknown44)
+			{
+				local_7 = function_210970(&local_5->unknown510, (s_type_c3b527 *)&local_8->unknown48);
+				local_6 = *(bool const volatile *)&local_4;
+			}
+			else
+				local_6 = true;
+		}
+		if (local_7 > *local_2)
+			*(bool volatile *)&local_4 = true;
+	}
+	else
+		*(bool volatile *)&local_4 = true;
+	if (local_4 || local_6)
+	{
+		s_prop_node_view *local_10 = prop_node_get(local_16);
+		s_type_5cfb45 *local_11 = function_25d690((s_prop_datum *)local_10);
+		function_1f86a0(*local_0);
+		function_1f4811((s_1f45c1 *)&local_5->unknown4ac);
+		local_5->unknown4ac = 7;
+		*(long *)&local_5->unknown4b8 = local_16;
+		local_5->unknown4d0 = *local_2;
+		local_5->unknown4e4 = local_11->unknown3c != NONE ? local_11->unknown3c : local_10->object_index;
+		if (local_5->unknown229)
+			local_5->unknown656 = 0;
+	}
+	bool local_12 = function_1f8a70(*local_0, 0);
+	function_265c30(local_16, *local_0, !local_12);
+	return local_12;
 }
