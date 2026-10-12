@@ -159,8 +159,8 @@ struct s_effect_color_query
 
 long function_d2bb0(void *source, s_effect_color_query *query);
 long __stdcall function_d2a50(long a, long b, long c, s_effect_color_query *query, long d, point3f const *point);
-bool function_11c050(s_location const *location);
-bool function_11c080(s_location const *location);
+__declspec(noinline) bool function_11c050(s_location const *location);
+__declspec(noinline) bool function_11c080(s_location const *location);
 bool function_11c120(s_location const *location, point3f const *point, short *zone_index);
 bool function_3eb20(long cluster_index);
 bool __stdcall function_3ebd0(vector3f const *offset, transform4x3f const *matrices, transform4x3f *out, long count);
@@ -2192,6 +2192,7 @@ bool __stdcall function_1794e0(long effect_index)
 // @retail 0x179730
 bool function_179730(long effect_index)
 {
+	bool result = false;
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 	s_effect_definition *definition = TAG_GET(s_effect_definition, effect->tag_index);
 	bool hidden = true;
@@ -2220,7 +2221,8 @@ bool function_179730(long effect_index)
 			effect->flag3 = false;
 		}
 	}
-	return effect == 0;
+	result = effect == 0;
+	return result;
 }
 
 // @retail 0x179810

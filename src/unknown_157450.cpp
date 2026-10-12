@@ -631,14 +631,15 @@ static inline bool engine_team_is_active(long team)
 // @retail 0x1588b0
 real function_1588b0(long player_index, long type)
 {
-	long index = player_index & 0xffff;
+	player_index &= 0xffff;
+	long index = player_index;
 	s_engine_player *player = (s_engine_player *)g_4e8c24->data + index;
 	real result = 1.0f;
 
 	switch (type)
 	{
 	case 2:
-		if (g_4e6948->mode_180 == 7 && juggernaut_is((short)index))
+		if (g_4e6948->mode_180 == 7 && juggernaut_is((short)player_index))
 		{
 			if (g_4e6948->flags22c & 2)
 			{
@@ -1278,12 +1279,11 @@ long c_engine_equipment::choose(long default_value, long *name, char kind)
 long function_15a5b0(long tag_index)
 {
 	s_multiplayer_globals_data *data = multiplayer_globals_data();
-	s_engine_options *options = engine_options();
 
-	if (tag_index == data->objects7c[0].index && !TEST_FIELD_BIT(options->flags_bit10) ||
-		tag_index == data->objects7c[1].index && !TEST_FIELD_BIT(options->flags_bit10) ||
-		tag_index == data->objects84[0].index && !TEST_FIELD_BIT(options->flags_bit9) ||
-		tag_index == data->objects84[1].index && (!TEST_FIELD_BIT(options->flags_bit8) || options->value1c4 == 1))
+	if (tag_index == data->objects7c[0].index && !TEST_FIELD_BIT(engine_options()->flags_bit10) ||
+		tag_index == data->objects7c[1].index && !TEST_FIELD_BIT(engine_options()->flags_bit10) ||
+		tag_index == data->objects84[0].index && !TEST_FIELD_BIT(engine_options()->flags_bit9) ||
+		tag_index == data->objects84[1].index && (!TEST_FIELD_BIT(engine_options()->flags_bit8) || engine_options()->value1c4 == 1))
 	{
 		return NONE;
 	}
