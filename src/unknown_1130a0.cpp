@@ -84,7 +84,7 @@ bool function_20b5c0(long definition_index);
 bool function_1144a0(long unit_index, short entry_index, long *tag_index)
 {
 	s_unit_1130a0 *unit = ((s_object_header_1130a0 *)g_4e0300->data)[unit_index & 0xffff].object;
-	long index = *unit_state_handle_114440(unit);
+	long const &index = *unit_state_handle_114440(unit);
 	long found = NONE;
 	bool result = false;
 	if (index != NONE)
@@ -129,7 +129,7 @@ struct s_model_114ec0
 	long value;
 };
 
-PRIVATE __forceinline void unit_state_tag_set_114ec0(long unit_index, long index)
+PRIVATE __forceinline void unit_state_tag_set_114ec0(long unit_index, long const &index)
 {
 	long value = *(long *)(g_4e3b44[index & 0xffff].bytes + 0x14);
 	s_unit_1130a0 *unit = ((s_object_header_1130a0 *)g_4e0300->data)[unit_index & 0xffff].object;
