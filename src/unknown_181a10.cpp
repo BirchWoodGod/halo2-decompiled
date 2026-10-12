@@ -261,6 +261,7 @@ bool function_182800(s_vehicle_ray *ray_data, long excluded_component, void *wor
 {
 	s_query_result *result = (s_query_result *)ray_data;
 	c_bounded_query_world *world = (c_bounded_query_world *)world_data;
+	__m128 local_1 = _mm_setzero_ps();
 	point3f end;
 	end.x = result->origin.x + result->direction.i;
 	end.y = result->origin.y + result->direction.j;
@@ -273,8 +274,8 @@ bool function_182800(s_vehicle_ray *ray_data, long excluded_component, void *wor
 	result->fraction = FLT_MAX;
 	s_bounded_ray ray;
 	ray.flag = false;
-	ray.from.m128_f32[3] = 0.0f;
-	ray.to.m128_f32[3] = 0.0f;
+	_mm_store_ss(&ray.from.m128_f32[3], local_1);
+	_mm_store_ss(&ray.to.m128_f32[3], local_1);
 	for (long i = 0; i < 3; i++)
 	{
 		ray.from.m128_f32[i] = function_182801(result->origin.n[i], &world->lower.m128_f32[i], &world->upper.m128_f32[i]);
