@@ -686,10 +686,10 @@ void font_cache_pixels_dispose(void)
 		g_54d580 = NULL;
 	}
 
-	s_record_pool *pool = g_54d57c;
-	if (pool)
+	if (g_54d57c)
 	{
-		data_dispose(pool);
+		// Read the pool through a const pointer at this later use.
+		data_dispose(*(s_record_pool *const *)&g_54d57c);
 		g_54d57c = NULL;
 	}
 }

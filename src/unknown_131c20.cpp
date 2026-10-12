@@ -72,7 +72,7 @@ color3f *function_131d60(color4f const *a, color4f const *b, dword flags, real t
 		}
 		else
 		{
-			result->red = *(volatile real const *)&result->red * tint->red;
+			result->red = result->red * tint->red;
 			result->green = tint->green * result->green;
 			result->blue = tint->blue * result->blue;
 		}

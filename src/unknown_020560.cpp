@@ -563,7 +563,7 @@ real function_020d80(s_slot *slot, bool skip)
 }
 
 // @retail 0x20f30
-void function_020f30(real a, real b)
+void function_020f30(real b, real a)
 {
     dword count;
     dword volatile full;
@@ -1309,7 +1309,7 @@ long function_21360(long source, real radius, real low, real high, long target,
     if (alternate == NONE)
         alternate = source;
     if (configure)
-        function_020f30(0.0f, scale);
+        function_020f30(scale, 0.0f);
     for (long pass = 0; pass < passes; ++pass)
     {
         real weights[4];
@@ -1343,7 +1343,7 @@ long function_211a0(long source, real passes, real distortion, real falloff,
     if (alternate == NONE)
         alternate = source;
     if ((byte)configure)
-        function_020f30(offset, scale);
+        function_020f30(scale, offset);
     if (passes > 0.0f)
     {
         real growth = (1.0f - falloff) + falloff * 2.0f;

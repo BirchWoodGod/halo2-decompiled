@@ -84,7 +84,7 @@ PRIVATE __forceinline short function_1388a1(s_game_options_view const *arg_1)
 bool function_1388a0()
 {
 	s_game_options_view *local_1 = g_4e6948;
-	long local_2 = *(long volatile *)&local_1->state;
+	long local_2 = local_1->state;
 	bool local_3 = true;
 	if (local_2 == _game_state_campaign)
 	{
@@ -271,7 +271,7 @@ short function_138ab0()
 	case _focus_object:
 		if (function_badc0(options->value11fc, NONE))
 		{
-			long object_index = function_baf80(*(volatile long const *)&options->value11fc);
+			long object_index = function_baf80(g_4e6948->value11fc);
 			s_object_location_view *object = ((s_object_header_location_view *)g_4e0300->data)[object_index & 0xffff].object;
 			if (TEST_FIELD_BIT(object->has_location) && object->location.cluster_index != NONE)
 				result = object->location.cluster_index;

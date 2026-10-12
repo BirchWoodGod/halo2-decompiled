@@ -21,7 +21,7 @@ long function_173b90(s_particle_system_datum *arg_0);
 double __cdecl function_1c1a0(real arg_0);
 vector3f *function_143070(vector3f const *arg_0, matrix3x3 const *arg_1, vector3f *arg_2);
 matrix3x3 *function_142da0(real arg_0, real arg_1, real arg_2, matrix3x3 *arg_3);
-matrix3x3 *function_142eb0(matrix3x3 const *arg_0, matrix3x3 const *arg_1, matrix3x3 *arg_2);
+matrix3x3 *function_142eb0(matrix3x3 const *right, matrix3x3 const *left, matrix3x3 *out);
 void function_247950(s_particle_system_datum *arg_2, s_particle_spawn_definition const *arg_3,
 	dword arg_4, real arg_5, real arg_6, real arg_7, s_247950 *arg_1, s_247fd0 *arg_0);
 
@@ -68,7 +68,7 @@ void c_247470::function_247470(real arg_0, s_particle_system_datum *arg_1, s_obj
 		{
 			matrix3x3 local_4;
 			function_142da0(local_2[0], local_2[1], 0.f, &local_4);
-			function_142eb0(&local_4, &field_10, &field_10);
+			function_142eb0(&field_10, &local_4, &field_10);
 		}
 		field_34.x += local_3.i;
 		field_34.y += local_3.j;

@@ -232,6 +232,17 @@ static inline s_player *player_get(long player_index)
 
 PRIVATE bool player_appearance_get_function_value(long name, s_player_appearance const *appearance, real *value);
 
+/* a copy of the game-has-teams test (0x15eaf0), which retail inlines here */
+static inline bool game_has_teams()
+{
+	bool result = false;
+
+	if (g_55e4d0[g_4e9ae8->engine_index])
+		result = g_4e6948->flags184.bit0;
+
+	return result;
+}
+
 // @retail 0x14bc80
 void player_configuration_verify(s_type_b07538 *configuration)
 {
@@ -240,13 +251,14 @@ void player_configuration_verify(s_type_b07538 *configuration)
 
 	if (g_4e6948->state == 1)
 	{
-		char representation_index = 0;
+		long representation_index = 0;
+		s_scenario_starting_profile_view *profile = scenario->starting_profiles;
 
-		for (long i = 0; i < scenario->starting_profile_count; i++)
+		for (long i = 0; i < scenario->starting_profile_count; i++, profile++)
 		{
-			if (scenario->starting_profiles[i].representation_index != NONE)
+			if (profile->representation_index != NONE)
 			{
-				representation_index = (char)scenario->starting_profiles[i].representation_index;
+				representation_index = profile->representation_index;
 				break;
 			}
 		}
@@ -287,14 +299,9 @@ void player_configuration_verify(s_type_b07538 *configuration)
 		configuration->unknown81 = 0;
 	}
 
-	if (g_55e4d0[g_4e9ae8->engine_index])
+	if (game_has_teams() && configuration->team_index != NONE && !(g_4e9ae8->wa & (1 << configuration->team_index)))
 	{
-		bool teams = TEST_FIELD_BIT(g_4e6948->flags184.bit0);
-
-		if (teams && configuration->team_index != NONE && !(g_4e9ae8->wa & (1 << configuration->team_index)))
-		{
-			configuration->team_index = NONE;
-		}
+		configuration->team_index = NONE;
 	}
 }
 

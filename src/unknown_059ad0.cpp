@@ -2011,13 +2011,28 @@ static inline bool transport_address_match(const s_type_99af70 *a, const s_type_
 	return a->address_length > 0 && a->address_length == b->address_length && memcmp(a, b, length) == 0;
 }
 
+PRIVATE __forceinline void function_5c8f1(short arg_0, short arg_1, short *arg_2)
+{
+	if (arg_0 > arg_1)
+		*arg_2 = arg_1;
+	else
+		*arg_2 = arg_0;
+}
+
+PRIVATE __forceinline bool function_5c8f2(const s_type_99af70 *arg_0, const s_type_99af70 *arg_1)
+{
+	short local_0;
+	function_5c8f1(arg_0->address_length, arg_1->address_length, &local_0);
+	return arg_0->address_length > 0 && arg_0->address_length == arg_1->address_length && memcmp(arg_0, arg_1, local_0) == 0;
+}
+
 // @retail 0x5c8f0
 bool network_session_channel_is_host_address(c_class_58d20 *session, const s_type_99af70 *address)
 {
 	bool result = false;
 
 	if (session->state == 1)
-		result = transport_address_match(address, &((s_session_state_joining_data *)&session->value7420)->host_address);
+		result = function_5c8f2(address, &((s_session_state_joining_data *)&session->value7420)->host_address);
 	return result;
 }
 
@@ -2027,7 +2042,7 @@ bool network_session_address_is_leaving_host(c_class_58d20 *session, const s_typ
 	bool result = false;
 
 	if (session->state == 2)
-		result = transport_address_match(address, &((s_session_state_leaving_join_data *)&session->value7420)->host_address);
+		result = function_5c8f2(address, &((s_session_state_leaving_join_data *)&session->value7420)->host_address);
 	return result;
 }
 
@@ -4115,18 +4130,16 @@ void __stdcall function_609e0(c_class_58d20 *session, const byte *current, s_609
   *(long *)(update + 0x60) = 0;
   *(long *)(update + 0x5c) = 0;
   *(long *)(update + 0x64) = 0;
-  switch (kind - 1)
+  dword local_10 = kind - 1;
+  if (local_10 == 0)
   {
-  case 0:
    *(long *)(update + 0x58) = *(const long *)(current + 0x58);
    *(long *)(update + 0x60) = *(const long *)(current + 0x60);
    *(long *)(update + 0x5c) = *(const long *)(current + 0x5c);
    *(long *)(update + 0x64) = *(const long *)(current + 0x64);
-   break;
-  case 1: memcpy(update + 0x68, current + 0x68, 4); break;
-  case 2: memcpy(update + 0x6c, current + 0x6c, 4); break;
-  default: break;
   }
+  else if (local_10 == 1) memcpy(update + 0x68, current + 0x68, 4);
+  else if (local_10 == 2) memcpy(update + 0x6c, current + 0x6c, 4);
  }
  if (!local_0 || current[0x85] != local_0[0x85] || memcmp(current + 0x88, local_0 + 0x88, 0x308))
  {

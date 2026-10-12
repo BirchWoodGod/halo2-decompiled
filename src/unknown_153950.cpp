@@ -470,13 +470,10 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 void function_155240(s_speed_values *values, s_speed_slot *slot, real priority)
 {
 	s_game_time_globals *time = g_510c54;
-	real rate = time->rate;
-	real timer = (real)slot->timer82;
-	real t = rate * timer;
 	real scaled;
 	long ticks;
 
-	if (values->value[0] > t || priority > slot->priority98 || (priority >= slot->priority98 && values->value[0] > t))
+	if (values->value[0] > time->rate * (real)slot->timer82 || priority > slot->priority98 || (priority >= slot->priority98 && values->value[0] > time->rate * (real)slot->timer82))
 	{
 		slot->values50 = *values;
 		slot->priority98 = priority;

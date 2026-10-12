@@ -63,6 +63,7 @@ class c_contact_query_transform_volume
 {
 public:
  c_contact_query_transform_volume(c_contact_query_transform_info const *info);
+ ~c_contact_query_transform_volume();
  byte unknown00[0xd0];
  static void *operator new(size_t size) { return contact_query_allocate(size); }
 };

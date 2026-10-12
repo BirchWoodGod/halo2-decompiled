@@ -428,15 +428,17 @@ void __stdcall function_16eff0(dword flags)
 {
 	if ((bool)((~(flags >> 4)) & 1))
 	{
-		long *out = g_510c70;
-		long *entry = g_4e8c20->entries;
 		long i;
 
-		*out++ = g_4686c4;
+		g_510c70[0] = g_4686c4;
 		for (i = 0; i < 4; i++)
 		{
-			*out = NONE;
-			if (i != NONE && *entry != NONE)
+			bool valid = false;
+
+			g_510c70[i + 1] = NONE;
+			if (i != NONE)
+				valid = g_4e8c20->entries[i] != NONE;
+			if (valid)
 			{
 				struct
 				{
@@ -445,10 +447,8 @@ void __stdcall function_16eff0(dword flags)
 				} result;
 
 				function_11bed0((s_location *)&result, (point3f const *)&g_4e9bd4[i].state);
-				*out = result.value;
+				g_510c70[i + 1] = result.value;
 			}
-			entry++;
-			out++;
 		}
 	}
 }

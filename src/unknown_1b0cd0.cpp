@@ -160,6 +160,21 @@ void __stdcall function_1b0d50(long actor_index, s_slot *slot)
 	}
 }
 
+PRIVATE __forceinline void function_1b0e41(short arg_0, vector2f const *arg_1,
+    vector2f const *arg_2, point2f const *arg_3, point2f *arg_4)
+{
+	real row = (real)(short)((arg_0 + 1) / 2);
+	real distance = row * -0.225f;
+
+	arg_4->x = arg_2->i * distance + arg_3->x;
+	arg_4->y = arg_2->j * distance + arg_3->y;
+
+	double side = (arg_0 % 2 - 0.5) * (row * 0.9f);
+
+	arg_4->x += side * arg_1->i;
+	arg_4->y += side * arg_1->j;
+}
+
 /* the position of a formation slot: in a line behind the leader, or (mode 5)
    in two staggered lines */
 // @retail 0x1b0e40
@@ -177,19 +192,8 @@ bool function_1b0e40(point2f *point, point2f const *origin, vector2f const *forw
 		break;
 	}
 	case 5:
-	{
-		real row = (real)(short)((index + 1) / 2);
-		real distance = row * -0.225f;
-
-		point->x = forward->i * distance + origin->x;
-		point->y = forward->j * distance + origin->y;
-
-		double side = (index % 2 - 0.5) * (row * 0.9f);
-
-		point->x += side * left->i;
-		point->y += side * left->j;
+		function_1b0e41(index, left, forward, origin, point);
 		break;
-	}
 	}
 	return true;
 }
