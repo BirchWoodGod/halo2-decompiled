@@ -104,11 +104,11 @@ hash_node *function_13e2d0(hash_table *table, void *key)
 // @retail 0x13e320
 bool hash_table_remove(hash_table *table, void *key)
 {
-	hash_node *previous = NULL;
 	dword bucket = table->hash_proc(key) % table->bucket_count;
+	hash_node *previous = NULL;
 	for (hash_node *node = table->buckets[bucket]; node; node = node->next)
 	{
-		if (table->compare_proc(key, node->key))
+		if (table->compare_proc(*(void *volatile *)&key, node->key))
 		{
 			if (!previous)
 				table->buckets[bucket] = node->next;

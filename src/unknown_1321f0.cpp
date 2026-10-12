@@ -834,14 +834,13 @@ void __stdcall function_134390(s_bit_vector_pool *data)
 	for (long i = 0; (short)i < ((s_sort_context *)data->context)->count; i++)
 	{
 		s_sort_entry *item = &((s_sort_context *)data->context)->entries[(short)i];
-		s_visibility_bsp *bsp = (s_visibility_bsp *)g_4e0348;
-		s_visible_cluster *cluster = &bsp->clusters[item->value];
+		s_visible_cluster *cluster = &((s_visibility_bsp *)g_4e0348)->clusters[item->value];
 		data->flags[item->value >> 5] |= 1 << (item->value & 31);
 		((byte *)data->indices)[item->value] = (byte)i;
 		if (cluster->surface_count > 0)
 		{
 			long cluster_index = item->value;
-			s_visible_cluster *bounds = &bsp->clusters[cluster_index];
+			s_visible_cluster *bounds = &((s_visibility_bsp *)g_4e0348)->clusters[cluster_index];
 			point3f center;
 			center.x = (bounds->bounds[0][0] + bounds->bounds[0][1]) * 0.5f;
 			center.y = (bounds->bounds[1][0] + bounds->bounds[1][1]) * 0.5f;
