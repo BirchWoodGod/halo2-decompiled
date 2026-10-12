@@ -883,11 +883,12 @@ viewport_ready:
 // @retail 0x14f60
 void function_14f60(short stage, short index)
 {
+	long local_c270bf = stage;
+	struct { long width; long height; } dimensions = { 0, 0 };
+	function_01dd60(index, &dimensions.width, &dimensions.height);
+	g_485af4[local_c270bf] = dimensions.width;
+	g_485b04[local_c270bf] = dimensions.height;
 	D3DBaseTexture *texture = NULL;
-	long width = 0, height = 0;
-	function_01dd60(index, &width, &height);
-	g_485af4[stage] = width;
-	g_485b04[stage] = height;
 	switch (index)
 	{
 	case 0: texture = g_509354[(g_485aa0 - 1) % 2]; break;
@@ -908,7 +909,7 @@ void function_14f60(short stage, short index)
 	case 14: break;
 	default: __assume(0);
 	}
-	g_51f3c8[1][stage] = texture;
+	g_51f3c8[1][local_c270bf] = texture;
 }
 
 struct s_mask_offset
@@ -7511,6 +7512,8 @@ struct s_33a0b_view;
 extern s_33a0b_view *g_485a58;
 void function_20e50(long index);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x22590
 void function_22590()
 {
@@ -7544,8 +7547,11 @@ void function_22590()
     memset(&g_render_state_storage, 0, sizeof(g_render_state_storage));
     for (long i = 0; i < 0x1ff; ++i) function_20e50(i);
     if (effects) *(real *)effects->unknown190 = 0.0f;
+    // Keep the effect write before the pointer clear.
+    _ReadWriteBarrier();
     g_485a58 = 0;
 }
+#pragma function(_ReadWriteBarrier)
 
 #include "allocator_storage.h"
 #include "font_loading_storage.h"
@@ -7596,7 +7602,13 @@ void function_12190()
 {
     function_12420();
     function_12b400();
-    function_xe0ae94();
+    int depth = g_4e6420;
+    long next = depth + 1;
+    g_4e642c[depth + 1] = g_4e642c[depth];
+    // Retail reloads the stage before reading the second bound.
+    long later = *(long const *)&g_4e6420;
+    g_4e6440[later + 1] = g_4e6440[later];
+    g_4e6420 = next;
     if (function_12000())
     {
         function_12b690();
@@ -7668,6 +7680,7 @@ void __stdcall function_1f5c0(long character);
 void __stdcall function_1f490(long unused, long font, long character, long color, long shadow,
     real x, real y, real u, real v, real width, real height, real scale, long callback, long context)
 {
+    volatile real positions[2];
     long index = font_cache_find_character(g_4e28f4[font], character);
     if (index == NONE)
     {
@@ -7683,8 +7696,9 @@ void __stdcall function_1f490(long unused, long font, long character, long color
     bool draw_shadow = ((dword)shadow & 0xff000000) > 0;
     do
     {
-        real offset = draw_shadow ? scale : 0.0f;
-        function_1f3a0((short const *)rectangle, x + offset, y + offset, (long)width, (long)height,
+        positions[0] = x + (draw_shadow ? scale : 0.0f);
+        positions[1] = y + (draw_shadow ? scale : 0.0f);
+        function_1f3a0((short const *)rectangle, positions[0], positions[1], (long)width, (long)height,
             (short)(long)u, (short)(long)v, scale, draw_shadow ? shadow : color,
             (t_1f3a0_callback)callback, (void *)context);
         if (!draw_shadow) break;
@@ -7708,6 +7722,9 @@ byte g_485a88;
 long g_4670f8;
 point3f g_4b72b4;
 
+__declspec(noinline) bool function_1d3f0(long index, void const *colors, D3DPalette **out);
+__declspec(noinline) void function_0169f0();
+__declspec(noinline) void function_016a30(real scale, short y, short x);
 // @retail 0x12560
 void function_12560()
 {
@@ -7718,7 +7735,7 @@ void function_12560()
     else { x = 0x30; y = 0x24; }
     function_016a30(1.0f, y, x);
     Direct3D_SetPushBufferSize(0x100000, 0x8000);
-    bool success = function_128c0(&g_43ed80);
+    volatile bool success = function_128c0(&g_43ed80);
     if (success)
     {
         g_4670bc = 1;
@@ -7726,18 +7743,15 @@ void function_12560()
         function_1c1b0();
         function_1c810();
         D3DPalette *palette = NULL;
-        success = function_015b10(3, &palette);
-        if (success)
-        {
-            D3DCOLOR *destination = D3DPalette_Lock2(palette, 0);
-            if (destination)
-                { long color = 0;
-                do { *destination++ = g_468848[color++]; } while (color < 256); }
-            D3DPalette_Unlock(palette);
-        }
+        success = function_1d3f0(3, g_468848, &palette);
         g_484dbc = palette;
         if (success)
-            for (long i = 0; i < 4; ++i) D3DDevice_SetPalette(i, (D3DPalette *)g_484dbc);
+            {
+                D3DDevice_SetPalette(0, (D3DPalette *)g_484dbc);
+                D3DDevice_SetPalette(1, (D3DPalette *)g_484dbc);
+                D3DDevice_SetPalette(2, (D3DPalette *)g_484dbc);
+                D3DDevice_SetPalette(3, (D3DPalette *)g_484dbc);
+            }
         memset(g_484dd0, 0, 0x180);
         if (success)
         {
@@ -7757,7 +7771,10 @@ void function_12560()
             D3DDevice_SetRenderState(D3DRS_FOGENABLE, 1);
             D3DDevice_SetRenderState(D3DRS_LIGHTING, 0);
             D3DDevice_SetRenderState(D3DRS_SPECULARENABLE, 1);
-            for (long i = 0; i < 4; ++i) D3DDevice_SetTextureStageState(i, D3DTSS_TEXCOORDINDEX, i);
+                        D3DDevice_SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+            D3DDevice_SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            D3DDevice_SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            D3DDevice_SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, 3);
         }
     }
     function_01d660();
