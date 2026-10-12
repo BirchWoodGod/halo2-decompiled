@@ -12,15 +12,17 @@ long const g_4408bc[13] = { 0x06000084, 0x070001a4, 0x050001a5, 0x0b0001a6, 0x08
 // @retail 0x10e9a0
 void function_10e9a0(long object_index, long name, real value, real time)
 {
-	if (name != 0x7000001)
+	if (name == 0x7000001)
 	{
-		for (long index = 0; index < 13; index++)
+		function_10e9f0(object_index, NONE, value, time);
+		return;
+	}
+	for (long index = 0; index < 13; index++)
+	{
+		if (name == g_4408bc[index])
 		{
-			if (name == g_4408bc[index])
-			{
-				function_10e9f0(object_index, (short)index, value, time);
-				return;
-			}
+			function_10e9f0(object_index, (short)index, value, time);
+			return;
 		}
 	}
 	function_10e9f0(object_index, NONE, value, time);

@@ -670,20 +670,13 @@ void function_161f30(long player_index)
 	}
 	if (player->target_index != target_index)
 	{
-
-		int time;
-
 		if (player->target_time > 0 && target_index == NONE)
 		{
-			time = player->target_time - rounding.slow_ticks;
-			time = time > 0 ? time : 0;
-			player->target_time = time;
+			player->target_time = player->target_time - rounding.slow_ticks > 0 ? player->target_time - rounding.slow_ticks : 0;
 		}
 		else if (player->target_time > 0 && target_index != NONE)
 		{
-			time = player->target_time - rounding.fast_ticks;
-			time = time > 0 ? time : 0;
-			player->target_time = time;
+			player->target_time = player->target_time - rounding.fast_ticks > 0 ? player->target_time - rounding.fast_ticks : 0;
 		}
 		if (player->target_time == 0)
 		{
