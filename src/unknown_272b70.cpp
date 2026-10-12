@@ -2660,7 +2660,7 @@ void __stdcall function_2772b0(long animation_graph_index, long animation_name, 
 		s_actor_datum *actor = actor_datum_get(g_50240c);
 		real duration = 0.0f;
 
-		if (function_11b520(animation_graph_index, actor->unit_index, animation_name, interpolate, NONE, false))
+		if (function_11b520(actor->unit_index, animation_graph_index, animation_name, interpolate, NONE, false))
 		{
 			real ticks_real = (real)g_510c54->field_2_3 * (function_11b6b0(actor->unit_index) * scale);
 			long ticks;
