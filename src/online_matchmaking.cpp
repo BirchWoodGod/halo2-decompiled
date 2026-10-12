@@ -139,9 +139,11 @@ long online_match_search(const s_range_input *input)
 long online_match_session_create(const s_online_match_session *session)
 {
 	long local_0 = NONE;
-	if (online_task_exists(7, 0xff) <= 2)
+
+	if (online_task_exists(7, 0xff) > 2) goto local_1;
 	{
 		long task_index = online_task_new_if_logged_on();
+		local_0 = task_index;
 		s_type_9df9da *task = function_6b910(task_index);
 		if (task)
 		{
@@ -150,16 +152,20 @@ long online_match_session_create(const s_online_match_session *session)
 			if (SUCCEEDED(XOnlineMatchSessionCreate(session->public_filled, session->public_open, session->private_filled, session->private_open,
 				attribute_count, (PXONLINE_ATTRIBUTE)attributes, NULL, (PXONLINETASK_HANDLE)&task->handle)))
 			{
+				long local_2 = *(volatile long *)&task_index;
 				task->flags = 1;
 				task->type = 7;
 				task->controller_index = NONE;
-				return task_index;
+				local_0 = local_2;
 			}
-			function_6b640(task_index);
-			return NONE;
+			else
+			{
+				function_6b640(task_index);
+				local_0 = NONE;
+			}
 		}
-		return task_index;
 	}
+local_1:
 	return local_0;
 }
 
@@ -196,9 +202,7 @@ long online_match_session_update(const s_online_match_session *session)
 {
 	long local_3 = NONE;
 
-	dword local_0 = ((const dword *)&session->session_id)[0];
-	dword local_1 = ((const dword *)&session->session_id)[1];
-	if ((local_0 | local_1) != 0 && online_task_exists(10, 0xff) <= 2)
+	if (*(const __int64 *)&session->session_id == 0 || online_task_exists(10, 0xff) > 2) goto local_4;
 	{
 		long task_index = online_task_new_if_logged_on();
 		local_3 = task_index;
@@ -214,15 +218,16 @@ long online_match_session_update(const s_online_match_session *session)
 				task->flags = 1;
 				task->type = 10;
 				task->controller_index = NONE;
-				return local_2;
+				local_3 = local_2;
 			}
 			else
 			{
 				function_6b640(task_index);
-				return NONE;
+				local_3 = NONE;
 			}
 		}
 	}
+local_4:
 	return local_3;
 }
 

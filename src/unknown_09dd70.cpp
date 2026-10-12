@@ -436,6 +436,7 @@ static __forceinline byte *function_9d952(long arg_0)
     return (byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object;
 }
 
+#pragma inline_depth(0)
 // @retail 0x9d950
 void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
 {
@@ -454,7 +455,7 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
             if (*(short *)local_5)
                 local_4 = ((long)*(short *)local_5 << 16) | local_3;
         }
-        byte *local_6 = function_9d952(arg_0);
+        byte *local_6 = ((byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object);
         *(long *)(local_6 + 0x2a8) = local_4;
         *(long *)(local_6 + 0x2ac) = local_2->field_92;
         function_d0d20(arg_0);
@@ -465,7 +466,7 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
         short local_8 = local_2->field_98;
         if (local_7 != NONE)
         {
-            byte *local_9 = function_9d952(local_7);
+            byte *local_9 = ((byte *)((s_object_header *)g_4e0300->data)[local_7 & 0xffff].object);
             if (!((1 << local_9[0xaa]) & 3) || local_8 < 0 ||
                 local_8 >= *(long *)(g_4e3b44[*(long *)local_9 & 0xffff].bytes + 0x1c8))
             {
@@ -475,7 +476,7 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
         }
         else if (local_8 != -1)
             local_8 = -1;
-        byte *local_10 = function_9d952(arg_0);
+        byte *local_10 = ((byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object);
         *(long *)(local_10 + 0x2a0) = local_7;
         *(short *)(local_10 + 0x2a4) = local_8;
         function_d0c10(arg_0);
@@ -484,7 +485,7 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
         function_d0930(arg_0, &local_2->field_9c);
     if (local_1 & 0x2000)
     {
-        byte *local_11 = function_9d952(arg_0);
+        byte *local_11 = ((byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object);
         long local_12 = *(long *)&local_2->field_a8;
         *(long *)(local_11 + 0x214) = local_12;
         *(short *)(local_11 + 0x210) = (short)local_12;
@@ -505,7 +506,7 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
     } while ((dword)local_13 < 4);
     if (local_1 & 0x400000)
     {
-        byte *local_16 = function_9d952(arg_0);
+        byte *local_16 = ((byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object);
         long local_17 = 0;
         do
         {
@@ -515,14 +516,14 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
     }
     if (local_1 & 0x800000)
     {
-        byte *local_18 = function_9d952(arg_0);
+        byte *local_18 = ((byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object);
         *(real *)(local_18 + 0x2b0) = local_2->field_f0;
         if (local_2->field_ec[2])
         {
-            byte *local_19 = function_9d952(arg_0);
+            byte *local_19 = ((byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object);
             *(dword *)(local_19 + 0x134) |= 8;
             *(real *)(local_19 + 0x2b8) = -1.0f;
-            long local_20 = *(long *)(function_9d952(arg_0) + 0xd4);
+            long local_20 = *(long *)(((byte *)((s_object_header *)g_4e0300->data)[arg_0 & 0xffff].object) + 0xd4);
             if (local_20 != NONE)
                 function_b58c0(local_20, 0x800000);
         }
@@ -531,3 +532,4 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
         *(real *)(local_18 + 0x2b8) = local_2->field_f4;
     }
 }
+#pragma inline_depth(255)

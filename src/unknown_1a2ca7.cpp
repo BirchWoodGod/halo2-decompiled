@@ -120,8 +120,8 @@ struct s_online_player
 		dword flags;
 		struct
 		{
-			byte flags_0 : 1;
-			byte : 7;
+			dword flags_0 : 1;
+			dword : 31;
 		};
 		struct
 		{

@@ -842,6 +842,7 @@ class c_class_2b0b5e : public c_class_1a2c81
 public:
 	c_class_2b0b5e(s_model_block *definition);
 	virtual void v1();
+	virtual void v4(long frame);
 
 	s_model_block *definition;
 };

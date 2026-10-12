@@ -160,16 +160,16 @@ bool string_table_load(s_string_table *table)
 	size = table->count * sizeof(s_string_reference);
 	if (size & 0x1ff)
 		size = (size | 0x1ff) + 1;
-	location.file_index = NONE;
 	location.offset = table->references_offset;
+	location.file_index = NONE;
 	function_122d60(location, size, table->references);
 
 	table->data = (char *)physical_memory_malloc_fixed(table->data_size, PAGE_READWRITE);
 	size = table->data_size;
 	if (size & 0x1ff)
 		size = (size | 0x1ff) + 1;
-	location.file_index = NONE;
 	location.offset = table->data_offset;
+	location.file_index = NONE;
 	function_122d60(location, size, table->data);
 
 	table->loaded = true;

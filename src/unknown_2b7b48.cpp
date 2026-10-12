@@ -68,7 +68,7 @@ class c_xbox_live_message_send_list : public c_class_1474e8
 {
 public:
 	c_xbox_live_message_send_list(word user_flags);
-	~c_xbox_live_message_send_list();
+	virtual ~c_xbox_live_message_send_list();
 
 	/* makes the message block */
 	virtual void v1();

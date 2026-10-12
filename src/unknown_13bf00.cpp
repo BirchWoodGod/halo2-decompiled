@@ -178,8 +178,8 @@ void function_13c680(void)
 			long pinned = index < 0 ? 0 : (index > globals->title_count - 1 ? globals->title_count - 1 : index);
 			if (pinned == index)
 			{
-				title->ticks++;
 				s_title_definition *definition = &globals->titles[index];
+				title->ticks++;
 				real duration = definition->up_time + definition->fade_in_time;
 				if (title->ticks * game_time->rate >= duration)
 				{

@@ -56,6 +56,12 @@ bool __stdcall function_59e50(c_class_58d20 *arg_0, long arg_1, long arg_2,
 	long arg_6, const dword *arg_7, const long *arg_8, const long *arg_9,
 	bool arg_10, long arg_11, const s_session_id *arg_12, const void *arg_13);
 
+static __forceinline long function_70f23(c_class_58d20 *arg_0)
+{
+	return network_session_get_language(arg_0);
+}
+
+#pragma inline_depth(0)
 // @retail 0x70ea0
 bool function_70ea0(c_session_state_matchmaking *arg_0)
 {
@@ -78,7 +84,7 @@ bool function_70ea0(c_session_state_matchmaking *arg_0)
 				*(long *)((byte *)arg_0 + 0x7b4), *(long *)((byte *)arg_0 + 0x960),
 				*(long *)((byte *)arg_0 + 0x958), *(long *)((byte *)arg_0 + 0x95c),
 				*(long *)((byte *)arg_0 + 0x94c), *(long *)((byte *)arg_0 + 0x950),
-				local_5, network_session_get_language(local_1));
+				local_5, function_70f23(local_1));
 		}
 		if (arg_0->flag97c && !local_2->state)
 		{
@@ -87,9 +93,9 @@ bool function_70ea0(c_session_state_matchmaking *arg_0)
 			{
 				s_session_snapshot local_7;
 				local_7.unknown00 = local_6->kind;
-				memcpy(local_7.unknown04, &local_6->id, sizeof(local_6->id));
-				memcpy(local_7.unknown0c, &local_6->key, sizeof(local_6->key));
-				memcpy(local_7.words, &local_6->address, sizeof(local_6->address));
+				memcpy(local_7.unknown04, (byte *)arg_0 + 0xa24, sizeof(local_6->id));
+				memcpy(local_7.unknown0c, (byte *)arg_0 + 0xa2c, sizeof(local_6->key));
+				memcpy(local_7.words, (byte *)arg_0 + 0xa3c, sizeof(local_6->address));
 				local_7.unknown40 = 2;
 				if (network_session_host_set_data5ddc(local_1, (const s_parameters_part *)&local_7))
 				{
@@ -159,3 +165,4 @@ bool function_70ea0(c_session_state_matchmaking *arg_0)
 local_19:
 	return local_0;
 }
+#pragma inline_depth(255)

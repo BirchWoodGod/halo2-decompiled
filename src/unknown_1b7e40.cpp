@@ -68,12 +68,15 @@ bool actor_has_joint_invitation(long actor_index, short type);
 long function_25d810(long object_index, long actor_index, bool create);
 bool function_25d9b0(long prop_index);
 
+#pragma inline_depth(0)
 // @retail 0x1b7e40
 short __stdcall function_1b7e40(long actor_index)
 {
-	s_actor_view *actor = actor_get(actor_index);
+	s_actor_view *actor = (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 	long prop_index = actor->prop_index;
-	s_prop_node_view *node = prop_index != NONE ? prop_node_get(prop_index) : NULL;
+	s_prop_node_view *node = NULL;
+	if (prop_index != NONE)
+		node = (s_prop_node_view *)(g_502418->data + (prop_index & 0xffff) * sizeof(s_prop_node_view));
 	short priority;
 	if (actor_has_joint_invitation(actor_index, 0x12))
 	{
@@ -81,11 +84,11 @@ short __stdcall function_1b7e40(long actor_index)
 		iterator.actor_index = actor_index;
 		iterator.reference.unknown2 = 0x12;
 		iterator.reference.unknown0 = NONE;
-		while (function_26f0c0(&iterator))
+		s_slot_memory_entry *local_1;
+		while ((local_1 = function_26f0c0(&iterator)) != NULL)
 		{
 			short invitation_index = iterator.reference.unknown0;
-			s_joint_invitation *invitation = &((s_slot_owner_entry *)actor)->joint_invitations[invitation_index];
-			s_502424_element *joint = element_502424_get(invitation->joint_index);
+			s_502424_element *joint = (s_502424_element *)(g_502424->data + (((s_slot_owner_entry *)actor)->joint_invitations[invitation_index].joint_index & 0xffff) * sizeof(s_502424_element));
 			if (!node || joint->target.unknown0 != node->object_index)
 			{
 				long new_prop;
@@ -94,35 +97,42 @@ short __stdcall function_1b7e40(long actor_index)
 					joint_decline(actor_index, iterator.reference.unknown0);
 					continue;
 				}
-				node = prop_node_get(new_prop);
+				node = (s_prop_node_view *)(g_502418->data + (new_prop & 0xffff) * sizeof(s_prop_node_view));
 			}
-			priority = *(short *)((byte *)joint + invitation->participant_index * 12 + 0xa);
+			priority = *(short *)((byte *)joint + ((s_slot_owner_entry *)actor)->joint_invitations[invitation_index].participant_index * 12 + 0xa);
 			if (priority <= 0)
 				return 0;
 			goto evaluate;
 		}
-		return 0;
+		return (short)(long)local_1;
 	}
 	else
 	{
 		if (actor->unknown07c == NONE || !node)
 			return 0;
-		node = prop_node_get(prop_index);
+		node = (s_prop_node_view *)(g_502418->data + (prop_index & 0xffff) * sizeof(s_prop_node_view));
 		if (node->unknown27 < 2)
 			return 0;
 		priority = 3;
 	}
 evaluate:
 	s_type_5cfb45 *state = function_25d690((s_prop_datum *)node);
-	s_prop_view_fields *view = prop_node_view(node);
+	s_prop_view_fields *view = NULL;
+	if (node->view_index != NONE)
+	{
+		byte *local_0 = g_502414->data + (node->view_index & 0xffff) * 0x124;
+		if (local_0)
+			view = (s_prop_view_fields *)(local_0 + 0x70);
+	}
 	vector3f velocity;
 	function_ba1d0(node->object_index, &velocity, NULL);
-	if (node->unknown28 > 1.6f && sqrt(length_sq3f(&velocity)) < 1.0f &&
+	if (node->unknown28 > 1.6f && (real)sqrt((double)(velocity.i * velocity.i + velocity.j * velocity.j + velocity.k * velocity.k)) < 1.0f &&
 		view->unknown54 < 0.31 && node->unknown28 <= 15.0f &&
 		!state->unknown64 && !function_25d9b0(actor->prop_index))
 		return priority;
 	return 0;
 }
+#pragma inline_depth()
 
 // @retail 0x1b81c0
 short __stdcall function_1b81c0(long actor_index, s_slot *slot, bool active)

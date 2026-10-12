@@ -575,41 +575,35 @@ void function_175d70(void)
 	while (datum != NONE)
 	{
 		s_effect_datum *effect = DATUM(array, s_effect_datum, datum);
-		if (effect->object_index != NONE)
-		{
-			s_effect_object *object = (s_effect_object *)function_badc0(effect->object_index, (dword)NONE);
-			if (!object)
-			{
-				effect->object_index = NONE;
-				effect->location.leaf_index = NONE;
-				effect->location.cluster_index = NONE;
-				effect->location.bsp_index = g_4686c4;
-				function_1774f0(datum);
-			}
-			else
-			{
-				effect->location = object->location;
-				long index = effect->first_particle_system_index;
-				while (index != NONE)
-				{
-					s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, index);
-					index = system->next_index;
-					system->set_location(&effect->location);
-				}
-			}
-		}
-		else if (function_1789f0(effect))
-		{
-			long index = effect->first_particle_system_index;
-			while (index != NONE)
-			{
-				s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, index);
-				index = system->next_index;
-				system->set_location(&effect->location);
-			}
-		}
-		else
-			function_1774f0(datum);
+        if (effect->object_index != NONE)
+        {
+            s_effect_object *object = (s_effect_object *)function_badc0(effect->object_index, (dword)NONE);
+            if (!object)
+            {
+                effect->object_index = NONE;
+                effect->location.leaf_index = NONE;
+                effect->location.cluster_index = NONE;
+                effect->location.bsp_index = g_4686c4;
+                function_1774f0(datum);
+                goto next;
+            }
+            effect->location = object->location;
+        }
+        else if (!function_1789f0(effect))
+        {
+            function_1774f0(datum);
+            goto next;
+        }
+        {
+            long index = effect->first_particle_system_index;
+            while (index != NONE)
+            {
+                s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, index);
+                index = system->next_index;
+                system->set_location(&effect->location);
+            }
+        }
+next:
 		array = g_4ea93c;
 		datum = data_datum_index(array, data_find_index(array, datum == NONE ? 0 : (datum & 0xffff) + 1));
 	}
