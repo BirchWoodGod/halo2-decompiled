@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7878 functions match
+
+```
+matched 7878 of 11318 game functions (951983 of 2784283 bytes, 34.19%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, rounds 31 to 33 (+1): `0x24c5f2` matches, callee first, so its caller `0x2b225a` now gets retail's call registers; the `cache_files_windows` family `0x213e30`, `0x213e90`, `0x213f10` and `0x214100` is down to 3 differences each, and eight UI-core functions are closer.
+
 ## 2026-10-12: 7877 functions match
 
 ```
