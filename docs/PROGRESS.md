@@ -2,6 +2,42 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7744 functions match
+
+```
+matched 7744 of 11318 game functions (926140 of 2784283 bytes, 33.26%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, round 24: 0x19b62e.
+
+## 2026-10-12: 7743 functions match
+
+```
+matched 7743 of 11318 game functions (926056 of 2784283 bytes, 33.26%)
+```
+
+3 new matches, none lost:
+- Deep lane 1, round 32: 0x265c30, 0x2684f0 and 0x2a2e00.
+
+## 2026-10-12: 7740 functions match
+
+```
+matched 7740 of 11318 game functions (925828 of 2784283 bytes, 33.25%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, round 23: 0x1008f0, which had 148 differing instructions two rounds earlier.
+
+## 2026-10-12: 7739 functions match
+
+```
+matched 7739 of 11318 game functions (925241 of 2784283 bytes, 33.23%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 31: 0x1e3920.
+
 ## 2026-10-11: 7738 functions match
 
 ```
