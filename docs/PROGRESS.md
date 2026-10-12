@@ -2,6 +2,42 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7954 functions match
+
+```
+matched 7954 of 11318 game functions (966803 of 2784283 bytes, 34.72%)
+```
+
+3 new matches, none lost:
+- The second machine's lane D upper, round 18 (#382, +3): `0x8aed0`, `0x85600` and `0x8b2a0`, and four matched functions no longer need a `volatile` access to match.
+
+## 2026-10-12: 7951 functions match
+
+```
+matched 7951 of 11318 game functions (966210 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 34 (+2), writing this machine's unwritten functions: `0x24ba99` matches on its first draft, and `0x2c3b0` replaces its stub, which gives the second machine's caller `0x22a648` retail's call and matches it. Thirteen more render and UI functions are now written, some kept disabled where a draft would cost an existing match.
+
+## 2026-10-12: 7949 functions match
+
+```
+matched 7949 of 11318 game functions (966138 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 43 (+2), in the render range: `0x3f830` matches, and `0x36880` keeps its rectangle on the stack through a named reference, the third machine's lead from #375. That matches the third machine's caller `0x1634d0` and takes `0x36880` from 76 differences to 55; `0x15720` and `0x22c30` are each about ten closer.
+
+## 2026-10-12: 7947 functions match
+
+```
+matched 7947 of 11318 game functions (965514 of 2784283 bytes, 34.68%)
+```
+
+3 new matches, none lost:
+- Claude lane 1, round 4 (+3): the two interpolator getters behind `0x2abc10` and `0x2abca0` set their default result after the lookup, as retail does, and `0xc12d0` reads its light definition through a volatile pointer to the tag data and writes its last clamp the other way round; `0xa3df0` is two differences closer.
+
 ## 2026-10-12: 7944 functions match
 
 ```

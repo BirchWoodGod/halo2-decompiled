@@ -158,7 +158,8 @@ bool function_01dd60(long index, long *width, long *height)
 void function_01ddd0(long index, dword width, dword height)
 {
 	s_unknown_01dcc0 *e = &g_4b4b58[index];
-	dword x = ((width * 4) / 64) << 24;
+	dword const *width_reference = &width;
+	dword x = ((*width_reference * 4) / 64) << 24;
 	dword y = height << 12;
 	dword value = (x - 0x1000000) | (y - 0x1000) | (width - 1);
 	e->width = width;

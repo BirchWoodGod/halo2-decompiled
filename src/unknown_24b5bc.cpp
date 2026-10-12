@@ -5,6 +5,7 @@
 #include "unknown_11c920.h"
 #include <string.h>
 #include "unknown_24b5bc.h"
+#include "online_task_screen.h"
 #include "unknown_19b510.h"
 
 bool function_1a0540(s_player_profile_settings *settings, long profile_index);
@@ -292,4 +293,61 @@ void s_player_slot_profile::task_succeeded()
 	{
 		callback(player, false);
 	}
+}
+
+// @retail 0x24ba99
+void s_player_slot_profile::show_task_text(c_online_task_screen *screen)
+{
+    if (task_type == 1)
+    {
+        screen->set_title_from_block(0, 0);
+        screen->set_description_from_block(0, 1);
+    }
+    else
+    {
+        screen->set_title_from_block(0, 2);
+        screen->set_description_from_block(0, 3);
+    }
+}
+
+#include "online_tasks.h"
+bool function_2bb04e(long task_index, bool * volatile completion);
+void online_task_screen_finish(c_online_task_screen *screen);
+extern dword g_54d5b8;
+dword g_51ec94;
+
+// @retail 0x24b869
+void __stdcall function_24b869(c_class_1473c9 *screen_base)
+{
+    c_online_task_screen *screen = (c_online_task_screen *)screen_base;
+    s_player_slot_profile *profile = *(s_player_slot_profile **)screen->unknown618;
+    long task = screen->task_index;
+    profile->show_task_text(screen);
+    if (task != NONE && function_6b910(task))
+    {
+        bool complete = false;
+        if (!function_2bb04e(task, &complete) || complete)
+        {
+            complete = online_task_get_type(task) == 0;
+            long status = online_task_get_logon_status(task);
+            XONLINE_USER users[4];
+            online_get_logon_users(users);
+            XONLINE_USER *user = &users[profile->player];
+            if (status == 1 && user->xuid.qwUserID && user->szGamertag[0] && user->hr >= 0)
+            {
+                if (complete) screen->task_index = NONE;
+                online_task_screen_finish(screen);
+                profile->task_succeeded();
+            }
+            else
+            {
+                if (profile->task_type == 1) profile->sign_in_failed();
+                else profile->signed_out();
+                if (complete) screen->task_index = NONE;
+                online_task_screen_finish(screen);
+            }
+            g_51ec94 = g_54d5b8;
+        }
+    }
+    else online_task_screen_finish(screen);
 }
