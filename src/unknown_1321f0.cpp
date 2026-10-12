@@ -166,14 +166,13 @@ void function_132a30(s_bit_vector_pool *data, long index, long section_index, bo
 	if (function_c3140(index))
 	{
 		s_132a30_light *light = &((s_132a30_light *)g_4e030c->data)[index & 0xffff];
-		long local_1 = *(long volatile const *)&light->stamp;
-		if (local_1 != g_4e0308)
+		if (((s_132a30_light *)g_4e030c->data)[index & 0xffff].stamp != g_4e0308)
 		{
 			if (!visible)
 			{
+				visible = false;
 				point3f center = light->center;
 				real radius = light->radius;
-				visible = false;
 				char intersects = true;
 				if (data->query_type == 0)
 					intersects = function_165010((s_frustum_set_view *)data->context, section_index, &center, radius, &visible);
@@ -289,14 +288,12 @@ dword *function_1332b0(long bit_count, s_bit_vector_pool *data)
 	dword *result = NULL;
 	if (bit_count > 0)
 	{
-		word used = data->pool_used;
 		long count = (bit_count + 31) >> 5;
 		result = data->pool;
-		if (used + count < 0x200)
+		if (data->pool_used + count < 0x200)
 		{
-			result = &data->pool[used];
-			used += count;
-			data->pool_used = used;
+			result = &data->pool[data->pool_used];
+			data->pool_used += count;
 		}
 	}
 	return result;
@@ -1085,7 +1082,7 @@ void function_132900(s_bit_vector_pool *arg_1, s_sort_context const *arg_2, s_so
 	{
 		s_sort_entry const *local_3 = &arg_2->entries[arg_2->order[local_1]];
 		s_sort_entry const *local_4 = &arg_3->entries[arg_3->order[local_2]];
-		short local_6 = *(volatile short const *)&local_3->value;
+		short local_6 = local_3->value;
 		if (local_4->value > local_6)
 			local_1++;
 		else if (local_4->value < local_6)

@@ -917,7 +917,7 @@ bool network_session_interface_set_value49c4(void)
 	if (g_527330.initialized && g_527330.state == 3)
 	{
 		c_class_58d20 *session = (c_class_58d20 *)g_527330.session_a;
-		if (session->state && session_is_established(session) && session->current_member == session->value50 && network_session_parameters_set_value49c4(session))
+		if (session->state && function_058d50(session) && network_session_parameters_set_value49c4(session))
 			result = true;
 	}
 	return result;

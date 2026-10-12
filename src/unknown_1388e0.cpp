@@ -7,6 +7,19 @@ void function_12b980(void);
 void function_1389c0(void);
 void function_18e960(void);
 
+static __forceinline bool function_1388e3(long arg_1)
+{
+	return g_4e6948->state == arg_1;
+}
+
+static __forceinline long function_1388e1(long arg_1)
+{
+	long local_1 = NONE;
+	if (arg_1 >= 0 && arg_1 < 3)
+		local_1 = arg_1 + 1;
+	return local_1;
+}
+
 // @retail 0x1388e0
 void function_1388e0(void)
 {
@@ -15,13 +28,13 @@ void function_1388e0(void)
 	{
 		if (local_1->state == 1)
 		{
-			if (local_1->state == 1 && local_1->position_b != NONE)
+			if (function_1388e3(1) && local_1->position_b != NONE)
 			{
 				long local_2 = 0;
 				do
 				{
-					function_19043f(local_2, local_1->position_b, local_1->difficulty);
-					local_2 = local_2 >= 0 && local_2 < 3 ? local_2 + 1 : NONE;
+					function_19043f(local_2, local_1->difficulty, local_1->position_b);
+					local_2 = function_1388e1(local_2);
 				}
 				while (local_2 != NONE);
 				function_12b980();

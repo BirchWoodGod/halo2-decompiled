@@ -188,9 +188,12 @@ short __stdcall function_1b6c90(long actor_index, s_slot *slot, bool active)
 		if (node->unknown24 >= 3 && prop_node_view(node))
 		{
 			if (!actor->unknown040)
-				return g_46fbe8;
-			function_1b69e0(actor_index, actor->prop_index);
-			actor_get(actor_index)->unknown040 = false;
+				result = g_46fbe8;
+			else
+			{
+				function_1b69e0(actor_index, actor->prop_index);
+				actor_get(actor_index)->unknown040 = false;
+			}
 		}
 	}
 	return result;

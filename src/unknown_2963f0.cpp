@@ -310,7 +310,7 @@ PRIVATE __forceinline bool function_2959c1(short arg_0, short arg_1, long arg_2,
 void function_2959c0()
 {
 	s_2959c1 *local_0 = (s_2959c1 *)g_4e034c;
-	long local_1 = *(volatile long *)&g_510c54->game_time;
+	long local_1 = g_510c54->game_time;
 	if (local_0->field_c8 > 0 && local_0->field_cc->field_120 > 0)
 	{
 		real *local_2 = local_0->field_cc->field_124;
@@ -321,7 +321,7 @@ void function_2959c0()
 		if (local_3->field0c != NONE)
         {
             long local_9 = function_295a34(g_510c54->field_2_3 * 10.0f);
-            if (local_1 - *(volatile long *)&local_3->field0c > local_9)
+            if (local_1 - local_3->field0c > local_9)
             {
                 local_3->field0c = NONE;
                 local_3->field08 = 0;
