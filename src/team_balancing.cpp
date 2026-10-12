@@ -174,6 +174,7 @@ void s_balance_team::add_party(s_balance_party const *party)
 }
 #pragma optimize("", on)
 
+#pragma optimize("s", on)
 // @retail 0x916e0
 void s_balance_team::remove_party(s_balance_party const *party)
 {
@@ -193,6 +194,7 @@ void s_balance_team::remove_party(s_balance_party const *party)
 	if (party->flagged)
 		flagged_count--;
 }
+#pragma optimize("", on)
 
 // @retail 0x91760
 void s_balance_team::remove_largest_party(s_balance_party *party)

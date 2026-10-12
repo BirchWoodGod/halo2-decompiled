@@ -152,7 +152,7 @@ bool c_unit_melee_damage_event_definition::v11(long arg_0, long const *arg_1, lo
     long local_3 = *(long const *)(local_2 + 4);
     long local_4 = *(long const *)(local_2 + 8);
     long local_5 = *(long const *)(local_2 + 0xc);
-    if (local_3 != NONE && !function_183f50(local_3, local_4, local_5))
+    if (local_3 != NONE && !function_183f50(local_4, local_5, local_3))
     {
         local_3 = NONE;
         local_4 = NONE;

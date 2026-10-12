@@ -227,11 +227,10 @@ bool function_99640(c_handle_table_450cd0 *self, long handle)
 			byte flags = self->table->peers[index].flags;
 			if (flags & 4)
 			{
-				if (entry->state == 3 && !(flags & 2))
-					result = true;
+				if (entry->state != 3 || (flags & 2))
+					return false;
 			}
-			else
-				result = true;
+			result = true;
 		}
 	}
 	return result;

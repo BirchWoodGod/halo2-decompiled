@@ -127,6 +127,12 @@ static __forceinline void sender_write_type(s_bitstream *stream, dword type)
 	function_195720(stream, type, 5);
 }
 
+static __forceinline void function_97241(c_vtable_450d1c *arg_0, s_node_450d1c *arg_1, s_bitstream *arg_2)
+{
+    s_owner_450d1c *local_0 = arg_0->owner;
+    local_0->manager->v2(arg_1->unknown04, arg_1->size, arg_1->data, arg_2);
+}
+
 // @retail 0x97240
 void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bitstream *stream, long reserved_bits)
 {
@@ -182,7 +188,7 @@ void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bits
 					*(long volatile *)&remaining = local_8;
 				} while (local_8);
 				if (node->size > 0)
-					owner->manager->v2(node->unknown04, node->size, node->data, stream);
+					function_97241(this, node, stream);
 				if ((stream->size_in_bytes << 3) - stream->bit_position >= reserved_bits)
 				{
 					stream->checkpoint_count--;
