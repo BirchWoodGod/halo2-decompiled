@@ -168,7 +168,14 @@ inline s_entry_420 *entry_420_get(long index)
 long function_1e8cb0(long index)
 {
 	long result = 0;
-	s_entry_420 *entry = entry_420_get(index);
+	s_entry_420 *entry = NULL;
+	s_table_420 *table = (s_table_420 *)g_510c94;
+	if (table && index >= 0 && index < table->count)
+	{
+		/* the table is read a second time for the lookup (retail does; with one read the index lands in another register) */
+		s_table_420 *entry_table = (s_table_420 *)g_510c94;
+		entry = &entry_table->entries[index];
+	}
 	if (entry)
 		result = entry->value;
 	return result;
@@ -177,7 +184,15 @@ long function_1e8cb0(long index)
 // @retail 0x1e8d50
 s_entry_420 *function_1e8d50(long index)
 {
-	return entry_420_get(index);
+	s_entry_420 *result = NULL;
+	s_table_420 *table = (s_table_420 *)g_510c94;
+	if (table && index >= 0 && index < table->count)
+	{
+		/* the table is read a second time for the lookup (retail does; with one read the index lands in another register) */
+		s_table_420 *entry_table = (s_table_420 *)g_510c94;
+		result = &entry_table->entries[index];
+	}
+	return result;
 }
 
 // @retail 0x1e77c0

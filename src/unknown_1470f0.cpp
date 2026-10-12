@@ -60,11 +60,11 @@ void c_game_havok_memory::deallocate(void *address)
 {
 	if (address)
 	{
-		if (ADDRESS_IN_BLOCK(address, (byte *)g_479898 + 0x4340, (byte *)g_479898 + 0xf0340))
+		if (((long)((byte *)g_479898 + 0x4340) <= (long)address && ((long)((byte *)g_479898 + 0xf0340) > (long)address || (byte *)g_479898 + 0xf0340 == address)))
 		{
 			g_479898->deallocate(address);
 		}
-		else if (ADDRESS_IN_BLOCK(address, (byte *)g_479894 + 0x30, (byte *)g_479894 + 0x15030))
+		else if (((long)((byte *)g_479894 + 0x30) <= (long)address && ((long)((byte *)g_479894 + 0x15030) > (long)address || (byte *)g_479894 + 0x15030 == address)))
 		{
 			g_479894->deallocate(address);
 		}
@@ -106,11 +106,11 @@ void c_game_havok_memory::deallocate_aligned(void *address)
 {
 	if (address)
 	{
-		if (ADDRESS_IN_BLOCK(address, (byte *)g_479898 + 0x4340, (byte *)g_479898 + 0xf0340))
+		if (((long)((byte *)g_479898 + 0x4340) <= (long)address && ((long)((byte *)g_479898 + 0xf0340) > (long)address || (byte *)g_479898 + 0xf0340 == address)))
 		{
 			g_479898->deallocate_aligned(address);
 		}
-		else if (ADDRESS_IN_BLOCK(address, (byte *)g_479894 + 0x30, (byte *)g_479894 + 0x15030))
+		else if (((long)((byte *)g_479894 + 0x30) <= (long)address && ((long)((byte *)g_479894 + 0x15030) > (long)address || (byte *)g_479894 + 0x15030 == address)))
 		{
 			g_479894->deallocate_aligned(address);
 		}

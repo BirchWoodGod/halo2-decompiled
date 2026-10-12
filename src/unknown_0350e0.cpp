@@ -1786,7 +1786,7 @@ bool function_48b00(point3f const *point, real radius, real *screen, real *exten
         real vz = g_48568c[9] * z + g_48568c[6] * y + g_48568c[3] * x + g_48568c[12];
         real py = g_48568c[39] * vz + g_48568c[35] * vy + g_48568c[31] * vx + g_48568c[43];
         real pz = g_48568c[40] * vz + g_48568c[36] * vy + g_48568c[32] * vx + g_48568c[44];
-        real pw = g_48568c[41] * vz + g_48568c[37] * vy + g_48568c[33] * vx + g_48568c[45];
+        real pw = (real)(g_48568c[37] * vy + g_48568c[41] * vz) + g_48568c[33] * vx + g_48568c[45];
         real rx = g_48568c[30] * radius;
         real ry = g_48568c[35] * radius;
         if (pz > 0.0f)
@@ -1796,7 +1796,7 @@ bool function_48b00(point3f const *point, real radius, real *screen, real *exten
             screen[0] = ((px * inverse + 1.0f) * width + (short)g_48564a * 2.0f - 1.0f) * 0.5f;
             screen[1] = ((1.0f - py * inverse) * height + (short)g_485648 * 2.0f - 1.0f) * 0.5f;
             real depth = pz * inverse;
-            screen[2] = (1.0f < depth ? 1.0f : depth) * 16777215.0f;
+            screen[2] = (depth < 1.0f ? depth : 1.0f) * 16777215.0f;
             screen[3] = pw / g_48565c * 16777215.0f;
             extent[0] = width * inverse * rx * 0.5f;
             extent[1] = height * inverse * ry * 0.5f;
