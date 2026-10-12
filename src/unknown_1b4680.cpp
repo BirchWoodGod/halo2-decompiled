@@ -162,17 +162,18 @@ short __stdcall function_1b4bd0(long actor_index, s_slot *slot, bool active)
 	return result;
 }
 
+#pragma inline_depth(0)
 // @retail 0x1b4d10
 short __stdcall function_1b4d10(long actor_index, short level, long a, long b)
 {
-	s_actor_view *actor = actor_get(actor_index);
+	s_actor_view *actor = (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 	short result = g_46fbe4;
 
 	actor->unknown41c = 3;
 	actor->unknown420 = 2;
 	if (actor->prop_index != NONE)
 	{
-		s_prop_view_fields *view = prop_view_fields_get(actor->prop_index);
+		s_prop_view_fields *view = (s_prop_view_fields *)function_25d700(actor->prop_index);
 
 		if (view->unknown6d)
 		{
@@ -183,6 +184,7 @@ short __stdcall function_1b4d10(long actor_index, short level, long a, long b)
 	}
 	return result;
 }
+#pragma inline_depth()
 
 // @retail 0x1b4e70
 short __stdcall function_1b4e70(long actor_index, long leader_index, long a, long b)

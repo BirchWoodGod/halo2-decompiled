@@ -1,6 +1,7 @@
 // @flags /O2 /arch:SSE /Gr
 #include "unknown_11c920.h"
 #include "slot_handler.h"
+#include <string.h>
 
 /* slot type 0x6c and slot group 7 */
 
@@ -30,10 +31,12 @@ void __stdcall function_1f4280(long actor_index);
 // @retail 0x1bcee0
 bool __stdcall function_1bcee0(long actor_index, s_slot *slot)
 {
-	s_unit_request request = {0};
+	s_unit_request request;
 
+	memset(&request, 0, sizeof(request));
+	long unit_index = actor_get(actor_index)->unknown018;
 	request.type = 0x2c;
-	function_e6900(actor_get(actor_index)->unknown018, &request);
+	function_e6900(unit_index, &request);
 	((s_slot_6c *)slot)->unknown0c = 0;
 	actor_reset_state(actor_index);
 	return true;
