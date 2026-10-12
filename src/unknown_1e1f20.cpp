@@ -239,7 +239,7 @@ void function_1e3a00(long object_index, s_actor_object_sample *sample)
 		memcpy(point_output, &marker.matrix.position, sizeof(point3f));
 	}
 	else
-		memcpy(point_output, &(*sample_reference)->center, sizeof(point3f));
+		memcpy(point_output, &point_output[1], sizeof(point3f)); /* the sample's center follows its point */
 	function_ba1d0(object_index, &(*sample_reference)->velocity, NULL);
 	s_actor_object_query *root = actor_query_object(actor_query_root(object_index));
 	struct location_pair { long first; long second; };
