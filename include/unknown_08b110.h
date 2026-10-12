@@ -246,15 +246,8 @@ struct s_definition_4ced60
 
 extern s_definition_4ced60 g_4ced60[];
 
-/* the global tunables of 0x450c94 and the time source */
+/* a global tunable of 0x450c94 and the time source */
 extern long g_4cf474;
-extern real g_4cf478;
-extern long g_4cf47c;
-extern real g_4cf480;
-extern real g_4cf484;
-extern real g_4cf488;
-extern real g_4cf48c;
-extern real g_4cf490;
 
 
 inline long time_now()

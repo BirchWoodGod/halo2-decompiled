@@ -428,10 +428,11 @@ local_1:
 	return local_0;
 }
 
-static __forceinline void release_block(void *block, long *info)
+static __forceinline void release_block(void *block)
 {
+	long info;
 	s_allocator_globals *globals = g_4d87f8;
-	globals->allocator->get_info(block, info);
+	globals->allocator->get_info(block, &info);
 	globals = g_4d87f8;
 	globals->allocator->release(block, -1);
 	globals->count--;
@@ -584,40 +585,60 @@ long c_entry_table::read_update(dword identifier, long *size_out, long a, long *
 	long result;
 	s_entry *entry = 0;
 	if (identifier != NONE)
+		entry = entries[ENTRY_INDEX(identifier)].identifier == identifier ? &entries[ENTRY_INDEX(identifier)] : 0;
+	if (entry)
 	{
-		s_entry *candidate = &entries[ENTRY_INDEX(identifier)];
-		if (candidate->identifier == identifier)
-			entry = candidate;
-	}
-	if (!entry)
-		return 3;
-	c_entry_handler *handler = handlers->handlers[entry->handler_index];
-	long state_size = entry->state_size;
-	void *state = handle_allocate(state_size);
-	if (!state)
-		return 3;
-	if (stream->mode == 4)
-	{
-		memset(state, 0, entry->state_size);
-		if (!handler->save(entry->data_size, (long)entry->data, entry->state_size, state))
-			goto failed;
+		c_entry_handler *handler = handlers->handlers[entry->handler_index];
+		long volatile state_size = entry->state_size;
+		s_allocator_globals *globals = g_4d87f8;
+		void *state = globals->allocator->allocate(entry->state_size, 0, 0);
+		if (state == 0)
+		{
+			globals->allocator->compact(0);
+			state = globals->allocator->allocate(state_size, 0, 0);
+		}
+		if (state != 0)
+			globals->count++;
+		if (state)
+		{
+			if (stream->mode != 4)
+			{
+				memcpy(state, entry->state, entry->state_size);
+			}
+			else
+			{
+				memset(state, 0, entry->state_size);
+				if (!handler->save(entry->data_size, (long)entry->data, entry->state_size, state))
+				{
+					result = 3;
+					release_block(state);
+					goto done;
+				}
+			}
+			long read_size = 0;
+			if (!handler->v15(false, (dword *)&read_size, entry->state_size, state, stream))
+			{
+				result = 3;
+				release_block(state);
+				goto done;
+			}
+			*size_out = read_size;
+			blocks[*count].type = 0xd;
+			blocks[*count].size = (short)entry->state_size;
+			blocks[*count].block = state;
+			(*count)++;
+			result = 0;
+		}
+		else
+		{
+			result = 3;
+		}
 	}
 	else
 	{
-		memcpy(state, entry->state, entry->state_size);
+		result = 3;
 	}
-	long read_size = 0;
-	if (!handler->v15(false, (dword *)&read_size, entry->state_size, state, stream))
-		goto failed;
-	*size_out = read_size;
-	blocks[*count].type = 0xd;
-	blocks[*count].size = (short)entry->state_size;
-	blocks[*count].block = state;
-	(*count)++;
-	return 0;
-failed:
-	result = 3;
-	release_block(state, (long *)&stream);
+done:
 	return result;
 }
 
