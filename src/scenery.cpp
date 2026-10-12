@@ -421,18 +421,23 @@ bool __stdcall function_10a2f0(long scenery_index)
 {
 	bool result = false;
 	s_scenery *scenery = SCENERY_GET(scenery_index);
-	if (SCENERY_GET(scenery_index)->animation_state_offset != NONE)
+	switch (SCENERY_GET(scenery_index)->animation_state_offset)
 	{
-		s_animation_state *state = (s_animation_state *)((byte *)scenery + scenery->animation_state_offset);
-		state->update(function_bf600, scenery_index, 0, NULL, NULL);
-		c_animation_channel *channel = &state->channels[0];
-		if (state->graph_tag_index != NONE && channel->graph_tag_index != NONE && channel->animation_id.index != NONE)
+	case NONE:
+		break;
+	default:
 		{
-			s_animation *animation = function_1daea0(graph_tag_get(channel->graph_tag_index), channel->animation_id);
-			if (((s_animation_view *)animation)->frame_count > 1)
+			s_animation_state *state = (s_animation_state *)((byte *)scenery + scenery->animation_state_offset);
+			state->update(function_bf600, scenery_index, 0, NULL, NULL);
+			c_animation_channel *channel = &state->channels[0];
+			if (state->graph_tag_index != NONE && channel->graph_tag_index != NONE && channel->animation_id.index != NONE)
 			{
-				function_bba20(scenery_index);
-				result = true;
+				s_animation *animation = function_1daea0(graph_tag_get(channel->graph_tag_index), channel->animation_id);
+				if (((s_animation_view *)animation)->frame_count > 1)
+				{
+					function_bba20(scenery_index);
+					result = true;
+				}
 			}
 		}
 	}
