@@ -369,10 +369,8 @@ struct s_observer_command;
 struct s_16f460;
 void function_16f460(s_16f460 *state);
 
-PRIVATE inline real placement_clamp_172520(real const &value, real minimum, real maximum)
-{
-	return value < minimum ? minimum : value > maximum ? maximum : value;
-}
+#define PLACEMENT_CLAMP_172520(value, minimum, maximum) \
+	((value) = (value) < (minimum) ? (minimum) : (value) > (maximum) ? (maximum) : (value))
 
 // @retail 0x172520
 void function_172520(s_observer_command *command)
@@ -385,16 +383,16 @@ void function_172520(s_observer_command *command)
 			placement->forward = *g_4687a8;
 			placement->up = *g_4687b0;
 		}
-		placement->position.x = placement_clamp_172520(placement->position.x, -50000.0f, 50000.0f);
-		placement->position.y = placement_clamp_172520(placement->position.y, -50000.0f, 50000.0f);
-		placement->position.z = placement_clamp_172520(placement->position.z, -50000.0f, 50000.0f);
-		placement->target.x = placement_clamp_172520(placement->target.x, -50000.0f, 50000.0f);
-		placement->target.y = placement_clamp_172520(placement->target.y, -50000.0f, 50000.0f);
-		placement->target.z = placement_clamp_172520(placement->target.z, -50000.0f, 50000.0f);
+		PLACEMENT_CLAMP_172520(placement->position.x, -50000.0f, 50000.0f);
+		PLACEMENT_CLAMP_172520(placement->position.y, -50000.0f, 50000.0f);
+		PLACEMENT_CLAMP_172520(placement->position.z, -50000.0f, 50000.0f);
+		PLACEMENT_CLAMP_172520(placement->target.x, -50000.0f, 50000.0f);
+		PLACEMENT_CLAMP_172520(placement->target.y, -50000.0f, 50000.0f);
+		PLACEMENT_CLAMP_172520(placement->target.z, -50000.0f, 50000.0f);
 		if (!function_a7570(&placement->velocity))
 			placement->velocity = *g_4687a4;
-		placement->radius = placement_clamp_172520(placement->radius, g_54e858, g_54e85c);
-		placement->scale = placement_clamp_172520(placement->scale, 0.0f, g_54e860);
+		PLACEMENT_CLAMP_172520(placement->radius, g_54e858, g_54e85c);
+		PLACEMENT_CLAMP_172520(placement->scale, 0.0f, g_54e860);
 		if (!function_1724a0(placement))
 			function_16f460((s_16f460 *)command);
 	}
@@ -915,6 +913,13 @@ static inline void rotation_matrix_transform(s_rotation_matrix const *m, vector3
 	out->k = in->j * m->m21 + in->k * m->m22 + in->i * m->m20;
 }
 
+static inline void view_cross_product(vector3f const *a, vector3f const *b, vector3f *result)
+{
+	result->i = a->j * b->k - b->j * a->k;
+	result->j = a->k * b->i - b->k * a->i;
+	result->k = b->j * a->i - a->j * b->i;
+}
+
 // @retail 0x171d90
 void function_171d90(s_view_setup *view)
 {
@@ -933,9 +938,7 @@ void function_171d90(s_view_setup *view)
 	rotation_matrix_transform(&m, &view->up, &view->up);
 
 	vector3f axis;
-	axis.i = view->forward.j * view->up.k - view->up.j * view->forward.k;
-	axis.j = view->forward.k * view->up.i - view->up.k * view->forward.i;
-	axis.k = view->up.j * view->forward.i - view->forward.j * view->up.i;
+	view_cross_product(&view->forward, &view->up, &axis);
 	rotation_matrix_from_axis_angle(&m, &axis, angle_b);
 	rotation_matrix_transform(&m, &view->forward, &view->forward);
 	rotation_matrix_transform(&m, &view->up, &view->up);
