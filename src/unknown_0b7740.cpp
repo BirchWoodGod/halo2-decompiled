@@ -6,6 +6,12 @@
 #include <xmmintrin.h>
 
 // @flags /O2 /Ob1 /arch:SSE /Gr
+#include "object_masks_storage.h"
+#include "sample_mask_storage.h"
+#include "matrices_storage.h"
+#include "orientations_storage.h"
+#include "partition_colliding_storage.h"
+#include "partition_noncolliding_storage.h"
 
 struct s_object_transform_view
 {
@@ -250,12 +256,7 @@ void function_b88e0(long object_index, s_object_partition_record_ab *record)
 	record->radius = object->radius;
 }
 
-extern void *g_4de2e0;
-extern void *g_4de2e4;
-extern void *g_4de2d4;
-extern void *g_4de2d8;
 
-extern void *g_4de2e8;
 
 struct s_cluster_partition
 {
@@ -273,15 +274,12 @@ void function_b8b70(long object_index)
     s_object_partition_view_ab *object = header->object;
     if ((*((byte *)header + 2) & 0x40) && (bool)((object->flags >> 9) & 1))
     {
-        s_object_partition_record_ab record;
-        function_b88e0(object_index, &record);
-        s_cluster_partition partition =
-        {
-            (long *)g_4de2e0,
-            (s_record_pool *)g_4de2e4,
-            (s_record_pool *)g_4de2e8
-        };
-        function_1cadf0(&partition, *(long *)((byte *)object + 0x60), object_index, sizeof(record), &record);
+        struct { s_object_partition_record_ab record; s_cluster_partition partition; } state;
+        function_b88e0(object_index, &state.record);
+        state.partition.cluster_first_data_references = (long *)g_4de2e0;
+        state.partition.data_references = (s_record_pool *)g_4de2e4;
+        state.partition.cluster_references = (s_record_pool *)g_4de2e8;
+        function_1cadf0(&state.partition, *(long *)((byte *)object + 0x60), object_index, sizeof(state.record), &state.record);
     }
 }
 
@@ -586,9 +584,6 @@ void function_bdc40(point3f const *position, vector3f const *forward, vector3f c
 
 extern long g_4e7414;
 extern bool g_4e7411;
-extern long g_4de2fc;
-extern bool g_4de2f8;
-extern long g_4de300[0x800];
 short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, long maximum_count, short *clusters);
 
 static inline bool cluster_sphere_accept_ab(long object, s_object_cluster_reference const *record, dword type_mask, point3f const *position, real radius)
@@ -723,12 +718,7 @@ void __stdcall function_bd970(long object_index, s_16760c_render_model *render_m
     }
 }
 
-struct rigid_transform_scaled
-{
-    quaternionf rotation;
-    point3f position;
-    real scale;
-};
+
 transform4x3f *function_b8bd0(long object_index, short node_index);
 void function_141590(transform4x3f const *in, transform4x3f *out);
 quaternionf *function_141f60(matrix3x3 const *matrix, quaternionf *out);
@@ -909,8 +899,6 @@ __declspec(noinline) void function_10e530(long object_index, s_animation_state *
 void function_1132f0(long object_index, dword const *node_mask, long count, transform4x3f *matrices);
 void __stdcall function_1421f0(transform4x3f *out, rigid_transform_scaled const *orientation);
 
-rigid_transform_scaled g_4dc2f0[255];
-transform4x3f g_4d8f20[255];
 
 __declspec(noinline) transform4x3f const *__stdcall function_bd610(long object_index,
 	byte const *nodes, transform4x3f const *input_matrices);
@@ -1058,7 +1046,7 @@ void __stdcall function_b77d0(long object_index, vector3f const *linear_velocity
 
 // Disabled: retail passes persistent shared orientation/mask storage and reaches 0x142a60's unbound inputs.
 #if 0
-extern dword g_55eed4, g_55eeb4[8];
+extern dword g_55eed4;
 extern rigid_transform_scaled *g_4687d8;
 void __stdcall function_1d3920(void *component, dword *mask, real amount);
 real function_e1670(long object_index);
@@ -1194,3 +1182,9 @@ void __stdcall function_bd090(long object_index)
 }
 #endif
 
+
+s_orientations_storage g_orientations_storage;
+
+s_matrices_storage g_matrices_storage;
+
+s_sample_mask_storage g_sample_mask_storage;

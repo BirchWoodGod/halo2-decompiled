@@ -1,7 +1,9 @@
 // @flags /O2 /Op /arch:SSE /Gr
+#include "render_source_storage.h"
 /* UNKNOWN_0494B0.CPP: rasterizer render state helpers */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include <xtl.h>
 #include "globals.h"
 
@@ -169,7 +171,6 @@ void function_049740(void)
 	D3DDevice_SetRenderState(D3DRS_COLORWRITEENABLE, 0x1010101);
 }
 
-extern short g_4b9dd0, g_4b9dd4;
 struct s_unknown_13bf00;
 extern s_unknown_13bf00 *g_510c50;
 real g_485b28[7];
@@ -245,7 +246,6 @@ extern IDirect3DBaseTexture8 *g_51f3c8[2][4];
 void function_1cf50(void);
 void function_01ddd0(long index, dword width, dword height);
 long function_48e70(real value);
-dword g_4c1a80;
 real g_485a34, g_485a40;
 byte g_485a47;
 real g_485a0c[8];

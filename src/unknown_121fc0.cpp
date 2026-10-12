@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "font_loading_storage.h"
 #include "unknown_11c920.h"
 #include "font_loading.h"
 #include "async.h"

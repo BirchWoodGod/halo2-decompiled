@@ -41,8 +41,7 @@ void function_e5930(long unit_index) { }
 void function_e5300(long unit_index, long a) { }
 
 
-// @stub 0xb9a50
-void __stdcall function_b9a50(long unit_index) { }
+
 
 
 

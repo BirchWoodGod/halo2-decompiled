@@ -1,4 +1,5 @@
 // @flags /O2 /Ob1 /Gr
+#include "launch_stack_storage.h"
 #include "unknown_11c920.h"
 #include <xtl.h>
 
@@ -23,9 +24,6 @@ s_unknown_01dcc0 g_4b4b58[39];
 
 void function_12d520(long address);
 
-long g_4e6420;
-long g_4e642c[5];
-long g_4e6440[5];
 bool function_1df20(long index, long kind, long width, long height, bool alternate, bool linear, long count, void *data);
 
 // @retail 0x1db10
@@ -359,3 +357,5 @@ initial_done:
     if (!function_1db10(15, 64, 64, 0, false)) return false;
     return true;
 }
+
+s_launch_stack_storage g_launch_stack_storage;

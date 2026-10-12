@@ -228,7 +228,14 @@ public:
 	virtual bool v10(long a, void *data, s_bitstream *stream);
 };
 
-class c_weapon_put_away_event : public c_event_definition
+/* The drop and put-away tables share the decoder at slot 10. */
+class c_weapon_object_event : public c_event_definition
+{
+public:
+	virtual bool v10(long a, void *data, s_bitstream *stream);
+};
+
+class c_weapon_put_away_event : public c_weapon_object_event
 {
 public:
 	virtual bool v11(long a, long const *entities, long c, void const *data);
@@ -271,7 +278,7 @@ public:
 	virtual bool v10(long a, void *data, s_bitstream *stream);
 };
 
-class c_weapon_drop_event : public c_event_definition
+class c_weapon_drop_event : public c_weapon_object_event
 {
 public:
 	virtual bool v11(long a, long const *entities, long c, void const *data);
@@ -279,7 +286,6 @@ public:
 	virtual const char *v1();
 	virtual void v8(long a, long b, long c, long size, char *buffer);
 	virtual void v9(long a, void const *data, s_bitstream *stream);
-	virtual bool v10(long a, void *data, s_bitstream *stream);
 };
 
 class c_weapon_reload_event : public c_event_definition

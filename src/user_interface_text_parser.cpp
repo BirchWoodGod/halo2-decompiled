@@ -1,4 +1,5 @@
 // @flags /O1 /Oi /arch:SSE /Gr
+#include "view_context_storage.h"
 /* USER_INTERFACE_TEXT_PARSER.CPP: the user interface's text parser. A
    string's private use characters (0xe000..0xf8ff) are either glyphs (the
    controller buttons) or stand for a value the parser fills in: the map
@@ -123,7 +124,6 @@ struct s_button_layout
 
 /* the input users' button layouts (unknown_217c20.cpp) */
 extern byte g_51ea18[];
-extern long g_4b9ed8;
 
 /* a player (0x21c bytes) */
 struct s_player_view

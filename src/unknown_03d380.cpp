@@ -1,4 +1,5 @@
 // @flags /O2 /Gr
+#include "handles_storage.h"
 /* UNKNOWN_03D380.CPP: the game module callbacks of the table at 0x46e320
    (batch 18-4); every entry takes one dword on the stack */
 
@@ -108,7 +109,6 @@ dword g_453498[1];
 s_4e6380 *g_4e6380;
 s_record_pool *g_4e637c;
 s_looping_sound_globals *g_4ed288;
-dword g_4c8798[256];
 
 void decal_delete_group(long decal_index);
 
@@ -678,3 +678,32 @@ void function_43890()
 }
 #endif
 
+
+s_handles_storage g_handles_storage;
+
+#include "crc.h"
+#include "physical_memory.h"
+extern D3DResource *g_509444;
+
+// @retail 0x43890
+void function_43890()
+{
+    byte *state = (byte *)VirtualAlloc(0, 12, 0x101000, PAGE_READWRITE);
+    if (!state) GetLastError();
+    *(long *)state = 1;
+    long size = 0x14000;
+    game_state_globals.unknown8 += size;
+    byte *buffer = (byte *)game_state_globals.base_address + 0x3fe000 - game_state_globals.unknown8;
+    g_509444 = (D3DResource *)state;
+    function_163ba0(&game_state_globals.allocation_size_checksum, &size, 4);
+    *(byte **)(state + 4) = buffer;
+    *(long *)(state + 8) = 0;
+    if ((*(long *)state & 0x70000) != 0x20000) buffer = (byte *)((dword)buffer & 0x0fffffff);
+    *(byte **)(state + 4) = buffer;
+    c_data_allocator *allocator = g_510c2c;
+    void *table = allocator->allocate(0x613c);
+    function_13d170((s_physical_object *)table, "decal vertex cache", 0x500, 6, 1024,
+        function_43820, (physical_block_busy_proc)function_43850, 0, allocator);
+    memset(g_4c8798, 0xff, 1024 * sizeof(dword));
+    g_509448 = (s_game_proc_table_509448 *)table;
+}

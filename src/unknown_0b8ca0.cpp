@@ -1,4 +1,6 @@
 // @flags /O2 /arch:SSE /Gr
+#include "partition_colliding_storage.h"
+#include "partition_noncolliding_storage.h"
 /* object markers and object physics state (0xb8ca0-0xb9c60) */
 
 #include "unknown_11c920.h"
@@ -474,21 +476,19 @@ void function_b9a90(long object_index);
 
 void __stdcall function_b9a50(long object_index);
 
-#if 0
-// Retail 0xb9a50. Activating this dispatcher changes shared unit-call conventions.
-// Retail 0xb9a50
+__declspec(noinline) void __stdcall function_b9a50(long object_index);
+// @retail 0xb9a50
 void __stdcall function_b9a50(long object_index)
 {
     s_object_view *object = OBJECT_GET(object_index);
     if (object->parent_index != NONE)
     {
-        if ((1 << object->type) & 3)
-            function_cc590(object_index);
-        else
+        if (!((1 << object->type) & 3))
             function_b9a90(object_index);
+        else
+            function_cc590(object_index);
     }
 }
-#endif
 
 extern void (__stdcall *g_468664[8])(long object_index);
 void __stdcall function_b8540(long object_index);
@@ -582,7 +582,7 @@ void function_b9a90(long object_index)
     s_object_view *parent = ((s_object_header_view *)objects->data)[object->parent_index & 0xffff].object;
     byte connected = function_b9d20(object->parent_index) ? 1 : 0;
     s_object_view *node_parent = ((s_object_header_view *)objects->data)[object->parent_index & 0xffff].object;
-    transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + node_parent->node_matrices_offset) + *(char *)((byte *)object + 0x18);
+    transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + *(short const volatile *)&node_parent->node_matrices_offset) + *(char *)((byte *)object + 0x18);
     if (connected)
         function_bef30(object_index, 1, 0, 0, false);
     function_b9890(object_index);
@@ -819,8 +819,6 @@ struct s_cluster_partition
     s_record_pool *data_references;
     s_record_pool *cluster_references;
 };
-extern void *g_4de2d4, *g_4de2d8, *g_4de2dc;
-extern void *g_4de2e0, *g_4de2e4, *g_4de2e8;
 void function_1cae40(s_cluster_partition *partition, long data_index, long *first_cluster_reference);
 
 // @retail 0xb87b0
@@ -1142,13 +1140,13 @@ void __stdcall function_b8600(long object_index, volatile long supplied_location
     if (*(short const *)((byte const *)location + 4) != NONE)
     {
         *(s_location *)(object + 0x28) = *location;
-        *(short *)((byte *)header + 4) = *(short const *)((byte const *)location + 4);
+        *(short *)((byte *)header + 4) = *(short *)(object + 0x2c);
         *(dword *)(object + 4) &= ~0x40000;
     }
     else *(dword *)(object + 4) |= 0x40000;
     dword cluster_bits[16];
     dword *bits = 0;
-    if (*(dword *)(object + 4) & 0x200000)
+    if ((bool)((*(dword *)(object + 4) >> 21) & 1))
     {
         long size = (*(long *)((byte *)g_4e0348 + 0x9c) + 31) >> 5;
         memset(cluster_bits, 0xff, size * sizeof(dword));
@@ -1206,8 +1204,9 @@ void __stdcall function_beca0(long object_index)
         for (long i = 0; i < *(long *)(definition + 0x94); ++i)
         {
             byte *entry = *(byte **)(definition + 0x98) + i * 0x18;
-            long tag = *(long *)(entry + 4), index = NONE;
             short kind = NONE;
+            long index = kind;
+            long tag = *(long *)(entry + 4);
             if (tag != NONE)
             {
                 switch (*(dword *)entry)

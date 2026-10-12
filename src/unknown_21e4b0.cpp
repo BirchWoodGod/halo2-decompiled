@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "pool_storage.h"
 #include "unknown_11c920.h"
 #include "sound_driver.h"
 #include "globals.h"
@@ -59,9 +60,6 @@ struct s_47f0d0
 };
 
 extern s_47f0d0 g_47f0d0;
-extern dword g_510800_pool_base;
-extern long g_510804_pool_size;
-extern dword g_510808_pool_checksum;
 
 struct s_sound_listener_environment;
 struct s_sound_listener

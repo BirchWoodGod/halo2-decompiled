@@ -40,9 +40,11 @@ struct s_game_state_globals
 	long unknown253c;
 };
 
-extern s_game_state_globals game_state_globals;
+
 
 void *function_123d40(char const *name, char const *type, long size);
 void *game_state_malloc_aligned(char const *name, char const *type, long size, long alignment_bits);
+
+#include "allocator_storage.h"
 
 #endif

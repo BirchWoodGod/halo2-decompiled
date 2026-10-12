@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "orientations_storage.h"
 /* UNKNOWN_16D280.CPP: render model queries (0x16d280..0x16e2b3), the rest of
    the models file that unknown_16d180.cpp starts: node lookups, default
    orientations and node matrices built down the node hierarchy */
@@ -52,12 +53,7 @@ struct s_render_model_definition
 
 /* an orientation: a quaternion, a translation and a scale (0x20 bytes;
    unknown_141590.cpp) */
-struct rigid_transform_scaled
-{
-	quaternionf rotation;
-	point3f position;
-	real scale;
-};
+
 
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 
