@@ -211,9 +211,7 @@ short __stdcall function_1ab690(long actor_index, s_slot *slot, bool active)
 			return result;
 		return g_46fbe4;
 	}
-	short local_0 = state->timer - 1;
-	*(volatile short *)&state->timer = local_0;
-	if (local_0 <= 0)
+	if (--state->timer <= 0)
 		return g_46fbe4;
 	return result;
 }
@@ -481,8 +479,8 @@ bool __stdcall function_1ab770(long actor_index, s_slot *slot)
 			s_sector_trace_result *result = (s_sector_trace_result *)&trace;
 			if (result->blocked && result->edge_index != 0xffff)
 			{
-				word flags = *(word *)&pathfinding->edges[result->edge_index].unknown04;
-				if ((flags & 0x400) || ((flags & 0x200) && radius > result->distance))
+				s_pathfinding_edge *edge = &pathfinding->edges[result->edge_index];
+				if ((*(word *)&edge->unknown04 & 0x400) || ((*(word *)&edge->unknown04 & 0x200) && radius > result->distance))
 					((s_slot_53 *)slot)->ticks = 0;
 			}
 		}

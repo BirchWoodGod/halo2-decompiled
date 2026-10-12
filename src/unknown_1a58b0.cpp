@@ -1359,12 +1359,14 @@ bool __stdcall function_1a5910(long object_index, long excluded_index, short tea
 	*has_hostile = false;
 	if (*local_object != *local_excluded)
 	{
-		s_object_header *header = OBJECT_HEADER(object_index);
 		result = true;
+		s_object_header *header = OBJECT_HEADER(object_index);
 		if ((1 << header->type) & 3)
 		{
 			s_target_link_view *object = (s_target_link_view *)header->object;
-			s_target_link_definition *definition = (s_target_link_definition *)((s_tag_instance volatile *)g_4e3b44)[object->definition_index & 0xffff].bytes;
+			s_target_link_definition *definition;
+			s_target_link_definition **local_2 = &definition;
+			*local_2 = (s_target_link_definition *)g_4e3b44[object->definition_index & 0xffff].bytes;
 			short object_team = object->field_138;
 			result = !(bool)object->field_10a.field_2 && !(bool)((definition->field_bc >> 21) & 1);
 			if (result)
@@ -1599,6 +1601,12 @@ struct s_candidate_scale_globals
 	s_candidate_scale_view *field_f4;
 };
 
+PRIVATE __forceinline s_target_link_definition *function_1a5c01(long object_index)
+{
+	s_target_link_view *object = (s_target_link_view *)OBJECT_HEADER(object_index)->object;
+	return (s_target_link_definition *)g_4e3b44[object->definition_index & 0xffff].bytes;
+}
+
 // @retail 0x1a5c00
 long function_1a5c00(s_sort_weight_view const *weights, long object_index, bool alternate,
 	point3f const *origin, vector3f const *direction, long count, s_sort_candidate_view *candidates)
@@ -1608,7 +1616,7 @@ long function_1a5c00(s_sort_weight_view const *weights, long object_index, bool 
 	byte *definition = g_4e3b44[object->definition_index & 0xffff].bytes;
 	real scale = 1.0f;
 	if (((1 << object->field_aa) & 3) &&
-		(bool)((((s_target_link_definition *)g_4e3b44[(*(long volatile *)&object->definition_index) & 0xffff].bytes)->field_bc >> 19) & 1))
+		(bool)((function_1a5c01(object_index)->field_bc >> 19) & 1))
 		scale = ((s_candidate_scale_globals *)g_4e034c)->field_f4->field_8;
 	if (local_0 < 64 && function_1a5e40(object_index, NONE, NULL, NULL, NULL, alternate,
 		origin, direction, &candidates[local_0]) && function_1a60f0(&candidates[local_0], weights, scale))

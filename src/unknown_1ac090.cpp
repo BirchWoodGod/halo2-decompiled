@@ -251,11 +251,10 @@ void __stdcall function_1ac270(long actor_index, s_slot *slot)
 bool __stdcall function_1ac300(long actor_index, s_slot *slot)
 {
 	bool result = false;
-	s_actor_view *local_0 = actor_get(actor_index);
-	long unit_index = *(volatile long *)&local_0->unknown018;
-	long mode = UNIT_MODE(unit_index);
+	s_actor_view *actor = actor_get(actor_index);
+	long unit_index = actor->unknown018;
 
-	switch (mode)
+	switch (UNIT_MODE(actor->unknown018))
 	{
 	case 6: result = function_e68c0(0x25, unit_index); break;
 	case 7: result = true; break;
@@ -375,7 +374,7 @@ short __stdcall function_1ac570(long actor_index, s_slot *slot, s_slot *next)
 		}
 		else
 		{
-			*(volatile bool *)&state->unknown39 = false;
+			state->unknown39 = false;
 			result = g_46fbe4;
 		}
 	}

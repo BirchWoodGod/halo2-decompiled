@@ -354,13 +354,15 @@ short __stdcall function_1ae3b0(long actor_index, s_slot *slot)
 		real value = view->unknown3d8;
 		if (!flag && value > entry->unknown04)
 			flag = true;
-		else if (flag && entry->unknown08 > value)
+		else if (view->unknown5d4 && entry->unknown08 > value)
 			flag = false;
 		view->unknown449 = flag;
 		view->unknown44a = flag;
 		if (flag)
 		{
-			long local_0 = function_1e4a50(actor->unknown054);
+			long local_0;
+			long *local_2 = &local_0;
+			*local_2 = function_1e4a50(actor->unknown054);
 			result = g_46fbe4;
 			if (!(*(byte *)local_0 & 1))
 				view->unknown480 = true;
