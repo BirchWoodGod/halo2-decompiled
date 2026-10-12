@@ -528,10 +528,16 @@ bool g_4f55e2;
 bool function_13939b()
 {
 	long index = g_4b9ed8;
-	return (function_155760(index) != 3 || function_155d60(index)) &&
+	if ((function_155760(index) != 3 || function_155d60(index)) &&
 		function_155760(index) != 2 &&
-		((s_510c4c_view *)g_510c4c)->flag1d2 &&
-		!(g_4e6948->state == 1 ? g_4f55e2 : false);
+		((s_510c4c_view *)g_510c4c)->flag1d2)
+	{
+		bool local_1 = g_4e6948->state == 1 ? g_4f55e2 : false;
+		if (local_1)
+			return false;
+		return true;
+	}
+	return false;
 }
 
 byte function_016a90();
@@ -757,19 +763,23 @@ bool function_13ac87(s_condition_masks const *masks, word first, word second, wo
 
 struct s_ammunition_state
 {
-	byte unknown00[8];
+	long field_0;
+	byte unknown04[2];
+	short field_6;
 	short rounds;
-	byte unknown0a[2];
+	short field_a;
 	short magazine;
 	byte unknown0e[2];
 	real charge;
 	byte unknown14[0xd];
 	bool flag21;
+	bool field_22;
 };
 
 struct s_ammunition_definition
 {
-	byte unknown00[0x1a];
+	byte unknown00[0x18];
+	short field_18;
 	short maximum_rounds;
 	real minimum_charge;
 };
@@ -777,22 +787,21 @@ struct s_ammunition_definition
 /* the state an ammunition counter shows */
 static __forceinline long function_13b084(s_ammunition_state const *arg_1)
 {
-    real volatile local_1 = *(real volatile const *)&arg_1->charge * 100.0f;
-    return _mm_cvtt_ss2si(_mm_set_ss(local_1));
+    return real_truncate(arg_1->charge * 100.0f);
 }
 
 // @retail 0x13b083
-long function_13b083(s_ammunition_state const *state, long definition_index)
+long function_13b083(long definition_index, s_ammunition_state const *state)
 {
 	long result = NONE;
 	if (definition_index != NONE)
 	{
 		s_ammunition_definition *definition = (s_ammunition_definition *)g_4e3b44[definition_index & 0xffff].bytes;
-		if (*(short volatile const *)&state->magazine == 0 && 100 - PIN(function_13b084(state), 0, 100) == 0)
+		if (state->magazine == 0 && 100 - PIN(function_13b084(state), 0, 100) == 0)
 		{
 			result = 4;
 		}
-		else if (*(short volatile const *)&state->magazine == 0 && definition->minimum_charge >= (1.0f - state->charge) * 100.0f)
+		else if (state->magazine == 0 && definition->minimum_charge >= (1.0f - state->charge) * 100.0f)
 		{
 			result = 3;
 		}
@@ -808,6 +817,88 @@ long function_13b083(s_ammunition_state const *state, long definition_index)
 			result = 1;
 	}
 	return result;
+}
+
+struct s_13aa27_record
+{
+	long field_0;
+	byte field_4;
+	byte field_5;
+};
+
+void function_2007b3(long arg_0, long arg_1, long arg_2, long arg_3);
+
+// @retail 0x13aa27
+void function_13aa27(long arg_1, byte const *arg_2, byte *arg_3, long arg_4, byte const *arg_5)
+{
+	byte const *const *local_0 = &arg_5;
+	s_ammunition_state const *state = (s_ammunition_state const *)arg_2;
+	s_13aa27_record *record = (s_13aa27_record *)arg_3;
+
+	if (state->field_0 != record->field_0)
+	{
+		record->field_4 = 0;
+		record->field_0 = state->field_0;
+	}
+	if (arg_4 != NONE)
+	{
+		s_ammunition_definition *definition = (s_ammunition_definition *)g_4e3b44[arg_4 & 0xffff].bytes;
+		byte previous = record->field_4;
+		byte local_1 = 0;
+		if (state->field_a == 0)
+		{
+			if (definition->minimum_charge >= (1.0f - state->charge) * 100.0f)
+				local_1 = 2;
+		}
+		else if (state->field_6 <= definition->field_18)
+		{
+			local_1 = 1;
+		}
+		if (local_1 != previous && local_1 != 0)
+		{
+			long local_2 = function_13b083(arg_4, state);
+			if (local_2 != NONE)
+				function_2007b3(arg_1, local_2, 3, NONE);
+			record->field_5 = (byte)function_1469f0(5.0f);
+		}
+		if (local_1 != 0)
+		{
+			if (--record->field_5 == 0)
+			{
+				long local_3 = function_13b083(arg_4, state);
+				record->field_5 = (byte)function_1469f0(5.0f);
+				if (local_3 != NONE)
+					function_2007b3(arg_1, local_3, 1, NONE);
+			}
+			if (state->field_a != 0 && state->field_22)
+			{
+				if (state->rounds == 0)
+				{
+					function_2007b3(arg_1, 2, 1, NONE);
+					record->field_5 = (byte)function_1469f0(5.0f);
+				}
+				else if (state->rounds <= definition->maximum_rounds && !state->flag21)
+				{
+					function_2007b3(arg_1, 1, 1, NONE);
+					record->field_5 = (byte)function_1469f0(5.0f);
+				}
+			}
+			if (state->magazine == 0 && state->field_22)
+			{
+				if (100 - PIN(function_13b084(state), 0, 100) == 0)
+				{
+					function_2007b3(arg_1, 4, 1, NONE);
+					record->field_5 = (byte)function_1469f0(5.0f);
+				}
+				else if (definition->minimum_charge >= (1.0f - state->charge) * 100.0f)
+				{
+					function_2007b3(arg_1, 3, 1, NONE);
+					record->field_5 = (byte)function_1469f0(5.0f);
+				}
+			}
+		}
+		record->field_4 = local_1;
+	}
 }
 
 void function_1a0180(long tag_index, long string_handle, word *buffer);
