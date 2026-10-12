@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7861 functions match
+
+```
+matched 7861 of 11318 game functions (949167 of 2784283 bytes, 34.09%)
+```
+
+14 new matches, none lost:
+- Claude lane 1, round 2 (+14): the inlined next-local-player scan takes its start index in a second variable, so the compiler no longer jumps past its guard (`0x1e7800`, `0x1e78b0`, `0x1e7960`, `0x2a0840`).
+- Five UI-screen and list destructors are declared `virtual` explicitly, which keeps `this` in `ecx` (`0x2b53a7`, `0x2b549d`, `0x2b6301`, `0x2b7c86`, `0x2b81a4`, and the deleting destructors `0x2b53ea`, `0x2b61b2`, `0x2b7c6a`).
+- `0x69110` calls `0xab9f0` directly instead of through a local function pointer, so whole-program optimization keeps retail's register convention for it (`0xab960`, `0xab9f0`).
+
 ## 2026-10-12: 7847 functions match
 
 ```
