@@ -64,10 +64,7 @@ public:
 struct _XONLINE_USER;
 
 /* my own, not written yet */
-// @stub 0x24b869
-void __stdcall function_24b869(c_class_1473c9 *screen)
-{
-}
+
 
 
 /* lane D */

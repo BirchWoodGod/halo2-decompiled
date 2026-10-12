@@ -53,6 +53,8 @@ LPVOID __stdcall XMemAlloc(SIZE_T dwSize, DWORD dwAllocAttributes)
 	}
 }
 
+__forceinline void __stdcall XMemFree(PVOID pAddress, DWORD dwAllocAttributes);
+
 // @retail 0x122c0
 void __stdcall XMemFree(PVOID pAddress, DWORD dwAllocAttributes)
 {

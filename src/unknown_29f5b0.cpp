@@ -10099,8 +10099,8 @@ real __stdcall function_134fe0(long index, real value);
 inline real function_xa57cf5(long name, bool flag)
 {
 	long index = NONE;
-	real value = 0.0f;
 	s_interpolator_state *state = interpolator_get(name, &index);
+	real value = 0.0f;
 	if (state)
 	{
 		value = state->start_value;
@@ -10130,8 +10130,8 @@ s_type_f4462a const g_44f268 = { _hs_type_real, 0, function_2abc10, NULL, 2, { _
 inline real interpolator_get_target_value(long name, bool flag)
 {
 	long index = NONE;
-	real value = 0.0f;
 	s_interpolator_state *state = interpolator_get(name, &index);
+	real value = 0.0f;
 	if (state)
 	{
 		value = state->target_value;

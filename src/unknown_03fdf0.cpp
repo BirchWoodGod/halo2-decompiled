@@ -105,7 +105,7 @@ void function_15370(short mode);
 void function_44550(void);
 void function_445d0(void);
 void function_0496f0(void);
-void __stdcall function_14b60(short target, bool first, bool second, bool third);
+void __stdcall function_14b60(dword flags, dword color, real depth, byte stencil);
 bool __stdcall function_44370(long mode);
 void __stdcall function_174220(bool enabled);
 bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engine);
@@ -294,7 +294,7 @@ bool function_3fdf0(long mode, bool single_pass)
         {
             g_467130 = 1; g_467134 = 0; g_467138 = &g_4c1a48[0]; g_4858b4 = 1;
             function_14bc0(1, 0, true);
-            if (!g_485a75 && !g_485a76) function_14b60(1, false, false, false);
+            if (!g_485a75 && !g_485a76) function_14b60(1, 0, 0.0f, 0);
             function_15680(g_485898 >= 4 && g_485898 <= 7 ? 0 : 1);
         }
         else g_467130 = 0;
