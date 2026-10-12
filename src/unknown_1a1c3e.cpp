@@ -54,10 +54,11 @@ struct s_sensor_object
 	byte unknownab[0xc1 - 0xab];
 	byte flagsc1;
 	byte unknownc2[0x10a - 0xc2];
-	byte flags10a_0 : 1;
-	byte flags10a_1 : 1;
-	byte flags10a_2 : 1;
-	byte unknown10b[0x12c - 0x10b];
+	word flags10a_0 : 1;
+	word flags10a_1 : 1;
+	word flags10a_2 : 1;
+	word : 13;
+	byte unknown10c[0x12c - 0x10c];
 	union
 	{
 		long unknown12c;

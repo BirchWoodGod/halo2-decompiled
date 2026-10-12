@@ -89,18 +89,17 @@ short __stdcall function_1a9bc0(long actor_index, s_slot *slot)
 	if (actor->unknown07c != NONE)
 	{
 		long other_index = element_502420_get(actor->unknown07c)->first_actor_index;
-		for (;;)
+		s_actor_view *other;
+		do
 		{
 			if (other_index == NONE)
 			{
 				function_1e4650(actor_index, true);
-				return g_46fbe4;
+				break;
 			}
-			s_actor_view *other = actor_get(other_index);
+			other = actor_get(other_index);
 			other_index = other->next_index;
-			if (other != actor && other->unknown004 == actor->unknown004)
-				return g_46fbe4;
-		}
+		} while (other == actor || other->unknown004 != actor->unknown004);
 	}
 	return g_46fbe4;
 }
