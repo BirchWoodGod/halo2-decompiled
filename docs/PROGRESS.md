@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7772 functions match
+
+```
+matched 7772 of 11318 game functions (930371 of 2784283 bytes, 33.42%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 38: 0x22590, after retail's table of 68 subsystem records (startup, shutdown and per-map callbacks) was written as data, so the functions it holds are referenced from data as in retail.
+
 ## 2026-10-12: 7771 functions match
 
 ```
