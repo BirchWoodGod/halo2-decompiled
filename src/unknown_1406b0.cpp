@@ -672,7 +672,8 @@ void font_cache_pixels_initialize(void)
 	// Read the physical receiver through a const pointer at this later use.
 	(*(s_physical_object *const *)&g_54d580)->state = 2;
 
-	g_54d57c->valid = true;
+	// Read the pool through a const pointer at this later use.
+	(*(s_record_pool *const *)&g_54d57c)->valid = true;
 	record_pool_release_all(g_54d57c);
 }
 

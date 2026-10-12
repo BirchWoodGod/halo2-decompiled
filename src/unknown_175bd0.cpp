@@ -2584,9 +2584,9 @@ long __stdcall function_177040(long particle_system_index, long effect_index)
 {
 	long const *effect_index_argument = &effect_index;
 	effect_index = *effect_index_argument;
-	s_particle_system_datum *particle_system = DATUM(g_510c74, s_particle_system_datum, particle_system_index);
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
-	long next_index = particle_system->next_index;
+	s_particle_system_datum *particle_system = DATUM(g_510c74, s_particle_system_datum, particle_system_index);
+	volatile long next_index = particle_system->next_index;
 	s_effect_particle_system_definition *definition = particle_system->function_1751d0();
 	long location_index = effect->location_indices[definition->location_index];
 
