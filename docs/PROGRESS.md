@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7877 functions match
+
+```
+matched 7877 of 11318 game functions (951953 of 2784283 bytes, 34.19%)
+```
+
+5 new matches, none lost:
+- Claude lane 1, round 3 (+5): two lookups into one table read the table global a second time, as retail does (`0x1e8cb0`, `0x1e8d50`); `0x2cb001` keeps its unused argument, so it returns with `ret 4`; `0x1e3a00` copies the sample's center from the slot after its point, so the compiler loads before it stores; and `0x2b178e` stores its flag before it fills the message parameters.
+
 ## 2026-10-12: 7872 functions match
 
 ```
