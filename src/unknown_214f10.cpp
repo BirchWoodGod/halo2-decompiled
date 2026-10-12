@@ -42,6 +42,22 @@ void *game_state_cache_allocate(long cpu_size, long gpu_size)
 	return memory;
 }
 
+long __stdcall function_1a08f0(s_async_task *task);
+
+PRIVATE __forceinline long function_214f83(char const *arg_0, s_file_handle *arg_1, bool volatile *arg_2)
+{
+    s_async_task local_0;
+    memset(&local_0, 0, sizeof(local_0));
+    local_0.create_file.path = arg_0;
+    local_0.create_file.access = GENERIC_READ | GENERIC_WRITE;
+    local_0.create_file.share_mode = 0;
+    local_0.create_file.creation_disposition = OPEN_ALWAYS;
+    local_0.create_file.flags = 0;
+    local_0.create_file.file = arg_1;
+    local_0.create_file.create_path = false;
+    return function_120ba0(6, &local_0, 8, function_1a08f0, arg_2);
+}
+
 // @retail 0x214f80
 void game_state_cache_files_open(void)
 {
@@ -52,7 +68,7 @@ void game_state_cache_files_open(void)
 		bool success;
 
 		function_11c9c0(path, sizeof(path), g_470050, i);
-		function_1a0b40(path, 3, 3, 0, 8, 6, &g_5020f8[i], &done);
+		function_214f83(path, &g_5020f8[i], &done);
 		if (!done)
 		{
 			while (!done)

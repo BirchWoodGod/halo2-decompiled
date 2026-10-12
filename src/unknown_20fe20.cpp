@@ -258,12 +258,13 @@ bool __stdcall function_20c2f0(long object_index, long type, real *scale)
 					goto found;
 			}
 		}
-		return false;
+		goto local_0;
 		found:
 		if (scale)
 			*scale *= 2.0f;
-		return true;
+		result = true;
 	}
+local_0:
 	return result;
 }
 
