@@ -813,7 +813,8 @@ bool function_11b4a0(long unit_index, long animation_graph_index, long animation
 
 	if (function_11b520(unit_index, animation_graph_index, animation_name, interpolate, NONE, false))
 	{
-		real seconds = (real)frame * (1.0f / 30.0f);
+		long local_0 = *(short const volatile *)&frame;
+		real seconds = (real)local_0 * (1.0f / 30.0f);
 		s_unit_11a4d0 *unit = unit_get_11a4d0(unit_index);
 		s_unit_animation_11a4d0 *animation = (s_unit_animation_11a4d0 *)((byte *)unit + unit->animation_offset);
 		if (animation->index68 != NONE && animation->index0 != NONE && animation->index6 != NONE)

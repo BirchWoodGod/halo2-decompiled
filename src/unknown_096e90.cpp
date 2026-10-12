@@ -26,62 +26,89 @@ bool c_vtable_450d1c::v0()
 	return pending > 0;
 }
 
+static __forceinline long function_970b1(s_node_450d1c const *arg_0)
+{
+    bool local_0 = g_510548;
+    long local_1 = arg_0->time;
+    long local_2;
+    if (local_0)
+        local_2 = g_51054c;
+    else
+        local_2 = GetTickCount();
+    return local_2 - local_1;
+}
+
+static __forceinline void function_970b3(c_vtable_450d1c *arg_0, s_node_450d1c *arg_1, long arg_2, real *arg_3, long *arg_4)
+{
+    s_owner_450d1c *local_0 = arg_0->owner;
+    local_0->manager->v4(arg_1, arg_2, arg_3, arg_4);
+}
+
 // @retail 0x970b0
 long c_vtable_450d1c::v1(long a1, long max_count, void *entries)
 {
-	s_entry_450d1c *entry_pointer = (s_entry_450d1c *)entries;
 	long count = 0;
 	s_node_450d1c *node = owner->head;
 	s_node_450d1c *next;
-	while (node != 0 && count < max_count)
+	if (node != 0)
 	{
-		next = node->next;
-		dword mask = 1 << player;
-		if ((node->active_mask & mask) != 0 && (node->done_mask & mask) == 0)
+		s_entry_450d1c *entry_pointer = (s_entry_450d1c *)entries;
+		while (node != 0)
 		{
-			long start = node->time;
-			if (node->timeout != NONE && time_now() - start >= node->timeout)
+			next = node->next;
+			if (count >= max_count)
+				break;
+			dword mask = 1 << player;
+			if ((node->active_mask & mask) != 0 && (node->done_mask & mask) == 0)
 			{
-				pending--;
-				s_owner_450d1c *current_owner = owner;
-				node->active_mask &= ~(1 << player);
-				if (node->active_mask == 0)
+				if (node->timeout != NONE && function_970b1(node) >= node->timeout)
 				{
-					current_owner->manager->v3(node);
-					function_89e70(node, current_owner);
-				}
-			}
-			else
-			{
-				real fraction;
-				long size;
-				owner->manager->v4(node, a1, &fraction, &size);
-				if (fraction > 0.0f)
-				{
-					s_entry_450d1c *entry = entry_pointer;
-					count++;
-					entry_pointer++;
-					size += 7;
-					if (node->unknown10 != NONE)
-						size += 14;
-					size++;
-					if (node->unknown14 != NONE)
-						size += 14;
-					entry->unknown00 = unknown04;
-					entry->unknown04 = fraction;
-					entry->node = node;
-					entry->unknown0c = NONE;
-					entry->size = size;
+					pending--;
+					s_owner_450d1c *current_owner = owner;
+					node->active_mask &= ~(1 << player);
+					if (node->active_mask == 0)
+					{
+						current_owner->manager->v3(node);
+						function_89e70(node, current_owner);
+					}
 				}
 				else
 				{
-					start = node->time;
-					if (time_now() - start >= g_4cf474 && node->timeout == NONE)
-						node->timeout = 0;
+					real fraction;
+					function_970b3(this, node, a1, &fraction, (long *)&entries);
+					long size = *(long *)&entries;
+					if (fraction > 0.0f)
+					{
+						s_entry_450d1c *entry = entry_pointer;
+						count++;
+						entry_pointer++;
+						size += 7;
+						if (node->unknown10 != NONE)
+							size += 14;
+						size++;
+						long local_0 = node->unknown14;
+						*(volatile long *)&entries = size;
+						if (local_0 != NONE)
+						{
+							size += 14;
+							*(volatile long *)&entries = size;
+						}
+						entry->unknown00 = unknown04;
+						entry->unknown04 = fraction;
+						entry->node = node;
+						entry->unknown0c = NONE;
+						entry->size = size;
+					}
+					else
+					{
+						long start = node->time;
+						if (time_now() - start >= g_4cf474 && node->timeout == NONE)
+							node->timeout = 0;
+					}
 				}
 			}
+			node = next;
 		}
-		node = next;
 	}
 	return count;
 }
@@ -98,6 +125,12 @@ static __forceinline void sender_write_type(s_bitstream *stream, dword type)
 		csprintf_256(message, "%u exceeds max value of %u", type, 32);
 	}
 	function_195720(stream, type, 5);
+}
+
+static __forceinline void function_97241(c_vtable_450d1c *arg_0, s_node_450d1c *arg_1, s_bitstream *arg_2)
+{
+    s_owner_450d1c *local_0 = arg_0->owner;
+    local_0->manager->v2(arg_1->unknown04, arg_1->size, arg_1->data, arg_2);
 }
 
 // @retail 0x97240
@@ -155,7 +188,7 @@ void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bits
 					*(long volatile *)&remaining = local_8;
 				} while (local_8);
 				if (node->size > 0)
-					owner->manager->v2(node->unknown04, node->size, node->data, stream);
+					function_97241(this, node, stream);
 				if ((stream->size_in_bytes << 3) - stream->bit_position >= reserved_bits)
 				{
 					stream->checkpoint_count--;
@@ -181,6 +214,12 @@ void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bits
 				unknown09 = 1;
 		}
 	}
+}
+
+PRIVATE __forceinline long function_974c1(c_vtable_450d1c *arg_0, long arg_1, dword *arg_2, long *arg_3, dword *arg_4, s_bitstream *arg_5)
+{
+    s_owner_450d1c *local_0 = arg_0->owner;
+    return local_0->manager->v0(arg_1, arg_2, 1, arg_3, arg_4, arg_5);
 }
 
 // @retail 0x974c0
@@ -226,7 +265,7 @@ long c_vtable_450d1c::v5(dword a1, s_bitstream *stream, long max_blocks, s_block
 					items[i] = NONE;
 			}
 
-			error = owner->manager->v0(type, items, 1, local_1, data, local_0);
+			error = function_974c1(this, type, items, local_1, data, local_0);
 			if (error != 0)
 				break;
 

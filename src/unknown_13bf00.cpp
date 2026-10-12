@@ -130,8 +130,7 @@ static inline void timer_update()
 		data->timer -= g_510c54->rate;
 		if (0.0f >= data->timer)
 		{
-			data->timer_index = 0;
-			*(long *)&data->timer = 0;
+			memset(&data->timer_index, 0, 8);
 		}
 	}
 }
@@ -178,8 +177,8 @@ void function_13c680(void)
 			long pinned = index < 0 ? 0 : (index > globals->title_count - 1 ? globals->title_count - 1 : index);
 			if (pinned == index)
 			{
-				title->ticks++;
 				s_title_definition *definition = &globals->titles[index];
+				title->ticks++;
 				real duration = definition->up_time + definition->fade_in_time;
 				if (title->ticks * game_time->rate >= duration)
 				{
@@ -246,7 +245,7 @@ static __forceinline short real_to_short(real value)
 
 /* the screen between the letterbox bars, and the two bars */
 // @retail 0x13ccf0
-void function_13ccf0(short_rectangle2d *bottom_bar, short_rectangle2d *screen, short_rectangle2d *top_bar)
+void function_13ccf0(short_rectangle2d *screen, short_rectangle2d *top_bar, short_rectangle2d *bottom_bar)
 {
 	real letterbox = 0.0f;
 	real height;

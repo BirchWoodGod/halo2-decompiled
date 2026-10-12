@@ -93,6 +93,7 @@ done:
 bool function_1f5390(point2f const *heading, long actor_index, real distance,
     short *mode, real vertical_distance, bool *vertical_out, s_path_trace_result *trace)
 {
+    bool local_0 = false;
     short attempts = 1;
     short selected = *mode;
     point2f direction;
@@ -157,19 +158,20 @@ bool function_1f5390(point2f const *heading, long actor_index, real distance,
         }
         break;
     }
-    for (short attempt = 0; attempt < attempts; attempt++)
+    for (short attempt = 0; attempt < attempts; attempt++, selected ^= 1)
     {
         if (function_1f5110(actor_index, &direction, distance, vertical_distance, vertical_out, trace))
         {
-            *mode = selected;
-            return true;
+            local_0 = true;
+            goto local_1;
         }
         direction.x = 0.0f - direction.x;
         direction.y = 0.0f - direction.y;
-        selected ^= 1;
     }
-    *mode = NONE;
-    return false;
+    selected = NONE;
+local_1:
+    *mode = selected;
+    return local_0;
 }
 
 long function_1e4a50(long index);
@@ -915,14 +917,17 @@ real function_1f9e70(long actor_index, long object_index, point2f const *positio
     vector2f const *path_direction, vector2f const *facing, vector2f const *desired,
     vector2f const *next_direction, real distance, bool ignore_facing)
 {
-    byte *actor = (byte *)actor_get(actor_index);
+    s_record_pool *local_0 = g_4f55f0;
+    byte *local_1 = local_0->data;
+    byte *actor = local_1 + (actor_index & 0xffff) * sizeof(s_actor_view);
     s_slot_object_view *object = object_get(object_index);
     byte *settings = (byte *)function_1e5450(actor_index, object->tag_index);
-    real facing_scale = 1.0f;
+    real speed_scale;
     real turning_scale = 1.0f;
-    real velocity_scale = 1.0f;
     real approach_scale = 1.0f;
-    real speed_scale = *(real *)(actor + 0x4b4) != 0.0f ? *(real *)(actor + 0x4b4) : 1.0f;
+    real facing_scale = 1.0f;
+    real velocity_scale = 1.0f;
+    speed_scale = *(real *)(actor + 0x4b4) != 0.0f ? *(real *)(actor + 0x4b4) : 1.0f;
     if (!ignore_facing)
     {
         real dot = facing->j * desired->j + facing->i * desired->i;

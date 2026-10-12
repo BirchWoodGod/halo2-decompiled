@@ -399,8 +399,9 @@ void __stdcall function_221980(
 
 struct s_221a20
 {
-	word field_0 : 1;
-	word field_1 : 15;
+	byte field_0[0xc];
+	word field_c : 1;
+	word field_d : 15;
 };
 
 PRIVATE inline void set_fade_flag(
@@ -408,9 +409,9 @@ PRIVATE inline void set_fade_flag(
 	bool arg_1)
 {
 	if (arg_1)
-		arg_0.field_0 = true;
+		arg_0.field_c = true;
 	else
-		arg_0.field_0 = false;
+		arg_0.field_c = false;
 }
 
 // @retail 0x221a20
@@ -423,7 +424,10 @@ void function_221a20(
 	for (i = 0; i < k_sound_class_count; ++i)
 	{
 		if (*g_470090[i] && strstr(g_470090[i], name))
-			set_fade_flag(*(s_221a20 *)&g_502118[i].flags, !set);
+			{
+			s_221a20 *local_0 = (s_221a20 *)&g_502118[i];
+			set_fade_flag(*local_0, !set);
+		}
 	}
 }
 

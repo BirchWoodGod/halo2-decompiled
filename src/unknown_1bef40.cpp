@@ -201,14 +201,13 @@ bool __stdcall function_1bf230(long actor_index, s_slot *slot)
 // @retail 0x1bf360
 void __stdcall function_1bf360(long actor_index, s_slot *slot)
 {
-	long prop_index = actor_get(actor_index)->prop_index;
 	s_actor_view *actor = actor_get(actor_index);
 
-	if (prop_index != NONE)
+	if (actor->prop_index != NONE)
 	{
-		short value = prop_node_get(prop_index)->unknown24;
+		s_prop_node_view *node = prop_node_get(actor->prop_index);
 
-		if (value >= 1 && value <= 2)
+		if (node->unknown24 >= 1 && node->unknown24 <= 2)
 		{
 			actor->unknown41c = 3;
 			actor->unknown420 = 2;
@@ -229,15 +228,15 @@ void __stdcall function_1bf3d0(long actor_index, s_slot *slot, bool active)
 // @retail 0x1bf3f0
 bool function_1bf3f0(long other_index, long actor_index, short type)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	bool result = false;
+	s_actor_view *actor = actor_get(actor_index);
 
 	if (other_index != NONE)
 	{
-		long other_prop_index = actor_get(other_index)->prop_index;
+		s_actor_view *other = actor_get(other_index);
 
-		if (other_prop_index != NONE && actor->prop_index != NONE &&
-			prop_node_get(actor->prop_index)->unknown08 == prop_node_get(other_prop_index)->unknown08 &&
+		if (other->prop_index != NONE && actor->prop_index != NONE &&
+			prop_node_get(actor->prop_index)->unknown08 == prop_node_get(other->prop_index)->unknown08 &&
 			function_1a6fe0(other_index, type) != NONE)
 		{
 			result = true;
@@ -330,10 +329,10 @@ void __stdcall function_1bf5c0(long actor_index, s_slot *slot)
 		function_210850(&point, &position);
 		actor->unknown41c = 3;
 		actor->unknown420 = 3;
+		actor->unknown434 = 3;
 		actor->unknown424.point = position;
 		actor->unknown438.point = position;
 		actor->unknown430 = 2;
-		actor->unknown434 = 3;
 		actor->unknown444 = NONE;
 		actor->unknown488 = true;
 		actor->unknown4a0 = true;
@@ -346,8 +345,9 @@ void __stdcall function_1bf5c0(long actor_index, s_slot *slot)
 			if (weapon)
 			{
 				s_weapon_difficulty_entry_0b *entry;
+				short local_0 = g_4e6948->state == 1 ? g_4e6948->difficulty : 1;
 
-				switch (g_4e6948->state == 1 ? g_4e6948->difficulty : 1)
+				switch (local_0)
 				{
 				case 2:
 					entry = &weapon->difficulty[1];

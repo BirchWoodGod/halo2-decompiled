@@ -339,49 +339,45 @@ void c_class_19b8b1::v3()
 // @retail 0x2540e8
 bool c_class_19b8b1::v10(s_widget_event *event)
 {
+	long sound;
 	if (event->type == 5 && (event->param == 0 || event->param == 12))
 	{
 		function_24c7e4(&handlers, (s_event **)&event, (long *)&valuef8);
-		function_236299(1);
-		return true;
+		sound = 1;
+		goto accepted;
 	}
-	else if (event->type == 3)
+	if (event->type == 3)
 	{
-		if (!(valuef4 & 1))
-		{
-			v8();
-			function_236299(0);
-			return true;
-		}
+		if (valuef4 & 1) goto fallback;
+		goto previous_handler;
 	}
-	else if (event->type == 1)
+	if (event->type == 1)
 	{
-		if (!(valuef4 & 1))
-		{
-			v9();
-			function_236299(0);
-			return true;
-		}
+		if (valuef4 & 1) goto fallback;
+		goto next_handler;
 	}
-	else if (event->type == 4)
+	if (event->type == 4)
 	{
-		if (!(valuef4 & 2))
-		{
-			v8();
-			function_236299(0);
-			return true;
-		}
+		if (valuef4 & 2) goto fallback;
+		goto previous_handler;
 	}
-	else if (event->type == 2)
+	if (event->type == 2)
 	{
-		if (!(valuef4 & 2))
-		{
-			v9();
-			function_236299(0);
-			return true;
-		}
+		if (valuef4 & 2) goto fallback;
+		goto next_handler;
 	}
+fallback:
 	return c_class_1a2c81::v10(event);
+previous_handler:
+	v8();
+	sound = 0;
+	goto accepted;
+next_handler:
+	v9();
+	sound = 0;
+accepted:
+	function_236299(sound);
+	return true;
 }
 
 // @retail 0x254173

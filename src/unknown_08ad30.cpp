@@ -127,7 +127,7 @@ struct c_entry_table
 	struct { long count; c_entry_handler *handlers[1]; } *handlers;
 	s_entry entries[1024];
 
-	void function_08ae80(dword identifier, short handler_index, long a, long b, long c, long d);
+	void function_08ae80(dword identifier, long handler_index, long a, long b, long c, long d);
 	void function_08aed0(dword identifier);
 	bool function_08af70(long handler_index, long *size, void **data);
 	bool function_08b010(long handler_index, long *size, void **data);
@@ -241,7 +241,7 @@ PRIVATE void free_block(void *block)
 	long dummy;
 	g_4d87f8->allocator->get_info(block, &dummy);
 	s_allocator_globals *globals = g_4d87f8;
-	globals->allocator->release(block, -1);
+	g_4d87f8->allocator->release(block, -1);
 	if (block)
 	{
 		globals->count--;
@@ -251,34 +251,55 @@ PRIVATE void free_block(void *block)
 // @retail 0x8aed0
 void c_entry_table::function_08aed0(dword identifier)
 {
- byte local_0 = *(volatile byte *)&this->busy;
-	s_entry *entry = &entries[ENTRY_INDEX(identifier)];
-	if (entry->data)
+	/* both arms are the same code; retail still reads busy (a dead load) */
+	if (busy)
 	{
-		free_block(entry->data);
-		entry->data = 0;
-		entry->data_size = 0;
+		s_entry *entry = &entries[ENTRY_INDEX(identifier)];
+		if (entry->data)
+		{
+			free_block(entry->data);
+			entry->data_size = 0;
+			entry->data = 0;
+		}
+		if (entry->state)
+		{
+			free_block(entry->state);
+			entry->state_size = 0;
+			entry->state = 0;
+		}
+		entry->identifier = NONE;
+		entry->handler_index = -1;
 	}
-	if (entry->state)
+	else
 	{
-		free_block(entry->state);
-		entry->state = 0;
-		entry->state_size = 0;
+		s_entry *entry = &entries[ENTRY_INDEX(identifier)];
+		if (entry->data)
+		{
+			free_block(entry->data);
+			entry->data_size = 0;
+			entry->data = 0;
+		}
+		if (entry->state)
+		{
+			free_block(entry->state);
+			entry->state_size = 0;
+			entry->state = 0;
+		}
+		entry->identifier = NONE;
+		entry->handler_index = -1;
 	}
-	entry->identifier = NONE;
-	entry->handler_index = -1;
 }
 
 // @retail 0x8ae80
-void c_entry_table::function_08ae80(dword identifier, short handler_index, long a, long b, long c, long d)
+void c_entry_table::function_08ae80(dword identifier, long handler_index, long a, long b, long c, long d)
 {
 	s_entry *entry = &entries[ENTRY_INDEX(identifier)];
 	entry->identifier = identifier;
-	entry->handler_index = handler_index;
+	entry->handler_index = (short)handler_index;
 	entry->unknown06 = 0;
+	entry->unknown08 = NONE;
 	entry->unknown0c = 0;
 	entry->unknown07 = 0;
-	entry->unknown08 = NONE;
 	entry->data_size = a;
 	entry->data = (void *)b;
 	entry->state_size = c;
@@ -428,18 +449,20 @@ local_1:
 	return local_0;
 }
 
-static __forceinline void release_block(void *block, long *info)
+static __forceinline void release_block(void *block)
 {
+	long info;
 	s_allocator_globals *globals = g_4d87f8;
-	globals->allocator->get_info(block, info);
+	globals->allocator->get_info(block, &info);
 	globals = g_4d87f8;
 	globals->allocator->release(block, -1);
 	globals->count--;
 }
 
-PRIVATE __forceinline void function_8a6f2(s_allocator_globals *arg_0, void *arg_1, long *arg_2)
+PRIVATE __forceinline void function_8a6f2(s_allocator_globals *arg_0, void *arg_1)
 {
- arg_0->allocator->get_info(arg_1, arg_2);
+ long local_1;
+ arg_0->allocator->get_info(arg_1, &local_1);
  s_allocator_globals *local_0 = g_4d87f8;
  local_0->allocator->release(arg_1, NONE);
  local_0->count--;
@@ -478,7 +501,7 @@ long c_entry_table::read_creation(long a, long *handler_index_out, dword *mask_o
 					*handler_index_out = handler_index;
 					*mask_out = result;
 					blocks[*count].type = 0xc;
-					blocks[*count].size = (short)*(volatile long *)&data_size;
+					blocks[*count].size = (short)data_size;
 					blocks[*count].block = data;
 					blocks[*count + 1].type = 0xd;
 					blocks[*count + 1].size = (short)state_size;
@@ -490,9 +513,9 @@ long c_entry_table::read_creation(long a, long *handler_index_out, dword *mask_o
 			result = 3;
 		}
 		if (data)
-			function_8a6f2(g_4d87f8, data, (long *)&stream);
+			function_8a6f2(g_4d87f8, data);
 		if (state)
-			function_8a6f2(g_4d87f8, state, (long *)&stream);
+			function_8a6f2(g_4d87f8, state);
 		return result;
 	}
 	return 3;
@@ -507,7 +530,7 @@ void c_entry_table::create(dword identifier, long handler_index, long a, long co
 	void *state = blocks[1].block;
 	memset(blocks, 0, count * sizeof(s_update_block));
 	c_entry_handler *handler = handlers->handlers[handler_index];
-	function_08ae80(identifier, (short)handler_index, data_size, (long)data, state_size, (long)state);
+	function_08ae80(identifier, handler_index, data_size, (long)data, state_size, (long)state);
 	s_entry *entry = &entries[ENTRY_INDEX(identifier)];
 	entry->unknown06 = handler->v22(entry, entry->data_size, entry->data, a, entry->state_size, entry->state) != false;
 }
@@ -583,40 +606,60 @@ long c_entry_table::read_update(dword identifier, long *size_out, long a, long *
 	long result;
 	s_entry *entry = 0;
 	if (identifier != NONE)
+		entry = entries[ENTRY_INDEX(identifier)].identifier == identifier ? &entries[ENTRY_INDEX(identifier)] : 0;
+	if (entry)
 	{
-		s_entry *candidate = &entries[ENTRY_INDEX(identifier)];
-		if (candidate->identifier == identifier)
-			entry = candidate;
-	}
-	if (!entry)
-		return 3;
-	c_entry_handler *handler = handlers->handlers[entry->handler_index];
-	long state_size = entry->state_size;
-	void *state = handle_allocate(state_size);
-	if (!state)
-		return 3;
-	if (stream->mode == 4)
-	{
-		memset(state, 0, entry->state_size);
-		if (!handler->save(entry->data_size, (long)entry->data, entry->state_size, state))
-			goto failed;
+		c_entry_handler *handler = handlers->handlers[entry->handler_index];
+		long volatile state_size = entry->state_size;
+		s_allocator_globals *globals = g_4d87f8;
+		void *state = globals->allocator->allocate(entry->state_size, 0, 0);
+		if (state == 0)
+		{
+			globals->allocator->compact(0);
+			state = globals->allocator->allocate(state_size, 0, 0);
+		}
+		if (state != 0)
+			globals->count++;
+		if (state)
+		{
+			if (stream->mode != 4)
+			{
+				memcpy(state, entry->state, entry->state_size);
+			}
+			else
+			{
+				memset(state, 0, entry->state_size);
+				if (!handler->save(entry->data_size, (long)entry->data, entry->state_size, state))
+				{
+					result = 3;
+					release_block(state);
+					goto done;
+				}
+			}
+			long read_size = 0;
+			if (!handler->v15(false, (dword *)&read_size, entry->state_size, state, stream))
+			{
+				result = 3;
+				release_block(state);
+				goto done;
+			}
+			*size_out = read_size;
+			blocks[*count].type = 0xd;
+			blocks[*count].size = (short)entry->state_size;
+			blocks[*count].block = state;
+			(*count)++;
+			result = 0;
+		}
+		else
+		{
+			result = 3;
+		}
 	}
 	else
 	{
-		memcpy(state, entry->state, entry->state_size);
+		result = 3;
 	}
-	long read_size = 0;
-	if (!handler->v15(false, (dword *)&read_size, entry->state_size, state, stream))
-		goto failed;
-	*size_out = read_size;
-	blocks[*count].type = 0xd;
-	blocks[*count].size = (short)entry->state_size;
-	blocks[*count].block = state;
-	(*count)++;
-	return 0;
-failed:
-	result = 3;
-	release_block(state, (long *)&stream);
+done:
 	return result;
 }
 
@@ -717,11 +760,12 @@ long replication_table_create(s_handle_peers *peers, long index);
 bool replication_table_create_chain(s_handle_peers *peers, long count, long *handles);
 
 /* frees a block the way the failed creations do */
-static __forceinline void discard_block(void *block, long *size)
+static __forceinline void discard_block(void *block)
 {
+	long local_0;
 	s_allocator_globals *globals = g_4d87f8;
-	if (!globals->allocator->get_info(block, size))
-		*size = NONE;
+	if (!globals->allocator->get_info(block, &local_0))
+		local_0 = NONE;
 	globals = g_4d87f8;
 	globals->allocator->release(block, NONE);
 	globals->count--;
@@ -758,7 +802,7 @@ long entity_table_new_entity(c_entry_table *table, long handler_index)
 		result = identifier;
 		if (identifier != NONE)
 		{
-			local_2->function_08ae80(identifier, (short)handler_index, data_size, (long)data, state_size, (long)state);
+			local_2->function_08ae80(identifier, handler_index, data_size, (long)data, state_size, (long)state);
 			goto local_3;
 		}
 	}
@@ -774,12 +818,17 @@ local_3:
 // @retail 0x8a210
 bool entity_table_new_entities(long *identifiers, c_entry_table *table, long count, long const *handler_indices)
 {
-	void *datas[4] = { 0 };
-	void *states[4] = { 0 };
-	long field_34[4] = { 0 };
-	long state_sizes[4] = { 0 };
-	bool result = true;
+	void *datas[4];
+	void *states[4];
+	long field_34[4];
+	long state_sizes[4];
+	volatile bool result = true;
 	long i;
+
+	memset(field_34, 0, sizeof(field_34));
+	memset(datas, 0, sizeof(datas));
+	memset(state_sizes, 0, sizeof(state_sizes));
+	memset(states, 0, sizeof(states));
 
 	for (i = 0; i < count; i++)
 	{
@@ -789,19 +838,20 @@ bool entity_table_new_entities(long *identifiers, c_entry_table *table, long cou
 			goto failed;
 		}
 	}
-	if (!replication_table_create_chain((s_handle_peers *)table->unknown0c, count, identifiers))
-		goto failed;
-	for (i = 0; i < count; i++)
-		table->function_08ae80(identifiers[i], (short)handler_indices[i], field_34[i], (long)datas[i], state_sizes[i], (long)states[i]);
-	return result;
+	if (replication_table_create_chain((s_handle_peers *)table->unknown0c, count, identifiers))
+	{
+		for (i = 0; i < count; i++)
+			table->function_08ae80(identifiers[i], handler_indices[i], field_34[i], (long)datas[i], state_sizes[i], (long)states[i]);
+		return result;
+	}
 
 failed:
 	for (i = 0; i < count; i++)
 	{
 		if (datas[i])
-			discard_block(datas[i], (long *)&handler_indices);
+			discard_block(datas[i]);
 		if (states[i])
-			discard_block(states[i], (long *)&table);
+			discard_block(states[i]);
 	}
 	return false;
 }

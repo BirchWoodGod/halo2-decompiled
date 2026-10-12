@@ -2,6 +2,148 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7954 functions match
+
+```
+matched 7954 of 11318 game functions (966803 of 2784283 bytes, 34.72%)
+```
+
+3 new matches, none lost:
+- The second machine's lane D upper, round 18 (#382, +3): `0x8aed0`, `0x85600` and `0x8b2a0`, and four matched functions no longer need a `volatile` access to match.
+
+## 2026-10-12: 7951 functions match
+
+```
+matched 7951 of 11318 game functions (966210 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 34 (+2), writing this machine's unwritten functions: `0x24ba99` matches on its first draft, and `0x2c3b0` replaces its stub, which gives the second machine's caller `0x22a648` retail's call and matches it. Thirteen more render and UI functions are now written, some kept disabled where a draft would cost an existing match.
+
+## 2026-10-12: 7949 functions match
+
+```
+matched 7949 of 11318 game functions (966138 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 43 (+2), in the render range: `0x3f830` matches, and `0x36880` keeps its rectangle on the stack through a named reference, the third machine's lead from #375. That matches the third machine's caller `0x1634d0` and takes `0x36880` from 76 differences to 55; `0x15720` and `0x22c30` are each about ten closer.
+
+## 2026-10-12: 7947 functions match
+
+```
+matched 7947 of 11318 game functions (965514 of 2784283 bytes, 34.68%)
+```
+
+3 new matches, none lost:
+- Claude lane 1, round 4 (+3): the two interpolator getters behind `0x2abc10` and `0x2abca0` set their default result after the lookup, as retail does, and `0xc12d0` reads its light definition through a volatile pointer to the tag data and writes its last clamp the other way round; `0xa3df0` is two differences closer.
+
+## 2026-10-12: 7944 functions match
+
+```
+matched 7944 of 11318 game functions (964956 of 2784283 bytes, 34.66%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 42 (+2), in the render range: `0x36f50` sums its three squared lengths in single precision as retail does, and `0x2afa0` matches; `0x31590` is down to 2 differences, which wait on its callee `0xc17f0`, and `0x3ea60` to 5.
+
+## 2026-10-12: 7942 functions match
+
+```
+matched 7942 of 11318 game functions (964104 of 2784283 bytes, 34.63%)
+```
+
+64 new matches, none lost:
+- The third machine's first batch (#375, +25), over its lanes N, Q, R, S, T and H: among them `0x142eb0`, which now takes its two matrices in retail's order, and `0x1973f0`, through two input globals that now point into the record they belong to.
+- The second machine's lanes (#372–#374, #376–#381, +39): lane F +10 (the shared list base now has one declaration, which also matches lane O's `0x249f85` and this machine's `0x2b19bd`), lane P +8, lane M +6, lane D +9, lanes J and Y +2 each, lane B +1, and lane AC +1 (this machine's `0x2a56e0`, through its callee `0x275380`).
+
+## 2026-10-12: 7878 functions match
+
+```
+matched 7878 of 11318 game functions (951983 of 2784283 bytes, 34.19%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, rounds 31 to 33 (+1): `0x24c5f2` matches, callee first, so its caller `0x2b225a` now gets retail's call registers; the `cache_files_windows` family `0x213e30`, `0x213e90`, `0x213f10` and `0x214100` is down to 3 differences each, and eight UI-core functions are closer.
+
+## 2026-10-12: 7877 functions match
+
+```
+matched 7877 of 11318 game functions (951953 of 2784283 bytes, 34.19%)
+```
+
+5 new matches, none lost:
+- Claude lane 1, round 3 (+5): two lookups into one table read the table global a second time, as retail does (`0x1e8cb0`, `0x1e8d50`); `0x2cb001` keeps its unused argument, so it returns with `ret 4`; `0x1e3a00` copies the sample's center from the slot after its point, so the compiler loads before it stores; and `0x2b178e` stores its flag before it fills the message parameters.
+
+## 2026-10-12: 7872 functions match
+
+```
+matched 7872 of 11318 game functions (951426 of 2784283 bytes, 34.17%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 41 (+1), in the render range: `0x48b00`, the screen-space bounds of a sphere, groups one projected product the way retail does and writes its depth clamp the other way round; `0x23600` and `0x3e9c0` are each one difference closer.
+
+## 2026-10-12: 7871 functions match
+
+```
+matched 7871 of 11318 game functions (950609 of 2784283 bytes, 34.14%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 40 (+1): the multiplayer-settings preview update `0x2c8d7c`, one of the methods round 39 put into its retail vtable slot, keeps its child-model pointer addressable across both preview updates.
+
+## 2026-10-12: 7870 functions match
+
+```
+matched 7870 of 11318 game functions (950496 of 2784283 bytes, 34.14%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 30 (+2): `0x214f0` calls `0x211a0` directly instead of through a volatile function pointer, and `0x211a0` copies its final pass to its output parameter; with the indirect call gone, two of its callers match (`0x222a0`, `0x235756`).
+
+## 2026-10-12: 7868 functions match
+
+```
+matched 7868 of 11318 game functions (950393 of 2784283 bytes, 34.13%)
+```
+
+7 new matches, none lost:
+- Second machine, lane AA round 9 (+2): `0x1144a0`, `0x114ec0`.
+- Second machine, lane O round 25 (+2): `0x240ee0`, `0x249f0d`.
+- Second machine, lane M round 22 (+3): `0x1a9bc0`, `0x1ab770`, `0x1a2084`; it also removed forbidden `volatile` from seven bodies.
+
+## 2026-10-12: 7861 functions match
+
+```
+matched 7861 of 11318 game functions (949167 of 2784283 bytes, 34.09%)
+```
+
+14 new matches, none lost:
+- Claude lane 1, round 2 (+14): the inlined next-local-player scan takes its start index in a second variable, so the compiler no longer jumps past its guard (`0x1e7800`, `0x1e78b0`, `0x1e7960`, `0x2a0840`).
+- Five UI-screen and list destructors are declared `virtual` explicitly, which keeps `this` in `ecx` (`0x2b53a7`, `0x2b549d`, `0x2b6301`, `0x2b7c86`, `0x2b81a4`, and the deleting destructors `0x2b53ea`, `0x2b61b2`, `0x2b7c6a`).
+- `0x69110` calls `0xab9f0` directly instead of through a local function pointer, so whole-program optimization keeps retail's register convention for it (`0xab960`, `0xab9f0`).
+
+## 2026-10-12: 7847 functions match
+
+```
+matched 7847 of 11318 game functions (947790 of 2784283 bytes, 34.04%)
+```
+
+75 new matches, none lost:
+- The second machine's lanes (#345–#348, #350, #352–#363, #365, #367, #368): lane P +18 (0x134d20, its callers and the interpolator getters), lane D +16, lane B +11, lane M +11, lane O +5, lane J +4, lane K +2, lane AA +2, lanes U and Y +1 each, and the permuter lane +4.
+- @coldspear's maps of 0x1d3920 (#344), 0x25d020 (#364) and 0x119280 (#366), and the one-bit tests note in docs/DECOMPILING.md (#351).
+- @Banshee64's comments on the parameter-address references from #183 and #255 (#349).
+
+## 2026-10-12: 7772 functions match
+
+```
+matched 7772 of 11318 game functions (930371 of 2784283 bytes, 33.42%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 38: 0x22590, after retail's table of 68 subsystem records (startup, shutdown and per-map callbacks) was written as data, so the functions it holds are referenced from data as in retail.
+
 ## 2026-10-12: 7771 functions match
 
 ```

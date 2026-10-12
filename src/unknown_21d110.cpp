@@ -695,9 +695,12 @@ void __stdcall function_21d630(long effect_index, long mode)
 					state.source_data_size = sizeof(state.source_data);
 					state.effect_marker.link.effect_index = effect_index;
 				}
-				state.flags |= 0x80;
-				*(long *)&state.gain = *(long *)&entry->gain;
-				if (sound_system_available())
+				long local_0 = *(long *)&entry->gain;
+				s_sound_system_effect_view *local_1 = (s_sound_system_effect_view *)g_4e6380;
+				bool local_2 = local_1->initialized;
+				*(long *)&state.gain = local_0;
+				state.flags = *(dword const volatile *)&state.flags | 0x80;
+				if (local_2 && local_1->hardware_available && local_1->enabled)
 				{
 					long listener_index;
 					long rate_limit_stage;

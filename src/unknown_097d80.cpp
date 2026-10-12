@@ -46,7 +46,6 @@ struct c_aggregate : c_child
 	byte unknown04[8];
 	c_child *children[3];
 
-	long function_97d80(dword *source, s_request *request);
 	void v7(void *a);
 	void v8(long a, long b);
 
@@ -54,14 +53,14 @@ struct c_aggregate : c_child
 
 
 // @retail 0x97d80
-long c_aggregate::function_97d80(dword *source, s_request *request)
+long c_aggregate_450cf4::function_97d80(dword *source, s_request *request)
 {
 	s_block blocks[256];
 	long starts[4];
 	long error = 0;
 	long total = 0;
 
-	c_child **child = children;
+	c_child **child = (c_child **)children;
 	for (long i = 0; i < 3; i++, child++)
 	{
 		starts[i] = total;
@@ -76,7 +75,7 @@ long c_aggregate::function_97d80(dword *source, s_request *request)
 
 	if (error == 0 && request->type != 4)
 	{
-		child = children;
+		child = (c_child **)children;
 		for (long i = 0; i < 3; i++, child++)
 		{
 			c_child *object = *child;
@@ -94,7 +93,8 @@ long c_aggregate::function_97d80(dword *source, s_request *request)
 			if (object != 0)
 			{
 				long result;
-				g_4d87f8->allocator->get_info(object, &result);
+				if (!g_4d87f8->allocator->get_info(object, &result))
+					result = NONE;
 				g_4d87f8->allocator->release(object, NONE);
 				if (object != 0)
 					g_4d87f8->count--;
@@ -134,9 +134,10 @@ void c_aggregate::v8(long a, long b)
 void function_97f60(s_handle_peers *t, long a, c_handle_table_450cd0 *self)
 {
 	self->table = t;
-	self->shift = a;
-	self->bit = 1 << a;
+	long local_0 = 1 << a;
 	self->head = 0;
+	self->shift = a;
+	self->bit = local_0;
 	self->node = 0;
 	for (long i = 0; i < 1024; i++)
 	{

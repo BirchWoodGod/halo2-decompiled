@@ -216,10 +216,7 @@ struct s_datums_450cb8
 
 inline s_datum_450cb8 *datum_try_get_450cb8(s_datums_450cb8 *datums, long handle)
 {
-	s_datum_450cb8 *datum = &datums->data[handle & 0x3ff];
-	if (datum->handle != handle)
-		return 0;
-	return datum;
+	return datums->data[handle & 0x3ff].handle == handle ? &datums->data[handle & 0x3ff] : 0;
 }
 
 class c_vtable_450cb8
@@ -249,15 +246,8 @@ struct s_definition_4ced60
 
 extern s_definition_4ced60 g_4ced60[];
 
-/* the global tunables of 0x450c94 and the time source */
+/* a global tunable of 0x450c94 and the time source */
 extern long g_4cf474;
-extern real g_4cf478;
-extern long g_4cf47c;
-extern real g_4cf480;
-extern real g_4cf484;
-extern real g_4cf488;
-extern real g_4cf48c;
-extern real g_4cf490;
 
 
 inline long time_now()

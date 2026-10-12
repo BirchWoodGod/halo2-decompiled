@@ -585,6 +585,8 @@ void function_3ede0(void)
 	}
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x3ea60
 void function_3ea60(void)
 {
@@ -605,12 +607,16 @@ void function_3ea60(void)
 		byte *definition = g_4e3b44[*(long *)(data + 4) & 0xffff].bytes;
 		scratch.count = *(long *)(definition + 0x48);
 		render_model_get_default_orientations((s_render_model_definition *)definition, scratch.orientations);
+		vector3f *second = g_4687b0;
 		g_4c5038 = true;
+		// Keep the flag store before the count reload.
+		_ReadWriteBarrier();
 		g_4c503c = *(long *)(definition + 0x48);
-		render_model_build_node_matrices(g_4687a8, g_4687b0, g_468788,
+		render_model_build_node_matrices(g_4687a8, second, g_468788,
 			(s_render_model_definition *)definition, g_4c5040, scratch.orientations);
 	}
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x3eb70
 real function_3eb70(void)
@@ -1471,9 +1477,9 @@ void function_36f50(byte *state)
         vector3f const *a = (vector3f const *)(state + 0x24);
         vector3f const *b = (vector3f const *)(state + 0x30);
         vector3f const *c = (vector3f const *)(state + 0x3c);
-        *(real *)((entry - 0x24) + 0xac) = (real)sqrt((double)a->i * a->i + (double)a->j * a->j + (double)a->k * a->k);
-        *(real *)((entry - 0x24) + 0xb0) = (real)sqrt((double)b->i * b->i + (double)b->j * b->j + (double)b->k * b->k);
-        *(real *)((entry - 0x24) + 0xb4) = (real)sqrt((double)c->i * c->i + (double)c->j * c->j + (double)c->k * c->k);
+        *(real *)((entry - 0x24) + 0xac) = (real)sqrt((real)(a->i * a->i) + (real)(a->j * a->j) + (real)(a->k * a->k));
+        *(real *)((entry - 0x24) + 0xb0) = (real)sqrt((real)(b->i * b->i) + (real)(b->j * b->j) + (real)(b->k * b->k));
+        *(real *)((entry - 0x24) + 0xb4) = (real)sqrt((real)(c->i * c->i) + (real)(c->j * c->j) + (real)(c->k * c->k));
         *(real *)((entry - 0x24) + 0x88) = signed_fraction::evaluate(random);
         *(real *)((entry - 0x24) + 0x8c) = signed_fraction::evaluate(random);
         *(real *)((entry - 0x24) + 0x90) = signed_fraction::evaluate(random);
@@ -1786,7 +1792,7 @@ bool function_48b00(point3f const *point, real radius, real *screen, real *exten
         real vz = g_48568c[9] * z + g_48568c[6] * y + g_48568c[3] * x + g_48568c[12];
         real py = g_48568c[39] * vz + g_48568c[35] * vy + g_48568c[31] * vx + g_48568c[43];
         real pz = g_48568c[40] * vz + g_48568c[36] * vy + g_48568c[32] * vx + g_48568c[44];
-        real pw = g_48568c[41] * vz + g_48568c[37] * vy + g_48568c[33] * vx + g_48568c[45];
+        real pw = (real)(g_48568c[37] * vy + g_48568c[41] * vz) + g_48568c[33] * vx + g_48568c[45];
         real rx = g_48568c[30] * radius;
         real ry = g_48568c[35] * radius;
         if (pz > 0.0f)
@@ -1796,7 +1802,7 @@ bool function_48b00(point3f const *point, real radius, real *screen, real *exten
             screen[0] = ((px * inverse + 1.0f) * width + (short)g_48564a * 2.0f - 1.0f) * 0.5f;
             screen[1] = ((1.0f - py * inverse) * height + (short)g_485648 * 2.0f - 1.0f) * 0.5f;
             real depth = pz * inverse;
-            screen[2] = (1.0f < depth ? 1.0f : depth) * 16777215.0f;
+            screen[2] = (depth < 1.0f ? depth : 1.0f) * 16777215.0f;
             screen[3] = pw / g_48565c * 16777215.0f;
             extent[0] = width * inverse * rx * 0.5f;
             extent[1] = height * inverse * ry * 0.5f;
@@ -1908,7 +1914,9 @@ void __stdcall function_3f830(byte const *tree, point3f const *center)
     g_509438 = NULL;
     if (*(long const *)(tree + 0x20) > 0)
     {
-        real tree_radius = (real)*(long const *)(tree + 0xc) * 8.0f * 0.5f;
+        real scaled_radius = (real)*(long const *)(tree + 0xc) * 8.0f;
+        dword scaled_bits = *(dword const *)&scaled_radius;
+        real tree_radius = *(real const *)&scaled_bits * 0.5f;
         ((c_octree_radius_view_ab const *)tree)->function_3f970( 0, (plane3f *)(context + 0x10c), (real *)&bounds,
             (point3f const *)tree, tree_radius);
     }
@@ -3345,47 +3353,7 @@ void __stdcall function_41cc0(byte const *levels)
     group.flags = group.unknown10;
 }
 
-// Retail 0x30ed0
-void function_30ed0()
-{
-    byte *state = (byte *)g_4c0b78.state;
-    byte *list = *(byte **)(state + 0x14);
-    long saved_context = g_4c19ac;
-    bool rendered = false;
-    for (long i = 0; i < g_4ba134; ++i)
-    {
-        byte *entry = (byte *)&g_4ba074 + i * 12;
-        long found = NONE;
-        for (long j = 0; j < *(word *)(list + 4); ++j)
-            if (*(long *)(*(byte **)(list + 0xc) + j * 4) == *(long *)entry) { found = j; break; }
-        if (found == NONE || !(*(word *)(*(byte **)(list + 8) + found * 2) & 0x1000)) continue;
-        s_object_marker marker;
-        if (function_b8d30(*(long *)entry, *(long *)(entry + 4), &marker, 1, false) <= 0) continue;
-        byte *frustum = *(byte **)state + 4;
-        s_bounds3d bounds3d;
-        if (!function_1650a0((s_view *)frustum, &marker.matrix.position, &bounds3d, *(real *)(entry + 8))) continue;
-        s_record_sources &group = g_4c1a48[1];
-        group.unknown10 = group.flags;
-        group.flags = 0;
-        group.first = group.count;
-        real *r = (real *)&bounds3d;
-        real *bounds = (real *)(frustum + 0xa0);
-        if (r[0] < bounds[0]) r[0] = bounds[0];
-        if (r[1] > bounds[1]) r[1] = bounds[1];
-        if (r[2] < bounds[2]) r[2] = bounds[2];
-        if (r[3] > bounds[3]) r[3] = bounds[3];
-        function_133790((s_bit_vector_pool *)state, (short)found, false, (long *)&bounds3d, saved_context, true);
-        function_44ac0(3, 2, saved_context);
-        function_494b0((box2f const *)bounds, (box2f *)&bounds3d);
-        draw_configured_pass_r18(10);
-        draw_source_pass_r18(1, 11, true, false, false, g_4858b8, true);
-        group.flags = group.unknown10;
-        group.first = 0;
-        rendered = true;
-    }
-    g_4c19ac = saved_context;
-    if (rendered) function_40e90(0);
-}
+
 
 // Retail 0x31170
 void function_31170(long tag, s_view_camera *camera, long resource, s_view_source *source, bool special, real scale)
@@ -3433,76 +3401,7 @@ void function_31170(long tag, s_view_camera *camera, long resource, s_view_sourc
 
 
 
-// Disabled: visibility creation needs shared pool addresses and a corrected protected 1320f0 interface; frame/pass storage is not yet canonical.
-#if 0
-struct s_light_frame_ab;
-struct s_light_shape_ab;
-struct s_light_definition_ab;
-struct s_light_projection_ab;
-struct s_index_state_31660;
-bool function_c17f0(long light, s_light_shape_ab *shape, bool respect_engine);
-void function_c1930(s_light_definition_ab const *definition, s_light_shape_ab *shape);
-void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_light_definition_ab const *definition);
-void __stdcall function_c1d90(s_light_frame_ab const *frame, s_light_shape_ab const *shape, s_light_projection_ab *entries, short *count);
-s_bit_vector_pool *function_1320f0(long kind, long count, bool flag, dword mask, byte const *projections,
-    point3f const *origin, real radius, s_bit_vector_pool *parent, long unknown, long bsp);
 
-// Retail 0x31c80
-void function_31c80()
-{
-    s_cached_input records[128];
-    long count = function_31910(records);
-    for (long i = 0; i < count; ++i)
-    {
-        long light_index = records[i].data[2];
-        real weight = *(real *)(records[i].data + 3);
-        if (!(weight > 0.07000000029802322f)) continue;
-        byte *light = g_4e030c->data + (light_index & 0xffff) * 0x110;
-        byte *definition = g_4e3b44[*(long *)(light + 4) & 0xffff].bytes;
-        long parent = NONE, root = NONE;
-        if (*(short *)(light + 0x54) != NONE)
-        {
-            parent = *(long *)(light + 0x4c);
-            for (long current = parent; current != NONE; current = *(long *)(((s_scalar_object_header *)g_4e0300->data)[current & 0xffff].object + 0x14))
-                root = current;
-            if ((definition[0] & 0x20) && !(*(dword *)definition & 0x40000))
-            {
-                long node = function_b8c40(parent, *(short *)(light + 0x54));
-                function_16640f(parent, node, (point3f *)(light + 0x84), (vector3f *)(light + 0xac), (vector3f *)(light + 0xb8));
-                point3f *position = (point3f *)(light + 0x84);
-                vector3f *offset = (vector3f *)(light + 0xac);
-                point3f *endpoint = (point3f *)(light + 0x90);
-                endpoint->x = position->x + offset->i;
-                endpoint->y = position->y + offset->j;
-                endpoint->z = position->z + offset->k;
-                function_31b40(offset, (vector3f *)(light + 0xb8));
-            }
-        }
-        byte shape[0x74], projections[6 * 0x1bc];
-        function_c17f0(light_index, (s_light_shape_ab *)shape, true);
-        if (g_509440 < 8) g_4c6b00[g_509440++].index = light_index;
-        s_bit_vector_pool *parent_visibility = g_4ba010 ? 0 : &g_547f88;
-        bool special = !(definition[0] & 8) && g_4ba020 && *(real *)(light + 0xf8) > 0.0f && *(short *)shape != 0;
-        long bsp = *(short *)(light + 0x48);
-        if (bsp == NONE && (definition[0] & 0x20) && (*(dword *)definition & 0x40000)) bsp = g_4b9ee4;
-        dword mask = (*(dword *)definition >> 12) & 0x400;
-        short projection_count;
-        function_c1d90((s_light_frame_ab *)(light + 0x84), (s_light_shape_ab *)shape, (s_light_projection_ab *)projections, &projection_count);
-        s_bit_vector_pool *visibility = function_1320f0(1, projection_count, false, mask, projections,
-            (point3f *)(light + 0x18), *(real *)(light + 0x24), parent_visibility, 0, bsp);
-        function_31660(light_index, *(long *)(light + 4), (s_index_state_31660 *)visibility, parent, root, *(short *)shape == 0, &special);
-        if (*(dword *)definition & 0x400000) function_31c20(parent, special, visibility);
-        s_bit_vector_pool *state = (s_bit_vector_pool *)g_4c0b78.state;
-        function_2cb30((s_2cb30_state *)state);
-        function_133390(state);
-        function_133520(state);
-        function_133720(state, true);
-        function_44720();
-        function_31170(*(long *)(light + 4), (s_view_camera *)shape, light_index,
-            (s_view_source *)(light + 0x84), special, weight);
-    }
-}
-#endif
 
 // Disabled: shadow rendering requires persistent shared light-frame/definition storage and visibility/global-source addresses.
 #if 0
@@ -3893,3 +3792,201 @@ s_light_frame_storage g_light_frame_storage;
 s_light_definition_storage g_light_definition_storage;
 
 s_filter_buffer_storage g_filter_buffer_storage;
+
+extern byte g_485a75, g_485a76;
+extern long g_485898;
+void function_15680(short mode);
+void function_15370(short mode);
+extern s_record_sources *g_467138;
+extern long g_467130, g_4858b4;
+extern void *g_467134;
+void function_0496f0();
+void function_44550();
+void function_445d0();
+bool __stdcall function_44370(long mode);
+void __stdcall function_14b60(dword flags, dword color, real depth, byte stencil);
+bool function_133790(s_bit_vector_pool *state, short index, bool flag, long *bounds, long context, bool final);
+void __stdcall function_44ac0(long group, dword selection_mask, long level);
+void function_0494b0(real const *bounds, real const *clip);
+void function_40e90(long mode);
+
+extern long g_4ba134, g_4c19ac;
+struct s_2cb30_state
+{
+	byte unknown00[0x2a78];
+	long active;
+};
+
+struct s_2cb30_entry
+{
+	dword values[9];
+};
+
+struct s_2cb30_globals
+{
+	long current;
+	long previous;
+	s_2cb30_state *state;
+	union
+	{
+		byte unknown0c[0x9b0 - 0xc];
+		struct
+		{
+			byte weights[850];
+			byte material_indices[850];
+			long materials[192];
+		};
+	};
+	long count;
+	s_2cb30_entry entries[32];
+	long entry_count;
+};
+extern s_2cb30_globals g_4c0b78;
+
+PRIVATE __forceinline void draw_source_pass_r18(long group, long mode, bool extra_enabled, bool depth, bool normal_cull, long target, bool filter)
+{
+    bool enabled = (g_4c1a48[group].flags & (1 << mode)) && extra_enabled;
+    if (enabled)
+    {
+        g_467130 = mode;
+        g_467134 = (void *)group;
+        g_467138 = &g_4c1a48[group];
+        g_4858b4 = target;
+        function_14bc0((short)target, 0, true);
+        if (mode == 1 && !g_485a75 && !g_485a76) function_14b60(1, 0, 0.0f, 0);
+        function_15680(normal_cull && (g_485898 < 4 || g_485898 > 7) ? 1 : 0);
+        if (filter) function_0496f0();
+    }
+    else g_467130 = 0;
+    function_15370(depth ? 1 : 0);
+    if (enabled) { function_44550(); function_445d0(); }
+}
+PRIVATE __forceinline void draw_configured_pass_r18(long mode)
+{
+    if (function_44370(mode)) { function_44550(); function_445d0(); }
+}
+
+// @retail 0x30ed0
+void function_30ed0()
+{
+    bool rendered = false;
+    byte *state = (byte *)g_4c0b78.state;
+    byte *list = *(byte **)(state + 0x14);
+    long saved_context = g_4c19ac;
+    for (long i = 0; i < g_4ba134; ++i)
+    {
+        byte *entry = (byte *)&g_4ba074 + i * 12;
+        volatile long found = 0;
+        bool hit = false;
+        for (long j = 0; j < *(word *)(list + 4); ++j)
+            if (*(long *)(*(byte **)(list + 0xc) + j * 4) == *(long *)entry) { found = j; hit = true; break; }
+        if (!hit || !(*(word *)(*(byte **)(list + 8) + found * 2) & 0x1000)) continue;
+        s_object_marker marker;
+        if (function_b8d30(*(long *)entry, *(long *)(entry + 4), &marker, 1, false) <= 0) continue;
+        byte *frustum = *(byte **)state + 4;
+        s_bounds3d bounds3d;
+        if (!function_1650a0((s_view *)frustum, &marker.matrix.position, &bounds3d, *(real *)(entry + 8))) continue;
+        s_record_sources &group = g_4c1a48[1];
+        group.unknown10 = group.flags;
+        group.flags = 0;
+        group.first = group.count;
+        real *r = (real *)&bounds3d;
+        real *bounds = (real *)(frustum + 0xa0);
+        if (!(r[0] > bounds[0])) r[0] = bounds[0];
+        if (r[1] > bounds[1]) r[1] = bounds[1];
+        if (!(r[2] > bounds[2])) r[2] = bounds[2];
+        if (r[3] > bounds[3]) r[3] = bounds[3];
+        function_133790((s_bit_vector_pool *)state, (short)found, false, (long *)&bounds3d, saved_context, true);
+        function_44ac0(3, 2, saved_context);
+        function_0494b0(bounds, (real const *)&bounds3d);
+        draw_configured_pass_r18(10);
+        draw_source_pass_r18(1, 11, true, false, false, g_4858b8, true);
+        group.flags = group.unknown10;
+        group.first = 0;
+        rendered = true;
+    }
+    g_4c19ac = saved_context;
+    if (rendered) function_40e90(0);
+}
+
+
+#include "index_cache_storage.h"
+extern bool g_4ba010;
+long function_b8c40(long object, short node);
+struct s_light_frame_ab;
+struct s_light_shape_ab;
+struct s_light_projection_ab;
+struct s_index_state_31660;
+struct s_view_camera;
+struct s_view_source;
+extern long g_509440;
+bool function_c17f0(long light, s_light_shape_ab *shape, bool respect_engine);
+void __stdcall function_c1d90(s_light_frame_ab const *frame, s_light_shape_ab const *shape, s_light_projection_ab *entries, short *count);
+s_bit_vector_pool *function_1320f0(long kind, long count, bool flag, long mask, byte const *projections,
+    byte const *origin, real radius, void *filter, real plane_offset, long bsp);
+bool first_person_weapon_get_marker(long object, long marker, point3f *position, vector3f *forward, vector3f *up);
+real function_31b40(vector3f *direction, vector3f const *up);
+void function_31660(long light, long tag, s_index_state_31660 *visibility, long parent, long root, bool flag, bool *special);
+void function_31c20(s_bit_vector_pool *visibility, bool flag, long parent);
+void function_2cb30();
+void function_133390(s_bit_vector_pool const *visibility);
+void __stdcall function_133520(s_bit_vector_pool *visibility);
+void function_133720(s_bit_vector_pool *visibility, bool enabled);
+void function_44720();
+void function_31170(long tag, s_view_camera *camera, long resource, s_view_source *source, bool special, real weight);
+
+// @retail 0x31c80
+void function_31c80()
+{
+    s_cached_input records[128];
+    long count = function_31910(records);
+    for (long i = 0; i < count; ++i)
+    {
+        long const &light_index = *(long const *)(records[i].data + 1);
+        real weight = *(real *)(records[i].data + 3);
+        if (!(weight > 0.07000000029802322f)) continue;
+        byte *light = g_4e030c->data + (light_index & 0xffff) * 0x110;
+        byte *definition = g_4e3b44[*(long *)(light + 4) & 0xffff].bytes;
+        long parent = NONE, root = NONE;
+        if (*(short *)(light + 0x54) != NONE)
+        {
+            parent = *(long *)(light + 0x4c);
+            for (long current = parent; current != NONE; current = *(long *)(((s_scalar_object_header *)g_4e0300->data)[current & 0xffff].object + 0x14))
+                root = current;
+            if ((definition[0] & 0x20) && !(*(dword *)definition & 0x40000))
+            {
+                long node = function_b8c40(parent, *(short *)(light + 0x54));
+                first_person_weapon_get_marker(parent, node, (point3f *)(light + 0x84), (vector3f *)(light + 0xac), (vector3f *)(light + 0xb8));
+                point3f *position = (point3f *)(light + 0x84);
+                vector3f *offset = (vector3f *)(light + 0xac);
+                point3f *endpoint = (point3f *)(light + 0x90);
+                endpoint->x = position->x + offset->i;
+                endpoint->y = position->y + offset->j;
+                endpoint->z = position->z + offset->k;
+                function_31b40(offset, (vector3f *)(light + 0xb8));
+            }
+        }
+        byte shape[0x7c], projections[6 * 0x1bc];
+        function_c17f0(light_index, (s_light_shape_ab *)shape, true);
+        if (g_509440 < 8) g_4c6b00[g_509440++].index = light_index;
+        s_bit_vector_pool *parent_visibility = g_4ba010 ? 0 : &g_547f88;
+        bool special = !(definition[0] & 8) && g_4ba020 && *(real *)(light + 0xf8) > 0.0f && *(short *)shape != 0;
+        long bsp = *(short *)(light + 0x48);
+        if (bsp == NONE && (definition[0] & 0x20) && (*(dword *)definition & 0x40000)) bsp = g_4b9ee4;
+        long mask = (*(dword *)definition >> 12) & 0x400;
+        short projection_count;
+        function_c1d90((s_light_frame_ab *)(light + 0x84), (s_light_shape_ab *)shape, (s_light_projection_ab *)projections, &projection_count);
+        s_bit_vector_pool *visibility = function_1320f0(1, projection_count, false, mask, projections,
+            (byte const *)(light + 0x18), *(real *)(light + 0x24), parent_visibility, 0.0f, bsp);
+        function_31660(light_index, *(long *)(light + 4), (s_index_state_31660 *)visibility, parent, root, *(short *)shape == 0, &special);
+        if (*(dword *)definition & 0x400000) function_31c20(visibility, special, parent);
+        s_bit_vector_pool *state = (s_bit_vector_pool *)g_4c0b78.state;
+        function_2cb30();
+        function_133390(state);
+        function_133520(state);
+        function_133720(state, true);
+        function_44720();
+        function_31170(*(long *)(light + 4), (s_view_camera *)shape, light_index,
+            (s_view_source *)(light + 0x84), special, weight);
+    }
+}

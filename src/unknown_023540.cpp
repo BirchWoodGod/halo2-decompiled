@@ -19,7 +19,6 @@
 #include "geometry_cache.h"
 #include "unknown_234c64.h"
 
-#if 0
 struct s_interface_function_context
 {
     long index;
@@ -40,9 +39,10 @@ struct s_interface_function_context
     bool field_76, field_77;
 };
 
-// Retail initializer at 0x2c3b0; activation changes shared caller conventions.
+// @retail 0x2c3b0
 inline void function_2c3b0(s_interface_function_context *context)
 {
+    vector3f *copied_direction = &context->field_1c;
     s_interface_function_context volatile *initialization = context;
     initialization->field_74 = false;
     initialization->evaluate = NULL;
@@ -66,15 +66,16 @@ inline void function_2c3b0(s_interface_function_context *context)
     context->field_3c.i = (real)(cos(yaw) * cos(pitch));
     context->field_3c.j = (real)(sin(yaw) * cos(pitch));
     context->field_3c.k = (real)sin(pitch);
-    vector3f volatile const *direction = &context->field_3c;
-    context->field_54.i = 0.0f - direction->i;
-    context->field_54.j = 0.0f - direction->j;
-    context->field_54.k = 0.0f - direction->k;
-    context->field_1c = context->field_3c;
+    vector3f const *direction = &context->field_3c;
+    vector3f volatile *negative = &context->field_54;
+    negative->i = 0.0f - direction->i;
+    negative->j = 0.0f - direction->j;
+    negative->k = 0.0f - direction->k;
+    *copied_direction = context->field_3c;
     context->field_60 = NONE;
 }
 
-#endif
+
 
 struct s_render_view_2b790
 {
@@ -1834,8 +1835,8 @@ void function_2afa0(point2f const *scale)
     real bounds[4];
     g_509408 = *scale;
     bounds[0] = 0.0f;
-    bounds[1] = 64.0f;
     bounds[2] = 0.0f;
+    bounds[1] = 64.0f;
     bounds[3] = 64.0f;
     function_34420((t_34770_begin)function_2b000, bounds, function_2b220, NULL, 0);
 }
@@ -3403,9 +3404,30 @@ bool __stdcall function_26e50(void *context)
 }
 
 
-// Disabled: frame construction copies full camera/projection ranges across split shared declarations and takes new shared frame/context addresses.
-#if 0
-// Retail 0x2ba10
+// Construct a saved camera frame, then select and run its render passes.
+extern bool g_4ba010;
+extern long g_4ba038, g_46701c, g_4e9194, g_4e64a8, g_4e92e0;
+void __stdcall function_132d0(s_frame_view_2c560 const *frame);
+void function_13c20();
+void function_13680(bool skip_effects);
+void function_15370(short mode);
+void function_15680(short mode);
+void function_1beb0();
+void function_3d2c0();
+void function_3ea60();
+void function_c15a0();
+void function_156040();
+real __stdcall function_156b30(long track, long type);
+void function_3fd70();
+void function_2b990(long object);
+void function_40890();
+void function_1917eb();
+class c_render_window;
+void function_147af1(long first, long second, c_render_window *window);
+struct s_2f800_view;
+void function_2fd90(s_2f800_view const *view, box2f const *clip, byte *out);
+
+// @retail 0x2ba10
 void function_2ba10(s_2f970_view const *view, long cluster, long player,
     byte const *camera, bool enabled, long leaf, bool invalid, vector3f const *sky_color,
     long unknown0, long object, long object_index, byte kind, long sky_index,
@@ -3452,17 +3474,17 @@ void function_2ba10(s_2f970_view const *view, long cluster, long player,
     function_1beb0();
     if (g_4e9194)
     {
-        function_156040(g_4e9194);
+        function_156040();
         function_13c20();
         return;
     }
     g_4e64a8 = 0;
     g_4e92e0 = 0;
-    function_2c3b0(&g_4e9268);
-    g_4e926c = function_156b30;
+    function_2c3b0((s_interface_function_context *)&g_4e9268);
+    g_4e926c = (void *)function_156b30;
     function_3fd70();
     function_2b990(object);
-    function_13680(false);
+    function_13680(enabled);
     function_15370(0);
     function_15680(0);
     if (g_4b9ed8 != NONE) function_1917eb();
@@ -3470,5 +3492,3 @@ void function_2ba10(s_2f970_view const *view, long cluster, long player,
     function_147af1(NONE, object_index, (c_render_window *)(camera + 0x30));
     function_13c20();
 }
-#endif
-

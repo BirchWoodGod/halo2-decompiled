@@ -84,10 +84,11 @@ void *function_1e4ef0(long actor_index);
 void *function_1e4e50(long actor_index);
 short function_1a77a0(long actor_index, long a, short level);
 
+#pragma inline_depth(0)
 // @retail 0x1b4680
 short __stdcall function_1b4680(long actor_index)
 {
-	s_actor_view *actor = actor_get(actor_index);
+	s_actor_view *actor = (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 	short result = 0;
 
 	if (actor->unknown225 || actor->unknown223)
@@ -95,8 +96,8 @@ short __stdcall function_1b4680(long actor_index)
 
 	if (actor->prop_index != NONE)
 	{
-		s_prop_node_view *node = prop_node_get(actor->prop_index);
-		s_prop_view_fields *view = prop_node_view(node);
+		s_prop_node_view *node = (s_prop_node_view *)(g_502418->data + (actor->prop_index & 0xffff) * sizeof(s_prop_node_view));
+		s_prop_view_fields *view = (s_prop_view_fields *)function_25d740((s_prop_node *)node);
 
 		if (view && !view->unknown68 && function_1e4e50(actor_index))
 		{
@@ -104,23 +105,27 @@ short __stdcall function_1b4680(long actor_index)
 			s_slot_memory_entry *entry;
 
 			if (view->unknown00 == 5)
-				return 3;
+				goto local_0;
 
 			iterator.actor_index = actor_index;
 			iterator.reference.unknown2 = 0x1b;
 			iterator.reference.unknown0 = NONE;
 			for (entry = function_26f0c0(&iterator); entry; entry = function_26f0c0(&iterator))
 			{
-				s_502424_element *joint = element_502424_get(entry->unknown4);
+				s_502424_element *joint = (s_502424_element *)(g_502424->data + (entry->unknown4 & 0xffff) * sizeof(s_502424_element));
 
-				if (joint->target.unknown8 != NONE && prop_node_get(joint->target.unknown8)->object_index == node->object_index)
-					return 3;
+				if (joint->target.unknown8 != NONE && ((s_prop_node_view *)(g_502418->data + (joint->target.unknown8 & 0xffff) * sizeof(s_prop_node_view)))->object_index == node->object_index)
+					goto local_0;
 			}
 		}
 		return 0;
 	}
 	return result;
+local_0:
+	result = 3;
+	return result;
 }
+#pragma inline_depth()
 // @retail 0x1b4bd0
 short __stdcall function_1b4bd0(long actor_index, s_slot *slot, bool active)
 {
@@ -162,17 +167,18 @@ short __stdcall function_1b4bd0(long actor_index, s_slot *slot, bool active)
 	return result;
 }
 
+#pragma inline_depth(0)
 // @retail 0x1b4d10
 short __stdcall function_1b4d10(long actor_index, short level, long a, long b)
 {
-	s_actor_view *actor = actor_get(actor_index);
+	s_actor_view *actor = (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 	short result = g_46fbe4;
 
 	actor->unknown41c = 3;
 	actor->unknown420 = 2;
 	if (actor->prop_index != NONE)
 	{
-		s_prop_view_fields *view = prop_view_fields_get(actor->prop_index);
+		s_prop_view_fields *view = (s_prop_view_fields *)function_25d700(actor->prop_index);
 
 		if (view->unknown6d)
 		{
@@ -183,6 +189,7 @@ short __stdcall function_1b4d10(long actor_index, short level, long a, long b)
 	}
 	return result;
 }
+#pragma inline_depth()
 
 // @retail 0x1b4e70
 short __stdcall function_1b4e70(long actor_index, long leader_index, long a, long b)

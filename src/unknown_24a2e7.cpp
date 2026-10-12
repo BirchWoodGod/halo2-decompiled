@@ -22,23 +22,6 @@ struct s_entry_24a64d
 	word field_1e4[50];
 };
 
-class c_list_24a64d : public c_list_widget_with_items
-{
-public:
-	c_list_24a64d(word arg_0);
-	virtual void v20(c_class_1a2c81 *item, long);
-	virtual void *function_24a64d(long index);
-	virtual void v24();
-	virtual word const *function_24a691(long index, bool append);
-	bool function_24a2e7(long controller);
-	void function_24a30e(s_controller_reference **arg_0, long *arg_1);
-	byte field_88;
-	bool field_89;
-	bool field_8a;
-	long field_8c;
-	c_list_item_handler field_90;
-};
-
 short player_slot_count_active(void);
 bool function_148c3e(long controller, long type);
 
@@ -284,12 +267,12 @@ void c_list_24a64d::v24()
 // @retail 0x249f0d
 c_list_24a64d::c_list_24a64d(word arg_0) :
 	c_list_widget_with_items(arg_0),
+	field_88(0),
+	field_89(false),
+	field_8a(false),
+	field_8c(NONE),
 	field_90(this, (list_item_method)&c_list_24a64d::function_24a30e)
 {
-	field_88 = 0;
-	field_89 = false;
-	field_8a = false;
-	field_8c = NONE;
 	data = user_interface_data_new("player profile list", 0x1001, 8);
 	function_16b790(data);
 	delegate_register(&item_handlers, &field_90);

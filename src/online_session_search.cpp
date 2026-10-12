@@ -382,7 +382,9 @@ void function_902b0(s_session_search *arg_0)
 	if (local_1 != NONE)
 	{
 		long local_2 = online_task_poll(local_1);
-		if (local_2 >= 0 && local_2 <= 1)
+		if (local_2 < 0)
+			goto local_5;
+		if (local_2 <= 1)
 			return;
 		if (local_2 == 2)
 		{
@@ -404,6 +406,7 @@ void function_902b0(s_session_search *arg_0)
 			for (; local_4 < 50; local_4++)
 				arg_0->results[local_4].valid = false;
 		}
+local_5:
 		if (arg_0->task_index != NONE)
 		{
 			function_6b640(arg_0->task_index);
@@ -572,7 +575,10 @@ bool __stdcall session_search_result_precedes(void const *a, void const *b, void
 	s_search_result const *first = (s_search_result const *)a;
 	s_search_result const *second = (s_search_result const *)b;
 	if (first->field1f8 < second->field1f8)
+	{
+local_0:
 		return true;
+	}
 	if (first->field1f8 > second->field1f8)
 		goto failed;
 	if (first->unknown74)
@@ -580,14 +586,14 @@ bool __stdcall session_search_result_precedes(void const *a, void const *b, void
 		if (first->field90 > second->field90)
 			return true;
 		if (first->field90 < second->field90)
-			goto failed;
+			return false;
 	}
 	if (first->field1fc > second->field1fc)
 		return true;
 	if (first->field1fc < second->field1fc)
-		goto failed;
+		return false;
 	if (first->field10c > second->field10c)
-		return true;
+		goto local_0;
 failed:
 	return false;
 }
@@ -659,9 +665,11 @@ void __stdcall session_search_score_and_sort(s_session_search *search)
 {
 	if (memcmp(search->unknown90, search->results, search->unknown88) == 0)
 		return;
-	for (s_search_result *entry = search->results; entry < search->results + MAXIMUM_SEARCH_RESULTS; entry++)
+	s_search_result *local_0 = search->results + MAXIMUM_SEARCH_RESULTS;
+	for (s_search_result *entry = search->results; entry < local_0; entry++)
 	{
-		entry->field1f8 = 0;
+		byte *local_1 = (byte *)entry + 0x10c;
+		(*(long *)(local_1 + 0xec)) = 0;
 		if (entry->valid && entry->unknown01 && !session_search_result_allowed(search, entry))
 			entry->unknown01 = false;
 		if (entry->valid && entry->unknown01)
@@ -672,9 +680,9 @@ void __stdcall session_search_score_and_sort(s_session_search *search)
 			long count;
 			if (has_details)
 			{
-				kind = entry->field10c;
-				value = SEARCH_LONG(entry, 0x120);
-				count = SEARCH_LONG(entry, 0x11c);
+				kind = (*(long *)local_1);
+				value = (*(long *)(local_1 + 0x14));
+				count = (*(long *)(local_1 + 0x10));
 			}
 			else
 			{
@@ -682,20 +690,20 @@ void __stdcall session_search_score_and_sort(s_session_search *search)
 				value = SEARCH_LONG(entry, 0x5c);
 				count = SEARCH_LONG(entry, 0x6c);
 			}
-			entry->field1fc = abs(value - SEARCH_LONG(search, 0x4c));
-			if (entry->field1fc <= g_4ce230)
-				entry->field1f8 += g_4ce234 - ((g_4ce234 - g_4ce238) / (g_4ce230 + 1)) * entry->field1fc;
+			(*(long *)(local_1 + 0xf0)) = abs(value - SEARCH_LONG(search, 0x4c));
+			if ((*(long *)(local_1 + 0xf0)) <= g_4ce230)
+				(*(long *)(local_1 + 0xec)) += g_4ce234 - ((g_4ce234 - g_4ce238) / (g_4ce230 + 1)) * (*(long *)(local_1 + 0xf0));
 			if (kind == SEARCH_LONG(search, 0x38))
-				entry->field1f8 += g_4ce380;
+				(*(long *)(local_1 + 0xec)) += g_4ce380;
 			long bounded = count < 0 ? 0 : (count > g_4ce384 ? g_4ce384 : count);
-			entry->field200 = bounded;
-			entry->field1f8 = (long)(entry->field1f8 + bounded * g_4ce388);
+			(*(long *)(local_1 + 0xf4)) = bounded;
+			(*(long *)(local_1 + 0xec)) = (long)((*(long *)(local_1 + 0xec)) + bounded * g_4ce388);
 			if (has_details)
 			{
 				if ((SEARCH_LONG(entry, 0xf8) < g_4ce11c || SEARCH_LONG(entry, 0xfc) < g_4ce118) &&
 					SEARCH_LONG(search, 0x58) >= g_4ce11c && SEARCH_LONG(search, 0x5c) >= g_4ce118)
-					entry->field1f8 += g_4ce390;
-				entry->field1f8 += g_4ce23c[SEARCH_LONG(search, 0x6c)][SEARCH_LONG(entry, 0xb8)];
+					(*(long *)(local_1 + 0xec)) += g_4ce390;
+				(*(long *)(local_1 + 0xec)) += g_4ce23c[SEARCH_LONG(search, 0x6c)][SEARCH_LONG(entry, 0xb8)];
 			}
 			if (entry->unknown74)
 			{
@@ -711,7 +719,7 @@ void __stdcall session_search_score_and_sort(s_session_search *search)
 				}
 				else
 					score = g_4ce200[9];
-				entry->field1f8 += score;
+				(*(long *)(local_1 + 0xec)) += score;
 			}
 		}
 	}
@@ -821,10 +829,10 @@ void function_90f70(s_session_search *arg_0)
 	if (arg_0->state != 0 && arg_0->task_index == NONE && arg_0->qos_handles[0] == NONE &&
 		arg_0->qos_handles[1] == NONE && !session_search_select(arg_0, 0))
 	{
+		bool local_1 = false;
 		long local_0 = arg_0->result_count;
 		long local_2 = SEARCH_LONG(arg_0, 0xc) + local_0;
 		SEARCH_LONG(arg_0, 0xc) = local_2;
-		bool local_1 = false;
 		if (SEARCH_LONG(arg_0, 0xc) < g_network_configuration.value1b8)
 		{
 			if (arg_0->unknown1c != NONE)
@@ -840,13 +848,13 @@ void function_90f70(s_session_search *arg_0)
 					local_1 = true;
 				}
 			}
-			if (local_0 != MAXIMUM_SEARCH_RESULTS && !local_1)
-				arg_0->state = 0;
-			else
+			if (local_0 == MAXIMUM_SEARCH_RESULTS || local_1)
+			{
 				function_90b30(arg_0);
+				return;
+			}
 		}
-		else
-			arg_0->state = 0;
+		arg_0->state = 0;
 	}
 }
 

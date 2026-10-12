@@ -257,6 +257,14 @@ static inline real sound_track_function_at_time(s_sound_track_function const *fu
 
 void __stdcall function_21d630(long effect_index, long mode);
 
+struct s_225b60
+{
+	byte field_0[4];
+	word field_4 : 3;
+	word field_5 : 2;
+	word field_6 : 11;
+};
+
 // @retail 0x225b60
 void __stdcall function_225b60(real elapsed)
 {
@@ -304,11 +312,12 @@ void __stdcall function_225b60(real elapsed)
 			track->unknown08 += elapsed;
 			if (finished)
 			{
-				if (track->effect_index != NONE)
+				long local_0 = track->effect_index;
+				if (local_0 != NONE)
 				{
-					s_track_effect_view *effect = &((s_track_effect_view *)((s_record_pool *)g_51ebe0)->data)[track->effect_index & 0xffff];
-					effect->flags |= 0x18;
-					function_21d630(track->effect_index, 2);
+					s_track_effect_view *effect = &((s_track_effect_view *)((s_record_pool *)g_51ebe0)->data)[local_0 & 0xffff];
+					((s_225b60 *)effect)->field_5 = 3;
+					function_21d630(local_0, 2);
 					effect->flags |= 1;
 				}
 				track->active = false;

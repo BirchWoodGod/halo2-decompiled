@@ -695,6 +695,13 @@ long session_summary_get_player_value(s_session_summary *summary, long player_in
 	}
 	return value;
 }
+
+union s_60403
+{
+ bool field_0;
+ long field_00;
+};
+
 // @retail 0x60400
 void __stdcall function_60400(c_class_58d20 *session, const byte *current, const byte *previous, byte *update)
 {
@@ -745,17 +752,18 @@ void __stdcall function_60400(c_class_58d20 *session, const byte *current, const
   else
   {
    const byte *old_member = previous + 0xc + (*local_0) * 0x10c;
-   bool changed = false;
+   s_60403 local_10;
+   local_10.field_0 = false;
    if (member[0x24] != old_member[0x24])
-    changed = true;
+    local_10.field_0 = true;
    else if (memcmp(member + 0x28, old_member + 0x28, 0xc8))
-    changed = true;
-   if (changed || i != (*local_0))
+    local_10.field_0 = true;
+   if (local_10.field_0 || i != (*local_0))
    {
     byte *entry = update + 0x14 + (*(short *)(update + 0x10))++ * 0x104;
     *(short *)entry = (short)(*local_0);
     *(short *)(entry + 2) = (short)i;
-    if (changed)
+    if (local_10.field_0)
     {
      memcpy(entry + 4, member, 0x24);
      entry[0x28] = true;

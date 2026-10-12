@@ -124,25 +124,29 @@ void function_1a07b0(s_player_profile *profile, long type)
 {
 	memset(profile, 0, sizeof(s_player_profile));
 	wide_string_copy(profile->name, L"Guest", 31);
-	*(volatile byte *)&profile->unknown118 = 10;
-	*(volatile byte *)&profile->unknown119 = 0;
-	*(volatile byte *)&profile->unknown11a = 0;
-	*(volatile byte *)&profile->unknown11b = 10;
-	*(volatile byte *)&profile->unknown11d = 0;
-	*(volatile byte *)&profile->unknown11e = 0;
-	((volatile s_player_profile *)profile)->flags_0 = true;
+	profile->unknown118 = 10;
+	profile->unknown119 = 0;
+	profile->unknown11a = 0;
+	profile->unknown11b = 10;
+	profile->unknown11d = 0;
+	profile->unknown11e = 0;
+	dword *local_0 = (dword *)((byte *)profile + 4);
+	*local_0 |= 1;
 	profile->unknown102 = 3;
 	profile->unknownfc = 0;
 	switch (type)
 	{
 	case 0:
-		*(volatile byte *)&profile->unknown100 = 0;
-		*(volatile byte *)&profile->unknown101 = 0;
+		profile->unknown100 = 0;
+		profile->unknown101 = 0;
 		break;
 	case 1:
-		*(volatile byte *)&profile->unknown100 = 0;
-		*(volatile byte *)&profile->unknown101 = 0;
-		profile->unknownfc |= 1;
+		profile->unknown100 = 0;
+		profile->unknown101 = 0;
+		{
+			dword *local_1 = &profile->unknownfc;
+			*local_1 |= 1;
+		}
 		break;
 	}
 }

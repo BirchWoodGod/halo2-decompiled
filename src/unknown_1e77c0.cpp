@@ -85,12 +85,12 @@ struct s_request_screen_bounds
 PRIVATE inline long next_request_player(long current)
 {
 	long result = NONE;
-	long index = current;
-	if (index == NONE)
-		index = 0;
+	long start;
+	if (current == NONE)
+		start = 0;
 	else
-		index++;
-	for (; index < 4; index++)
+		start = current + 1;
+	for (long index = start; index < 4; index++)
 	{
 		if (g_4e8c20->entries[index] != NONE)
 		{
@@ -168,7 +168,14 @@ inline s_entry_420 *entry_420_get(long index)
 long function_1e8cb0(long index)
 {
 	long result = 0;
-	s_entry_420 *entry = entry_420_get(index);
+	s_entry_420 *entry = NULL;
+	s_table_420 *table = (s_table_420 *)g_510c94;
+	if (table && index >= 0 && index < table->count)
+	{
+		/* the table is read a second time for the lookup (retail does; with one read the index lands in another register) */
+		s_table_420 *entry_table = (s_table_420 *)g_510c94;
+		entry = &entry_table->entries[index];
+	}
 	if (entry)
 		result = entry->value;
 	return result;
@@ -177,7 +184,15 @@ long function_1e8cb0(long index)
 // @retail 0x1e8d50
 s_entry_420 *function_1e8d50(long index)
 {
-	return entry_420_get(index);
+	s_entry_420 *result = NULL;
+	s_table_420 *table = (s_table_420 *)g_510c94;
+	if (table && index >= 0 && index < table->count)
+	{
+		/* the table is read a second time for the lookup (retail does; with one read the index lands in another register) */
+		s_table_420 *entry_table = (s_table_420 *)g_510c94;
+		result = &entry_table->entries[index];
+	}
+	return result;
 }
 
 // @retail 0x1e77c0

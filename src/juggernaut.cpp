@@ -272,7 +272,7 @@ void c_juggernaut_engine::v15(long player_index)
 		long absolute_index = player_index & 0xffff;
 
 		if (g_510c9c->players & (1 << absolute_index) &&
-			((s_juggernaut_player *)(g_4e8c24->data + absolute_index * sizeof(s_juggernaut_player)))->unit_index != NONE)
+			juggernaut_player_get(player_index)->unit_index != NONE)
 		{
 			function_1967d0(absolute_index, NONE, 0x28, 1);
 		}

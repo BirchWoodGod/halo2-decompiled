@@ -716,11 +716,11 @@ done:
 // @retail 0x238114
 long c_virtual_keyboard_screen::check_string()
 {
+	long result = 0;
 	bool empty = string[0] == 0;
 	bool has_alphanumeric = false;
 	bool characters_valid = true;
 	s_keyboard_type const *keyboard_type = &g_44a9f8[type];
-	long result = 0;
 
 	for (long i = 0; string[i]; i++)
 	{
@@ -1293,7 +1293,9 @@ bool finish_profile_create(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		function_148ca8(g_55c154, keyboard->user_flags);
+		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
+		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
+		function_148ca8(g_55c154, controller_flags);
 	}
 	return true;
 }
@@ -1312,7 +1314,9 @@ bool finish_profile_create_1(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		function_148ca8(g_55c154, keyboard->user_flags);
+		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
+		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
+		function_148ca8(g_55c154, controller_flags);
 	}
 	return true;
 }
@@ -1355,7 +1359,9 @@ bool finish_profile_create_3(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		function_148ca8(g_55c154, keyboard->user_flags);
+		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
+		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
+		function_148ca8(g_55c154, controller_flags);
 	}
 	return true;
 }

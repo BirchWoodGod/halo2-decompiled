@@ -188,9 +188,12 @@ short __stdcall function_1b6c90(long actor_index, s_slot *slot, bool active)
 		if (node->unknown24 >= 3 && prop_node_view(node))
 		{
 			if (!actor->unknown040)
-				return g_46fbe8;
-			function_1b69e0(actor_index, actor->prop_index);
-			actor_get(actor_index)->unknown040 = false;
+				result = g_46fbe8;
+			else
+			{
+				function_1b69e0(actor_index, actor->prop_index);
+				actor_get(actor_index)->unknown040 = false;
+			}
 		}
 	}
 	return result;
@@ -304,6 +307,11 @@ short __stdcall function_1b7190(long actor_index, s_slot *slot)
 	return result;
 }
 
+PRIVATE __forceinline byte function_1b7211(long arg_0)
+{
+	return (g_557c40[arg_0 >> 5] >> (arg_0 & 31)) & 1;
+}
+
 // @retail 0x1b7210
 short __stdcall function_1b7210(long actor_index, s_slot *slot)
 {
@@ -313,34 +321,39 @@ short __stdcall function_1b7210(long actor_index, s_slot *slot)
 	if (actor->prop_index != NONE && !actor->unknown225)
 	{
 		s_character_d10 *character = (s_character_d10 *)function_1e4d10(actor_index);
+		s_game_time_globals *local_1 = g_510c54;
 
-		if ((actor->times[9] == NONE || (real)(g_510c54->game_time - actor->times[9]) * g_510c54->rate > character->unknown14) &&
+		if ((actor->times[9] == NONE || (real)(local_1->game_time - actor->times[9]) * local_1->rate > character->unknown14) &&
 			actor->unknown3d8 >= character->unknown1c &&
 			character->unknown0c >= actor->unknown2d0 &&
 			character->unknown10 >= actor->unknown2d4)
 		{
 			s_prop_node_view *node = prop_node_get(actor->prop_index);
 
-			if ((!(character->unknown30 > node->unknown28) || node->unknown27 < 1) && slot_type_enabled(0x2a))
+			if (!(character->unknown30 > node->unknown28) || node->unknown27 < 1)
 			{
-				real t;
+				s_slot_handler *local_0 = g_46eeb8[0x2a];
+				if (local_0->unknown8 != g_46f348 && (local_0->mask & g_4ee4ec) == g_4ee4ec && function_1b7211(0x2a) != 0)
+				{
+					real t;
 
-				if (actor->unknown3d8 > character->unknown20)
-				{
-					t = 1.0f;
-				}
-				else
-				{
-					real range = character->unknown20 - character->unknown1c;
+					if (actor->unknown3d8 > character->unknown20)
+					{
+						t = 1.0f;
+					}
+					else
+					{
+						real range = character->unknown20 - character->unknown1c;
 
-					t = 0.0f;
-					if (range > 0.0f)
-						t = (actor->unknown3d8 - character->unknown1c) / range;
-				}
-				if (function_1c9ee0(character->unknown24 + (character->unknown28 - character->unknown24) * t) > function_259a0(&g_4e7408->unknown0))
-				{
-					actor->times[9] = g_510c54->game_time;
-					result = 0x2a;
+						t = 0.0f;
+						if (!(0.0f >= range))
+							t = (actor->unknown3d8 - character->unknown1c) / range;
+					}
+					if (function_1c9ee0(character->unknown24 + (character->unknown28 - character->unknown24) * t) > function_259a0(&g_4e7408->unknown0))
+					{
+						actor->times[9] = local_1->game_time;
+						result = 0x2a;
+					}
 				}
 			}
 		}

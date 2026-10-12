@@ -8,6 +8,7 @@
 
 #include "unknown_11c920.h"
 #include "frame_storage.h"
+#include "depth_parameters_storage.h"
 #include <string.h>
 #include <math.h>
 #include <xtl.h>
@@ -101,7 +102,7 @@ void function_20e50(long index);
 
 hash_table *g_51f400;
 extern __int64 g_485aa0;
-dword g_4850c8;
+s_depth_parameters_13450 g_depth_parameters_storage;
 real g_5234c8;
 dword g_4b81fc[0xa6];
 D3DPIXELSHADERDEF g_484f68;
@@ -563,7 +564,7 @@ real function_020d80(s_slot *slot, bool skip)
 }
 
 // @retail 0x20f30
-void function_020f30(real a, real b)
+void function_020f30(real b, real a)
 {
     dword count;
     dword volatile full;
@@ -725,23 +726,25 @@ void function_022750(const real *a, long size, const real *b, real *out, real t)
 real function_022c30(const point3f *a, const point3f *c, const point3f *b)
 {
 	vector3f v1, v2;
-	real result = 0.0f;
+	vector3f *v1_reference = &v1;
+	real result;
 
 	v2.i = a->x - c->x;
 	v2.j = a->y - c->y;
 	v2.k = a->z - c->z;
-	v1.i = a->x - b->x;
-	v1.j = a->y - b->y;
-	v1.k = a->z - b->z;
+	result = 0.0f;
+	v1_reference->i = a->x - b->x;
+	v1_reference->j = a->y - b->y;
+	v1_reference->k = a->z - b->z;
 
-	real length = (real)sqrt(v1.k * v1.k + v1.j * v1.j + v1.i * v1.i);
+	real length = (real)sqrt(v1_reference->k * v1_reference->k + v1_reference->j * v1_reference->j + v1_reference->i * v1_reference->i);
 	if (length > 0.0001f)
 	{
 		real inverse = 1.0f / length;
-		v1.i *= inverse;
-		v1.j *= inverse;
-		v1.k *= inverse;
-		result = (v1.k * v2.k + v1.j * v2.j + v1.i * v2.i) * inverse;
+		v1_reference->j *= inverse;
+		v1_reference->k *= inverse;
+		v1_reference->i *= inverse;
+		result = (v1_reference->k * v2.k + v1_reference->j * v2.j + v1_reference->i * v2.i) * inverse;
 	}
 
 	return result;
@@ -1309,7 +1312,7 @@ long function_21360(long source, real radius, real low, real high, long target,
     if (alternate == NONE)
         alternate = source;
     if (configure)
-        function_020f30(0.0f, scale);
+        function_020f30(scale, 0.0f);
     for (long pass = 0; pass < passes; ++pass)
     {
         real weights[4];
@@ -1335,15 +1338,15 @@ long function_21360(long source, real radius, real low, real high, long target,
 
 // @retail 0x211a0
 long function_211a0(long source, real passes, real distortion, real falloff,
-    long target, long alternate, long unused, long configure, long full_surface,
+    long target, long alternate, long output, long configure, long full_surface,
     real scale, real offset)
 {
-    (void)&unused;
+    (void)&output;
     real volatile pass = 0.0f;
     if (alternate == NONE)
         alternate = source;
     if ((byte)configure)
-        function_020f30(offset, scale);
+        function_020f30(scale, offset);
     if (passes > 0.0f)
     {
         real growth = (1.0f - falloff) + falloff * 2.0f;
@@ -1365,10 +1368,11 @@ long function_211a0(long source, real passes, real distortion, real falloff,
             pass += 1.0f;
         } while (pass < passes);
     }
-    if (alternate != NONE && alternate != source)
+    /* Copy the final pass to the requested output buffer. */
+    if (output != NONE && output != source)
     {
-        function_351a0(source, alternate);
-        source = alternate;
+        function_351a0(source, output);
+        source = output;
     }
     return source;
 }
@@ -1560,8 +1564,7 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         g_484f68.PSFinalCombinerInputsEFG = ((g_485a74 ? 0x1d : 0) | 0xc1100) << 8;
         function_1ccf0(&g_484f68);
         function_34a90(7, 10, 0x1010101, false, false, 1.0f, 0.5f, 1.0f, 4, false, false);
-        long (*volatile filter)(long, real, real, real, long, long, long, long, long, real, real) = function_211a0;
-        long filtered = filter(7, passes, 1.0f, falloff, 8, NONE, NONE, 1, 0, scale, values.second);
+        long filtered = function_211a0(7, passes, 1.0f, falloff, 8, NONE, NONE, 1, 0, scale, values.second);
         function_14f60(0, (short)filtered);
         function_15780(0, 4);
         function_0222d0(D3DRS_ALPHABLENDENABLE, 1);

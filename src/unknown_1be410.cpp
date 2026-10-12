@@ -75,9 +75,10 @@ short __stdcall function_1be4b0(long actor_index)
 // @retail 0x1be6e0
 short __stdcall function_1be6e0(long actor_index, s_slot *slot, bool active)
 {
-	s_actor_view *actor = actor_get(actor_index);
-	s_slot_20 *state = (s_slot_20 *)slot;
+	s_slot *volatile *local_0 = &slot;
+	s_slot_20 *state = (s_slot_20 *)*local_0;
 	short result = g_46fbe4;
+	s_actor_view *actor = actor_get(actor_index);
 	if (actor->prop_index != NONE && state->unknown10 != NONE &&
 		(actor->unknown348 == state->unknown10 || state->unknown0d))
 	{
@@ -151,9 +152,9 @@ void __stdcall function_1be6b0(long actor_index, s_slot *slot)
 // @retail 0x1be840
 bool __stdcall function_1be840(long actor_index, s_slot *slot)
 {
+	volatile bool result = true;
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_20 *state = (s_slot_20 *)slot;
-	bool result = true;
 
 	if (state->unknown10 == NONE)
 		return false;

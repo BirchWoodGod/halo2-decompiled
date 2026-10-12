@@ -171,8 +171,9 @@ void function_1b0540(long actor_index, s_follow_search_state *state)
 	}
 	byte *scratch = ai_scratch_buffer_get();
 	s_261d20_entry entry;
-	long other_index;
-	bool unknown;
+	struct { long field_0; bool field_4; } local_0;
+	long &other_index = local_0.field_0;
+	bool &unknown = local_0.field_4;
 	state->reference = function_2605d0(actor_index, &request, (long)&entry, (long)&other_index, scratch, &unknown);
 	state->reference = function_2626b0(actor_index, state->reference, other_index, scratch, unknown, false);
 	state->flag8 = !REFERENCE_EQUAL(state->reference, g_470fa0) && !unknown;
@@ -183,15 +184,16 @@ void function_1b0540(long actor_index, s_follow_search_state *state)
 
 bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra);
 
+#pragma inline_depth(0)
 // @retail 0x1b0020
 void __stdcall function_1b0020(long actor_index, s_slot *slot)
 {
-    s_actor_view *actor = actor_get(actor_index);
+    s_actor_view *actor = (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
     ++*(long *)((byte *)slot + 0x18);
     if (*(short *)((byte *)slot + 0xc) > 0)
         --*(short *)((byte *)slot + 0xc);
     long unit_index = actor->unknown018;
-    byte *unit = (byte *)object_get(unit_index);
+    byte *unit = (byte *)((s_object_header_view *)g_4e0300->data)[unit_index & 0xffff].object;
     if (*(short *)(unit + *(short *)(unit + 0x342) + 0xc) <= 0)
     {
         if (*(short *)((byte *)slot + 0x22) > 0)
@@ -199,10 +201,21 @@ void __stdcall function_1b0020(long actor_index, s_slot *slot)
         else
         {
             function_114b60(NONE, 0xc, unit_index, 0xd, 0);
-            *(short *)((byte *)slot + 0x22) = (short)real_to_long(slot_random_range(0.5f, 1.5f) * g_510c54->field_2_3);
+            dword *local_0 = &g_4e7408->unknown0;
+            *local_0 = 1664525 * *local_0 + 1013904223;
+            real local_1 = (real)(*local_0 >> 16) * (1.f / 65535.f);
+            real local_2 = (0.5f + (1.5f - 0.5f) * local_1) * g_510c54->field_2_3;
+            long local_3;
+            __asm
+            {
+                fld local_2
+                fistp local_3
+            }
+            *(short *)((byte *)slot + 0x22) = (short)local_3;
         }
     }
 }
+#pragma inline_depth()
 
 short __stdcall function_272af0(s_match_globals *arg_0, point3f const *arg_1);
 void function_1e3b00(long arg_0, long arg_1, point3f const *arg_2,

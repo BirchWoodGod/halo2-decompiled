@@ -307,6 +307,16 @@ long function_1b9190(long object_index, long *rider_index)
 	return result;
 }
 
+PRIVATE __forceinline void function_1b9201(long arg_0, vector3f *arg_1)
+{
+	s_slot_object_view *local_0 = object_get(arg_0);
+
+	if (local_0->parent_index == NONE)
+		*arg_1 = local_0->forward;
+	else
+		matrix_transform_vector(object_node_matrix(object_get(local_0->parent_index), local_0->parent_node), &local_0->forward, arg_1);
+}
+
 // @retail 0x1b9200
 bool function_1b9200(long object_index, long prop_index)
 {
@@ -333,7 +343,7 @@ bool function_1b9200(long object_index, long prop_index)
 				vector3f forward;
 
 				function_b9dd0(object_index, &position);
-				object_get_forward(object_index, &forward);
+				function_1b9201(object_index, &forward);
 				forward.k = 0.0f;
 				if (function_30bf0(&forward) > 0.0f)
 				{
@@ -1063,6 +1073,12 @@ bool __stdcall function_f5d10(long vehicle_index, long bit, bool set);
 void function_26ee40(s_joint_behavior_state *behavior);
 void function_1f86a0(long actor_index);
 
+struct s_1ba091
+{
+    s_slot_memory_entry *field_0;
+    s_slot_entry_iterator field_4;
+};
+
 // @retail 0x1ba090
 long __stdcall function_1ba090(long actor_index, s_slot *slot)
 {
@@ -1072,22 +1088,21 @@ long __stdcall function_1ba090(long actor_index, s_slot *slot)
     s_seat_selection *selection = (s_seat_selection *)&state->unknown1c;
     if (*(long *)((byte *)unit + 0x14) != NONE)
         return NONE;
-    s_slot_entry_iterator iterator;
-    iterator.actor_index = actor_index;
-    iterator.reference.unknown2 = 0x4c;
-    iterator.reference.unknown0 = NONE;
-    s_slot_memory_entry *entry;
+    s_1ba091 local_0;
+    local_0.field_4.actor_index = actor_index;
+    local_0.field_4.reference.unknown2 = 0x4c;
+    local_0.field_4.reference.unknown0 = NONE;
     long joint_index = NONE;
-    while ((entry = function_26f0c0(&iterator)) != NULL)
+    while ((local_0.field_0 = function_26f0c0(&local_0.field_4)) != NULL)
     {
-        s_4c_element *element = (s_4c_element *)element_502424_get(entry->unknown4);
+        s_4c_element *element = (s_4c_element *)element_502424_get(local_0.field_0->unknown4);
         bool specified = (selection->flags & 0x20) != 0;
         bool same = specified && function_baf40(element->object_index) == function_baf40(selection->object_index);
         if ((element->unknown86 ? !(selection->flags & 0x40) || !same : specified && !same))
-            joint_decline(actor_index, iterator.reference.unknown0);
-        else if (function_26ecc0(actor_index, iterator.reference.unknown0, (s_joint_behavior_state *)slot))
+            joint_decline(actor_index, local_0.field_4.reference.unknown0);
+        else if (function_26ecc0(actor_index, local_0.field_4.reference.unknown0, (s_joint_behavior_state *)slot))
         {
-            joint_index = entry->unknown4;
+            joint_index = local_0.field_0->unknown4;
             break;
         }
     }

@@ -35,8 +35,9 @@ void c_244c10::function_244c10(s_244c10 const *arg_0, void const *arg_1)
 	long local_0 = arg_0->field_04;
 	if (g_4e7c20[(short)local_0] != g_4e7c1c)
 	{
+		s_collision_result_1697c0 *local_1 = field_1c;
 		g_4e7c20[(short)local_0] = g_4e7c1c;
-		if (function_1691a0(local_0, field_08, field_0c, field_10, field_14, field_1c))
+		if (function_1691a0(local_0, field_08, field_0c, field_10, field_14, local_1))
 		{
 			if (field_08 & 0x10000000)
 				field_04 = 0.f;

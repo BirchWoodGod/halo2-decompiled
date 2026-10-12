@@ -8,6 +8,7 @@
 #include "camera_storage.h"
 #include "unknown_123b30.h"
 #include "globals.h"
+#include "unknown_440dd8.h"
 #include "engine_peer.h"
 #include "unknown_157450.h"
 #include "input_record.h"
@@ -5124,7 +5125,7 @@ struct c_entry_table
 	struct { long count; c_entry_handler *handlers[1]; } *handlers;
 	s_entry entries[1024];
 
-	void function_08ae80(dword identifier, short handler_index, long a, long b, long c, long d);
+	void function_08ae80(dword identifier, long handler_index, long a, long b, long c, long d);
 	void function_08aed0(dword identifier);
 	bool function_08af70(long handler_index, long *size, void **data);
 	bool function_08b010(long handler_index, long *size, void **data);
@@ -5206,4 +5207,259 @@ void function_158530(void)
         game_engine_get()->p12();
         function_158e20();
     }
+}
+
+
+// Retail callback records at 0x440dd8, traversed with a 0x24-byte stride.
+void function_12560();
+void function_141c0();
+void function_22590();
+void function_226a0(void);
+void function_0226b0(void);
+void function_226c0();
+void function_2b4a0(void);
+void function_2b540(void);
+void function_02b5a0(void);
+void function_2b5c0(void);
+void function_03f2b0(void);
+void function_67e30(void);
+void function_067eb0(void);
+void function_67ee0(void);
+void function_67f60(void);
+void function_8d690(void);
+void transport_dispose(void);
+void function_8d9f0();
+void function_8dd70(void);
+void function_b67c0();
+void function_b68c0(void);
+void function_b69d0(void);
+void function_b6ab0(void);
+void function_b6bb0();
+void function_b6c50();
+void __stdcall function_b6df0(dword const *previous, dword const *current, long count);
+void function_d4de0(void);
+void function_d4e20(void);
+void function_d4e30(void);
+void function_d4e60(short bsp_index);
+void function_109300(void);
+void function_109350(void);
+void function_109360(void);
+void function_109380(void);
+void function_10a980(void);
+void function_10a9d0(void);
+void function_10a9e0(void);
+void function_10aab0(void);
+void function_11be20(void);
+void function_11be40(void);
+void function_11cc10(void);
+void function_123b30(void);
+void function_123bf0(void);
+void arena_initialize_for_new_map(void);
+void arena_initialize_for_new_structure_bsp(void);
+void function_1253d0(void);
+void function_125600(void);
+void function_125690(void);
+void function_1257b0(void);
+void sound_update_locations(void);
+void function_131ff0(void);
+void function_1320b0(void);
+void function_134d90(void);
+void function_134dd0(void);
+void function_134de0(void);
+void function_13bf00(void);
+void function_13bf60(void);
+void function_13bfc0(void);
+void function_13e5c7(void);
+void interface_initialize_for_new_map(void);
+void interface_dispose_from_old_map(void);
+void random_initialize(void);
+void game_time_globals_allocate(void);
+void game_time_globals_initialize(void);
+void game_time_stop(void);
+void function_1476c7();
+void function_14783f(void);
+void function_14784e();
+void function_147920(void);
+void function_14b4b0(void);
+void function_14b560(void);
+void function_14b580(void);
+void function_14b600(void);
+void function_14b6a0();
+void function_153870(void);
+void function_1538b0(void);
+void function_1552e0(void);
+void function_155380(void);
+void function_155490(void);
+void function_155ea0(void);
+void function_155ed0(void);
+void function_157450(void);
+void function_1574c0(void);
+void function_157bb0(void);
+void function_16efb0(void);
+void function_16f0e0(void);
+void function_16f120(void);
+void function_175b50(void);
+void effects_dispose(void);
+void function_175c10(void);
+void effects_dispose_from_old_map(void);
+void function_175d70(void);
+void function_175f40();
+void function_17b7b0(void);
+void function_17b850(void);
+void function_17b870(void);
+void function_17b8a0(void);
+void contrails_update_locations(void);
+void function_17d220(void);
+void function_17d2a0(void);
+void decals_initialize_for_new_map(void);
+void function_17d330(void);
+void decals_update_locations(void);
+void function_17d440(void);
+void __stdcall decals_render(long a, long b, long c);
+void function_183e40();
+void function_183ec0();
+void function_183ee0(void);
+void function_183f00(void);
+void function_185ab0(void);
+void function_185b00(void);
+void object_looping_sounds_initialize(void);
+void object_looping_sounds_dispose(void);
+void object_looping_sounds_initialize_for_new_map(void);
+void object_looping_sounds_dispose_from_old_map(void);
+void object_looping_sounds_initialize_for_new_structure_bsp(void);
+void level_handle_tables_initialize(void);
+void level_handle_tables_dispose(void);
+void function_19c190(void);
+void function_19c1d0();
+void function_1c25a0(void);
+void function_1c2600(void);
+void function_1c2670(void);
+void function_1c2690();
+void function_1c27a0();
+void function_1c7790(void);
+void function_1c79c0(void);
+void function_1c79e0(void);
+void ai_dispose_from_old_map(void);
+void function_1c7bb0();
+void function_1c7f60(void);
+void function_1df460(void);
+void function_1df4b0(void);
+void function_1e6a40(void);
+void function_1e6a80(void);
+void function_1e6ae0(void);
+void function_1eb550(void);
+void function_1eb5e0(void);
+void function_1eb5f0(void);
+void function_1ec420(void);
+void function_1ec470(void);
+void function_1ec480(void);
+void function_1ec4b0(void);
+void function_1fb2f0(void);
+void function_1fb330(void);
+void function_1fb350(void);
+void function_20a700(void);
+void function_20a750(void);
+void function_20a7d0(void);
+void script_nodes_dispose(void);
+void function_20aee0(void);
+void function_20af50(void);
+void function_20af90(void);
+void function_210db0(void);
+void function_210df0(void);
+void function_210e10(void);
+void function_211030(void);
+void function_215690(void);
+void function_215720(void);
+void function_215730(void);
+void function_217bc0(void);
+void function_217c20(void);
+void function_221850(void);
+void function_2218a0(void);
+void function_2218e0(void);
+void function_2218f0(void);
+void function_2229d0(void);
+void function_222a10(void);
+void function_222a60(void);
+void function_225700(void);
+void function_225a40(void);
+void function_225a80(void);
+void function_225f80(void);
+void function_225fc0(void);
+void function_3361a4();
+
+s_subsystem_440dd8 const g_440dd8[68] =
+{
+    { function_8d690, transport_dispose, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_11cc10, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { random_initialize, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_8d9f0, function_8dd70, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_215690, function_215730, function_175f40, function_215720, NULL, NULL, NULL, NULL, NULL },
+    { function_217bc0, function_217c20, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_155ea0, function_155ed0, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { level_handle_tables_initialize, level_handle_tables_dispose, function_19c190, function_19c1d0, NULL, NULL, NULL, NULL, NULL },
+    { function_131ff0, function_1320b0, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_225700, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_123b30, function_123bf0, arena_initialize_for_new_map, function_175f40, arena_initialize_for_new_structure_bsp, function_175f40, NULL, NULL, NULL },
+    { game_time_globals_allocate, function_175f40, game_time_globals_initialize, game_time_stop, NULL, NULL, NULL, NULL, NULL },
+    { function_1df460, function_175f40, function_1df4b0, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_14b4b0, function_14b560, function_14b580, function_14b600, function_175f40, function_175f40, NULL, NULL, NULL },
+    { function_185ab0, function_175f40, function_185b00, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_1e6a40, function_175f40, function_1e6a80, function_1e6ae0, NULL, NULL, NULL, NULL, NULL },
+    { function_157450, function_175f40, function_1574c0, function_157bb0, NULL, NULL, NULL, NULL, NULL },
+    { function_67e30, function_067eb0, function_67ee0, function_67f60, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_11be20, function_11be40, NULL, NULL, NULL, NULL, NULL },
+    { function_1eb550, function_1eb5e0, function_1eb5f0, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { function_b67c0, function_b68c0, function_b69d0, function_b6ab0, function_b6bb0, function_b6c50, NULL, NULL, (t_subsystem_440dd8_callback_20)function_b6df0 },
+    { function_109300, function_109350, function_109360, function_109380, NULL, NULL, NULL, NULL, NULL },
+    { function_10a980, function_10a9d0, function_10a9e0, function_10aab0, NULL, NULL, NULL, NULL, NULL },
+    { function_1ec420, function_1ec470, function_1ec480, function_1ec4b0, NULL, NULL, NULL, NULL, NULL },
+    { function_12560, function_141c0, function_22590, function_226c0, function_226a0, function_0226b0, NULL, NULL, NULL },
+    { function_2b4a0, function_2b5c0, function_2b540, function_02b5a0, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_183e40, function_175f40, function_183ec0, function_175f40, function_183ee0, function_183f00, NULL, NULL, NULL },
+    { function_1552e0, function_175f40, function_155380, function_155490, NULL, NULL, NULL, NULL, NULL },
+    { function_16efb0, function_175f40, function_16f0e0, function_175f40, function_16f120, function_175f40, NULL, NULL, NULL },
+    { function_17d220, function_17d2a0, decals_initialize_for_new_map, function_17d330, decals_update_locations, function_17d440, NULL, (t_subsystem_440dd8_callback_20)decals_render, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_17b7b0, function_17b850, function_17b870, function_17b8a0, contrails_update_locations, function_175f40, NULL, NULL, NULL },
+    { function_175b50, effects_dispose, function_175c10, effects_dispose_from_old_map, function_175d70, function_175f40, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, function_03f2b0, function_175f40, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_211030, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_221850, function_2218f0, function_2218a0, function_2218e0, NULL, NULL, NULL, NULL, NULL },
+    { function_1253d0, function_125600, function_125690, function_1257b0, sound_update_locations, function_175f40, NULL, NULL, NULL },
+    { function_20aee0, function_20af50, function_20af90, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { object_looping_sounds_initialize, object_looping_sounds_dispose, object_looping_sounds_initialize_for_new_map, object_looping_sounds_dispose_from_old_map, object_looping_sounds_initialize_for_new_structure_bsp, function_175f40, NULL, NULL, NULL },
+    { function_225a40, function_175f40, function_225a80, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_2229d0, function_175f40, function_222a10, function_222a60, NULL, NULL, NULL, NULL, NULL },
+    { function_153870, function_175f40, function_1538b0, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_1476c7, function_14783f, function_14784e, function_147920, NULL, NULL, NULL, NULL, NULL },
+    { function_13e5c7, function_3361a4, interface_initialize_for_new_map, interface_dispose_from_old_map, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_13bf00, function_175f40, function_13bf60, function_13bfc0, NULL, NULL, NULL, NULL, NULL },
+    { function_20a700, script_nodes_dispose, function_20a750, function_20a7d0, NULL, NULL, NULL, NULL, NULL },
+    { function_1fb2f0, function_175f40, function_1fb330, function_1fb350, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_d4de0, function_175f40, function_d4e20, function_175f40, function_d4e30, function_175f40, (t_subsystem_440dd8_callback_18)function_d4e60, NULL, NULL },
+    { function_1c7790, function_1c79c0, function_1c79e0, ai_dispose_from_old_map, function_1c7bb0, function_1c7f60, NULL, NULL, NULL },
+    { function_1c25a0, function_1c2600, function_1c2670, function_175f40, function_1c2690, function_1c27a0, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, function_14b6a0, function_175f40, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL },
+    { function_210db0, function_175f40, function_175f40, function_175f40, function_210df0, function_210e10, NULL, NULL, NULL },
+    { function_134d90, function_134dd0, function_134de0, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL },
+    { function_225f80, function_175f40, function_225fc0, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL },
+};
+
+// @retail 0x175f40
+void function_175f40()
+{
 }
