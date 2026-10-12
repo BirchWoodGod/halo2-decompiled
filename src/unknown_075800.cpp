@@ -483,10 +483,10 @@ struct s_network_message_peer_reply
 // @retail 0x94520
 void c_class_938e0::function_94520(const s_session_id *message, const s_type_99af70 *address)
 {
-	long reason = 0;
-	bool has_identity = false;
 	s_member_identity_bytes identity;
 	c_class_58d20 *session = network_session_manager_find_session(session_manager, message);
+	long reason = 0;
+	bool has_identity = false;
 	if (session)
 	{
 		if (function_05e7f0(session, address, message, &reason, &has_identity, (s_session_member_identity *)&identity))
@@ -823,132 +823,132 @@ void c_class_938e0::function_93aa0(long channel_index, long message_type, long m
 	case 11:
 		if (connection->state == 5 && network_connection_get_address(connection, &address))
 			function_94270((const s_session_id *)message, &address);
-		break;
+		return;
 	case 13:
 		if (connection->state == 5 && network_connection_get_address(connection, &address))
 			function_094310(this, (const s_session_id *)message, &address);
-		break;
+		return;
 	case 14:
 		if (connection->state == 5 && network_connection_get_address(connection, &address))
 			function_094330(this, (const s_session_id *)message, &address);
-		break;
+		return;
 	case 15:
 		if (connection->state == 5)
 			handle_host_handoff((const s_network_message_handoff *)message, channel_index);
-		break;
+		return;
 	case 16:
 		if (connection->state == 5)
 			handle_host_handoff_acknowledge((const byte *)message, channel_index);
-		break;
+		return;
 	case 17:
 		if (connection->state == 5)
 			function_943d0((const s_session_id *)message, channel_index);
-		break;
+		return;
 	case 18:
 		if (connection->state == 5 && network_connection_get_address(connection, &address))
 			function_94420((const s_session_id *)message, &address);
-		break;
+		return;
 	case 19:
 		if (connection->state == 5)
 			handle_channel_closed((const s_session_id *)message, channel_index);
-		break;
+		return;
 	case 20:
 		if (connection->state == 5)
 			handle_peer_ready((const s_session_id *)message, channel_index);
-		break;
+		return;
 	case 21:
 		if (connection->state == 5)
 			function_944a0((const s_session_id *)message, channel_index);
-		break;
+		return;
 	case 22:
 		if (connection->state == 5 && network_connection_get_address(connection, &address))
 			function_94520((const s_session_id *)message, &address);
-		break;
+		return;
 	case 23:
 		if (connection->state == 5 && network_connection_get_address(connection, &address))
 			handle_peer_reestablish((const s_session_id *)message, &address);
-		break;
+		return;
 	case 25:
 		if (connection->state == 5)
 			function_94610((const s_session_id *)message, channel_index);
-		break;
+		return;
 	case 26:
 		if (connection->state == 5)
 			handle_peer_properties((const s_network_message_peer_properties *)message, channel_index);
-		break;
+		return;
 	case 27:
 		if (connection->state == 5)
 			handle_delegate_leader((const s_network_message_peer_identity *)message, channel_index);
-		break;
+		return;
 	case 28:
 		if (connection->state == 5)
 			handle_boot_machine((const s_network_message_peer_identity *)message, channel_index);
-		break;
+		return;
 	case 29:
 		if (connection->state == 5)
 			function_94700((const s_session_id *)message, channel_index);
-		break;
+		return;
 	case 30:
 		if (connection->state == 5)
 			handle_player_refuse((const s_network_message_player_refuse *)message, channel_index);
-		break;
+		return;
 	case 31:
 		if (connection->state == 5)
 			handle_player_remove((const s_network_message_player_remove *)message, channel_index);
-		break;
+		return;
 	case 32:
 		if (connection->state == 5)
 			handle_player_properties((const s_network_message_player_properties *)message, channel_index);
-		break;
+		return;
 	case 33:
 		if (connection->state == 5)
 			function_94800((const s_session_id *)message, channel_index);
-		break;
+		return;
 	case 34:
 		if (connection->state == 5)
 			handle_parameters_request((const s_network_message_parameters_request *)message, channel_index);
-		break;
+		return;
 	case 35:
 		if (connection->state == 5)
 			handle_countdown_timer((const s_network_message_countdown_timer *)message, channel_index);
-		break;
+		return;
 	case 36:
 		if (connection->state == 5)
 			handle_mode_acknowledge((const s_network_message_mode_acknowledge *)message, channel_index);
-		break;
+		return;
 	case 37:
 		if (connection->state == 5)
 			handle_view_establishment((const s_type_22101d *)message, channel_index);
-		break;
+		return;
 	case 38:
 		if (connection->state == 5)
 			handle_player_acknowledge((const s_type_0bbd2f *)message, channel_index);
-		break;
+		return;
 	case 39:
 		if (connection->state == 5)
 			handle_synchronous_update((const s_simulation_block_data *)message, channel_index);
-		break;
+		return;
 	case 40:
 		if (connection->state == 5)
 			handle_player_update((const s_network_message_player_update *)message, channel_index);
-		break;
+		return;
 	case 41:
 		if (connection->state == 5)
 			handle_join_data_begin((const s_network_message_join_data_begin *)message, channel_index);
-		break;
+		return;
 	case 43:
 		if (connection->state == 5)
 			handle_baseline_update((const s_network_message_baseline_update *)message, channel_index);
-		break;
+		return;
 	case 6:
 		network_message_handle_connect_establish(channel_index, (const s_type_3de205 *)message);
-		break;
+		return;
 	case 42:
 		if (connection->state == 5)
 			handle_join_data((const s_network_message_join_data *)message, channel_index, message_size - 8, (const byte *)message + 8);
-		break;
+		return;
 	case 44:
-		break;
+		return;
 	}
 }
 

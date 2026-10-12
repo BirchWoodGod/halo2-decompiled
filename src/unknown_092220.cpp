@@ -48,12 +48,12 @@ static inline long online_task_new_inline(void)
 // @retail 0x92220
 long online_stats_read(word count, XONLINE_STAT_SPEC *specs)
 {
+	long task_index = NONE;
 	for (long i = 0; i < count; i++)
 	{
 		if (specs[i].xuidUser.dwUserFlags == 0xbad00000 || (specs[i].xuidUser.dwUserFlags & 3))
-			return NONE;
+			goto local_0;
 	}
-	long task_index = NONE;
 	if (online_logon_connected())
 		task_index = online_task_new_inline();
 	if (task_index != NONE)
@@ -70,10 +70,12 @@ long online_stats_read(word count, XONLINE_STAT_SPEC *specs)
 			else
 			{
 				function_6b640(task_index);
-				return NONE;
+				task_index = NONE;
+				goto local_0;
 			}
 		}
 	}
+local_0:
 	return task_index;
 }
 
@@ -95,26 +97,33 @@ bool online_stats_read_result(long task_index, XONLINE_STAT_SPEC *specs, word co
 // @retail 0x923c0
 long online_stats_write(XONLINE_STAT_SPEC const *specs, word count)
 {
-	long task_index = online_task_new_if_logged_on();
-	if (task_index != NONE)
-	{
-		s_type_9df9da *task = online_task_try_and_get(task_index);
-		if (task)
-		{
-			if (SUCCEEDED(XOnlineStatWrite(count, specs, NULL, (PXONLINETASK_HANDLE)&task->handle)))
-			{
-				task->flags = 1;
-				task->type = 0x13;
-				task->controller_index = NONE;
-			}
-			else
-			{
-				function_6b640(task_index);
-				return NONE;
-			}
-		}
-	}
-	return task_index;
+    long task_index = online_task_new_if_logged_on();
+    if (task_index != NONE)
+    {
+        s_record_pool *local_0 = g_4cf78c;
+        long local_1 = task_index & 0xffff;
+        if (local_1 < local_0->high_water_index)
+        {
+            byte *local_2 = local_0->data;
+            long local_3 = local_0->size;
+            s_type_9df9da *task = (s_type_9df9da *)(local_2 + local_3 * local_1);
+            if (task->salt != 0 && task->salt == (task_index >> 16))
+            {
+                if (SUCCEEDED(XOnlineStatWrite(count, specs, NULL, (PXONLINETASK_HANDLE)&task->handle)))
+                {
+                    task->flags = 1;
+                    task->type = 0x13;
+                    task->controller_index = NONE;
+                }
+                else
+                {
+                    function_6b640(task_index);
+                    return NONE;
+                }
+            }
+        }
+    }
+    return task_index;
 }
 
 // @retail 0x92450
@@ -220,6 +229,7 @@ bool online_task_service_unavailable(long task_index)
 long online_round_extend(ULONGLONG const *round_key, XNKID const *session_id, word seconds)
 {
 	long task_index = online_task_new_if_logged_on();
+	long local_0 = task_index;
 	if (task_index != NONE)
 	{
 		s_type_9df9da *task = online_task_try_and_get(task_index);
@@ -237,9 +247,9 @@ long online_round_extend(ULONGLONG const *round_key, XNKID const *session_id, wo
 			else
 			{
 				function_6b640(task_index);
-				return NONE;
+				local_0 = NONE;
 			}
 		}
 	}
-	return task_index;
+	return local_0;
 }
