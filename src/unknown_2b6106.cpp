@@ -76,7 +76,7 @@ class c_y_menu_player_selected_screen : public c_screen_with_menu
 {
 public:
 	c_y_menu_player_selected_screen(long a, long b, word user_flags);
-	~c_y_menu_player_selected_screen();
+	virtual ~c_y_menu_player_selected_screen();
 
 	virtual screen_load_proc get_load_proc();
 
