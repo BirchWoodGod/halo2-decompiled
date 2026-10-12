@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7764 functions match
+
+```
+matched 7764 of 11318 game functions (928920 of 2784283 bytes, 33.36%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 35: 0xb5990.
+
+## 2026-10-12: 7763 functions match
+
+```
+matched 7763 of 11318 game functions (928696 of 2784283 bytes, 33.35%)
+```
+
+12 new matches, none lost:
+- Deep lane 2, round 26: 0x192129, 0x101d20, 0x140aa0 and 0x23169c; and eight screen functions (0x231865, 0x231995, 0x2319d6, 0x2b1942, 0x2b19dc, 0x2b2d9a, 0x2b2e6b, 0x2b3f15) once the list widget's constructor is inlined, as retail inlines it.
+
 ## 2026-10-12: 7751 functions match
 
 ```

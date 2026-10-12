@@ -386,13 +386,15 @@ void font_cache_dispose(void)
 
 	if (g_54d578)
 	{
-		data_dispose(g_54d578);
+		// Read the pool receiver through a const pointer at this later use.
+		data_dispose(*(s_record_pool *const *)&g_54d578);
 		g_54d578 = NULL;
 	}
 
 	if (g_54d574)
 	{
-		data_dispose(g_54d574);
+		// Read the second pool through a const pointer at this later use.
+		data_dispose(*(s_record_pool *const *)&g_54d574);
 		g_54d574 = NULL;
 	}
 }
