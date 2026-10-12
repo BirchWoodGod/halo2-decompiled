@@ -646,15 +646,10 @@ void function_265c30(long prop_index, long actor_index, bool active)
 	if (view)
 	{
 		if (*active_reference)
-		{
 			view->unknown50 = g_510c54->game_time;
-			*(real *)((byte *)view + 0x3c) = function_265d30(*actor_reference, prop_index);
-		}
 		else
-		{
 			view->unknown50 = NONE;
-			*(real *)((byte *)view + 0x3c) = function_265d30(*actor_reference, prop_index);
-		}
+		*(real *)((byte *)view + 0x3c) = function_265d30(*actor_reference, prop_index);
 	}
 }
 
@@ -1041,6 +1036,8 @@ bool function_2675f0(long object_index)
 	return result;
 }
 
+// Keep the prop lookup out of line in this accessor.
+#pragma inline_depth(0)
 // @retail 0x2684f0
 short function_2684f0(s_actor_view *actor)
 {
@@ -1052,6 +1049,7 @@ short function_2684f0(s_actor_view *actor)
 	}
 	return 0;
 }
+#pragma inline_depth(255)
 
 long function_1e4a10(long index);
 short function_1a6fe0(long owner_index, short type);

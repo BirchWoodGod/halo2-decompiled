@@ -310,17 +310,18 @@ short g_54e898;
 // @retail 0x1ee410
 void function_1ee410(const s_lookup_source *source, short *result)
 {
-    short value = g_54e898;
+    struct { short value; } local;
+    local.value = g_54e898;
 	if (source->tag_index != NONE)
 	{
 		s_tag_instance_ref *tags = (s_tag_instance_ref *)g_4e3b44;
-		value = tags[(word)source->tag_index].data->entries[source->index].value10;
+		local.value = tags[(word)source->tag_index].data->entries[source->index].value10;
 	}
 	else if (source->index != NONE)
 	{
-		value = g_4e0348->entries[source->index].value08;
+		local.value = g_4e0348->entries[source->index].value08;
 	}
-    *result = value;
+    *result = local.value;
 }
 
 struct s_count_entry

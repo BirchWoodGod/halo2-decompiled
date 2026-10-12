@@ -42,7 +42,8 @@ bool function_10a660(long volatile object_index, long animation_name, short fram
 
 	if (object_index != NONE && animation_graph_index != NONE && animation_name)
 	{
-		long header_offset = (object_index & 0xffff) * sizeof(s_object_header_10a660);
+		long index = object_index;
+		long header_offset = (index & 0xffff) * sizeof(s_object_header_10a660);
 		s_object_10a660 *object = ((s_object_header_10a660 *)(g_4e0300->data + header_offset))->object;
 		if (*(short const volatile *)&object->animation_state_offset != NONE)
 		{
@@ -65,24 +66,24 @@ bool function_10a660(long volatile object_index, long animation_name, short fram
 					{
 						function_1ccb80(&state->channels[0], (real)frame * (1.0f / 30.0f));
 						*(dword volatile *)&object->flags_12c &= ~1;
-						function_b7290(object_index);
+						function_b7290(index);
 						object->attached_object_index = attached_object_index;
 						if (attached_object_index != NONE)
 						{
-							function_b9a50(object_index);
+							function_b9a50(index);
 							if (TEST_FIELD_BIT(((s_object_default_placement_view *)object)->flag_c0_6))
-								function_b8840(object_index);
-							function_b75a0(object_index, g_468788, g_4687a8, g_4687b0, NULL, false);
-							function_b7360(object_index);
+								function_b8840(index);
+							function_b75a0(index, g_468788, g_4687a8, g_4687b0, NULL, false);
+							function_b7360(index);
 							s_object_default_placement_view *placed = (s_object_default_placement_view *)
 								((s_object_header_10a660 *)(g_4e0300->data + header_offset))->object;
 							placed->hidden = false;
 							if (!TEST_FIELD_BIT(placed->flag8) && g_4de2f4 && *(byte *)g_4de2f4)
-								function_b8600(object_index, 0);
-							function_b7290(object_index);
+								function_b8600(index, 0);
+							function_b7290(index);
 						}
-						function_b9b90(object_index, true);
-						function_bd020(object_index);
+						function_b9b90(index, true);
+						function_bd020(index);
 						result = 1;
 					}
 				}

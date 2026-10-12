@@ -1145,7 +1145,8 @@ void function_2a09c0(void)
 		s_hs_syntax_node_view *node = (s_hs_syntax_node_view *)array->data + (datum & 0xffff);
 		if (node->type == _hs_type_string)
 			node->value = node->source_offset + string_data;
-		datum = data_datum_index(array, data_find_index(array, datum == NONE ? 0 : (datum & 0xffff) + 1));
+		long next_index = datum == NONE ? 0 : (datum & 0xffff) + 1;
+		datum = data_datum_index(array, data_find_index(array, next_index));
 	}
 }
 
@@ -3011,7 +3012,8 @@ void __stdcall function_2a2e00(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		s_recorded_animation *animation = recorded_animation_find(NULL, arguments[0]);
+		long object_index = arguments[0];
+		s_recorded_animation *animation = recorded_animation_find(NULL, object_index);
 		if (animation)
 			animation->flags |= 3;
 		function_209ae0(thread_index, 0);
@@ -8583,7 +8585,10 @@ void __stdcall function_2a9e60(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_189cd0(arguments[0], arguments[1], *(real *)&arguments[2], function_2197f0(*(real *)&arguments[3]), function_2197f0(*(real *)&arguments[4]), NONE, 0);
+		struct { long fourth, fifth; } gains;
+		gains.fifth = function_2197f0(*(real *)&arguments[4]);
+		gains.fourth = function_2197f0(*(real *)&arguments[3]);
+		function_189cd0(arguments[0], arguments[1], *(real *)&arguments[2], gains.fourth, gains.fifth, NONE, 0);
 		function_209ae0(thread_index, 0);
 	}
 }
