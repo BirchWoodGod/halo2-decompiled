@@ -3410,7 +3410,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00100430,233,game,speed,a16 pad,,,000b7360 00101f20 001061c0 00322b0c,src/weapons.cpp,matched
 00100520,853,game,speed,a16 pad,,,000b8d30 000badc0 001008f0 00106280,src/weapons.cpp,todo
 00100880,109,game,speed,a16 pad,,,,src/unknown_100880.cpp,matched
-001008f0,587,game,speed,a16 pad,,,00106030,src/weapons.cpp,todo
+001008f0,587,game,speed,a16 pad,,,00106030,src/weapons.cpp,matched
 00100b40,60,game,speed,a16 pad,,,001008f0,src/weapons.cpp,matched
 00100b80,585,game,speed,a16 pad,,,000b7360 001008f0 00106030,src/weapons.cpp,todo
 00100dd0,204,game,speed,a16 pad,,,000fa580 000fa6a0,src/weapons.cpp,todo
