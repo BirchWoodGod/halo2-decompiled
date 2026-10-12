@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7877 functions match
+
+```
+matched 7877 of 11318 game functions (951953 of 2784283 bytes, 34.19%)
+```
+
+5 new matches, none lost:
+- Claude lane 1, round 3 (+5): two lookups into one table read the table global a second time, as retail does (`0x1e8cb0`, `0x1e8d50`); `0x2cb001` keeps its unused argument, so it returns with `ret 4`; `0x1e3a00` copies the sample's center from the slot after its point, so the compiler loads before it stores; and `0x2b178e` stores its flag before it fills the message parameters.
+
+## 2026-10-12: 7872 functions match
+
+```
+matched 7872 of 11318 game functions (951426 of 2784283 bytes, 34.17%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 41 (+1), in the render range: `0x48b00`, the screen-space bounds of a sphere, groups one projected product the way retail does and writes its depth clamp the other way round; `0x23600` and `0x3e9c0` are each one difference closer.
+
 ## 2026-10-12: 7871 functions match
 
 ```
