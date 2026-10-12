@@ -738,6 +738,13 @@ long qos_lookup(long kind, long count, long bits_per_second, s_qos_target *targe
 bool qos_is_complete(long handle);
 bool function_7c530(const byte *data, long size, void *description);
 
+PRIVATE __forceinline bool function_6f4b1(const s_qos_result *arg_0, s_session_description *arg_1)
+{
+ const byte *local_0 = *(byte *volatile const *)&arg_0->data;
+ long local_1 = *(volatile const long *)&arg_0->data_size;
+ return function_7c530(local_0, local_1, arg_1);
+}
+
 // @retail 0x6f4b0
 void function_06f4b0(c_session_state_joining *self)
 {
@@ -749,14 +756,11 @@ void function_06f4b0(c_session_state_joining *self)
  }
  if (state->unknownf0 != NONE)
  {
-  dword local_0 = (dword)online_task_poll(state->unknownf0);
-  if (local_0 == 0)
-   return;
-  local_0--;
-  if (local_0 == 0)
-   return;
-  local_0--;
-  if (local_0 == 0)
+  switch (online_task_poll(state->unknownf0))
+  {
+  case 0: goto local_1;
+  case 1: return;
+  case 2:
    {
     s_match_result_data result;
     if (function_90160(state->unknownf0, &result))
@@ -772,6 +776,9 @@ void function_06f4b0(c_session_state_joining *self)
     else
      state->unknown104 = 3;
    }
+   break;
+  default: break;
+  }
   function_6b640(state->unknownf0);
   state->unknownf0 = NONE;
  }
@@ -784,7 +791,7 @@ void function_06f4b0(c_session_state_joining *self)
   {
    struct { s_session_description description; byte remaining[0x714 - sizeof(s_session_description)]; } buffer;
    s_session_description *description = &buffer.description;
-   if (function_7c530(result.data, result.data_size, description))
+   if (function_6f4b1(&result, description))
    {
     self->function_06f2b0(description, state->entry_count);
     state->unknown10 = false;
@@ -813,6 +820,8 @@ void function_06f4b0(c_session_state_joining *self)
   if (state->unknownf0 == NONE)
    state->unknown104 = 16;
  }
+local_1:
+ return;
 }
 
 bool __stdcall function_59e50(c_class_58d20 *session, long mode, long local,
