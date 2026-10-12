@@ -968,10 +968,10 @@ bool function_14ed80(void)
 // @retail 0x14f040
 void player_get_representation(long player_index, long *field_b4, long *third_person)
 {
-	s_player *player = player_get(player_index);
-	s_globals_representations_view *globals = (s_globals_representations_view *)g_4e034c;
 	long first = NONE;
 	long third = NONE;
+	s_player *player = player_get(player_index);
+	s_globals_representations_view *globals = (s_globals_representations_view *)g_4e034c;
 	long index;
 
 	if (player->appearance.representation_index < 0)
@@ -981,9 +981,10 @@ void player_get_representation(long player_index, long *field_b4, long *third_pe
 	else
 	{
 		index = player->appearance.representation_index;
-		if (index > globals->representation_count - 1)
+		long maximum = globals->representation_count - 1;
+		if (index > maximum)
 		{
-			index = globals->representation_count - 1;
+			index = maximum;
 		}
 	}
 
