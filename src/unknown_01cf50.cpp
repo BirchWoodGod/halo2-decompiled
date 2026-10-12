@@ -7512,6 +7512,8 @@ struct s_33a0b_view;
 extern s_33a0b_view *g_485a58;
 void function_20e50(long index);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x22590
 void function_22590()
 {
@@ -7545,8 +7547,11 @@ void function_22590()
     memset(&g_render_state_storage, 0, sizeof(g_render_state_storage));
     for (long i = 0; i < 0x1ff; ++i) function_20e50(i);
     if (effects) *(real *)effects->unknown190 = 0.0f;
+    // Keep the effect write before the pointer clear.
+    _ReadWriteBarrier();
     g_485a58 = 0;
 }
+#pragma function(_ReadWriteBarrier)
 
 #include "allocator_storage.h"
 #include "font_loading_storage.h"
@@ -7717,6 +7722,9 @@ byte g_485a88;
 long g_4670f8;
 point3f g_4b72b4;
 
+__declspec(noinline) bool function_1d3f0(long index, void const *colors, D3DPalette **out);
+__declspec(noinline) void function_0169f0();
+__declspec(noinline) void function_016a30(real scale, short y, short x);
 // @retail 0x12560
 void function_12560()
 {
@@ -7727,7 +7735,7 @@ void function_12560()
     else { x = 0x30; y = 0x24; }
     function_016a30(1.0f, y, x);
     Direct3D_SetPushBufferSize(0x100000, 0x8000);
-    bool success = function_128c0(&g_43ed80);
+    volatile bool success = function_128c0(&g_43ed80);
     if (success)
     {
         g_4670bc = 1;
@@ -7735,18 +7743,15 @@ void function_12560()
         function_1c1b0();
         function_1c810();
         D3DPalette *palette = NULL;
-        success = function_015b10(3, &palette);
-        if (success)
-        {
-            D3DCOLOR *destination = D3DPalette_Lock2(palette, 0);
-            if (destination)
-                { long color = 0;
-                do { *destination++ = g_468848[color++]; } while (color < 256); }
-            D3DPalette_Unlock(palette);
-        }
+        success = function_1d3f0(3, g_468848, &palette);
         g_484dbc = palette;
         if (success)
-            for (long i = 0; i < 4; ++i) D3DDevice_SetPalette(i, (D3DPalette *)g_484dbc);
+            {
+                D3DDevice_SetPalette(0, (D3DPalette *)g_484dbc);
+                D3DDevice_SetPalette(1, (D3DPalette *)g_484dbc);
+                D3DDevice_SetPalette(2, (D3DPalette *)g_484dbc);
+                D3DDevice_SetPalette(3, (D3DPalette *)g_484dbc);
+            }
         memset(g_484dd0, 0, 0x180);
         if (success)
         {
@@ -7766,7 +7771,10 @@ void function_12560()
             D3DDevice_SetRenderState(D3DRS_FOGENABLE, 1);
             D3DDevice_SetRenderState(D3DRS_LIGHTING, 0);
             D3DDevice_SetRenderState(D3DRS_SPECULARENABLE, 1);
-            for (long i = 0; i < 4; ++i) D3DDevice_SetTextureStageState(i, D3DTSS_TEXCOORDINDEX, i);
+                        D3DDevice_SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+            D3DDevice_SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            D3DDevice_SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            D3DDevice_SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, 3);
         }
     }
     function_01d660();

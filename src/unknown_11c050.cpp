@@ -89,6 +89,7 @@ short function_11c0b0(char const *name, s_name_table_11c0b0 *table)
 
 #define CLUSTER_BITS(offset) ((dword *)((byte *)g_4e6948 + (offset)))
 
+__declspec(noinline)
 // @retail 0x11c050
 bool function_11c050(s_location const *location)
 {
@@ -97,6 +98,7 @@ bool function_11c050(s_location const *location)
 	return (CLUSTER_BITS(0x1178)[cluster_index >> 5] & (1 << (cluster_index & 31))) != 0;
 }
 
+__declspec(noinline)
 // @retail 0x11c080
 bool function_11c080(s_location const *location)
 {
