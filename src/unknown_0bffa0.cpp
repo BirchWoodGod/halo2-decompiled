@@ -375,14 +375,14 @@ static __forceinline real light_distance_fade_ab(s_light_ab *light, long index, 
 void function_c12d0(long light_index)
 {
     s_light_ab *light = &((s_light_ab *)g_4e030c->data)[light_index & 0xffff];
-    s_light_definition_ab *definition = (s_light_definition_ab *)g_4e3b44[light->tag_index & 0xffff].bytes;
+    s_light_definition_ab volatile *definition = (s_light_definition_ab *)g_4e3b44[light->tag_index & 0xffff].bytes;
     light->fade = light_distance_fade_ab(light, definition->fade_distance, 10.0f, g_4405f0);
     light->fade_f8 = light_distance_fade_ab(light, definition->fade_colour, 5.0f, g_440604);
     light->fade_fc = light_distance_fade_ab(light, definition->fade_colour, light->fade_radius, g_440618);
     light->fade_104 = light_distance_fade_ab(light, definition->fade_range, 1.0f, g_44062c);
     light->fade_108 = light_distance_fade_ab(light, 0, light->fade_radius * 0.5f, g_440640);
     if (light->fade_f8 > light->fade) light->fade_f8 = light->fade;
-    if (light->fade_104 > light->fade_f8) light->fade_104 = light->fade_f8;
+    if (light->fade_f8 < light->fade_104) light->fade_104 = light->fade_f8;
 }
 
 bool function_31520(long index);

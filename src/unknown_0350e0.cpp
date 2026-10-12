@@ -585,6 +585,8 @@ void function_3ede0(void)
 	}
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x3ea60
 void function_3ea60(void)
 {
@@ -605,12 +607,16 @@ void function_3ea60(void)
 		byte *definition = g_4e3b44[*(long *)(data + 4) & 0xffff].bytes;
 		scratch.count = *(long *)(definition + 0x48);
 		render_model_get_default_orientations((s_render_model_definition *)definition, scratch.orientations);
+		vector3f *second = g_4687b0;
 		g_4c5038 = true;
+		// Keep the flag store before the count reload.
+		_ReadWriteBarrier();
 		g_4c503c = *(long *)(definition + 0x48);
-		render_model_build_node_matrices(g_4687a8, g_4687b0, g_468788,
+		render_model_build_node_matrices(g_4687a8, second, g_468788,
 			(s_render_model_definition *)definition, g_4c5040, scratch.orientations);
 	}
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x3eb70
 real function_3eb70(void)
@@ -1471,9 +1477,9 @@ void function_36f50(byte *state)
         vector3f const *a = (vector3f const *)(state + 0x24);
         vector3f const *b = (vector3f const *)(state + 0x30);
         vector3f const *c = (vector3f const *)(state + 0x3c);
-        *(real *)((entry - 0x24) + 0xac) = (real)sqrt((double)a->i * a->i + (double)a->j * a->j + (double)a->k * a->k);
-        *(real *)((entry - 0x24) + 0xb0) = (real)sqrt((double)b->i * b->i + (double)b->j * b->j + (double)b->k * b->k);
-        *(real *)((entry - 0x24) + 0xb4) = (real)sqrt((double)c->i * c->i + (double)c->j * c->j + (double)c->k * c->k);
+        *(real *)((entry - 0x24) + 0xac) = (real)sqrt((real)(a->i * a->i) + (real)(a->j * a->j) + (real)(a->k * a->k));
+        *(real *)((entry - 0x24) + 0xb0) = (real)sqrt((real)(b->i * b->i) + (real)(b->j * b->j) + (real)(b->k * b->k));
+        *(real *)((entry - 0x24) + 0xb4) = (real)sqrt((real)(c->i * c->i) + (real)(c->j * c->j) + (real)(c->k * c->k));
         *(real *)((entry - 0x24) + 0x88) = signed_fraction::evaluate(random);
         *(real *)((entry - 0x24) + 0x8c) = signed_fraction::evaluate(random);
         *(real *)((entry - 0x24) + 0x90) = signed_fraction::evaluate(random);

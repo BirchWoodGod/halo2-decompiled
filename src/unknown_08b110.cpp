@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "unknown_08b110.h"
 #include "unknown_096ed0.h"
+#include "unknown_0662e0.h"
 
 // @flags /O2 /arch:SSE /Gr
 
@@ -43,13 +44,6 @@ void c_vtable_450c94::v3(s_node_450d1c *node, long a2, long a3, long key,
 
 s_definition_4ced60 g_4ced60[32];
 long g_4cf474;
-real g_4cf478;
-long g_4cf47c;
-real g_4cf480;
-real g_4cf484;
-real g_4cf488;
-real g_4cf48c;
-real g_4cf490;
 
 struct s_object;
 s_object *function_badc0(long object_index, dword type_mask);
@@ -298,7 +292,7 @@ long c_vtable_450c94::v1(long a1, long max_count, void *entries)
 				size += 0x71;
 
 			entry->unknown00 = unknown04;
-			real value = *(volatile real *)&g_4cf478;
+			real value = g_network_configuration.real1438;
 			if (flag_a)
 			{
 				real x;
@@ -306,12 +300,12 @@ long c_vtable_450c94::v1(long a1, long max_count, void *entries)
 				source->v1(i, a1, &x, &y);
 				long start = *time_pointer;
 				long elapsed = time_now() - start;
-				if (elapsed >= g_4cf47c)
-					value = g_4cf480;
+				if (elapsed >= g_network_configuration.value143c)
+					value = g_network_configuration.real1440;
 				else if (elapsed >= y)
-					value = g_4cf488 * x + g_4cf484;
+					value = g_network_configuration.real1448 * x + g_network_configuration.real1444;
 				else
-					value = g_4cf490 * x + g_4cf48c;
+					value = g_network_configuration.real1450 * x + g_network_configuration.real144c;
 			}
 			entry->size = size;
 			entry->unknown04 = value;

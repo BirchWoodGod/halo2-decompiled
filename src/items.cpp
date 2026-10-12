@@ -140,12 +140,11 @@ void function_10da60(long item_index, point3f *position)
 	}
 }
 
-// @retail 0x10d5f0
-void function_10d5f0(long item_index)
+/* normalizes the vector in place and returns its old length (0 when it is
+   too short) */
+static inline real item_axis_normalize(vector3f *v)
 {
-	s_item *item = ITEM_GET(item_index);
-	vector3f axis = item->angular_velocity;
-	real length = (real)sqrt(axis.i * axis.i + axis.j * axis.j + axis.k * axis.k);
+	real length = (real)sqrt(v->i * v->i + v->j * v->j + v->k * v->k);
 
 	if (fabs(length) < 0.0001f)
 	{
@@ -154,10 +153,19 @@ void function_10d5f0(long item_index)
 	else
 	{
 		real inverse = 1.0f / length;
-		axis.i = inverse * axis.i;
-		axis.j = inverse * axis.j;
-		axis.k = inverse * axis.k;
+		v->i = inverse * v->i;
+		v->j = v->j * inverse;
+		v->k = v->k * inverse;
 	}
+	return length;
+}
+
+// @retail 0x10d5f0
+void function_10d5f0(long item_index)
+{
+	s_item *item = ITEM_GET(item_index);
+	vector3f axis = item->angular_velocity;
+	real length = item_axis_normalize(&axis);
 
 	if (length > 0.001f && !(item->flags_c1 & 1))
 	{
@@ -387,10 +395,10 @@ void function_10d4e0(long item_index)
 		owner.unknown0 = owner_item->location_c4;
 		owner.unknown8 = owner_item->location_c2;
 		function_176780(item_index, &owner, 0.0f, definition->effect_tag_index, 0.0f, NULL, NULL);
-		delay = (real)g_510c54->field_2_3 * delay;
+		real scaled = (real)g_510c54->field_2_3 * delay;
 		__asm
 		{
-			fld delay
+			fld scaled
 			fistp ticks
 		}
 		item->value_12e = (short)ticks;
@@ -451,7 +459,7 @@ void function_10cd50(long item_index)
 	}
 	item = ITEM_GET(item_index);
 	function_b7300(item_index);
-	if ((item->object_flags >> 8) & 1)
+	if ((bool)((item->object_flags >> 8) & 1))
 		function_b87b0(item_index);
 	item->object_flags |= 0x80;
 	function_b7290(item_index);

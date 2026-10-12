@@ -175,17 +175,15 @@ void function_109220(long object_index, long a, long b)
 void function_109290(long object_index, long a, long b, long c)
 {
 	s_object_handlers **list = OBJECT_TYPE_DEFINITION(object_index)->handlers;
-	s_object_handlers **slot = list;
-	s_object_handlers *next = *list;
-	while (next)
+
+	for (long i = 0; list[i]; i++)
 	{
-		s_object_handlers *handlers = *slot;
+		s_object_handlers *handlers = list[i];
+
 		if (handlers->handler68)
 		{
 			handlers->handler68(object_index, a, b, c);
 		}
-		slot++;
-		next = *slot;
 	}
 }
 

@@ -35,10 +35,3 @@ bool function_22af8d(long arg_1, byte const *arg_2)
 {
     return false;
 }
-
-
-
-// @stub 0x13aa27
-void function_13aa27(long arg_1, byte const *arg_2, byte *arg_3, long arg_4, byte const *arg_5)
-{
-}

@@ -1237,6 +1237,7 @@ bool function_31590(long index, s_light_shape_ab *shape)
 {
     volatile bool enabled = false;
     bool result = false;
+    bool *result_reference = &result;
     if (index != NONE && function_c3140(index))
     {
         s_render_entry_110 *entry = &((s_render_entry_110 *)g_4e030c->data)[index & 0xffff];
@@ -1244,19 +1245,21 @@ bool function_31590(long index, s_light_shape_ab *shape)
         bool visible;
         if (function_31520(index))
         {
-            result = function_c17f0(index, shape, true);
+            *result_reference = function_c17f0(index, shape, true);
             visible = true;
             if ((*(dword *)definition & 0x400) && g_485602 != 2)
                 visible = false;
         }
         else
             visible = enabled;
-        result &= visible;
-        result &= true;
-        result &= *(short *)((byte *)entry + 0x48) != NONE ||
+        *result_reference &= visible;
+        *result_reference &= true;
+        *result_reference &= *(short *)((byte *)entry + 0x48) != NONE ||
             ((*(dword *)definition & 0x20) && (*(dword *)definition & 0x40000));
     }
-    return result;
+    else
+        return false;
+    return *result_reference;
 }
 
 #include <math.h>

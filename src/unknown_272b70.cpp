@@ -870,17 +870,42 @@ void function_201ad0(long squad_index, long vehicle_index);
 void function_2011f0(long squad_index);
 void function_201df0(void);
 
+__forceinline s_squad_datum *function_274141(s_ai_squad_iterator *arg_0, s_record_pool const *arg_1)
+{
+	s_squad_datum *local_0 = NULL;
+	if (arg_0->squad_group_index == NONE)
+	{
+		long local_1 = *(volatile long *)&arg_0->next_squad_index;
+		if (local_1 != NONE)
+		{
+			arg_0->squad_index = local_1;
+			arg_0->next_squad_index = NONE;
+			local_0 = (s_squad_datum *)arg_1->data + (arg_0->squad_index & 0xffff);
+		}
+	}
+	else
+	{
+		local_0 = function_204e10(&arg_0->group_iterator);
+		arg_0->squad_index = arg_0->group_iterator.squad_index;
+	}
+	return local_0;
+}
+
 /* moves the actors and vehicles an ai index names into a squad */
 // @retail 0x274140
 void function_274140(long ai_index, long squad_index)
 {
 	long const *squad_reference = &squad_index;
 	short actor_count = 0;
-	s_ai_actor_iterator field_10;
-	ai_actor_iterator_new(ai_index, &field_10);
-	while (ai_actor_iterator_next(&field_10))
+	struct
 	{
-		function_1e3400(field_10.actor_index, *squad_reference);
+		s_ai_squad_iterator field_0;
+		s_ai_actor_iterator field_20;
+	} local_20;
+	ai_actor_iterator_new(ai_index, &local_20.field_20);
+	while (ai_actor_iterator_next(&local_20.field_20))
+	{
+		function_1e3400(local_20.field_20.actor_index, *squad_reference);
 		actor_count++;
 	}
 
@@ -910,15 +935,16 @@ void function_274140(long ai_index, long squad_index)
 		actor_index = actor->next_actor_index;
 	}
 
-	s_ai_squad_iterator local_278a95;
 	s_squad_datum *squad;
-	ai_squad_iterator_new_inline(&local_278a95, ai_index);
-	while ((squad = ai_squad_iterator_next(&local_278a95)) != NULL)
+	ai_squad_iterator_new_inline(&local_20.field_0, ai_index);
+	s_record_pool *local_22 = g_4e0300;
+	s_record_pool *local_23 = g_51e9d8;
+	while ((squad = function_274141(&local_20.field_0, local_23)) != NULL)
 	{
 		long vehicle_index = squad->first_vehicle_index;
 		while (vehicle_index != NONE)
 		{
-			long next_vehicle_index = ((s_ai_script_squad_vehicle *)ai_script_object_get(vehicle_index))->next_squad_vehicle_index;
+			long next_vehicle_index = ((s_ai_script_squad_vehicle *)((s_object_header_view *)local_22->data)[vehicle_index & 0xffff].object)->next_squad_vehicle_index;
 			function_201ad0(squad_index, vehicle_index);
 			vehicle_index = next_vehicle_index;
 		}
