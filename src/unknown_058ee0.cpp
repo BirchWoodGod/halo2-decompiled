@@ -147,14 +147,24 @@ bool network_session_manager_is_joining(void)
 	return result;
 }
 
+PRIVATE __forceinline void function_59281(const c_class_58d20 *arg_0, bool *arg_1)
+{
+	long local_0 = arg_0->state;
+	if (!local_0)
+		*arg_1 = true;
+	else if (local_0 > 2 && local_0 <= 8)
+		*arg_1 = arg_0->current_member == arg_0->value50;
+}
+
 // @retail 0x59280
 void network_session_manager_check_joining_leader(void)
 {
 	if (g_527330.initialized && g_527330.state == 5 && !g_527330.state_joining.unknown104)
 	{
 		c_class_58d20 *session = g_527330.state_joining.owner->session_a;
-		long state = session->state;
-		if (!state || (state > 2 && state <= 8 && session->current_member == session->value50))
+		bool local_0 = false;
+		function_59281(session, &local_0);
+		if (local_0)
 			g_527330.state_joining.flage9 = true;
 	}
 }
@@ -319,21 +329,33 @@ void network_session_manager_request_mode_acknowledge(void)
 	}
 }
 
+PRIVATE __forceinline void function_59615(c_class_58d20 *arg_0, bool *arg_1)
+{
+	if (network_session_parameters_set_mode(arg_0, 1))
+		*arg_1 = true;
+	else
+		*arg_1 = *(volatile bool *)arg_1;
+}
+
 // @retail 0x59610
 bool network_session_manager_set_mode(void)
 {
 	bool result = false;
-	if (g_527330.state)
+	long local_0 = g_527330.state;
+	if (!local_0)
+		goto local_1;
+	if (local_0 == 1)
+		goto local_2;
 	{
-		if (g_527330.state == 1)
-			return true;
 		c_class_58d20 *session = session_manager_session_a();
-		if (session_state_is_live(session) && function_058d50(session))
-		{
-			if (network_session_parameters_set_mode(session, 1))
-				return true;
-		}
+		if (!function_058d50(session))
+			goto local_1;
+		function_59615(session, &result);
+		goto local_1;
 	}
+local_2:
+	result = true;
+local_1:
 	return result;
 }
 
