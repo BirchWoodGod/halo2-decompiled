@@ -581,7 +581,9 @@ bool function_3e9c0(long object_index)
             if (!header->inactive)
             {
                 byte *object = header->object;
-                long entry = g_4e8c20->entries[index];
+                s_index_table *table = g_4e8c20;
+                s_index_table *const *table_reference = &table;
+                long entry = (*table_reference)->entries[index];
                 if (*(long *)(object + 0x13c) == entry)
                     result = true;
             }

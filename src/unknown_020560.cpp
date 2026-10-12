@@ -1335,10 +1335,10 @@ long function_21360(long source, real radius, real low, real high, long target,
 
 // @retail 0x211a0
 long function_211a0(long source, real passes, real distortion, real falloff,
-    long target, long alternate, long unused, long configure, long full_surface,
+    long target, long alternate, long output, long configure, long full_surface,
     real scale, real offset)
 {
-    (void)&unused;
+    (void)&output;
     real volatile pass = 0.0f;
     if (alternate == NONE)
         alternate = source;
@@ -1365,10 +1365,11 @@ long function_211a0(long source, real passes, real distortion, real falloff,
             pass += 1.0f;
         } while (pass < passes);
     }
-    if (alternate != NONE && alternate != source)
+    /* Copy the final pass to the requested output buffer. */
+    if (output != NONE && output != source)
     {
-        function_351a0(source, alternate);
-        source = alternate;
+        function_351a0(source, output);
+        source = output;
     }
     return source;
 }
@@ -1560,8 +1561,7 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         g_484f68.PSFinalCombinerInputsEFG = ((g_485a74 ? 0x1d : 0) | 0xc1100) << 8;
         function_1ccf0(&g_484f68);
         function_34a90(7, 10, 0x1010101, false, false, 1.0f, 0.5f, 1.0f, 4, false, false);
-        long (*volatile filter)(long, real, real, real, long, long, long, long, long, real, real) = function_211a0;
-        long filtered = filter(7, passes, 1.0f, falloff, 8, NONE, NONE, 1, 0, scale, values.second);
+        long filtered = function_211a0(7, passes, 1.0f, falloff, 8, NONE, NONE, 1, 0, scale, values.second);
         function_14f60(0, (short)filtered);
         function_15780(0, 4);
         function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
