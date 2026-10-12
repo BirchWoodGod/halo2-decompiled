@@ -113,14 +113,24 @@ struct s_first_person_indices
 	real unknown10;
 };
 
+/* the indices are three animation ids (two shorts each) at +4, +8 and +0 */
+struct s_first_person_short_pair
+{
+	short first;
+	short second;
+};
+
+static inline void first_person_short_pair_reset(s_first_person_short_pair *pair)
+{
+	pair->first = NONE;
+	pair->second = NONE;
+}
+
 static inline void first_person_indices_reset(s_first_person_indices *indices)
 {
-	indices->unknown4 = NONE;
-	indices->unknown6 = NONE;
-	indices->unknown8 = NONE;
-	indices->unknowna = NONE;
-	indices->unknown0 = NONE;
-	indices->unknown2 = NONE;
+	first_person_short_pair_reset((s_first_person_short_pair *)&indices->unknown4);
+	first_person_short_pair_reset((s_first_person_short_pair *)&indices->unknown8);
+	first_person_short_pair_reset((s_first_person_short_pair *)&indices->unknown0);
 }
 
 /* the first person weapon (0x1010 bytes) */
@@ -704,7 +714,7 @@ short first_person_weapon_animation_ticks(long weapon_index, long animation_name
 	{
 		long frame_count = *(short const *)((byte const *)animation + 0x14);
 		long event_frame = function_1dadb0(animation, 4);
-		long frame = event_frame;
+		long frame;
 
 		switch (type)
 		{
@@ -712,7 +722,8 @@ short first_person_weapon_animation_ticks(long weapon_index, long animation_name
 			frame = frame_count;
 			break;
 		case 1:
-			if (event_frame == NONE || frame_count < event_frame)
+			frame = event_frame;
+			if (event_frame == NONE || frame_count <= event_frame)
 				frame = frame_count;
 			break;
 		case 2:
