@@ -328,7 +328,7 @@ PRIVATE inline byte *impact_component_definition_get(long component_index)
 	return impact_tag_get(impact_object_header_get(havok_component_get(component_index)->object_index)->object->definition_index);
 }
 
-PRIVATE inline bool impact_type_is_continuous(char type)
+PRIVATE __forceinline bool impact_type_is_continuous(char type)
 {
 	return PIN(type, 2, 3) == type;
 }
@@ -814,6 +814,18 @@ void impact_local_positions_update(
 	}
 }
 
+struct s_227af0
+{
+	real field_0;
+	real field_4;
+	real field_8;
+	real field_c;
+	real field_10;
+	real field_14;
+	real field_18;
+	real field_1c;
+};
+
 // @retail 0x227af0
 void impact_orientation_get(
 	s_impact const *impact,
@@ -841,7 +853,7 @@ void impact_orientation_get(
 		*half_width = 0.0f;
 		*half_length = 0.0f;
 	}
-	else if (impact->reference_count <= 1 || impact->unknowne && !unknown)
+	else if (impact->reference_count <= 1 && !(impact->unknowne && unknown))
 	{
 		*half_width = 0.0f;
 		*half_length = 0.0f;
@@ -858,14 +870,15 @@ void impact_orientation_get(
 	{
 		s_havok_component *component = havok_component_get(impact->component_a);
 		bool has_component_b = impact->component_b != NONE;
-		real x_a_max = -3.4028235e+38f;
-		real x_a_min = 3.4028235e+38f;
-		real y_a_max = -3.4028235e+38f;
-		real y_a_min = 3.4028235e+38f;
-		real x_b_max = -3.4028235e+38f;
-		real x_b_min = 3.4028235e+38f;
-		real y_b_max = -3.4028235e+38f;
-		real y_b_min = 3.4028235e+38f;
+		s_227af0 local_1;
+		local_1.field_10 = 3.4028235e+38f;
+		local_1.field_0 = -3.4028235e+38f;
+		local_1.field_14 = 3.4028235e+38f;
+		local_1.field_c = -3.4028235e+38f;
+		local_1.field_4 = 3.4028235e+38f;
+		local_1.field_1c = -3.4028235e+38f;
+		local_1.field_8 = 3.4028235e+38f;
+		local_1.field_18 = -3.4028235e+38f;
 		matrix3x3 matrix_a;
 		matrix3x3 matrix_b;
 		long i;
@@ -885,46 +898,48 @@ void impact_orientation_get(
 				real x;
 				real y;
 
-				vector3d_from_points3d(position, &constraint->position, &delta);
+				delta.j = constraint->position.y - position->y;
+				delta.k = constraint->position.z - position->z;
+				delta.i = constraint->position.x - position->x;
 				x = dot3f(&matrix_a.forward, &delta);
 				y = dot3f(&matrix_a.left, &delta);
-				if (x >= x_a_max)
-					x_a_max = x;
-				if (x < x_a_min)
-					x_a_min = x;
-				if (y >= y_a_max)
-					y_a_max = y;
-				if (y < y_a_min)
-					y_a_min = y;
+				if (!(local_1.field_0 > x))
+					local_1.field_0 = x;
+				if (local_1.field_10 > x)
+					local_1.field_10 = x;
+				if (!(local_1.field_c > y))
+					local_1.field_c = y;
+				if (local_1.field_14 > y)
+					local_1.field_14 = y;
 				if (has_component_b)
 				{
 					x = matrix_b.up.i * delta.k + matrix_b.left.i * delta.j + matrix_b.forward.i * delta.i;
 					y = matrix_b.up.j * delta.k + matrix_b.left.j * delta.j + matrix_b.forward.j * delta.i;
-					if (x >= x_b_max)
-						x_b_max = x;
-					if (x < x_b_min)
-						x_b_min = x;
-					if (y >= y_b_max)
-						y_b_max = y;
-					if (y < y_b_min)
-						y_b_min = y;
+					if (!(local_1.field_1c > x))
+						local_1.field_1c = x;
+					if (local_1.field_4 > x)
+						local_1.field_4 = x;
+					if (!(local_1.field_18 > y))
+						local_1.field_18 = y;
+					if (local_1.field_8 > y)
+						local_1.field_8 = y;
 				}
 			}
 		}
-		if (has_component_b && !((y_a_max - y_a_min) * (x_a_max - x_a_min) > (x_b_max - x_b_min) * (y_b_max - y_b_min)))
+		if (has_component_b && !((local_1.field_c - local_1.field_14) * (local_1.field_0 - local_1.field_10) > (local_1.field_1c - local_1.field_4) * (local_1.field_18 - local_1.field_8)))
 		{
 			real x_center;
 			real y_center;
 
-			*half_width = (x_b_max - x_b_min) * 0.5f;
-			*half_length = (y_b_max - y_b_min) * 0.5f;
+			*half_width = (local_1.field_1c - local_1.field_4) * 0.5f;
+			*half_length = (local_1.field_18 - local_1.field_8) * 0.5f;
 			*forward = matrix_b.forward;
 			*left = matrix_b.left;
-			x_center = (x_b_max + x_b_min) * 0.5f;
+			x_center = (local_1.field_1c + local_1.field_4) * 0.5f;
 			position->x += forward->i * x_center;
 			position->y += forward->j * x_center;
 			position->z += forward->k * x_center;
-			y_center = (y_b_max + y_b_min) * 0.5f;
+			y_center = (local_1.field_18 + local_1.field_8) * 0.5f;
 			position->x += left->i * y_center;
 			position->y += left->j * y_center;
 			position->z += left->k * y_center;
@@ -934,15 +949,15 @@ void impact_orientation_get(
 			real x_center;
 			real y_center;
 
-			*half_width = (x_a_max - x_a_min) * 0.5f;
-			*half_length = (y_a_max - y_a_min) * 0.5f;
+			*half_width = (local_1.field_0 - local_1.field_10) * 0.5f;
+			*half_length = (local_1.field_c - local_1.field_14) * 0.5f;
 			*forward = matrix_a.forward;
 			*left = matrix_a.left;
-			x_center = (x_a_max + x_a_min) * 0.5f;
+			x_center = (local_1.field_0 + local_1.field_10) * 0.5f;
 			position->x += forward->i * x_center;
 			position->y += forward->j * x_center;
 			position->z += forward->k * x_center;
-			y_center = (y_a_max + y_a_min) * 0.5f;
+			y_center = (local_1.field_c + local_1.field_14) * 0.5f;
 			position->x += left->i * y_center;
 			position->y += left->j * y_center;
 			position->z += left->k * y_center;
@@ -1082,7 +1097,10 @@ void impact_type_update(
 		rigid_body = component_a->rigid_bodies.data[rigid_body_index_a].rigid_body;
 		if (!rigid_body->m_fixed)
 		{
-			velocity = *(vector3f *)&rigid_body->m_motion->m_linear_velocity;
+			point3f const *local_1 = (point3f const *)&rigid_body->m_motion->m_linear_velocity;
+			velocity.i = local_1->x;
+			velocity.j = local_1->y;
+			velocity.k = local_1->z;
 		}
 		else
 		{
@@ -1511,6 +1529,7 @@ void function_2294a0(
 	long impulse_effect_b = NONE;
 	real scale;
 	bool impulse = false;
+	union { short field_0; point2f field_0_1; } local_3;
 
 	effect_location.position = impact->position;
 	effect_location.normal = impact->normal;
@@ -1546,7 +1565,8 @@ void function_2294a0(
 		sound_position.compressed_forward = vector3d_compress(&impact->unknown50);
 		sound_position.velocity = *g_4687a4;
 		sound_position.location = object->location;
-		impact_material_effects_get(impact, &impact->position, impact->material_a, impact->material_b, 0,
+		*(volatile short *)&local_3.field_0=*(short const *)&impact->material_b;
+		impact_material_effects_get(impact, &impact->position, impact->material_a, *(c_type_47f957 const *)&local_3.field_0, 0,
 			&sound_a, &effect_a, &sound_b, &effect_b, &sound_c, &effect_c);
 		if (sound_a != NONE)
 		{
@@ -1647,7 +1667,8 @@ void function_2294a0(
 					long effect_b = NONE;
 
 					scale = impact_level_get(impact, impact->type);
-					impact_material_effects_get(impact, &impact->position, impact->material_a, impact->material_b, impact->type,
+					*(volatile short *)&local_3.field_0=*(short const *)&impact->material_b;
+					impact_material_effects_get(impact, &impact->position, impact->material_a, *(c_type_47f957 const *)&local_3.field_0, impact->type,
 						&looping_sound_a, &effect_a, &looping_sound_b, &effect_b, NULL, NULL);
 					if (start_looping_sounds)
 					{
@@ -1708,7 +1729,7 @@ void function_2294a0(
 		real level = impact_level_get(impact, impact->unknown1d);
 		s_havok_component *component = havok_component_get(impact->component_a);
 		transform4x3f matrix;
-		point2f size;
+		point2f &size=local_3.field_0_1;
 		vector3f velocity;
 		hkRigidBody *rigid_body;
 
@@ -1720,7 +1741,10 @@ void function_2294a0(
 		rigid_body = component->rigid_bodies.data[rigid_body_index_a].rigid_body;
 		if (!rigid_body->m_fixed)
 		{
-			velocity = *(vector3f *)&rigid_body->m_motion->m_linear_velocity;
+			point3f const *local_2=(point3f const *)&rigid_body->m_motion->m_linear_velocity;
+			velocity.i=local_2->x;
+			velocity.j=local_2->y;
+			velocity.k=local_2->z;
 		}
 		else
 		{
