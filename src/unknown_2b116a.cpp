@@ -6029,10 +6029,10 @@ void c_class_2b0b5e::v4(long frame)
     }
     if (object_count > 0)
     {
-        s_widget_bounds const *frame_bounds = (s_widget_bounds const *)frame;
+        s_widget_bounds const *local_00ace5 = (s_widget_bounds const *)frame;
         short_rectangle2d const *screen = (short_rectangle2d const *)frame;
-        long half_width = (frame_bounds->right - frame_bounds->left) >> 1;
-        long half_height = (frame_bounds->bottom - frame_bounds->top) >> 1;
+        long half_width = (local_00ace5->right - local_00ace5->left) >> 1;
+        long half_height = (local_00ace5->bottom - local_00ace5->top) >> 1;
         long left = half_width + ((s_model_render_definition_2b const *)definition)->bounds.left;
         long top = half_height - ((s_model_render_definition_2b const *)definition)->bounds.top;
         long right = half_width + ((s_model_render_definition_2b const *)definition)->bounds.right;
