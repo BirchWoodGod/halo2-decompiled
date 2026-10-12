@@ -524,7 +524,8 @@ void __stdcall function_363a0(void *vertices)
 // @retail 0x36880
 void function_36880(color4f const *color, s_short_rectangle const *rectangle)
 {
-	(void)&rectangle;
+	// Retail callers keep the rectangle argument on the stack.
+	s_short_rectangle const *const *rectangle_reference = &rectangle;
 	function_1cf50();
 	D3DDevice::Begin(D3DPT_TRIANGLEFAN);
 	D3DDevice_SetVertexData4f(9, color->red, color->green, color->blue, color->alpha);
@@ -532,11 +533,9 @@ void function_36880(color4f const *color, s_short_rectangle const *rectangle)
 	{
 		bool top = i < 2;
 		bool right = i == 1 || i == 2;
-		short y = top ? rectangle->top : rectangle->bottom;
-		short x = right ? rectangle->right : rectangle->left;
-		real vertex_x = (real)x;
-        real vertex_y = (real)y;
-        D3DDevice_SetVertexData2f(0, vertex_x, vertex_y);
+		short y = top ? (*rectangle_reference)->top : (*rectangle_reference)->bottom;
+		short x = right ? (*rectangle_reference)->right : (*rectangle_reference)->left;
+		D3DDevice_SetVertexData2s(0, x, y);
 	}
 	D3DDevice::End();
 }
@@ -1850,8 +1849,11 @@ void __stdcall function_15720(real x, real y)
 {
     (void)&x;
     (void)&y;
-    x = g_485adc;
-    y = g_485ae0;
+    struct { real near_value; real far_value; } planes;
+    planes.near_value = g_485adc;
+    planes.far_value = g_485ae0;
+    x = planes.near_value;
+    y = planes.far_value;
     real const *near_plane = &x;
     real const *far_plane = &y;
     D3DDevice_SetDepthClipPlanes(*near_plane, *far_plane, D3DSDCP_SET_VERTEXPROGRAM_PLANES);
