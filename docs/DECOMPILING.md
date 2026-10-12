@@ -79,7 +79,15 @@ This is the procedure for one function, written for a person or a subagent.
    - **an argument or local that retail keeps on the stack:** take its address
      (`T const *x_reference = &x;`) so our build keeps it there too, and say
      why in a comment;
-   - **the file's flags** (`/O1` against `/O2`, `/Ob1`).
+   - **the file's flags** (`/O1` against `/O2`, `/Ob1`);
+   - **bit tests:**
+     - Retail's `shr reg, N; test reg8, 1` before a branch comes from a
+       one-bit value converted to `bool`: `TEST_FIELD_BIT` on a one-bit
+       field (`include/unknown_11c920.h`), or `(bool)((x >> n) & 1)`.
+     - A mask (`x & 0x1000`) or a bare `(x >> n) & 1` in a condition
+       compiles to `test reg, mask` instead.
+     - To find candidates, look for `shr reg, N` followed by `test reg8, 1`
+       in a retail function whose source tests the same field with a mask.
 7. **Stop after 20 tries,** or when only register choice or operand order
    differs. Leave the function with its marker. The checker records it as
    `near` or `todo` with the first difference, so someone can come back to
