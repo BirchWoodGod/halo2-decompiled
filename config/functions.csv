@@ -8892,7 +8892,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0024c515,124,game,size,ebp packed,,,0016bbc0 0024c177 0024c1a4 0024c461 0024c5d0,src/unknown_24c177.cpp,matched
 0024c591,63,game,size,packed,,,0016bbc0 0024c515,src/unknown_24c177.cpp,matched
 0024c5d0,34,game,unknown,a16 ebp,,,,src/unknown_24c177.cpp,matched
-0024c5f2,30,game,size,packed,,,,src/unknown_24c177.cpp,todo
+0024c5f2,30,game,size,packed,,,,src/unknown_24c177.cpp,matched
 0024c610,46,game,unknown,a16 ebp,,,0024c7c1,src/unknown_24c177.cpp,matched
 0024c63e,56,game,size,packed,,,0016bcc0,src/unknown_24c177.cpp,matched
 0024c676,65,game,size,packed,,,0016bbc0,src/unknown_24c177.cpp,todo
