@@ -401,22 +401,22 @@ void __stdcall function_1e98e0(void *state, long mask_address, void *data)
 				changed &= ~selected;
 		}
 	}
-	for (long team = 0; team < 8; team++)
+	short const *source = table->team_values[0] + 2;
+	for (long team = 0; team < 8; source += 9, team++)
 	{
 		if (*mask & (1 << (team + 16)))
 		{
-			short const *source = table->team_values[team] + 8;
 			short *destination = packet->team_values[team] + 8;
 			bool same = true;
-			if (destination[-8] != source[-8]) { destination[-8] = source[-8]; same = false; }
-			if (destination[-7] != source[-7]) { destination[-7] = source[-7]; same = false; }
-			if (destination[-6] != source[-6]) { destination[-6] = source[-6]; same = false; }
-			if (destination[-5] != source[-5]) { destination[-5] = source[-5]; same = false; }
-			if (destination[-4] != source[-4]) { destination[-4] = source[-4]; same = false; }
-			if (destination[-3] != source[-3]) { destination[-3] = source[-3]; same = false; }
-			if (destination[-2] != source[-2]) { destination[-2] = source[-2]; same = false; }
-			if (destination[-1] != source[-1]) { destination[-1] = source[-1]; same = false; }
-			if (destination[0] != source[0]) { destination[0] = source[0]; same = false; }
+			if (destination[-8] != source[-2]) { destination[-8] = source[-2]; same = false; }
+			if (destination[-7] != source[-1]) { destination[-7] = source[-1]; same = false; }
+			if (destination[-6] != source[0]) { destination[-6] = source[0]; same = false; }
+			if (destination[-5] != source[1]) { destination[-5] = source[1]; same = false; }
+			if (destination[-4] != source[2]) { destination[-4] = source[2]; same = false; }
+			if (destination[-3] != source[3]) { destination[-3] = source[3]; same = false; }
+			if (destination[-2] != source[4]) { destination[-2] = source[4]; same = false; }
+			if (destination[-1] != source[5]) { destination[-1] = source[5]; same = false; }
+			if (destination[0] != source[6]) { destination[0] = source[6]; same = false; }
 			if (!same) changed |= 1 << (team + 16);
 			else changed &= ~(1 << (team + 16));
 		}
