@@ -978,10 +978,8 @@ void __stdcall function_bc820(long object_index)
         }
     }
     function_108cd0(object_index);
-    if ((bool)(((dword)((volatile byte *)object)[0xc0] >> 2) & 1))
-        ((byte *)object)[0xc0] |= 2;
-    else
-        ((byte *)object)[0xc0] &= ~2;
+    ((byte *)object)[0xc0] = ((bool)(((dword)((volatile byte *)object)[0xc0] >> 2) & 1))
+        ? (((byte *)object)[0xc0] | 2) : (((byte *)object)[0xc0] & ~2);
     object->flag2 = false;
     bool moved = function_bdef0(object_index);
     if ((header->flags & 0x40) && !moved)

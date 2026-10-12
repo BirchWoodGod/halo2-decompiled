@@ -9,6 +9,24 @@
 #include "unknown_0a58d0.h"
 #include "object_types_21_2.h"
 #include <string.h>
+#include <xmmintrin.h>
+
+/* Retail keeps these definition objects in data. Their vtables retain all
+   overrides even when a particular method has no indirect caller yet. */
+c_item_type g_47980c;
+c_projectile_type g_479818;
+c_projectile_attached_event g_47981c;
+c_projectile_effect_event g_479820;
+c_projectile_impact_effect_event g_479824;
+c_weapon_type g_47982c;
+c_weapon_fire_event g_479830;
+c_weapon_pickup_event g_479838;
+c_weapon_put_away_event g_47983c;
+c_weapon_drop_event g_479840;
+c_weapon_effect_event g_479844;
+c_device_type g_47984c;
+c_game_engine_event g_479854;
+c_game_engine_request_boot_player_event g_479858;
 
 #define OBJECT_FROM_INDEX(index) \
 	((byte *)((s_object_header *)g_4e0300->data)[(index) & 0xffff].object)
@@ -812,7 +830,7 @@ void c_weapon_drop_event::v9(long a, void const *data, s_bitstream *stream)
 }
 
 // @retail 0xa3010
-bool c_weapon_drop_event::v10(long a, void *data, s_bitstream *stream)
+bool c_weapon_object_event::v10(long a, void *data, s_bitstream *stream)
 {
 	s_weapon_drop_payload *event = (s_weapon_drop_payload *)data;
 	event->field_0 = (short)function_1959c0(stream, 1);
@@ -1404,7 +1422,8 @@ bool c_weapon_pickup_event::v11(long a, long const *entities, volatile long c, v
                     }
                     if (allowed)
                     {
-                        s_unit_request request = {0};
+                        s_unit_request request;
+                        memset(&request, 0, sizeof(request));
                         request.type = 0x14;
                         *(long *)request.arguments = weapon;
                         *(short *)(request.arguments + 4) = (short)event[1];
@@ -1427,7 +1446,8 @@ bool c_weapon_fire_event::v11(long a, long const *entities, long c, void const *
     s_z_event_header *headers = (s_z_event_header *)g_4e0300->data;
     s_z_event_header *header = headers + (entity & 0xffff);
     byte const *event = (byte const *)data;
-    long unit = NONE, weapon;
+    long unit = NONE;
+    volatile long weapon = c;
     if (header->type == 2) weapon = entity;
     else
     {
@@ -1504,9 +1524,12 @@ bool c_weapon_effect_event::v11(long a, long const *entities, long c, void const
             byte *settings = *(byte **)(*(byte **)(g_4e3b44[global_tag & 0xffff].bytes + 0xc) + 0x534);
             byte const *event = (byte const *)data;
             long mode = *(long const *)event, effect;
-            if (mode == 0) effect = *(long *)(settings + 0xe0);
-            else if (mode == 1) effect = *(long *)(settings + 0xf0);
-            else return false;
+            switch (mode)
+            {
+            case 0: effect = *(long *)(settings + 0xe0); break;
+            case 1: effect = *(long *)(settings + 0xf0); break;
+            default: return false;
+            }
             if (effect != NONE)
             {
                 vector3f up = *g_4687b0;
@@ -1516,9 +1539,9 @@ bool c_weapon_effect_event::v11(long a, long const *entities, long c, void const
                 markers[0].forward = up;
                 markers[1].forward = *g_4687bc;
                 markers[2].forward = up;
-                markers[3].forward.i = 0.0f - up.i;
-                markers[3].forward.j = 0.0f - up.j;
-                markers[3].forward.k = 0.0f - up.k;
+                _mm_store_ss(&markers[3].forward.i, _mm_sub_ss(_mm_setzero_ps(), _mm_load_ss(&up.i)));
+                _mm_store_ss(&markers[3].forward.j, _mm_sub_ss(_mm_setzero_ps(), _mm_load_ss(&up.j)));
+                _mm_store_ss(&markers[3].forward.k, _mm_sub_ss(_mm_setzero_ps(), _mm_load_ss(&up.k)));
                 markers[4].forward = up;
                 markers[0].name = 0x700054c;
                 markers[1].name = 0x70000c0;
@@ -1542,4 +1565,3 @@ bool c_weapon_effect_event::v11(long a, long const *entities, long c, void const
     }
     return false;
 }
-
