@@ -729,16 +729,7 @@ extern short g_4686c4;
    stages, each with the lowest allowed address and the current top of its
    heap; allocations take memory from the top (0b3d30, and the
    PHYSICAL_MEMORY_ALLOCATE macro of unknown_053310.h) */
-struct s_physical_memory_globals
-{
-	long field_0;
-	long base_address;
-	long field_8_3;
-	long field_c_6[5];
-	long field_20[5];
-};
-
-extern s_physical_memory_globals g_global_f9ae07;
+#include "launch_stack_storage.h"
 
 /* the time source: when g_510548 is set, g_51054c is the current time
    (otherwise GetTickCount is used); read by 058dd0 and 08b110 */

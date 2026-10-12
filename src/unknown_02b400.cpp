@@ -1156,7 +1156,7 @@ bool __stdcall function_391f0(void *state_address)
     function_1cf80();
     if (lines) D3DDevice_SetRenderState(D3DRS_LINEWIDTH, *(dword *)(state + 0x7c));
     D3DDevice_Begin(lines ? D3DPT_LINELIST : D3DPT_POINTLIST);
-    short players = *(short *)((byte *)g_4e8c20 + 8);
+    long players = *(short *)((byte *)g_4e8c20 + 8);
     long divisor = players < 1 ? 1 : players > 4 ? 4 : players;
     long count = records->count / divisor;
     long first = g_485600 * count;
