@@ -616,13 +616,20 @@ bool function_101d20(long weapon_index)
 	}
 	else
 	{
-		for (short i = 0; i < definition->barrel_count; i++)
+		short i = 0;
+		long count = definition->barrel_count;
+		if (i < count)
 		{
-			if (definition->barrels[i].value_a8 > 0.0f)
+			s_weapon_barrel_definition *barrels = definition->barrels;
+			do
 			{
-				result = true;
-				break;
+				if (barrels[i].value_a8 > 0.0f)
+				{
+					result = true;
+					break;
+				}
 			}
+			while (++i < count);
 		}
 	}
 	return result;
