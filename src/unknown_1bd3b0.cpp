@@ -132,6 +132,80 @@ bool function_1bd3b0(long object_index)
 	return result;
 }
 
+struct s_1bd610
+{
+    byte field_0;
+    byte field_1[3];
+    long field_4;
+    word field_8;
+    byte field_a[2];
+    s_type_c3b527 field_c;
+    long field_1c;
+};
+
+struct s_1bd611
+{
+    byte field_0[6];
+    short field_6;
+    vector3f field_8;
+};
+
+long function_25d810(long object_index, long actor_index, bool create);
+void __stdcall function_26c2d0(long arg_0);
+
+// @retail 0x1bd610
+bool function_1bd610(s_1bd610 *arg_0, long arg_1, s_1bd611 *arg_2)
+{
+    bool local_0 = false;
+    s_slot_object_view *local_1 = object_get(arg_0->field_4);
+    long local_2 = function_25d810(arg_0->field_4, arg_1, false);
+    if (local_2 != NONE)
+    {
+        s_prop_state_view *local_3 = prop_node_state(prop_node_get(local_2));
+        function_26c2d0(local_2);
+        if (*(long *)((byte *)local_3 + 0x44) != NONE)
+        {
+            vector3f const *local_4 = (vector3f const *)((byte *)local_1 + 0x7c);
+            vector3f local_5 = *local_4;
+            local_5.k = 0.0f;
+            if (function_30bf0(&local_5) == 0.0f)
+            {
+                local_5.i = local_4->j * local_1->forward.k - local_1->forward.j * local_4->k;
+                local_5.j = local_1->forward.i * local_4->k - local_1->forward.k * local_4->i;
+                local_5.k = local_1->forward.j * local_4->i - local_1->forward.i * local_4->j;
+            }
+            function_210770(local_3->unknown48.output_index, &local_5, &local_5);
+            s_type_c3b527 local_6;
+            long local_7;
+            local_0 = function_1bd400(arg_0->field_4, arg_1, &local_3->unknown48,
+                *(long *)((byte *)local_3 + 0x44), &local_5, arg_0->field_8,
+                arg_2->field_6 > 1, &local_6, &local_7);
+            if (!local_0)
+            {
+                local_5.i = local_5.i * -1.0f;
+                local_5.j = local_5.j * -1.0f;
+                local_5.k = local_5.k * -1.0f;
+                local_0 = function_1bd400(arg_0->field_4, arg_1, &local_3->unknown48,
+                    *(long *)((byte *)local_3 + 0x44), &local_5, arg_0->field_8,
+                    arg_2->field_6 > 1, &local_6, &local_7);
+            }
+            if (local_0)
+            {
+                arg_0->field_c = local_6;
+                arg_0->field_1c = local_7;
+                arg_2->field_8.i = local_5.i * -1.0f;
+                arg_2->field_8.j = local_5.j * -1.0f;
+                arg_2->field_8.k = local_5.k * -1.0f;
+            }
+        }
+    }
+    if (local_0)
+        arg_0->field_0 |= 0x10;
+    else
+        arg_0->field_0 &= ~0x10;
+    return local_0;
+}
+
 // @retail 0x1bd850
 short __stdcall function_1bd850(long actor_index)
 {

@@ -255,6 +255,68 @@ short __stdcall function_1b39e0(long actor_index)
 	return 0;
 }
 
+PRIVATE __forceinline s_prop_node_view *function_1b3a82(s_record_pool *arg_0, long arg_1)
+{
+    byte *local_0 = arg_0->data;
+    return (s_prop_node_view *)(local_0 + (arg_1 & 0xffff) * sizeof(s_prop_node_view));
+}
+
+// @retail 0x1b3a80
+bool __stdcall function_1b3a80(long actor_index, s_slot *slot)
+{
+    s_1b36e0 *local_0 = (s_1b36e0 *)((byte *)slot + 0xc);
+    long local_1 = actor_get(actor_index)->first_prop_index;
+    long local_2;
+    while (local_1 != NONE)
+    {
+        s_prop_node_view *local_3 = function_1b3a82(g_502418, local_1);
+        local_2 = local_1;
+        local_1 = local_3->next_index;
+        if (local_3->type == 7 && local_3->unknown28 < 3.5f &&
+            prop_node_state(local_3)->unknown00 != NONE &&
+            !(object_get(local_3->object_index)->unknownb2 & 1))
+        {
+            goto local_9;
+        }
+    }
+    return false;
+local_9:
+
+    s_prop_node_view *local_3 = function_1b3a82(g_502418, local_2);
+    s_prop_state_view *local_4 = prop_node_state(local_3);
+    byte *local_5 = &object_get(local_3->object_index)->unknownb2;
+    *local_5 |= 1;
+    memset(local_0, 0, sizeof(*local_0));
+    real local_6 = g_510c54->field_2_3 * 15.0f;
+    long local_7;
+    __asm
+    {
+        fld local_6
+        fistp local_7
+    }
+    local_0->field_6 = (short)local_7;
+    local_6 = g_510c54->field_2_3 * 4.0f;
+    __asm
+    {
+        fld local_6
+        fistp local_7
+    }
+    local_0->field_4 = (short)local_7;
+    local_0->field_0 = local_2;
+    local_0->field_24 = 1.5f;
+    function_26c2d0(local_2);
+    local_0->field_8 = 2;
+    local_0->field_10 = local_4->unknown48;
+    local_0->field_20 = *(long *)((byte *)local_4 + 0x44);
+    local_0->field_a = false;
+    local_0->field_b = false;
+    long local_8 = actor_get(actor_index)->unknown018;
+    if (local_8 != NONE)
+        function_20ba60(0x62, local_8, local_3->object_index, NONE, NONE, NULL);
+    return true;
+}
+
+
 // @retail 0x1b3e20
 short __stdcall function_1b3e20(long actor_index, short level, bool active)
 {
