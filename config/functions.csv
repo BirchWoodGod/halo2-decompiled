@@ -1125,7 +1125,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0006b4a0,162,game,speed,a16 pad,,,0006c560 0006cd50 0008bf70,src/online_tasks.cpp,todo
 0006b550,60,game,speed,a16 pad,,,0006cd50 003a11ae,src/online_tasks.cpp,matched
 0006b590,50,game,speed,a16 pad,,,003207ed 0033039a 003a07cf,src/unknown_06b590.cpp,matched
-0006b5d0,106,game,speed,a16 pad,,,,src/online_tasks.cpp,todo
+0006b5d0,106,game,speed,a16 pad,,,,src/online_tasks.cpp,matched
 0006b640,167,game,speed,a16 pad,,,0006c670 0008c550 0016ba40 003a062b 003a07b9,src/online_tasks.cpp,matched
 0006b6f0,57,game,speed,a16 pad,,,0016b840,src/online_tasks.cpp,matched
 0006b730,79,game,speed,a16 pad,,,0006cd50 0016b840,src/online_tasks.cpp,matched
