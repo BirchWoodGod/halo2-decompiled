@@ -338,15 +338,16 @@ bool function_10a660(long volatile object_index, long animation_name, short fram
 // @retail 0x10a3f0
 void function_10a3f0(long scenery_index)
 {
-	s_scenery *scenery = SCENERY_GET(scenery_index);
+	long const &index = scenery_index;
+	s_scenery *scenery = SCENERY_GET(index);
 
 	scenery->flags &= ~1;
-	if (SCENERY_GET(scenery_index)->animation_state_offset != NONE)
+	if (SCENERY_GET(index)->animation_state_offset != NONE)
 	{
 		long graph_tag_index = ((s_scenery_animation_state *)((byte *)scenery + scenery->animation_state_offset))->graph_tag_index;
 
 		if (graph_tag_index != NONE &&
-			function_10a660(scenery_index, 0x400000c, 0, NONE, false, true, graph_tag_index))
+			function_10a660(index, 0x400000c, 0, NONE, false, true, graph_tag_index))
 		{
 			scenery->flags |= 1;
 		}
