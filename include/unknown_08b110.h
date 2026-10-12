@@ -216,10 +216,7 @@ struct s_datums_450cb8
 
 inline s_datum_450cb8 *datum_try_get_450cb8(s_datums_450cb8 *datums, long handle)
 {
-	s_datum_450cb8 *datum = &datums->data[handle & 0x3ff];
-	if (datum->handle != handle)
-		return 0;
-	return datum;
+	return datums->data[handle & 0x3ff].handle == handle ? &datums->data[handle & 0x3ff] : 0;
 }
 
 class c_vtable_450cb8
