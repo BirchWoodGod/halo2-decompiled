@@ -9,7 +9,7 @@ matched 7992 of 11318 game functions (974527 of 2784283 bytes, 35.00%)
 ```
 
 38 new matches, none lost:
-- The third machine's second batch (#384, +31), over its lanes N, Q, R, S, T and H: among them eight matches in `0x176780`–`0x179850`, `0x143070`, which now takes its matrix and vector in its siblings' order, and `0x1520a0`, which no longer needs a `volatile` read.
+- The third machine's second batch (#384, +31), over its lanes N, Q, R, S, T and H: among them eight matches in `0x1766b0`–`0x179850`, `0x143070`, which now takes its matrix and vector in its siblings' order, and `0x1520a0`, which no longer needs a `volatile` read.
 - The second machine's lane D lower, round 18 (#383, +4): `0x5b650` and `0x5e150` return one result, and the callers `0x945f0` (lane J) and `0x162d00` (the third machine) now match unchanged.
 - Deep lane 3, round 44 (+3), in the render range: `0x12420`, `0x36ab0` and `0x174d0`.
 
