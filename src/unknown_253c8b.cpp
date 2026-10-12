@@ -345,43 +345,23 @@ bool c_class_19b8b1::v10(s_widget_event *event)
 		function_236299(1);
 		return true;
 	}
-	else if (event->type == 3)
+	else if ((event->type == 3 && !(valuef4 & 1)) ||
+	         (event->type == 4 && !(valuef4 & 2)))
 	{
-		if (!(valuef4 & 1))
-		{
-			v8();
-			function_236299(0);
-			return true;
-		}
+		goto previous_handler;
 	}
-	else if (event->type == 1)
+	else if ((event->type == 1 && !(valuef4 & 1)) ||
+	         (event->type == 2 && !(valuef4 & 2)))
 	{
-		if (!(valuef4 & 1))
-		{
-			v9();
-			function_236299(0);
-			return true;
-		}
-	}
-	else if (event->type == 4)
-	{
-		if (!(valuef4 & 2))
-		{
-			v8();
-			function_236299(0);
-			return true;
-		}
-	}
-	else if (event->type == 2)
-	{
-		if (!(valuef4 & 2))
-		{
-			v9();
-			function_236299(0);
-			return true;
-		}
+		v9();
+		function_236299(0);
+		return true;
 	}
 	return c_class_1a2c81::v10(event);
+previous_handler:
+	v8();
+	function_236299(0);
+	return true;
 }
 
 // @retail 0x254173

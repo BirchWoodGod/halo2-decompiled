@@ -346,20 +346,25 @@ real function_23c980(s_camera_tracks_23c300 const *camera, real angle, bool alte
 {
     /* Keep the selector among the stack parameters. */
     bool const *alternate_reference = &alternate;
-    real lower = 0.f;
-    real upper = 1.f;
-    real time;
+    struct
+    {
+        real time;
+        real upper;
+        real lower;
+    } interval;
+    interval.lower = 0.f;
+    interval.upper = 1.f;
     do
     {
         vector3f direction;
-        time = (upper + lower) * 0.5f;
-        function_23c300(alternate, camera, &direction, time, 0);
+        interval.time = (interval.upper + interval.lower) * 0.5f;
+        function_23c300(alternate, camera, &direction, interval.time, 0);
         if (angle > atan2(direction.k, sqrt(direction.j * direction.j + direction.i * direction.i)))
-            lower = time;
+            interval.lower = interval.time;
         else
-            upper = time;
-    } while (upper - lower > 0.001f);
-    return time;
+            interval.upper = interval.time;
+    } while (interval.upper - interval.lower > 0.001f);
+    return interval.time;
 }
 
 bool function_cb810(long unit_index, vector3f *vector);
