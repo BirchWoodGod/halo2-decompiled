@@ -132,11 +132,16 @@ long c_class_1474e8::count_filled_items()
 // @retail 0x24c5f2
 void *c_class_1474e8::function_24c5f2(long datum)
 {
+	void *result;
 	if (data && datum != NONE)
 	{
-		return data->data + (datum & 0xffff) * data->size;
+		result = data->data + (datum & 0xffff) * data->size;
 	}
-	return 0;
+	else
+	{
+		result = 0;
+	}
+	return result;
 }
 
 // @retail 0x24c1a4
