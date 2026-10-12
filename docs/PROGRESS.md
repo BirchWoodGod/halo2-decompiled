@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7942 functions match
+
+```
+matched 7942 of 11318 game functions (964104 of 2784283 bytes, 34.63%)
+```
+
+64 new matches, none lost:
+- The third machine's first batch (#375, +25), over its lanes N, Q, R, S, T and H: among them `0x142eb0`, which now takes its two matrices in retail's order, and `0x1973f0`, through two input globals that now point into the record they belong to.
+- The second machine's lanes (#372–#374, #376–#381, +39): lane F +10 (the shared list base now has one declaration, which also matches lane O's `0x249f85` and this machine's `0x2b19bd`), lane P +8, lane M +6, lane D +9, lanes J and Y +2 each, lane B +1, and lane AC +1 (this machine's `0x2a56e0`, through its callee `0x275380`).
+
 ## 2026-10-12: 7878 functions match
 
 ```
