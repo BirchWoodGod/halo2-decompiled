@@ -651,10 +651,13 @@ class c_device_touch_event : public c_event_definition
 {
 public:
 	virtual bool v11(long a, long const *entities, long c, void const *data);
+	virtual bool v10(long, void *, s_bitstream *) { return true; }
 	virtual real v7(long a, long b, long c);
 	virtual const char *v1();
 	virtual void v8(long a, long b, long c, long size, char *buffer);
 };
+
+c_device_touch_event g_479850;
 
 // @retail 0xa44a0
 const char *c_device_touch_event::v1()
@@ -1234,9 +1237,10 @@ bool c_device_touch_event::v11(long a, long const *entities, long c, void const 
         word suppressed : 1;
         word unknown3 : 13;
     };
+    long unit;
     long device = function_a58d0(entities[0]);
-    long unit = function_a58d0(entities[1]);
-    if (device != NONE && unit != NONE)
+    unit = function_a58d0(entities[1]);
+    if (unit != NONE && device != NONE)
     {
         byte *headers = g_4e0300->data;
         long device_offset = (device & 0xffff) * 12;

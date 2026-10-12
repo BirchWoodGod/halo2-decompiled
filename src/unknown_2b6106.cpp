@@ -77,6 +77,7 @@ class c_y_menu_player_selected_screen : public c_screen_with_menu
 public:
 	c_y_menu_player_selected_screen(long a, long b, word user_flags);
 	virtual ~c_y_menu_player_selected_screen();
+	virtual void v3();
 
 	virtual screen_load_proc get_load_proc();
 
@@ -452,31 +453,57 @@ struct s_friend_session_2b642e
     short session_seconds;
 };
 
-#if 0
-// Disabled: the name lookup requires the shared presence-cache address.
-// @retail 0x2b6e55 disabled
-void function_2b6e55(c_y_menu_player_selected_screen *screen)
+#include "network_qos.h"
+struct s_match_result_data
 {
+    XNKEY key;
+    XNKID id;
+    XNADDR address;
+    DWORD public_filled, public_open, private_filled, private_open;
+    long properties[7];
+};
+struct s_qos_target { XNKID kid; XNKEY key; XNADDR xna; };
+extern byte g_4771c8[0x2580];
+extern dword g_54d5b8;
+bool __stdcall function_8c150(void *, long, unsigned __int64 *, void *, unsigned __int64 *);
+void function_1a31ff();
+struct s_window_manager_text;
+const char *function_148956(s_window_manager_text *);
+void ascii_string_to_unicode(const char *, word *, long);
+void function_23620d(long, word *);
+long online_task_poll(long);
+bool function_90160(long, s_match_result_data *);
+long qos_lookup(long, long, long, s_qos_target *);
+bool qos_is_complete(long);
+bool function_7c530(byte const *, long, void *);
+struct s_friend_presence_status;
+bool function_8d230(XONLINE_FRIEND const *, s_friend_presence_status *);
+bool online_title_is_this_title(DWORD);
+// @retail 0x2b6e55
+void c_y_menu_player_selected_screen::v3()
+{
+	c_y_menu_player_selected_screen *screen = this;
 	word formatted[256], format[256], name[16], group_name[16];
-	formatted[0] = format[0] = 0;
-	if (!function_1490ec(4)) function_1a31ff();
+	formatted[0] = 0;
+	format[0] = 0;
+	if (!window_manager_channel_window_in_use(4, 4)) function_1a31ff();
 	screen->update_selection();
 	s_name_request selection;
 	function_14887e((s_screen_settings_54dc6c *)&selection);
 	XUID *user = selection_get_xuid(&selection);
-	function_13fc90(16, function_148956((s_window_manager_text *)&selection), name);
-	unsigned __int64 group;
-	word *displayed = name;
-	if (function_8c150(g_4771c8, 0, user, group_name, &group) && group)
+	ascii_string_to_unicode(function_148956((s_window_manager_text *)&selection), name, 16);
+	XUID group;
+	if (function_8c150(g_4771c8, 0, (unsigned __int64 *)user, group_name, &group.qwUserID) && group.qwUserID)
 	{
 		function_23620d(0x220006bd, format);
 		function_1630e0(formatted, format, name, group_name);
-		displayed = formatted;
+		((c_class_1a2c81 *)((byte *)screen + 0x80))->function_22f52e()->set_text(formatted);
 	}
-	((c_widget *)((byte *)screen + 0x80))->function_22f52e()->set_text(displayed);
+	else
+		((c_class_1a2c81 *)((byte *)screen + 0x80))->function_22f52e()->set_text(name);
 	if (screen->task_index != NONE)
 	{
-		long state = function_6b5d0(screen->task_index);
+		long state = online_task_poll(screen->task_index);
 		if (state != 0 && state != 1)
 		{
 			if (state == 2)
@@ -509,24 +536,25 @@ void function_2b6e55(c_y_menu_player_selected_screen *screen)
 	}
 	for (long i = 0; i < 8; ++i)
 	{
-		c_class_1a2c81 *widget = screen->find_child(6, (short)(i + 2), false);
+		c_class_1a2c81 *widget = screen->find_text(i + 2);
 		if (widget) widget->value6e = false;
 	}
 	if (screen->value10e5)
 	{
-		function_14887e((s_screen_settings_54dc6c *)&selection);
+		s_name_request friend_selection;
+		function_14887e((s_screen_settings_54dc6c *)&friend_selection);
 		s_friend_session_2b642e session;
-		bool present = function_8d230(&selection.field_xb3bdcf, &session);
-		if (function_8c540(selection.field_xb3bdcf.dwTitleID))
-			screen->update_friend_details(&selection.field_xb3bdcf, &session);
+		bool present = function_8d230(&friend_selection.field_xb3bdcf, (s_friend_presence_status *)&session);
+		if (online_title_is_this_title(friend_selection.field_xb3bdcf.dwTitleID))
+			screen->update_friend_details(&friend_selection.field_xb3bdcf, &session);
 		else if (present)
-			screen->update_friend_status(&selection.field_xb3bdcf, &session);
-		else function_2b635f(&selection.field_xb3bdcf, (c_widget *)screen);
+			screen->update_friend_status(&friend_selection.field_xb3bdcf, &session);
+		else function_2b635f(&friend_selection.field_xb3bdcf, (c_widget *)screen);
 	}
 	else screen->update_join_text();
 	screen->c_class_1a2c81::v3();
 }
-#endif
+
 
 
 // @retail 0x2b642e

@@ -716,11 +716,11 @@ done:
 // @retail 0x238114
 long c_virtual_keyboard_screen::check_string()
 {
+	long result = 0;
 	bool empty = string[0] == 0;
 	bool has_alphanumeric = false;
 	bool characters_valid = true;
 	s_keyboard_type const *keyboard_type = &g_44a9f8[type];
-	long result = 0;
 
 	for (long i = 0; string[i]; i++)
 	{

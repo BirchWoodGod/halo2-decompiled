@@ -2,6 +2,33 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7872 functions match
+
+```
+matched 7872 of 11318 game functions (951426 of 2784283 bytes, 34.17%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 41 (+1), in the render range: `0x48b00`, the screen-space bounds of a sphere, groups one projected product the way retail does and writes its depth clamp the other way round; `0x23600` and `0x3e9c0` are each one difference closer.
+
+## 2026-10-12: 7871 functions match
+
+```
+matched 7871 of 11318 game functions (950609 of 2784283 bytes, 34.14%)
+```
+
+1 new matches, none lost:
+- Deep lane 3, round 40 (+1): the multiplayer-settings preview update `0x2c8d7c`, one of the methods round 39 put into its retail vtable slot, keeps its child-model pointer addressable across both preview updates.
+
+## 2026-10-12: 7870 functions match
+
+```
+matched 7870 of 11318 game functions (950496 of 2784283 bytes, 34.14%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 30 (+2): `0x214f0` calls `0x211a0` directly instead of through a volatile function pointer, and `0x211a0` copies its final pass to its output parameter; with the indirect call gone, two of its callers match (`0x222a0`, `0x235756`).
+
 ## 2026-10-12: 7868 functions match
 
 ```
