@@ -621,13 +621,16 @@ PRIVATE __forceinline vector3f function_1f0873(vector3f const &arg_0, vector3f c
     return local_0;
 }
 
+#pragma optimize("", on)
 PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f const *arg_2, byte const *arg_3)
 {
     byte *settings = *(byte **)(arg_3 + 8);
-    dword flags = *(dword *)(arg_3 + 0x14);
+    struct s_1f0875 { unsigned field_0:1; unsigned field_1:1; unsigned field_2:1; unsigned field_3:1; unsigned field_4:1; unsigned field_5:27; };
+    union { dword field_0; s_1f0875 field_4; } local_7;
+    local_7.field_0 = *(dword *)(arg_3 + 0x14);
     bool flying = ((*(dword *)settings >> 3) & 1) != 0;
-    bool gravity = ((flags >> 3) & 1) != 0;
-    bool damping = ((flags >> 4) & 1) != 0;
+    volatile bool gravity = local_7.field_4.field_3 != 0;
+    bool damping = local_7.field_4.field_4 != 0;
     vector3f const &input = *(vector3f const *)(arg_3 + 0x138);
     vector3f const &facing = *(vector3f const *)(arg_3 + 0x9c);
     vector3f const &up = *(vector3f const *)(arg_3 + 0x100);
@@ -635,7 +638,7 @@ PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f co
     vector3f const &basis = *(vector3f const *)(arg_3 + 0x118);
     vector3f *velocity = (vector3f *)(arg_0 + 0xc);
     real scale = *(real *)(arg_3 + 0x20);
-    if (!(flags & 1))
+    if (!(local_7.field_4.field_0))
     {
         vector3f left;
         left.i = facing.k * up.j - up.k * facing.j;
@@ -644,18 +647,18 @@ PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f co
         real local_0 = input.i * scale;
         real local_1 = input.j * scale;
         real local_2 = input.k * scale;
-        velocity->i = facing.i * local_0;
-        velocity->j = facing.j * local_0;
-        velocity->k = facing.k * local_0;
-        velocity->i += left.i * local_1;
-        velocity->j += left.j * local_1;
-        velocity->k += left.k * local_1;
-        velocity->i += up.i * local_2;
-        velocity->j += up.j * local_2;
-        velocity->k += up.k * local_2;
+        (*(real volatile *)&velocity->i) = facing.i * local_0;
+        (*(real volatile *)&velocity->j) = facing.j * local_0;
+        (*(real volatile *)&velocity->k) = facing.k * local_0;
+        (*(real volatile *)&velocity->i) += left.i * local_1;
+        (*(real volatile *)&velocity->j) += left.j * local_1;
+        (*(real volatile *)&velocity->k) += left.k * local_1;
+        (*(real volatile *)&velocity->i) += up.i * local_2;
+        (*(real volatile *)&velocity->j) += up.j * local_2;
+        (*(real volatile *)&velocity->k) += up.k * local_2;
         gravity = false;
     }
-    else if (flags & 4)
+    else if (local_7.field_4.field_2)
     {
         vector3f delta;
         delta.i = scale * (facing.i * input.i - facing.j * input.j) - arg_2->i;
@@ -768,7 +771,7 @@ PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f co
             limited.k -= *(real *)(arg_3 + 0x130) * g_510c54->rate;
         function_1f087c(velocity, arg_2, &limited);
     }
-    if (!((*(dword *)settings >> 2) & 1) && !(flags & 4))
+    if (!((*(dword *)settings >> 2) & 1) && !(local_7.field_4.field_2))
     {
         if (*(long *)(arg_1 + 0xc) != NONE && *(long *)(arg_1 + 0xc) == g_510c54->game_time - 1)
         {
@@ -789,7 +792,7 @@ PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f co
 }
 
 // @retail 0x1f0870
-void function_1f0870(byte const *state, byte *out, byte *history, vector3f const *current)
+void function_1f0870(vector3f const *current, byte *history, byte const *state, byte *out)
 {
     function_1f087a(out, history, current, state);
 }
@@ -857,7 +860,7 @@ void __stdcall function_1f0450(s_shape_state *history, byte *out, s_shape_carrie
             current.k += delta_velocity.k;
         }
     }
-    function_1f0870(data, out, (byte *)history, &current);
+    function_1f0870(&current, (byte *)history, data, out);
     if (override_velocity)
     {
         *(real *)(out + 0xc) += *(real *)(out + 0x64);

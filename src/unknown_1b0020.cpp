@@ -171,8 +171,9 @@ void function_1b0540(long actor_index, s_follow_search_state *state)
 	}
 	byte *scratch = ai_scratch_buffer_get();
 	s_261d20_entry entry;
-	long other_index;
-	bool unknown;
+	struct { long field_0; bool field_4; } local_0;
+	long &other_index = local_0.field_0;
+	bool &unknown = local_0.field_4;
 	state->reference = function_2605d0(actor_index, &request, (long)&entry, (long)&other_index, scratch, &unknown);
 	state->reference = function_2626b0(actor_index, state->reference, other_index, scratch, unknown, false);
 	state->flag8 = !REFERENCE_EQUAL(state->reference, g_470fa0) && !unknown;
