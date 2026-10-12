@@ -405,7 +405,7 @@ bool network_connection_next_client(s_network_connection *connection, s_connecti
 			absolute_index = 0;
 			started = true;
 		}
-		if (index >= 0)
+		if (!(index & 0x80000000))
 		{
 			long local_index = index & 0x7fffffff;
 			if (!started)
@@ -426,7 +426,7 @@ bool network_connection_next_client(s_network_connection *connection, s_connecti
 				started = true;
 			}
 		}
-		if (!handler && index < 0)
+		if (!handler && (index & 0x80000000))
 		{
 			long local_index = index & 0x7fffffff;
 			s_connection_handler *handlers = NULL;

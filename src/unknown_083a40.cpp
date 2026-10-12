@@ -806,11 +806,12 @@ bool __stdcall function_83f00(s_simulation_world_owner *watcher, long update, lo
    }
    else if (member != view->unknown1c) view->unknown1c = member;
   }
-  if (watcher->world->state != 3 && watcher->world->state != 5)
+  world = watcher->world;
+  if (world->state != 3 && world->state != 5)
   {
    for (long i = 0; i < 16; i++)
    {
-    c_class_6a600 *world = watcher->world;
+    world = watcher->world;
     s_simulation_world_player *player = &world->players[i & 0xffff];
     if (player->player_index != NONE && player->flag25 &&
      watcher_find_current_machine(mask, machines, *(const s_machine_address *)world->players[i].unknown18) == NONE)

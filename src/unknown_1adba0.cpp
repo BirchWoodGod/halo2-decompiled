@@ -233,14 +233,16 @@ void __stdcall function_1add50(long actor_index, s_slot *slot)
 // @retail 0x1addd0
 short __stdcall function_1addd0(long actor_index, s_slot *slot, long joint_index, long unknown)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	short count = 0;
+	s_actor_view *actor = actor_get(actor_index);
 
 	if (actor->unknown07c != NONE)
 	{
 		long other_index = element_502420_get(actor->unknown07c)->first_actor_index;
-		while (other_index != NONE)
+		for (;;)
 		{
+			if (other_index == NONE)
+				return count;
 			s_actor_view *other = actor_get(other_index);
 			long index = other_index;
 			other_index = other->next_index;
@@ -352,13 +354,15 @@ short __stdcall function_1ae3b0(long actor_index, s_slot *slot)
 		real value = view->unknown3d8;
 		if (!flag && value > entry->unknown04)
 			flag = true;
-		else if (flag && entry->unknown08 > value)
+		else if (view->unknown5d4 && entry->unknown08 > value)
 			flag = false;
 		view->unknown449 = flag;
 		view->unknown44a = flag;
 		if (flag)
 		{
-			long local_0 = function_1e4a50(actor->unknown054);
+			long local_0;
+			long *local_2 = &local_0;
+			*local_2 = function_1e4a50(actor->unknown054);
 			result = g_46fbe4;
 			if (!(*(byte *)local_0 & 1))
 				view->unknown480 = true;

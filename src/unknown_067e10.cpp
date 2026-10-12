@@ -2065,8 +2065,7 @@ void __stdcall function_69110(c_class_6a600 *world, s_simulation_input_69110 *in
       s_player_object_motion motion;
       memcpy(&motion, &source->data720[player->player_index], sizeof(motion));
       source->mask71c &= ~bit;
-      bool (*validate)(const s_z_transform_state *) = function_ab9f0;
-      if (validate((const s_z_transform_state *)&motion))
+      if (function_ab9f0((const s_z_transform_state *)&motion))
        function_82980(player->unknown04, &motion);
      }
     }

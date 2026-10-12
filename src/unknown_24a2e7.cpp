@@ -284,12 +284,12 @@ void c_list_24a64d::v24()
 // @retail 0x249f0d
 c_list_24a64d::c_list_24a64d(word arg_0) :
 	c_list_widget_with_items(arg_0),
+	field_88(0),
+	field_89(false),
+	field_8a(false),
+	field_8c(NONE),
 	field_90(this, (list_item_method)&c_list_24a64d::function_24a30e)
 {
-	field_88 = 0;
-	field_89 = false;
-	field_8a = false;
-	field_8c = NONE;
 	data = user_interface_data_new("player profile list", 0x1001, 8);
 	function_16b790(data);
 	delegate_register(&item_handlers, &field_90);

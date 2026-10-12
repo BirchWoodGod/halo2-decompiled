@@ -150,7 +150,7 @@ finished:
 void function_265050(long actor_index, long prop_ref_index)
 {
 	struct { byte *definition; long volatile missing_owner; } scratch;
-	long const volatile *prop_reference = &prop_ref_index;
+	long const *prop_reference = &prop_ref_index;
 	byte *actor = g_4f55f0->data + (actor_index & 0xffff) * 0x888;
 	byte *reference = g_502418->data + (prop_ref_index & 0xffff) * 0x3c;
 	long object_index = *(long *)(reference + 0x20);

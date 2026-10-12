@@ -332,17 +332,14 @@ struct s_unit_state_0f
 // @retail 0x1afb30
 void __stdcall function_1afb30(long actor_index, s_slot *slot)
 {
-    long local_0 = actor_index;
-	s_record_pool *local_1 = g_4f55f0;
-    byte *local_2 = *(byte *volatile *)&local_1->data;
-    s_actor_view *actor = (s_actor_view *)(local_2 + (local_0 & 0xffff) * sizeof(s_actor_view));
+	s_actor_view *actor = actor_get(actor_index);
 	s_slot_0f *state = (s_slot_0f *)slot;
 
 	if (state->timer > 0)
 	{
 		state->timer--;
 		if (!state->timer && actor->unknown227 && !actor->unknown229)
-			function_1f86a0(local_0);
+			function_1f86a0(actor_index);
 	}
 	if (--state->ticks <= 0)
 	{
@@ -353,25 +350,26 @@ void __stdcall function_1afb30(long actor_index, s_slot *slot)
 			long now = g_510c54->game_time;
 			if ((real)(now - timer->time) * g_510c54->rate > 10.0f)
 			{
-				function_1fb7e0(0x96, local_0, NULL, node->object_index, NONE);
+				function_1fb7e0(0x96, actor_index, NULL, node->object_index, NONE);
 				timer->time = now;
 			}
 		}
 		real seconds = slot_random_range(3.0f, 10.0f);
 		real ticks = g_510c54->field_2_3 * seconds;
+		long rounded;
 		__asm
 		{
 			fld ticks
-			fistp actor_index
+			fistp rounded
 		}
-		state->ticks = (short)actor_index;
+		state->ticks = (short)rounded;
 	}
-	if (state->unknown16 && !state->unknown17 && state->unknown34 && actor_get(local_0)->unknown504 == 2)
+	if (state->unknown16 && !state->unknown17 && state->unknown34 && actor_get(actor_index)->unknown504 == 2)
 	{
 		s_unit_state_0f *unit = (s_unit_state_0f *)ai_object_get(actor->unknown018);
 		if (*(short *)((byte *)unit + unit->state_offset + 0x36) != 7)
 		{
-			function_1f4f40(local_0, &state->facing, state->unknown34, &state->point, true);
+			function_1f4f40(actor_index, &state->facing, state->unknown34, &state->point, true);
 			state->unknown17 = true;
 		}
 	}

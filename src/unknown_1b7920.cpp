@@ -68,7 +68,7 @@ short __stdcall function_1b7920(long actor_index)
 // @retail 0x1b79d0
 bool __stdcall function_1b79d0(long actor_index, s_slot *slot)
 {
-	bool result = false;
+	volatile bool result = false;
 	s_character_e50 *character = (s_character_e50 *)function_1e4e50(actor_index);
 	s_prop_node_view *node = prop_node_get(actor_get(actor_index)->prop_index);
 	s_prop_state_view *s_type_5cfb45 = prop_node_state(node);
@@ -174,6 +174,21 @@ struct s_character_weapon_1e
 	s_weapon_difficulty_entry difficulty[3];
 };
 
+PRIVATE __forceinline point3f *function_1b7cc1(s_type_c3b527 const *arg_0, point3f *arg_1)
+{
+	if (arg_0->output_index != NONE)
+	{
+		if (!function_2104b0(arg_0->output_index, &arg_0->point, arg_1))
+			*arg_1 = arg_0->point;
+	}
+	else
+	{
+		*arg_1 = arg_0->point;
+	}
+
+	return arg_1;
+}
+
 // @retail 0x1b7cc0
 void __stdcall function_1b7cc0(long actor_index, s_slot *slot)
 {
@@ -182,13 +197,13 @@ void __stdcall function_1b7cc0(long actor_index, s_slot *slot)
 	s_slot_1e *state = (s_slot_1e *)slot;
 	point3f point;
 
-	function_210850(&state->point, &point);
+	function_1b7cc1(&state->point, &point);
 	actor->unknown41c = 3;
 	actor->unknown420 = 3;
 	actor->unknown424.point = point;
-	actor->unknown438.point = point;
 	actor->unknown430 = 2;
 	actor->unknown434 = 3;
+	actor->unknown438.point = point;
 	actor->unknown444 = NONE;
 	actor->unknown488 = true;
 	actor->unknown4a0 = true;
@@ -201,8 +216,9 @@ void __stdcall function_1b7cc0(long actor_index, s_slot *slot)
 		if (weapon)
 		{
 			s_weapon_difficulty_entry *entry;
+			short local_0 = g_4e6948->state == 1 ? g_4e6948->difficulty : 1;
 
-			switch (g_4e6948->state == 1 ? g_4e6948->difficulty : 1)
+			switch (local_0)
 			{
 			case 2:
 				entry = &weapon->difficulty[1];

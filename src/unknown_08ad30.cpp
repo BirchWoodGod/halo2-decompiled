@@ -437,9 +437,10 @@ static __forceinline void release_block(void *block, long *info)
 	globals->count--;
 }
 
-PRIVATE __forceinline void function_8a6f2(s_allocator_globals *arg_0, void *arg_1, long *arg_2)
+PRIVATE __forceinline void function_8a6f2(s_allocator_globals *arg_0, void *arg_1)
 {
- arg_0->allocator->get_info(arg_1, arg_2);
+ long local_1;
+ arg_0->allocator->get_info(arg_1, &local_1);
  s_allocator_globals *local_0 = g_4d87f8;
  local_0->allocator->release(arg_1, NONE);
  local_0->count--;
@@ -478,7 +479,7 @@ long c_entry_table::read_creation(long a, long *handler_index_out, dword *mask_o
 					*handler_index_out = handler_index;
 					*mask_out = result;
 					blocks[*count].type = 0xc;
-					blocks[*count].size = (short)*(volatile long *)&data_size;
+					blocks[*count].size = (short)data_size;
 					blocks[*count].block = data;
 					blocks[*count + 1].type = 0xd;
 					blocks[*count + 1].size = (short)state_size;
@@ -490,9 +491,9 @@ long c_entry_table::read_creation(long a, long *handler_index_out, dword *mask_o
 			result = 3;
 		}
 		if (data)
-			function_8a6f2(g_4d87f8, data, (long *)&stream);
+			function_8a6f2(g_4d87f8, data);
 		if (state)
-			function_8a6f2(g_4d87f8, state, (long *)&stream);
+			function_8a6f2(g_4d87f8, state);
 		return result;
 	}
 	return 3;
@@ -717,11 +718,12 @@ long replication_table_create(s_handle_peers *peers, long index);
 bool replication_table_create_chain(s_handle_peers *peers, long count, long *handles);
 
 /* frees a block the way the failed creations do */
-static __forceinline void discard_block(void *block, long *size)
+static __forceinline void discard_block(void *block)
 {
+	long local_0;
 	s_allocator_globals *globals = g_4d87f8;
-	if (!globals->allocator->get_info(block, size))
-		*size = NONE;
+	if (!globals->allocator->get_info(block, &local_0))
+		local_0 = NONE;
 	globals = g_4d87f8;
 	globals->allocator->release(block, NONE);
 	globals->count--;
@@ -789,19 +791,20 @@ bool entity_table_new_entities(long *identifiers, c_entry_table *table, long cou
 			goto failed;
 		}
 	}
-	if (!replication_table_create_chain((s_handle_peers *)table->unknown0c, count, identifiers))
-		goto failed;
-	for (i = 0; i < count; i++)
-		table->function_08ae80(identifiers[i], (short)handler_indices[i], field_34[i], (long)datas[i], state_sizes[i], (long)states[i]);
-	return result;
+	if (replication_table_create_chain((s_handle_peers *)table->unknown0c, count, identifiers))
+	{
+		for (i = 0; i < count; i++)
+			table->function_08ae80(identifiers[i], (short)handler_indices[i], field_34[i], (long)datas[i], state_sizes[i], (long)states[i]);
+		return result;
+	}
 
 failed:
 	for (i = 0; i < count; i++)
 	{
 		if (datas[i])
-			discard_block(datas[i], (long *)&handler_indices);
+			discard_block(datas[i]);
 		if (states[i])
-			discard_block(states[i], (long *)&table);
+			discard_block(states[i]);
 	}
 	return false;
 }

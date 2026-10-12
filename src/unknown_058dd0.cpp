@@ -1229,6 +1229,18 @@ static inline long matchmaking_variant_width(s_surface_description *variant)
 	}
 }
 
+#pragma inline_depth(0)
+static __forceinline void function_72349(c_class_58d20 *arg_0)
+{
+	network_session_host_clear_flag49fc(arg_0);
+}
+
+static __forceinline long function_72458(s_surface_description *arg_0)
+{
+	return function_193340(arg_0);
+}
+#pragma inline_depth(255)
+
 // @retail 0x72330
 void function_72330(c_session_state_matchmaking *state)
 {
@@ -1236,7 +1248,7 @@ void function_72330(c_session_state_matchmaking *state)
 	long member = session->member_index;
 	s_member_quality_collection *members = (s_member_quality_collection *)&session->value4c;
 	s_matchmaking_player_values *values = (s_matchmaking_player_values *)state;
-	network_session_host_clear_flag49fc(session);
+	function_72349(session);
 	if (state->mode == 3)
 	{
 		const byte *summary = session_state_is_live(session) && session->flag49fd ? session->data4a00 : NULL;
@@ -1268,10 +1280,10 @@ void function_72330(c_session_state_matchmaking *state)
 		long type = *(long *)variant;
 		if (type == 5 || type == 3 || type == 4)
 		{
-			if (matchmaking_variant_width(variant) > 0 && function_193340(variant) > 0)
+			if (matchmaking_variant_width(variant) > 0 && function_72458(variant) > 0)
 			{
 				long count = level / function_193440(variant);
-				if (count >= function_193340(variant))
+				if (count >= function_72458(variant))
 				{
 					if (count > function_193370(variant)) count = function_193370(variant);
 					values->limit = function_193440(variant) * count;
@@ -1638,25 +1650,31 @@ struct s_matchmaking_summary
 bool network_session_parameters_set_summary(c_class_58d20 *session, const s_session_summary *summary);
 bool network_session_parameters_set_mode(c_class_58d20 *session, long mode);
 
-// @retail 0x70280
-void function_70280(c_session_state_matchmaking *state)
+static __forceinline void function_702c0(byte *arg_0, s_matchmaking_summary *arg_1)
 {
-	c_class_58d20 *session = state->owner->session_a;
-	s_matchmaking_summary summary;
-	memset(&summary, 0, sizeof(summary));
-	dword player_mask = session->player_mask;
-	summary.player_count = 0;
-	for (long i = 0; i < 16; i++)
+	arg_1->player_count = 0;
+	dword local_0 = *(dword *)(arg_0 + 0x10d0);
+	for (long local_1 = 0; local_1 < 16; local_1++)
 	{
-		if (player_mask & (1 << i))
+		if (local_0 & (1 << local_1))
 		{
-			summary.player_users[summary.player_count] = *(s_matchmaking_identity *)&session->players[i].user_id;
-			summary.first[summary.player_count] = NONE;
-			summary.second[summary.player_count] = NONE;
-			summary.third[summary.player_count] = 0;
-			summary.player_count++;
+			arg_1->player_users[arg_1->player_count] = *(s_matchmaking_identity *)(arg_0 + 0x10d4 + local_1 * 0x13c);
+			arg_1->first[arg_1->player_count] = NONE;
+			arg_1->second[arg_1->player_count] = NONE;
+			arg_1->third[arg_1->player_count] = 0;
+			arg_1->player_count++;
 		}
 	}
+}
+
+// @retail 0x70280
+void function_70280(c_session_state_matchmaking *volatile state)
+{
+	c_class_58d20 *session = state->owner->session_a;
+	byte *local_0 = (byte *)&session->value4c;
+	s_matchmaking_summary summary;
+	memset(&summary, 0, sizeof(summary));
+	function_702c0(local_0, &summary);
 	summary.machine_count = 1;
 	const s_session_id *id = NULL;
 	if (session->state && session->flag24)
