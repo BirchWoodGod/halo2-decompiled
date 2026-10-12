@@ -3,6 +3,7 @@
 #include "visibility_storage.h"
 #include "camera_storage.h"
 #include "frame_storage.h"
+#include "depth_parameters_storage.h"
 #include "reset_storage.h"
 // @flags /O2 /Ob1 /arch:SSE /Gr
 #include "pool_storage.h"
@@ -1858,7 +1859,7 @@ void __stdcall function_15720(real x, real y)
 }
 
 byte g_4b6290;
-extern dword g_4850c8;
+
 
 // @retail 0x13630
 bool function_13630(void)
@@ -5740,23 +5741,19 @@ void __stdcall function_44ac0(long group, dword selection_mask, long level)
 }
 
 #if 0 // Preserve the existing exact SDK Clear callers.
-struct s_depth_parameters_13450
-{
-    long identifier, mode;
-    real distance;
-};
-s_depth_parameters_13450 g_4850c4;
+
 extern bool g_485a74;
 extern dword g_4b8344;
 real g_4b893c;
 
-// Disabled retail 0x13450; SDK Clear activation changes matched 0x14ac0.
+// Disabled retail 0x13450; activation changes matched 14ac0 stack alignment.
 bool function_13450(s_depth_parameters_13450 const *parameters)
 {
-    real inverse = 1.0f / g_485ad4.hi;
+    real high = g_485ad4.hi;
+    real inverse = 1.0f / high;
     g_4850c4 = *parameters;
     real lower = inverse * g_485ad4.lo * 16777215.0f;
-    real upper = inverse * g_485ad4.hi * 16777215.0f;
+    real upper = inverse * high * 16777215.0f;
     g_485a74 = false;
     if (lower < 0.0f) lower = 0.0f;
     else if (lower > 16777215.0f) lower = 16777215.0f;
@@ -7182,64 +7179,71 @@ void __stdcall function_1f490(long unused, long font, long character, long color
 #endif
 
 // Disabled: the frame copies overlap independently declared shared camera/projection globals.
+
+extern dword g_5093b4;
+dword g_5093b8;
+dword __cdecl pack_color3f(color3f const *color);
+void function_25a10(vector3f const *direction, point3f const *position, byte const *state);
+void __stdcall function_14b60(dword flags, dword color, real depth, byte stencil);
+
 #if 0
-
-extern dword g_5093b4, g_5093b8;
-dword __cdecl function_131ed0(void const *color);
-void function_25a10(void const *view, point3f *position, vector3f *forward);
-
-// Retail 0x132d0
+// Disabled retail 0x132d0; activation changes the protected 223240 caller.
 void __stdcall function_132d0(s_frame_view_2c560 const *frame)
 {
-    g_485600 = *frame;
-    short mode = *(short const *)(frame->data + 2);
-    g_4858b8 = mode == 1 ? 18 : 0;
+    s_frame_view_2c560 const *const *frame_reference = &frame;
+    memcpy(g_frame_storage.data, *frame_reference, sizeof(*frame));
+    short mode = *(short const *)(((byte const *)frame) + 2);
+    switch (mode) { case 0: g_4858b8 = 0; break; case 1: g_4858b8 = 18; break; default: g_4858b8 = 0; break; }
     function_15370(0);
     g_5093b4 = 0x901;
     g_5093b8 = 0x900;
-    function_12fa0((real const *)(frame->data + 0x8c), frame->data + 0x18,
-        frame->data[7] != 0, mode);
-    if (*(short *)(g_485600.data + 8))
+    function_12fa0((real const *)(((byte const *)frame) + 0x8c), ((byte const *)frame) + 0x18,
+        ((byte const *)frame)[7] != 0, mode);
+    if (*(short *)(g_frame_storage.data + 8))
     {
         dword color = 0;
         dword flags = 1;
         if (!g_4670cd)
         {
             flags = 0x61;
-            color = function_131ed0(g_485600.data + 0xc);
+            color = pack_color3f((color3f const *)(g_frame_storage.data + 0xc));
         }
         function_14bc0((short)g_4858b8, 0, true);
         function_14b60(flags, color, 1.0f, 0);
     }
     else function_14bc0((short)g_4858b8, 0, true);
     D3DDevice_SetVertexData4f(7, 0.0f, 0.5f, 1.0f, 42.0f);
-    D3DDevice_SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+    function_0222d0(D3DRS_FILLMODE, D3DFILL_SOLID);
     g_4670bc = 1;
     function_16b10((s_render_reset_state *)g_485b48);
-    if (frame->data[0x26c])
+    if (((byte const *)frame)[0x26c])
     {
-        memcpy(g_48574c, frame->data + 0x14c, 0x120);
-        function_25a10(g_48574c, &g_4b9da0, &g_4b9dac);
+        memcpy(&g_48574c, ((byte const *)frame) + 0x14c, 0x120);
+        function_25a10(&g_4b9dac, &g_4b9da0, (byte const *)&g_48574c);
     }
 }
 #endif
 
+
+
 // Disabled: retail publishes the persistent shared render-source address and needs the blocked 14b60 flags interface.
-#if 0
 
 extern byte g_4ba022, g_4ba023, g_4ba024;
-extern long g_467130, g_467134, g_4858b4;
+extern long g_467130, g_4858b4;
+extern void *g_467134;
 extern s_record_sources *g_467138;
 extern dword g_4ba014;
 void function_15680(short mode);
-void function_495e0();
-void function_496f0();
+void function_0495e0();
+void function_0496f0();
 
-// Retail 0x44370
+extern bool g_485a74;
+
+// @retail 0x44370
 bool __stdcall function_44370(long mode)
 {
+    long group = g_43fa1c[mode].group;
     s_render_mode_44370 const *settings = &g_43fa1c[mode];
-    long group = settings->group;
     s_record_sources *sources = &g_4c1a48[group];
     bool enabled = true;
     if ((1 << mode) & 0xbffdee) enabled = (sources->flags & (1 << mode)) != 0;
@@ -7252,7 +7256,7 @@ bool __stdcall function_44370(long mode)
     if (enabled)
     {
         g_467130 = mode;
-        g_467134 = group;
+        g_467134 = (void *)group;
         g_467138 = sources;
         long target = settings->target;
         if (target == NONE)
@@ -7273,8 +7277,8 @@ bool __stdcall function_44370(long mode)
         switch (mode)
         {
         case 3: case 16: enabled = true; break;
-        case 10: enabled = true; function_495e0(); break;
-        case 11: enabled = true; function_496f0(); break;
+        case 10: enabled = true; function_0495e0(); break;
+        case 11: enabled = true; function_0496f0(); break;
         case 17: g_485a74 = 1; enabled = true; break;
         }
     }
@@ -7282,7 +7286,7 @@ bool __stdcall function_44370(long mode)
     function_15370(mode == 3 || mode == 1);
     return enabled;
 }
-#endif
+
 
 
 
@@ -7432,8 +7436,14 @@ void function_12080()
 #endif
 
 // Disabled: retail restores a 0x74-byte camera and 0x120-byte projection across split shared declarations.
-#if 0
-// Retail 0x13c20
+void __stdcall function_132d0(s_frame_view_2c560 const *frame);
+extern long g_46701c;
+struct s_2f970_view;
+struct s_2f800_view;
+bool function_2f970(s_2f970_view const *view, real *out);
+void function_2fd90(s_2f800_view const *view, box2f const *clip, byte *out);
+
+// @retail 0x13c20
 void function_13c20()
 {
     if (g_4ba04c > 1) D3DDevice_Clear(0, 0, 0x80, 0, 1.0f, 0);
@@ -7442,6 +7452,7 @@ void function_13c20()
     {
         byte *frame = (byte *)&g_4850d0 + g_46701c * 0x298;
         function_132d0((s_frame_view_2c560 const *)frame);
+        frame = (byte *)&g_4850d0 + g_46701c * 0x298;
         g_4b9ed4 = *(short *)frame;
         memcpy(&g_4b9ef0, frame + 0x14c, 0x120);
         memcpy(&g_4b9da0, frame + 0x18, 0x74);
@@ -7450,7 +7461,7 @@ void function_13c20()
         function_2fd90((s_2f800_view const *)&g_4b9da0, (box2f const *)bounds, (byte *)&g_4b9e14);
     }
 }
-#endif
+
 
 // Disabled: launch stack reset takes a new address of shared global g_4e6420; its aggregate is not yet canonical.
 #if 0
@@ -7476,9 +7487,14 @@ void function_12190()
 
 
 
-// Disabled: the dual timed-effect pass publishes a new shared visibility-pool address and depends on blocked 2bcd0.
-#if 0
-// Retail 0x13680
+// Draw the timed UI/world effect passes for the current frame.
+void function_1bdf0();
+bool function_016ac0();
+bool function_022710();
+void __stdcall function_2bcd0(long, long, bool, long, long, long, real);
+void __stdcall function_21a80(real, real, real);
+
+// @retail 0x13680
 void function_13680(bool skip_effects)
 {
     function_1bdf0();
@@ -7489,9 +7505,10 @@ void function_13680(bool skip_effects)
         return;
     }
     bool draw_ui = !skip_effects && g_485898 != 6;
-    bool world_effects = !skip_effects && g_485898 != 7 && function_22710();
-    if (!function_16ac0() && !skip_effects && effect && effect->unknown3c &&
-        effect->unknown40 > 0.0f && function_22710() && function_01de20(18))
+    bool world_effects = false;
+    if (!skip_effects && g_485898 != 7 && function_022710()) world_effects = true;
+    if (!function_016ac0() && !skip_effects && effect && effect->unknown3c &&
+        effect->unknown40 > 0.0f && function_022710() && function_01de20(18))
     {
         function_2bcd0(1, 1, false, world_effects, 1, 1, effect->unknown40);
         g_4c0b78.state = (s_2cb30_state *)&g_547f88;
@@ -7500,7 +7517,7 @@ void function_13680(bool skip_effects)
     }
     else function_2bcd0(1, 1, draw_ui, world_effects, 0, 0, 0.0f);
 }
-#endif
+
 
 s_reset_storage g_reset_storage;
 

@@ -988,7 +988,7 @@ struct s_timed_effect_globals;
 void function_441b0(s_planar_camera_source const *source, s_planar_camera *state, byte const *view);
 s_timed_effect_globals *function_01fd20(s_timed_effect_globals *result);
 s_bit_vector_pool *function_1320f0(long mode, long pass, bool enabled, long extra,
-	byte const *camera, byte const *plane, real distance, real bias, real offset, long identifier);
+	byte const *camera, byte const *plane, real distance, void *filter, real offset, long identifier);
 void function_133390(s_bit_vector_pool const *data);
 void __stdcall function_133520(s_bit_vector_pool *data);
 void function_133720(s_bit_vector_pool *data, bool enabled);
@@ -1020,7 +1020,7 @@ void function_3f2c0(s_planar_camera_source const *source, byte const *view, long
 	}
 	function_3d600();
 	s_bit_vector_pool *data = function_1320f0(0, 1, enabled, 0, camera,
-		camera + 0x60, 1024.0f, 0.0f, offset, g_4b9ee4);
+		camera + 0x60, 1024.0f, NULL, offset, g_4b9ee4);
 	if (object_index != NONE)
 	{
 		struct s_entry_list_view

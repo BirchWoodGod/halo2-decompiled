@@ -185,7 +185,10 @@ signed char *function_3d430(long object_index)
     {
         long cache = function_3ddd0(object_index);
         if (cache != NONE)
-            result = (signed char *)(g_509434->data + (cache & 0xffff) * 0x100 + 0xc0 + g_4ba050 * 16);
+        {
+            // Reload the shared channel index after cache setup.
+            result = (signed char *)(g_509434->data + (cache & 0xffff) * 0x100 + 0xc0 + *(long const *)&g_4ba050 * 16);
+        }
     }
     return result;
 }
