@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7868 functions match
+
+```
+matched 7868 of 11318 game functions (950393 of 2784283 bytes, 34.13%)
+```
+
+7 new matches, none lost:
+- Second machine, lane AA round 9 (+2): `0x1144a0`, `0x114ec0`.
+- Second machine, lane O round 25 (+2): `0x240ee0`, `0x249f0d`.
+- Second machine, lane M round 22 (+3): `0x1a9bc0`, `0x1ab770`, `0x1a2084`; it also removed forbidden `volatile` from seven bodies.
+
 ## 2026-10-12: 7861 functions match
 
 ```
