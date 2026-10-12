@@ -196,18 +196,19 @@ long function_101fb0(long object_index)
 		if (parent)
 		{
 			s_object_tag *tag = OBJECT_TAG(parent);
-			if (TEST_FIELD_BIT(tag->flagbc_26) && parent->parent_index != NONE
-				&& ((1 << OBJECT_HEADER(parent->parent_index)->type) & 3))
+			if (!(TEST_FIELD_BIT(tag->flagbc_26) && parent->parent_index != NONE
+				&& ((1 << OBJECT_HEADER(parent->parent_index)->type) & 3)))
 			{
-				parent_index = ((volatile s_object *)parent)->parent_index;
-				parent = OBJECT_HEADER(parent_index)->object;
 				result = parent->field_24c;
 				if (result == NONE)
 					result = parent_index;
 			}
 			else
 			{
-				result = parent->field_24c;
+				parent_index = ((volatile s_object *)parent)->parent_index;
+				s_object *ancestor = OBJECT_HEADER(parent_index)->object;
+				s_object *const &selected = ancestor;
+				result = selected->field_24c;
 				if (result == NONE)
 					result = parent_index;
 			}

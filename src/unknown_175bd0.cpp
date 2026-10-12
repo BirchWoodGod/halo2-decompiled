@@ -726,12 +726,7 @@ void function_177260(long effect_index, bool flag)
 
 	if (effect)
 	{
-		if (effect->looping_sound_index != NONE)
-		{
-			s_effect_looping_sound *sound = DATUM(g_4ed28c, s_effect_looping_sound, effect->looping_sound_index);
-			sound->flag1 = true;
-			effect->looping_sound_index = NONE;
-		}
+		effect_stop_looping_sound(effect);
 		function_1771a0(effect);
 		if (((byte)effect->flags >> 1) & 1)
 		{

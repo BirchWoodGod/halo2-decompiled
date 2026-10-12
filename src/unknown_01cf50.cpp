@@ -3318,6 +3318,8 @@ void function_36560()
     }
 }
 
+__declspec(noinline) bool function_12420();
+
 // @retail 0x12420
 bool function_12420()
 {
@@ -7525,11 +7527,11 @@ void function_22590()
         effects->unknown180[3] = 1.0f;
         effects->unknown3f8 = 1.0f;
     }
-    *(long *)g_50934c = 0;
-    *(real *)(g_50934c + 0x18) = 0.5f;
-    *(real *)(g_50934c + 0x10) = 0.5f;
-    *(real *)(g_50934c + 0x28) = 0.5f;
-    *(real *)(g_50934c + 0x30) = 0.5f;
+    *(volatile long *)g_50934c = 0;
+    *(volatile real *)(g_50934c + 0x10) = 0.5f;
+    *(volatile real *)(g_50934c + 0x18) = 0.5f;
+    *(volatile real *)(g_50934c + 0x28) = 0.5f;
+    *(volatile real *)(g_50934c + 0x30) = 0.5f;
     ((byte *)g_5093e4)[0] = 0;
     ((byte *)g_5093e4)[1] = 0;
     real *value = (real *)(((byte *)g_5093e4) + 4);
@@ -7579,10 +7581,7 @@ void function_12080()
     if (g_510800_pool_base)
     {
         VirtualFree((void *)g_510800_pool_base, 0, MEM_RELEASE);
-        g_pool_storage.flags.initialized = 0;
-        g_pool_storage.base = 0;
-        g_pool_storage.size = 0;
-        g_pool_storage.checksum = 0;
+        memset(&g_pool_storage, 0, sizeof(g_pool_storage));
     }
 }
 
@@ -7591,15 +7590,13 @@ extern "C" void __stdcall MmFreeContiguousMemory(void *base);
 void function_12b400();
 void function_12b690();
 
+#include "unknown_12b400.h"
 // @retail 0x12190
 void function_12190()
 {
     function_12420();
     function_12b400();
-    long depth = g_4e6420;
-    g_4e642c[depth + 1] = g_4e642c[depth];
-    g_4e6440[depth + 1] = g_4e6440[depth];
-    g_4e6420 = depth + 1;
+    function_xe0ae94();
     if (function_12000())
     {
         function_12b690();
@@ -7608,6 +7605,7 @@ void function_12190()
     memset(&g_4e6420, 0, 0x34);
     MmFreeContiguousMemory((void *)0x80061000);
     __debugbreak();
+    __assume(0);
 }
 
 dword g_55e6b8;
@@ -7615,18 +7613,178 @@ dword g_55e6b8;
 // @retail 0x14280
 long __fastcall function_14280(void const *data)
 {
-    if (++g_485ab0.low == 0)
-        ++g_485ab0.high;
-    volatile long result = 0;
+    volatile unsigned __int64 *current = (volatile unsigned __int64 *)&g_485ab0;
+    volatile unsigned __int64 *previous = (volatile unsigned __int64 *)&g_485ab8;
+    long result = 0;
+    ++*current;
     if (((dword const *)data)[1] != g_55e6b8)
     {
-        result = g_485ab0.low - g_485ab8.low;
-        g_485ab8 = g_485ab0;
+        result = (long)(*current - *previous);
+        *previous = *current;
         g_55e6b8 = ((dword const *)data)[1];
     }
     return result;
 }
 
+
+
 s_device_setup_storage g_device_setup_storage = {{{0, 0, 1, 0, 3, 0, 0, 0, 1, 0, 0, 0}}};
 
 s_render_modes_storage g_render_modes_storage = {{{255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 255, 255, 255, 255, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 255, 255, 255, 255, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 10, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 11, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 12, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 13, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 14, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 15, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 255, 255, 255, 255, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 183, 209, 56}}};
+
+s_type_7ba8e9 *function_1358e0(short width, short height, short levels, short format, word flags);
+// @retail 0x1eff0
+bool function_1eff0()
+{
+    bool result = true;
+    byte *bitmap = (byte *)function_1358e0(256, 256, 0, 9, 0x810);
+    if (bitmap)
+    {
+        memset(&g_glyphs_storage, 0, sizeof(g_glyphs_storage));
+        if (function_1d000(bitmap))
+        {
+            g_4b62ac = (s_bitmap_view *)bitmap;
+            g_4b62a0 = true;
+            g_4b62a4.fields.x = 1;
+            g_4b62a8 = 1;
+        }
+        else result = false;
+    }
+    else result = false;
+    s_font_render_entry *entry = g_4b62b0;
+    long count = 512;
+    do { memset(entry, 0, sizeof(*entry)); entry->character_index = NONE; ++entry; } while (--count);
+    return result;
+}
+
+
+extern long g_4e28f4[11];
+struct s_font_character_header;
+long font_cache_find_character(long font_index, long character);
+s_font_character_header *font_cache_get_character_header(long font_index, long character, dword flags);
+void __stdcall function_1f5c0(long character);
+
+// @retail 0x1f490
+void __stdcall function_1f490(long unused, long font, long character, long color, long shadow,
+    real x, real y, real u, real v, real width, real height, real scale, long callback, long context)
+{
+    long index = font_cache_find_character(g_4e28f4[font], character);
+    if (index == NONE)
+    {
+        font_cache_get_character_header(font, character, 3);
+        index = font_cache_find_character(g_4e28f4[font], character);
+        if (index == NONE) return;
+    }
+    function_1f5c0(index);
+    if (index == NONE) return;
+    long entry = *(long *)(g_54d574->data + (index & 0xffff) * 0x38 + 0x34);
+    if (entry == NONE) return;
+    s_font_render_entry *rectangle = &g_4b62b0[entry];
+    bool draw_shadow = ((dword)shadow & 0xff000000) > 0;
+    do
+    {
+        real offset = draw_shadow ? scale : 0.0f;
+        function_1f3a0((short const *)rectangle, x + offset, y + offset, (long)width, (long)height,
+            (short)(long)u, (short)(long)v, scale, draw_shadow ? shadow : color,
+            (t_1f3a0_callback)callback, (void *)context);
+        if (!draw_shadow) break;
+        draw_shadow = false;
+    } while (true);
+}
+
+#include "allocator_storage.h"
+#include "crc.h"
+void function_0169f0();
+void function_016a30(real scale, short y, short x);
+void function_01d660();
+bool function_1d770();
+void function_01fbb0();
+void geometry_cache_initialize();
+void texture_cache_initialize();
+void function_020eb0();
+extern dword g_468848[256];
+extern long g_4b72c0;
+byte g_485a88;
+long g_4670f8;
+point3f g_4b72b4;
+
+// @retail 0x12560
+void function_12560()
+{
+    if (g_485a88) return;
+    function_0169f0();
+    short x, y;
+    if (g_485ac5 && g_485ac6) { x = 0x20; y = 0x18; }
+    else { x = 0x30; y = 0x24; }
+    function_016a30(1.0f, y, x);
+    Direct3D_SetPushBufferSize(0x100000, 0x8000);
+    bool success = function_128c0(&g_43ed80);
+    if (success)
+    {
+        g_4670bc = 1;
+        function_16b10((s_render_reset_state *)g_485b48);
+        function_1c1b0();
+        function_1c810();
+        D3DPalette *palette = NULL;
+        success = function_015b10(3, &palette);
+        if (success)
+        {
+            D3DCOLOR *destination = D3DPalette_Lock2(palette, 0);
+            if (destination)
+                { long color = 0;
+                do { *destination++ = g_468848[color++]; } while (color < 256); }
+            D3DPalette_Unlock(palette);
+        }
+        g_484dbc = palette;
+        if (success)
+            for (long i = 0; i < 4; ++i) D3DDevice_SetPalette(i, (D3DPalette *)g_484dbc);
+        memset(g_484dd0, 0, 0x180);
+        if (success)
+        {
+            D3DDevice_SetVertexShader(0x11);
+            D3DDevice_SetRenderState(D3DRS_CULLMODE, 2);
+            D3DDevice_SetRenderState(D3DRS_ZWRITEENABLE, 1);
+            D3DDevice_SetRenderState(D3DRS_ZFUNC, 0x203);
+            D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
+            D3DDevice_SetRenderState(D3DRS_STENCILENABLE, 0);
+            D3DDevice_SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+            D3DDevice_SetRenderState(D3DRS_ALPHAFUNC, 0x204);
+            D3DDevice_SetRenderState(D3DRS_ALPHAREF, 0);
+            D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
+            D3DDevice_SetRenderState(D3DRS_SRCBLEND, 1);
+            D3DDevice_SetRenderState(D3DRS_DESTBLEND, 0);
+            D3DDevice_SetRenderState(D3DRS_BLENDOP, 0x8006);
+            D3DDevice_SetRenderState(D3DRS_FOGENABLE, 1);
+            D3DDevice_SetRenderState(D3DRS_LIGHTING, 0);
+            D3DDevice_SetRenderState(D3DRS_SPECULARENABLE, 1);
+            for (long i = 0; i < 4; ++i) D3DDevice_SetTextureStageState(i, D3DTSS_TEXCOORDINDEX, i);
+        }
+    }
+    function_01d660();
+    if (success && function_14600() && function_14850() && function_1d770() && function_1d0e0() && function_1e110())
+    {
+        g_4670f8 = 0x24;
+        if (function_1eff0())
+        {
+            g_4b72b4.x = g_468788->x;
+            g_4b72b4.y = g_468788->y;
+            g_4b72b4.z = g_468788->z;
+            g_4b72c0 = NONE;
+            success = true;
+        }
+        else success = false;
+    }
+    else success = false;
+    function_01fbb0();
+    geometry_cache_initialize();
+    texture_cache_initialize();
+    memset(&g_render_state_storage, 0, sizeof(g_render_state_storage));
+    for (long i = 0; i < 0x1ff; ++i) function_20e50(i);
+    byte *allocated = g_4e6080 + g_4e6084;
+    g_4e6084 += 0x34;
+    long size = 0x34;
+    function_163ba0(&g_4e608c, &size, 4);
+    g_50934c = allocated;
+    function_020eb0();
+    if (success) g_485a88 = 1;
+}

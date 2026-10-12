@@ -512,10 +512,10 @@ void __stdcall function_b83b0(long object_index, bool unused)
             {
                 if (local_f86fb0->parent_index != NONE)
                 {
-                    if ((1 << local_f86fb0->type) & 3)
-                        function_cc590(child);
-                    else
+                    if (!((1 << local_f86fb0->type) & 3))
                         function_b9a90(child);
+                    else
+                        function_cc590(child);
                 }
             }
         else
@@ -577,11 +577,10 @@ void __stdcall function_b77d0(long object_index, vector3f const *linear_velocity
 // @retail 0xb9a90
 void function_b9a90(long object_index)
 {
-    s_record_pool *objects = g_4e0300;
-    s_object_view *object = ((s_object_header_view *)objects->data)[object_index & 0xffff].object;
-    s_object_view *parent = ((s_object_header_view *)objects->data)[object->parent_index & 0xffff].object;
+    s_object_view *object = OBJECT_GET(object_index);
+    s_object_view *parent = OBJECT_GET(object->parent_index);
     byte connected = function_b9d20(object->parent_index) ? 1 : 0;
-    s_object_view *node_parent = ((s_object_header_view *)objects->data)[object->parent_index & 0xffff].object;
+    s_object_view *node_parent = OBJECT_GET(object->parent_index);
     transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + *(short const volatile *)&node_parent->node_matrices_offset) + *(char *)((byte *)object + 0x18);
     if (connected)
         function_bef30(object_index, 1, 0, 0, false);

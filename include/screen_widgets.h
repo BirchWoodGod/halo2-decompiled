@@ -966,7 +966,7 @@ s_record_pool *user_interface_data_new(const char *name, long maximum_count, lon
 class c_list_widget_with_items : public c_class_1474e8
 {
 public:
-	c_list_widget_with_items(word user_flags) :
+	__forceinline c_list_widget_with_items(word user_flags) :
 		c_class_1474e8(user_flags)
 	{
 	}
