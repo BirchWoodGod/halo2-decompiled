@@ -14,6 +14,18 @@
 #include <math.h>
 #include <string.h>
 
+c_breakable_surface_group_entity_definition g_4797dc;
+c_breakable_surface_damage_event_definition g_4797d8;
+c_damage_section_response_event_definition g_4797d4;
+
+c_game_engine_player_entity_definition g_4797c8;
+
+c_vehicle_flip_event_definition g_479800;
+c_unit_exit_vehicle_event_definition g_4797e8;
+c_unit_melee_damage_event_definition g_4797fc;
+
+c_vehicle_trick_event_definition g_479804;
+
 #define OBJECT_HEADER(index) (&((s_object_header *)g_4e0300->data)[(index) & 0xFFFF])
 #define OBJECT(index) (OBJECT_HEADER(index)->object)
 #define UNIT_OBJECT(index) ((s_unit_object_view *)OBJECT(index))
@@ -1595,16 +1607,19 @@ bool c_breakable_surface_group_entity_definition::v20(s_entity_slot *entity, dwo
 {
 	if (*flags & 1)
 	{
+		long local_4 = entity->slot;
+		long index = local_4 * 32;
 		dword old_mask = *mask;
-		long index = entity->slot * 32;
-		s_slot_pair *pair = &g_4eca80[index];
-		for (long i = 0; i < 32; i++, pair++, index++)
+		long *local_1 = (long *)((byte *)g_4eca80 + (local_4 << 8) + 4);
+		for (long i = 0; i < 32; i++, local_1 += 2, index++)
 		{
 			if (index != NONE && index < 0x100)
 			{
-				if (pair->a != NONE || pair->b != pair->a)
+				long local_2 = local_1[-1];
+				long local_3 = *local_1;
+				if (local_2 != NONE || local_3 != local_2)
 				{
-					if (!function_184000(pair->b, pair->a))
+					if (!(byte)function_184000(local_3, local_2))
 					{
 						dword local_0 = *mask;
 						*mask = local_0 | (1 << i);

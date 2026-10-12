@@ -92,18 +92,23 @@ bool function_98750(c_handle_table_450cd0 *self, s_bitstream *stream, long index
 	function_195720(stream, 3, 3);
 	stream_write_checked(stream, count - 2, 2);
 	long i;
-	for (i = 0; i < count;)
+	i = 0;
+	do
 	{
+		if (i >= count)
+			goto local_1;
 		handle = handles[i];
 		function_b5650(handle, stream);
 		if (result && self->table->owner->v0(handle, self->entries[handle & 0x3ff].unknown04, a3, stream, reserved_bits, &released[i]))
 			result = true;
 		else
 			result = false;
+		i = *(volatile long *)&i;
 		i++;
-		if (!result)
-			break;
-	}
+	} while (result);
+	function_194710(stream, true);
+	return false;
+local_1:
 	if (result && stream_has_room(stream, reserved_bits))
 	{
 		stream->checkpoint_count--;
@@ -123,10 +128,11 @@ bool function_98750(c_handle_table_450cd0 *self, s_bitstream *stream, long index
 // @retail 0x988f0
 bool function_988f0(c_handle_table_450cd0 *self, long index, s_bitstream *stream, long reserved_bits)
 {
+	bool local_0 = false;
 	long handles[4];
 	long count = 0;
-	long handle = self->entries[index].handle;
 	s_handle_peers *peers = self->table;
+	long handle = self->entries[index].handle;
 	while (handle != NONE)
 	{
 		handles[count] = handle;
@@ -145,10 +151,11 @@ bool function_988f0(c_handle_table_450cd0 *self, long index, s_bitstream *stream
 		stream->checkpoint_count--;
 		for (i = 0; i < count; i++)
 			function_98b60(self, handles[i]);
-		return true;
+		local_0 = true;
 	}
-	function_194710(stream, true);
-	return false;
+	else
+		function_194710(stream, true);
+	return local_0;
 }
 
 /* kind 5: an entity's update */
@@ -176,16 +183,15 @@ bool function_989f0(c_handle_table_450cd0 *self, long index, s_bitstream *stream
 
 static __forceinline s_handle_node *function_984d1(s_handle_node *arg_0)
 {
-	s_handle_node *local_0 = 0;
 	if (arg_0)
 	{
 		arg_0->handle = NONE;
 		arg_0->items = 0;
 		arg_0->records = 0;
 		arg_0->next = 0;
-		local_0 = arg_0;
+		return arg_0;
 	}
-	return local_0;
+	return 0;
 }
 
 // @retail 0x984d0
