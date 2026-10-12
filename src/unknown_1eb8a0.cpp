@@ -716,7 +716,7 @@ void __stdcall function_1ed340(void *physics, long object_index)
   {
    function_b7740(object_index, &velocity, NULL, false);
    function_1c4b00(object_index, &velocity, NULL, 1);
-   if (velocity.i * velocity.i + velocity.j * velocity.j + velocity.k * velocity.k > 0.0001f)
+   if (velocity.k * velocity.k + velocity.j * velocity.j + velocity.i * velocity.i > 0.0001f)
    {
     function_b9b90(object_index, false);
     function_b7360(object_index);

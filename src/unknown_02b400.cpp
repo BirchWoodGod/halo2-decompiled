@@ -1,7 +1,11 @@
 // @flags /O2 /arch:SSE /Gr
+#include "shader_storage.h"
+#include "visibility_storage.h"
 /* UNKNOWN_02B400.CPP: vector math and rectangular grid placement */
 
 #include "unknown_11c920.h"
+#include "frame_storage.h"
+#include "reset_storage.h"
 #include "unknown_0259d0.h"
 #include <math.h>
 #include "globals.h"
@@ -11,7 +15,6 @@ typedef void (__stdcall *masked_list_proc)(long value, short mask);
 void masked_list_iterate(s_masked_list const *list, long mask, masked_list_proc proc);
 void __stdcall function_c3340(long light_index, long unused);
 void function_3eec0();
-s_masked_list *g_547f98;
 
 // @retail 0x2c340
 void function_2c340(bool enabled)
@@ -656,18 +659,11 @@ void function_28580(long tag, real time, vector3f *out)
 }
 
 #include <string.h>
-extern long g_4857b8;
-extern real g_4857dc, g_4857e0, g_485640;
 extern real g_4b9d90, g_4b9d94;
 extern bool g_4b9d9c;
-extern short g_485600;
-extern byte g_485607;
-extern word g_485648, g_48564a, g_48564c, g_48564e;
-extern real g_48568c[46];
 extern double g_4858a0;
 extern transform4x3f *g_4687d0;
-struct s_frame_offset { point3f position; vector3f forward; vector3f up; };
-extern s_frame_offset g_485618;
+
 void function_141590(transform4x3f const *in, transform4x3f *out);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 
@@ -1021,7 +1017,7 @@ bool __stdcall function_38450(byte *state, byte const *definition, real remainin
 
 // Disabled: the shared camera is a 0x24-byte prefix, but 0x12fa0 reads through +0x36; shared addresses prohibited.
 #if 0
-extern byte g_485b48[0x1fc0], g_51f0f0[0x2d8], g_4670bc;
+extern byte g_4670bc;
 extern byte *g_485a80;
 extern long g_4858b8;
 struct s_render_reset_state;
@@ -1107,3 +1103,93 @@ bool __stdcall function_391f0(byte *state)
 }
 #endif
 
+
+#include <xtl.h>
+#include "geometry_cache.h"
+#include "shader_storage.h"
+extern byte g_4670bc;
+extern byte *g_485a80;
+extern long g_4858b8;
+struct s_render_reset_state;
+struct s_shader_cache;
+void function_16b10(s_render_reset_state *);
+void function_1c590(s_shader_cache *, long, long);
+void function_12fa0(real const *, byte const *, bool, long);
+bool function_39780(bool);
+void function_1cf80();
+bool function_143c0(long, short, short, real);
+
+
+// @retail 0x391f0
+bool __stdcall function_391f0(void *state_address)
+{
+    byte *state = (byte *)state_address;
+    bool lines = *(short *)(state + 0x6c) == 2;
+    if (!function_12de70((s_geometry_block_info *)(state + 0x40), 3)) return true;
+    s_38450_records *records = *(s_38450_records **)(state + 0x68);
+    g_4670bc = 1;
+    function_16b10((s_render_reset_state *)g_485b48);
+    function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0xb4), 0);
+    function_12fa0(g_48568c, (byte *)&g_485618, false, g_4858b8);
+    bool result = function_39780(lines);
+    if (!lines)
+    {
+        D3DDevice_SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
+        D3DDevice_SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
+        D3DDevice_SetRenderState(D3DRS_POINTSCALE_A, 0);
+        D3DDevice_SetRenderState(D3DRS_POINTSCALE_B, 0);
+        real scale = 1.0f;
+        D3DDevice_SetRenderState(D3DRS_POINTSCALE_C, *(dword *)&scale);
+    }
+    dword first_alpha = (dword)(long)(*(real *)(state + 0x70) * 256.0f) << 24;
+    dword second_alpha = (dword)(long)(*(real *)(state + 0x74) * 256.0f) << 24;
+    D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    D3DDevice_SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+    D3DDevice_SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+    D3DDevice_SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+    D3DDevice_SetRenderState(D3DRS_ALPHAREF, 0);
+    D3DDevice_SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+    D3DDevice_SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+    D3DDevice_SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+    D3DDevice_SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+    if (!lines) function_143c0(*(long *)(state + 4), 0, 3, 0.0f);
+    function_1cf80();
+    if (lines) D3DDevice_SetRenderState(D3DRS_LINEWIDTH, *(dword *)(state + 0x7c));
+    D3DDevice_Begin(lines ? D3DPT_LINELIST : D3DPT_POINTLIST);
+    short players = *(short *)((byte *)g_4e8c20 + 8);
+    long divisor = players < 1 ? 1 : players > 4 ? 4 : players;
+    long count = records->count / divisor;
+    long first = g_485600 * count;
+    for (long i = first; i < first + count; ++i)
+    {
+        s_38450_vertex *volatile vertex = records->vertices + i;
+        s_38450_particle *particle = records->particles + i;
+        if (!(particle->age > 0.0f)) continue;
+        if (!lines)
+        {
+            D3DDevice_SetVertexDataColor(1, vertex->color);
+            D3DDevice_SetVertexData4f(0, vertex->position.x, vertex->position.y,
+                vertex->position.z, vertex->size * 16777215.0f);
+        }
+        else
+        {
+            real scale = g_509418;
+            point3f previous;
+            previous.x = vertex->position.x - particle->velocity.i * scale * *(real *)(state + 0x78);
+            previous.y = vertex->position.y - particle->velocity.j * scale * *(real *)(state + 0x78);
+            previous.z = vertex->position.z - particle->velocity.k * scale * *(real *)(state + 0x78);
+            D3DDevice_SetVertexDataColor(1, (vertex->color & 0xffffff) | first_alpha);
+            D3DDevice_SetVertexData4f(0, previous.x, previous.y, previous.z, 1.0f);
+            D3DDevice_SetVertexDataColor(1, (vertex->color & 0xffffff) | second_alpha);
+            D3DDevice_SetVertexData4f(0, vertex->position.x, vertex->position.y, vertex->position.z, 1.0f);
+        }
+    }
+    D3DDevice_End();
+    D3DDevice_SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
+    D3DDevice_SetRenderState(D3DRS_POINTSCALEENABLE, FALSE);
+    D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    D3DDevice_SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+    g_4670bc = 1;
+    function_16b10((s_render_reset_state *)g_485b48);
+    return result;
+}

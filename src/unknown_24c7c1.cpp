@@ -3,6 +3,7 @@
    (g_5023f4) */
 
 #include <math.h>
+#include "camera_storage.h"
 #include <stdlib.h>
 #include <string.h>
 #include "unknown_11c920.h"
@@ -517,11 +518,8 @@ struct s_33a0b_default;
 
 extern s_510c4c *g_510c4c;
 extern s_33a0b_default *g_4686d4;
-extern short g_4b9dd0;
-extern short g_4b9dd2;
 
 /* the frame the HUD draws in */
-short_rectangle2d g_4b9dd8;
 
 long function_122540(long font);
 color4f *unpack_color4f(dword pixel, color4f *color);

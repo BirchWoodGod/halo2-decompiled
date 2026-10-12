@@ -1,4 +1,5 @@
 // @flags /O2 /Gr /arch:SSE
+#include "object_masks_storage.h"
 #include "unknown_11c920.h"
 #include "props.h"
 #include <float.h>
@@ -807,9 +808,6 @@ struct s_object;
 s_object *function_badc0(long object_index, dword type_mask);
 point3f *function_b9dd0(long object_index, point3f *result);
 bool function_bec70(long object_index);
-extern long g_4de2fc;
-extern long g_4de300[0x800];
-extern bool g_4de2f8;
 bool function_26add0(long prop_index);
 
 struct s_prop_candidate_view

@@ -1,8 +1,13 @@
 // @flags /O2 /arch:SSE /Gr
+#include "palette_storage.h"
+#include "shader_storage.h"
+#include "render_state_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_020560.CPP: the timed effect values, the table of visibility
    slots, a pixel shader and the render state wrappers */
 
 #include "unknown_11c920.h"
+#include "frame_storage.h"
 #include <string.h>
 #include <math.h>
 #include <xtl.h>
@@ -94,22 +99,12 @@ void hash_table_initialize(hash_table *table);
 void function_20e50(long index);
 
 
-byte g_51f408;
-byte g_51f409;
 hash_table *g_51f400;
-long g_5234c4;
-long g_5234b4[4];
 extern __int64 g_485aa0;
-byte g_485607;
 dword g_4850c8;
 real g_5234c8;
-word g_485648;
-word g_48564a;
-word g_48564c;
-word g_48564e;
 dword g_4b81fc[0xa6];
 D3DPIXELSHADERDEF g_484f68;
-long g_5234b0;
 extern long g_485898;
 short g_467010 = NONE;
 
@@ -871,7 +866,6 @@ void __stdcall function_22cf0(s_light_sample_source const *source, real *red, re
 real g_4b8494;
 long g_467130;
 long g_4858b4;
-extern D3DPalette *g_484dbc;
 extern long g_484dc0[4];
 dword *function_1c290(real value);
 void function_0496a0(void);
@@ -1097,7 +1091,6 @@ void function_1ba00(byte *state)
 struct s_shader_cache;
 void function_1c590(s_shader_cache *state, long tag, long index);
 void __stdcall function_1c710(void *state);
-extern byte g_51f0f0[0x2d8];
 
 // @retail 0x246a0
 bool __stdcall function_246a0(void *context)
@@ -1183,7 +1176,6 @@ void __stdcall function_20bb0(long player, dword mask, long const *indices, long
 }
 
 
-extern long g_4b9ed4;
 long __stdcall function_3bf20(s_slot *slot, byte *data);
 
 // @retail 0x3c270

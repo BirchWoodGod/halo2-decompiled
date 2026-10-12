@@ -2647,17 +2647,22 @@ void c_invert_look_settings_edit_list::v20(c_class_1a2c81 *widget, long index)
 // @retail 0x2c6431
 void c_invert_look_settings_edit_list::handle_item(s_controller_reference **controller, long *item)
 {
+	bool invert;
 	switch (*(short *)item)
 	{
-	case 1:
-		g_54e5d0.settings.controller_flags.invert_look = false;
-		break;
 	case 0:
-		g_54e5d0.settings.controller_flags.invert_look = true;
+		invert = true;
+		break;
+	case 1:
+		invert = false;
 		break;
 	default:
 		__assume(0);
 	}
+	if (invert)
+		g_54e5d0.settings.controller_flags.invert_look = true;
+	else
+		g_54e5d0.settings.controller_flags.invert_look = false;
 	if (value188)
 	{
 		profile_edit_save();
@@ -2760,17 +2765,22 @@ c_auto_level_settings_edit_list::c_auto_level_settings_edit_list(word user_flags
 // @retail 0x2c66b5
 void c_auto_level_settings_edit_list::handle_item(s_controller_reference **controller, long *item)
 {
+	bool auto_level;
 	switch (*(short *)item)
 	{
-	case 1:
-		g_54e5d0.settings.controller_flags.auto_level = false;
-		break;
 	case 0:
-		g_54e5d0.settings.controller_flags.auto_level = true;
+		auto_level = true;
+		break;
+	case 1:
+		auto_level = false;
 		break;
 	default:
 		__assume(0);
 	}
+	if (auto_level)
+		g_54e5d0.settings.controller_flags.auto_level = true;
+	else
+		g_54e5d0.settings.controller_flags.auto_level = false;
 	if (value188)
 	{
 		profile_edit_save();
@@ -2821,18 +2831,23 @@ void c_vibration_settings_edit_list::v20(c_class_1a2c81 *widget, long index)
 // @retail 0x2c67d7
 void c_vibration_settings_edit_list::handle_item(s_controller_reference **controller, long *item)
 {
+	bool vibration;
 	switch (*(short *)item)
 	{
 	case 0:
-		g_54e5d0.settings.controller_flags.vibration = false;
+		vibration = false;
 		break;
 	case 1:
-		g_54e5d0.settings.controller_flags.vibration = true;
+		vibration = true;
 		break;
 	default:
-		g_54e5d0.settings.controller_flags.vibration = true;
+		vibration = true;
 		break;
 	}
+	if (vibration)
+		g_54e5d0.settings.controller_flags.vibration = true;
+	else
+		g_54e5d0.settings.controller_flags.vibration = false;
 	if (value188)
 	{
 		profile_edit_save();

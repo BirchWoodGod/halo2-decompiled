@@ -7,6 +7,7 @@
 #include <string.h>
 
 // @flags /O2 /Ob1 /arch:SSE /Gr
+#include "view_context_storage.h"
 
 /* UNKNOWN_19DE80.CPP: the game engine events. An event names a cause (a
    player and a team) and an effect (a player and a team); each player is
@@ -126,7 +127,6 @@ void function_24caac(long player_index, word const *text, word const *plural_tex
 void function_24cbee(long player_index, word const *text);
 void function_24cc73(long player_index, word const *text, long value);
 
-extern long g_4b9ed8;
 
 inline long game_seconds_to_ticks_round(real seconds)
 {

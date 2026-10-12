@@ -5,6 +5,7 @@
 #include <string.h>
 
 // @flags /O2 /arch:SSE /Gr
+#include "object_masks_storage.h"
 
 struct s_player_creation_record;
 class c_class_6a600;
@@ -43,9 +44,6 @@ void function_1c7e70(long player_index, short value);
 void __stdcall function_14e0f0(long player_index, long target_index, point3f const *position,
 	point3f const *alternate);
 void function_152340();
-extern bool g_4de2f8;
-extern long g_4de2fc;
-extern long g_4de300[0x800];
 
 // @retail 0x14bf80
 void __stdcall function_14bf80(long player_index, s_player_creation_record const *record)

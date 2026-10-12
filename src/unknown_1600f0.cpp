@@ -4,6 +4,7 @@
    object (g_55e4d0), and the time text the engines draw */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include "engine_peer.h"
 #include <string.h>
@@ -540,7 +541,7 @@ bool g_55e754;
 // @retail 0x162470
 long function_162470(bool flag)
 {
-	long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
+	volatile long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
 	s_mp_globals *globals = g_4e9ae8;
 	long elapsed = g_510c54->game_time - ((s_mp_globals_time_view *)globals)->start_time;
 	long time_left;
@@ -1137,8 +1138,6 @@ void game_engine_player_row_build(short const *position, real alpha, long player
 #include "unknown_07f720.h"
 #include <xtl.h>
 
-extern short_rectangle2d g_4b9dd8;
-extern short g_4b9dd0, g_4b9dd2;
 long function_11ca80(long value);
 long function_19fd00(long team_index);
 void utf8_string_to_utf16_string(char const *source, word *destination, long count);

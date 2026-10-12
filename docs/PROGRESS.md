@@ -2,6 +2,105 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7744 functions match
+
+```
+matched 7744 of 11318 game functions (926140 of 2784283 bytes, 33.26%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, round 24: 0x19b62e.
+
+## 2026-10-12: 7743 functions match
+
+```
+matched 7743 of 11318 game functions (926056 of 2784283 bytes, 33.26%)
+```
+
+3 new matches, none lost:
+- Deep lane 1, round 32: 0x265c30, 0x2684f0 and 0x2a2e00.
+
+## 2026-10-12: 7740 functions match
+
+```
+matched 7740 of 11318 game functions (925828 of 2784283 bytes, 33.25%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, round 23: 0x1008f0, which had 148 differing instructions two rounds earlier.
+
+## 2026-10-12: 7739 functions match
+
+```
+matched 7739 of 11318 game functions (925241 of 2784283 bytes, 33.23%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 31: 0x1e3920.
+
+## 2026-10-11: 7738 functions match
+
+```
+matched 7738 of 11318 game functions (925029 of 2784283 bytes, 33.22%)
+```
+
+3 new matches, none lost:
+- Deep lane 1, round 30 (the closest functions in groups 1 and 3): 0x2acf80, 0x2b1ed5 and 0x2b1eef.
+
+## 2026-10-11: 7735 functions match
+
+```
+matched 7735 of 11318 game functions (924736 of 2784283 bytes, 33.21%)
+```
+
+4 new matches, none lost:
+- Deep lane 3, round 34: eight shared storage blocks of the renderer and the object system take retail's layout. 0xb3ed0, whose body had waited on that storage, matches, with its caller 0xb3e90; 0x243ed0 and 0x24da7d match as side effects.
+
+## 2026-10-11: 7731 functions match
+
+```
+matched 7731 of 11318 game functions (923546 of 2784283 bytes, 33.17%)
+```
+
+8 new matches, none lost:
+- A trial lane run by Claude Sonnet instead of Codex, on the closest functions in group 3: 0x1ed340, 0x26d0e0, 0x2c6431, 0x2c66b5, 0x2c67d7, 0x2a07c0, 0x2a06a0 and 0x2b86fa.
+
+## 2026-10-11: 7723 functions match
+
+```
+matched 7723 of 11318 game functions (922319 of 2784283 bytes, 33.13%)
+```
+
+3 new matches, none lost:
+- Deep lane 1, round 26: the object types' vtables now hold the real methods in the slots that held placeholders, as retail's do; 0xa0520 and 0xa26d0 match with that alone, and 0xa0640 with them.
+
+## 2026-10-11: 7720 functions match
+
+```
+matched 7720 of 11318 game functions (921933 of 2784283 bytes, 33.11%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 25: 0xbeca0.
+
+## 2026-10-11: 7719 functions match
+
+```
+matched 7719 of 11318 game functions (921493 of 2784283 bytes, 33.10%)
+```
+
+1 new matches, none lost:
+- Deep lane 2, round 22 (callees that close functions wait on): 0x10a8b0.
+
+## 2026-10-11: 7718 functions match
+
+```
+matched 7718 of 11318 game functions (921286 of 2784283 bytes, 33.09%)
+```
+
+1 new matches, none lost:
+- Deep lane 1, round 24: 0xa5b80.
+
 ## 2026-10-11: 7717 functions match
 
 ```

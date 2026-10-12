@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "orientations_storage.h"
 /* BIPEDS.CPP: bipeds
 
 The biped object type's callbacks (its definition at 0x467a78) and the

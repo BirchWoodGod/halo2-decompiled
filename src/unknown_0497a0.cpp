@@ -1,14 +1,13 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
 /* UNKNOWN_0497A0.CPP: view parameter computation */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include <math.h>
 #include "unknown_0494b0.h"
 #include "globals.h"
 
-point3f g_4b9da0;
-vector3f g_4b9dac;
-vector3f g_4b9db8;
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
@@ -586,3 +585,5 @@ void __stdcall function_42b20(dword mask)
             data_find_index(g_4ea944, index == NONE ? 0 : (index & 0xffff) + 1));
     }
 }
+
+s_camera_storage g_camera_storage;

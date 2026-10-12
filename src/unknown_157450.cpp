@@ -1,8 +1,11 @@
 // @flags /O2 /arch:SSE /Gr
+#include "projection_storage.h"
+#include "view_context_storage.h"
 /* UNKNOWN_157450.CPP: the game engine globals: the lifecycle callbacks of
    entry 22 and the team bookkeeping */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "unknown_123b30.h"
 #include "globals.h"
 #include "engine_peer.h"
@@ -929,7 +932,6 @@ real function_1591e0(long local_index)
 	return result;
 }
 
-extern long g_4b9ed8;
 
 // @retail 0x159610
 bool function_159610(void)
@@ -1963,14 +1965,13 @@ void function_159460(long player_index, bool *leading, bool *tied)
 // @retail 0x15adb0
 void function_15adb0(s_netgame_entry_state *entries)
 {
-	s_type_f1af8e iterator;
-	s_engine_object *object;
+	struct { s_engine_object *object; s_type_f1af8e iterator; } local;
 
 	function_15ace0(entries);
-	function_bae80(&iterator, 0x1e, 0);
-	while ((object = (s_engine_object *)function_baeb0(&iterator)) != 0)
+	function_bae80(&local.iterator, 0x1e, 0);
+	while ((local.object = (s_engine_object *)function_baeb0(&local.iterator)) != 0)
 	{
-		long index = object->netgame_entry;
+		long index = local.object->netgame_entry;
 
 		if (index >= 0 && index < ((s_scenario_netgame_view *)g_4e0350)->count)
 		{
@@ -1979,11 +1980,11 @@ void function_15adb0(s_netgame_entry_state *entries)
 				function_15b1e0(entries[index].index, index, entries);
 			}
 			entries[index].value04 = 0;
-			entries[index].index = iterator.object_index;
+			entries[index].index = local.iterator.object_index;
 		}
 		else
 		{
-			object->netgame_entry = NONE;
+			local.object->netgame_entry = NONE;
 		}
 	}
 }
@@ -4377,8 +4378,6 @@ void function_15e970(long unit_index)
 
 #include "font_loading.h"
 #include "unknown_030290.h"
-extern short_rectangle2d g_4b9dd8;
-extern short g_4b9dd0, g_4b9dd2;
 extern long g_4ba04c;
 extern real g_4e69c0[4];
 extern point3f *g_468718;
@@ -4491,8 +4490,6 @@ void function_15be20()
 }
 
 #include <wchar.h>
-extern s_camera g_4b9e14;
-extern short g_4b9dd4, g_4b9dd6;
 bool function_30710(vector3f const *vector, short_rectangle2d const *bounds, point2f *point, s_camera const *camera, s_view const *view);
 void parse_text(word *text);
 
@@ -4844,8 +4841,7 @@ void function_157ae0(void)
 #include "unknown_030290.h"
 #include "unknown_163110.h"
 #include <math.h>
-extern long g_4e64a8, g_4b9ed8;
-extern short g_4b9dd0, g_4b9dd2, g_4b9dd4, g_4b9dd6;
+extern long g_4e64a8;
 void function_36580(void);
 void function_36880(color4f const *color, s_short_rectangle const *rectangle);
 void function_161420(long player_index, real alpha);

@@ -4,6 +4,7 @@
    samples of up to 16 blips that fade out in turn. */
 
 #include "unknown_11c920.h"
+#include "camera_storage.h"
 #include "globals.h"
 #include "unknown_0259d0.h"
 #include "object_iterator.h"
@@ -139,8 +140,6 @@ real g_51e98c;
 bool g_51e990;
 real g_47ff98 = 1.1f;
 real g_47ff9c[3] = { 0.0f, -0.75f, 1.0f };
-short g_4b9dd0;
-short g_4b9dd2;
 
 extern color3f const g_445320[9] =
 {
