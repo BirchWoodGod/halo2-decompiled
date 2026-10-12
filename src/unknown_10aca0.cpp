@@ -111,15 +111,17 @@ void function_10ad90(long object_index, real target, real seconds)
 			object->fade_ticks = (char)ticks;
 			if (object->fade_ticks == 0)
 			{
-				object->fade_value = target;
-				object->fade_rate = 0.0f;
-				object->fading = true;
+				real *value = &object->fade_value;
+				*value = target;
+				real *rate = &object->fade_rate;
+				*(volatile real *)rate = 0.0f;
 			}
 			else
 			{
-				object->fade_rate = (target - object->fade_value) / object->fade_ticks;
-				object->fading = true;
+				real *rate = &object->fade_rate;
+				*rate = (target - object->fade_value) / object->fade_ticks;
 			}
+			object->fading = true;
 		}
 	}
 }
