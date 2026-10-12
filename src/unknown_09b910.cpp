@@ -1286,7 +1286,9 @@ bool c_projectile_attached_event::v11(long a, long const *entities, long c, void
             if (*(short const *)(event + 0x14) == NONE && *(long const *)(event + 0x10) == NONE) forward = 0;
             if ((event[0] && *(short const *)(event + 2) != NONE) || (!event[0] && *(word const *)(event + 2) == 0xffff))
             {
-                function_fd560(projectile, target, *(word const *)(event + 2), (point3f const *)(event + 4), forward);
+                struct { volatile word node; } payload;
+                payload.node = *(word const *)(event + 2);
+                function_fd560(projectile, target, payload.node, (point3f const *)(event + 4), forward);
                 result = true;
             }
         }

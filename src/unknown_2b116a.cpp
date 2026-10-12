@@ -840,9 +840,9 @@ void c_campaign_options_list::v3()
 			long level = header.level;
 			g_54e7c0 = 1;
 			g_54e7c4 = level;
+			parameters.field_c = 0;
 			function_148d42(difficulty);
 			g_54e7cc = true;
-			parameters.field_c = 0;
 			function_149f49((s_message *)&parameters, 0, 0, user_flags, 5, 4, (long)function_2b1467);
 			screen = (c_campaign_options_screen *)parameters.load(&parameters);
 			screen->value610 = 0;
@@ -3125,29 +3125,21 @@ void c_playlist_saved_game_file_list::v1()
 // @retail 0x2b1eef
 void playlist_list_focus_playlist(c_playlist_saved_game_file_list *list)
 {
-	if (!list->value2e24a)
-	{
-		long index = g_510990;
-
-		if (index != NONE)
-		{
-			s_list_item_iterator iterator;
-
-			iterator.iterator.index = NONE;
-			iterator.iterator.datum_index = NONE;
-			iterator.iterator.data = list->data;
-			while (function_2b2327(&iterator))
-			{
-				s_playlist_item *item = (s_playlist_item *)iterator.item;
-
-				if (!(bool)(((dword)((s_playlist_item_view *)item)->flags >> 1) & 1) && list->value2e248 && TEST_FIELD_BIT(item->variant) && item->index == index)
-				{
-					list->select_datum(iterator.iterator.datum_index);
-					break;
-				}
-			}
-		}
-	}
+    if (list->value2e24a || g_510990 == NONE) return;
+    long index = g_510990;
+    s_list_item_iterator iterator;
+    iterator.iterator.index = NONE;
+    iterator.iterator.datum_index = NONE;
+    iterator.iterator.data = list->data;
+    while (function_2b2327(&iterator))
+    {
+        s_playlist_item *item = (s_playlist_item *)iterator.item;
+        if (!(bool)(((dword)((s_playlist_item_view *)item)->flags >> 1) & 1) && list->value2e248 && TEST_FIELD_BIT(item->variant) && item->index == index)
+        {
+            list->select_datum(iterator.iterator.datum_index);
+            break;
+        }
+    }
 }
 // @retail 0x2b221d
 long *c_playlist_saved_game_file_list::find_playlist(byte type, long index)

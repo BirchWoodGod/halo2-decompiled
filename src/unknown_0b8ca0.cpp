@@ -483,10 +483,10 @@ void __stdcall function_b9a50(long object_index)
     s_object_view *object = OBJECT_GET(object_index);
     if (object->parent_index != NONE)
     {
-        if ((1 << object->type) & 3)
-            function_cc590(object_index);
-        else
+        if (!((1 << object->type) & 3))
             function_b9a90(object_index);
+        else
+            function_cc590(object_index);
     }
 }
 
@@ -582,7 +582,7 @@ void function_b9a90(long object_index)
     s_object_view *parent = ((s_object_header_view *)objects->data)[object->parent_index & 0xffff].object;
     byte connected = function_b9d20(object->parent_index) ? 1 : 0;
     s_object_view *node_parent = ((s_object_header_view *)objects->data)[object->parent_index & 0xffff].object;
-    transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + node_parent->node_matrices_offset) + *(char *)((byte *)object + 0x18);
+    transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + *(short const volatile *)&node_parent->node_matrices_offset) + *(char *)((byte *)object + 0x18);
     if (connected)
         function_bef30(object_index, 1, 0, 0, false);
     function_b9890(object_index);
