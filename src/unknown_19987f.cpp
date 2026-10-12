@@ -1105,40 +1105,38 @@ bool __stdcall function_594a0(long a, long b, long c);
 // @retail 0x199d7c
 long function_199d7c(void)
 {
-	long result;
-
 	switch (network_session_manager_get_match_mode())
 	{
 	case 1:
 		return 1;
 	case 2:
 		return 8;
+	case 4:
+		return 2;
 	case 3:
-		switch (function_59570())
-		{
-		case 0:
-			return 0;
-		case 1:
-			result = 3;
-			break;
-		case 2:
-			result = 4;
-			break;
-		case 3:
-			result = 5;
-			break;
-		case 4:
-			result = 6;
-			break;
-		case 5:
-			result = 7;
-			break;
-		default:
-			return 0;
-		}
+		break;
+	default:
+		return 0;
+	}
+	long result;
+	switch (function_59570())
+	{
+	case 0:
+		return 0;
+	case 1:
+		result = 3;
+		break;
+	case 2:
+		result = 4;
+		break;
+	case 3:
+		result = 5;
 		break;
 	case 4:
-		result = 2;
+		result = 6;
+		break;
+	case 5:
+		result = 7;
 		break;
 	default:
 		return 0;
