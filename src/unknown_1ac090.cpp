@@ -552,13 +552,11 @@ bool function_1acd30(long actor_index, s_prop_datum_54 *prop)
 // @retail 0x1ad400
 void __stdcall function_1ad400(long actor_index, s_slot *slot)
 {
-	s_game_time_globals *local_1 = g_510c54;
-	long local_2 = *(volatile long *)&local_1->game_time;
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_2c *state = (s_slot_2c *)slot;
-	long unit_index = actor->unknown018;
 
-	ACTOR_VIEW_3C(actor)->unknown20c = local_2;
+	ACTOR_VIEW_3C(actor)->unknown20c = g_510c54->game_time;
+	long unit_index = actor->unknown018;
 	short mode = UNIT_MODE(unit_index);
 	if (!state->unknown39)
 	{

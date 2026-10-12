@@ -693,7 +693,7 @@ void function_1a7430(long owner_index, s_action_request *request, short *out_id,
 		if (timer == -2 && context->time == time->game_time)
 		{
 		}
-		else if (timer >= 0 && timer < 14)
+		else if (request->timer >= 0 && request->timer < 14)
 		{
 			long last = owner->times[timer];
 

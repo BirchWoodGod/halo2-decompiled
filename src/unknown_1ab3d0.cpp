@@ -107,9 +107,8 @@ short __stdcall function_1ab3d0(long actor_index)
 		if (prop->unknown24 >= 1 && prop->unknown24 <= 2)
 		{
 			s_prop_state_53 *state = (s_prop_state_53 *)function_25d690((s_prop_datum *)prop);
-			long object_index = state->object_index;
-			if (object_index == NONE ||
-				object_definition_244(actor->unknown26c)->unknown244 >= object_definition_244(object_index)->unknown244)
+			if (state->object_index == NONE ||
+				object_definition_244(actor->unknown26c)->unknown244 >= object_definition_244(state->object_index)->unknown244)
 			{
 				result = 3;
 			}
