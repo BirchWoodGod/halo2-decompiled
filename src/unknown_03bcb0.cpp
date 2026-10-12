@@ -1529,8 +1529,8 @@ bool __stdcall function_3c3c0(bool render, bool clear)
 void function_40e30(short group, long tag, real distance, long level, word kind,
     dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context)
 {
-    if (group != NONE && function_1bf50(tag, level, distance, &level))
-        function_3b9d0(&g_4c1a48[group], tag, level, and_mask, or_mask, fill, value, context, 0);
+    if (group != NONE && function_1bf50(tag, level, distance, (long *)&distance))
+        function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
 }
 
 s_material_constants_storage g_material_constants_storage;
