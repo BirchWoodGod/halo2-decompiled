@@ -4062,7 +4062,7 @@ void function_f7ed0(long vehicle_index, vector3f *impulse)
 }
 
 void __stdcall function_a9120(long vehicle_index, long flip);
-matrix3x3 *function_142eb0(matrix3x3 const *a, matrix3x3 const *b, matrix3x3 *out);
+matrix3x3 *function_142eb0(matrix3x3 const *right, matrix3x3 const *left, matrix3x3 *out);
 extern real g_5476c8;
 
 /* transposes a rotation in place */
@@ -4396,7 +4396,7 @@ void __stdcall function_f4800(long vehicle_index, s_vehicle_physics_state *state
 	real length;
 	real angle;
 
-	function_141f60(function_142eb0(&current, &desired, &difference), &rotation);
+	function_141f60(function_142eb0(&desired, &current, &difference), &rotation);
 	length = (real)sqrt(rotation.k * rotation.k + rotation.j * rotation.j + rotation.i * rotation.i);
 	if (0.0001f > (real)fabs(length))
 	{
@@ -4432,9 +4432,9 @@ void __stdcall function_f4800(long vehicle_index, s_vehicle_physics_state *state
 	local_461a4b.i = inverse_dt * (axis.i * rate - vehicle->angular_velocity.i);
 	local_461a4b.j = (axis.j * rate - vehicle->angular_velocity.j) * inverse_dt;
 	local_461a4b.k = (axis.k * rate - vehicle->angular_velocity.k) * inverse_dt;
-	function_142eb0((matrix3x3 const *)&state->unknown3c, &rotation_matrix, &inertia);
+	function_142eb0(&rotation_matrix, (matrix3x3 const *)&state->unknown3c, &inertia);
 	vehicle_transpose(&rotation_matrix);
-	function_142eb0(&rotation_matrix, &inertia, &inertia);
+	function_142eb0(&inertia, &rotation_matrix, &inertia);
 
 	real torque_scale = *(real *)(definition + 0x270) * vehicle->unknown25c;
 
