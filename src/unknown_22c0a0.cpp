@@ -16,8 +16,9 @@ struct s_fixed_memory_entry
 void *c_havok_fixed_memory::function_22c330(long alignment, long limit,
 	long offset, long size, s_fixed_memory_entry *entry)
 {
+	bool fits = limit >= offset;
 	void *result = NULL;
-	if (limit >= offset)
+	if (fits)
 	{
 		switch (alignment)
 		{
@@ -57,14 +58,13 @@ void c_havok_fixed_memory::deallocate_aligned(void *address)
 {
 	for (long i = 0; i < m_count; i++)
 	{
-		s_fixed_memory_entry *entries = (s_fixed_memory_entry *)((byte *)m_buffer + m_size);
-
-		if ((byte *)m_buffer + entries[-1 - i].offset == address)
+		if ((byte *)m_buffer + ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - i].offset == address)
 		{
 			for (; i < m_count - 1; i++)
 			{
-				entries = (s_fixed_memory_entry *)((byte *)m_buffer + m_size);
-				entries[-1 - i] = entries[-2 - i];
+				s_fixed_memory_entry *entries = (s_fixed_memory_entry *)((byte *)m_buffer + m_size);
+				entries[-1 - i].offset = entries[-2 - i].offset;
+				entries[-1 - i].size = entries[-2 - i].size;
 			}
 			m_count--;
 			return;
@@ -148,10 +148,8 @@ void fixed_memory_get_statistics_16(c_havok_fixed_memory *memory, s_fixed_memory
 	}
 	else
 	{
-		statistics->header_size = 0;
-		statistics->allocated_size = 0;
-		statistics->allocation_count = 0;
-		statistics->unknown0c = 0;
+		s_fixed_memory_statistics_16 empty = {0};
+		*statistics = empty;
 	}
 }
 
