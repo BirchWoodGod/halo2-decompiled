@@ -519,15 +519,10 @@ bool function_99640(c_handle_table_450cd0 *self, long handle);
 // @retail 0xa0e50
 bool c_projectile_type::v8(long a, long b)
 {
- bool result = true;
  long identifier = *(long *)(*(long *)(a + 0x14) + 0x14);
- if (identifier != NONE)
- {
-  byte *table = *(byte **)(*(long *)(*(long *)b + 4) + 8);
-  if (!function_99640((c_handle_table_450cd0 *)(table + 0x30), identifier))
-   return false;
- }
- return result;
+ if (identifier == NONE) return true;
+ byte *table = *(byte **)(*(long *)(*(long *)b + 4) + 8);
+ return function_99640((c_handle_table_450cd0 *)(table + 0x30), identifier) != false;
 }
 
 // @retail 0xa3df0
@@ -736,7 +731,8 @@ bool function_100f00(long weapon_index);
 // @retail 0xa1f70
 long c_weapon_type::v27(long a, long b, long c, long d)
 {
- byte *object = (byte *)OBJECT(a);
+ long object_offset = (a & 0xffff) * 12;
+ byte *object = *(byte **)(object_offset + g_4e0300->data + 8);
  volatile long result = ((c_item_type *)this)->c_item_type::v27(a, b & 0x7ff, 0x94, d);
  dword requested = b;
  s_object_view *updated_object = OBJECT(a);
@@ -746,7 +742,7 @@ long c_weapon_type::v27(long a, long b, long c, long d)
  {
   if (requested & 0x800)
   {
-   dword source_flags = *(word *)(object + 0x16c);
+   word source_flags = *(word *)(object + 0x16c);
    byte flags = (byte)((source_flags >> 8) & 1);
    if (source_flags & 0x200) flags |= 2; else flags &= ~2;
    if (source_flags & 0x400) flags |= 4; else flags &= ~4;
@@ -788,9 +784,17 @@ long c_weapon_type::v27(long a, long b, long c, long d)
 }
 
 
+// Retail calls this decoder out of line and still passes its two unused inputs.
+__declspec(noinline) bool function_a0640(c_object_type_definition *definition, long a, long *flags, long state, s_bitstream *stream);
+
 // @retail 0xa0640
 bool function_a0640(c_object_type_definition *definition, long a, long *flags, long state, s_bitstream *stream)
 {
+ // Keep the two unused parameters in their retail stack slots.
+ c_object_type_definition *const *definition_reference = &definition;
+ long const *a_reference = &a;
+ (void)*definition_reference;
+ (void)*a_reference;
  bool result = function_a6d50((long)flags, state, stream);
  if (function_1957d0(stream))
  {
