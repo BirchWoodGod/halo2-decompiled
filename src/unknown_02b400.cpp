@@ -191,7 +191,7 @@ void function_2fb70(s_2f800_view const *view, box2f const *clip, s_projection_sc
     output.half_width = half_width;
     output.offset_x = offset_x;
     output.offset_y = offset_y;
-    real volatile tangent = (real)tan((double)view->angle * 0.5f);
+    real volatile tangent = (real)tan((double)(view->angle * 0.5f));
     real aspect = output.width / output.height;
     if (!(g_4e6948 && g_4e6948->flag && g_4e6948->index != NONE && g_4e6948->state == 3) && g_485ac2)
     {

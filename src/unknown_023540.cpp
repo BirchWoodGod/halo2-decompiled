@@ -1834,8 +1834,8 @@ void function_2afa0(point2f const *scale)
     real bounds[4];
     g_509408 = *scale;
     bounds[0] = 0.0f;
-    bounds[1] = 64.0f;
     bounds[2] = 0.0f;
+    bounds[1] = 64.0f;
     bounds[3] = 64.0f;
     function_34420((t_34770_begin)function_2b000, bounds, function_2b220, NULL, 0);
 }
