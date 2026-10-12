@@ -151,6 +151,8 @@ public:
 	virtual void v26(long a, dword *flags, long size, char *buffer);
 };
 
+c_game_engine_statborg_entity_definition g_4797cc;
+
 /* the globals of each game engine: the fields they all have, then their own */
 struct s_ctf_globals_update
 {

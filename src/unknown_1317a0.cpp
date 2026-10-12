@@ -124,8 +124,8 @@ color3f *function_131a00(const hsv3f *hsv, color3f *rgb)
 			sector--;
 		}
 		f = h - (real)sector;
-		real q = (1.0f - hsv->saturation * f) * hsv->value;
 		real p = (1.0f - hsv->saturation) * hsv->value;
+		real q = (1.0f - hsv->saturation * f) * hsv->value;
 		real t = (1.0f - (1.0f - f) * hsv->saturation) * hsv->value;
 
 		switch (sector)

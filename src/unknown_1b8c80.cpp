@@ -307,6 +307,16 @@ long function_1b9190(long object_index, long *rider_index)
 	return result;
 }
 
+PRIVATE __forceinline void function_1b9201(long arg_0, vector3f *arg_1)
+{
+	s_slot_object_view *local_0 = object_get(arg_0);
+
+	if (local_0->parent_index == NONE)
+		*arg_1 = local_0->forward;
+	else
+		matrix_transform_vector(object_node_matrix(object_get(local_0->parent_index), local_0->parent_node), &local_0->forward, arg_1);
+}
+
 // @retail 0x1b9200
 bool function_1b9200(long object_index, long prop_index)
 {
@@ -333,7 +343,7 @@ bool function_1b9200(long object_index, long prop_index)
 				vector3f forward;
 
 				function_b9dd0(object_index, &position);
-				object_get_forward(object_index, &forward);
+				function_1b9201(object_index, &forward);
 				forward.k = 0.0f;
 				if (function_30bf0(&forward) > 0.0f)
 				{

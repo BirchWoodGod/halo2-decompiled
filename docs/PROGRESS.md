@@ -2,6 +2,48 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7870 functions match
+
+```
+matched 7870 of 11318 game functions (950496 of 2784283 bytes, 34.14%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 30 (+2): `0x214f0` calls `0x211a0` directly instead of through a volatile function pointer, and `0x211a0` copies its final pass to its output parameter; with the indirect call gone, two of its callers match (`0x222a0`, `0x235756`).
+
+## 2026-10-12: 7868 functions match
+
+```
+matched 7868 of 11318 game functions (950393 of 2784283 bytes, 34.13%)
+```
+
+7 new matches, none lost:
+- Second machine, lane AA round 9 (+2): `0x1144a0`, `0x114ec0`.
+- Second machine, lane O round 25 (+2): `0x240ee0`, `0x249f0d`.
+- Second machine, lane M round 22 (+3): `0x1a9bc0`, `0x1ab770`, `0x1a2084`; it also removed forbidden `volatile` from seven bodies.
+
+## 2026-10-12: 7861 functions match
+
+```
+matched 7861 of 11318 game functions (949167 of 2784283 bytes, 34.09%)
+```
+
+14 new matches, none lost:
+- Claude lane 1, round 2 (+14): the inlined next-local-player scan takes its start index in a second variable, so the compiler no longer jumps past its guard (`0x1e7800`, `0x1e78b0`, `0x1e7960`, `0x2a0840`).
+- Five UI-screen and list destructors are declared `virtual` explicitly, which keeps `this` in `ecx` (`0x2b53a7`, `0x2b549d`, `0x2b6301`, `0x2b7c86`, `0x2b81a4`, and the deleting destructors `0x2b53ea`, `0x2b61b2`, `0x2b7c6a`).
+- `0x69110` calls `0xab9f0` directly instead of through a local function pointer, so whole-program optimization keeps retail's register convention for it (`0xab960`, `0xab9f0`).
+
+## 2026-10-12: 7847 functions match
+
+```
+matched 7847 of 11318 game functions (947790 of 2784283 bytes, 34.04%)
+```
+
+75 new matches, none lost:
+- The second machine's lanes (#345–#348, #350, #352–#363, #365, #367, #368): lane P +18 (0x134d20, its callers and the interpolator getters), lane D +16, lane B +11, lane M +11, lane O +5, lane J +4, lane K +2, lane AA +2, lanes U and Y +1 each, and the permuter lane +4.
+- @coldspear's maps of 0x1d3920 (#344), 0x25d020 (#364) and 0x119280 (#366), and the one-bit tests note in docs/DECOMPILING.md (#351).
+- @Banshee64's comments on the parameter-address references from #183 and #255 (#349).
+
 ## 2026-10-12: 7772 functions match
 
 ```

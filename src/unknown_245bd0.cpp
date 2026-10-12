@@ -444,23 +444,17 @@ bool function_246360(
 	return true;
 }
 
-// @retail 0x2466b0
-bool function_2466b0(
-	real *t,
-	plane3f *out,
-	point3f const *start,
-	vector3f const *direction,
-	s_prism const *prism)
+PRIVATE __forceinline bool function_2466b1(s_prism const *arg_4, vector3f const *arg_3, point3f const *arg_2, plane3f *arg_1, real *const &arg_0)
 {
-	real a = shape_dot_reverse(&prism->plane.n, direction);
-	real b = plane_distance_to_point(&prism->plane, start);
+	real a = shape_dot_reverse(&arg_4->plane.n, arg_3);
+	real b = plane_distance_to_point(&arg_4->plane, arg_2);
 	real t0 = 0.f;
 	real t1 = 1.f;
 	if (!(fabs(a) < k_real_epsilon))
 	{
 		real inv = 1.f / a;
 		real s0 = 0.f - inv * b;
-		real s1 = 0.f - (b - prism->thickness) * inv;
+		real s1 = 0.f - (b - arg_4->thickness) * inv;
 		if (a > 0.f)
 		{
 			if (s0 > 0.f)
@@ -488,43 +482,41 @@ bool function_2466b0(
 			return false;
 		}
 	}
-	else if (0.f > b || b >= prism->thickness)
+	else if (0.f > b || b >= arg_4->thickness)
 	{
 		return false;
 	}
 	real nb = 0.f - b;
 	real q0[3];
-	q0[0] = prism->plane.i * nb + start->x;
-	q0[1] = prism->plane.j * nb + start->y;
-	q0[2] = prism->plane.k * nb + start->z;
+	q0[0] = arg_4->plane.i * nb + arg_2->x;
+	q0[1] = arg_4->plane.j * nb + arg_2->y;
+	q0[2] = arg_4->plane.k * nb + arg_2->z;
 	real na = 0.f - a;
 	real q1[3];
-	q1[0] = na * prism->plane.i + direction->i;
-	q1[1] = prism->plane.j * na + direction->j;
-	q1[2] = prism->plane.k * na + direction->k;
+	q1[0] = na * arg_4->plane.i + arg_3->i;
+	q1[1] = arg_4->plane.j * na + arg_3->j;
+	q1[2] = arg_4->plane.k * na + arg_3->k;
 	point2f s2;
-	prism_project(q0, prism->axis, prism->side, &s2);
+	prism_project(q0, arg_4->axis, arg_4->side, &s2);
 	point2f d2;
-	prism_project(q1, prism->axis, prism->side, &d2);
-	long count = prism->point_count;
-	long i = 0;
+	prism_project(q1, arg_4->axis, arg_4->side, &d2);
+	long count = arg_4->point_count;
+	long i = 1;
+	point2f const *local_0 = arg_4->points;
 	if (count > 0)
 	{
 		do
 		{
-			long next = i + 1;
-			if (next >= count)
-			{
-				next = 0;
-			}
-			point2f const *cur = &prism->points[i];
-			point2f const *nxt = &prism->points[next];
+			long next = i >= count ? 0 : i;
+			point2f const *cur = local_0;
 			point2f offset;
-			shape_difference2d(&s2, cur, &offset);
+			offset.y = s2.y - cur->y;
+			offset.x = s2.x - cur->x;
 			point2f edge;
-			shape_difference2d(nxt, cur, &edge);
-			real denom = shape_cross2d(&d2, &edge);
-			real num = shape_cross2d(&edge, &offset);
+			edge.y = arg_4->points[next].y - cur->y;
+			edge.x = arg_4->points[next].x - cur->x;
+			real denom = edge.y * d2.x - d2.y * edge.x;
+			real num = offset.y * edge.x - edge.y * offset.x;
 			if (!(fabs(denom) < k_real_epsilon))
 			{
 				real r = num / denom;
@@ -552,12 +544,24 @@ bool function_2466b0(
 				return false;
 			}
 			i++;
-		} while (i < count);
+			local_0++;
+		} while (i - 1 < count);
 	}
-	*t = t0;
-	out->n = prism->plane.n;
-	out->d = prism->plane.d + prism->thickness;
+	*arg_0 = t0;
+	arg_1->n = arg_4->plane.n;
+	arg_1->d = arg_4->plane.d + arg_4->thickness;
 	return true;
+}
+
+// @retail 0x2466b0
+bool function_2466b0(
+	real *t,
+	plane3f *out,
+	point3f const *start,
+	vector3f const *direction,
+	s_prism const *prism)
+{
+	return function_2466b1(prism, direction, start, out, t);
 }
 
 struct s_ray_shape_result
@@ -694,6 +698,30 @@ struct s_frame_2477b0
 	point3f position;
 };
 
+PRIVATE __forceinline vector3f *function_2477b1(
+	vector3f const *arg_0, matrix3x3 const *arg_1, vector3f *arg_2)
+{
+	vector3f local_0;
+	if (arg_0 == arg_2)
+	{
+		local_0 = *arg_0;
+		arg_0 = &local_0;
+	}
+	real local_1 = arg_1->left.i * arg_0->j;
+	local_1 += arg_1->up.i * arg_0->k;
+	local_1 += arg_1->forward.i * arg_0->i;
+	arg_2->i = local_1;
+	real local_2 = arg_1->forward.j * arg_0->i;
+	local_2 += arg_1->left.j * arg_0->j;
+	local_2 += arg_1->up.j * arg_0->k;
+	arg_2->j = local_2;
+	real local_3 = arg_1->forward.k * arg_0->i;
+	local_3 += arg_1->left.k * arg_0->j;
+	local_3 += arg_1->up.k * arg_0->k;
+	arg_2->k = local_3;
+	return arg_2;
+}
+
 // @retail 0x2477b0
 void function_2477b0(
 	s_object_2470e0 *object,
@@ -707,7 +735,7 @@ void function_2477b0(
 		frame->rotation.up = source->up;
 		frame->position = source->position;
 		vector3f offset;
-		function_143070(&object->vector9c, &frame->rotation, &offset);
+		function_2477b1(&object->vector9c, &frame->rotation, &offset);
 		if (!(fabs(object->unknownac) < k_real_epsilon) || !(fabs(object->unknowna8) < k_real_epsilon))
 		{
 			matrix3x3 rotation;

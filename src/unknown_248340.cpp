@@ -31,8 +31,9 @@ void function_248340(s_particle_system_datum *system, s_object_246eb0 *particle,
 	if (definition->v3() != NONE)
 	{
 		long definition_index = system->function_1751d0()->tag_index;
-		long tag_index = definition->v3();
-		function_246e60(tag_index, definition->v2(), 0, particle, definition_index);
+		long volatile tag_index = definition->v3();
+		dword local_0 = definition->v2();
+		function_246e60(tag_index, local_0, 0, particle, definition_index);
 	}
 	*(long *)((byte *)particle + 4) = NONE;
 	--emitter->field_02;

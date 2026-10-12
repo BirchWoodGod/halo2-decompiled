@@ -236,6 +236,32 @@ static inline dword network_time_now(void)
 	return GetTickCount();
 }
 
+static __forceinline void function_94bf3(s_allocator_globals *arg_0, void *arg_1)
+{
+	c_allocator *local_0 = arg_0->allocator;
+	local_0->release(arg_1, NONE);
+	if (arg_1)
+		arg_0->count--;
+}
+
+static __forceinline void function_94bf4(s_allocator_globals *arg_0, void *arg_1, s_allocator_globals **arg_2)
+{
+	c_allocator *local_0 = arg_0->allocator;
+	*arg_2 = arg_0;
+	local_0->release(arg_1, NONE);
+	if (arg_1)
+		(*(s_allocator_globals *volatile *)arg_2)->count--;
+}
+
+static __forceinline void function_94bf7(s_sequence_window *arg_0)
+{
+	arg_0->newest = 0;
+	arg_0->oldest = 0;
+	arg_0->head = 0;
+	arg_0->count = 0;
+	arg_0->valid = true;
+}
+
 // @retail 0x94bf0
 void function_094bf0(s_network_stream_header *header)
 {
@@ -257,12 +283,7 @@ void function_094bf0(s_network_stream_header *header)
 				void *local_2 = message->data;
 				if (!g_4d87f8->allocator->get_info(local_2, &local_0))
 					local_0 = NONE;
-				s_allocator_globals *local_3 = g_4d87f8;
-				c_allocator *local_4 = local_3->allocator;
-				local_1 = local_3;
-				local_4->release(local_2, NONE);
-				if (local_2)
-					(*(s_allocator_globals *volatile *)&local_1)->count--;
+				function_94bf4(g_4d87f8, local_2, &local_1);
 				message->data = 0;
 			}
 		}
@@ -281,26 +302,15 @@ void function_094bf0(s_network_stream_header *header)
 					void *local_2 = fragment->data;
 					if (!g_4d87f8->allocator->get_info(local_2, (long *)&local_1))
 						local_1 = (s_allocator_globals *)NONE;
-					s_allocator_globals *local_3 = g_4d87f8;
-					local_3->allocator->release(local_2, NONE);
-					if (local_2)
-						local_3->count--;
+					function_94bf3(g_4d87f8, local_2);
 					fragment->data = 0;
 				}
 			}
 		}
 	}
 	stream->m_unknown05 = false;
-	stream->m_message_window.newest = 0;
-	stream->m_message_window.oldest = 0;
-	stream->m_message_window.head = 0;
-	stream->m_message_window.count = 0;
-	stream->m_message_window.valid = true;
-	stream->m_fragment_window.newest = 0;
-	stream->m_fragment_window.oldest = 0;
-	stream->m_fragment_window.head = 0;
-	stream->m_fragment_window.count = 0;
-	stream->m_fragment_window.valid = true;
+	function_94bf7(&stream->m_message_window);
+	function_94bf7(&stream->m_fragment_window);
 	stream->m_message_bytes = 0;
 	stream->m_fragment_bytes = 0;
 }
@@ -897,7 +907,8 @@ bool c_network_reliable_stream::get_next_send(long *type, long *sequence, long *
 		}
 		else
 		{
-			long elapsed = network_time_now() - message->time;
+			long local_1 = message->time;
+			long elapsed = network_time_now() - local_1;
 			if (elapsed >= m_timeout + m_backoff || m_last_sequence - next >= g_network_configuration.value16b0)
 			{
 				message->unknown08 = elapsed;

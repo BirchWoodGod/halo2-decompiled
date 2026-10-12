@@ -11,20 +11,22 @@ real function_30bf0(vector3f *v);
 bool function_11eed0(
 	real *velocity,
 	real *position,
-	volatile real dt,
+	real dt,
 	bool wrap,
-	real target,
+	real arg_4,
 	real a,
-	real b,
+	real arg_6,
 	real lo,
 	real hi)
 {
+	real volatile &target = arg_4;
+	real volatile &b = arg_6;
+	bool reached = false;
 	real v0 = *velocity;
 	real p0 = *position;
 	real dt2 = dt * dt;
 	real orig = target;
-	bool reached = false;
-	real d = target - p0;
+	real d = orig - p0;
 	real limit;
 	real accel;
 	real newv;
@@ -42,9 +44,10 @@ bool function_11eed0(
 		target = d;
 	}
 
+	real local_0 = a * a * b;
 	limit = a * dt;
-	if (!(a * a * b > limit))
-		limit = a * a * b;
+	if (!(local_0 > limit))
+		limit = local_0;
 
 	if (limit >= (real)fabs(target - v0 * a))
 	{
@@ -94,6 +97,11 @@ bool function_11eed0(
 	return reached;
 }
 
+PRIVATE __forceinline double function_11f0d1(real arg_0)
+{
+	return acos(arg_0 < -1.0f ? -1.0f : arg_0 > 1.0f ? 1.0f : arg_0);
+}
+
 // @retail 0x11f0d0
 void function_11f0d0(
 	vector3f *position,
@@ -106,7 +114,7 @@ void function_11f0d0(
 	vector3f axis;
 	vector3f diff;
 	real d;
-	real angle;
+	double angle;
 	real step;
 	real dist2;
 	real theta;
@@ -118,13 +126,12 @@ void function_11f0d0(
 		return;
 	}
 
-	d = target->k * forward->k + target->j * forward->j + forward->i * target->i;
-	d = d < -1.f ? -1.f : d;
-	d = d > 1.f ? 1.f : d;
-	angle = (real)acos(d);
+	d = forward->i * target->i + (target->j * forward->j + target->k * forward->k);
+	d = d < -1.f ? -1.f : d > 1.f ? 1.f : d;
+	angle = function_11f0d1(d);
 	angle = angle * scale;
 	angle = angle + angle;
-	max_angle = angle >= max_angle * max_angle ? max_angle : (real)sqrt(angle);
+	max_angle = angle >= max_angle * max_angle ? *(real const volatile *)&max_angle : (real)sqrt(angle);
 
 	axis.i = target->k * forward->j - forward->k * target->j;
 	axis.j = target->i * forward->k - target->k * forward->i;
@@ -137,8 +144,8 @@ void function_11f0d0(
 	axis.i = axis.i * max_angle;
 	diff.k = axis.k - position->k;
 	diff.i = axis.i - position->i;
-	step = rate * scale;
 	dist2 = diff.k * diff.k + diff.j * diff.j + diff.i * diff.i;
+	step = rate * scale;
 
 	if (step * step * 5.f > dist2)
 	{
@@ -152,7 +159,7 @@ void function_11f0d0(
 	}
 	else
 	{
-		real s = step / (real)sqrt(dist2);
+		double s = step / sqrt(dist2);
 		position->i = diff.i * s + position->i;
 		position->j = diff.j * s + position->j;
 		position->k = diff.k * s + position->k;
@@ -164,16 +171,13 @@ void function_11f0d0(
 	{
 		real s = (real)sin(theta);
 		real c = (real)cos(theta);
-		real dot = (forward->k * axis.k + forward->j * axis.j + forward->i * axis.i) * (1.f - c);
+		real dot = (forward->i * axis.i + (forward->j * axis.j + forward->k * axis.k)) * (1.f - c);
 		real cx = forward->k * axis.i - forward->i * axis.k;
 		real cy = forward->i * axis.j - forward->j * axis.i;
 		real cz = forward->j * axis.k - forward->k * axis.j;
-		real nx = forward->i * c + axis.i * dot - cz * s;
-		real ny = forward->j * c + axis.j * dot - cx * s;
-		real nz = forward->k * c + axis.k * dot - cy * s;
-		forward->i = nx;
-		forward->j = ny;
-		forward->k = nz;
+		forward->i = forward->i * c + axis.i * dot - cz * s;
+		forward->j = forward->j * c + axis.j * dot - cx * s;
+		forward->k = forward->k * c + axis.k * dot - cy * s;
 		function_30bf0(forward);
 	}
 }

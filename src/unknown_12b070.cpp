@@ -95,15 +95,23 @@ bool function_12b3c0(void)
 
 	if (!g_485aca)
 	{
-		return false;
+		result = false;
 	}
-	if (!g_4e6948 || !g_4e6948->flag1120)
+	else
 	{
-		return false;
-	}
-	if (g_4e6388)
-	{
-		result = *(bool *)&g_4e6389;
+		if (!g_4e6948)
+		{
+			return false;
+		}
+		short local_0 = g_4e6948->flag1120;
+		if (!local_0)
+		{
+			return false;
+		}
+		if (g_4e6388)
+		{
+			result = *(bool *)&g_4e6389;
+		}
 	}
 	return result;
 }
