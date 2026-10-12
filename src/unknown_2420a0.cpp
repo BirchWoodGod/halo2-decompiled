@@ -1968,14 +1968,14 @@ PRIVATE __forceinline long function_240741(long arg_0, s_mp_globals const *arg_1
 void function_240740(long object_index)
 {
 	long slot = slot_object_get(object_index)->slot;
-	long volatile best_player_index = NONE;
+	long best_player_index = NONE;
 	long best_score = 0x80000000;
 	s_player_iterator iterator;
 
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (function_19f240((long *)&iterator) != 0)
 	{
 		if (slot == 8 || iterator.player->team == slot)
 		{

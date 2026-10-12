@@ -71,10 +71,11 @@ void function_b4020(void)
 void function_b4050(void)
 {
 	long iteration = g_547620 + 1;
-	g_547620 = iteration;
 	long count = 0;
 	if (g_510580) count = g_5107d8;
-	if (iteration >= 3 * count)
+	g_547620 = iteration;
+	// Read the shared iteration through its const pointer at the later use.
+	if (*(long const *)&g_547620 >= 3 * count)
 	{
 		online_result_registration_clear();
 		long task_index = g_510584;
@@ -416,9 +417,9 @@ long function_b42b0(long kind, long controller, struct _XUID owner, wchar_t cons
             if (status >= 0)
             {
                 *task_out = task_index;
+                task->controller_index = controller;
                 task->flags = 1;
                 task->type = 0x29;
-                task->controller_index = controller;
                 return 0;
             }
             switch (status)

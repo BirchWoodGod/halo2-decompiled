@@ -890,8 +890,21 @@ long function_1008f0(long magazine_index, long weapon_index, bool weapon_only)
 {
 	long rounds = 0;
 	s_weapon *weapon = WEAPON_GET(weapon_index);
+	long magazine_offset = magazine_index * sizeof(s_weapon_magazine);
 	bool infinite = function_106030(weapon_index);
-	weapon_magazine_rounds_unloaded(weapon, magazine_index, infinite, rounds);
+	{
+		if (infinite)
+		{
+			s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
+			if (definition->magazine_count > magazine_index)
+				rounds += definition->magazines[magazine_index].rounds_total_maximum;
+		}
+		else
+		{
+			s_weapon_magazine const *magazine = (s_weapon_magazine const *)((byte const *)weapon->magazines + magazine_offset);
+			rounds += magazine->rounds_unloaded;
+		}
+	}
 
 	if (weapon->unit_index != NONE && !weapon_only)
 	{
@@ -905,7 +918,19 @@ long function_1008f0(long magazine_index, long weapon_index, bool weapon_only)
 			{
 				s_weapon *other = WEAPON_GET(other_index);
 				if (other->definition_index == weapon->definition_index)
-					weapon_magazine_rounds_unloaded(other, magazine_index, infinite, rounds);
+				{
+					if (infinite)
+					{
+						s_weapon_definition *definition = WEAPON_DEFINITION(other);
+						if (definition->magazine_count > magazine_index)
+							rounds += definition->magazines[magazine_index].rounds_total_maximum;
+					}
+					else
+					{
+						s_weapon_magazine const *magazine = (s_weapon_magazine const *)((byte const *)other->magazines + magazine_offset);
+						rounds += magazine->rounds_unloaded;
+					}
+				}
 			}
 		}
 	}
@@ -3538,8 +3563,8 @@ point3f *function_b9dd0(long object_index, point3f *point);
 void function_141590(transform4x3f const *in, transform4x3f *out);
 point3f *transform4x3f_apply_point(transform4x3f const *matrix, point3f const *point, point3f *out);
 void object_get_root_location(long object_index, s_location *location);
-void object_get_damage_owner(long object_index, s_damage_owner *owner);
-long function_d6c80(s_type_1e6529 *data, long ignore_object_index);
+void __stdcall object_get_damage_owner(long object_index, s_damage_owner *owner);
+long __stdcall function_d6c80(s_type_1e6529 *data, long ignore_object_index);
 void function_a7d50(long index, long group, long target, short node, point3f const *point);
 extern short g_47d8e0;
 extern short g_4686c4;

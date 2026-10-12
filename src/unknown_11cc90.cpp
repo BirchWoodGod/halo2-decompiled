@@ -123,7 +123,7 @@ vector3f *function_11d090(
 	w.j = 0.f - v->i;
 	w.k = 0.f;
 	length = (real)sqrt(w.j * w.j + w.i * w.i + w.k * w.k);
-	if (!(0.0001f > fabs(length)) && length != 0.f)
+	if (!(0.0001f > fabs(length)))
 	{
 		real inv = 1.f / length;
 		w.i = inv * w.i;
@@ -131,11 +131,14 @@ vector3f *function_11d090(
 		w.k = inv * w.k;
 	}
 	else
-	{
+		length = 0.f;
+	if (length == 0.f)
 		w = *g_4687a8;
-	}
-	out->i = v->k * w.j - w.k * v->j;
-	out->j = v->i * w.k - v->k * w.i;
-	out->k = w.i * v->j - v->i * w.j;
+	real local_0 = w.i * v->j - v->i * w.j;
+	real local_1 = v->i * w.k - v->k * w.i;
+	real local_2 = v->k * w.j - w.k * v->j;
+	out->i = local_2;
+	out->j = local_1;
+	out->k = local_0;
 	return out;
 }

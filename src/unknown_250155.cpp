@@ -1056,7 +1056,7 @@ void function_251284(long controller)
 {
 	if (player_slot_count_active() == 1)
 	{
-		dialog_choice_show(3, 0x8b, 4, (word)(1 << controller), function_25132e, 0, 0);
+		dialog_choice_show(3, 0x8b, 4, (1 << controller), function_25132e, 0, 0);
 	}
 	else
 	{
@@ -1069,7 +1069,7 @@ void function_2512f8(long controller, bool choice)
 {
 	if (choice)
 	{
-		dialog_choice_show(3, 0x8b, 4, (word)(1 << controller), function_251345, 0, 0);
+		dialog_choice_show(3, 0x8b, 4, (1 << controller), function_251345, 0, 0);
 	}
 	else
 	{
@@ -1679,7 +1679,7 @@ void function_25217b(c_matchmaking_screen *screen, s_widget_event *event)
 		long dialog_id = (function_199ebc() <= function_199f6d()) + 0x8c;
 		long user_flags = event ? 1 << event->controller_index : (short)function_1901fc();
 
-		dialog_choice_show(3, dialog_id, 4, (word)user_flags, function_252150, 0, function_252166);
+		dialog_choice_show(3, dialog_id, 4, user_flags, function_252150, 0, function_252166);
 	}
 	else
 	{

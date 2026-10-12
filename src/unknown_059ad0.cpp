@@ -1235,8 +1235,9 @@ PRIVATE __forceinline bool function_5b3a1(c_class_58d20 *session)
 	bool result = true;
 	if (session->function_058d20())
 	{
-		session->update_count++;
+		long local_0 = session->update_count;
 		session->value49c4 = result;
+		session->update_count = local_0 + 1;
 	}
 	else
 	{

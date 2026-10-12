@@ -274,15 +274,12 @@ void function_b8b70(long object_index)
     s_object_partition_view_ab *object = header->object;
     if ((*((byte *)header + 2) & 0x40) && (bool)((object->flags >> 9) & 1))
     {
-        s_object_partition_record_ab record;
-        function_b88e0(object_index, &record);
-        s_cluster_partition partition =
-        {
-            (long *)g_4de2e0,
-            (s_record_pool *)g_4de2e4,
-            (s_record_pool *)g_4de2e8
-        };
-        function_1cadf0(&partition, *(long *)((byte *)object + 0x60), object_index, sizeof(record), &record);
+        struct { s_object_partition_record_ab record; s_cluster_partition partition; } state;
+        function_b88e0(object_index, &state.record);
+        state.partition.cluster_first_data_references = (long *)g_4de2e0;
+        state.partition.data_references = (s_record_pool *)g_4de2e4;
+        state.partition.cluster_references = (s_record_pool *)g_4de2e8;
+        function_1cadf0(&state.partition, *(long *)((byte *)object + 0x60), object_index, sizeof(state.record), &state.record);
     }
 }
 
@@ -741,8 +738,8 @@ void function_bfa40(long object_index, long node_mask)
     if (*(long *)(model + 4) == NONE)
         return;
     transform4x3f *matrices = (transform4x3f *)(object + *(short *)(object + 0x116));
-    rigid_transform_scaled *orientations = (rigid_transform_scaled *)(object + *(short *)(object + 0x112));
-    long count = (dword)(long)*(short *)(object + 0x110) / sizeof(rigid_transform_scaled);
+    rigid_transform_scaled *orientations = (rigid_transform_scaled *)(object + *(short volatile *)(object + 0x112));
+    volatile long count = (dword)(long)*(short *)(object + 0x110) / sizeof(rigid_transform_scaled);
     long parent_index = *(long *)(object + 0x14);
     transform4x3f *parent = 0;
     bool parent_mirrored = false;

@@ -39,9 +39,9 @@ void function_155710(long index)
 {
 	if (g_4e8c3c == 0)
 	{
-		g_4e8c44[index].word58 = 0;
-		g_4e8c44[index].value10 = 0.0f;
-		g_4e8c44[index].value14 = 0.0f;
+		(volatile word &)g_4e8c44[index].word58 = 0;
+		(volatile real &)g_4e8c44[index].value10 = 0.0f;
+		(volatile real &)g_4e8c44[index].value14 = 0.0f;
 		g_4e8c44[index].proc = function_23c110;
 		g_4e8c44[index].value10c = 1.0f;
 		g_4e8c44[index].flag108 = 0;

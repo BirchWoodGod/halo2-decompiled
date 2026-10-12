@@ -46,7 +46,7 @@ struct s_z_transform_state
  vector3f angular_velocity;
 };
 
-bool function_ab9f0(s_z_transform_state const *state);
+__declspec(noinline) bool function_ab9f0(s_z_transform_state const *state);
 void simulation_read_position(s_bitstream *stream, real *position, long bits);
 void function_195070(s_bitstream *stream, vector3f *out, real lo, real hi, long bits);
 

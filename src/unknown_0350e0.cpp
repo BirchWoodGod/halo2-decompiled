@@ -109,9 +109,9 @@ struct s_motion_state_groups
 // @retail 0x39880
 inline void function_39880(s_motion_state_groups *state)
 {
+    long i = 0;
     if (state->large_count > 0)
     {
-        long i = 0;
         long offset = 0;
         do
         {
@@ -120,9 +120,9 @@ inline void function_39880(s_motion_state_groups *state)
             offset += 0x3a8;
         } while (i < state->large_count);
     }
+    i = 0;
     if (state->count > 0)
     {
-        long i = 0;
         long offset = 0;
         do
         {

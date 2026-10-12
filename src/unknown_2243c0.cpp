@@ -55,6 +55,7 @@ void function_175610(s_particle_value_cache *, s_particle_system_datum *, s_part
 void __stdcall function_224550(s_draw_sprite_seed const *, s_draw_value_cache *,
 	point3f *, point3f *, real, color4f const *, s_draw_sprite_context *);
 
+#pragma optimize("s", on)
 // @retail 0x2243c0
 void __stdcall function_2243c0(s_interface_definition *arg_0, long arg_1, long arg_2,
 	long arg_3, long arg_4, long arg_5)
@@ -124,6 +125,7 @@ void __stdcall function_2243c0(s_interface_definition *arg_0, long arg_1, long a
 		}
 	}
 }
+#pragma optimize("", on)
 
 struct s_224db0
 {

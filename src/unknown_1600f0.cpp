@@ -541,7 +541,7 @@ bool g_55e754;
 // @retail 0x162470
 long function_162470(bool flag)
 {
-	long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
+	volatile long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
 	s_mp_globals *globals = g_4e9ae8;
 	long elapsed = g_510c54->game_time - ((s_mp_globals_time_view *)globals)->start_time;
 	long time_left;

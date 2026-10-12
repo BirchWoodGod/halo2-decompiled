@@ -1098,7 +1098,7 @@ struct s_16eb20_block;
 void function_16eb20(s_16eb20_block const *);
 void function_bc190(long, s_damage_owner *);
 void function_d6660(s_type_1e6529 *, long);
-long function_d6c80(s_type_1e6529 *, long);
+long __stdcall function_d6c80(s_type_1e6529 *, long);
 void function_bba20(long);
 long function_184000(long, long);
 void __stdcall function_b8540(long);

@@ -476,9 +476,8 @@ void function_b9a90(long object_index);
 
 void __stdcall function_b9a50(long object_index);
 
-#if 0
-// Retail 0xb9a50. Activating this dispatcher changes shared unit-call conventions.
-// Retail 0xb9a50
+__declspec(noinline) void __stdcall function_b9a50(long object_index);
+// @retail 0xb9a50
 void __stdcall function_b9a50(long object_index)
 {
     s_object_view *object = OBJECT_GET(object_index);
@@ -490,7 +489,6 @@ void __stdcall function_b9a50(long object_index)
             function_b9a90(object_index);
     }
 }
-#endif
 
 extern void (__stdcall *g_468664[8])(long object_index);
 void __stdcall function_b8540(long object_index);
@@ -1142,13 +1140,13 @@ void __stdcall function_b8600(long object_index, volatile long supplied_location
     if (*(short const *)((byte const *)location + 4) != NONE)
     {
         *(s_location *)(object + 0x28) = *location;
-        *(short *)((byte *)header + 4) = *(short const *)((byte const *)location + 4);
+        *(short *)((byte *)header + 4) = *(short *)(object + 0x2c);
         *(dword *)(object + 4) &= ~0x40000;
     }
     else *(dword *)(object + 4) |= 0x40000;
     dword cluster_bits[16];
     dword *bits = 0;
-    if (*(dword *)(object + 4) & 0x200000)
+    if ((bool)((*(dword *)(object + 4) >> 21) & 1))
     {
         long size = (*(long *)((byte *)g_4e0348 + 0x9c) + 31) >> 5;
         memset(cluster_bits, 0xff, size * sizeof(dword));
@@ -1206,8 +1204,9 @@ void __stdcall function_beca0(long object_index)
         for (long i = 0; i < *(long *)(definition + 0x94); ++i)
         {
             byte *entry = *(byte **)(definition + 0x98) + i * 0x18;
-            long tag = *(long *)(entry + 4), index = NONE;
             short kind = NONE;
+            long index = kind;
+            long tag = *(long *)(entry + 4);
             if (tag != NONE)
             {
                 switch (*(dword *)entry)

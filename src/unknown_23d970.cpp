@@ -184,7 +184,8 @@ void function_23cea0(s_view_state *state, long temporary)
 		}
 		else
 		{
-			g_51ec14.x = g_51ec14.y = g_51ec14.z = 0.f;
+			point3f const zero = {0.f, 0.f, 0.f};
+			g_51ec14 = zero;
 			g_51ec20 = g_51ec24 = 0.f;
 		}
 	}

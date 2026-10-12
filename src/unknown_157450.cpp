@@ -1384,31 +1384,32 @@ struct s_item_collection
 // @retail 0x15ac50
 long function_15ac50(long index)
 {
-	long const *index_reference = &index;
-	index = *index_reference;
 	s_scenario_netgame_equipment *equipment = &((s_scenario_netgame_equipment_view *)g_4e0350)->equipment[index];
-	real seconds = 30.0f;
-	short spawn_time = 0;
-	long result;
-
-	if (equipment->spawn_time)
-	{
-		spawn_time = equipment->spawn_time;
-	}
-	else if ((equipment->group_tag == 'itmc' || equipment->group_tag == 'vehc') && equipment->tag_index != NONE)
-	{
-		spawn_time = ((s_item_collection *)g_4e3b44[equipment->tag_index & 0xffff].bytes)->spawn_time;
-	}
+	struct { real seconds; long result; } rounding;
+	rounding.seconds = 30.0f;
+	short spawn_time = equipment->spawn_time;
+	long ticks;
 	if (spawn_time)
 	{
-		seconds = (real)spawn_time;
+		ticks = spawn_time;
 	}
+	else
+	{
+		if ((equipment->group_tag != 'itmc' && equipment->group_tag != 'vehc') || equipment->tag_index == NONE)
+			goto done;
+		short collection_time = ((s_item_collection *)g_4e3b44[equipment->tag_index & 0xffff].bytes)->spawn_time;
+		if (!collection_time)
+			goto done;
+		ticks = collection_time;
+	}
+	rounding.seconds = (real)ticks;
+done:
 	__asm
 	{
-		fld seconds
-		fistp result
+		fld rounding.seconds
+		fistp rounding.result
 	}
-	return result;
+	return rounding.result;
 }
 
 // @retail 0x15b1e0
@@ -1964,14 +1965,13 @@ void function_159460(long player_index, bool *leading, bool *tied)
 // @retail 0x15adb0
 void function_15adb0(s_netgame_entry_state *entries)
 {
-	s_type_f1af8e iterator;
-	s_engine_object *object;
+	struct { s_engine_object *object; s_type_f1af8e iterator; } local;
 
 	function_15ace0(entries);
-	function_bae80(&iterator, 0x1e, 0);
-	while ((object = (s_engine_object *)function_baeb0(&iterator)) != 0)
+	function_bae80(&local.iterator, 0x1e, 0);
+	while ((local.object = (s_engine_object *)function_baeb0(&local.iterator)) != 0)
 	{
-		long index = object->netgame_entry;
+		long index = local.object->netgame_entry;
 
 		if (index >= 0 && index < ((s_scenario_netgame_view *)g_4e0350)->count)
 		{
@@ -1980,11 +1980,11 @@ void function_15adb0(s_netgame_entry_state *entries)
 				function_15b1e0(entries[index].index, index, entries);
 			}
 			entries[index].value04 = 0;
-			entries[index].index = iterator.object_index;
+			entries[index].index = local.iterator.object_index;
 		}
 		else
 		{
-			object->netgame_entry = NONE;
+			local.object->netgame_entry = NONE;
 		}
 	}
 }
