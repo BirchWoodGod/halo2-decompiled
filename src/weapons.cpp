@@ -919,17 +919,7 @@ long function_1008f0(long magazine_index, long weapon_index, bool weapon_only)
 				s_weapon *other = WEAPON_GET(other_index);
 				if (other->definition_index == weapon->definition_index)
 				{
-					if (infinite)
-					{
-						s_weapon_definition *definition = WEAPON_DEFINITION(other);
-						if (definition->magazine_count > magazine_index)
-							rounds += definition->magazines[magazine_index].rounds_total_maximum;
-					}
-					else
-					{
-						s_weapon_magazine const *magazine = (s_weapon_magazine const *)((byte const *)other->magazines + magazine_offset);
-						rounds += magazine->rounds_unloaded;
-					}
+					weapon_magazine_rounds_unloaded(other, magazine_index, infinite, rounds);
 				}
 			}
 		}

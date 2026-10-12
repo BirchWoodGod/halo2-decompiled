@@ -81,6 +81,7 @@ real function_1e3920(long actor_index)
 			if (actor->unknown229 && (element = function_1e5450(actor_index, unit->tag_index)) != 0)
 			{
 				radius = *(real *)((byte *)element + 0x18);
+				if (radius <= 0.0f) radius = 0.3f;
 			}
 			else
 			{

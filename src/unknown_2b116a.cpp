@@ -840,9 +840,9 @@ void c_campaign_options_list::v3()
 			long level = header.level;
 			g_54e7c0 = 1;
 			g_54e7c4 = level;
+			parameters.field_c = 0;
 			function_148d42(difficulty);
 			g_54e7cc = true;
-			parameters.field_c = 0;
 			function_149f49((s_message *)&parameters, 0, 0, user_flags, 5, 4, (long)function_2b1467);
 			screen = (c_campaign_options_screen *)parameters.load(&parameters);
 			screen->value610 = 0;

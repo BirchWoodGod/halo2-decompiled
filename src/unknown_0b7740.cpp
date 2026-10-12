@@ -990,8 +990,8 @@ void __stdcall function_bc070(real a, real b, real c, real d, real e)
 {
     (void)&a; (void)&b; (void)&c; (void)&d; (void)&e;
     volatile real *state = (volatile real *)g_4de2f4;
-    real horizontal = a * 0.01745329238474369f;
     real vertical = b * 0.01745329238474369f;
+    real horizontal = a * 0.01745329238474369f;
     state[0x60 / 4] = (real)(cos(horizontal) * cos(vertical));
     state[0x64 / 4] = (real)(sin(horizontal) * cos(vertical));
     state[0x68 / 4] = (real)sin(vertical);
