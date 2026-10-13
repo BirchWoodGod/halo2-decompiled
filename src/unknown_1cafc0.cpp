@@ -33,7 +33,7 @@ void function_1dd1c0(s_graph_tag *graph, transform4x3f *matrices, rigid_transfor
 struct s_1d9240;
 void function_1d9240(s_1d9240 *p, char flag, real x);
 real function_1d9430(s_1d9240 const *p);
-void function_1d9470(s_1d9240 const *p, s_blend_orientation const *targets, long count, dword const *mask,
+void function_1d9470(s_1d9240 const *p, long count, dword const *mask, s_blend_orientation const *targets,
 	s_blend_orientation *orientations);
 
 bool g_46fbf4 = true;
@@ -1114,7 +1114,7 @@ void s_animation_state::nodes_compute(transform4x3f *matrices, rigid_transform_s
 void s_animation_state::orientations_blend(s_blend_orientation const *targets, short count, dword const *mask,
 	s_blend_orientation *orientations)
 {
-	function_1d9470((s_1d9240 const *)&unknown64, targets, count, mask, orientations);
+	function_1d9470((s_1d9240 const *)&unknown64, count, mask, targets, orientations);
 }
 
 // @retail 0x1cb5f0

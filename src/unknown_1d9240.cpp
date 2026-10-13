@@ -195,7 +195,7 @@ struct s_blend_orientation
    towards the orientations by the counter's position, renormalizing the
    quaternions */
 // @retail 0x1d9470
-void function_1d9470(s_1d9240 const *p, s_blend_orientation const *targets, long count, dword const *mask, s_blend_orientation *orientations)
+void function_1d9470(s_1d9240 const *p, long count, dword const *mask, s_blend_orientation const *targets, s_blend_orientation *orientations)
 {
 	if (p->count)
 	{
