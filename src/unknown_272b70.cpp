@@ -961,13 +961,13 @@ void function_2735c0(long ai_index, long squad_ai_index)
 {
 	if (ai_index != NONE && squad_ai_index != NONE && !(squad_ai_index & 0xc0000000))
 	{
-		long squad_index = squad_ai_index & 0xffff;
-		s_ai_squad_iterator iterator;
-		ai_squad_iterator_new(&iterator, ai_index);
-		while (ai_squad_iterator_next(&iterator))
+		struct { s_ai_squad_iterator cursor; word target; } work;
+		work.target = squad_ai_index & 0xffff;
+		ai_squad_iterator_new(&work.cursor, ai_index);
+		while (ai_squad_iterator_next(&work.cursor))
 		{
-			function_201520(NONE, (word)iterator.squad_index, NONE, 0, 1);
-			function_204010(squad_index, iterator.squad_index);
+			function_201520(NONE, (word)work.cursor.squad_index, NONE, 0, 1);
+			function_204010(work.target, *(long const volatile *)&work.cursor.squad_index);
 		}
 		g_4f55d0->unknown364 = ai_index;
 	}
