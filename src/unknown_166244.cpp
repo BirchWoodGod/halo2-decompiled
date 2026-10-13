@@ -49,6 +49,9 @@ long function_166244(long key)
 	return matching_group_index;
 }
 
+/* retail calls this out of line from the effects */
+__declspec(noinline) bool function_166283(long group_index, long key);
+
 // @retail 0x166283
 bool function_166283(long group_index, long key)
 {
