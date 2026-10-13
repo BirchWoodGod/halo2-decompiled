@@ -643,18 +643,11 @@ void c_game_engine_derived::v0(long killer, long victim, bool suicide_or_betraya
 	{
 		if (killer != NONE && !player_get(victim)->flags2.bit1)
 		{
-			long delta;
 			if (!suicide_or_betrayal)
-				delta = 1;
-			else
-			{
-				if (victim == killer && !(options()->flags22c & 2))
-					goto skip;
-				delta = NONE;
-			}
-			function_15b7c0(delta, killer);
+				function_15b7c0(1, killer);
+			else if (victim != killer || (options()->flags22c & 2))
+				function_15b7c0(NONE, killer);
 		}
-skip:
 		if (options()->flags22c & 4)
 			function_15b7c0(NONE, victim);
 		if (options()->flags22c & 1)

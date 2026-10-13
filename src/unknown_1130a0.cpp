@@ -33,13 +33,10 @@ struct s_object_header_1130a0
 void function_1130a0(long unit_index, bool flag)
 {
 	s_unit_1130a0 *unit = ((s_object_header_1130a0 *)g_4e0300->data)[unit_index & 0xffff].object;
-	bool enable = flag;
-	if (enable && (unit->index1f6 == NONE || unit->index1f7 == NONE))
-		enable = false;
-	if (enable)
-		unit->unit_flags |= 0x1000000;
-	else
-		unit->unit_flags &= ~0x1000000;
+	if (flag && (unit->index1f6 == NONE || unit->index1f7 == NONE))
+		flag = false;
+	dword *flags = &unit->unit_flags;
+	flag ? (*flags |= 0x1000000) : (*flags &= ~0x1000000);
 }
 
 // @retail 0x114480

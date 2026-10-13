@@ -127,8 +127,7 @@ void function_402b0(long cache_index, long mode)
     {
         long first = g_4c0b78.previous;
         g_4c0b78.current = first;
-        s_44940_entry const *entries = cache_index == 0 ? g_4c6700 :
-            (s_44940_entry const *)g_4c6b00[cache_index - 1].values;
+        s_44940_entry const *entries = g_4c62f8.records.blocks[cache_index + 1].entries;
         memcpy(g_4ba138 + first, entries, g_4c6b00[cache_index].count * sizeof(s_44940_entry));
         g_4c0b78.current += g_4c6b00[cache_index].count;
         dword selection = !mode ? ~0UL : mode == 2 ? 0x10 : 0x20;

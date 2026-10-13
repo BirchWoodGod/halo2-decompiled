@@ -258,7 +258,8 @@ short function_1b10e0(short index, s_slot_target_list *list)
 short function_1b1100(long actor_index, vector2f const *forward, s_slot_7e *state, s_slot_target_list *list,
 	point2f const *origin, vector2f const *left, point2f *position)
 {
-	s_actor_view *actor = actor_get(actor_index);
+	s_actor_view *actors = (s_actor_view *)g_4f55f0->data;
+	long actor_number = actor_index & 0xffff;
 
 	if (state->unknown0c)
 		return 0;
@@ -273,7 +274,7 @@ short function_1b1100(long actor_index, vector2f const *forward, s_slot_7e *stat
 	{
 		if (function_1b0e40(&points[i], origin, forward, i, list->mode, left))
 		{
-			real distance = distance2d((point2f *)&actor->position, &points[i]);
+			real distance = distance2d((point2f *)&actors[actor_number].position, &points[i]);
 
 			distances[i] = distance;
 			if (best_distance > distance)
@@ -304,7 +305,7 @@ short function_1b1100(long actor_index, vector2f const *forward, s_slot_7e *stat
 		if (other_index == NONE)
 			break;
 
-		s_actor_view *other_actor = actor_get(list->entries[other_index].actor_index);
+		s_actor_view *other_actor = &actors[list->entries[other_index].actor_index & 0xffff];
 
 		if (distance2d((point2f *)&other_actor->position, &points[best_index]) + 0.1f > distances[best_index])
 		{
@@ -376,10 +377,15 @@ bool function_1b1970(long actor_index, short mode, vector2f const *forward,
 	return result;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1b1a90
 void __stdcall function_1b1a90(long actor_index, s_slot *slot, s_slot_target_list *list)
 {
-	s_actor_view *actor = actor_get(actor_index);
+	long actor_offset = (actor_index & 0xffff) * sizeof(s_actor_view);
+	byte *actor_base = g_4f55f0->data;
+	_ReadWriteBarrier();
+#define actor (*(s_actor_view *)(actor_base + actor_offset))
 
 	if (list->entries[0].actor_index == NONE)
 		return;
@@ -398,7 +404,7 @@ void __stdcall function_1b1a90(long actor_index, s_slot *slot, s_slot_target_lis
 	{
 		if (!state->unknown0c)
 		{
-			if (actor->unknown50c)
+			if (actor.unknown50c)
 				function_1f4280(actor_index);
 			if (leader->unknown5d0)
 			{
@@ -408,8 +414,8 @@ void __stdcall function_1b1a90(long actor_index, s_slot *slot, s_slot_target_lis
 				{
 					point2f direction;
 
-					direction.x = point.x - actor->position.x;
-					direction.y = point.y - actor->position.y;
+					direction.x = point.x - actor.position.x;
+					direction.y = point.y - actor.position.y;
 					normalize2d(&direction);
 					if (leader->unknown290.i * direction.x + leader->unknown290.j * direction.y < 0.5f)
 					{
@@ -417,49 +423,51 @@ void __stdcall function_1b1a90(long actor_index, s_slot *slot, s_slot_target_lis
 					}
 					else
 					{
-						actor->unknown456 = true;
-						actor->unknown458.i = direction.x;
-						actor->unknown458.j = direction.y;
-						actor->unknown458.k = 0.0f;
+						actor.unknown456 = true;
+						actor.unknown458.i = direction.x;
+						actor.unknown458.j = direction.y;
+						actor.unknown458.k = 0.0f;
 					}
 				}
 			}
 		}
-		if (actor->unknown086 >= 7)
+		if (actor.unknown086 >= 7)
 		{
 			if (state->position_index != NONE)
-				actor->unknown488 = function_1b1970(actor_index, list->mode, &forward, &left, state->position_index);
+				actor.unknown488 = function_1b1970(actor_index, list->mode, &forward, &left, state->position_index);
 			else
-				actor->unknown488 = false;
-			actor->unknown41c = 3;
-			actor->unknown420 = 2;
+				actor.unknown488 = false;
+			actor.unknown41c = 3;
+			actor.unknown420 = 2;
 		}
-		actor->unknown44a = true;
-		actor->unknown449 = true;
+		actor.unknown44a = true;
+		actor.unknown449 = true;
 	}
 	else
 	{
-		actor->unknown4cc = 0.2f;
-		if (actor->unknown504 == 2)
+		actor.unknown4cc = 0.2f;
+		if (actor.unknown504 == 2)
 		{
 			vector2f direction;
 
 			function_1b0f20(list, &direction);
-			actor->unknown420 = 4;
-			actor->unknown424.vector.i = direction.i;
-			actor->unknown424.vector.j = direction.j;
-			actor->unknown44d = true;
-			actor->unknown41c = 3;
-			actor->unknown424.vector.k = 0.0f;
+			actor.unknown420 = 4;
+			actor.unknown424.vector.i = direction.i;
+			actor.unknown424.vector.j = direction.j;
+			actor.unknown44d = true;
+			actor.unknown41c = 3;
+			actor.unknown424.vector.k = 0.0f;
 		}
-		else if (actor->unknown086 >= 7)
+		else if (actor.unknown086 >= 7)
 		{
-			actor->unknown488 = false;
-			actor->unknown420 = 2;
-			actor->unknown41c = 3;
+			actor.unknown488 = false;
+			actor.unknown420 = 2;
+			actor.unknown41c = 3;
 		}
 	}
+#undef actor
 }
+#pragma function(_ReadWriteBarrier)
 
 /* invites the actors of the actor's group (or squad) of the same team */
 struct s_1b1d90_locals

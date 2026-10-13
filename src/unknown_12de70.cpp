@@ -610,7 +610,6 @@ void function_12e480(void)
 
 /* the geometry cache's frame: its memory's clock, the predicted blocks'
    requests and the low-memory message */
-#pragma optimize("s", on)
 // @retail 0x12dd80
 void geometry_cache_update(void)
 {
@@ -626,7 +625,7 @@ void geometry_cache_update(void)
 		{
 			physical->time++;
 		}
-		for (long i = 0; i < 8; i++)
+		for (short i = 0; i < 8; i++)
 		{
 			physical->limits[i] = 0x7fffffff;
 		}
@@ -634,4 +633,3 @@ void geometry_cache_update(void)
 		function_12e480();
 	}
 }
-#pragma optimize("", on)
