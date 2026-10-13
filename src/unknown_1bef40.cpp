@@ -168,12 +168,11 @@ bool __stdcall function_1befd0(long actor_index, s_slot *slot)
 // @retail 0x1bf230
 bool __stdcall function_1bf230(long actor_index, s_slot *slot)
 {
-	bool result = true;
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_0a *state = (s_slot_0a *)slot;
-	s_reference reference = state->reference;
+	bool result = true;
 
-	if (!REFERENCE_EQUAL(reference, g_470fa0) && actor->unknown5b4 > 0)
+	if (!REFERENCE_EQUAL(state->reference, g_470fa0) && actor->unknown5b4 > 0)
 		state->reference = g_470fa0;
 	if (actor->unknown040)
 	{
