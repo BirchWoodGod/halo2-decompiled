@@ -903,19 +903,20 @@ void havok_component_rigid_body_point_velocity_get(long rigid_body_index, s_havo
 void __stdcall function_1c3770(long object_index, dword flags);
 bool function_1c5210(transform4x3f const *matrix, void *shape, long excluded_component, long filter);
 
-class c_movement_sphere : public c_a
+class c_2def90 : public c_a
 {
 public:
- c_movement_sphere(real radius);
+ c_2def90(real radius);
  long field_8;
  real radius;
 };
 
-// Disabled: activation changes matched 0x2901e0 and 0xfa100 through LTCG.
 // @retail 0x1ec690 disabled
 void function_1ec690(byte const *input, s_state_c570 *state, byte *output)
 {
- byte *component = g_51e9b8->data + (*(long *)(input + 0x18) & 0xffff) * 0xa0;
+ long component_index = *(long *)(input + 0x18);
+ byte *component_data = g_51e9b8->data;
+ byte *component = component_data + (component_index & 0xffff) * 0xa0;
  bool disabled = *(byte *)(*(byte **)(component + 0x70) + 0x44) != 0;
  vector3f *velocity = (vector3f *)(output + 0xc);
  *velocity = *(vector3f *)(input + 0x124);
@@ -1011,7 +1012,7 @@ void function_1ec690(byte const *input, s_state_c570 *state, byte *output)
    byte *shape = *(byte **)(*(byte **)(input + 8) + 0x24) + index * 0x80;
    real radius = *(real *)(shape + 0x2c) - extra;
    if (g_47f05c > radius) radius = g_47f05c;
-   c_movement_sphere sphere(radius);
+   c_2def90 sphere(radius);
    __m128 position = _mm_set_ps(0.0f, *(real *)(input + 0xf0), *(real *)(input + 0xec), *(real *)(input + 0xe8));
    position = _mm_add_ps(position, *(__m128 *)(shape + 0x70));
    transform4x3f matrix;

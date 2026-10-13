@@ -1246,10 +1246,10 @@ struct s_projection_copy_3bd00
     byte unknown68[0xc0 - 0x68];
 };
 void function_14ac0(void);
-void function_12fa0(real const *projection, byte const *camera, bool scaled, long mode);
+void function_12fa0(byte const *camera, real const *projection, bool scaled, long mode);
 void function_3ede0(void);
 
-// Disabled retail 0x3bd00; activation must preserve the matched clear helpers.
+// Retail 0x3bd00
 bool __stdcall function_3bd00(real height, dword color)
 {
     long target = g_4858b8;
@@ -1273,13 +1273,13 @@ bool __stdcall function_3bd00(real height, dword color)
     *(short *)(camera.data + 0x34) = 256;
     *(short *)(camera.data + 0x36) = 512;
     function_141590(&projection.transform, &projection.inverse);
-    function_12fa0((real *)&projection, camera.data, false, 21);
+    function_12fa0(camera.data, (real *)&projection, false, 21);
     function_3ede0();
     function_14bc0((short)target, 0, true);
     memcpy(&g_485618, &saved_camera, sizeof(saved_camera));
     memcpy(g_48568c, &saved_projection, sizeof(saved_projection));
     g_4858b8 = target;
-    function_12fa0((real *)&saved_projection, saved_camera.data, false, target);
+    function_12fa0(saved_camera.data, (real *)&saved_projection, false, target);
     return true;
 }
 #endif

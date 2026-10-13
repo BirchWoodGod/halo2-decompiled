@@ -1371,9 +1371,9 @@ void function_109390(long index);
 long function_b8820();
 bool havok_object_type_can_have_component(long tag);
 
-// Disabled: Two active creation forms change matched b8890 and 1c3770 through the protected 1d1540 register convention; retain the complete body and original stub.
+// Disabled: activation changes matched b8890, 1c3770 and 1c39c0 through the protected 1d1540 register convention.
 #if 0
-// Retail 0xb7b40
+// @retail 0xb7b40 disabled
 long __stdcall function_b7b40(void *creation)
 {
     byte *placement = (byte *)creation;
