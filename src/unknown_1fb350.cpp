@@ -236,7 +236,7 @@ inline void recorded_animation_object_set_flag(long object_index, long bit, bool
 // @retail 0x1fb360
 bool function_1fb360(long unit_index, short recording_index, long flags)
 {
-	bool result = false;
+	volatile bool result = false;
 
 	if (unit_index != NONE && recording_index != NONE)
 	{

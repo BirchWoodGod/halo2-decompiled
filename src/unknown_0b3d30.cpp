@@ -189,7 +189,7 @@ bool function_b40b0()
 {
     long index = (dword)g_547620 % g_5107d8;
     volatile bool result = false;
-    volatile bool failure = false;
+    bool failure = result;
     IN_ADDR address;
     if (online_result_get_address(index, &address))
     {
@@ -197,7 +197,7 @@ bool function_b40b0()
             return true;
         else return result;
     }
-    return result;
+    return failure;
 }
 
 bool function_b5e90(s_http_connection_ab *connection, bool *complete);

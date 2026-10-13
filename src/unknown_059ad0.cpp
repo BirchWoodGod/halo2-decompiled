@@ -440,16 +440,18 @@ void network_session_set_key(c_class_58d20 *session, const XNKID *kid, const XNK
 bool network_session_create_key(c_class_58d20 *session, long local, long mode)
 {
 	bool result = false;
+	volatile long *local_pointer = &local;
+	long local_value = *local_pointer;
 
 	network_session_release_key(session);
-	if (transport_security_create_key(local, session->value38, mode == 2))
+	if (transport_security_create_key(local_value, session->value38, mode == 2))
 	{
 		s_xnet_registry_entry *entry = &g_4cf7d4[session->value38];
 		if (entry->valid)
 		{
 			XNKID kid = entry->kid;
 			XNKEY key = entry->key;
-			network_session_set_key(session, &kid, &key, local);
+			network_session_set_key(session, &kid, &key, local_value);
 			return true;
 		}
 	}
@@ -865,7 +867,7 @@ bool network_session_set_local_properties(c_class_58d20 *session, const s_sessio
 long network_session_add_local_player(c_class_58d20 *session, long member_index, long slot, const dword *identity);
 
 // @retail 0x5a880
-bool network_session_player_add(c_class_58d20 *session, const byte *properties, const dword *identity, long slot, long unknown18, long unknownac)
+bool network_session_player_add(c_class_58d20 *session, long slot, const dword *identity, long unknown18, const byte *properties, long unknownac)
 {
 	volatile bool result = false;
 
@@ -2255,10 +2257,24 @@ void network_session_update_leaving_timeout(c_class_58d20 *session)
 
 void network_session_enter_state_9(c_class_58d20 *session);
 
+static __forceinline bool network_session_state_is_host_local(long state)
+{
+	bool result = false;
+	if (state == 5 || state == 6 || state == 7 || state == 8)
+		result = true;
+	else
+	{
+		volatile long unused = state;
+	}
+	return result;
+}
+
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x62ab0
 void network_session_host_lost(c_class_58d20 *session)
 {
-	switch (session->state)
+	long state = session->state;
+	switch (state)
 	{
 	case 2:
 	case 4:
@@ -2273,8 +2289,13 @@ void network_session_host_lost(c_class_58d20 *session)
 			return;
 		}
 		break;
+	case 3:
+		_ReadWriteBarrier();
+		break;
+	case 5:
+		break;
 	}
-	if (session_state_is_live(session) && !session->function_058d20() && session->value4c != NONE && session->member_count > 1)
+	if (state > 2 && state <= 8 && !network_session_state_is_host_local(state) && session->value4c != NONE && session->member_count > 1)
 	{
 		network_observer_close_channel(session->observer, session->member_states[session->member_index].unknown04);
 		network_session_enter_state_9(session);
@@ -2284,6 +2305,7 @@ void network_session_host_lost(c_class_58d20 *session)
 		network_session_close(session);
 	}
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x62eb0
 bool network_session_add_reservation(const dword *identity, c_class_58d20 *session, const s_session_id *id, long timeout, long unknown18)
@@ -2379,19 +2401,23 @@ bool network_session_handle_session_disband(c_class_58d20 *session, const s_type
 // @retail 0x5e1a0
 bool network_session_handle_session_boot(c_class_58d20 *session, const s_type_99af70 *address)
 {
-	bool result = false;
+	union { long value; bool result; } local_0;
+	local_0.value = 0;
 	if (network_session_address_is_peer(session, address))
 	{
 		if (network_session_channel_is_host_address(session, address))
 		{
 			if (network_session_channel_is_host_address(session, address))
 				network_session_close(session);
+			local_0.value = 1;
 		}
 		else
-			network_session_disconnect(session, 1);
-		result = true;
+		{
+			local_0.value = 1;
+			network_session_disconnect(session, local_0.value);
+		}
 	}
-	return result;
+	return local_0.result;
 }
 
 // @retail 0x5e5b0
@@ -2648,10 +2674,8 @@ bool network_session_handle_peer_reestablish(c_class_58d20 *session, const s_typ
 	return result;
 }
 
-/* retail calls 0x5f670 here; the inlined copy keeps the stack convention its
-   caller 0x94640 (lane J) matches with, until this body matches */
-// @retail 0x5ed90
-bool network_session_handle_peer_properties(c_class_58d20 *session, long remote_index, const s_network_message_peer_properties *message)
+// @retail 0x5ed90 standard
+bool __stdcall network_session_handle_peer_properties(c_class_58d20 *session, long remote_index, const s_network_message_peer_properties *message)
 {
 	bool result = false;
 
@@ -2659,7 +2683,7 @@ bool network_session_handle_peer_properties(c_class_58d20 *session, long remote_
 	{
 		if (session->function_058d20())
 		{
-			long member_index = network_session_member_from_remote_inline(session, remote_index);
+			long member_index = network_session_member_from_remote(session, remote_index);
 			if (member_index != NONE && member_index != session->current_member)
 			{
 				s_session_member *member = &session->members[member_index];
@@ -2675,19 +2699,20 @@ bool network_session_handle_peer_properties(c_class_58d20 *session, long remote_
 				}
 				else if (!changed)
 				{
-					return true;
+					goto success;
 				}
 				session->value4c++;
 				session->update7618++;
-				return true;
+			success:
+				result = true;
 			}
 		}
 	}
 	return result;
 }
 
-// @retail 0x5ee70
-bool network_session_handle_delegate_leader(c_class_58d20 *session, long remote_index, const s_network_message_peer_identity *message)
+// @retail 0x5ee70 standard
+bool __stdcall network_session_handle_delegate_leader(c_class_58d20 *session, long remote_index, const s_network_message_peer_identity *message)
 {
 	bool result = false;
 
@@ -2705,7 +2730,7 @@ bool network_session_handle_delegate_leader(c_class_58d20 *session, long remote_
 					session->value4c++;
 					session->update7618++;
 				}
-				return true;
+				result = true;
 			}
 		}
 	}
@@ -2734,8 +2759,8 @@ bool network_session_handle_host_handoff_acknowledge(c_class_58d20 *session, lon
 	return result;
 }
 
-// @retail 0x5ef20
-bool network_session_handle_boot_machine(c_class_58d20 *session, long remote_index, const s_network_message_peer_identity *message)
+// @retail 0x5ef20 standard
+bool __stdcall network_session_handle_boot_machine(c_class_58d20 *session, long remote_index, const s_network_message_peer_identity *message)
 {
 	bool result = false;
 
@@ -2751,7 +2776,7 @@ bool network_session_handle_boot_machine(c_class_58d20 *session, long remote_ind
 					network_session_disconnect(session, 1);
 				else
 					network_session_boot_member(session, boot_index);
-				return true;
+				result = true;
 			}
 		}
 	}
@@ -3073,8 +3098,8 @@ struct s_network_message_handoff
 };
 #pragma pack(pop)
 
-// @retail 0x5e210
-bool network_session_handle_host_handoff(c_class_58d20 *session, const s_network_message_handoff *message)
+// @retail 0x5e210 standard
+bool __stdcall network_session_handle_host_handoff(c_class_58d20 *session, const s_network_message_handoff *message)
 {
 	bool result = false;
 	if (!session_state_is_live(session))

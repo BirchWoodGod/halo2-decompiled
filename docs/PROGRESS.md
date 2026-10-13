@@ -2,6 +2,57 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8237 functions match
+
+```
+matched 8237 of 11318 game functions (1038460 of 2784283 bytes, 37.30%)
+```
+
+6 new matches, none lost:
+- Deep lane 2 round 40: `0xaa7c0` and `0x1efdc0` (from 86 differences; it now has its own SSE file)
+- Machine 2, lane Y rounds 17 and 18 (#412): `0x72b50`
+- Machine 2, lane D lower round 23 (#413): `0x507e0`, `0x64cf0` and `0x94350`
+
+## 2026-10-13: 8231 functions match
+
+```
+matched 8231 of 11318 game functions (1037186 of 2784283 bytes, 37.25%)
+```
+
+8 new matches, none lost:
+- Claude lane 1, round 11 (+8), on Opus 5.5: `0x2360c3`, `0x2c1e70`, `0x2be880`, `0xa1520`, `0xb2790`, `0x48e70`, `0x235b9c` and `0x2b1a1c`, all functions earlier rounds had left; `0xa1520`'s node index is a `short` along its call chain, as retail's callers pass it.
+
+## 2026-10-13: 8223 functions match
+
+```
+matched 8223 of 11318 game functions (1034419 of 2784283 bytes, 37.15%)
+```
+
+6 new matches, none lost:
+- Deep lane 2, round 39 (+4): `0x2cac1a`, `0xfdc70` and `0xb77d0`, each from 51 to 59 differences, and the second machine's `0x118b10` through them, its body unchanged.
+- Deep lane 3, round 50 (+1): `0x1ed70`, one of Direct3D's callers in the render range.
+- Deep lane 4, rounds 2 and 3 (+1): `0x143c0` from 68 differences; Direct3D's large callers and other render functions are much closer.
+
+## 2026-10-13: 8217 functions match
+
+```
+matched 8217 of 11318 game functions (1033217 of 2784283 bytes, 37.11%)
+```
+
+56 new matches, none lost:
+- The third machine's batch 5 (#410, +36), over its lanes N, Q, R, S, T and H, with three behaviour fixes (`0x170bb0` passes its state blocks in retail's order, `0x15f120` calls the `vsnprintf` form, and `0x1583d0`'s parameters are named for the values they receive).
+- The second machine's lanes (#407, #408, #409, #411, +14): lane D lower +9 (including lane J's `0x94680` and `0x946c0` and lane F's `0x18fb34` through their callees), lane J +3, lanes B and M +1 each.
+- This machine's deep lanes (+6): lane 1's `0xc3220` (the partition globals at 0x4e0310 are now one struct global) and `0x269e60`, lane 2's `0x251d84` and `0x2b225a`, and lane 3's `0x1ef70` and `0x36880`.
+
+## 2026-10-13: 8161 functions match
+
+```
+matched 8161 of 11318 game functions (1016900 of 2784283 bytes, 36.52%)
+```
+
+5 new matches, none lost:
+- Claude lane 1, round 10 (+5), on Opus 5.5: `0x3ea60` and `0x1c810` match once neighbouring globals that retail treats as one block become one struct global each (the node matrix cache, and the texture stage storage in `include/texture_stage_storage.h`); `0x2c8bf5` makes its call in every switch case, `0x1e4310` inlines a copy of a matched helper, and `0x1c4a0` is a constructor run at startup.
+
 ## 2026-10-13: 8156 functions match
 
 ```

@@ -576,24 +576,15 @@ void function_158850(long *type, long *count)
 	if (engine_options()->value190)
 	{
 		*type = 2;
-		long number = function_xaee93d()->value_e0;
-		if (number > 0)
-		{
-			*count = (long)number;
-			return;
-		}
+		short number = function_xaee93d()->value_e0;
+		*count = number > 0 ? number : 0;
 	}
 	else
 	{
 		*type = 1;
-		long number = function_xaee93d()->value_e0;
-		if (number > 0)
-		{
-			*count = (long)number;
-			return;
-		}
+		short number = function_xaee93d()->value_e0;
+		*count = number > 0 ? number : 0;
 	}
-	*count = 0;
 }
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
@@ -1089,7 +1080,8 @@ static inline char random_option(short range)
 	return (char)(random_index((dword *)&g_4e7408->unknown0, range) + 1);
 }
 
-/* the chooser of the engine's default equipment (its methods ignore this) */
+/* the engine's netgame entries, with the chooser of their default equipment
+   (the choosers ignore this) */
 class c_engine_equipment
 {
 public:
@@ -1098,6 +1090,9 @@ public:
 	long choose_15a310(long default_value, char option, long *name);
 	long choose_15a3d0(long default_value, char option, long *name);
 	long choose(long default_value, long *name, char kind);
+	void release_entry(long object_index, long index);
+
+	s_netgame_entry_state entries[100];
 };
 
 // @retail 0x15a140
@@ -1410,7 +1405,7 @@ done:
 }
 
 // @retail 0x15b1e0
-void function_15b1e0(long object_index, s_netgame_entry_state *entries, long index)
+void c_engine_equipment::release_entry(long object_index, long index)
 {
 	s_engine_object *object = (((s_engine_object_header *)g_4e0300->data) + (object_index & 0xffff))->object;
 
@@ -1980,7 +1975,7 @@ void function_15adb0(s_netgame_entry_state *entries)
 		{
 			if (entries[index].index != NONE)
 			{
-				function_15b1e0(entries[index].index, entries, index);
+				((c_engine_equipment *)entries)->release_entry(entries[index].index, index);
 			}
 			entries[index].value04 = 0;
 			entries[index].index = local.iterator.object_index;
@@ -2001,26 +1996,23 @@ real function_15dec0(long player_index, long other_index)
 
 	if (game_engine_get() && player_index != other_index && player_index != NONE)
 	{
-		s_engine_player *player = engine_player_get(player_index);
-
-		switch (player->value_c1)
+		switch (engine_player_get(player_index)->value_c1)
 		{
 		case 0:
+			result *= 1.0f;
 			break;
 		case 1:
-			result = 0.75f;
+			result *= 0.75f;
 			break;
 		case 2:
-			result = 0.5f;
+			result *= 0.5f;
 			break;
 		case 3:
-			result = 0.25f;
+			result *= 0.25f;
 			break;
 		}
 		if (other_index != NONE)
 		{
-			s_engine_player *other;
-
 			if (function_15ff50(player_index, 2))
 			{
 				result *= 1.5f;
@@ -2029,12 +2021,11 @@ real function_15dec0(long player_index, long other_index)
 			{
 				result *= 0.5f;
 			}
-			other = engine_player_get(other_index);
-			if (other->value194 > 0)
+			if (engine_player_get(other_index)->value194 > 0)
 			{
 				result *= 0.1f;
 			}
-			if (!TEST_FIELD_BIT(engine_options()->flags_bit7) && !function_15e020(player->team, other->team))
+			if (!TEST_FIELD_BIT(engine_options()->flags_bit7) && !function_15e020(engine_player_get(player_index)->team, engine_player_get(other_index)->team))
 			{
 				result = 0.0f;
 			}
@@ -2067,7 +2058,7 @@ void function_15d6c0(long player_index, long maximum, long minimum)
 }
 
 // @retail 0x15a090
-long function_15a090(short const *types, long type, long count)
+long function_15a090(long type, long count, short const *types)
 {
 	long const *count_reference = &count;
 	long result = NONE;
@@ -2187,7 +2178,7 @@ bool function_15b7c0(long delta, long player_index)
 			function_15b650(player->team, delta);
 		}
 		else if (!score_teams_enabled() && delta > 0 && g_4e6948->score_to_win &&
-			globals->statborg.players[index].score >= g_4e6948->score_to_win)
+			globals->statborg.players[player_index & 0xffff].score >= g_4e6948->score_to_win)
 		{
 			function_15b3a0(player_index, 0);
 		}
@@ -2717,7 +2708,7 @@ void function_1583d0(short old_value, short new_value, long player_index)
 {
 	if (game_engine_get() && g_4e6948->mode != 4 && old_value != new_value)
 	{
-		if (old_value < new_value)
+		if (old_value > new_value)
 		{
 			s_engine_player *player = engine_player_get(player_index);
 			if (player->unit_index != NONE)
@@ -2853,28 +2844,31 @@ void __stdcall function_a7840(short player_index, dword mask);
 // @retail 0x15dd40
 bool function_15dd40(long player_index)
 {
-	bool result = false;
+	bool result = true;
 	if (game_engine_get())
 	{
-		long index = player_index & 0xffff;
 		s_engine_player *player = engine_player_get(player_index);
 		if (function_158a50(player_index) && function_15b2f0())
 		{
 			if (player->value164 > 0)
 			{
 				long ticks = g_510c54->field_2_3;
-				s_event event;
 				if (player->value164 == ticks * 3 || player->value164 == ticks * 2 || player->value164 == ticks)
-					event.subtype = 20;
+				{
+					s_event event;
+					game_engine_event_initialize_inline(&event, 0, 20);
+					event.cause_player_index = player_index;
+					event.a = player_index;
+					function_19eb90(&event);
+				}
 				else if (player->value164 == 1)
-					event.subtype = 21;
-				else
-					goto update_countdown;
-				game_engine_event_initialize_inline(&event, 0, event.subtype);
-				event.a = player_index;
-				event.cause_player_index = player_index;
-				function_19eb90(&event);
-			update_countdown:
+				{
+					s_event event;
+					game_engine_event_initialize_inline(&event, 0, 21);
+					event.cause_player_index = player_index;
+					event.a = player_index;
+					function_19eb90(&event);
+				}
 				player->value164--;
 				player->value170 = player->value164 / g_510c54->field_2_3;
 				player->value170 = player->value170 < 0 ? 0 : player->value170 > 0x3ff ? 0x3ff : player->value170;
@@ -2884,14 +2878,36 @@ bool function_15dd40(long player_index)
 			if (result)
 			{
 				long elapsed = g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time;
-				if (elapsed >= 0 && elapsed > 3 && index % 32 != elapsed % 32)
+				if (elapsed >= 0 && elapsed > 3 && elapsed % 32 != (player_index & 0xffff) % 32)
 					result = false;
 			}
 		}
+		else
+			result = false;
 	}
-	else
-		result = true;
 	return result;
+}
+
+/* the test of function_15b2f0, which 0x15ba20 inlines */
+struct s_engine_running_state
+{
+	byte unknown00[0x6c];
+	short w6c;
+	byte unknown6e[0xc04 - 0x6e];
+	long lc04;
+	byte unknownc08[0xc14 - 0xc08];
+	long engine_index;
+};
+
+static inline bool engine_running_inline()
+{
+	s_engine_running_state *g = (s_engine_running_state *)g_4e9ae8;
+	bool mode_gate_open = false;
+
+	if (g_55e4d0[g->engine_index] && g->w6c == 1 && (g_4e6948->mode == 4 || g->lc04 == 1))
+		mode_gate_open = true;
+
+	return mode_gate_open;
 }
 
 // @retail 0x15ba20
@@ -2899,7 +2915,7 @@ void function_15ba20(void)
 {
 	long winner = NONE;
 	bool few_teams = false;
-	if (function_15b2f0() && function_158d20(&winner, &few_teams))
+	if (engine_running_inline() && function_158d20(&winner, &few_teams))
 		function_15b3a0(winner, few_teams);
 }
 
@@ -3269,6 +3285,8 @@ void function_161ef0(long string_handle, word *buffer);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 void function_19e0f0(word const *string, long size, word *buffer, s_event *event);
 
+int unicode_string_vsnprintf(word *buffer, long maximum_count, const word *format, ...);
+
 // @retail 0x15f120
 bool function_15f120(long player_index, word *buffer, long size, long suppress_score)
 {
@@ -3282,15 +3300,13 @@ bool function_15f120(long player_index, word *buffer, long size, long suppress_s
 		short state = function_xaee93d()->value6c;
 		if (state == 1)
 		{
-			s_local_engine_player local = g_4e9af0.players[user_index];
-			s_engine_local_notice *notice = (s_engine_local_notice *)&local;
-			if (notice->type != NONE && notice->definition_index != NONE)
+			if (g_4e9af0.players[user_index].index != NONE && g_4e9af0.players[user_index].value08 != NONE)
 			{
 				s_engine_notice_settings *settings = ((s_engine_notice_root *)g_4e3b44[g_4e034c->index & 0xffff].bytes)->settings;
-				s_engine_notice_definition *definition = &settings->notices[notice->definition_index];
+				s_engine_notice_definition *definition = &settings->notices[g_4e9af0.players[user_index].value08];
 				long string_handle = function_15eaf0() ? definition->team_text : definition->text;
-				if ((!(byte)*suppress_reference || (notice->type != 25 && notice->type != 5 && notice->type != 26 &&
-					notice->type != 6 && notice->type != 27 && notice->type != 7)) && string_handle != NONE && string_handle != 0)
+				if ((!(byte)*suppress_reference || (g_4e9af0.players[user_index].index != 25 && g_4e9af0.players[user_index].index != 5 && g_4e9af0.players[user_index].index != 26 &&
+					g_4e9af0.players[user_index].index != 6 && g_4e9af0.players[user_index].index != 27 && g_4e9af0.players[user_index].index != 7)) && string_handle != NONE && string_handle != 0)
 				{
 					text[0] = 0;
 					function_1a0180(settings->string_list, string_handle, text);
@@ -3304,21 +3320,21 @@ bool function_15f120(long player_index, word *buffer, long size, long suppress_s
 		{
 			text[0] = 0;
 			function_161ef0(0x0c000108, text);
-			unicode_string_snprintf(buffer, *size_reference, text);
+			unicode_string_vsnprintf(buffer, *size_reference, text);
 			return true;
 		}
 		else if (state == 2)
 		{
 			text[0] = 0;
 			function_161ef0(0x0d000109, text);
-			unicode_string_snprintf(buffer, *size_reference, text);
+			unicode_string_vsnprintf(buffer, *size_reference, text);
 			return true;
 		}
 		else if (state == 3)
 		{
 			text[0] = 0;
 			function_161ef0(0x1900010a, text);
-			unicode_string_snprintf(buffer, *size_reference, text);
+			unicode_string_vsnprintf(buffer, *size_reference, text);
 			return true;
 		}
 	}
@@ -4282,34 +4298,11 @@ void __stdcall function_15bb20(long player_index)
 long function_23f360(long mode, long team);
 long function_23f260(long mode, long player_index, long value);
 
-PRIVATE __forceinline long sweep_rank_mode()
-{
-    long mode;
-    if (g_4e6948->flag1128)
-        mode = 1;
-    else
-        mode = 0;
-    return mode;
-}
-
 // @retail 0x158e90
 long function_158e90(long team)
 {
     bool flag = g_4e6948->flag1128;
     return function_23f360(flag != 0, team) / 2;
-}
-
-PRIVATE __forceinline bool sweep_team_active(long team)
-{
-    bool result = false;
-    if (g_55e4d0[g_4e9ae8->engine_index])
-    {
-        byte teams = ((byte *)g_4e6948)[0x184] & 1;
-        volatile byte observed_teams = teams;
-        if (teams && team >= 0 && team < 8)
-            result = (function_xaee93d()->team_mask & (1 << team)) != 0;
-    }
-    return result;
 }
 
 // @retail 0x158eb0
@@ -4318,7 +4311,7 @@ bool function_158eb0()
     bool result = true;
     for (long team = 0; team < 8; ++team)
     {
-        if (sweep_team_active(team) && function_158e90(team) > 0)
+        if (engine_team_is_active(team) && function_158e90(team) > 0)
         {
             result = false;
             break;
@@ -4339,7 +4332,8 @@ bool function_158f50()
     while (function_19f240((long *)&iterator))
     {
         ++count;
-        if (function_23f260(sweep_rank_mode(), iterator.index, NONE) / 2 > 0)
+        bool flag = g_4e6948->flag1128;
+        if (function_23f260(flag != 0, iterator.index, NONE) / 2 > 0)
         {
             result = false;
             break;
@@ -4355,15 +4349,23 @@ void __stdcall function_19ef40(long unit_index, long *first_count, long *second_
 // @retail 0x15e970
 void function_15e970(long unit_index)
 {
-	long *unit_index_reference = &unit_index;
-    byte *unit = (byte *)engine_object_get((*unit_index_reference));
+    byte *unit = (byte *)engine_object_get(unit_index);
     long first_limit, second_limit;
-    first_limit = second_limit = (function_xaee93d()->flags & 8) ? 1 : 2;
+    if (function_xaee93d()->flags & 8)
+    {
+        first_limit = 1;
+        second_limit = first_limit;
+    }
+    else
+    {
+        first_limit = 2;
+        second_limit = first_limit;
+    }
     long first_count = first_limit;
     long second_count = 0;
-    function_19ef40((*unit_index_reference), &first_count, &second_count);
+    function_19ef40(unit_index, &first_count, &second_count);
     if (!((bool)((*(dword *)((byte *)g_4e6948 + 0x184) >> 11) & 1)))
-        first_count = second_count = 0;
+        second_count = first_count = 0;
     switch (*(char *)((byte *)g_4e6948 + 0x210))
     {
     case 15:
@@ -4380,9 +4382,7 @@ void function_15e970(long unit_index)
     if (second_count > second_limit) second_count = second_limit;
     unit[0x23e] = (byte)first_count;
     unit[0x23f] = (byte)second_count;
-    long simulation_index = engine_object_get((*unit_index_reference))->simulation_index;
-    if (simulation_index != NONE)
-        function_b58c0(simulation_index, 0x400000);
+    engine_object_mark_dirty(unit_index, 0x400000);
 }
 
 #include "font_loading.h"
@@ -4614,7 +4614,7 @@ void function_15aad0(s_netgame_entry_state *entries, long index)
         *(point3f *)(creation + 0x1c) = *(point3f *)(placement + 0x40);
         function_11df60((vector3f const *)(placement + 0x4c), (vector3f *)(creation + 0x28), (vector3f *)(creation + 0x34));
         if ((*entries_reference)[*index_reference].index != NONE)
-            function_15b1e0((*entries_reference)[*index_reference].index, *entries_reference, *index_reference);
+            ((c_engine_equipment *)*entries_reference)->release_entry((*entries_reference)[*index_reference].index, *index_reference);
         long object_index = function_b7b40(creation);
         (*entries_reference)[*index_reference].index = object_index;
         (*entries_reference)[*index_reference].value04 = 0;
@@ -4661,33 +4661,39 @@ void function_159e20(void)
             function_b83b0(unit, true);
             function_b8460(unit, true);
         }
-        s_type_f1af8e iterator;
-        iterator.type_mask = clear_all ? ~0UL : 0xfffff83fUL;
-        if (!iterator.type_mask) iterator.type_mask = ~0UL;
-        iterator.flags = 0;
-        iterator.index = 0;
-        iterator.object_index = NONE;
-        iterator.signature = 0x86868686;
-        byte *object;
-        while ((object = (byte *)function_baeb0(&iterator)) != NULL)
+        struct { byte *object; s_type_f1af8e iterator; } state;
+        dword type_mask = NONE;
+        if (!clear_all) type_mask = 0xfffff83f;
+        function_bae80(&state.iterator, type_mask, 0);
+        while ((state.object = (byte *)function_baeb0(&state.iterator)) != NULL)
         {
-            long index = iterator.object_index;
+            byte *object = state.object;
+            long index = state.iterator.object_index;
+            long current = index;
             long root = NONE;
-            for (long current = index; current != NONE;)
+            while (current != NONE)
             {
                 root = current;
                 current = *(long *)((byte *)engine_object_get(current) + 0x14);
             }
-            bool remove = clear_all;
+            bool remove;
             if (*(char *)(object + 0xaf) == NONE && engine_object_get(root)->netgame_entry == NONE)
             {
-                long type = *(char *)(object + 0xaa);
-                if (type == 2)
-                    remove = *(short *)(g_4e3b44[*(long *)object & 0xffff].bytes + 0x290) == 0;
-                else if (type == 11)
+                switch (*(char *)(object + 0xaa))
+                {
+                case 2:
+                    remove = *(short *)(g_4e3b44[*(long *)engine_object_get(index) & 0xffff].bytes + 0x290) == 0;
+                    break;
+                case 11:
                     remove = clear_all || (bool)((*(dword *)(object + 4) >> 14) & 1);
-                else remove = true;
+                    break;
+                default:
+                    remove = true;
+                    break;
+                }
             }
+            else
+                remove = clear_all;
             if (remove)
             {
                 function_b83b0(index, true);
@@ -4697,19 +4703,15 @@ void function_159e20(void)
     }
     else if (clear_all)
     {
-        s_type_f1af8e iterator;
-        iterator.type_mask = ~0UL;
-        iterator.flags = 0;
-        iterator.index = 0;
-        iterator.object_index = NONE;
-        iterator.signature = 0x86868686;
-        byte *object;
-        while ((object = (byte *)function_baeb0(&iterator)) != NULL)
+        struct { byte *object; s_type_f1af8e iterator; } state;
+        function_bae80(&state.iterator, ~0UL, 0);
+        while ((state.object = (byte *)function_baeb0(&state.iterator)) != NULL)
         {
+            byte *object = state.object;
             if (*(long *)(object + 0x14) == NONE && *(long *)(object + 0xd4) == NONE)
             {
-                function_b83b0(iterator.object_index, true);
-                function_b8460(iterator.object_index, true);
+                function_b83b0(state.iterator.object_index, true);
+                function_b8460(state.iterator.object_index, true);
             }
         }
     }
@@ -4737,6 +4739,18 @@ PRIVATE real const g_444908[2] = { 90.0f, 15.0f };
 PRIVATE real const g_444910[2] = { 15.0f, 5.0f };
 PRIVATE real const g_444918[2] = { 90.0f, 10.0f };
 
+struct s_object_flags_159ac0
+{
+	byte unknown00[0x10a];
+	word : 2;
+	word bit_10a_2 : 1;
+	word : 13;
+	byte unknown10c[0x12c - 0x10c];
+	word : 2;
+	word bit_12c_2 : 1;
+	word : 13;
+};
+
 // @retail 0x159ac0
 void function_159ac0(void)
 {
@@ -4744,56 +4758,47 @@ void function_159ac0(void)
     {
         long now = g_510c54->game_time;
         long mode = *(long *)((byte *)g_4e9ae8 + 0xc0c);
-        s_type_f1af8e iterator;
-        iterator.type_mask = 0x81f;
-        iterator.flags = 0;
-        iterator.index = 0;
-        iterator.object_index = NONE;
-        iterator.signature = 0x86868686;
-        byte *object;
-        while ((object = (byte *)function_baeb0(&iterator)) != NULL)
+        struct { byte *object; s_type_f1af8e iterator; } state;
+        function_bae80(&state.iterator, 0x81f, 0);
+        while ((state.object = (byte *)function_baeb0(&state.iterator)) != NULL)
         {
-            long index = iterator.object_index;
+            byte *object = state.object;
+            long index = state.iterator.object_index;
             if ((index & 0xffff) % 30 != g_510c54->game_time % 30) continue;
-            long mask = 1 << *(char *)(object + 0xaa);
-            bool remove = false;
-            if (mask & 0x1c)
+            long type = *(char *)(object + 0xaa);
+            if ((1 << type) & 0x1c)
             {
                 bool available = true;
-                short special = 0;
-                if (mask & 4)
+                long special = 0;
+                if ((1 << *(char *)(object + 0xaa)) & 4)
                 {
                     byte *definition = g_4e3b44[*(long *)engine_object_get(index) & 0xffff].bytes;
                     special = *(short *)(definition + 0x290);
                     available = function_100f00(index);
                 }
-                if (special)
-                    remove = g_55e4d0[g_4e9ae8->engine_index]->p38(index) && !function_161cd0(index);
-                else
+                if (!special)
                 {
-                    if (*(char *)(object + 0xaf) != NONE && !(bool)((object[0x12c] >> 2) & 1) && available) continue;
+                    if (*(char *)(object + 0xaf) != NONE && !TEST_FIELD_BIT(((s_object_flags_159ac0 *)object)->bit_12c_2) && available) continue;
                     if (function_161cd0(index) && available) continue;
                     if (object[0x12c] & 1) continue;
-                    remove = (real)(now - *(long *)(object + 0x150)) * g_510c54->rate >= g_4448f8[mode];
+                    if (g_4448f8[mode] > (real)(now - *(long *)(object + 0x150)) * g_510c54->rate) continue;
                 }
+                else if (!g_55e4d0[g_4e9ae8->engine_index]->p38(index) || function_161cd0(index)) continue;
             }
-            else if (mask & 1)
+            else if ((1 << type) & 1)
             {
-                if (!(bool)((object[0x10a] >> 2) & 1)) continue;
-                remove = (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate >= g_444900[mode] ||
-                    (real)(now - *(long *)(object + 0x2e0)) * g_510c54->rate >= g_444908[mode];
+                if (!TEST_FIELD_BIT(((s_object_flags_159ac0 *)object)->bit_10a_2)) continue;
+                if (g_444900[mode] > (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate &&
+                    g_444908[mode] > (real)(now - *(long *)(object + 0x2e0)) * g_510c54->rate) continue;
             }
             else
             {
                 if (!(bool)((*(dword *)(object + 4) >> 14) & 1) || now < *(long *)(object + 0x20)) continue;
-                remove = (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate >= g_444910[mode] ||
-                    (real)(now - *(long *)(object + 0x20)) * g_510c54->rate >= g_444918[mode];
+                if (g_444910[mode] > (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate &&
+                    g_444918[mode] > (real)(now - *(long *)(object + 0x20)) * g_510c54->rate) continue;
             }
-            if (remove)
-            {
-                function_b9b90(index, false);
-                function_b8540(index);
-            }
+            function_b9b90(index, false);
+            function_b8540(index);
         }
     }
 }
@@ -4835,7 +4840,7 @@ void function_157ae0(void)
             function_15dc40();
             function_15ad30(globals->netgame_entries);
             globals = function_xaee93d();
-            s_statborg *table = game_engine_get_statborg();
+            s_statborg *table = game_engine_statborg_inline();
             if (table) function_1e97b0((s_object_values *)table);
             globals->flags |= 0x20;
         }
@@ -4936,7 +4941,7 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
         if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
         c_engine_peer *engine = game_engine_get();
         long type = engine ? engine->p0() : NONE;
-        if (function_15a090((short *)(placement + 4), type, 4) == NONE) continue;
+        if (function_15a090(type, 4, (short *)(placement + 4)) == NONE) continue;
         long index = entries[i].index;
         byte *object = NULL;
         if (index != NONE)

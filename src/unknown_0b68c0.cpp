@@ -26,9 +26,7 @@ struct s_data_header_40
 
 s_callback_entry g_4674ac[3];
 s_callback_node *g_4e0330;
-void *g_4e0310;
-void *g_4e0314;
-void *g_4e0318;
+s_cluster_partition g_4e0310_partition;
 bool g_4de2f0;
 s_data_header_40 *g_4de2ec;
 
@@ -468,12 +466,6 @@ void function_bffa0();
 struct s_loop_allocator;
 s_loop_allocator *game_state_loop_allocator_new(long size, char const *name);
 void *function_123d40(char const *name, char const *type, long size);
-struct s_cluster_partition
-{
-    long *cluster_first_data_references;
-    s_record_pool *data_references;
-    s_record_pool *cluster_references;
-};
 void function_1cabc0(s_cluster_partition *partition, char const *name, long payload_size);
 
 s_record_pool *data_new(char const *name, long maximum_count, long size, long alignment_bits, c_data_allocator *allocator);
