@@ -1616,10 +1616,21 @@ void function_19b1c9(long screen_id, long menu, long state)
 			break;
 		case 3:
 		{
-			bool in_game = menu == 0 || menu == 1 || menu == 2 || menu == 6;
+			bool in_game = false;
+
+			switch (menu)
+			{
+			case 0:
+			case 1:
+			case 2:
+			case 6:
+				in_game = true;
+				break;
+			}
+
 			bool players = player_slot_count_active() > 0;
 
-			if (in_game && players)
+			if (in_game & players)
 			{
 				function_149f1e(0xffff, (long)function_24fa4c);
 				return;
@@ -2147,39 +2158,45 @@ bool function_19a902(void)
 // @retail 0x19a5fd
 long function_19a5fd(long state)
 {
-	volatile long default_value = 0;
-	long entries[16][2] =
+	struct
 	{
-		{ 0, 0x9 },
-		{ 1, 0xb },
-		{ 2, 0xc },
-		{ 3, 0xd },
-		{ 4, 0xe },
-		{ 5, 0xf },
-		{ 6, 0x10 },
-		{ 7, 0x11 },
-		{ 8, 0x12 },
-		{ 9, 0x13 },
-		{ 0xa, 0x14 },
-		{ 0xb, 0x15 },
-		{ 0xc, 0x16 },
-		{ 0xd, 0x17 },
-		{ 0xe, 0x18 },
-		{ 0xf, 0x19 },
+		long entries[16][2];
+		long default_value;
+	} table =
+	{
+		{
+			{ 0, 0x9 },
+			{ 1, 0xb },
+			{ 2, 0xc },
+			{ 3, 0xd },
+			{ 4, 0xe },
+			{ 5, 0xf },
+			{ 6, 0x10 },
+			{ 7, 0x11 },
+			{ 8, 0x12 },
+			{ 9, 0x13 },
+			{ 0xa, 0x14 },
+			{ 0xb, 0x15 },
+			{ 0xc, 0x16 },
+			{ 0xd, 0x17 },
+			{ 0xe, 0x18 },
+			{ 0xf, 0x19 },
+		},
+		0
 	};
 
 
 	long result;
 	for (dword i = 0; i < 16; i++)
 	{
-		if (entries[i][0] == state)
+		if (table.entries[i][0] == state)
 		{
-			result = entries[i][1];
+			result = table.entries[i][1];
 			goto done;
 		}
 	}
 
-	result = default_value;
+	result = table.default_value;
 done:
 	return result;
 }
