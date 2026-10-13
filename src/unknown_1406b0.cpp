@@ -179,6 +179,13 @@ static inline byte *data_iterator_next_called(s_record_pool_iterator *iterator)
 	return result;
 }
 
+/* function_16b790, which retail inlines here */
+static inline void data_make_valid_inlined(s_record_pool *data)
+{
+	data->valid = true;
+	record_pool_release_all(data);
+}
+
 static inline bool hash_table_find_data(hash_table *table, void *key, void *data)
 {
 	hash_node *node = function_13e2d0(table, key);
@@ -371,10 +378,8 @@ void font_cache_initialize(void)
 	g_54d578 = data_new_inlined("predicted data", 0x100, sizeof(s_font_prediction), 0, g_468758);
 	g_54d570 = function_13e1a0("font character hash table", sizeof(long), 0x400, font_cache_hash, font_cache_compare, 0x200, g_468758);
 
-	g_54d574->valid = true;
-	record_pool_release_all(g_54d574);
-	g_54d578->valid = true;
-	record_pool_release_all(g_54d578);
+	data_make_valid_inlined(g_54d574);
+	data_make_valid_inlined(g_54d578);
 }
 
 // @retail 0x140aa0
@@ -484,16 +489,17 @@ PRIVATE long font_cache_new_character(long font_index, long character)
 PRIVATE void font_cache_delete_character(long datum_index)
 {
 	s_font_character *character = FONT_CHARACTER(datum_index);
+	long render_index = character->render_index;
 
-	if (character->render_index != NONE)
+	if (render_index != NONE)
 	{
-		long other_index = g_4b62b0[character->render_index].character_index;
+		long other_index = g_4b62b0[render_index].character_index;
 
 		if (other_index != NONE)
 		{
 			FONT_CHARACTER(other_index)->render_index = NONE;
 		}
-		g_4b62b0[character->render_index].character_index = NONE;
+		g_4b62b0[render_index].character_index = NONE;
 	}
 
 	if (character->pixels_index != NONE)
@@ -674,9 +680,7 @@ void font_cache_pixels_initialize(void)
 	// Read the physical receiver through a const pointer at this later use.
 	(*(s_physical_object *const *)&g_54d580)->state = 2;
 
-	// Read the pool through a const pointer at this later use.
-	(*(s_record_pool *const *)&g_54d57c)->valid = true;
-	record_pool_release_all(g_54d57c);
+	data_make_valid_inlined(g_54d57c);
 }
 
 // @retail 0x141190
@@ -750,8 +754,8 @@ PRIVATE void *font_cache_pixels_get(long pixels_index, bool wait)
 // @retail 0x141350
 PRIVATE bool font_cache_character_allocate_pixels(long datum_index, bool wait)
 {
-	s_font_character *character = FONT_CHARACTER(datum_index);
 	bool result = false;
+	s_font_character *character = FONT_CHARACTER(datum_index);
 
 	if (character->pixels_index != NONE)
 	{
@@ -791,7 +795,8 @@ PRIVATE bool font_cache_character_allocate_pixels(long datum_index, bool wait)
 // @retail 0x141450
 PRIVATE byte *font_cache_pixels_get_buffer(long pixels_index)
 {
-	return g_54d584 + (PHYSICAL_BLOCK(pixels_index)->offset << g_54d580->page_shift);
+	// Read the pixel buffer through a const pointer, as the file's other pools are.
+	return *(byte *const *)&g_54d584 + (PHYSICAL_BLOCK(pixels_index)->offset << g_54d580->page_shift);
 }
 
 // @retail 0x141480
@@ -814,32 +819,32 @@ PRIVATE long font_cache_read(long font_index, void *buffer, long size, dword off
 bool font_cache_predict_character(s_13eeb1 font_index, s_13eeb1 character)
 {
 	s_font_cache_flags flags = { false, true };
-	s_font_character_header *(*get_header)(long, long, s_font_cache_flags) = font_cache_get_character_header;
-	if (get_header(font_index, character, flags))
-	{
-		return true;
-	}
 
-	s_record_pool_iterator iterator;
-	s_font_prediction *prediction;
-
-	iterator.data = g_54d578;
-	iterator.index = NONE;
-	while ((prediction = (s_font_prediction *)data_iterator_next_inlined(&iterator)) != NULL)
+	if (!font_cache_get_character_header(font_index, character, flags))
 	{
-		if (prediction->font_index == font_index && prediction->character == character)
+		s_record_pool_iterator iterator;
+		s_font_prediction *prediction;
+
+		iterator.data = g_54d578;
+		iterator.index = NONE;
+		while ((prediction = (s_font_prediction *)data_iterator_next_inlined(&iterator)) != NULL)
 		{
-			return false;
+			if (prediction->font_index == font_index && prediction->character == character)
+			{
+				return false;
+			}
 		}
+
+		long datum_index = record_pool_allocate(g_54d578);
+		if (datum_index != NONE)
+		{
+			prediction = (s_font_prediction *)&((s_font_prediction *)g_54d578->data)[datum_index & 0xffff];
+			prediction->font_index = font_index;
+			prediction->character = character;
+		}
+
+		return false;
 	}
 
-	long datum_index = record_pool_allocate(g_54d578);
-	if (datum_index != NONE)
-	{
-		prediction = (s_font_prediction *)&((s_font_prediction *)g_54d578->data)[datum_index & 0xffff];
-		prediction->font_index = font_index;
-		prediction->character = character;
-	}
-
-	return false;
+	return true;
 }
