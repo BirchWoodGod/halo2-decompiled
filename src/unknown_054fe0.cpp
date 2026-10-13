@@ -751,7 +751,7 @@ bool network_session_get_membership(c_class_58d20 *session, long *value4c, long 
 // @retail 0x64310
 bool network_session_interface_kick_player(long player_index)
 {
-	bool result = false;
+	volatile bool result = false;
 	c_class_58d20 *session = network_session_get_live();
 	if (session)
 	{
@@ -769,7 +769,7 @@ bool network_session_interface_kick_player(long player_index)
 // @retail 0x643f0
 bool network_session_interface_ban_player(long player_index)
 {
-	bool result = false;
+	volatile bool result = false;
 	c_class_58d20 *session = network_session_get_live();
 	if (session)
 	{
