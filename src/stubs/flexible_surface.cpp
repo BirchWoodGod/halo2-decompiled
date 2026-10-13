@@ -3,11 +3,6 @@
 
 
 
-// @stub 0x423c0
-void __stdcall function_423c0(void *payload) {}
-
-
-
 // @stub 0x508d0
 void __stdcall function_508d0(void *payload) {}
 

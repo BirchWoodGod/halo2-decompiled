@@ -14,15 +14,6 @@ struct s_frame_view_2c560;
 
 
 
-// @stub 0x2bcd0
-void __stdcall function_2bcd0(long, long, bool, long, long, long, float)
-{
-}
-
-
-
-
-
 
 
 struct s_2f970_view;
@@ -31,13 +22,6 @@ struct s_speed_result;
 
 struct s_bit_vector_pool;
 
-
-
-
-// @stub 0x41cc0
-void __stdcall function_41cc0(void *payload)
-{
-}
 
 
 struct s_visibility_plane_query;
@@ -56,21 +40,6 @@ void __cdecl function_2ddbd0(void *data, s_visibility_sphere_query const *query,
 {
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// @stub 0x32350
-bool __stdcall function_32350(long index, real alpha) { return false; }
 
 struct transform4x3f;
 
@@ -91,6 +60,9 @@ c_z_capsule_temp::~c_z_capsule_temp() {}
 void __stdcall function_14b60(dword, dword, real, byte) {}
 
 
+struct s_view_camera;
+struct s_view_source;
+
 
 // @stub 0x132d0
 void __stdcall function_132d0(s_frame_view_2c560 const *) {}
@@ -98,11 +70,9 @@ void __stdcall function_132d0(s_frame_view_2c560 const *) {}
 // @stub 0x3bd00
 bool __stdcall function_3bd00(real, dword) { return true; }
 
-struct s_view_camera;
-struct s_view_source;
-// @stub 0x31170
-void function_31170(long, s_view_camera *, long, s_view_source *, bool, real)
-{
-}
+struct s_depth_parameters_13450;
+// @stub 0x13450
+bool function_13450(s_depth_parameters_13450 const *parameters) { return false; }
 
-
+// @stub 0x289e0
+bool function_289e0() { return false; }

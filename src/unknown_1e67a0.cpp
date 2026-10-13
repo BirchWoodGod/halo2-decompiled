@@ -60,7 +60,7 @@ void function_b7360(long object_index);
 void function_bba20(long object_index);
 void __stdcall function_b87b0(long object_index);
 void __stdcall function_b8600(long object_index, long mode);
-void __stdcall function_1c4a80(long object_index, bool first, bool second);
+void function_1c4a80(long object_index, bool first, bool second);
 void function_b58c0(long object_index, dword mask);
 void function_1d08e0(short index, s_havok_component *component, transform4x3f *matrix);
 bool function_1c5210(transform4x3f const *matrix, void *shape, long component, long filter);
