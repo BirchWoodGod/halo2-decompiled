@@ -4094,7 +4094,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0012c290,65,game,speed,a16 pad,,,0012d0a0 0013d8b0,src/unknown_12c0d0.cpp,matched
 0012c2e0,277,game,speed,a16 pad,,,0013d950,src/unknown_12c0d0.cpp,matched
 0012c400,72,game,speed,a16 pad,,,,src/unknown_12c0d0.cpp,todo
-0012c450,213,game,speed,a16 pad,,,0012ccf0 0012ce00 0016ba40 0016bc00,src/unknown_12c0d0.cpp,todo
+0012c450,213,game,speed,a16 pad,,,0012ccf0 0012ce00 0016ba40 0016bc00,src/unknown_12c0d0.cpp,matched
 0012c530,122,game,speed,a16 pad,,,,src/unknown_12c0d0.cpp,matched
 0012c5b0,73,game,speed,a16 pad,,,0012c530 0013d230,src/unknown_12c0d0.cpp,matched
 0012c600,59,game,speed,a16 pad,,,0012c2e0 0012c400 0012c450 0012c5b0 003314b0,src/xbox_texture_cache_update.cpp,matched
