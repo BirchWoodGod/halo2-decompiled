@@ -482,8 +482,7 @@ void __stdcall function_44040(long cell, short mask)
                 {
                     g_4c8784 = color;
                     g_4c8780 = false;
-                    void (WINAPI *volatile set_vertex_data_4ub)(INT, BYTE, BYTE, BYTE, BYTE) = D3DDevice_SetVertexData4ub;
-                    set_vertex_data_4ub(10, (byte)(color >> 16), (byte)(color >> 8), (byte)color, (byte)(color >> 24));
+                    D3DDevice_SetVertexData4ub(10, (byte)(color >> 16), (byte)(color >> 8), (byte)color, (byte)(color >> 24));
                     D3DDevice_SetVertexDataColor(11, 0);
                 }
                 long block_index = *(long *)(entry + 4) & 0xffff;
