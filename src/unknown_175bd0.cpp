@@ -1255,12 +1255,13 @@ void function_17b750(long *values, long value)
 // @retail 0x175fa0
 long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 {
-	long effect_index = NONE;
+	long result = NONE;
 	bool force = TEST_FIELD_BIT(parameters->flag2);
 
 	if (force || function_176210(parameters))
 	{
-		effect_index = function_178120(parameters->tag_index, &parameters->owner, force);
+		long effect_index = function_178120(parameters->tag_index, &parameters->owner, force);
+		result = effect_index;
 		if (effect_index != NONE)
 		{
 			s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
@@ -1327,10 +1328,10 @@ long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 				function_179850(effect_index, 0.0f);
 			g_510c78 = 0;
 			if (!record_pool_lookup(g_4ea93c, effect_index))
-				return NONE;
+				result = NONE;
 		}
 	}
-	return effect_index;
+	return result;
 }
 
 // @retail 0x176210
