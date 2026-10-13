@@ -479,13 +479,16 @@ static __forceinline long function_74721(const s_match_rating_entry *arg_0, long
 long __stdcall function_74720(const s_match_rating_collection *collection, long selected)
 {
 	const s_match_rating_entry *current = &collection->entries[selected];
-	long rank;
-	long skill;
-	long value;
+	struct s_74720
+	{
+		long field_0;
+		long field_4;
+		long field_8;
+	} local_0;
 	long count = 0;
 	long total = 0;
-	value = current->value;
-	rank = function_74721(current, &skill);
+	local_0.field_8 = current->value;
+	local_0.field_4 = function_74721(current, &local_0.field_0);
 	for (long i = 0; i < 16; i++)
 	{
 		const s_match_rating_entry *entry = &collection->entries[i];
@@ -494,17 +497,17 @@ long __stdcall function_74720(const s_match_rating_collection *collection, long 
 			long other_skill = entry->skill;
 			if (entry->active && other_skill != NONE)
 			{
-				total += function_746b0(other_skill, skill, rank, entry->rank);
+				total += function_746b0(other_skill, local_0.field_0, local_0.field_4, entry->rank);
 				count++;
 			}
 		}
 	}
 	if (count > 0)
 		total /= count;
-	if (total + value < 0)
-		total = -value;
-	if (total + value > 0x3fffffff)
-		total = 0x3fffffff - value;
+	if (total + local_0.field_8 < 0)
+		total = -local_0.field_8;
+	if (total + local_0.field_8 > 0x3fffffff)
+		total = 0x3fffffff - local_0.field_8;
 	return total < g_network_configuration.valuec7c ? g_network_configuration.valuec7c :
 		(total > g_network_configuration.valuec78 ? g_network_configuration.valuec78 : total);
 }

@@ -551,18 +551,18 @@ void c_session_state_matchmaking::leave(long a)
 // @retail 0x72b50
 bool c_session_state_post_match::update()
 {
+	bool result;
 	s_session_owner *o = owner;
 	c_class_58d20 *a = o->session_a;
 	c_class_58d20 *b = o->session_b;
-	bool result = function_06dfa0();
+	result = function_06dfa0();
+	volatile bool local_0 = result;
 	if (!result && !o->failed)
 	{
 		if (b->type == 5 && (a->type == 13 || a->type == 12))
 		{
 			if (!SESSION_STATE_IS_LIVE(b->state) || !a->function_058d20())
-			{
-				return result;
-			}
+				goto local_1;
 			long index = b->member_index;
 			s_session_snapshot snapshot;
 			s_session_snapshot compare;
@@ -571,14 +571,16 @@ bool c_session_state_post_match::update()
 			network_session_get_key(b, (s_session_id *)snapshot.unknown04, snapshot.unknown0c, NULL, &snapshot.unknown00);
 			memcpy(snapshot.words, b->members[index].words, sizeof(snapshot.words));
 			if (!network_session_get_data5ddc(a, (s_parameters_part *)&compare) || memcmp(&compare, &snapshot, sizeof(snapshot)) != 0)
-			{
 				network_session_host_set_data5ddc(a, (const s_parameters_part *)&snapshot);
-			}
-			return result;
+			result = local_0;
 		}
-		network_session_leave(b, false);
-		return true;
+		else
+		{
+			network_session_leave(b, false);
+			result = true;
+		}
 	}
+local_1:
 	return result;
 }
 
