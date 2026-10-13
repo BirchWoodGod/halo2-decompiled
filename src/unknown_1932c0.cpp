@@ -745,6 +745,15 @@ PRIVATE s_map_preset_193010 const g_445258[6] = {
 
 void function_212f40(long preset, s_game_variant *variant);
 
+/* sets or clears one bit of a flags word */
+static inline void flags_set_bit(dword *flags, long bit, bool value)
+{
+	if (value)
+		*flags |= 1 << bit;
+	else
+		*flags &= ~(1 << bit);
+}
+
 // @retail 0x193010
 void function_193010(s_game_variant_block *block, long type)
 {
@@ -797,8 +806,8 @@ void function_193010(s_game_variant_block *block, long type)
         memcpy(map->unknown008 + 64, map->unknown008, 512);
         map->weight = presets[i].weight;
         function_212f40(presets[i].preset, (s_game_variant *)map->settings);
-        *(dword *)(map->settings + 0x48) &= ~0x10;
-        *(dword *)(map->settings + 0x48) &= ~0x20;
+        flags_set_bit((dword *)(map->settings + 0x48), 4, false);
+        flags_set_bit((dword *)(map->settings + 0x48), 5, false);
         *(long *)(map->settings + 0x58) = 0;
     }
     }
@@ -808,7 +817,7 @@ void function_193010(s_game_variant_block *block, long type)
     block->map_count = 1;
     function_19d220((s_game_variant *)block->maps[0].settings, 4);
     *(long *)(block->maps[0].settings + 0x50) = 5;
-    *(dword *)(block->maps[0].settings + 0x48) &= ~0x10;
+    flags_set_bit((dword *)(block->maps[0].settings + 0x48), 4, false);
     }
 }
 
