@@ -4532,18 +4532,16 @@ void function_159250(long player_index, real alpha)
 	}
 	if (player && player->unit_index != NONE)
 	{
-		union
-		{
-			struct { s_camera camera; s_view view; } projection;
-			word text[0x100];
-		} storage;
-		point2f point = { 0.0f, 0.0f };
+		word text[0x100];
+		point2f point;
 		s_object_marker marker;
 		function_b8d30(player->unit_index, 0x04000095, &marker, 1, false);
+		point3f position = marker.matrix.position;
+		position.z += 0.05f;
+		real x = position.x;
+		real y = position.y;
+		real z = position.z;
 		real scale = g_4b9e14.scale;
-		real x = marker.matrix.position.x;
-		real y = marker.matrix.position.y;
-		real z = marker.matrix.position.z + 0.05f;
 		if (scale != 1.0f)
 		{
 			x = scale * x;
@@ -4563,18 +4561,8 @@ void function_159250(long player_index, real alpha)
 		transformed.k += g_4b9e14.right.k * x;
 		transformed.k += g_4b9e14.up.k * y;
 		transformed.k += g_4b9e14.position.z;
-		// Copy the fields the projector reads; shared globals must not escape.
-		storage.projection.camera.unknown78 = g_4b9e14.unknown78;
-		storage.projection.camera.unknown8c = g_4b9e14.unknown8c;
-		storage.projection.camera.unknown98 = g_4b9e14.unknown98;
-		storage.projection.camera.unknown9c = g_4b9e14.unknown9c;
-		storage.projection.view.bounds.top = g_4b9dd0;
-		storage.projection.view.bounds.left = g_4b9dd2;
-		storage.projection.view.bounds.bottom = g_4b9dd4;
-		storage.projection.view.bounds.right = g_4b9dd6;
-		if (function_30710(&transformed, 0, &point, &storage.projection.camera, &storage.projection.view))
+		if (function_30710(&transformed, 0, &point, (s_camera const *)&g_4b9e14, (s_view const *)&g_camera_storage))
 		{
-			word *text = storage.text;
 			text[0] = 0;
 			wcsncpy((wchar_t *)text, (wchar_t const *)((byte *)player + 0x44), 0xff);
 			text[0xff] = 0;
@@ -4590,6 +4578,16 @@ void function_b7930(void *data, long tag_index, long object_index, s_effect_owne
 long __stdcall function_b7b40(void *creation);
 void function_11df60(vector3f const *rotation, vector3f *forward, vector3f *up);
 long weighted_choice_random(long tag_index, long *extra);
+long weighted_choice_random_15aad0(long tag_index, long *extra);
+
+/* retail calls 0x11df60 out of line here; its own file is built without /Ob1, so the call is kept out of line through a depth-0 helper */
+#pragma inline_depth(0)
+PRIVATE __forceinline void euler_vectors_get_15aad0(vector3f const *rotation, vector3f *forward, vector3f *up)
+{
+    function_11df60(rotation, forward, up);
+}
+#pragma inline_depth(255)
+
 void __stdcall function_b9b90(long object_index, bool disable);
 void __stdcall function_a7870(long object_index);
 
@@ -4603,28 +4601,33 @@ void function_15aad0(s_netgame_entry_state *entries, long index)
     long original = NONE;
     if (*(long *)(placement + 0x5c) != NONE)
     {
-        if (*(long *)(placement + 0x58) == 0x69746d63)
+        /* the second case calls the folded twin of weighted_choice_random (src/unknown_19eda0.cpp) */
+        switch (*(long *)(placement + 0x58))
+        {
+        case 0x69746d63:
             original = weighted_choice_random(*(long *)(placement + 0x5c), &name);
-        else if (*(long *)(placement + 0x58) == 0x76656863)
-            original = weighted_choice_random(*(long *)(placement + 0x5c), &name);
+            break;
+        case 0x76656863:
+            original = weighted_choice_random_15aad0(*(long *)(placement + 0x5c), &name);
+            break;
+        }
     }
     long selected;
-    char kind = *(char *)(placement + 0x14);
-    if (kind >= 1 && kind <= 7)
-        selected = ((c_engine_equipment *)*entries_reference)->choose(original, &name, kind);
-    else if (kind == 8 || kind == 9)
+    if ((char)placement[0x14] >= 1 && (char)placement[0x14] <= 7)
+        selected = ((c_engine_equipment *)*entries_reference)->choose(original, &name, (char)placement[0x14]);
+    else if ((char)placement[0x14] == 8 || (char)placement[0x14] == 9)
         selected = function_15a5b0(original);
-    else if (kind == 0)
+    else if ((char)placement[0x14] == 0)
         selected = function_15a640(original);
     else
         selected = original;
     if (selected != NONE)
     {
-        byte creation[0xb4];
+        byte creation[0xc4];
         function_b7930(creation, selected, NONE, NULL);
         *(long *)(creation + 0xc) = name;
         *(point3f *)(creation + 0x1c) = *(point3f *)(placement + 0x40);
-        function_11df60((vector3f const *)(placement + 0x4c), (vector3f *)(creation + 0x28), (vector3f *)(creation + 0x34));
+        euler_vectors_get_15aad0((vector3f const *)(placement + 0x4c), (vector3f *)(creation + 0x28), (vector3f *)(creation + 0x34));
         if ((*entries_reference)[*index_reference].index != NONE)
             ((c_engine_equipment *)*entries_reference)->release_entry((*entries_reference)[*index_reference].index, *index_reference);
         long object_index = function_b7b40(creation);
