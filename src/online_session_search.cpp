@@ -193,6 +193,8 @@ bool function_90160(long task_index, s_match_result_data *result)
 	return success;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x90b30
 void function_90b30(s_session_search *search)
 {
@@ -215,6 +217,7 @@ void function_90b30(s_session_search *search)
 		SEARCH_FLAG(search, 0x2c) = false;
 		SEARCH_FLAG(search, 0x24) = false;
 	}
+	_ReadWriteBarrier();
 	if (current != NONE && search->unknown20 > 0)
 		search->minimum_score = (long)((real)g_network_configuration.value1e8 + ((real)current / (real)search->unknown20) * ((real)g_network_configuration.value1ec - (real)g_network_configuration.value1e8));
 	else
@@ -237,6 +240,8 @@ void function_90b30(s_session_search *search)
 	else
 		search->start_time = g_510548 ? g_51054c : GetTickCount();
 }
+
+#pragma function(_ReadWriteBarrier)
 
 struct s_qos_target
 {

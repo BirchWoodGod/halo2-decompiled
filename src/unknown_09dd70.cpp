@@ -497,18 +497,20 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
         *(long *)(local_11 + 0x214) = local_12;
         *(short *)(local_11 + 0x210) = (short)local_12;
     }
+    short *record = &local_2->field_ac[0].field_4;
     long local_13 = 0;
     do
     {
         dword local_14 = local_1 & (1 << (local_13 + 14));
         if (local_14)
         {
-            long local_15 = local_2->field_ac[local_13].field_0;
+            long local_15 = *(long *)(record - 2);
             if (local_15 == NONE || function_122c10(0x77656170, local_15))
-                function_d09c0(arg_0, local_13, local_15, local_2->field_ac[local_13].field_4, (dword const *)&local_2->field_a8);
+                function_d09c0(arg_0, local_13, local_15, record[0], (dword const *)&local_2->field_a8);
         }
         if (local_14 || (local_1 & (1 << (local_13 + 18))))
-            function_d0b70(arg_0, local_2->field_ac[local_13].field_6, local_2->field_ac[local_13].field_8, local_2->field_ac[local_13].field_c, local_13);
+            function_d0b70(arg_0, record[1], record[2], *(real *)(record + 4), local_13);
+        record += 8;
         ++local_13;
     } while ((dword)local_13 < 4);
     if (local_1 & 0x400000)
