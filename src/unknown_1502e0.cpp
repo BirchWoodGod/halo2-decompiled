@@ -356,23 +356,19 @@ struct s_tail_player_identifier
 // @retail 0x1529a0
 s_tail_traits *function_1529a0(long player_index)
 {
-	s_tail_player_identifier *player = (s_tail_player_identifier *)tail_player_get(player_index);
 	s_tail_scenario *scenario = (s_tail_scenario *)g_4e0350;
 	bool alternate = false;
-	s_tail_options_player *entry;
-	long i;
+	s_tail_player_identifier *player = (s_tail_player_identifier *)tail_player_get(player_index);
 
 	if (scenario->entry_count > 0 && scenario->entries[0].value2c == 1)
-	{
 		alternate = true;
-	}
-	entry = ((s_tail_options *)g_4e6948)->players;
-	for (i = 0; i < 16; i++, entry++)
+	for (long i = 0; i < 16; i++)
 	{
-		if (memcmp(player->identifier, entry->identifier, sizeof(entry->identifier)) == 0)
-		{
+		s_tail_options_player *entry = &((s_tail_options *)g_4e6948)->players[i];
+		long difference = memcmp(entry->identifier, player->identifier, sizeof(entry->identifier));
+
+		if (difference == 0)
 			return &entry->traits[alternate ? 1 : 0];
-		}
 	}
 	return 0;
 }
