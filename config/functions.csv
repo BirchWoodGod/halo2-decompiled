@@ -3980,7 +3980,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 001249d0,26,game,speed,a16 pad,,,,src/unknown_1248b0.cpp,matched
 001249f0,77,game,speed,a16 pad,,,,src/unknown_1248b0.cpp,matched
 00124a40,96,game,speed,a16 pad,,,,src/unknown_1248b0.cpp,matched
-00124aa0,351,game,unknown,a16,,,002184a0 003314b0 004098c5 00409932 00409988 00409994,src/unknown_1248b0.cpp,todo
+00124aa0,351,game,unknown,a16,,,002184a0 003314b0 004098c5 00409932 00409988 00409994,src/unknown_1248b0.cpp,matched
 00124c00,728,game,speed,a16 pad,,,00409b6c,src/unknown_1248b0.cpp,todo
 00124ee0,174,game,speed,a16 pad,,,00409bdf,src/unknown_1248b0.cpp,matched
 00124f90,42,game,speed,a16 pad,,,,src/unknown_124f90.cpp,matched
@@ -6728,7 +6728,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 001ccba0,172,game,unknown,a16,,,,src/unknown_1cafc0.cpp,matched
 001ccc50,121,game,speed,a16 pad,,,,src/unknown_1cafc0.cpp,matched
 001cccd0,197,game,speed,a16 pad,,,001cc3f0,src/unknown_1cafc0.cpp,matched
-001ccda0,720,game,speed,a16 pad,,,001dade0 001daea0 001dc8c0,src/unknown_1cafc0.cpp,todo
+001ccda0,720,game,speed,a16 pad,,,001dade0 001daea0 001dc8c0,src/unknown_1cafc0.cpp,matched
 001cd070,1133,game,unknown,a16,,,000b6760 000e6800 001c6440 001c6470 001c6560 001c7300 001cb3b0 001cb410 001cc3f0 001ccba0 001cccd0 001ccda0 001ce010 001ce180 001daea0,src/unknown_1cafc0.cpp,todo
 001cd4e0,39,game,speed,a16 pad,,,001d9320,src/unknown_1cafc0.cpp,matched
 001cd510,117,game,speed,a16 pad,,,,src/unknown_1cafc0.cpp,matched
@@ -9226,7 +9226,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0025d420,226,game,speed,a16 pad,,,001fb7e0 0025d700 0026ba60,src/unknown_25d690.cpp,matched
 0025d510,108,game,speed,a16 pad,,,,src/unknown_25d690.cpp,todo
 0025d580,131,game,speed,a16 pad,,,0025c780,src/unknown_25d690.cpp,todo
-0025d610,85,game,speed,a16 pad,,,,src/unknown_25d690.cpp,todo
+0025d610,85,game,speed,a16 pad,,,,src/unknown_25d690.cpp,matched
 0025d670,24,game,speed,a16 pad,,,0025d690,src/unknown_25d690.cpp,matched
 0025d690,107,game,speed,a16 pad,,,,src/unknown_25d690.cpp,matched
 0025d700,59,game,speed,a16 pad,,,,src/unknown_25d690.cpp,matched
