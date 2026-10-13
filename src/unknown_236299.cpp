@@ -216,6 +216,12 @@ s_type_7ba8e9 *function_236235(short frame_index, short sequence_index)
 
 /* projects a point onto the screen: the window manager's depth moves it away
    from the eye, and x and y scale about the bounds' centre */
+/* true when a value is too close to zero to divide by */
+static __forceinline bool real_is_tiny(real value)
+{
+	return (real)fabs(value) < 0.0001f;
+}
+
 // @retail 0x2360c3
 void function_2360c3(point3f *point, short_rectangle2d const *bounds)
 {
@@ -224,8 +230,7 @@ void function_2360c3(point3f *point, short_rectangle2d const *bounds)
 	real depth = g_54d598.color14.green;
 	real scale;
 
-	real magnitude = (real)fabs(g_54d598.color14.green);
-	if (magnitude < 0.0001f)
+	if (real_is_tiny(g_54d598.color14.green))
 	{
 		depth = 1.0f;
 	}
@@ -587,7 +592,7 @@ void function_23661f(s_dialog_definition *definition, long dialog_id)
 
 struct s_1ed70_point { short x, y; };
 void function_1eb00();
-void function_1ed70(color4f const *color, s_1ed70_point const *points, volatile short count);
+void function_1ed70(color4f const *color, s_1ed70_point const *points, short count);
 void function_1ee50();
 
 // @retail 0x235d69

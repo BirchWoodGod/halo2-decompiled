@@ -42,8 +42,10 @@ real g_547638;
 // @retail 0xbfd20
 void function_0bfd20(long object_index)
 {
-	s_object_hdr *object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
+	s_object_header *headers = (s_object_header *)g_4e0300->data;
 	s_match_globals *globals = g_4e0348;
+	long header_index = object_index & 0xffff;
+	s_object_hdr *object = headers[header_index].object;
 	if (TEST_FIELD_BIT(g_4e3b44[(object->tag_index & 0xffff)].flags->flag0))
 	{
 		s_match_entry *entry = globals->match_entries;

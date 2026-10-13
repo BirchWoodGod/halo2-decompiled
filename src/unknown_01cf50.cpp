@@ -534,7 +534,7 @@ void function_36880(color4f const *color, s_short_rectangle const *rectangle)
 		bool right = i == 1 || i == 2;
 		short y = top ? (*rectangle_reference)->top : (*rectangle_reference)->bottom;
 		short x = right ? (*rectangle_reference)->right : (*rectangle_reference)->left;
-		D3DDevice_SetVertexData2s(0, x, y);
+		D3DDevice_SetVertexData2f(0, (real)x, (real)y);
 	}
 	D3DDevice::End();
 }
@@ -647,8 +647,8 @@ bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority)
     {
         long slot = stage;
         g_51f3c8[1][slot] = function_12310((s_bitmap_view *)bitmap, priority);
-        long height = *(short *)((byte *)bitmap + 6);
         long width = *(short *)((byte *)bitmap + 4);
+        long height = *(short *)((byte *)bitmap + 6);
         g_485af4[slot] = width;
         g_485b04[slot] = height;
     }
@@ -687,7 +687,7 @@ void function_144f0(long tag, short stage, long fallback, short fallback_index, 
     if (tag != NONE)
     {
         byte *group = g_4e3b44[tag & 0xffff].bytes;
-        long count = *(long *)(group + 0x44);
+        long count = *(long const volatile *)(group + 0x44);
         if (count > 0)
         {
             bitmap = function_137550(tag, (short)(index % count));
@@ -2219,13 +2219,15 @@ bool __stdcall function_1e700(word first, word second, void const *context)
 // @retail 0x1e370
 void function_1e370(void)
 {
-	long scratch;
 	function_35aa0();
 	long first = g_4b6280.unknown04;
 	word *indices = (word *)g_4b6280.buffer;
 	for (long i = first; i < g_4b6280.count; ++i)
 		indices[i - first] = (word)i;
-	sort_2byte(indices, g_4b6280.count - first, &scratch, function_1e700, g_4b6280.records);
+	{
+		long scratch;
+		sort_2byte(indices, g_4b6280.count - first, &scratch, function_1e700, g_4b6280.records);
+	}
 	for (long i = 0; i < g_4b6280.count - (long)g_4b6280.unknown04; ++i)
 	{
 		s_1e4e0_record *record = (s_1e4e0_record *)&g_4b6280.records[((word *)g_4b6280.buffer)[i]];
@@ -2236,7 +2238,18 @@ void function_1e370(void)
 	D3DDevice_SetRenderState(D3DRS_STIPPLEENABLE, 0);
 	if (!(fabs(g_4b8494 - 1.0f) < 0.0001f))
 	{
-		D3DDevice_SetStipple(function_1c290(1.0f));
+		real scaled = 1.0f * 16.0f;
+		long index;
+		__asm
+		{
+			fld scaled
+			fistp index
+		}
+		if (index < 0)
+			index = 0;
+		else if (index > 16)
+			index = 16;
+		D3DDevice_SetStipple(g_487288[index]);
 		g_4b8494 = 1.0f;
 	}
 }
@@ -3290,9 +3303,8 @@ void function_36580()
     function_0222d0(D3DRS_CULLMODE, 0);
     real x = 1.0f / (short)(g_48564e - g_48564a);
     real y = 1.0f / (short)(g_48564c - g_485648);
-    real extra[24];
+    real extra[24] = { 0.0f };
     real constants[20];
-    memset(extra, 0, sizeof(extra));
     constants[0] = x * 2.0f;
     constants[1] = 0.0f;
     constants[2] = 0.0f;

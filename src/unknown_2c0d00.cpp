@@ -689,7 +689,9 @@ void obstacle_list_flood(short first_index, dword *bits, real radius, s_obstacle
 					distance = (current->radius + radius) + (other_radius + radius);
 					vector2d_from_points2d(&current->center, &other->center, &offset);
 					distance *= distance;
-					if (length_sq2f(&offset) <= distance)
+					real length = offset.x * offset.x;
+					length += offset.y * offset.y;
+					if (length <= distance)
 					{
 						bit_vector_set(bits, i);
 						stack[stack_count++] = i;

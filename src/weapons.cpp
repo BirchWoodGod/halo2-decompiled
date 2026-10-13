@@ -696,23 +696,21 @@ void function_102f70(long weapon_index, short barrel_index)
 	}
 }
 
-static __forceinline s_weapon_trigger_definition *weapon_trigger_definition_get(short const volatile *index, s_weapon_definition *definition)
-{
-	return &definition->triggers[*index];
-}
-
 // @retail 0x103a90
 bool function_103a90(long weapon_index, short trigger_index)
 {
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
-	short const volatile *trigger_reference = &trigger_index;
-	s_weapon_trigger_definition *trigger = weapon_trigger_definition_get(trigger_reference, definition);
-	short barrel_index = trigger->primary_barrel;
+	s_weapon_trigger_definition *trigger = &definition->triggers[trigger_index];
 	bool result = true;
 
-	if (barrel_index != NONE && barrel_index < definition->barrel_count && weapon->barrels[barrel_index].state)
-		result = false;
+	if (trigger->primary_barrel != NONE)
+	{
+		short barrel_index = trigger->primary_barrel;
+
+		if (barrel_index < definition->barrel_count && weapon->barrels[barrel_index].state)
+			result = false;
+	}
 	if (weapon->heat >= 1.0f)
 		result = false;
 	return result;
@@ -1612,7 +1610,8 @@ bool function_1058b0(long weapon_index, long state, bool force)
 	function_b7360(weapon_index);
 	if (force || weapon_state_replaceable(weapon->state, state))
 	{
-		if (WEAPON_GET(weapon_index)->animation_state_offset != NONE)
+		s_weapon *current = WEAPON_GET(weapon_index);
+		if (current->animation_state_offset != NONE)
 		{
 			s_animation_state *animation = (s_animation_state *)((byte *)weapon + weapon->animation_state_offset);
 			long set;
@@ -2146,19 +2145,13 @@ void function_1055b0(vector3f *direction, vector3f const *axis, short index, sho
 			offset = 0.0f;
 		else
 		{
-			short &value = flags;
+			short value = index - 1;
 
-			value = index - 1;
 			if (value & 1)
-			{
 				value >>= 1;
-				offset = (real)value;
-			}
 			else
-			{
 				value = -(value >> 1);
-				offset = (real)value;
-			}
+			offset = (real)value;
 		}
 	}
 	else
@@ -2552,16 +2545,16 @@ bool __stdcall function_fdc70(long weapon_index, short magazine_index)
         long current_weapon = NONE;
         if (current_slot != NONE)
             current_weapon = unit->weapon_indices[current_slot];
+        bool current = weapon_index == current_weapon;
         unit = ((s_weapon_unit_header *)*headers)[unit_index & 0xffff].unit;
         short other_slot = unit->other_weapon_slot;
-        bool current = weapon_index == current_weapon;
         long other_weapon = NONE;
         if (other_slot != NONE)
             other_weapon = unit->weapon_indices[other_slot];
         if (current || weapon_index == other_weapon)
         {
             if (magazine_index == 0)
-                return function_e68c0(current ? 0 : 10, unit_index);
+                result = function_e68c0(current ? 0 : 10, unit_index);
             if (magazine_index == 1)
                 result = function_e68c0(current ? 1 : 11, unit_index);
         }

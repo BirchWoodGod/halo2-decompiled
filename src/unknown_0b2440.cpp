@@ -147,12 +147,11 @@ void __stdcall function_b2790(s_bitstream *stream, long size, s_synchronous_acti
 	function_195720(stream, message->unknown04 + 1, 32);
 	stream_write_bit(stream, message->flag);
 	stream_write_checked(stream, message->mask, 4);
-	long i = 0;
-	do
+	for (long i = 0; i < 4; i++)
 	{
-		if ((message->mask >> i) & 1)
+		if (message->mask & (1 << i))
 			function_86f90(stream, &message->actions[i]);
-	} while (++i < 4);
+	}
 }
 
 // @retail 0xb2860
