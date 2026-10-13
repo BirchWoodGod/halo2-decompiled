@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7954 functions match
+
+```
+matched 7954 of 11318 game functions (966803 of 2784283 bytes, 34.72%)
+```
+
+3 new matches, none lost:
+- The second machine's lane D upper, round 18 (#382, +3): `0x8aed0`, `0x85600` and `0x8b2a0`, and four matched functions no longer need a `volatile` access to match.
+
 ## 2026-10-12: 7951 functions match
 
 ```
