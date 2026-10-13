@@ -138,15 +138,14 @@ void sound_voices_update_locations(void)
 		{
 			local_0->location.leaf_index = NONE;
 			local_0->location.cluster_index = NONE;
-			local_0->location.bsp_index = g_4686c4;
 		}
 		else
 		{
 			long leaf_index = function_14a280(g_4e033c, 0, &local_0->position);
 			local_0->location.leaf_index = leaf_index;
 			local_0->location.cluster_index = leaf_index != NONE ? ((s_structure_bsp_leaves_view_21dde0 *)g_4e0348)->leaves[leaf_index].cluster_index : NONE;
-			local_0->location.bsp_index = g_4686c4;
 		}
+		local_0->location.bsp_index = g_4686c4;
 	}
 }
 
