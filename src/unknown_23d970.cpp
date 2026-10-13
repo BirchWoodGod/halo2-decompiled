@@ -323,6 +323,7 @@ bool function_23dba0(long player_index)
 	s_record_pool *players = g_4e8c24;
 	long team = PLAYER(players, player_index & 0xffff)->team;
 	long index = NONE;
+	bool result = false;
 
 	for (;;)
 	{
@@ -330,12 +331,16 @@ bool function_23dba0(long player_index)
 			break;
 		if (index == NONE)
 			break;
-		s_player *player = (s_player *)(players->data + players->size * index);
+		s_record_pool *current_players = g_4e8c24;
+		s_player *player = (s_player *)(current_players->data + players->size * index);
 		long datum = (player->identifier << 16) | index;
 		if (datum != player_index && player->team == team)
-			return true;
+		{
+			result = true;
+			break;
+		}
 	}
-	return false;
+	return result;
 }
 
 // @retail 0x23dc40
