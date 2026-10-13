@@ -212,7 +212,9 @@ bool function_1e13f0(long actor_index)
 	s_actor_view *actor = actor_get(actor_index);
 	if (actor->unknown018 != NONE)
 	{
-		if (actor_query_enabled(function_baf80(actor->unknown018)))
+		s_actor_object_query *object = actor_query_object(function_baf80(actor->unknown018));
+		dword flags = *(dword const volatile *)&object->flags;
+		if (!((bool)((flags >> 18) & 1)) && !((bool)((flags >> 7) & 1)))
 		{
 			result = true;
 			goto done;
@@ -224,18 +226,27 @@ bool function_1e13f0(long actor_index)
 		if (perception_index != NONE)
 		{
 			long object_index = perception_get(perception_index)->object_index;
-			while (object_index != NONE)
+			s_record_pool *objects = g_4e0300;
+			if (object_index != NONE) do
 			{
-				s_actor_object_query *object = actor_query_object(object_index);
+				byte *data = objects->data;
+				s_actor_object_query *object = (s_actor_object_query *)((s_ai_object_header *)data)[object_index & 0xffff].object;
 				long current = object_index;
 				byte *links = object->flags134 == 0 ? (byte *)object + object->link_offset : NULL;
 				object_index = links ? *(long *)(links + 0xc) : NONE;
-				if (actor_query_enabled(actor_query_root(current)))
+				long root = NONE;
+				while (current != NONE)
+				{
+					root = current;
+					current = ((s_actor_object_query *)((s_ai_object_header *)data)[current & 0xffff].object)->parent_index;
+				}
+				dword root_flags = ((s_actor_object_query *)((s_ai_object_header *)data)[root & 0xffff].object)->flags;
+				if (!((bool)((root_flags >> 18) & 1)) && !((bool)((root_flags >> 7) & 1)))
 				{
 					result = true;
 					goto done;
 				}
-			}
+			} while (object_index != NONE);
 		}
 	}
 done:

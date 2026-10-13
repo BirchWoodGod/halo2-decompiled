@@ -1480,18 +1480,10 @@ selected:
     hkRigidBody *body = havok_component_rigid_body_get(index, component);
     if (!body->m_fixed && body->m_motion->getType() != 6)
     {
-     if (point)
+     if (point && change_a && !TEST_FIELD_BIT(component->flag1))
      {
-      if (change_a)
-      {
-       if (!TEST_FIELD_BIT(component->flag1))
-       {
-        havok_component_rigid_body_point_impulse_apply(index, component, point, &a);
-        i = local_0;
-       }
-       else
-        havok_component_rigid_body_linear_velocity_change(index, component, &a);
-      }
+      havok_component_rigid_body_point_impulse_apply(index, component, point, &a);
+      i = local_0;
      }
      else if (change_a)
       havok_component_rigid_body_linear_velocity_change(index, component, &a);
@@ -1660,9 +1652,9 @@ void function_1c5710(long object_index)
 {
     c_contact_query_bounds_info info;
     s_contact_query_object *object = (s_contact_query_object *)havok_object_get(object_index);
-    real radius = g_47f05c * 2.0f + object->radius;
     point3f center;
     contact_query_center(object, &center);
+    real radius = g_47f05c * 2.0f + object->radius;
     info.lower.set(center.x - radius, center.y - radius, center.z - radius);
     info.upper.set(center.x + radius, center.y + radius, center.z + radius);
     c_contact_query_bounds_volume *volume = new c_contact_query_bounds_volume(&info);

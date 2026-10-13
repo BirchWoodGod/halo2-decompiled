@@ -167,8 +167,8 @@ real function_1f8940(long actor_index);
 // @retail 0x1b3380
 bool __stdcall function_1b3380(long actor_index, s_slot *slot)
 {
-    s_actor_view *actor = actor_get(actor_index);
     bool result = true;
+    s_actor_view *actor = actor_get(actor_index);
     if (actor->unknown040)
     {
         if (!REFERENCE_EQUAL(actor->unknown418, g_470fa0) &&
@@ -177,7 +177,7 @@ bool __stdcall function_1b3380(long actor_index, s_slot *slot)
             function_262800(actor_index, actor->unknown418, false);
             result = function_1b3070(actor_index, &((s_slot_6d *)slot)->choice);
             if (!result)
-                return result;
+                goto done;
         }
         byte *scratch = ai_scratch_buffer_get();
         s_2605d0_request request;
@@ -206,5 +206,6 @@ bool __stdcall function_1b3380(long actor_index, s_slot *slot)
         }
         ai_scratch_buffer_release(scratch);
     }
+done:
     return result;
 }

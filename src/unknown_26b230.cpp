@@ -421,7 +421,8 @@ PRIVATE __forceinline bool next_clump_in_pool(s_clump_pool_iterator *iterator)
 long function_26b900(long prop_index, long actor_index, long clump_index)
 {
 	bool result = function_26b8a0(prop_index, actor_index);
-	volatile bool saved_result = result;
+	struct { s_clump_pool_iterator iterator; volatile bool saved_result; } frame;
+	frame.saved_result = result;
 
 	if (!result)
 	{
@@ -430,21 +431,21 @@ long function_26b900(long prop_index, long actor_index, long clump_index)
 		long team = ((s_clump volatile *)*clump_reference)->team;
 		long side = function_20f040((short)team);
 		s_clump_prop *prop = (s_clump_prop *)(g_50241c->data + (prop_index & 0xffff) * sizeof(s_clump_prop));
-		s_clump_pool_iterator iterator;
-		s_clump *other;
+
+		s_clump *volatile other;
 
 		if (g_4f55d0->active)
 		{
-			iterator.pool.data = g_502420;
-			iterator.pool.index = NONE;
+			frame.iterator.pool.data = g_502420;
+			frame.iterator.pool.index = NONE;
 		}
 
-		while (next_clump_in_pool(&iterator))
+		while (next_clump_in_pool(&frame.iterator))
 		{
-			other = *(s_clump *volatile *)&iterator.current;
-			if (clump_index != iterator.pool.datum_index && (short)side == (short)function_20f040(other->team))
+			other = *(s_clump *volatile *)&frame.iterator.current;
+			if (clump_index != frame.iterator.pool.datum_index && (short)side == (short)function_20f040(other->team))
 			{
-				long other_prop_index = function_26b230(iterator.pool.datum_index, prop->type);
+				long other_prop_index = function_26b230(frame.iterator.pool.datum_index, prop->type);
 				if (other_prop_index != NONE)
 				{
 					if (function_26b8a0(other_prop_index, NONE))
@@ -452,7 +453,7 @@ long function_26b900(long prop_index, long actor_index, long clump_index)
 						result = true;
 						goto done;
 					}
-					result = saved_result;
+					result = frame.saved_result;
 				}
 			}
 		}

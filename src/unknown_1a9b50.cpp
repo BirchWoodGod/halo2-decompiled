@@ -141,7 +141,7 @@ short __stdcall function_1a9cf0(long actor_index, s_slot *slot, bool active)
 			(handler->mask & g_4ee4ec) == g_4ee4ec &&
 			(g_557c40[type >> 5] & (1 << (type & 31))) != 0)
 		{
-			result = type;
+			result = state->next_type;
 			if (result != g_46fbe8)
 				goto local_0;
 		}

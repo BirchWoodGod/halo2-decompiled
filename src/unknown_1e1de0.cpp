@@ -31,8 +31,8 @@ struct s_object_1e1de0
 	byte unknown000[0xd4];
 	long index0d4;
 	byte unknown0d8[0x10a - 0xd8];
-	byte flags10a;
-	byte unknown10b[0x134 - 0x10b];
+	word flags10a;
+	byte unknown10c[0x134 - 0x10c];
 	dword flags134;
 	byte unknown138[0x2b8 - 0x138];
 	real value2b8;

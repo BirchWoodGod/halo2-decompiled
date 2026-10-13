@@ -131,22 +131,23 @@ void function_45560(short entry_index, point3f const *center, real radius);
 void function_44720(void)
 {
     s_2cb30_state *state = g_4c0b78.state;
-    volatile word end = (word)(state->active ? g_4c0b78.current : g_4c0b78.previous);
+    long end = g_4c0b78.previous;
+    if (state->active) end = g_4c0b78.current;
+    end = (word)end;
     word index = (word)(state->active ? g_4c0b78.previous : 0);
     while (index < end)
     {
-        s_44940_entry *entry = &g_4ba138[(short)index];
-        if (!(entry->unknown00 & 1) && (entry->unknown00 & 0x40))
+        dword entry_flags = g_4ba138[(short)index].unknown00;
+        if (!(entry_flags & 1) && (entry_flags & 0x40))
         {
+            s_44940_entry *entry = &g_4ba138[(short)index];
             if (*(long *)((byte *)state + 0x2a7c) == 1)
             {
                 point3f center = *(point3f *)((byte *)state + 0x2a68);
                 transform4x3f const *transform = *(transform4x3f **)(entry->unknown10 + 0xc);
                 if (transform)
                 {
-                    if (transform->scale == 0.0f)
-                        center.x = center.y = center.z = 0.0f;
-                    else
+                    if (transform->scale != 0.0f)
                     {
                         point3f local;
                         local.x = center.x - transform->position.x;
@@ -161,10 +162,16 @@ void function_44720(void)
                         center.y = transform->left.k * local.z + transform->left.j * local.y + transform->left.i * local.x;
                         center.z = transform->up.k * local.z + transform->up.j * local.y + transform->up.i * local.x;
                     }
+                    else
+                    {
+                        center.x = 0.0f;
+                        center.y = 0.0f;
+                        center.z = 0.0f;
+                    }
                 }
                 function_45560((short)index, &center, *(real *)((byte *)state + 0x2a74));
             }
-            else if (entry->unknown00 & 8)
+            else if (entry_flags & 8)
             {
                 long section = *(short *)(entry->unknown10 + 8);
                 dword const *words = (dword const *)((byte *)g_4c0b78.state + (section + 0xa6) * 16);
@@ -191,6 +198,7 @@ void __stdcall function_44c90(long group, dword selection_mask, long level,
         if (!((entry->unknown00 & selection_mask) & 0x1fffff) ||
             ((entry->flags >> 4) & 0x1f) != level || !(entry->unknown00 & 1) || !entry->unknown10[0xa]) continue;
         byte weight = g_4c0b78.weights[index];
+        long transform_index = entry->flags & 0xf;
         byte material_index = g_4c0b78.material_indices[(short)index];
         long material = material_index == 0xff ? NONE : g_4c0b78.materials[material_index];
         byte *geometry = visible_entry_geometry(entry);
@@ -203,7 +211,7 @@ void __stdcall function_44c90(long group, dword selection_mask, long level,
         for (long part = 0; part < *(long *)geometry; ++part)
         {
             byte context[0x2c];
-            if (function_45ce0((short)index, context, (short)part, (short)(entry->flags & 0xf)))
+            if (function_45ce0((short)index, context, (short)part, (short)transform_index))
             {
                 long selected = force || (entry->unknown00 & 0x8000) ? material : NONE;
                 function_41040((short)index, part, group, weight, (s_render_part_context *)context,
@@ -216,14 +224,15 @@ void __stdcall function_44c90(long group, dword selection_mask, long level,
 void function_45560(short entry_index, point3f const *center, real radius)
 {
     (void)&center; (void)&radius;
+    point3f query_center = *center;
+    long selected_entry = entry_index;
     s_44940_entry *entry = &g_4ba138[entry_index];
     byte *geometry = visible_entry_geometry(entry);
-    point3f query_center = *center;
     if (geometry)
     {
         if (*(long *)(geometry + 0x30) > 0)
         {
-            s_visibility_query_storage<512> first, second;
+            __declspec(align(16)) s_visibility_query_storage<512> first, second;
             first.list.indices = first.indices;
             first.list.count = 0;
             first.list.capacity = (long)0x80000200;
@@ -234,7 +243,7 @@ void function_45560(short entry_index, point3f const *center, real radius)
             query.center = *center;
             query.radius = radius;
             function_2ddbd0(*(void **)(geometry + 0x2c), &query, &first.list, &second.list);
-            function_458d0(entry_index, true, (s_geometry_visibility_list *)&second.list,
+            function_458d0((short)selected_entry, true, (s_geometry_visibility_list *)&second.list,
                 (s_geometry_visibility_list *)&first.list);
             release_visibility_list(&first.list);
             release_visibility_list(&second.list);

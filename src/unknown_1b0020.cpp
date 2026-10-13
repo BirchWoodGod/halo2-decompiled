@@ -229,17 +229,22 @@ bool function_1b0400(long arg_0, s_follow_search_state *arg_1)
 {
     s_actor_view *local_0 = actor_get(arg_0);
     bool local_1 = false;
+    struct
+    {
+        s_type_5cfb45 *state;
+        s_262b40_result *entry;
+    } pointers;
     if (local_0->unknown344 != NONE && !REFERENCE_EQUAL(arg_1->reference, g_470fa0))
     {
-        s_262b40_result *local_2 = function_262b40(arg_1->reference);
-        if (local_2)
+        pointers.entry = function_262b40(arg_1->reference);
+        if (pointers.entry)
         {
             s_prop_node_view *local_3 = prop_node_get(local_0->unknown344);
-            s_type_5cfb45 *local_4 = function_25d690((s_prop_datum *)local_3);
+            pointers.state = function_25d690((s_prop_datum *)local_3);
             point3f local_5;
             point3f local_6;
-            function_210850((s_type_c3b527 const *)local_2, &local_5);
-            if (((s_type_c3b527 const *)local_2)->output_index != NONE)
+            function_210850((s_type_c3b527 const *)pointers.entry, &local_5);
+            if (((s_type_c3b527 const *)pointers.entry)->output_index != NONE)
                 function_272af0(g_4e0348, &local_5);
             function_1e3b00(local_0->unknown018, 2, &local_5, NULL, NULL, &local_6);
             long local_7 = local_3->object_index;
@@ -247,8 +252,8 @@ bool function_1b0400(long arg_0, s_follow_search_state *arg_1)
             if (!local_8[0xaa] && *(long *)(local_8 + 0x14) != NONE)
                 local_7 = *(long *)(local_8 + 0x14);
             local_7 = function_baf40(local_7);
-            short local_9 = function_1c8df0(local_7, (point3f const *)((byte *)local_4 + 0x30),
-                *(volatile short *)((byte *)local_2 + 0x2c), *(short *)((byte *)local_2 + 0x12),
+            short local_9 = function_1c8df0(local_7, (point3f const *)((byte *)pointers.state + 0x30),
+                *(volatile short *)((byte *)pointers.entry + 0x2c), *(short *)((byte *)pointers.entry + 0x12),
                 &local_6, 1, false, local_0->unknown26c != NONE, false, NULL);
             if (local_3->unknown24 >= 1)
                 local_1 = local_9 == 0;

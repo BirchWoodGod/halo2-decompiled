@@ -369,6 +369,7 @@ short function_296230(long object_index);
 long function_1fa3a0(long structure_index, long surface_index, long object_index,
     long node_index, point3f const *point)
 {
+    long const *node_reference = &node_index;
     long result = NONE;
     long type = object_index != NONE ? 4 : (structure_index != NONE ? 3 : 1);
     s_contact_surface_table *table = NULL;
@@ -387,7 +388,7 @@ long function_1fa3a0(long structure_index, long surface_index, long object_index
                     for (short i = 0; i < owner->range_count; i++)
                     {
                         s_contact_surface_range *range = &owner->ranges[i];
-                        if (range->key == node_index)
+                        if (range->key == *node_reference)
                         {
                             result = range->first;
                             if (result == NONE || surface_index < 0 || surface_index > range->last - result)
@@ -457,11 +458,10 @@ bool function_1faf80(vector3f *facing, long object_index, void const *settings_p
 {
     s_slot_object_view *object = object_get(object_index);
     real const *settings = (real const *)settings_pointer;
-    vector3f *angular = (vector3f *)((byte *)object + 0x94);
     vector3f desired;
     if (object->velocity.i * object->velocity.i + object->velocity.j * object->velocity.j +
         object->velocity.k * object->velocity.k < 0.25f &&
-        angular->i * angular->i + angular->j * angular->j + angular->k * angular->k < g_557c70 * g_557c70 &&
+        ((vector3f *)object->unknown094)->i * ((vector3f *)object->unknown094)->i + ((vector3f *)object->unknown094)->j * ((vector3f *)object->unknown094)->j + ((vector3f *)object->unknown094)->k * ((vector3f *)object->unknown094)->k < g_557c70 * g_557c70 &&
         control->i * control->i + control->j * control->j + control->k * control->k < 0.0001f &&
         object->forward.k * facing->k + object->forward.j * facing->j + object->forward.i * facing->i > threshold)
         desired = object->forward;
@@ -476,12 +476,15 @@ bool function_1faf80(vector3f *facing, long object_index, void const *settings_p
                 desired = *facing;
         }
     }
+    vector3f *forward = &object->forward;
     vector3f const *up = (vector3f const *)((byte *)object + 0x7c);
     vector3f left;
     left.i = object->forward.j * up->k - up->j * object->forward.k;
     left.j = up->i * object->forward.k - up->k * object->forward.i;
-    left.k = up->j * object->forward.i - up->i * object->forward.j;
-    real value = (facing->k * left.k + facing->j * left.j + facing->i * left.i) * 3.3333332538604736f * control->i - control->j;
+    left.k = up->j * object->forward.i - up->i * forward->j;
+    real value = (facing->k * left.k + facing->j * left.j + facing->i * left.i) * 3.3333332538604736f;
+    value *= control->i;
+    value -= control->j;
     if (value > 1.5f)
         value = 1.5f;
     real target = settings[0] * value;
@@ -501,9 +504,9 @@ bool function_1faf80(vector3f *facing, long object_index, void const *settings_p
     *turn = target;
     real limits[4] = { -3.1415927410125732f, 3.1415927410125732f, -1.5707963705062866f, 1.5707963705062866f };
     if (settings[9] == 0.0f)
-        object->forward = desired;
+        *forward = desired;
     else
-        function_c7840(&desired, &object->forward, NULL, g_510c54->rate, angular, limits, settings[8], settings[9]);
+        function_c7840(&desired, forward, NULL, g_510c54->rate, (vector3f *)object->unknown094, limits, settings[8], settings[9]);
     return true;
 }
 
