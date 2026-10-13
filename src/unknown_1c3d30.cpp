@@ -75,9 +75,7 @@ void function_1c3d30()
  if (g_51e9a4)
  {
   real local_0 = g_510c54->rate;
-  s_184251 local_7;
-  local_7.field_0 = false;
-  function_2e90a0(local_7);
+  function_2e90a0(s_184251(false));
   ((s_1c3d30 *)g_51eca8)->field_18 = true;
   if (g_47f044)
   {

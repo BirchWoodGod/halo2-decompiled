@@ -543,7 +543,7 @@ long function_239cb0(long count, point3f const *points, point2f *hull);
 bool function_1648d0(s_frustum_1648d0 const *source, s_view *view,
 	s_clip_1648d0 const *clip, s_projection_1648d0 *result, bool make_hull)
 {
-	bool *make_hull_reference = &make_hull;
+	bool success = false;
 	s_clip_1648d0 const * *clip_reference = &clip;
 	s_view * *view_reference = &view;
 	long pyramid_edges[8][2] = { {0, 1}, {1, 3}, {3, 2}, {2, 0}, {4, 0}, {4, 1}, {4, 2}, {4, 3} };
@@ -554,29 +554,26 @@ bool function_1648d0(s_frustum_1648d0 const *source, s_view *view,
 	if (source->plane_index != NONE)
 	{
 		s_plane const *plane = &((s_bsp_1648d0 *)g_4e0348)->block->planes[source->plane_index];
-		project_ray_1648d0(&source->points[4], &source->directions[0], plane, &points[4]);
-		points[0] = source->points[0];
-		project_ray_1648d0(&source->points[4], &source->directions[1], plane, &points[5]);
-		points[1] = source->points[1];
-		project_ray_1648d0(&source->points[4], &source->directions[2], plane, &points[6]);
-		points[2] = source->points[2];
-		project_ray_1648d0(&source->points[4], &source->directions[3], plane, &points[7]);
-		points[3] = source->points[3];
-		edges = box_edges;
+		for (long i = 0; i < 4; i++)
+		{
+			project_ray_1648d0(&source->points[4], &source->directions[i], plane, &points[i + 4]);
+			points[i] = source->points[i];
+		}
 		edge_count = 12;
+		edges = box_edges;
 	}
 	else
 	{
 		memcpy(points, source->points, 5 * sizeof(point3f));
-		edges = pyramid_edges;
 		edge_count = 8;
+		edges = pyramid_edges;
 	}
+	long point_count = 0;
 	real margin = 1.52588e-5f > (*clip_reference)->margin ? 1.52588e-5f : (*clip_reference)->margin;
 	s_bounds3d bounds = *g_4687e0;
 	point3f segments[24];
 	point3f projected[24];
 	short projected_count;
-	long point_count = 0;
 	for (long i = 0; i < edge_count; ++i)
 	{
 		segments[point_count++] = points[edges[i][0]];
@@ -596,14 +593,14 @@ bool function_1648d0(s_frustum_1648d0 const *source, s_view *view,
 		if (!(clipped.x0 > clipped.x1 || clipped.y0 > clipped.y1))
 		{
 			*(box2f *)&result->bounds = clipped;
-			if ((*make_hull_reference))
+			if (make_hull)
 				result->hull_count = (short)function_239cb0(projected_count, projected, result->hull);
 			result->bounds.z0 = bounds.z0;
-			result->bounds.z1 = bounds.y1;
-			return true;
+			result->bounds.z1 = bounds.z1;
+			success = true;
 		}
 	}
-	return false;
+	return success;
 }
 
 // @retail 0x1652e0
@@ -618,29 +615,32 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 	use_plane1 &= (view->flag84 || view->flag85);
 	*bounds = *g_4687e0;
 
-	volatile real  near_distance = view->margin + margin;
-	if (near_distance < 1.52588e-5f)
-		near_distance = 1.52588e-5f;
-
 	memset(segment_culled, 0, sizeof(segment_culled));
 
-	planes[0].normal = *(vector3f *)&view->point54;
-	real dot0 = view->vector_e4.j * planes[0].normal.j + view->vector_e4.k * planes[0].normal.k + view->vector_e4.i * planes[0].normal.i;
-	vector3f negated;
-	negated.i = 0.0f - view->point54.x;
-	negated.j = 0.0f - view->point54.y;
-	negated.k = 0.0f - view->point54.z;
-	planes[0].normal.i = 0.0f - planes[0].normal.i;
-	planes[0].normal.j = 0.0f - planes[0].normal.j;
-	planes[0].normal.k = 0.0f - planes[0].normal.k;
-	planes[0].d = 0.0f - dot0 + near_distance;
+	real near_distance = 1.52588e-5f > view->margin + margin ? 1.52588e-5f : view->margin + margin;
 
+	planes[0].normal = *(vector3f *)&view->point54;
+	planes[0].d = view->vector_e4.j * planes[0].normal.j;
+	planes[0].d += view->vector_e4.k * planes[0].normal.k;
+	planes[0].d += view->vector_e4.i * planes[0].normal.i;
+	planes[0].normal.i = -planes[0].normal.i;
+	planes[0].normal.j = -planes[0].normal.j;
+	planes[0].normal.k = -planes[0].normal.k;
+	planes[0].d = -planes[0].d;
+	planes[0].d += near_distance;
+
+	vector3f negated;
+	negated.i = -view->point54.x;
+	negated.j = -view->point54.y;
+	negated.k = -view->point54.z;
 	planes[1].normal = negated;
-	real dot1 = view->vector_b4.j * planes[1].normal.j + view->vector_b4.k * planes[1].normal.k + view->vector_b4.i * planes[1].normal.i;
-	planes[1].normal.i = 0.0f - planes[1].normal.i;
-	planes[1].normal.j = 0.0f - planes[1].normal.j;
-	planes[1].normal.k = 0.0f - planes[1].normal.k;
-	planes[1].d = 0.0f - dot1;
+	planes[1].d = view->vector_b4.j * planes[1].normal.j;
+	planes[1].d += view->vector_b4.k * planes[1].normal.k;
+	planes[1].d += view->vector_b4.i * planes[1].normal.i;
+	planes[1].normal.i = -planes[1].normal.i;
+	planes[1].normal.j = -planes[1].normal.j;
+	planes[1].normal.k = -planes[1].normal.k;
+	planes[1].d = -planes[1].d;
 
 	memcpy(local_points, points, point_count * sizeof(point3f));
 
@@ -663,14 +663,13 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 		long i;
 		for (i = 0; i < point_count; i++)
 		{
-			point3f *point = &local_points[i];
-			outside[i] = plane->normal.i * point->x + plane->normal.k * point->z + plane->normal.j * point->y - plane->d > -0.0001f;
+			outside[i] = plane->normal.i * local_points[i].x + plane->normal.k * local_points[i].z + plane->normal.j * local_points[i].y - plane->d > -0.0001f ? 1 : 0;
 		}
 
 		long segment_count = point_count / 2;
+		long segment = 0;
 		if (segment_count > 0)
 		{
-		long segment = 0;
 		do
 		{
 			byte outside0 = outside[segment * 2];
@@ -682,20 +681,27 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 				real dx = p1->x - p0->x;
 				real dz = p1->z - p0->z;
 				real dy = p1->y - p0->y;
-				real denominator = dx * plane->normal.i + dz * plane->normal.k + plane->normal.j * dy;
+				real denominator = dx * plane->normal.i;
+				denominator += dz * plane->normal.k;
+				denominator += plane->normal.j * dy;
 				real t;
 				if (denominator != 0.0f)
-					t = (plane->normal.j * p0->y + p0->z * plane->normal.k + plane->normal.i * p0->x - plane->d) * (-1.0f / denominator);
+				{
+					real distance = plane->normal.j * p0->y;
+					distance += p0->z * plane->normal.k;
+					distance += plane->normal.i * p0->x;
+					t = (distance - plane->d) * (-1.0f / denominator);
+				}
 				else
 					t = 0.0f;
 				point3f intersection;
 				intersection.x = t * dx + p0->x;
 				intersection.y = dy * t + p0->y;
 				intersection.z = dz * t + p0->z;
-				if (outside0)
-					*p1 = intersection;
-				else
+				if (!outside0)
 					*p0 = intersection;
+				else
+					*p1 = intersection;
 			}
 			segment++;
 		} while (segment < segment_count);
@@ -713,25 +719,18 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 			total += 2;
 			point3f *output = cursor;
 			cursor += 2;
-			point3f *point = &local_points[segment * 2];
-			long k = 2;
-			do
+			for (long k = 0; k < 2; k++)
 			{
 				point3f t;
-				transform_point(&view->matrix, point, &t);
-				real w = t.z;
-				if (w > -1.52588e-5f)
-					w = -1.52588e-5f;
+				transform_point(&view->matrix, &local_points[segment * 2 + k], &t);
+				real w = t.z > -1.52588e-5f ? -1.52588e-5f : t.z;
 				real factor = -1.0f / w;
 				point3f s;
 				s.x = t.x * factor;
 				s.y = t.y * factor;
 				s.z = t.z;
 				if (projected_points)
-				{
-					*output = s;
-					output++;
-				}
+					output[k] = s;
 				if (bounds->x0 > s.x)
 					bounds->x0 = s.x;
 				if (s.x > bounds->x1)
@@ -744,8 +743,7 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 					bounds->z0 = s.z;
 				if (s.z > bounds->z1)
 					bounds->z1 = s.z;
-				point++;
-			} while (--k);
+			}
 		}
 	}
 
