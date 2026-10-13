@@ -215,7 +215,6 @@ void function_11f4f0(
 	long *out)
 {
 	long i = 0;
-	long max = (1 << bits) - 1;
 
 	do
 	{
@@ -232,7 +231,7 @@ void function_11f4f0(
 			v = in[i];
 		lo = ranges[i].lo;
 		hi = ranges[i].hi;
-		v = (v - lo) / ((hi - lo) / (real)max);
+		v = (v - lo) / ((hi - lo) / (real)((1 << bits) - 1));
 		__asm
 		{
 			fld v

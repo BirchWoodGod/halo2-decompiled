@@ -242,7 +242,7 @@ PRIVATE __forceinline real function_112e21(real arg_0)
 }
 
 // @retail 0x112e20
-void function_112e20(transform4x3f *matrix, transform4x3f const *orientation, point3f const *target)
+void function_112e20(transform4x3f *matrix, point3f const *target, transform4x3f const *orientation)
 {
 	static real yaw_limit = angle_radians_112e20(30.0f);
 	static real pitch_limit = angle_radians_112e20(15.0f);
@@ -1983,10 +1983,10 @@ void function_1132f0(long arg_0, dword const *arg_1, long arg_2, transform4x3f *
             {
                 char local_4 = local_0->index1f6;
                 if (local_4 >= 0 && local_4 < arg_2 && (!arg_1 || function_0bfe60(arg_1, local_4)))
-                    function_112e20(&arg_3[local_4], &local_3.matrix, local_1);
+                    function_112e20(&arg_3[local_4], local_1, &local_3.matrix);
                 char local_5 = local_0->index1f7;
                 if (local_5 >= 0 && local_5 < arg_2 && (!arg_1 || function_0bfe60(arg_1, local_5)))
-                    function_112e20(&arg_3[local_5], &local_3.matrix, local_1);
+                    function_112e20(&arg_3[local_5], local_1, &local_3.matrix);
             }
         }
     }
