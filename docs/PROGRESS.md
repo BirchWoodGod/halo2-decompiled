@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7997 functions match
+
+```
+matched 7997 of 11318 game functions (975262 of 2784283 bytes, 35.03%)
+```
+
+2 new matches, none lost:
+- Deep lane 1, rounds 38 and 41 (+2): `0x24ad0b` and `0x24bc12` (from 105 differences) match, among this machine's least-worked functions; the second machine's `0x11b520` now takes the unit before the animation graph, with every call updated, which brings five of this machine's script functions closer.
+
 ## 2026-10-12: 7995 functions match
 
 ```
