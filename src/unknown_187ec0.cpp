@@ -217,7 +217,7 @@ s_seat_animation_entry *function_187fe0(long type, s_seat_animation const *anima
 
 	while ((element = globals_element_get((s_globals_element_block_view *)g_4e034c, local_0)) != NULL)
 	{
-		for (long i = 0; i < count; i++)
+		for (long i = 0; i < count && !result; i++)
 		{
 			s_seat_animation_entry *entry = (first ? local_1->first_entries : local_1->second_entries) + i;
 			if (entry->element_index == local_0)
