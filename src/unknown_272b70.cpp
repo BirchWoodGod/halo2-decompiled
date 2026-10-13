@@ -1367,8 +1367,8 @@ void function_2742f0(short team_a, short team_b)
 	{
 		long difficulty = 1;
 		short ai_team = NONE;
-		short incident_decay_ticks = NONE;
 		short incident_threshold = NONE;
+		short incident_decay_ticks = NONE;
 		bool player_alliance = false;
 
 		if (team_a == 1)
@@ -1381,8 +1381,8 @@ void function_2742f0(short team_a, short team_b)
 
 			if (g_4e6948->state == 1)
 				difficulty = g_4e6948->difficulty;
-			incident_threshold = 5;
 			player_alliance = true;
+			incident_threshold = 5;
 			incident_decay_ticks = (short)ai_seconds_to_ticks_round(decay_seconds[(short)difficulty]);
 		}
 		function_1df6c0(team_a, team_b, player_alliance && team_a == ai_team, player_alliance && team_b == ai_team,

@@ -48,16 +48,16 @@ void function_28c470()
 	}
 }
 
-PRIVATE __forceinline void function_28c4e7(long arg_0, s_animation_data *arg_1, vector3f *arg_2)
+PRIVATE __forceinline void function_28c4e7(long arg_0, s_animation_data *arg_1, s_animation_output *arg_2)
 {
 	long local_0 = arg_0 * 12;
 	local_0 += arg_1->vector_offset;
-	*arg_2 = *(vector3f *)((byte *)arg_1 + local_0);
+	arg_2->vector = *(vector3f *)((byte *)arg_1 + local_0);
 }
 
 // @retail 0x28c4e0
 void function_28c4e0()
 {
-	vector3f *destination = &g_5044c0->vector;
+	s_animation_output *destination = g_5044c0;
 	function_28c4e7(g_5044b8, g_sampling_settings.field_30, destination);
 }
