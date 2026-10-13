@@ -68,11 +68,13 @@ void function_142f0(short mode)
     }
 }
 
+#pragma auto_inline(off)
 // @retail 0x48010
 void function_48010(real const *color)
 {
     D3DDevice_SetVertexData4f(9, color[1], color[2], color[3], color[0]);
 }
+#pragma auto_inline(on)
 
 
 dword g_4b8334;

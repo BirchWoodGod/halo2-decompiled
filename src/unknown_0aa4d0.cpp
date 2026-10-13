@@ -279,7 +279,16 @@ real function_aa7c0(s_relevance_observers const *observers, point3f const *posit
   s_relevance_observer const *observer = &observers->observers[index];
   vector3f direction;
   vector3d_from_points3d(&observer->position, position, &direction);
-  real distance = z_relevance_normalize(&direction);
+  real distance = (real)sqrt(direction.i * direction.i + direction.j * direction.j + direction.k * direction.k);
+  if (!(fabs(distance) < 0.0001f))
+  {
+   real inverse = 1.0f / distance;
+   direction.i = inverse * direction.i;
+   direction.j = inverse * direction.j;
+   direction.k = direction.k * inverse;
+  }
+  else
+   distance = 0.0f;
   if (distance < g_4ced0c)
    return 1.0f;
   real facing = dot3f(&observer->forward, &direction);

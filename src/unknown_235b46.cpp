@@ -118,7 +118,7 @@ void main_menu_music_update_playing(s_main_menu_music *music)
 	{
 		dword time = g_54d5b8;
 
-		if (!music->time || (long)(time - music->time) > 6000)
+		if (!music->time || (long)(g_54d5b8 - music->time) > 6000)
 		{
 			if (music->wanted == 1)
 			{

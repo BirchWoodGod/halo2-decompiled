@@ -329,12 +329,12 @@ void function_016a30(real scale, short y, short x)
 {
 	g_485a8a.a.v1 = 0;
 	g_485a8a.a.v0 = 0;
-	g_485a8a.a.v3 = (short)(scale * g_45dd80);
 	g_485a8a.a.v2 = (short)(scale * g_45dd7c);
-	g_485a8a.b.v3 = g_485a8a.a.v3 - y;
+	g_485a8a.a.v3 = (short)(scale * g_45dd80);
+	g_485a8a.b.v2 = g_485a8a.a.v2 - x;
 	g_485a8a.b.v1 = y;
 	g_485a8a.b.v0 = x;
-	g_485a8a.b.v2 = g_485a8a.a.v2 - x;
+	g_485a8a.b.v3 = g_485a8a.a.v3 - y;
 }
 
 byte g_485ac2;
