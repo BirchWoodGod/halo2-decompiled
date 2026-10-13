@@ -449,16 +449,6 @@ local_1:
 	return local_0;
 }
 
-static __forceinline void release_block(void *block)
-{
-	long info;
-	s_allocator_globals *globals = g_4d87f8;
-	globals->allocator->get_info(block, &info);
-	globals = g_4d87f8;
-	globals->allocator->release(block, -1);
-	globals->count--;
-}
-
 PRIVATE __forceinline void function_8a6f2(s_allocator_globals *arg_0, void *arg_1)
 {
  long local_1;
@@ -603,7 +593,7 @@ s_simulation_entity *simulation_entity_try_get(s_simulation_entity_table *table,
 // @retail 0x8aac0
 long c_entry_table::read_update(dword identifier, long *size_out, long a, long *count, s_update_block *blocks, s_bitstream *stream)
 {
-	long result;
+	long result = 3;
 	s_entry *entry = 0;
 	if (identifier != NONE)
 		entry = entries[ENTRY_INDEX(identifier)].identifier == identifier ? &entries[ENTRY_INDEX(identifier)] : 0;
@@ -622,44 +612,44 @@ long c_entry_table::read_update(dword identifier, long *size_out, long a, long *
 			globals->count++;
 		if (state)
 		{
-			if (stream->mode != 4)
+			bool success = false;
+			if (stream->mode == 4)
 			{
-				memcpy(state, entry->state, entry->state_size);
+				memset(state, 0, entry->state_size);
+				if (handler->save(entry->data_size, (long)entry->data, entry->state_size, state))
+					success = true;
 			}
 			else
 			{
-				memset(state, 0, entry->state_size);
-				if (!handler->save(entry->data_size, (long)entry->data, entry->state_size, state))
-				{
-					result = 3;
-					release_block(state);
-					goto done;
-				}
+				memcpy(state, entry->state, entry->state_size);
+				success = true;
 			}
-			long read_size = 0;
-			if (!handler->v15(false, (dword *)&read_size, entry->state_size, state, stream))
+			if (success)
+			{
+				long read_size = 0;
+				if (handler->v15(false, (dword *)&read_size, entry->state_size, state, stream))
+				{
+					*size_out = read_size;
+					blocks[*count].type = 0xd;
+					blocks[*count].size = (short)entry->state_size;
+					blocks[*count].block = state;
+					(*count)++;
+					result = 0;
+				}
+				else
+					success = false;
+			}
+			if (!success)
 			{
 				result = 3;
-				release_block(state);
-				goto done;
+				function_8a6f2(g_4d87f8, state);
 			}
-			*size_out = read_size;
-			blocks[*count].type = 0xd;
-			blocks[*count].size = (short)entry->state_size;
-			blocks[*count].block = state;
-			(*count)++;
-			result = 0;
-		}
-		else
-		{
-			result = 3;
 		}
 	}
 	else
 	{
 		result = 3;
 	}
-done:
 	return result;
 }
 
@@ -760,13 +750,12 @@ long replication_table_create(s_handle_peers *peers, long index);
 bool replication_table_create_chain(s_handle_peers *peers, long count, long *handles);
 
 /* frees a block the way the failed creations do */
-static __forceinline void discard_block(void *block)
+static __forceinline void discard_block(s_allocator_globals *arg_0, void *block)
 {
 	long local_0;
-	s_allocator_globals *globals = g_4d87f8;
-	if (!globals->allocator->get_info(block, &local_0))
+	if (!arg_0->allocator->get_info(block, &local_0))
 		local_0 = NONE;
-	globals = g_4d87f8;
+	s_allocator_globals *globals = g_4d87f8;
 	globals->allocator->release(block, NONE);
 	globals->count--;
 }
@@ -849,9 +838,9 @@ failed:
 	for (i = 0; i < count; i++)
 	{
 		if (datas[i])
-			discard_block(datas[i]);
+			discard_block(g_4d87f8, datas[i]);
 		if (states[i])
-			discard_block(states[i]);
+			discard_block(g_4d87f8, states[i]);
 	}
 	return false;
 }
