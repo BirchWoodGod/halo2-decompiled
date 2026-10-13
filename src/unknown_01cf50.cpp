@@ -702,7 +702,8 @@ void function_144f0(long tag, short stage, long fallback, short fallback_index, 
     bitmap = function_137550(tag, fallback_index);
     if (!bitmap) return;
 selected:
-    function_14390(stage, bitmap, priority);
+    real selected_priority = priority;
+    function_14390(stage, bitmap, selected_priority);
 }
 
 short g_55ece0, g_55ece2;
@@ -3658,7 +3659,7 @@ void function_13f10(long bitmap_value, long front_value)
 
 
 // @retail 0x12fa0
-void function_12fa0(real const *projection, byte const *camera, bool scaled, long mode)
+void function_12fa0(byte const *camera, real const *projection, bool scaled, long mode)
 {
     real width = (real)(*(short const *)(camera + 0x36) - *(short const *)(camera + 0x32));
     real height = (real)(*(short const *)(camera + 0x34) - *(short const *)(camera + 0x30));
@@ -5769,7 +5770,7 @@ extern bool g_485a74;
 extern dword g_4b8344;
 real g_4b893c;
 
-// Disabled retail 0x13450; activation changes matched 14ac0 stack alignment.
+// Retail 0x13450
 bool function_13450(s_depth_parameters_13450 const *parameters)
 {
     real high = g_485ad4.hi;
@@ -7210,7 +7211,7 @@ void function_25a10(vector3f const *direction, point3f const *position, byte con
 void __stdcall function_14b60(dword flags, dword color, real depth, byte stencil);
 
 #if 0
-// Disabled retail 0x132d0; activation changes the protected 223240 caller.
+// Retail 0x132d0
 void __stdcall function_132d0(s_frame_view_2c560 const *frame)
 {
     s_frame_view_2c560 const *const *frame_reference = &frame;
@@ -7218,10 +7219,10 @@ void __stdcall function_132d0(s_frame_view_2c560 const *frame)
     short mode = *(short const *)(((byte const *)frame) + 2);
     switch (mode) { case 0: g_4858b8 = 0; break; case 1: g_4858b8 = 18; break; default: g_4858b8 = 0; break; }
     function_15370(0);
+    long setup_mode = frame->mode;
     g_5093b4 = 0x901;
     g_5093b8 = 0x900;
-    function_12fa0((real const *)(((byte const *)frame) + 0x8c), ((byte const *)frame) + 0x18,
-        ((byte const *)frame)[7] != 0, mode);
+    function_12fa0(((byte const *)frame) + 0x18, (real const *)(((byte const *)frame) + 0x8c), ((byte const *)frame)[7] != 0, setup_mode);
     if (*(short *)(g_frame_storage.data + 8))
     {
         dword color = 0;
