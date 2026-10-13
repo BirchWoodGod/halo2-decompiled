@@ -4420,9 +4420,9 @@ void __stdcall function_15e530(c_1fa50 const *text, real alpha, point2f const *p
 {
     (void)&text;
     (void)&alpha;
-    (void)&point;
-    short_rectangle2d bounds = g_4b9dd8;
+    point2f const *const *point_reference = &point;
     long font_index = (g_4ba04c <= 1) + 5;
+    short_rectangle2d bounds = g_4b9dd8;
     s_font_header *font = font_get(g_4e28f4[font_index]);
     long height = 10;
     if (font)
@@ -4438,11 +4438,14 @@ void __stdcall function_15e530(c_1fa50 const *text, real alpha, point2f const *p
                 rgb = &alternate_score_text_color;
         }
     }
-    real scale = (g_4b9ed8 >= 0 && g_4b9ed8 < 4) ? g_4e69c0[g_4b9ed8] : 1.0f;
-    color4f color = { scale * alpha, rgb->red, rgb->green, rgb->blue };
-    color4f shadow = { scale * alpha, g_468718->x, g_468718->y, g_468718->z };
-    real x = point->x - g_4b9dd2;
-    real y = point->y - g_4b9dd0;
+    color4f color;
+    *(color3f *)&color.red = *rgb;
+    color.alpha = ((g_4b9ed8 >= 0 && g_4b9ed8 < 4) ? g_4e69c0[g_4b9ed8] : 1.0f) * alpha;
+    color4f shadow;
+    *(point3f *)&shadow.red = *g_468718;
+    shadow.alpha = ((g_4b9ed8 >= 0 && g_4b9ed8 < 4) ? g_4e69c0[g_4b9ed8] : 1.0f) * alpha;
+    real x = (*point_reference)->x - g_4b9dd2;
+    real y = (*point_reference)->y - g_4b9dd0;
     bounds.left = (short)(x - 300.0f);
     bounds.right = (short)(x + 300.0f);
     bounds.top = (short)(y - (short)height);
