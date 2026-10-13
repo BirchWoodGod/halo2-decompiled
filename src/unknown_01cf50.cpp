@@ -2776,17 +2776,19 @@ bool function_1c8c0(byte const *definition, dword mask,
 bool function_1caa0(long tag, byte const *selection, word const *kind, byte const *definition,
     s_1c8c0_stream const *third, s_1c8c0_stream const *second, s_1c8c0_stream const *first)
 {
-    signed char index;
-    switch (*kind)
+    long mode = *(word const volatile *)(selection + 0x14);
+    long offset;
+    word const *const &kind_reference = kind;
+    switch (*kind_reference)
     {
-    case 1: index = (signed char)selection[0x10]; break;
-    case 2: index = (signed char)selection[0x10]; break;
-    case 3: index = (signed char)selection[0x10]; break;
-    case 4: index = (signed char)selection[0x11]; break;
-    case 5: index = (signed char)selection[0x11]; break;
-    default: index = (signed char)selection[0x10]; break;
+    case 1: offset = 0x10; break;
+    case 2: offset = 0x10; break;
+    case 3: offset = 0x10; break;
+    case 4: offset = 0x11; break;
+    case 5: offset = 0x11; break;
+    default: offset = 0x10; break;
     }
-    long mode = *(word const *)(selection + 0x14);
+    long index = (signed char)selection[offset];
     long shader = function_1cb20(mode, index, tag);
     function_1c590((s_shader_cache *)g_51f0f0, tag, shader);
     dword mask = function_1cb70(tag, shader);
@@ -2808,11 +2810,11 @@ dword g_484ce8[53];
 // @retail 0x12490
 bool function_12490()
 {
-    bool result = true;
+    volatile bool result = true;
     D3DPRESENT_PARAMETERS parameters;
     memset(&parameters, 0, sizeof(parameters));
     g_509350 = 1;
-    parameters.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+    dword flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
     parameters.Windowed = false;
     parameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
     parameters.EnableAutoDepthStencil = true;
@@ -2823,18 +2825,21 @@ bool function_12490()
     parameters.BackBufferHeight = 480;
     parameters.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
     if (g_485ac2)
-        parameters.Flags |= D3DPRESENTFLAG_WIDESCREEN;
+        flags |= D3DPRESENTFLAG_WIDESCREEN;
     if (g_485ac6)
-        parameters.Flags |= D3DPRESENTFLAG_PROGRESSIVE;
+        flags |= D3DPRESENTFLAG_PROGRESSIVE;
+    parameters.Flags = flags;
     D3DDevice *device = NULL;
     Direct3D_CreateDevice(0, D3DDEVTYPE_HAL, NULL, D3DCREATE_HARDWARE_VERTEXPROCESSING, &parameters, &device);
     g_5093b0 = device;
     if (!g_5093b0)
     {
         g_5093b0 = NULL;
-        return false;
+        result = false;
+        goto done;
     }
     memcpy(g_484ce8, g_47ffd8, sizeof(g_484ce8));
+done:
     return result;
 }
 
@@ -3465,6 +3470,7 @@ void __stdcall function_4d640(short index, long mode, bool setup)
 // @retail 0x4d720
 void function_4d720(short index, long mode)
 {
+    short const *material_index = &index;
     s_44940_entry *entry = &g_4ba138[index];
     if (entry->unknown10[10] != 0xff && !(fabs(g_4b8494 - 1.0f) < 0.0001f))
     {
@@ -3473,8 +3479,14 @@ void function_4d720(short index, long mode)
     }
     if (entry->unknown00 & 0x800)
         function_12d50(NULL, false, NULL);
-    if ((mode == 1 || mode == 3) && ((entry->unknown00 & 0x4000) || g_485a75 || g_485a76))
-        function_15370(1);
+    switch (mode)
+    {
+    case 1:
+    case 3:
+        if (g_485a75 || g_485a76 || (g_4ba138[*material_index].unknown00 & 0x4000))
+            function_15370(1);
+        break;
+    }
 }
 
 
