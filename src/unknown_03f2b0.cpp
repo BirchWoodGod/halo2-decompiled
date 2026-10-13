@@ -383,7 +383,8 @@ long function_2d000(long object_index, long tag, long instance)
 					byte *mappings = *(byte **)(definition + 0x64);
 					long section = *(word *)(mappings + instance * 12 + 2);
 					byte *sections = *(byte **)(definition + 0x44);
-					if (function_12de70((s_geometry_block_info *)(sections + section * 0x38 + 0xc), 3))
+					byte *section_record = sections + section * 0x38;
+					if (function_12de70((s_geometry_block_info *)(section_record + 0xc), 3))
 						result = 1;
 				}
 			}
@@ -393,7 +394,8 @@ long function_2d000(long object_index, long tag, long instance)
 			byte *mappings = *(byte **)(definition + 0x54);
 			long section = *(word *)(mappings + instance * 12 + 2);
 			byte *sections = *(byte **)(definition + 0x44);
-			if (function_12de70((s_geometry_block_info *)(sections + section * 0x38 + 0xc), 3))
+			byte *section_record = sections + section * 0x38;
+			if (function_12de70((s_geometry_block_info *)(section_record + 0xc), 3))
 			{
 				byte *instances = *(byte **)((byte *)g_4e0348 + 0x144);
 				result = *(short *)(instances + instance * 0x58 + 0x56) != 0;
@@ -1015,15 +1017,14 @@ void __stdcall function_2cbc0(bool enabled)
 // @retail 0x3f2c0
 void function_3f2c0(s_planar_camera_source const *source, byte const *view, long object_index, long identifier)
 {
-	byte camera[0x1bc];
+	byte camera[0x1b4];
 	real offset = 0.0f;
 	function_441b0(source, (s_planar_camera *)camera, view);
 	byte *effect = (byte *)function_01fd20(0);
-	bool enabled = false;
-	if (effect && effect[0x3c])
+	bool enabled = effect && effect[0x3c];
+	if (enabled)
 	{
 		offset = *(real *)(effect + 0x40) - *(real *)(camera + 0x70);
-		enabled = true;
 	}
 	function_3d600();
 	s_bit_vector_pool *data = function_1320f0(0, 1, enabled, 0, camera,

@@ -604,7 +604,7 @@ void function_b75a0(long object_index, point3f const *point, vector3f const *for
 void __stdcall function_b77d0(long object_index, vector3f const *linear_velocity, vector3f const *angular_velocity);
 void __stdcall function_b93b0(long parent_index, long object_index, short node_index);
 void __stdcall function_1e2930(long object_index, long actor_index);
-void function_a83e0(long object_index, long parent_index, point3f const *point, long node_index,
+void function_a83e0(long object_index, long parent_index, point3f const *point, short node_index,
 	vector3f const *forward);
 
 /* a copy of the effect parameter defaults (unknown_175bd0.cpp keeps its
@@ -783,7 +783,7 @@ void function_fd7d0(long object_index, point3f const *point, byte const *effects
 
 /* sticks a projectile to what it hit */
 // @retail 0xfd560
-void function_fd560(long projectile_index, long object_index, long node_index, point3f const *point,
+void function_fd560(long projectile_index, long object_index, short node_index, point3f const *point,
 	vector3f const *forward)
 {
 	s_projectile *projectile = PROJECTILE_GET(projectile_index);

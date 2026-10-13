@@ -4315,7 +4315,7 @@ c_clan_options_list::c_clan_options_list(word user_flags) :
 	handler(this, (list_item_method)&c_clan_options_list::handle_item)
 {
 	long controller = get_controller_index();
-	bool online = function_19a935();
+	volatile bool online = function_19a935();
 	s_clan_membership membership;
 
 	data = user_interface_data_new("clan options list", 4, 4);
@@ -5538,13 +5538,27 @@ c_list_45af88::c_list_45af88(word user_flags) : c_list_24a64d(user_flags)
 
 // @retail 0x2b19a1 deleting c_list_45af88
 
+/* s_profile_list_entry as this screen holds it: retail builds it with the
+   entry constructor written inline */
+struct s_profile_list_entry_inline
+{
+    __forceinline s_profile_list_entry_inline()
+    {
+        profile_index = NONE;
+        memset(&settings, 0, sizeof(settings));
+    }
+    long profile_index;
+    s_player_profile_settings settings;
+    byte unknown1e4[0x248 - 0x1e4];
+};
+
 class c_screen_45b0b8 : public c_screen_with_menu
 {
 public:
     c_screen_45b0b8(long a, long b, word user_flags);
     virtual screen_load_proc get_load_proc();
     c_list_45af88 profile_choices;
-    s_profile_list_entry selected;
+    s_profile_list_entry_inline selected;
     bool value19b4;
 };
 

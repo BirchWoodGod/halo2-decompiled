@@ -2545,16 +2545,16 @@ bool __stdcall function_fdc70(long weapon_index, short magazine_index)
         long current_weapon = NONE;
         if (current_slot != NONE)
             current_weapon = unit->weapon_indices[current_slot];
+        bool current = weapon_index == current_weapon;
         unit = ((s_weapon_unit_header *)*headers)[unit_index & 0xffff].unit;
         short other_slot = unit->other_weapon_slot;
-        bool current = weapon_index == current_weapon;
         long other_weapon = NONE;
         if (other_slot != NONE)
             other_weapon = unit->weapon_indices[other_slot];
         if (current || weapon_index == other_weapon)
         {
             if (magazine_index == 0)
-                return function_e68c0(current ? 0 : 10, unit_index);
+                result = function_e68c0(current ? 0 : 10, unit_index);
             if (magazine_index == 1)
                 result = function_e68c0(current ? 1 : 11, unit_index);
         }
