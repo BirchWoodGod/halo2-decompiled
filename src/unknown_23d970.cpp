@@ -15,7 +15,7 @@
 #include "object_iterator.h"
 #include "effects.h"
 
-long function_1366d0(short width, short height, short depth, short format, short alignment, long mipmap_count);
+__declspec(noinline) long function_1366d0(short width, short height, short depth, short format, short alignment, long mipmap_count);
 
 PRIVATE const dword g_4507c8[24] =
 {
@@ -29,8 +29,8 @@ typedef void *(__stdcall *texture_allocate_proc)(long size, long alignment);
 D3DTexture *function_23e340(short width, short height, short format,
 	texture_allocate_proc allocate, long *size, void **data, D3DTexture *header)
 {
-	D3DTexture *result = 0;
 	long bytes = function_1366d0(width, height, 1, format, 0x40, 0);
+	D3DTexture *result = 0;
 	bytes += -bytes & 0x7f;
 	void *buffer = allocate(bytes, 0x80);
 	if (header && buffer)

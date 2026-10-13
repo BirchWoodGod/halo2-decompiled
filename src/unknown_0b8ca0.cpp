@@ -119,8 +119,8 @@ void function_b9890(long object_index)
 	*((char *)object + 0x18) = NONE;
 }
 
-// @retail 0xb8ca0
-long function_b8ca0(long object_index)
+// @retail 0xb8ca0 standard
+long __stdcall function_b8ca0(long object_index)
 {
     long const volatile *index_reference_r16 = &object_index;
     object_index = *index_reference_r16;
@@ -1673,26 +1673,37 @@ long __stdcall function_bb670(short name_index, bool force)
 // @retail 0xa73b0
 long __stdcall function_a73b0(s_entity_info *info)
 {
+    long result = NONE;
     long type = *(short *)g_4e3b44[info->definition_index & 0xffff].bytes;
     byte *definition = (byte *)g_468630[type];
+    long stride = *(short *)(definition + 0xe);
     short placement_offset = *(short *)(definition + 0xa), palette_offset = *(short *)(definition + 0xc);
-    if (placement_offset == NONE || palette_offset == NONE) return NONE;
-    byte *scenario = (byte *)g_4e0350;
-    byte *placements = scenario + placement_offset;
-    long index = info->field0;
-    long clamped = index < 0 ? 0 : index > *(long *)placements - 1 ? *(long *)placements - 1 : index;
-    if (clamped != index) return NONE;
-    byte *datum = *(byte **)(placements + 4) + index * *(short *)(definition + 0xe);
-    long old_object = function_bf760((long const *)(datum + 0x28));
-    if (old_object != NONE) function_a7ab0(old_object);
-    definition = (byte *)g_468630[type];
-    byte *palette = scenario + *(short *)(definition + 0xc);
-    short palette_index = *(short *)datum;
-    if (palette_index == NONE) return NONE;
-    clamped = palette_index < 0 ? 0 : palette_index > *(long *)palette - 1 ? *(long *)palette - 1 : palette_index;
-    if (clamped != palette_index) return NONE;
-    if (*(long *)(*(byte **)(palette + 4) + palette_index * 0x28 + 4) != info->definition_index) return NONE;
-    return function_bf0f0((s_type_4f0dcc *)datum, type, info->field0, (s_scenario_block *)palette, false, false);
+    if (placement_offset != NONE && palette_offset != NONE)
+    {
+        byte *scenario = (byte *)g_4e0350;
+        byte *placements = scenario + placement_offset;
+        long index = info->field0;
+        long clamped = index < 0 ? 0 : index > *(long *)placements - 1 ? *(long *)placements - 1 : index;
+        if (clamped == index)
+        {
+            byte *datum = *(byte **)(placements + 4) + index * stride;
+            long old_object = function_bf760((long const *)(datum + 0x28));
+            if (old_object != NONE) function_a7ab0(old_object);
+            definition = (byte *)g_468630[type];
+            byte *palette = scenario + *(short *)(definition + 0xc);
+            short palette_index = *(short *)datum;
+            if (palette_index != NONE)
+            {
+                clamped = palette_index < 0 ? 0 : palette_index > *(long *)palette - 1 ? *(long *)palette - 1 : palette_index;
+                if (clamped == palette_index)
+                {
+                    if (*(long *)(*(byte **)(palette + 4) + palette_index * 0x28 + 4) == info->definition_index)
+                        result = function_bf0f0((s_type_4f0dcc *)datum, type, info->field0, (s_scenario_block *)palette, false, false);
+                }
+            }
+        }
+    }
+    return result;
 }
 
 struct s_havok_component;
