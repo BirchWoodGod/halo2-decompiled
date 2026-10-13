@@ -576,24 +576,15 @@ void function_158850(long *type, long *count)
 	if (engine_options()->value190)
 	{
 		*type = 2;
-		long number = function_xaee93d()->value_e0;
-		if (number > 0)
-		{
-			*count = (long)number;
-			return;
-		}
+		short number = function_xaee93d()->value_e0;
+		*count = number > 0 ? number : 0;
 	}
 	else
 	{
 		*type = 1;
-		long number = function_xaee93d()->value_e0;
-		if (number > 0)
-		{
-			*count = (long)number;
-			return;
-		}
+		short number = function_xaee93d()->value_e0;
+		*count = number > 0 ? number : 0;
 	}
-	*count = 0;
 }
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
@@ -4826,7 +4817,7 @@ void function_157ae0(void)
             function_15dc40();
             function_15ad30(globals->netgame_entries);
             globals = function_xaee93d();
-            s_statborg *table = game_engine_get_statborg();
+            s_statborg *table = game_engine_statborg_inline();
             if (table) function_1e97b0((s_object_values *)table);
             globals->flags |= 0x20;
         }

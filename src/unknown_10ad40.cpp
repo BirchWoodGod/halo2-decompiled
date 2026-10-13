@@ -25,6 +25,11 @@ struct s_object_10ad40
 			word : 5;
 			word flag_c0_5 : 1;
 		};
+		struct /* the same bit, read as a byte */
+		{
+			byte : 5;
+			byte flag_c0_5_byte : 1;
+		};
 	};
 };
 
@@ -44,12 +49,12 @@ void function_10ad40(long object_index, bool flag)
 	if (object_index != NONE)
 	{
 		s_object_10ad40 *object = OBJECT_GET_10ad40(object_index);
-		bool old_flag = TEST_FIELD_BIT(object->flag_c0_5);
+		bool old_flag = TEST_FIELD_BIT(object->flag_c0_5_byte);
 
 		if (flag)
-			*(byte *)&object->flags_c0 |= 0x20;
+			object->flag_c0_5 = true;
 		else
-			*(byte *)&object->flags_c0 &= ~0x20;
+			object->flag_c0_5 = false;
 		if (old_flag != flag)
 			function_1c3770(object_index, 0);
 	}
