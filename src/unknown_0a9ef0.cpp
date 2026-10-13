@@ -55,7 +55,8 @@ public:
 
 extern real g_47f05c;
 
-// Disabled: Five new fast source trials remained184 differences/728 bytes; activation loses matched ba160(6) and new b92d0(49) through the nested1420f0 convention
+// Disabled: the best round-36 draft has 179 differences/736 bytes, but activation
+// loses matched ba160 and b92d0 through the nested 1420f0 convention.
 #if 0
 // Retail 0xa9f70
 long __stdcall function_a9f70(long object_index, long mode, point3f const *position)
@@ -126,7 +127,9 @@ collision:
 				{
 					c_z_capsule_temp capsule((byte *)shape + 0x10, (byte *)shape + 0x20, radius);
 					transform4x3f matrix_storage;
-					transform4x3f *matrix = function_ba160(object_index, &matrix_storage);
+					typedef transform4x3f *(__fastcall *matrix_query_proc)(long, transform4x3f *);
+					matrix_query_proc volatile matrix_query = function_ba160;
+					transform4x3f *matrix = matrix_query(object_index, &matrix_storage);
 					matrix->position = *position;
 					hit = function_1c5210(matrix, &capsule, *(long *)(object + 0xb4), 9);
 				}
@@ -222,7 +225,8 @@ void function_aab40(long object_index, point3f const *position, vector3f const *
         vector3f delta;
         vector3d_from_points3d((point3f *)(object + 0x64), position, &delta);
         bool type_zero = header[3] == 0;
-        bool moved = delta.k * delta.k + delta.i * delta.i + delta.j * delta.j > 1.0f;
+        bool moved = (real)(delta.j * delta.j) + (real)(delta.k * delta.k) +
+            (real)(delta.i * delta.i) > 1.0f;
         bool parent = *(long *)(object + 0x14) != NONE;
         bool flag = function_a76b0(object_index, false);
         update = !moved && !parent && !flag && type_zero;
@@ -283,4 +287,3 @@ c_reference_a9f20::~c_reference_a9f20()
     }
 }
 #endif
-
