@@ -723,10 +723,10 @@ struct s_key_450d14;
 s_match_450d14 *__stdcall function_6a3b0(void *table, s_key_450d14 *key, long index)
 {
 	c_class_6a600 *world = (c_class_6a600 *)table;
-	s_machine_table *machine_table = (s_machine_table *)g_4e8c20;
-	dword machine_mask = machine_table->machine_mask;
 	s_machine_address machines[16];
+	s_machine_table *machine_table = (s_machine_table *)g_4e8c20;
 	memcpy(machines, machine_table->machines, sizeof(machines));
+	dword machine_mask = machine_table->machine_mask;
 
 	long machine_index = NONE;
 	for (long i = 0; i < 16; i++)
@@ -1967,8 +1967,9 @@ void function_680f0(void)
  function_68f30((c_class_6a600 *)g_4cf77c);
  if (g_4cf772) goto done;
  {
+  long state = ((c_class_6a600 *)g_4cf77c)->state;
   c_class_6a600 *world = (c_class_6a600 *)g_4cf77c;
-  if ((world->state == 3 || world->state == 5) && world->flag2c)
+  if ((state == 3 || state == 5) && world->flag2c)
   {
    function_068750();
    if (g_4cf772) goto done;
