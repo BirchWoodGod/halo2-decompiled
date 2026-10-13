@@ -1,3 +1,4 @@
+#include "surface_resource_pairs.h"
 // @flags /O2 /Gr
 #include "palette_cache_storage.h"
 #include "palette_storage.h"
@@ -19,10 +20,7 @@ long g_450768[2][24] = {
 dword g_43e8a8[12];
 long g_43e8d8[6];
 
-D3DResource *g_509378;
-D3DResource *g_509380;
-D3DResource *g_509374;
-D3DResource *g_50937c;
+s_surface_resource_pairs g_surface_resource_pairs;
 D3DResource *g_485ae4;
 D3DResource *g_485ae8;
 D3DResource *g_485aec;
@@ -106,8 +104,8 @@ dword **g_407488;
 
 // @retail 0x158f0
 bool function_0158f0(
-	byte a,
 	short b,
+	byte a,
 	long width,
 	long height,
 	long levels,
