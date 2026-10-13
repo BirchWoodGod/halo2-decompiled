@@ -1392,7 +1392,7 @@ bool __stdcall function_2b000(void *context)
 }
 
 // @retail 0x296c0
-bool __stdcall function_296c0(void *context)
+bool __stdcall function_296c0(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1])
         return false;
@@ -1474,7 +1474,7 @@ bool __stdcall function_276d0(void *context)
 }
 
 // @retail 0x29080
-bool __stdcall function_29080(void *context)
+bool __stdcall function_29080(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1])
         return false;
@@ -1623,7 +1623,7 @@ bool __stdcall function_251b0(void *context)
 
 
 // @retail 0x29370
-bool __stdcall function_29370(void *context)
+bool __stdcall function_29370(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1]) return false;
     g_509400 = g_485ae0;
@@ -2644,7 +2644,7 @@ struct s_bitmap_view;
 struct s_type_7ba8e9;
 D3DTexture *function_12310(s_bitmap_view *bitmap, real priority);
 bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority);
-extern IDirect3DBaseTexture8 *g_51f3c8[2][4];
+#include "texture_stage_storage.h"
 extern dword g_4b82e8, g_4b82f4, g_4b82f8, g_4b8324;
 
 struct s_2a2f0_record

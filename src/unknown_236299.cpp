@@ -224,7 +224,8 @@ void function_2360c3(point3f *point, short_rectangle2d const *bounds)
 	real depth = g_54d598.color14.green;
 	real scale;
 
-	if (fabsf(g_54d598.color14.green) < 0.0001f)
+	real magnitude = (real)fabs(g_54d598.color14.green);
+	if (magnitude < 0.0001f)
 	{
 		depth = 1.0f;
 	}

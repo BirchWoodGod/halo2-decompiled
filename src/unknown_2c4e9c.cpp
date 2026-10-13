@@ -4069,42 +4069,37 @@ void c_multiplayer_settings_edit_list::v20(c_class_1a2c81 *widget, long index)
 
 	if (name && value)
 	{
-		long string_handle;
-
 		switch ((short)widget_item(widget)->value70)
 		{
 		case 0:
 			name->function_253b1a(0xc0002f8);
-			string_handle = function_2365e0((char)g_54e5d0.settings.model);
+			value->function_253b1a(function_2365e0((char)g_54e5d0.settings.model));
 			break;
 		case 4:
 			name->function_253b1a(0x120002fc);
-			string_handle = function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[3]);
+			value->function_253b1a(function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[3]));
 			break;
 		case 3:
 			name->function_253b1a(0x120002fb);
-			string_handle = function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[2]);
+			value->function_253b1a(function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[2]));
 			break;
 		case 2:
 			name->function_253b1a(0x120002fa);
-			string_handle = function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[1]);
+			value->function_253b1a(function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[1]));
 			break;
 		case 1:
 			name->function_253b1a(0x120002f9);
-			string_handle = function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[0]);
+			value->function_253b1a(function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[0]));
 			break;
 		case 5:
 			name->function_253b1a(0x110002fd);
-			string_handle = function_149b5a(g_54e5d0.settings.unknown11d[0]);
+			value->function_253b1a(function_149b5a(g_54e5d0.settings.unknown11d[0]));
 			break;
 		case 6:
 			name->function_253b1a(0x110002fe);
-			string_handle = function_149da5(g_54e5d0.settings.unknown11d[1]);
+			value->function_253b1a(function_149da5(g_54e5d0.settings.unknown11d[1]));
 			break;
-		default:
-			return;
 		}
-		value->function_253b1a(string_handle);
 	}
 }
 

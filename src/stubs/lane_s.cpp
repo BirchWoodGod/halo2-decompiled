@@ -7,8 +7,6 @@
 
 /* object callees of 0xb7680 */
 
-// @stub 0xbd090
-void __stdcall function_bd090(long object_index) { }
 
 
 /* the unit's weapon state change (lane S's 0x1058b0 calls it) */
