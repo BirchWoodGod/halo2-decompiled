@@ -208,7 +208,7 @@ struct s_weapon_rule_header
 };
 
 struct s_effect_owner;
-long function_15a090(short const *types, long type, long count);
+long function_15a090(long type, long count, short const *types);
 void __stdcall function_ccff0(long unit_index);
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
 long __stdcall function_b7b40(void *creation);
@@ -223,11 +223,11 @@ void __stdcall function_19ef40(long unit_index, long *first_count, long *second_
     for (long i = 0; i < globals->count; i++)
     {
         s_weapon_rule *rule = &globals->rules[i];
-        c_engine_peer *engine = g_55e4d0[g_4e9ae8->engine_index];
         long type = NONE;
+        c_engine_peer *engine = g_55e4d0[g_4e9ae8->engine_index];
         if (engine)
             type = engine->p0();
-        if (function_15a090(rule->types, type, 4) != NONE)
+        if (function_15a090(type, 4, rule->types) != NONE)
         {
             function_ccff0(unit_index);
             long weapons[2];
