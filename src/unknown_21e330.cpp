@@ -529,10 +529,8 @@ void function_21f960(dword size, dword const *buffer)
 					{
 						local_2.field_8 = EFFECT_DATA(i)->size;
 						local_2.field_c = EFFECT_DATA(i)->offset;
-						LPDSEFFECTIMAGEDESC description = g_510c90->description;
-
-						if ((dword)(local_2.field_c + local_2.field_8) <= description->aEffectMaps[effect_index].dwStateSize * 4 &&
-							memcmp(EFFECT_DATA(i)->data, (byte *)description->aEffectMaps[effect_index].lpvStateSegment + local_2.field_c, local_2.field_8) != 0)
+						if ((dword)(local_2.field_c + local_2.field_8) <= g_510c90->description->aEffectMaps[effect_index].dwStateSize * 4 &&
+							memcmp(EFFECT_DATA(i)->data, (byte *)g_510c90->description->aEffectMaps[effect_index].lpvStateSegment + local_2.field_c, local_2.field_8) != 0)
 						{
 							IDirectSound_SetEffectData(SOUND_DRIVER_GLOBALS->direct_sound, effect_index, local_2.field_c,
 								EFFECT_DATA(i)->data, local_2.field_8, DSFX_IMMEDIATE);

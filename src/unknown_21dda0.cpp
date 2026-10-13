@@ -124,7 +124,6 @@ bool sound_voices_initialize(s_sound_voice_settings const *settings)
 // @retail 0x21dde0
 void sound_voices_update_locations(void)
 {
-	short bsp_index = g_4686c4;
 	s_record_pool_iterator iterator;
 	s_sound_voice *voice;
 
@@ -135,18 +134,18 @@ void sound_voices_update_locations(void)
 	{
 		s_sound_position *local_0 = &voice->position;
 
-		if (bsp_index == NONE)
+		if (g_4686c4 == NONE)
 		{
 			local_0->location.leaf_index = NONE;
 			local_0->location.cluster_index = NONE;
-			local_0->location.bsp_index = bsp_index;
+			local_0->location.bsp_index = g_4686c4;
 		}
 		else
 		{
 			long leaf_index = function_14a280(g_4e033c, 0, &local_0->position);
 			local_0->location.leaf_index = leaf_index;
 			local_0->location.cluster_index = leaf_index != NONE ? ((s_structure_bsp_leaves_view_21dde0 *)g_4e0348)->leaves[leaf_index].cluster_index : NONE;
-			local_0->location.bsp_index = bsp_index;
+			local_0->location.bsp_index = g_4686c4;
 		}
 	}
 }
