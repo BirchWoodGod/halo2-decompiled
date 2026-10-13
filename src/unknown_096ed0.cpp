@@ -210,7 +210,7 @@ long function_98480(long handle, c_handle_table_450cd0 *self)
 		s_handle_entry *entry = &self->entries[i];
 		if (entry->state == 1 || entry->state == 2)
 		{
-			result = self->entries[i].handle;
+			result = entry->handle;
 			break;
 		}
 	}
