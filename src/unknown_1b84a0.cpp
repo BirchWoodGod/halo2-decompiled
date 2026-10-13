@@ -186,9 +186,8 @@ void *function_1e4be0(long actor_index);
 bool __stdcall function_1ac610(long actor_index, point3f const *point,
     s_object_marker *markers, short *indices);
 short __stdcall function_272af0(s_match_globals *structure, point3f const *point);
-struct s_1f4a20_entry;
 struct s_1f4a20_source;
-bool function_1f4a20(long actor_index, s_reference reference, s_1f4a20_entry const *entries,
+bool function_1f4a20(long actor_index, s_reference reference, s_object_marker const *entries,
     bool alternate, s_type_c3b527 *point, vector3f *facing,
     signed char *type, bool *available, s_1f4a20_source const *source);
 
@@ -283,7 +282,7 @@ bool __stdcall function_1b85a0(long actor_index, s_slot *slot)
             *(long *)((byte *)location + 0x14) != 0xffff)
         {
             success = function_1f4a20(actor_index, reference,
-                (s_1f4a20_entry const *)scratch, true, &state->point, &state->facing,
+                (s_object_marker const *)(has_markers ? markers : NULL), true, &state->point, &state->facing,
                 (signed char *)&state->unknown1d, &available, (s_1f4a20_source const *)&entry);
             if (success)
             {

@@ -1082,17 +1082,19 @@ struct s_1ba091
 // @retail 0x1ba090
 long __stdcall function_1ba090(long actor_index, s_slot *slot)
 {
+    long local_1 = NONE;
+    long joint_index;
     s_actor_view *actor = actor_get(actor_index);
     s_slot_object_view *unit = object_get(actor->unknown018);
     s_slot_4c *state = (s_slot_4c *)slot;
     s_seat_selection *selection = (s_seat_selection *)&state->unknown1c;
     if (*(long *)((byte *)unit + 0x14) != NONE)
-        return NONE;
+        goto local_2;
     s_1ba091 local_0;
     local_0.field_4.actor_index = actor_index;
     local_0.field_4.reference.unknown2 = 0x4c;
     local_0.field_4.reference.unknown0 = NONE;
-    long joint_index = NONE;
+    joint_index = NONE;
     while ((local_0.field_0 = function_26f0c0(&local_0.field_4)) != NULL)
     {
         s_4c_element *element = (s_4c_element *)element_502424_get(local_0.field_0->unknown4);
@@ -1163,11 +1165,13 @@ long __stdcall function_1ba090(long actor_index, s_slot *slot)
         function_1f86a0(actor_index);
         state->unknown24 = 0;
     }
-    return joint_index;
+    local_1 = joint_index;
+    goto local_2;
 failed:
     if (joint_index != NONE)
         function_26ee40((s_joint_behavior_state *)slot);
-    return NONE;
+local_2:
+    return local_1;
 }
 
 

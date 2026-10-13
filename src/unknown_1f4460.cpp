@@ -9,6 +9,7 @@
 #include "unknown_0259d0.h"
 #include "unknown_2626b0.h"
 #include <string.h>
+#include "object_markers.h"
 #include "props.h"
 
 void function_1f86a0(long index);
@@ -22,14 +23,6 @@ struct s_1f4a20_source
     byte field_5e[2];
     point3f point;
     vector3f direction;
-};
-struct s_1f4a20_entry
-{
-    byte field_0[0x54];
-    point2f direction;
-    byte field_5c[4];
-    point3f point;
-    byte field_6c[4];
 };
 struct s_1f4a20_record
 {
@@ -51,7 +44,7 @@ point3f *function_b9dd0(long object_index, point3f *point);
 real function_30bf0(vector3f *vector);
 
 // @retail 0x1f4a20
-bool function_1f4a20(long actor_index, s_reference reference, s_1f4a20_entry const *entries,
+bool function_1f4a20(long actor_index, s_reference reference, s_object_marker const *entries,
     bool alternate, s_type_c3b527 *arg_26ef00, vector3f *direction_out,
     signed char *type_out, bool *available_out, s_1f4a20_source const *source)
 {
@@ -64,7 +57,7 @@ bool function_1f4a20(long actor_index, s_reference reference, s_1f4a20_entry con
     vector3f direction;
     long sector;
     signed char type;
-    if (reference.unknown2 >= 0)
+    if ((signed char)((word)reference.unknown2 >> 8) >= 0)
     {
         if (!source->type)
             goto done;
@@ -84,14 +77,14 @@ bool function_1f4a20(long actor_index, s_reference reference, s_1f4a20_entry con
         s_1f4a20_record *record = (s_1f4a20_record *)(g_51eca4->data + (reference.unknown2 & 0x7fff) * sizeof(s_1f4a20_record));
         if (record->type != 1)
             goto done;
-        s_1f4a20_entry const *entry = entries + reference.unknown0;
-        point3f const *point = &entry->point;
+        s_object_marker const *entry = entries + reference.unknown0;
+        point3f const *point = &entry->matrix.position;
         function_210690(record->point.output_index, point, &origin.point);
         origin.output_index = record->point.output_index;
         if (source->type != 1 && source->type != 2 && source->type != 3)
             goto done;
-        direction.i = -1.0f * entry->direction.x;
-        direction.j = -1.0f * entry->direction.y;
+        direction.i = -1.0f * entry->matrix.up.i;
+        direction.j = -1.0f * entry->matrix.up.j;
         direction.k = 0.0f;
         type = (signed char)source->type;
         if (!(function_30bf0(&direction) > 0.0f))
@@ -130,18 +123,22 @@ bool function_1f4a20(long actor_index, s_reference reference, s_1f4a20_entry con
             function_210850(&origin, &world);
             function_b9dd0(actor->unknown018, &position);
             unit = object_get(actor->unknown018);
-            vector3f forward = *(vector3f *)((byte *)unit + 0x70);
+            vector3f forward;
             long parent_index = *(long *)((byte *)unit + 0x14);
             if (parent_index != NONE)
             {
                 signed char node = *(signed char *)((byte *)unit + 0x18);
                 s_slot_object_view *parent = object_get(parent_index);
                 transform4x3f const *matrix = (transform4x3f const *)((byte *)parent + *(short *)((byte *)parent + 0x116)) + node;
-                real x = forward.i, y = forward.j, z = forward.k;
+                real x = *(real *)((byte *)unit + 0x70);
+                real y = *(real *)((byte *)unit + 0x74);
+                real z = *(real *)((byte *)unit + 0x78);
                 forward.i = matrix->up.i * z + matrix->left.i * y + matrix->forward.i * x;
                 forward.j = matrix->up.j * z + matrix->left.j * y + matrix->forward.j * x;
                 forward.k = matrix->up.k * z + matrix->left.k * y + matrix->forward.k * x;
             }
+            else
+                forward = *(vector3f *)((byte *)unit + 0x70);
             real x = world.x - position.x;
             real y = world.y - position.y;
             real z = world.z - position.z;
