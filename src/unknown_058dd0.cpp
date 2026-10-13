@@ -472,6 +472,9 @@ void c_session_state_start_match::leave(long a)
 }
 #pragma inline_depth(255)
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 /* ---- matchmaking ---- */
 
 // @retail 0x70a20
@@ -1291,8 +1294,18 @@ void function_72330(c_session_state_matchmaking *state)
 		values->limit = NONE;
 		s_surface_description *variant = (s_surface_description *)values->unknown1c;
 		long type = *(long *)variant;
-		if (type == 5 || type == 3 || type == 4)
+		if (type == 5) goto local_special;
+		switch (type)
 		{
+		case 3:
+		case 4:
+			break;
+		default:
+			goto local_default;
+		}
+	local_special:
+		{
+			_ReadWriteBarrier();
 			if (matchmaking_variant_width(variant) > 0 && function_72458(variant) > 0)
 			{
 				long count = level / function_193440(variant);
@@ -1303,11 +1316,14 @@ void function_72330(c_session_state_matchmaking *state)
 				}
 			}
 		}
-		else if (level >= function_1932c0(variant))
+		goto local_done;
+	local_default:
+		if (level >= function_1932c0(variant))
 		{
 			if (level > function_193300(variant)) level = function_193300(variant);
 			values->limit = level;
 		}
+	local_done:;
 	}
 	if (state->mode == 3)
 	{
@@ -1317,6 +1333,7 @@ void function_72330(c_session_state_matchmaking *state)
 		if (state->mode == 3) *(bool *)state->unknown14 = true;
 	}
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x70570
 long function_70570(c_session_state_matchmaking *state)

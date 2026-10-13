@@ -475,6 +475,8 @@ static __forceinline long function_74721(const s_match_rating_entry *arg_0, long
 }
 #pragma optimize("g", on)
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x74720
 long __stdcall function_74720(const s_match_rating_collection *collection, long selected)
 {
@@ -497,7 +499,11 @@ long __stdcall function_74720(const s_match_rating_collection *collection, long 
 			long other_skill = entry->skill;
 			if (entry->active && other_skill != NONE)
 			{
-				total += function_746b0(other_skill, local_0.field_0, local_0.field_4, entry->rank);
+				long local_1 = entry->rank;
+				_ReadWriteBarrier();
+				long local_2 = *(volatile long *)&local_0.field_0;
+				long local_3 = *(volatile long *)&local_0.field_4;
+				total += function_746b0(other_skill, local_2, local_3, local_1);
 				count++;
 			}
 		}
@@ -511,6 +517,7 @@ long __stdcall function_74720(const s_match_rating_collection *collection, long 
 	return total < g_network_configuration.valuec7c ? g_network_configuration.valuec7c :
 		(total > g_network_configuration.valuec78 ? g_network_configuration.valuec78 : total);
 }
+#pragma function(_ReadWriteBarrier)
 
 struct s_match_player_rating_entry
 {
