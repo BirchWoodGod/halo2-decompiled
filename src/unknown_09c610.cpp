@@ -228,7 +228,8 @@ bool c_damage_aftermath_event_definition::v11(long arg_0, long const *arg_1, lon
     {
         byte const *local_3 = (byte const *)arg_3;
         long local_4 = NONE;
-        long local_5 = NONE;
+        long &local_5 = *(long *)&arg_1;
+        local_5 = NONE;
         short local_6 = *(short const *)(local_3 + 8);
         if (local_6 != -1)
         {
@@ -246,12 +247,13 @@ bool c_damage_aftermath_event_definition::v11(long arg_0, long const *arg_1, lon
         }
         if (function_122c10(0x6a707421, *(long const *)local_3))
         {
+            short local_11 = *(short volatile *)&local_5;
             s_9c610 local_10;
             memset(&local_10, 0, sizeof(local_10));
             local_10.field_8 = *(long const *)local_3;
-            local_10.field_c = local_4;
             local_10.field_10 = local_1;
-            local_10.field_14 = (short)local_5;
+            local_10.field_c = local_4;
+            local_10.field_14 = local_11;
             if (local_3[0xa])
                 local_10.field_18 = *(vector3f const *)(local_3 + 0xc);
             local_10.field_4 = *(dword const *)(local_3 + 0x20);
@@ -266,7 +268,7 @@ bool c_damage_aftermath_event_definition::v11(long arg_0, long const *arg_1, lon
             local_10.field_30 = 0.0f;
             function_b9dd0(local_2, &local_10.field_24);
             local_10.field_4c = 0.0f;
-            if (*(dword const *)(local_3 + 0x20) & 2)
+            if (local_3[0x20] & 2)
                 function_d6a70(local_2);
             function_d9640((s_damage_report const *)&local_10, local_2);
             if (g_4e0300->data[(local_2 & 0xffff) * 12 + 3] == 0 && (*(char const *)(local_3 + 0x20) < 0))
