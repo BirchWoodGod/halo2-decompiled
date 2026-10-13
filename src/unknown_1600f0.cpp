@@ -10,6 +10,7 @@
 #include <string.h>
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+#define FLOOR(n, floor) ((n) < (floor) ? (floor) : (n))
 
 /* the multiplayer globals' fields read here that globals.h does not name */
 struct s_mp_globals_view
@@ -282,12 +283,12 @@ struct s_game_engine_player_info
 // @retail 0x162a30
 void function_162a30(long player_index)
 {
-	long const *const player_reference = &player_index;
-	s_game_engine_player_info *info = (s_game_engine_player_info *)&g_4e9ae8->players[(*player_reference) & 0xffff];
+	long index = player_index & 0xffff;
+	s_game_engine_player_info *info = (s_game_engine_player_info *)&g_4e9ae8->players[index];
 
 	if (g_4e6948->mode != 4)
 	{
-		short previous = info->state;
+		long previous = info->state;
 
 		if (info->state_ticks != 0 && --info->state_ticks == 0)
 		{
@@ -314,7 +315,7 @@ void function_162a30(long player_index)
 		}
 		if (previous != info->state && game_engine_get())
 		{
-			long slot = g_4e9ae8->slots[(short)(*player_reference)];
+			long slot = g_4e9ae8->slots[(short)index];
 
 			if (slot != NONE)
 			{
@@ -326,8 +327,7 @@ void function_162a30(long player_index)
 	{
 		long time = info->timer - 1;
 
-		if (time <= 0)
-			time = 0;
+		time = time > 0 ? time : 0;
 		info->timer = (short)time;
 		if ((short)time == 0)
 		{
@@ -541,16 +541,12 @@ bool g_55e754;
 // @retail 0x162470
 long function_162470(bool flag)
 {
-	volatile long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
-	s_mp_globals *globals = g_4e9ae8;
-	long elapsed = g_510c54->game_time - ((s_mp_globals_time_view *)globals)->start_time;
-	long time_left;
+	long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
+	long elapsed = FLOOR(g_510c54->game_time - ((s_mp_globals_time_view *)g_4e9ae8)->start_time, 0);
+	long time_left = FLOOR(g_510c54->field_2_3 * time_limit - elapsed, 0);
 	long result;
 
-	elapsed = elapsed < 0 ? 0 : elapsed;
-	time_left = g_510c54->field_2_3 * time_limit - elapsed;
-	time_left = time_left < 0 ? 0 : time_left;
-	result = g_55e4d0[globals->engine_index]->p25(time_left, flag, true);
+	result = g_55e4d0[g_4e9ae8->engine_index]->p25(time_left, flag, true);
 	if (flag)
 	{
 		if (result != time_left)

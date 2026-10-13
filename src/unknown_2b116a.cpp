@@ -4156,7 +4156,7 @@ void c_player_profile_edit_list::v20(c_class_1a2c81 *item, long unused)
 	}
 }
 
-c_class_1473c9 *function_149f1e(word user_flags, long load);
+c_class_1473c9 *function_149f1e(short user_flags, long load);
 
 /* opens the chosen part of the profile editor */
 // @retail 0x2b79f9

@@ -70,7 +70,7 @@ bool collision_surface_test(s_collision_result_view const *result, long surface_
 }
 
 // @retail 0x168ae0
-dword collision_flags_to_test_flags(dword flags)
+inline dword collision_flags_to_test_flags(dword flags)
 {
 	dword result = 0;
 
@@ -358,29 +358,26 @@ struct s_168d60_instance
 // @retail 0x168d60
 bool collision_point_inside_instance(long instance_index, point3f const *point, dword flags)
 {
+	bool result = false;
 	s_168d60_bsp_view *bsp = (s_168d60_bsp_view *)g_4e0348;
 	s_168d60_instance *instance = &bsp->instances[instance_index];
 	byte *section = bsp->sections + instance->section_index * 0xc8;
 
 	if (collision_surface_test((s_collision_result_view const *)section, instance_index, flags))
 	{
-		real dx = instance->center.x - point->x;
-		real dz = instance->center.z - point->z;
-		real dy = instance->center.y - point->y;
-		real radius = instance->radius;
+		vector3f delta;
 
-		if (dx * dx + dz * dz + dy * dy <= radius * radius)
+		vector3d_from_points3d(point, &instance->center, &delta);
+		if (delta.j * delta.j + delta.k * delta.k + delta.i * delta.i <= instance->radius * instance->radius)
 		{
 			point3f local_point;
 
 			function_142700(&instance->matrix, point, &local_point);
 			if (function_14a280((s_bsp3d *)(section + 0x70), 0, &local_point) == NONE)
-			{
-				return true;
-			}
+				result = true;
 		}
 	}
-	return false;
+	return result;
 }
 
 /* a surface found by a collision test, before it is transformed */
@@ -555,7 +552,7 @@ struct s_object_cluster_iterator
 };
 
 struct s_bsp3d;
-dword collision_flags_to_test_flags(dword flags);
+inline dword collision_flags_to_test_flags(dword flags);
 word collision_flags_to_object_flags(dword flags);
 bool function_1de630(dword test_flags, s_slot_entry_list *bsp, s_collision_bsp_test_vector_result *result, real maximum_t,
 	long maximum_leaf_count, byte const *arg_c9e1f7, point3f const *point, vector3f const *vector);
@@ -1116,38 +1113,22 @@ bool function_1691a0(long object_index, dword flags, dword test_flags, point3f c
 bool collision_test_vector_object(dword flags, s_collision_result_1697c0 *collision, long object_index,
 	point3f const *point, vector3f const *vector)
 {
+	/* retail keeps the point on the stack */
 	point3f const *const *point_reference = &point;
-	bool result;
-	short bsp_index = g_4686c4;
-
 	collision->type = 0;
 	collision->t = 1.0f;
-	collision->start_location.bsp_index = bsp_index;
-	collision->start_location.leaf_index = NONE;
-	collision->start_location.cluster_index = NONE;
-	collision->end_location.leaf_index = NONE;
-	collision->end_location.cluster_index = NONE;
-	collision->end_location.bsp_index = bsp_index;
-	result = false;
+	collision_location_reset_1696d0(&collision->start_location);
+	collision_location_reset_1696d0(&collision->end_location);
+	bool found = false;
 	collision->instance_index = NONE;
 	collision->unknown3c = NONE;
 	collision->unknown40 = NONE;
-	if ((flags & 8) && !(flags & 0x1fff0))
-	{
-		flags |= 0x1fff0;
-	}
-	if (function_1691a0(object_index, flags, collision_flags_to_test_flags(flags), (*point_reference), vector, collision))
-	{
-		result = true;
-	}
-	real fraction = collision->t;
-	collision->point.x = vector->i * fraction + (*point_reference)->x;
-	collision->point.y = vector->j * fraction + (*point_reference)->y;
-	collision->point.z = vector->k * fraction + (*point_reference)->z;
+	if ((flags & 8) && !(flags & 0x1fff0)) flags |= 0x1fff0;
+	if (function_1691a0(object_index, flags, collision_flags_to_test_flags(flags), *point_reference, vector, collision))
+		found = true;
+	point_along_vector_1696d0(*point_reference, vector, collision->t, &collision->point);
 	function_11bed0((s_location *)&collision->end_location, &collision->point);
-	if (result)
-		return true;
-	return false;
+	return found;
 }
 
 real function_30bf0(vector3f *v);

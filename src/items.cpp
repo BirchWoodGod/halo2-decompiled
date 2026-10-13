@@ -140,11 +140,11 @@ void function_10da60(long item_index, point3f *position)
 	}
 }
 
-static __forceinline void item_vector_scale(vector3f const *v, real scale, vector3f *out)
+static __forceinline void item_vector_scale(vector3f *v, real scale)
 {
-	out->i = v->i * scale;
-	out->j = v->j * scale;
-	out->k = v->k * scale;
+	v->i *= scale;
+	v->j *= scale;
+	v->k *= scale;
 }
 
 /* normalizes the vector in place and returns its old length (0 when it is
@@ -159,7 +159,7 @@ static inline real item_axis_normalize(vector3f *v)
 	}
 	else
 	{
-		item_vector_scale(v, 1.0f / length, v);
+		item_vector_scale(v, 1.0f / length);
 	}
 	return length;
 }
@@ -176,14 +176,18 @@ void function_10d5f0(long item_index)
 		real angle = length * g_510c54->rate;
 
 		item->flag4 = true;
-		item->spin_axis = axis;
+		/* stored through a pointer: retail sets the flag before the copy */
+		vector3f *spin_axis = &item->spin_axis;
+		*spin_axis = axis;
 		item->spin_sine = (real)sin(angle);
 		item->spin_cosine = (real)cos(angle);
 	}
 	else
 	{
 		item->flag4 = false;
-		item->spin_sine = 0.0f;
+		/* through a pointer: retail clears the flag before loading the zero */
+		real *sine = &item->spin_sine;
+		*sine = 0.0f;
 		item->spin_cosine = 1.0f;
 	}
 }
@@ -689,8 +693,10 @@ long function_1895f0(s_sound_position const *position, real scale, long tag_inde
 // @retail 0x10c880
 void function_10c880(long item_index, s_item_impact const *impact, vector3f const *velocity, point3f const *point)
 {
-	s_item *item = ITEM_GET(item_index);
-	s_item_impact_definition *definition = (s_item_impact_definition *)g_4e3b44[item->definition_index & 0xffff].bytes;
+	s_item_header *headers = (s_item_header *)g_4e0300->data;
+	s_tag_instance *tags = g_4e3b44;
+	s_item *item = headers[item_index & 0xffff].item;
+	s_item_impact_definition *definition = (s_item_impact_definition *)tags[item->definition_index & 0xffff].bytes;
 	vector3f direction = *velocity;
 	real scale = function_1201a0(&direction, g_4687bc) * (1.0f / 3.0f);
 	scale = scale < 0.0f ? 0.0f : (scale > 1.0f ? 1.0f : scale);
@@ -700,7 +706,7 @@ void function_10c880(long item_index, s_item_impact const *impact, vector3f cons
 		long kind = definition->kind;
 		if (impact->type == 4)
 		{
-			byte other_kind = ((s_item_impact_definition *)g_4e3b44[ITEM_GET(impact->object_index)->definition_index & 0xffff].bytes)->kind;
+			byte other_kind = ((s_item_impact_definition *)tags[headers[impact->object_index & 0xffff].item->definition_index & 0xffff].bytes)->kind;
 			kind = definition->kind > other_kind ? other_kind : definition->kind;
 		}
 		function_188180(&impact->point, &impact->normal, effect_index, item_index, kind + 10, kind,
@@ -738,24 +744,26 @@ void function_10ca80(long object_index, long owner_index)
 {
     long const *owner_reference = &owner_index;
     s_record_pool *objects = g_4e0300;
-    s_item *item = *(s_item **)(objects->data + (object_index & 0xffff) * 12 + 8);
+    byte *data = objects->data;
+    s_item *item = *(s_item **)(data + (object_index & 0xffff) * 12 + 8);
     byte *header = objects->data + (object_index & 0xffff) * 12;
     byte *item_flags = (byte *)item + 0x12c;
     struct s_node_flags { unsigned long : 29; unsigned long dirty : 1; unsigned long : 2; };
-    s_node_flags volatile *node_flags = (s_node_flags volatile *)((byte *)item + 4);
+    s_node_flags *node_flags = (s_node_flags *)((byte *)item + 4);
     if (*owner_reference != NONE)
     {
         if (TEST_FIELD_BIT(node_flags->dirty) && object_index != NONE &&
             *(short *)((byte *)item + 0x112) != NONE)
         {
-            if (TEST_FIELD_BIT(node_flags->dirty))
+            if ((bool)((item->object_flags >> 29) & 1))
                 function_bfa40(object_index, 0);
             item->object_flags &= ~0x20000000;
         }
         item->flag0 = true;
         item->flag2 = true;
         item->unit_index = *owner_reference;
-        byte *current = *(byte **)(objects->data + (object_index & 0xffff) * 12 + 8);
+        data = objects->data;
+        byte *current = *(byte **)(data + (object_index & 0xffff) * 12 + 8);
         if (current[4] & 1)
         {
             *(dword *)(current + 4) &= ~1;
@@ -794,7 +802,8 @@ void function_10ca80(long object_index, long owner_index)
                 add = false;
             function_bb950(object_index, add, real_to_long((real)g_510c54->field_2_3 * 30.0f));
         }
-        s_item *current = *(s_item **)(objects->data + (object_index & 0xffff) * 12 + 8);
+        data = objects->data;
+        s_item *current = *(s_item **)(data + (object_index & 0xffff) * 12 + 8);
         current->creation_time = g_510c54->game_time;
         *item_flags &= 0xf6;
         item->unit_index = NONE;

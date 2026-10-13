@@ -716,25 +716,24 @@ extern s_sound_globals *g_51ebd4;
 // @retail 0x16ea60
 bool function_16ea60(long sound_index)
 {
-	s_16ea60_sound *volatile sound = (s_16ea60_sound *)g_4e3b44[sound_index & 0xffff].bytes;
-	long pitch_range_count = sound->pitch_range_count;
+	s_16ea60_sound *sound = (s_16ea60_sound *)g_4e3b44[sound_index & 0xffff].bytes;
 	bool result = true;
-	long pitch_range_index;
+	long pitch_range_index = 0;
+	long pitch_range_count = sound->pitch_range_count;
 
-	for (pitch_range_index = 0; pitch_range_index < pitch_range_count; pitch_range_index++)
+	for (; pitch_range_index < pitch_range_count; pitch_range_index++)
 	{
-		s_16ea60_tables *tables = (s_16ea60_tables *)g_51ebd4;
-		s_16ea60_pitch_range *arg_58ecd0 = &tables->pitch_ranges[sound->first_pitch_range + pitch_range_index];
-		short permutation_count = arg_58ecd0->permutation_count;
+		s_16ea60_pitch_range *arg_58ecd0 = &((s_16ea60_tables *)g_51ebd4)->pitch_ranges[sound->first_pitch_range + pitch_range_index];
+		long permutation_count = arg_58ecd0->permutation_count;
 		long permutation_index;
 
 		for (permutation_index = 0; permutation_index < permutation_count; permutation_index++)
 		{
-			s_16ea60_permutation *permutation = &tables->permutations[arg_58ecd0->first_permutation + permutation_index];
-			dword flags = function_218850(sound_index, &tables->chunks[permutation->first_chunk], 8);
+			s_16ea60_tables *tables = (s_16ea60_tables *)g_51ebd4;
+			s_sound_chunk *chunk = &tables->chunks[tables->permutations[arg_58ecd0->first_permutation + permutation_index].first_chunk];
+			dword flags = function_218850(sound_index, chunk, 8);
 
 			result = result && (flags & 2);
-			tables = (s_16ea60_tables *)g_51ebd4;
 		}
 	}
 	return result;
@@ -1391,7 +1390,7 @@ void __stdcall function_16f570(long user_index)
 }
 void function_16fe90(long user_index);
 
-void function_170bb0(real const *first, real const *second, real *out);
+void function_170bb0(real *out, real const *second, real const *first);
 void function_1701f0(long player_index);
 void function_1703f0(long player_index);
 void function_170630(long player_index);
@@ -1403,7 +1402,7 @@ void function_16fe90(long user_index)
 	real *time = (real *)(state + 0x9c);
 	if (!(((s_16f190_observer *)g_4e9bd4)[user_index].command->flags & 0x20))
 	{
-		function_170bb0((real *)(state + 0xc), (real *)(state + 0x10c), (real *)(state + 0x320));
+		function_170bb0((real *)(state + 0x320), (real *)(state + 0x10c), (real *)(state + 0xc));
 		function_16ff10(user_index);
 		function_1701f0(user_index);
 		function_1703f0(user_index);

@@ -576,24 +576,15 @@ void function_158850(long *type, long *count)
 	if (engine_options()->value190)
 	{
 		*type = 2;
-		long number = function_xaee93d()->value_e0;
-		if (number > 0)
-		{
-			*count = (long)number;
-			return;
-		}
+		short number = function_xaee93d()->value_e0;
+		*count = number > 0 ? number : 0;
 	}
 	else
 	{
 		*type = 1;
-		long number = function_xaee93d()->value_e0;
-		if (number > 0)
-		{
-			*count = (long)number;
-			return;
-		}
+		short number = function_xaee93d()->value_e0;
+		*count = number > 0 ? number : 0;
 	}
-	*count = 0;
 }
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
@@ -1089,7 +1080,8 @@ static inline char random_option(short range)
 	return (char)(random_index((dword *)&g_4e7408->unknown0, range) + 1);
 }
 
-/* the chooser of the engine's default equipment (its methods ignore this) */
+/* the engine's netgame entries, with the chooser of their default equipment
+   (the choosers ignore this) */
 class c_engine_equipment
 {
 public:
@@ -1098,6 +1090,9 @@ public:
 	long choose_15a310(long default_value, char option, long *name);
 	long choose_15a3d0(long default_value, char option, long *name);
 	long choose(long default_value, long *name, char kind);
+	void release_entry(long object_index, long index);
+
+	s_netgame_entry_state entries[100];
 };
 
 // @retail 0x15a140
@@ -1410,7 +1405,7 @@ done:
 }
 
 // @retail 0x15b1e0
-void function_15b1e0(long object_index, s_netgame_entry_state *entries, long index)
+void c_engine_equipment::release_entry(long object_index, long index)
 {
 	s_engine_object *object = (((s_engine_object_header *)g_4e0300->data) + (object_index & 0xffff))->object;
 
@@ -1469,16 +1464,15 @@ short function_15cca0(long player_index, byte code)
 	if (game_engine_get() && player_index != NONE)
 	{
 		long maximum_age = g_510c54->field_2_3 * 60;
-		long time = g_510c54->game_time;
 		s_engine_player *player = engine_player_get(player_index);
-		long oldest_age = 0;
 		long slot = 0;
+		long oldest_age = 0;
 		long i;
 
 		for (i = 0; i < 8; i++)
 		{
 			s_engine_player_mark *mark = &player->marks[i];
-			long age = time - mark->time;
+			long age = g_510c54->game_time - mark->time;
 
 			if (mark->identifier == NONE || age > maximum_age)
 			{
@@ -1491,6 +1485,7 @@ short function_15cca0(long player_index, byte code)
 				oldest_age = age;
 			}
 		}
+		long time = g_510c54->game_time;
 		result = g_47ff84++;
 		player->marks[slot].identifier = result;
 		player->marks[slot].code = code;
@@ -1505,18 +1500,23 @@ void function_15cd90(long player_index, short identifier, long other_player_inde
 {
 	s_engine_player *player = (s_engine_player *)datum_get_inlined(g_4e8c24, player_index);
 
-	if (identifier != NONE && player && game_engine_get() &&
-		game_engine_get()->p27(engine_player_get(other_player_index)->team, player->team))
+	if (identifier != NONE && player && game_engine_get())
 	{
-		s_engine_player_mark *mark = player->marks;
-		long i;
+		short team = player->team;
+		short other_team = engine_player_get(other_player_index)->team;
 
-		for (i = 8; i != 0; i--, mark++)
+		if (game_engine_get()->p27(other_team, team))
 		{
-			if (mark->identifier == identifier)
+			s_engine_player_mark *mark = player->marks;
+			long i;
+
+			for (i = 8; i != 0; i--, mark++)
 			{
-				function_196e60(player_index & 0xffff, 5, function_196ef0(mark->code), 1);
-				mark->identifier = NONE;
+				if (mark->identifier == identifier)
+				{
+					function_196e60(player_index & 0xffff, 5, function_196ef0(mark->code), 1);
+					mark->identifier = NONE;
+				}
 			}
 		}
 	}
@@ -1531,17 +1531,18 @@ bool function_15db80(long team)
 	{
 		s_engine_player_iterator iterator;
 
+		result = true;
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		result = true;
 		while (function_19f240((long *)&iterator))
 		{
 			s_engine_player *player = iterator.player;
 
 			if (player->team == team && (player->unit_index != NONE || player->value1ac != 0))
 			{
-				return false;
+				result = false;
+				break;
 			}
 		}
 	}
@@ -1974,7 +1975,7 @@ void function_15adb0(s_netgame_entry_state *entries)
 		{
 			if (entries[index].index != NONE)
 			{
-				function_15b1e0(entries[index].index, entries, index);
+				((c_engine_equipment *)entries)->release_entry(entries[index].index, index);
 			}
 			entries[index].value04 = 0;
 			entries[index].index = local.iterator.object_index;
@@ -2061,24 +2062,15 @@ void function_15d6c0(long player_index, long maximum, long minimum)
 }
 
 // @retail 0x15a090
-long function_15a090(short const *types, long type, volatile long count)
+long function_15a090(long type, long count, short const *types)
 {
+	long const *count_reference = &count;
 	long result = NONE;
 	long i;
 
-	if (!(game_engine_get()))
+	if (game_engine_get())
 	{
-		for (i = 0; i < count; i++)
-		{
-			if (types[i] == 0)
-			{
-				return i;
-			}
-		}
-	}
-	else
-	{
-		for (i = 0; i < count; i++)
+		for (i = 0; i < *count_reference; i++)
 		{
 			short entry = types[i];
 			bool match = entry == type;
@@ -2091,13 +2083,29 @@ long function_15a090(short const *types, long type, volatile long count)
 			{
 				match |= true;
 			}
-			else if (entry == 13 || entry == 14)
+			else if (entry == 13)
+			{
+				match |= type != 1 && type != 9;
+			}
+			else if (entry == 14)
 			{
 				match |= type != 1 && type != 9;
 			}
 			if (match)
 			{
-				return i;
+				result = i;
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (i = 0; i < *count_reference; i++)
+		{
+			if (types[i] == 0)
+			{
+				result = i;
+				break;
 			}
 		}
 	}
@@ -2700,11 +2708,11 @@ struct s_engine_health_object
 void function_a7a30(long object_index, dword flags);
 
 // @retail 0x1583d0
-void function_1583d0(long player_index, short old_value, short new_value)
+void function_1583d0(short old_value, short new_value, long player_index)
 {
 	if (game_engine_get() && g_4e6948->mode != 4 && old_value != new_value)
 	{
-		if (old_value < new_value)
+		if (old_value > new_value)
 		{
 			s_engine_player *player = engine_player_get(player_index);
 			if (player->unit_index != NONE)
@@ -2881,12 +2889,34 @@ bool function_15dd40(long player_index)
 	return result;
 }
 
+/* the test of function_15b2f0, which 0x15ba20 inlines */
+struct s_engine_running_state
+{
+	byte unknown00[0x6c];
+	short w6c;
+	byte unknown6e[0xc04 - 0x6e];
+	long lc04;
+	byte unknownc08[0xc14 - 0xc08];
+	long engine_index;
+};
+
+static inline bool engine_running_inline()
+{
+	s_engine_running_state *g = (s_engine_running_state *)g_4e9ae8;
+	bool mode_gate_open = false;
+
+	if (g_55e4d0[g->engine_index] && g->w6c == 1 && (g_4e6948->mode == 4 || g->lc04 == 1))
+		mode_gate_open = true;
+
+	return mode_gate_open;
+}
+
 // @retail 0x15ba20
 void function_15ba20(void)
 {
 	long winner = NONE;
 	bool few_teams = false;
-	if (function_15b2f0() && function_158d20(&winner, &few_teams))
+	if (engine_running_inline() && function_158d20(&winner, &few_teams))
 		function_15b3a0(winner, few_teams);
 }
 
@@ -3139,25 +3169,26 @@ real function_159690(long player_index, long target_index)
 	if (target_unit != NONE)
 	{
 		long unit_index = player->unit_index;
-		if (unit_index == NONE && player->death_time != NONE)
+		char death_time = player->death_time;
+		if (unit_index == NONE && death_time != NONE)
 		{
-			real amount = 1.0f - (real)player->death_time / g_510c54->field_2_3;
+			real amount = 1.0f - (real)death_time / g_510c54->field_2_3;
 			amount = amount < 0.0f ? 0.0f : amount > 1.0f ? 1.0f : amount;
-			result = (real)pow((double)amount, 1.899999976158142);
+			result = powf(amount, 1.9f);
 		}
 		else
 		{
 			if (player->target_index == target_index)
 			{
 				long ticks = player->target_time < 256 ? player->target_time : 256;
-				result = (real)pow((double)(ticks * 0.00390625f), 1.899999976158142);
+				result = powf(ticks * 0.00390625f, 1.9f);
 			}
 			char shared_time = player->shared_time;
 			if (shared_time != NONE && unit_index != NONE && function_baf80(unit_index) == function_baf80(target_unit))
 			{
 				real amount = (real)shared_time / g_510c54->field_2_3;
 				amount = amount < 0.0f ? 0.0f : amount > 1.0f ? 1.0f : amount;
-				result = (real)pow((double)amount, 1.899999976158142);
+				result = powf(amount, 1.9f);
 			}
 		}
 		if (result > 0.0f)
@@ -4268,36 +4299,11 @@ void __stdcall function_15bb20(long player_index)
 long function_23f360(long mode, long team);
 long function_23f260(long mode, long player_index, long value);
 
-PRIVATE __forceinline long sweep_rank_mode()
-{
-    long mode;
-    if (g_4e6948->flag1128)
-        mode = 1;
-    else
-        mode = 0;
-    return mode;
-}
-
 // @retail 0x158e90
 long function_158e90(long team)
 {
-    long mode = 0;
-    if (g_4e6948->flag1128 != 0)
-        mode = 1;
-    return function_23f360((long)mode, team) / 2;
-}
-
-PRIVATE __forceinline bool sweep_team_active(long team)
-{
-    bool result = false;
-    if (g_55e4d0[g_4e9ae8->engine_index])
-    {
-        byte teams = ((byte *)g_4e6948)[0x184] & 1;
-        volatile byte observed_teams = teams;
-        if (teams && team >= 0 && team < 8)
-            result = (function_xaee93d()->team_mask & (1 << team)) != 0;
-    }
-    return result;
+    bool flag = g_4e6948->flag1128;
+    return function_23f360(flag != 0, team) / 2;
 }
 
 // @retail 0x158eb0
@@ -4306,7 +4312,7 @@ bool function_158eb0()
     bool result = true;
     for (long team = 0; team < 8; ++team)
     {
-        if (sweep_team_active(team) && function_158e90(team) > 0)
+        if (engine_team_is_active(team) && function_158e90(team) > 0)
         {
             result = false;
             break;
@@ -4327,7 +4333,8 @@ bool function_158f50()
     while (function_19f240((long *)&iterator))
     {
         ++count;
-        if (function_23f260(sweep_rank_mode(), iterator.index, NONE) / 2 > 0)
+        bool flag = g_4e6948->flag1128;
+        if (function_23f260(flag != 0, iterator.index, NONE) / 2 > 0)
         {
             result = false;
             break;
@@ -4473,8 +4480,8 @@ void function_15be20()
 		}
 		else
 		{
-			long ticks = g_510c54->game_time - ((s_engine_round_clock *)globals)->start_time;
-			ticks &= (ticks < 0) - 1;
+			long ticks = 0 > g_510c54->game_time - ((s_engine_round_clock *)globals)->start_time ? 0 :
+				g_510c54->game_time - ((s_engine_round_clock *)globals)->start_time;
 			long seconds = real_truncate((real)ticks * g_510c54->rate);
 			if (seconds > 0x7fff) seconds = 0x7fff;
 			if (seconds != globals->value_e0)
@@ -4602,7 +4609,7 @@ void function_15aad0(s_netgame_entry_state *entries, long index)
         *(point3f *)(creation + 0x1c) = *(point3f *)(placement + 0x40);
         function_11df60((vector3f const *)(placement + 0x4c), (vector3f *)(creation + 0x28), (vector3f *)(creation + 0x34));
         if ((*entries_reference)[*index_reference].index != NONE)
-            function_15b1e0((*entries_reference)[*index_reference].index, *entries_reference, *index_reference);
+            ((c_engine_equipment *)*entries_reference)->release_entry((*entries_reference)[*index_reference].index, *index_reference);
         long object_index = function_b7b40(creation);
         (*entries_reference)[*index_reference].index = object_index;
         (*entries_reference)[*index_reference].value04 = 0;
@@ -4823,7 +4830,7 @@ void function_157ae0(void)
             function_15dc40();
             function_15ad30(globals->netgame_entries);
             globals = function_xaee93d();
-            s_statborg *table = game_engine_get_statborg();
+            s_statborg *table = game_engine_statborg_inline();
             if (table) function_1e97b0((s_object_values *)table);
             globals->flags |= 0x20;
         }
@@ -4924,7 +4931,7 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
         if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
         c_engine_peer *engine = game_engine_get();
         long type = engine ? engine->p0() : NONE;
-        if (function_15a090((short *)(placement + 4), type, 4) == NONE) continue;
+        if (function_15a090(type, 4, (short *)(placement + 4)) == NONE) continue;
         long index = entries[i].index;
         byte *object = NULL;
         if (index != NONE)
