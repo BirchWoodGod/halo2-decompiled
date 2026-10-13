@@ -647,7 +647,7 @@ PRIVATE __forceinline vector3f const *function_227813(s_impact_object *arg_0, ve
 	vector3f const *local_1 = &arg_0->unknown70;
 	real local_0 = local_1->k * arg_1->k;
 	local_0 += arg_0->unknown70.j * arg_1->j;
-	local_0 += arg_1->i * local_1->i;
+	local_0 += arg_0->unknown70.i * arg_1->i;
 	if (!(local_0 >= 0.0f))
 		local_0 = -local_0;
 	if (!(local_0 < 0.9f))

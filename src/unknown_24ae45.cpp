@@ -203,9 +203,8 @@ void c_gamertag_select_list::v1()
 		{
 			datum_index = record_pool_allocate(data);
 			datum = &((s_gamertag_datum *)data->data)[datum_index & 0xffff];
+			memcpy(&datum->user, user, sizeof(datum->user));
 			XONLINE_USER *guest = &datum->user;
-
-			memcpy(guest, user, sizeof(*guest));
 			if (guest_number <= 3)
 			{
 				((s_xuid_flags_view *)&guest->xuid.dwUserFlags)->guest_number = guest_number;
