@@ -538,7 +538,9 @@ bool function_14d0a0(s_player_action const *action)
 	bool valid_values = action->unknown50 >= 0.0f && action->unknown50 <= 1.0f &&
 		action->unknown54 >= 0.0f && action->unknown54 <= 1.0f;
 
-	if (action->unknown50 != 0.0f || action->unknown54 != 0.0f || (action->flags4c & 1))
+	bool active = action->unknown50 != 0.0f || action->unknown54 != 0.0f || (action->flags4c & 1);
+
+	if (active)
 	{
 		if (!valid_values || action->unknown34 == NONE)
 		{

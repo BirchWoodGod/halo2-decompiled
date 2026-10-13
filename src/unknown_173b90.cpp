@@ -426,6 +426,8 @@ struct s_particle_value_cache
 	void *field_48;
 	void *field_4c;
 	void const *field_50;
+
+	void function_173c10(dword mask);
 };
 
 struct s_particle_emitter_175610
@@ -554,10 +556,10 @@ void function_175610(s_particle_value_cache *cache, s_particle_system_datum *sys
 }
 
 // @retail 0x173c10
-void function_173c10(s_particle_value_cache *cache, dword mask)
+void s_particle_value_cache::function_173c10(dword mask)
 {
-	function_173ba0(~cache->mask & mask, cache->field_48, cache->field_4c, cache->field_50, cache->values);
-	cache->mask |= mask;
+	function_173ba0(~this->mask & mask, field_48, field_4c, field_50, values);
+	this->mask |= mask;
 }
 
 struct s_248cc0;
@@ -603,7 +605,7 @@ void __stdcall function_175430(s_particle_system_datum *system, point3f const *p
 			cache.field_4c = location;
 			cache.mask = 0;
 		}
-		function_173c10(&cache, 0x1ffff);
+		cache.function_173c10(0x1ffff);
 		function_248cc0((s_248cc0 *)location, (s_247fd0 *)&cache, system, position, velocity);
 	}
 }
