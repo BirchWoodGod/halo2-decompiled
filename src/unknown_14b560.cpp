@@ -1538,9 +1538,9 @@ static __forceinline void player_configuration_apply(long player_index, dword co
 {
     s_player *player = player_get(player_index);
     s_type_b07538 *current = (s_type_b07538 *)((byte *)player + 0x44);
-    __declspec(align(8)) s_type_b07538 previous = *current;
+    s_type_b07538 previous = *current;
     *(s_type_b07538 *)((byte *)player + 0xd4) = *(s_type_b07538 const *)configuration;
-    __declspec(align(8)) s_type_b07538 verified = *(s_type_b07538 const *)configuration;
+    s_type_b07538 verified = *(s_type_b07538 const *)configuration;
     player_configuration_verify(&verified);
     function_158090(player_index, verified.team_index);
     *current = verified;
@@ -1548,7 +1548,7 @@ static __forceinline void player_configuration_apply(long player_index, dword co
     if (previous.team_index != *(char *)((byte *)player + 0xc0))
         function_1582d0(player_index, *(char *)((byte *)player + 0xc0));
     if (previous.unknown7d != *(char *)((byte *)player + 0xc1))
-        function_1583d0(*(char *)((byte *)player + 0xc1), previous.unknown7d, player_index);
+        function_1583d0(previous.unknown7d, *(char *)((byte *)player + 0xc1), player_index);
     if (player->unit_index != NONE)
         function_14bfc0(player_index, player->unit_index);
 }
