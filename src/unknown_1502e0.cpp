@@ -779,11 +779,21 @@ struct s_player_target_unit
 	point3f position;
 	real radius;
 	byte unknown40[0x10a - 0x40];
-	byte flags;
-	byte unknown10b[0x248 - 0x10b];
+	word flag0 : 1;
+	word flag1 : 1;
+	word flag2 : 1;
+	word : 13;
+	byte unknown10c[0x248 - 0x10c];
 	long parent_index;
 	byte unknown24c[0x348 - 0x24c];
-	byte flags348;
+	word flag348_0 : 1;
+	word flag348_1 : 1;
+	word flag348_2 : 1;
+	word flag348_3 : 1;
+	word flag348_4 : 1;
+	word flag348_5 : 1;
+	word flag348_6 : 1;
+	word : 9;
 };
 
 __declspec(noinline) bool function_f5dc0(long object_index);
@@ -798,7 +808,7 @@ static __forceinline void player_object_target_candidate_evaluate(long object_in
 	s_target_candidate *const *best_reference = &best;
 	s_tail_player *player = tail_player_get(*player_reference);
 	s_player_target_unit *object = (s_player_target_unit *)tail_object_get(object_index);
-	if (!(object->flags & 4))
+	if (!TEST_FIELD_BIT(object->flag2))
 	{
 		if (!function_f5dc0(object_index))
 		{
@@ -827,7 +837,7 @@ static __forceinline void player_object_target_candidate_evaluate(long object_in
 		else if (player->unit_index != NONE)
 		{
 			s_player_target_unit *unit = (s_player_target_unit *)tail_object_get(player->unit_index);
-			if (!(object->flags348 & 0x40) && object->parent_index == NONE)
+			if (!TEST_FIELD_BIT(object->flag348_6) && object->parent_index == NONE)
 			{
 				vector3f delta;
 				vector3d_from_points3d(&unit->position, &object->position, &delta);
@@ -898,7 +908,8 @@ void function_152660(s_tail_transfer_options *options)
 		s_tail_transfer_traits *traits = 0;
 		for (long i = 0; i < 16; i++)
 		{
-			if (memcmp(((s_tail_player_identifier *)player)->identifier, options->players[i].identifier, 12) == 0)
+			long difference = memcmp(((s_tail_player_identifier *)player)->identifier, options->players[i].identifier, 12);
+			if (difference == 0)
 				traits = (s_tail_transfer_traits *)&options->players[i].traits[alternate ? 1 : 0];
 		}
 		if (traits)
@@ -912,15 +923,15 @@ void function_152660(s_tail_transfer_options *options)
 				long other = NONE;
 				if (unit->seat_index != NONE)
 				{
-					long now = g_510c54->game_time;
 					for (long selection = 0; selection < 2; selection++)
 					{
+						long now = g_510c54->game_time;
 						long chosen = NONE;
 						long shortest = 0x7fffffff;
 						for (long slot = 0; slot < 4; slot++)
 						{
-							long weapon = unit->weapons[slot];
 							long age = now - unit->weapon_times[slot];
+							long weapon = unit->weapons[slot];
 							if (weapon != NONE && (!selection || weapon != primary) && age < shortest)
 							{
 								shortest = age;
@@ -1318,11 +1329,16 @@ void __stdcall function_152f80(void *address, void *option_data)
     byte const *machine_address = (byte const *)address;
     s_player_rebind_option const *options = (s_player_rebind_option const *)option_data;
     long controllers[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
-    long users[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
-    long assigned[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
+    long users[16];
+    long assigned[16];
     dword options_used = 0;
     dword users_used = 0;
     dword controllers_used = 0;
+    for (long i = 0; i < 16; i++)
+    {
+        users[i] = NONE;
+        assigned[i] = NONE;
+    }
     s_record_pool_iterator iterator;
     s_tail_player *player;
     iterator.data = g_4e8c24;
@@ -1337,22 +1353,23 @@ void __stdcall function_152f80(void *address, void *option_data)
             {
                 s_player_rebind_option const *entry = &options[option];
                 if (!entry->active || (options_used & (1 << option))) continue;
+                bool match;
                 switch (pass)
                 {
                 case 0:
-                    if (player->local_index == NONE || memcmp(entry->identifier, player->unknown04, 12)) continue;
+                    match = player->local_index != NONE && !memcmp(entry->identifier, player->unknown04, 12);
                     break;
                 case 1:
-                    if (player->local_index == NONE || entry->controller_index != player->controller_index) continue;
+                    match = player->local_index != NONE && entry->controller_index == player->controller_index;
                     break;
                 case 2:
-                    if (player->local_index != NONE) continue;
-                    break;
-                case 3:
+                    match = player->local_index != NONE;
                     break;
                 default:
-                    __assume(0);
+                    match = true;
+                    break;
                 }
+                if (!match) continue;
                 users[index] = entry->local_index;
                 assigned[index] = option;
                 controllers[index] = entry->controller_index;
@@ -1425,37 +1442,8 @@ void __stdcall function_152f80(void *address, void *option_data)
         long index = (short)iterator.datum_index;
         if (player->local_index != NONE && (player->local_index != users[index] || player->controller_index != controllers[index]))
         {
-            s_tail_player *local = tail_player_get(iterator.datum_index);
-            if (local->local_index != NONE)
-            {
-                player_control_set_unit(local->local_index, NONE);
-                long user = local->local_index;
-                byte *state = (byte *)g_4e9bc8 + user * 0x20cc;
-                if (*(long *)(state + 4) != NONE)
-                {
-                    for (long hand = 0; hand < 2; hand++)
-                    {
-                        dword *flags = (dword *)(state + 0xc + hand * 0x1010);
-                        if (*flags & 1) *flags &= ~1;
-                    }
-                    *(dword *)state &= ~1;
-                    *(long *)(state + 4) = NONE;
-                    *(long *)(state + 8) = NONE;
-                    for (long hand = 0; hand < 2; hand++) function_167e86(user, hand);
-                }
-                s_player_census_counts *census = (s_player_census_counts *)g_4e8c20;
-                census->users[local->local_index] = NONE;
-                census->user_count--;
-                local->local_index = NONE;
-            }
-            s_tail_player *local_controller = tail_player_get(iterator.datum_index);
-            if (local_controller->controller_index != NONE)
-            {
-                s_player_census_counts *census = (s_player_census_counts *)g_4e8c20;
-                census->controllers[local_controller->controller_index] = NONE;
-                census->controller_count--;
-                local_controller->controller_index = NONE;
-            }
+            player_set_local_user(iterator.datum_index, NONE);
+            function_14f270(iterator.datum_index, NONE);
             player->machine_user = NONE;
             player->machine_controller = NONE;
         }
@@ -1473,26 +1461,7 @@ void __stdcall function_152f80(void *address, void *option_data)
             player->machine_user = (short)users[index];
             player->machine_controller = controllers[index];
             player_set_local_user(iterator.datum_index, player->machine_user);
-            s_tail_player *local = tail_player_get(iterator.datum_index);
-            long controller = player->machine_controller;
-            if (local->controller_index != controller)
-            {
-                if (controller == NONE)
-                {
-                    s_player_census_counts *census = (s_player_census_counts *)g_4e8c20;
-                    census->controllers[local->controller_index] = NONE;
-                    census->controller_count--;
-                    local->controller_index = NONE;
-                }
-                else
-                {
-                    function_14f270(iterator.datum_index, NONE);
-                    local->controller_index = controller;
-                    s_player_census_counts *census = (s_player_census_counts *)g_4e8c20;
-                    census->controllers[controller] = iterator.datum_index;
-                    census->controller_count++;
-                }
-            }
+            function_14f270(iterator.datum_index, player->machine_controller);
         }
         s_player_slot *slot = &g_54e8e0[player->controller_index];
         if (TEST_FIELD_BIT(slot->flag4)) *(long *)slot->unknown004 = player->local_index;
@@ -1546,28 +1515,27 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
     if (state->kind != 0)
     {
         s_tag_iterator iterator;
-        iterator.datum_index = 0;
         iterator.next_index = 0;
         iterator.group_tag = 0x77656170;
         long tag;
         while ((tag = function_122c70(&iterator)) != NONE)
         {
             byte *definition = g_4e3b44[tag & 0xffff].bytes;
-            bool found = false;
             if (*(long *)(definition + 0x2d0) > 0)
             {
                 byte *seat = *(byte **)(definition + 0x2d4);
                 long ammunition = *(long *)(seat + 0x90);
                 if (ammunition != NONE)
-                    found = state->kind == (short)g_4e3b44[ammunition & 0xffff].bytes[0x128];
-                else if (*(long *)(seat + 0x98) != NONE)
-                    found = state->kind == (short)seat[0x88];
+                {
+                    if (state->kind == (short)g_4e3b44[ammunition & 0xffff].bytes[0x128]) break;
+                }
+                else if (*(long *)(seat + 0x98) != NONE && state->kind == (short)seat[0x88]) break;
             }
-            if (found || state->kind == (short)definition[0x1fc]) break;
+            if (state->kind == (short)definition[0x1fc]) break;
         }
         if (tag != NONE)
         {
-            byte creation[0xb4];
+            byte creation[0xc4];
             function_b7930(creation, tag, *owner_reference, NULL);
             result = function_b7b40(creation);
             if (result != NONE)
@@ -1651,11 +1619,15 @@ bool function_152bf0(byte const *loadout, long unit_index)
     {
         byte *unit = (byte *)tail_object_get(unit_index);
         function_ccff0(unit_index);
-        bool failed = false;
-        long primary = function_152a50((s_loadout_state_152a50 *)(loadout + 2), unit_index, &failed);
-        long special = function_152a50((s_loadout_state_152a50 *)(loadout + 0x12), unit_index, &failed);
-        long secondary = function_152a50((s_loadout_state_152a50 *)(loadout + 0xa), unit_index, &failed);
-        bool result = !failed;
+        long primary, special, secondary;
+        bool result;
+        {
+            bool failed = false;
+            primary = function_152a50((s_loadout_state_152a50 *)(loadout + 2), unit_index, &failed);
+            special = function_152a50((s_loadout_state_152a50 *)(loadout + 0x12), unit_index, &failed);
+            secondary = function_152a50((s_loadout_state_152a50 *)(loadout + 0xa), unit_index, &failed);
+            result = !failed;
+        }
         for (long i = 0; i < 2; ++i)
         {
             unit[0x23e + i] = 0;
@@ -1779,23 +1751,26 @@ void __stdcall function_150e30(long player_index, long object_index)
     byte *unit = (byte *)tail_object_get(player->unit_index);
     byte *object = (byte *)tail_object_get(object_index);
     long parent_index = *(long *)(object + 0x14);
+    bool parent_ok = false;
     if (parent_index != NONE)
     {
-        byte parent_type = ((s_tail_object_header *)g_4e0300->data)[parent_index & 0xffff].type;
-        if (parent_type != 11 && parent_type != 7) return;
+        long parent_type = ((s_tail_object_header *)g_4e0300->data)[parent_index & 0xffff].type;
+        parent_ok = parent_type == 11 || parent_type == 7;
     }
+    if (*(long *)(object + 0x14) != NONE && !parent_ok) return;
     if (*(long *)(object + 0x14c) == player->unit_index) return;
-    real z = *(real *)(object + 0x38) - *(real *)(unit + 0x38);
-    real x = *(real *)(object + 0x30) - *(real *)(unit + 0x30);
     real y = *(real *)(object + 0x34) - *(real *)(unit + 0x34);
+    real x = *(real *)(object + 0x30) - *(real *)(unit + 0x30);
+    real z = *(real *)(object + 0x38) - *(real *)(unit + 0x38);
     real radius = *(real *)(unit + 0x3c) + 0.3f;
-    if (radius * radius <= z * z + x * x + y * y) return;
+    if (!(z * z + x * x + y * y < radius * radius)) return;
     long weapon_index = NONE;
     short rounds;
-    for (short i = 0; i < 4; ++i)
+    short i = 0;
+    do
     {
         long current = *(signed char *)(unit + 0x212);
-        if (current < 0) current = 0;
+        current = current < 0 ? 0 : current;
         long slot = (current + i) % 4;
         weapon_index = *(long *)(unit + 0x218 + slot * 4);
         if (weapon_index != NONE && function_ffc60(weapon_index, object_index, player->unit_index, player->local_index, &rounds))
@@ -1804,19 +1779,20 @@ void __stdcall function_150e30(long player_index, long object_index)
                 function_191ec4(*(long *)tail_object_get(weapon_index), player->local_index, rounds);
             break;
         }
-    }
+        ++i;
+    } while (i < 4);
     s_object *pickup = function_badc0(object_index, 8);
     if (pickup)
     {
         byte *definition = g_4e3b44[*(long *)pickup & 0xffff].bytes;
         short kind = *(short *)(definition + 0x12c);
-        if (kind == 6)
+        if (kind != 6)
         {
-            if (function_ccba0(player->unit_index, object_index))
-                function_191e51(*(long *)pickup, player->local_index);
+            if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
+                function_151ea0(player_index, object_index);
         }
-        else if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
-            function_151ea0(player_index, object_index);
+        else if (function_ccba0(player->unit_index, object_index))
+            function_191e51(*(long *)pickup, player->local_index);
     }
     byte type = ((s_tail_object_header *)g_4e0300->data)[object_index & 0xffff].type;
     if ((1 << type) & 4)

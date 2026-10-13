@@ -153,13 +153,11 @@ void function_15c150()
 				}
 				else
 				{
-					long elapsed;
 					if ((!(*((byte *)globals + 0xf4) & (1 << local)) && *(long *)(player + 0x2c) != NONE) ||
 						(*(long *)(player + 0x2c) == NONE && !function_158a50(index) &&
-						((elapsed = g_510c54->game_time - *(long *)((byte *)globals + 0x70)) < 0 ? 0 : elapsed) > g_510c54->field_2_3))
+						(g_510c54->game_time - *(long *)((byte *)globals + 0x70) < 0 ? 0 : g_510c54->game_time - *(long *)((byte *)globals + 0x70)) > g_510c54->field_2_3))
 					{
-						long time = g_510c54->game_time;
-						if (time > real_to_long((real)g_510c54->field_2_3 * 1.5f))
+						if (g_510c54->game_time > real_to_long((real)g_510c54->field_2_3 * 1.5f))
 						{
 							real value = *fade - 3.0f / (real)g_510c54->field_2_3;
 							*fade = value < 0.0f ? 0.0f : value;

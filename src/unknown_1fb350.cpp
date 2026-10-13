@@ -41,7 +41,7 @@ bool recorded_animation_playing(long object_index)
 	iterator.data = g_4f5724;
 	iterator.index = NONE;
 	iterator.datum_index = NONE;
-	while ((animation = (s_recorded_animation *)function_1fb762(&iterator)) != 0)
+	while ((animation = (s_recorded_animation *)data_iterator_next_inlined(&iterator)) != 0)
 	{
 		if (animation->object_index == object_index && !(animation->flags & 1))
 		{
@@ -340,7 +340,7 @@ void function_1fb510(void)
 	iterator.data = g_4f5724;
 	iterator.index = NONE;
 	iterator.datum_index = NONE;
-	while ((animation = (s_recorded_animation *)data_iterator_next_inlined(&iterator)) != 0)
+	while ((animation = (s_recorded_animation *)function_1fb762(&iterator)) != 0)
 	{
 		if (recorded_animation_unit_try_and_get(animation->object_index))
 		{

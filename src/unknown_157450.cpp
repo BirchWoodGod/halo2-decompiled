@@ -1903,8 +1903,31 @@ void function_159460(long player_index, bool *leading, bool *tied)
 	long absolute_index = player_index & 0xffff;
 	s_engine_player *player = (s_engine_player *)g_4e8c24->data + absolute_index;
 	bool is_tied = false;
+	bool is_leading = true;
 
-	if (!(function_x340af0()))
+	if (function_x340af0())
+	{
+		long score = function_1587f0(player->team);
+
+		for (long team = 0; team < 8; team++)
+		{
+			if (team != player->team && game_engine_team_is_active(team))
+			{
+				long difference = function_1587f0(team) - score;
+
+				if (difference == 0)
+				{
+					is_tied = true;
+				}
+				else if (difference > 0)
+				{
+					is_leading = false;
+					break;
+				}
+			}
+		}
+	}
+	else
 	{
 		long score = function_1587b0(player_index);
 		s_engine_player_iterator iterator;
@@ -1924,38 +1947,22 @@ void function_159460(long player_index, bool *leading, bool *tied)
 				}
 				if (difference > 0)
 				{
-					*leading = false;
-					*tied = false;
-					return;
+					is_leading = false;
+					break;
 				}
 			}
 		}
+	}
+	if (is_leading)
+	{
+		*leading = true;
+		*tied = is_tied;
 	}
 	else
 	{
-		long score = function_1587f0(player->team);
-
-		for (long team = 0; team < 8; team++)
-		{
-			if (team != player->team && game_engine_team_is_active(team))
-			{
-				long difference = function_1587f0(team) - score;
-
-				if (difference == 0)
-				{
-					is_tied = true;
-				}
-				else if (difference > 0)
-				{
-					*leading = false;
-					*tied = false;
-					return;
-				}
-			}
-		}
+		*leading = false;
+		*tied = false;
 	}
-	*leading = true;
-	*tied = is_tied;
 }
 
 #include "object_iterator.h"
@@ -2351,7 +2358,7 @@ void function_15b980(bool skip_event)
 	}
 }
 
-void function_1e9df0(long field, long counter, s_statborg *statistics, long team, long delta);
+void function_1e9df0(long field, long counter, long team, s_statborg *statistics, long delta);
 void function_1e9ce0(long player_index, long counter, s_statborg *statistics, long field, long delta, bool by_team);
 
 // @retail 0x15b650
@@ -2392,7 +2399,7 @@ void __stdcall function_15b650(long team, long delta)
 	}
 	if (score != old_score)
 	{
-		function_1e9df0(0, NONE, statistics, selected_team, score - old_score);
+		function_1e9df0(0, NONE, selected_team, statistics, score - old_score);
 		switch (g_4e6948->mode_180)
 		{
 		case 1: function_1967d0(NONE, selected_team, 0xe, score - old_score); break;
@@ -2410,19 +2417,33 @@ struct s_round_limit_options
 	long limit_kind;
 };
 
+/* 0x1968b0's index half (the team half is dead here), clamped with the
+   ternary the out-of-line function uses */
+static __forceinline void input_counter_set_inlined_15b3a0(long a, long b, long value)
+{
+	if (g_510ca0 && !g_510ca1)
+	{
+		long minimum = g_46ddc0[b].minimum;
+		long maximum = g_46ddc0[b].maximum;
+		if (a != NONE)
+		{
+			s_input_counter *counter = &g_511bf4.all[a * 0x1b5 + b];
+			counter->value = value < minimum ? minimum : (value > maximum ? maximum : value);
+		}
+	}
+}
+
 // @retail 0x15b3a0
 void function_15b3a0(long player_or_team, bool value)
 {
 	s_game_engine_globals *globals = function_xaee93d();
 	long wins = 0;
-	bool const *value_reference = &value;
-	bool finish = (byte)*value_reference != 0;
 
 	if (player_or_team != NONE)
 	{
 		if (score_teams_enabled())
 		{
-			function_1e9df0(7, 6, &globals->statborg, player_or_team, 1);
+			function_1e9df0(7, 6, player_or_team, &globals->statborg, 1);
 			s_engine_player_iterator iterator;
 
 			iterator.data = g_4e8c24;
@@ -2441,7 +2462,7 @@ void function_15b3a0(long player_or_team, bool value)
 					{
 						function_b58c0(globals->index28, 1 << index);
 					}
-					input_counter_set_inlined(NONE, index, 6, *score);
+					input_counter_set_inlined_15b3a0(index, 6, *score);
 				}
 			}
 			wins = ((short *)&game_engine_statborg_inline()->teams[player_or_team])[7];
@@ -2454,42 +2475,18 @@ void function_15b3a0(long player_or_team, bool value)
 	}
 
 	long limit_kind = ((s_round_limit_options *)g_4e6948)->limit_kind;
-	if (limit_kind == 0)
+	if ((limit_kind == 0 && (short)globals->value6e >= 0) ||
+		(limit_kind == 1 && (short)globals->value6e >= 1) ||
+		(limit_kind == 2 && (short)globals->value6e >= 3) ||
+		(limit_kind == 3 && (short)globals->value6e >= 5) ||
+		(limit_kind == 4 && player_or_team != NONE && wins >= 2) ||
+		(limit_kind == 5 && player_or_team != NONE && wins >= 3) ||
+		(limit_kind == 6 && player_or_team != NONE && wins >= 4))
 	{
-		if ((short)globals->value6e >= 0)
-			finish = true;
+		value = true;
 	}
-	else if (limit_kind == 1)
-	{
-		if ((short)globals->value6e >= 1)
-			finish = true;
-	}
-	else if (limit_kind == 2)
-	{
-		if ((short)globals->value6e >= 3)
-			finish = true;
-	}
-	else if (limit_kind == 3)
-	{
-		if ((short)globals->value6e >= 5)
-			finish = true;
-	}
-	else if (limit_kind == 4)
-	{
-		if (player_or_team != NONE && wins >= 2)
-			finish = true;
-	}
-	else if (limit_kind == 5)
-	{
-		if (player_or_team != NONE && wins >= 3)
-			finish = true;
-	}
-	else if (limit_kind == 6)
-	{
-		if (player_or_team != NONE && wins >= 4)
-			finish = true;
-	}
-	if ((short)globals->value6e >= 31 || finish)
+	bool finished = (short)globals->value6e >= 31 || value;
+	if (finished)
 	{
 		if (g_4e6948->mode != 4)
 		{
@@ -3443,6 +3440,13 @@ void function_15ebd0(void)
 	}
 }
 
+/* the two ids of the game options (+0x10, +0x14), read as a pair */
+struct s_seed_pair_15a640
+{
+	long a;
+	long b;
+};
+
 // @retail 0x15a640
 long function_15a640(long tag_index)
 {
@@ -3452,7 +3456,8 @@ long function_15a640(long tag_index)
     long mode = *(signed char *)((byte *)g_4e6948 + 0x210);
     if (mode == 19)
     {
-        dword seed = (g_4e6948->id_b ^ g_4e6948->id_a) * 1664525 + 1013904223;
+        s_seed_pair_15a640 ids = *(s_seed_pair_15a640 const *)&g_4e6948->id_a;
+        dword seed = (ids.a ^ ids.b) * 1664525 + 1013904223;
         mode = (long)(seed >> 16) % 17 + 2;
     }
     switch (mode)
@@ -3504,20 +3509,26 @@ long function_15a640(long tag_index)
     case 8:
         switch (index)
         {
-        case 0: index = 5; break;
-        case 1: index = 5; break;
-        case 2: index = 5; break;
-        case 3: index = 5; break;
-        case 4: index = 15; break;
-        case 6: index = 12; break;
-        case 7: index = 12; break;
-        case 8: index = 12; break;
-        case 9: index = 15; break;
-        case 10: index = 12; break;
-        case 11: index = 12; break;
-        case 13: index = 15; break;
-        case 14: index = 12; break;
-        case 16: index = 15; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+            index = 5;
+            break;
+        case 4:
+        case 9:
+        case 13:
+        case 16:
+            index = 15;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 10:
+        case 11:
+        case 14:
+            index = 12;
+            break;
         }
         break;
     case 9:
@@ -3551,70 +3562,85 @@ long function_15a640(long tag_index)
     case 11:
         switch (index)
         {
-        case 0: index = 3; break;
-        case 1: index = 3; break;
-        case 2: index = 3; break;
-        case 3: index = 3; break;
-        case 5: index = 3; break;
-        case 6: index = 10; break;
-        case 7: index = 10; break;
-        case 8: index = 10; break;
-        case 9: index = 10; break;
-        case 10: index = 10; break;
-        case 11: index = 10; break;
-        case 12: index = 10; break;
-        case 14: index = 10; break;
-        case 15: index = 10; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 5:
+            index = 3;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 14:
+        case 15:
+            index = 10;
+            break;
         }
         break;
     case 12:
         switch (index)
         {
-        case 0: index = 4; break;
-        case 1: index = 4; break;
-        case 2: index = 4; break;
-        case 3: index = 4; break;
-        case 4: index = 4; break;
-        case 5: index = 4; break;
-        case 6: index = 13; break;
-        case 7: index = 13; break;
-        case 8: index = 13; break;
-        case 9: index = 13; break;
-        case 10: index = 13; break;
-        case 11: index = 13; break;
-        case 12: index = 13; break;
-        case 13: index = 13; break;
-        case 14: index = 13; break;
-        case 15: index = 13; break;
-        case 16: index = 13; break;
-        case 17: index = 13; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            index = 4;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+            index = 13;
+            break;
         }
         break;
     case 13:
-        if (index == 4) index = 3;
-        else if (index == 13) index = 10;
+        switch (index)
+        {
+        case 4: index = 3; break;
+        case 13: index = 10; break;
+        }
         break;
     case 14:
         switch (index)
         {
-        case 0: index = 0; break;
-        case 1: index = 0; break;
-        case 2: index = 0; break;
-        case 3: index = 0; break;
-        case 4: index = 0; break;
-        case 5: index = 0; break;
-        case 6: index = 6; break;
-        case 7: index = 6; break;
-        case 8: index = 6; break;
-        case 9: index = 6; break;
-        case 10: index = 6; break;
-        case 11: index = 6; break;
-        case 12: index = 6; break;
-        case 13: index = 6; break;
-        case 14: index = 6; break;
-        case 15: index = 6; break;
-        case 16: index = 6; break;
-        case 17: index = 6; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            index = 0;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+            index = 6;
+            break;
         }
         break;
     case 15:
@@ -3657,14 +3683,28 @@ long function_15a640(long tag_index)
     case 17:
         switch (index)
         {
-        case 0: index = 6; break;
-        case 1: index = 9; break;
-        case 2: index = 9; break;
-        case 3: index = 10; break;
-        case 4: index = 13; break;
-        case 5: index = 12; break;
-        case 16: index = 7; break;
-        case 17: index = 8; break;
+        case 0:
+            index = 6;
+            break;
+        case 1:
+        case 2:
+            index = 9;
+            break;
+        case 3:
+            index = 10;
+            break;
+        case 4:
+            index = 13;
+            break;
+        case 5:
+            index = 12;
+            break;
+        case 16:
+            index = 7;
+            break;
+        case 17:
+            index = 8;
+            break;
         }
         break;
     case 18:
@@ -3722,24 +3762,27 @@ static inline long death_seconds_to_ticks(real seconds)
     return result;
 }
 
+static __forceinline long nonnegative_15ce70(long value)
+{
+	return value < 0 ? 0 : value;
+}
+
 // @retail 0x15ce70
 void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte damage)
 {
+    long award = NONE;
     if (!game_engine_get()) return;
     s_engine_player *victim = engine_player_get(victim_index);
     long damage_type = damage & 0x3f;
     long damage_modifier = damage >> 6;
-    long award = NONE;
     bool special = damage_type == 3 || damage_type == 0x1a || damage_type == 0x18 || damage_type == 0x17 || damage_type == 0x14;
-    long elapsed = g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time;
-    if (elapsed < 0) elapsed = 0;
+    long elapsed = nonnegative_15ce70(g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time);
     *(long *)((byte *)victim + 0x1b4) = elapsed;
     if (attacker_index != NONE)
     {
         s_engine_player *attacker = engine_player_get(attacker_index);
         bool different = attacker_index != victim_index;
-        bool same_team = false;
-        if (game_engine_get()) same_team = game_engine_get()->p27(attacker->team, victim->team);
+        bool same_team = game_engine_get() ? game_engine_get()->p27(attacker->team, victim->team) : false;
         if (!different)
             *(long *)victim->unknown168 += death_seconds_to_ticks((real)*(long *)((byte *)g_4e6948 + 0x1c0));
         else if (!same_team && !victim->value164)
@@ -3768,8 +3811,7 @@ void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte
         break;
     case 1:
         {
-            long now = g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time;
-            if (now < 0) now = 0;
+            long now = nonnegative_15ce70(g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time);
             long next = (now / interval + 1) * interval;
             while (next < now + delay) next += interval;
             victim->value164 = next - now;
@@ -3852,9 +3894,9 @@ void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte
     if (attacker_index != NONE && attacker_index != victim_index && !betrayal)
     {
         long index = attacker_index & 0xffff;
-        short chain = *(short *)((byte *)&game_engine_get_statborg()->players[index] + 0x14);
-        short streak = *(short *)((byte *)&game_engine_get_statborg()->players[index] + 0x12);
-        short victim_streak = *(short *)((byte *)&game_engine_get_statborg()->players[victim_index & 0xffff] + 0x12);
+        long chain = *(short *)((byte *)&game_engine_get_statborg()->players[index] + 0x14);
+        long streak = *(short *)((byte *)&game_engine_get_statborg()->players[index] + 0x12);
+        long victim_streak = *(short *)((byte *)&game_engine_get_statborg()->players[victim_index & 0xffff] + 0x12);
         if (chain >= 7) function_1970a0(index, 5, 1);
         else if (chain == 6) function_1970a0(index, 4, 1);
         else if (chain == 5) function_1970a0(index, 3, 1);
@@ -4196,76 +4238,97 @@ extern s_input_state g_4e61dc[3];
 extern s_input_state g_4e630c;
 bool function_162c50(long player_index, long *spectated_player_index);
 
+/* the fields of a player that 0x15bb20 reads and writes, typed */
+struct s_player_view_15bb20
+{
+    short salt;
+    word flags;
+    byte unknown04[0x28 - 4];
+    short local_index;
+    byte unknown2a[2];
+    long unit_index;
+    byte unknown30[0x170 - 0x30];
+    long value170;
+    byte unknown174[0x194 - 0x174];
+    long value194;
+    byte unknown198[0x1a6 - 0x198];
+    char seat_timer;
+    char dead_timer;
+    char alive_timer;
+    byte unknown1a9[0x1b0 - 0x1a9];
+    long value1b0;
+    byte unknown1b4[0x218 - 0x1b4];
+    short dead_count;
+};
+
+
 // @retail 0x15bb20
 void __stdcall function_15bb20(long player_index)
 {
     long absolute_index = player_index & 0xffff;
-    s_engine_player *player = engine_player_get(player_index);
+    s_player_view_15bb20 *player = (s_player_view_15bb20 *)engine_player_get(player_index);
     if (player->value194 > 0)
         --player->value194;
     if (g_4e6948->mode != 4 && player->unit_index != NONE && function_15b2f0() &&
         g_510c54->game_time % g_510c54->field_2_3 == 0)
         function_1967d0(absolute_index, NONE, 13, 1);
 
-    char *seat_timer = (char *)player + 0x1a6;
-    char *dead_timer = (char *)player + 0x1a7;
-    char *alive_timer = (char *)player + 0x1a8;
-    if (player->unit_index != NONE)
+    long unit_index = player->unit_index;
+    if (unit_index != NONE)
     {
-        byte *unit = (byte *)engine_object_get(player->unit_index);
+        byte *unit = (byte *)engine_object_get(unit_index);
         if (*(long *)(unit + 0x14) != NONE && *(short *)(unit + 0x1fc) != NONE)
         {
-            if (*seat_timer == NONE)
-                *seat_timer = (char)(g_510c54->field_2_3 * 2);
-            else if (*seat_timer > 0)
-                --*seat_timer;
+            if (player->seat_timer == NONE)
+                player->seat_timer = (char)(g_510c54->field_2_3 * 2);
+            else if (player->seat_timer > 0)
+                --player->seat_timer;
         }
         else
-            *seat_timer = NONE;
-        if (player->unit_index != NONE)
+            player->seat_timer = NONE;
+    }
+    if (player->unit_index != NONE)
+    {
+        if (player->dead_timer != NONE && g_4e6948->mode == 4)
+            ++player->dead_count;
+        player->dead_timer = NONE;
+        if (player->alive_timer == NONE)
         {
-            if (*dead_timer != NONE && g_4e6948->mode == 4)
-                ++*(short *)((byte *)player + 0x218);
-            *dead_timer = NONE;
-            if (*alive_timer == NONE)
+            player->alive_timer = 0;
+            if (g_4e6948->mode != 4)
             {
-                *alive_timer = 0;
-                if (g_4e6948->mode != 4)
-                {
-                    *(long *)((byte *)player + 0x1b0) = NONE;
-                    function_a7840((short)player_index, 0x40);
-                }
+                player->value1b0 = NONE;
+                function_a7840((short)player_index, 0x40);
             }
-            else if (*alive_timer < 0x7f)
-                ++*alive_timer;
         }
+        else if (player->alive_timer < 0x7f)
+            ++player->alive_timer;
     }
     else
     {
-        if (*dead_timer == NONE)
-            *dead_timer = (char)g_510c54->field_2_3;
-        else if (*dead_timer > 0)
-            --*dead_timer;
-        *alive_timer = NONE;
+        if (player->dead_timer == NONE)
+            player->dead_timer = (char)g_510c54->field_2_3;
+        else if (player->dead_timer > 0)
+            --player->dead_timer;
+        player->alive_timer = NONE;
     }
 
-    short user = *(short *)((byte *)player + 0x28);
-    long controller = *(long *)((byte *)player + 0x24);
-    if (user != NONE && controller != NONE)
+    if (player->local_index != NONE && *(long *)((byte *)player + 0x24) != NONE)
     {
-        bool has_input = g_4e61cc[(short)controller] != 0;
-        bool primary_input = has_input && g_4e61b9;
-        bool active = has_input && (primary_input ? g_4e630c.values[0xd] :
-            g_4e61dc[(short)controller].values[0xd]) != 0;
+        s_input_state *input = NULL;
+        short controller = (short)*(long *)((byte *)player + 0x24);
+        if (g_4e61cc[controller] != 0)
+            input = g_4e61b9 ? &g_4e630c : &g_4e61dc[controller];
         long ticks = g_510c54->field_2_3;
         long minimum_time = ticks * 3;
-        if (function_15b2f0())
-            g_4e9af0.unknown04[0] = 0;
-        else
+        bool active = input && input->values[0xd] != 0;
+        if (!function_15b2f0())
         {
             long elapsed = (long)g_4e9af0.unknown04[0] + 1;
             g_4e9af0.unknown04[0] = (byte)(elapsed > ticks ? ticks : elapsed);
         }
+        else
+            g_4e9af0.unknown04[0] = 0;
 
         if ((active || g_4e9af0.unknown04[0] == ticks ||
             (player->unit_index == NONE && player->value170 <= 1 && !(player->flags & 0x4000) &&
@@ -4273,24 +4336,20 @@ void __stdcall function_15bb20(long player_index)
             !function_162c50(player_index, &player_index))
         {
                 long maximum = real_to_long((real)g_510c54->field_2_3 * 0.25f);
-                user = *(short *)((byte *)player + 0x28);
-                long elapsed = (long)g_4e9af0.timers[user] + 1;
-                g_4e9af0.timers[user] = (byte)(elapsed > maximum ? maximum : elapsed);
-                if (has_input)
+                g_4e9af0.timers[player->local_index] = (byte)((long)g_4e9af0.timers[player->local_index] + 1 > maximum ? maximum : (long)g_4e9af0.timers[player->local_index] + 1);
+                if (input)
                 {
-                    short delta = primary_input ? (short &)g_4e630c.values[0x36] :
-                        (short &)g_4e61dc[(short)controller].values[0x36];
+                    short delta = (short &)input->values[0x36];
                     real change = (real)(-delta);
                     change *= 3.0518509447574615e-05f;
-                    change *= 240.0f / (real)g_510c54->field_2_3;
-                    (real &)g_4e9af0.unknown04[4 + user * 4] += change;
+                    real scale = 240.0f / (real)g_510c54->field_2_3;
+                    change *= scale;
+                    (real &)g_4e9af0.unknown04[4 + player->local_index * 4] += change;
                 }
         }
         else
         {
-            user = *(short *)((byte *)player + 0x28);
-            long remaining = (long)g_4e9af0.timers[user] - 1;
-            g_4e9af0.timers[user] = (byte)(remaining > 0 ? remaining : 0);
+            g_4e9af0.timers[player->local_index] = (byte)((long)g_4e9af0.timers[player->local_index] - 1 > 0 ? (long)g_4e9af0.timers[player->local_index] - 1 : 0);
         }
     }
 }
@@ -4408,9 +4467,9 @@ void __stdcall function_15e530(c_1fa50 const *text, real alpha, point2f const *p
 {
     (void)&text;
     (void)&alpha;
-    (void)&point;
-    short_rectangle2d bounds = g_4b9dd8;
+    point2f const *const *point_reference = &point;
     long font_index = (g_4ba04c <= 1) + 5;
+    short_rectangle2d bounds = g_4b9dd8;
     s_font_header *font = font_get(g_4e28f4[font_index]);
     long height = 10;
     if (font)
@@ -4426,11 +4485,14 @@ void __stdcall function_15e530(c_1fa50 const *text, real alpha, point2f const *p
                 rgb = &alternate_score_text_color;
         }
     }
-    real scale = (g_4b9ed8 >= 0 && g_4b9ed8 < 4) ? g_4e69c0[g_4b9ed8] : 1.0f;
-    color4f color = { scale * alpha, rgb->red, rgb->green, rgb->blue };
-    color4f shadow = { scale * alpha, g_468718->x, g_468718->y, g_468718->z };
-    real x = point->x - g_4b9dd2;
-    real y = point->y - g_4b9dd0;
+    color4f color;
+    *(color3f *)&color.red = *rgb;
+    color.alpha = ((g_4b9ed8 >= 0 && g_4b9ed8 < 4) ? g_4e69c0[g_4b9ed8] : 1.0f) * alpha;
+    color4f shadow;
+    *(point3f *)&shadow.red = *g_468718;
+    shadow.alpha = ((g_4b9ed8 >= 0 && g_4b9ed8 < 4) ? g_4e69c0[g_4b9ed8] : 1.0f) * alpha;
+    real x = (*point_reference)->x - g_4b9dd2;
+    real y = (*point_reference)->y - g_4b9dd0;
     bounds.left = (short)(x - 300.0f);
     bounds.right = (short)(x + 300.0f);
     bounds.top = (short)(y - (short)height);
@@ -4499,7 +4561,7 @@ void function_15be20()
 }
 
 #include <wchar.h>
-bool function_30710(vector3f const *vector, short_rectangle2d const *bounds, point2f *point, s_camera const *camera, s_view const *view);
+bool function_30710(s_camera const *camera, short_rectangle2d const *bounds, vector3f const *vector, point2f *point, s_view const *view);
 void parse_text(word *text);
 
 // @retail 0x159250
@@ -4520,18 +4582,16 @@ void function_159250(long player_index, real alpha)
 	}
 	if (player && player->unit_index != NONE)
 	{
-		union
-		{
-			struct { s_camera camera; s_view view; } projection;
-			word text[0x100];
-		} storage;
-		point2f point = { 0.0f, 0.0f };
+		word text[0x100];
+		point2f point;
 		s_object_marker marker;
 		function_b8d30(player->unit_index, 0x04000095, &marker, 1, false);
+		point3f position = marker.matrix.position;
+		position.z += 0.05f;
+		real x = position.x;
+		real y = position.y;
+		real z = position.z;
 		real scale = g_4b9e14.scale;
-		real x = marker.matrix.position.x;
-		real y = marker.matrix.position.y;
-		real z = marker.matrix.position.z + 0.05f;
 		if (scale != 1.0f)
 		{
 			x = scale * x;
@@ -4551,18 +4611,8 @@ void function_159250(long player_index, real alpha)
 		transformed.k += g_4b9e14.right.k * x;
 		transformed.k += g_4b9e14.up.k * y;
 		transformed.k += g_4b9e14.position.z;
-		// Copy the fields the projector reads; shared globals must not escape.
-		storage.projection.camera.unknown78 = g_4b9e14.unknown78;
-		storage.projection.camera.unknown8c = g_4b9e14.unknown8c;
-		storage.projection.camera.unknown98 = g_4b9e14.unknown98;
-		storage.projection.camera.unknown9c = g_4b9e14.unknown9c;
-		storage.projection.view.bounds.top = g_4b9dd0;
-		storage.projection.view.bounds.left = g_4b9dd2;
-		storage.projection.view.bounds.bottom = g_4b9dd4;
-		storage.projection.view.bounds.right = g_4b9dd6;
-		if (function_30710(&transformed, 0, &point, &storage.projection.camera, &storage.projection.view))
+		if (function_30710((s_camera const *)&g_4b9e14, 0, &transformed, &point, (s_view const *)&g_camera_storage))
 		{
-			word *text = storage.text;
 			text[0] = 0;
 			wcsncpy((wchar_t *)text, (wchar_t const *)((byte *)player + 0x44), 0xff);
 			text[0xff] = 0;
@@ -4578,6 +4628,16 @@ void function_b7930(void *data, long tag_index, long object_index, s_effect_owne
 long __stdcall function_b7b40(void *creation);
 void function_11df60(vector3f const *rotation, vector3f *forward, vector3f *up);
 long weighted_choice_random(long tag_index, long *extra);
+long weighted_choice_random_15aad0(long tag_index, long *extra);
+
+/* retail calls 0x11df60 out of line here; its own file is built without /Ob1, so the call is kept out of line through a depth-0 helper */
+#pragma inline_depth(0)
+PRIVATE __forceinline void euler_vectors_get_15aad0(vector3f const *rotation, vector3f *forward, vector3f *up)
+{
+    function_11df60(rotation, forward, up);
+}
+#pragma inline_depth(255)
+
 void __stdcall function_b9b90(long object_index, bool disable);
 void __stdcall function_a7870(long object_index);
 
@@ -4591,28 +4651,33 @@ void function_15aad0(s_netgame_entry_state *entries, long index)
     long original = NONE;
     if (*(long *)(placement + 0x5c) != NONE)
     {
-        if (*(long *)(placement + 0x58) == 0x69746d63)
+        /* the second case calls the folded twin of weighted_choice_random (src/unknown_19eda0.cpp) */
+        switch (*(long *)(placement + 0x58))
+        {
+        case 0x69746d63:
             original = weighted_choice_random(*(long *)(placement + 0x5c), &name);
-        else if (*(long *)(placement + 0x58) == 0x76656863)
-            original = weighted_choice_random(*(long *)(placement + 0x5c), &name);
+            break;
+        case 0x76656863:
+            original = weighted_choice_random_15aad0(*(long *)(placement + 0x5c), &name);
+            break;
+        }
     }
     long selected;
-    char kind = *(char *)(placement + 0x14);
-    if (kind >= 1 && kind <= 7)
-        selected = ((c_engine_equipment *)*entries_reference)->choose(original, &name, kind);
-    else if (kind == 8 || kind == 9)
+    if ((char)placement[0x14] >= 1 && (char)placement[0x14] <= 7)
+        selected = ((c_engine_equipment *)*entries_reference)->choose(original, &name, (char)placement[0x14]);
+    else if ((char)placement[0x14] == 8 || (char)placement[0x14] == 9)
         selected = function_15a5b0(original);
-    else if (kind == 0)
+    else if ((char)placement[0x14] == 0)
         selected = function_15a640(original);
     else
         selected = original;
     if (selected != NONE)
     {
-        byte creation[0xb4];
+        byte creation[0xc4];
         function_b7930(creation, selected, NONE, NULL);
         *(long *)(creation + 0xc) = name;
         *(point3f *)(creation + 0x1c) = *(point3f *)(placement + 0x40);
-        function_11df60((vector3f const *)(placement + 0x4c), (vector3f *)(creation + 0x28), (vector3f *)(creation + 0x34));
+        euler_vectors_get_15aad0((vector3f const *)(placement + 0x4c), (vector3f *)(creation + 0x28), (vector3f *)(creation + 0x34));
         if ((*entries_reference)[*index_reference].index != NONE)
             ((c_engine_equipment *)*entries_reference)->release_entry((*entries_reference)[*index_reference].index, *index_reference);
         long object_index = function_b7b40(creation);
@@ -4803,6 +4868,7 @@ void function_159ac0(void)
     }
 }
 
+__declspec(noinline) void function_15cba0(long mode);
 
 // @retail 0x15cba0
 void function_15cba0(long mode)
@@ -4908,8 +4974,14 @@ void function_159880(void)
         real fade = local_user == NONE ? 1.0f : *(real *)((byte *)globals + 0xe4 + local_user * 4);
         if (fade > 0.0f)
         {
-            color4f color = {fade, g_468718->x, g_468718->y, g_468718->z};
-            s_short_rectangle bounds = {0, 0, (short)(g_4b9dd6 - g_4b9dd2), (short)(g_4b9dd4 - g_4b9dd0)};
+            color4f color;
+            color.alpha = fade;
+            *(point3f *)&color.red = *g_468718;
+            s_short_rectangle bounds;
+            bounds.left = 0;
+            bounds.top = 0;
+            bounds.right = (short)(g_4b9dd6 - g_4b9dd2);
+            bounds.bottom = (short)(g_4b9dd4 - g_4b9dd0);
             function_36580();
             function_36880(&color, &bounds);
         }
@@ -4933,14 +5005,17 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
     if (g_4e6948->mode == 4) return;
     byte *globals_tag = g_4e3b44[*(long *)((byte *)g_4e034c + 0x16c) & 0xffff].bytes;
     byte *preset = *(byte **)(*(byte **)(globals_tag + 0xc) + 0x534);
-    volatile long  arg_642c39 = g_510c54->field_2_3;
-    byte * volatile scenario = (byte *)g_4e0350;
+    long arg_642c39 = g_510c54->field_2_3;
+    byte *scenario = (byte *)g_4e0350;
     for (short i = 0; i < *(long *)(scenario + 0x120); ++i)
     {
         byte *placement = *(byte **)(scenario + 0x124) + i * 0x90;
         if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
+        short *timer = &entries[i].value04;
         c_engine_peer *engine = game_engine_get();
-        long type = engine ? engine->p0() : NONE;
+        long type = NONE;
+        if (engine)
+            type = engine->p0();
         if (function_15a090(type, 4, (short *)(placement + 4)) == NONE) continue;
         long index = entries[i].index;
         byte *object = NULL;
@@ -4955,18 +5030,20 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
                     real z = *(real *)(placement + 0x48) - *(real *)(object + 0x38);
                     real y = *(real *)(placement + 0x44) - *(real *)(object + 0x34);
                     real x = *(real *)(placement + 0x40) - *(real *)(object + 0x30);
-                    reset = z*z + y*y + x*x <= 100.0f || function_15f060((point3f *)(object + 0x30), *(real *)(preset + 0x28));
+                    if (z*z + y*y + x*x > 100.0f)
+                        reset = function_15f060((point3f *)(object + 0x30), *(real *)(preset + 0x28));
+                    else
+                        reset = true;
                 }
-                if (reset) entries[i].value06 = 0;
-                else ++entries[i].value06;
-                if (entries[i].value06 > *(short *)(placement + 0x10)) entries[i].value04 = 1;
+                if (!reset) ++entries[i].value06;
+                else entries[i].value06 = 0;
+                if (entries[i].value06 > *(short *)(placement + 0x10)) *timer = 1;
             }
         }
-        short *timer = &entries[i].value04;
         if (*timer == 0)
         {
-            bool schedule = index == NONE;
-            if (index != NONE)
+            bool schedule = entries[i].index == NONE;
+            if (entries[i].index != NONE)
             {
                 switch (*(short *)(placement + 0x12))
                 {
@@ -5151,21 +5228,33 @@ long entity_table_new_entity(c_entry_table *table, long handler_index);
 long function_b57d0(long handler_index, long object_index);
 void function_15cba0(long mode);
 
+static inline long local_user_next_158530(long index)
+{
+	long result = NONE;
+	long start = index == NONE ? 0 : index + 1;
+
+	for (long i = start; i < 4; i++)
+	{
+		if (g_4e8c20->entries[i] != NONE)
+		{
+			result = i;
+			break;
+		}
+	}
+	return result;
+}
+
 // @retail 0x158530
 void function_158530(void)
 {
     if (game_engine_get())
     {
         if (g_4e6948->mode != 4) function_157ae0();
-        s_index_table *users = g_4e8c20;
         s_game_engine_globals *globals = function_xaee93d();
-        for (long user = 0; user < 4; ++user)
+        for (long user = local_user_next_158530(NONE); user != NONE; user = local_user_next_158530(user))
         {
-            if (*(long *)((byte *)users + 0xc + user * 4) != NONE)
-            {
-                globals->timers[user] = 1.0f;
-                globals->timer_flags |= (byte)(1 << user);
-            }
+            globals->timers[user] = 1.0f;
+            globals->timer_flags |= (byte)(1 << user);
         }
         globals->value6c = 1;
         globals->value_c04 = 1;
@@ -5179,8 +5268,9 @@ void function_158530(void)
                 long handle = function_b57d0(current, NONE);
                 if (handle != NONE)
                 {
+                    c_entry_table *entry_table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
                     function_xaee93d()->index24 = handle;
-                    ((c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098)->function_08a400(handle);
+                    entry_table->function_08a400(handle);
                 }
             }
         }
@@ -5191,23 +5281,25 @@ void function_158530(void)
             long handle = entity_table_new_entity(table, 7);
             if (handle != NONE)
             {
-                *(long *)&table->entries[handle & 0x3ff].state = NONE;
+                table->entries[handle & 0x3ff].unknown08 = NONE;
+                c_entry_table *entry_table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
                 function_xaee93d()->index28 = handle;
-                ((c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098)->function_08a400(handle);
+                entry_table->function_08a400(handle);
             }
         }
-        for (short i = 0; i < 16; ++i)
+        for (long i = 0; i < 16; ++i)
         {
-            mode = ((c_class_6a600 *)g_4cf77c)->state;
+            c_class_6a600 *state_object = (c_class_6a600 *)g_4cf77c;
+            mode = state_object->state;
             if ((mode == 4 || mode == 5) && mode != 3 && mode != 5)
             {
-                c_entry_table *table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
+                c_entry_table *table = (c_entry_table *)&state_object->distribution->field_2098;
                 long handle = entity_table_new_entity(table, 6);
                 if (handle != NONE)
                 {
-                    table->entries[handle & 0x3ff].state = (void *)NONE;
-                    function_xaee93d()->slots[i] = handle;
-                    table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
+                    table->entries[handle & 0x3ff].unknown08 = NONE;
+                    table = (c_entry_table *)&state_object->distribution->field_2098;
+                    function_xaee93d()->slots[(short)i] = handle;
                     s_entry *entry = &table->entries[handle & 0x3ff];
                     c_entry_handler *handler = table->handlers->handlers[entry->handler_index];
                     handler->v18(entry, entry->data_size, entry->data);

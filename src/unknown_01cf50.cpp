@@ -2474,11 +2474,11 @@ PRIVATE __forceinline real maximum_25ca0(real first, real second)
 // @retail 0x25ca0
 void function_25ca0(bool enabled)
 {
-    volatile real divisor = maximum_25ca0(0.0001f, g_4b9fa4);
-    real value = g_4b9ff8;
-    value *= 1.0f / divisor;
-    value = 0.0f - value;
     real constants[4];
+    *(volatile real *)&constants[3] = maximum_25ca0(0.0001f, g_4b9fa4);
+    real value = g_4b9ff8;
+    value *= 1.0f / *(volatile real *)&constants[3];
+    value = 0.0f - value;
     constants[0] = value < 0.0f ? 0.0f : value > 1.0f ? 1.0f : value;
     constants[1] = 0.0f;
     constants[2] = g_4b9f18;
@@ -7798,7 +7798,8 @@ void __stdcall function_1f490(long unused, long font, long character, long color
     {
         positions[0] = x + (draw_shadow ? scale : 0.0f);
         positions[1] = y + (draw_shadow ? scale : 0.0f);
-        function_1f3a0((short const *)rectangle, positions[0], positions[1], (long)width, (long)height,
+        real const *position_values = (real const *)positions;
+        function_1f3a0((short const *)rectangle, position_values[0], position_values[1], (long)width, (long)height,
             (short)(long)u, (short)(long)v, scale, draw_shadow ? shadow : color,
             (t_1f3a0_callback)callback, (void *)context);
         if (!draw_shadow) break;

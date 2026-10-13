@@ -3990,7 +3990,7 @@ void c_variant_editing_options_list::v20(c_class_1a2c81 *item, long unused)
 	function_24c75c(this, item, table, 0, 6);
 }
 
-void function_2c83e6(long type, long a, long b, word user_flags);
+void __stdcall function_2c83e6(long type, long a, long b, word user_flags);
 
 /* opens the editor of the chosen category of the variant's settings; the
    first three depend on the variant's game engine */

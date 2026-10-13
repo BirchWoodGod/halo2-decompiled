@@ -491,14 +491,14 @@ void function_17fd20(s_decal_mesh_view const *mesh, long tag_index,
 	tag_index = *tag_index_alias;
 	output = *output_reference;
 	projection = *projection_reference;
-	byte const *definition = g_4e3b44[tag_index & 0xffff].bytes;
-	output->polygon_count = 0;
-	output->vertex_count = 0;
 	long faces[1024];
 	long secondary[1024];
 	short face_count = 1;
 	short secondary_count = 0;
 	faces[0] = placement->unknown50;
+	byte const *definition = g_4e3b44[tag_index & 0xffff].bytes;
+	output->polygon_count = 0;
+	output->vertex_count = 0;
 	for (short i = 0; i < face_count; ++i)
 	{
 		function_17dd80(mesh, &projection->quad, output, faces[i], true, projection->radius,
