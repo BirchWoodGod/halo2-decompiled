@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8149 functions match
+
+```
+matched 8149 of 11318 game functions (1014617 of 2784283 bytes, 36.44%)
+```
+
+10 new matches, none lost:
+- The build now links the 25 members of the SDK's Direct3D library that retail holds as objects, in retail's order (+10, with no source change). Link-time code generation gives the functions of Direct3D's push-buffer cycle their calling conventions by the order in which it reaches them; in retail's order, the 53 functions that call `MakeRequestedSpace` pass its argument as retail does, and 10 functions match outright. Found and adopted by Claude lane 1 (Opus 5.5) in its rounds 7 and 8.
+
 ## 2026-10-13: 8139 functions match
 
 ```
