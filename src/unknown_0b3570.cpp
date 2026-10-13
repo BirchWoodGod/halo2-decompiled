@@ -90,13 +90,8 @@ bool function_b2e30(void *entries, long count)
 	{
 		g_4d8eb4.active = true;
 		g_4d8eb4.unknown01[0] = 0;
-		g_4d8eb4.unknown01[3] = 0;
-		g_4d8eb4.unknown01[4] = 0;
-		g_4d8eb4.unknown01[5] = 0;
-		g_4d8eb4.unknown01[6] = 0;
-		s_session_id identity;
-		function_07ad50((byte *)&identity);
-		g_4d8eb4.session_id = identity;
+		*(dword *)&g_4d8eb4.unknown01[3] = 0;
+		function_07ad50((byte *)&g_4d8eb4.session_id);
 		g_4d8ec4 = count;
 		g_4d8ec8 = entries;
 		memset(entries, 0, count * 0x784);
