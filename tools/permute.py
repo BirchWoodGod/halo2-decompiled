@@ -63,9 +63,9 @@ import difflib
 import os
 import random
 import re
+import secrets
 import shutil
 import sys
-import tempfile
 import threading
 import time
 from collections import Counter
@@ -2175,7 +2175,15 @@ def new_scratch():
     # agents may not be allowed to write
     parent = os.path.join(ROOT, 'build', 'permute')
     os.makedirs(parent, exist_ok=True)
-    return tempfile.mkdtemp(prefix='scratch_', dir=parent)
+    # not tempfile.mkdtemp: on Windows its folder gets an owner-only ACL, which
+    # a sandboxed agent's restricted token can't write into
+    while True:
+        path = os.path.join(parent, 'scratch_' + secrets.token_hex(4))
+        try:
+            os.mkdir(path)
+            return path
+        except FileExistsError:
+            pass
 
 
 @dataclass
