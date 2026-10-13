@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8153 functions match
+
+```
+matched 8153 of 11318 game functions (1015072 of 2784283 bytes, 36.46%)
+```
+
+2 new matches, none lost:
+- Claude lane 1, round 9 (+2), on Opus 5.5: `0xe5790` and `0xe6460`, two small functions on a retail call cycle that were stubs, now written. The lane found that `0xb7430`'s exact draft can go live only together with `0xb8540`, and ruled out compile order as the cause of the callers that reuse a register where retail rebuilds it.
+
 ## 2026-10-13: 8151 functions match
 
 ```
