@@ -257,7 +257,8 @@ void function_170630(long player_index)
 	real *constant = state->constant;
 	for (short group = 0; group < 6; ++group)
 	{
-		real t = state->times[group] - g_4e9bd0;
+		/* retail reads the time step from memory at each use; a const read keeps the compiler from hoisting it */
+		real t = state->times[group] - *(real const *)&g_4e9bd0;
 		if (!(t > 0.0f) && (state->flags & 1))
 		{
 			for (short i = 0; i < g_468d30[group]; ++i)
@@ -1190,10 +1191,27 @@ struct s_cluster_portals_172840
 
 void function_11f5f0(box2f *bounds, point2f const *points, long count);
 
+/* the pool's point storage as 0x172840 addresses it: the used count and the points after it */
+struct s_point_storage_172840
+{
+	long used;
+	point2f points[5120]; /* the pool's real data[10240] */
+};
+
+struct s_pool_view_172840
+{
+	long count;
+	s_pool_entry entries[256];
+	s_point_storage_172840 storage;
+};
+
+#define POINT_STORAGE_172840(pool) (&((s_pool_view_172840 *)(pool))->storage)
+
 // @retail 0x172840
 bool __stdcall function_172840(long key, s_pool *pool, s_short_list_table *lists,
 	s_ring_buffer *queue, s_polygon_cache_173520 *cache)
 {
+	s_point_storage_172840 *storage = POINT_STORAGE_172840(pool);
 	bool result = true;
 	bool pool_full = false;
 	bool queue_full = false;
@@ -1230,27 +1248,30 @@ bool __stdcall function_172840(long key, s_pool *pool, s_short_list_table *lists
 				(polygon->state == 2 && polygon->field_8 == (short)cluster_index) ||
 				(polygon->state == 3 && function_173350(pool, (short)index, (short)portal_index) == NONE)))
 				continue;
-			if (!(polygon->bounds.x1 >= entry->rect.x0 && entry->rect.x1 >= polygon->bounds.x0 &&
-				polygon->bounds.y1 >= entry->rect.y0 && entry->rect.y1 >= polygon->bounds.y0))
+			box2f const *polygon_bounds = &polygon->bounds;
+			s_rect4 const *entry_rect = &entry->rect;
+			if (!(polygon_bounds->x1 >= entry_rect->x0 && entry_rect->x1 >= polygon_bounds->x0 &&
+				polygon_bounds->y1 >= entry_rect->y0 && entry_rect->y1 >= polygon_bounds->y0))
 				continue;
 			long new_index = pool->count;
-			if (new_index == 256 || 5120 - pool->data_used < 64)
+			if (new_index == 256 || 5120 - storage->used < 64)
 			{
 				pool_full = true;
 				continue;
 			}
 			++pool->count;
 			s_pool_entry *next = &pool->entries[(short)new_index];
-			next->data = (real *)((point2f *)pool->data + pool->data_used);
-			pool->data_used += 64;
+			point2f *allocated = &storage->points[storage->used];
+			storage->used += 64;
+			next->data = (real *)allocated;
 			if ((byte)function_173380((s_polygon_clip_173380 *)&polygon->bounds,
 				(s_polygon_clip_173380 *)&entry->rect, (s_polygon_clip_173380 *)&next->rect))
 			{
 				short other_cluster = polygon->field_6;
 				if (other_cluster == (short)cluster_index)
 					other_cluster = polygon->field_8;
-				next->key = key;
 				next->next = (short)index;
+				next->key = key;
 				next->value08 = other_cluster;
 				next->unknown06 = (short)portal_index;
 				next->unknown28 = NONE;
@@ -1259,7 +1280,7 @@ bool __stdcall function_172840(long key, s_pool *pool, s_short_list_table *lists
 				next->unknown24 = polygon->distance;
 				memcpy(next->unknown2c, entry->unknown2c, sizeof(next->unknown2c));
 				((dword *)next->unknown2c)[word_index] |= bit;
-				pool->data_used = ((point2f *)next->data - (point2f *)pool->data) + next->count;
+				storage->used = ((point2f *)next->data - storage->points) + next->count;
 				function_11f5f0((box2f *)&next->rect, (point2f *)next->data, next->count);
 				function_173b00(lists, other_cluster, (short)new_index);
 				if ((queue->index + 1) % 256 != queue->unknown00)
@@ -1269,7 +1290,7 @@ bool __stdcall function_172840(long key, s_pool *pool, s_short_list_table *lists
 			}
 			else
 			{
-				pool->data_used = (point2f *)next->data - (point2f *)pool->data;
+				storage->used = (point2f *)next->data - storage->points;
 				--pool->count;
 			}
 		}

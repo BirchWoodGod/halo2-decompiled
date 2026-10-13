@@ -330,6 +330,9 @@ void *function_1efd80(s_table_holder *holder, dword position);
 void function_23ac30(s_vertex_source_23ac30 const *source, long index,
 	s_vertex_bounds_23ac30 const *bounds, point3f *point, long *node);
 
+/* the collision record's object index, re-read at each use as retail does (no local copy) */
+#define COLLISION_OBJECT_14A8E0 (*(long *)((byte const *)collision + 0x40))
+
 // @retail 0x14a8e0
 bool __stdcall function_14a8e0(s_structure_collision_result const *collision,
 	long model_index, s_structure_lightmap_triangle *triangle)
@@ -343,12 +346,11 @@ bool __stdcall function_14a8e0(s_structure_collision_result const *collision,
 	*(long *)((byte *)triangle + 0xc) = NONE;
 	*(long *)((byte *)triangle + 0x10) = NONE;
 	byte *model = g_4e3b44[model_index & 0xffff].bytes;
-	long object_index = *(long *)((byte const *)collision + 0x40);
-	byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
+	byte *object = *(byte **)(g_4e0300->data + (COLLISION_OBJECT_14A8E0 & 0xffff) * 12 + 8);
 	signed char *regions = (signed char *)(object + *(short *)(object + 0x11a));
 	short region = *(short *)((byte const *)collision + 0x44);
 	short node = *(short *)((byte const *)collision + 0x46);
-	volatile bool result = false;
+	bool result = false;
 	if (regions[region] != -1)
 	{
 		byte *region_data = *(byte **)(model + 0x20) + region * 16;
@@ -362,7 +364,7 @@ bool __stdcall function_14a8e0(s_structure_collision_result const *collision,
 	byte *section = *(byte **)(model + 0x28) + section_index * 0x5c;
 	s_vertex_bounds_23ac30 const *bounds = *(s_vertex_bounds_23ac30 const **)(model + 0x18);
 	if (!function_12de70((s_geometry_block_info *)(section + 0x38), 3)) return result;
-	object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
+	object = *(byte **)(g_4e0300->data + (COLLISION_OBJECT_14A8E0 & 0xffff) * 12 + 8);
 	point3f point = collision->point;
 	if ((unsigned long)*(short *)(object + 0x114) / 0x34 > 0)
 	{
@@ -372,7 +374,7 @@ bool __stdcall function_14a8e0(s_structure_collision_result const *collision,
 		function_142700(matrix, &point, &point);
 	}
 	s_lookup lookup;
-	if (!lookup.initialize(object_index)) return result;
+	if (!lookup.initialize(COLLISION_OBJECT_14A8E0)) return result;
 	byte *surface_set = (byte *)function_1efd80((s_table_holder *)&lookup,
 		*(dword *)((byte const *)collision + 0x48));
 	byte *section_mesh = *(byte **)(section + 0x34);
@@ -412,7 +414,7 @@ bool __stdcall function_14a8e0(s_structure_collision_result const *collision,
 		if (function_11e800(&vertices[0], &vertices[1], &vertices[2], &point, &triangle->u, &triangle->v))
 		{
 			triangle->unknown18 = NONE;
-			*(long *)((byte *)triangle + 8) = object_index;
+			*(long *)((byte *)triangle + 8) = COLLISION_OBJECT_14A8E0;
 			triangle->part_index = 0;
 			result = true;
 			long part_count = *(long *)section_mesh;
@@ -439,6 +441,7 @@ bool __stdcall function_14a8e0(s_structure_collision_result const *collision,
 	return result;
 }
 
+#undef COLLISION_OBJECT_14A8E0
 
 // @retail 0x14af40
 bool function_14af40(bool include_objects, point3f const *point, vector3f const *direction,
