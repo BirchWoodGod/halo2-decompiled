@@ -724,12 +724,14 @@ void __stdcall function_bf600(long user, real frame, s_animation_frame_event con
         byte *header = g_4e0300->data + (user & 0xffff) * 12;
         byte *object = *(byte **)(header + 8);
         dword type_mask = 1u << object[0xaa];
-        long player = NONE;
+        long player;
         if (type_mask & 3)
         {
             byte *unit = (byte *)function_badc0(user, 3);
             if (unit) player = *(long *)(unit + 0x13c);
+            else player = NONE;
         }
+        else player = NONE;
         if ((event->flags & 1) || player == NONE)
         {
             s_object_marker marker;

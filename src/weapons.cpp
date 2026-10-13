@@ -2515,8 +2515,8 @@ bool __stdcall function_fdad0(long weapon_index, void *placement, bool *flag)
     *(real *)((byte *)weapon + 0x190) = 0.0f;
     *(real *)((byte *)weapon + 0x18c) = 0.0f;
     function_1058b0(weapon_index, 0, true);
-    weapon->object_index_194 = NONE;
-    weapon->entry_177 = 0xff;
+    *(long volatile *)&weapon->object_index_194 = NONE;
+    *(char volatile *)&weapon->entry_177 = -1;
     weapon->time_24c = 0;
     weapon->value_173 = 0;
     weapon->value_174 = 0;

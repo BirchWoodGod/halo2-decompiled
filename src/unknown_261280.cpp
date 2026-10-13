@@ -233,10 +233,12 @@ bool function_2623a0(s_reference_filter_view const *filter, long actor_index, s_
 		bool flag = (bool)(((dword)entry->flags >> 5) & 1);
 		if (filter->require_flag)
 			result = flag;
-		else if (filter->allow_any)
-			result = true;
 		else
-			result = !flag;
+        {
+            result = flag == 0;
+            if (filter->allow_any)
+                result = true;
+        }
 		if (result)
 		{
 			long other_index = function_262a30(reference);

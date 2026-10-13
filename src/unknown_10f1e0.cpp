@@ -629,22 +629,30 @@ void function_113870(long unit_index)
 }
 
 
+/* retail calls 0x1cb410 out of line here */
+#pragma inline_depth(0)
+PRIVATE __forceinline bool channel_start_114330(s_animation_state *state, c_animation_channel *channel,
+	c_type_709360 animation_id)
+{
+	return state->channel_start(channel, animation_id, 0x10000551, NONE, NONE, 1, 0x803f);
+}
+#pragma inline_depth(255)
+
 // @retail 0x114330
 void function_114330(long unit_index)
 {
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_animation_state *state = UNIT_ANIMATION_STATE(unit);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
-	long weapon_class = state->unknown74;
-	long weapon_type = state->unknown78;
+	long weapon[2] = { state->unknown74, state->unknown78 };
 
 	if (state->graph_tag_index != NONE)
 	{
-		c_type_709360 animation_id = GRAPH_GET(state->graph_tag_index)->overlay_get(state->unknown70, weapon_class,
-			weapon_type, 0x10000551, NULL, NULL, NULL);
+		c_type_709360 animation_id = GRAPH_GET(state->graph_tag_index)->overlay_get(state->unknown70, weapon[0],
+			weapon[1], 0x10000551, NULL, NULL, NULL);
 
 		if (animation_id.index != NONE &&
-			state->channel_start(&control->channel_dc, animation_id, 0x10000551, NONE, NONE, 1, 0x803f))
+			channel_start_114330(state, &control->channel_dc, animation_id))
 		{
 			control->flag7 = false;
 		}
@@ -878,24 +886,28 @@ bool function_1140b0(long unit_index, long name)
 {
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
+	long const *name_reference = &name;
 	bool result = false;
-	if (control->channel_9c.unknown08 == name)
+	if (control->channel_9c.unknown08 == *name_reference)
 	{
 		channel_reset_114240(&control->channel_9c);
 		function_ba350(unit_index, 0.267f);
-		return true;
+		result = true;
 	}
-	if (control->channel_bc.unknown08 == name)
+	else if (control->channel_bc.unknown08 == *name_reference)
 	{
 		channel_reset_114240(&control->channel_bc);
 		function_ba350(unit_index, 0.267f);
-		return true;
+		result = true;
 	}
-	long first, second;
-	if (function_10f630(unit_index, &first, &second) && second == name)
+	else
 	{
-		function_10f430(unit_index, 0x7000101, 0x7000101, 0x7000101, 0x7000001, 0.0f, false, 0);
-		return true;
+		long first, second;
+		if (function_10f630(unit_index, &first, &second) && second == *name_reference)
+		{
+			function_10f430(unit_index, 0x7000101, 0x7000101, 0x7000101, 0x7000001, 0.0f, false, 0);
+			result = true;
+		}
 	}
 	return result;
 }

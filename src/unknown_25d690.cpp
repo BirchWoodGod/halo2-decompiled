@@ -145,7 +145,7 @@ real normalize2d(point2f *v);
 bool function_1f57f0(long actor_index, long animation, long const *target);
 
 // @retail 0x25ace0
-void function_25ace0(long arg_0, long arg_1, short arg_2, vector3f const *arg_3)
+void function_25ace0(short arg_2, long arg_0, long arg_1, vector3f const *arg_3)
 {
 	s_actor_view *local_0 = actor_get(arg_0);
 	if (arg_2 > local_0->unknown3b0)
@@ -218,7 +218,7 @@ void function_25b9f0(long arg_0, long arg_1, vector3f const *arg_2)
 	}
 	if ((!local_1 || prop_get(local_1->prop_index)->unknown23) && local_0->unknown084 < 4)
 	{
-		function_25ace0(arg_0, arg_1, 5, local_2);
+		function_25ace0(5, arg_0, arg_1, local_2);
 	}
 	if (local_1 && prop_get(local_1->prop_index)->unknown23)
 	{
@@ -1648,7 +1648,7 @@ void function_25ae40(long arg_0, long arg_1, bool arg_2)
 		{
 			vector3f local_4;
 			vector3d_from_points3d(&local_0->position, &function_25d690(local_1)->position, &local_4);
-			function_25ace0(arg_0, arg_1, 3, &local_4);
+			function_25ace0(3, arg_0, arg_1, &local_4);
 		}
 	}
 }
