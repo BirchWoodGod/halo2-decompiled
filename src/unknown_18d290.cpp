@@ -131,7 +131,12 @@ bool function_bafb0(long object_index, long ancestor_index);
 
 static inline bool local_player_exists(long index)
 {
-	return index != NONE && g_4e8c20->entries[index] != NONE;
+	bool result = false;
+	if (index != NONE)
+	{
+		result = g_4e8c20->entries[index] != NONE;
+	}
+	return result;
 }
 
 // @retail 0x18d4f0

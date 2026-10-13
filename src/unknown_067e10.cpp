@@ -123,21 +123,26 @@ bool function_68800(c_simulation_view *view, long *delay, long *rate, long *rece
 	real measured_rate;
 	long measured_received;
 	long measured_loss;
-	if (view && observer && function_78a10(view->channel_index, observer,
-		&measured_delay, &measured_rate, &measured_received, &measured_loss))
+	if (view && observer)
 	{
-		*delay = measured_delay;
-		real scaled = measured_rate * 10.0f;
-		long rounded;
-		__asm { fld scaled }
-		__asm { fistp rounded }
-		*rate = rounded;
-		*received_rate = measured_received * 10 / 1024;
-		scaled = (real)measured_loss;
-		__asm { fld scaled }
-		__asm { fistp rounded }
-		*loss_percent = rounded;
-		result = true;
+		long local_0 = view->channel_index;
+		if (function_78a10(local_0, observer,
+			&measured_delay, &measured_rate, &measured_received, &measured_loss))
+		{
+			*delay = measured_delay;
+			real scaled = measured_rate * 10.0f;
+			long local_1;
+			__asm { fld scaled }
+			__asm { fistp local_1 }
+			*rate = local_1;
+			*received_rate = measured_received * 10 / 1024;
+			scaled = (real)measured_loss;
+			long local_2;
+			__asm { fld scaled }
+			__asm { fistp local_2 }
+			*loss_percent = local_2;
+			result = true;
+		}
 	}
 	return result;
 }
@@ -495,6 +500,7 @@ void function_6ab10(c_class_6a600 *world)
 // @retail 0x6ab90
 bool function_6ab90(c_class_6a600 *world, const s_simulation_block_data *data)
 {
+	bool result = false;
 	s_allocator_globals *globals = g_4d87f8;
 	s_simulation_block *block = (s_simulation_block *)globals->allocator->allocate(sizeof(s_simulation_block), 0, 0);
 	if (!block)
@@ -504,19 +510,20 @@ bool function_6ab90(c_class_6a600 *world, const s_simulation_block_data *data)
 	}
 	if (block)
 		globals->count++;
-	if (!block)
-		return false;
-
-	if (world->last_block)
-		world->last_block->next = block;
-	else
-		world->first_block = block;
-	block->next = 0;
-	world->block_count++;
-	world->last_block = block;
-	block->data = *data;
-	world->unknown1210 = data->size;
-	return true;
+	if (block)
+	{
+		if (!world->last_block)
+			world->first_block = block;
+		else
+			world->last_block->next = block;
+		block->next = 0;
+		world->block_count++;
+		world->last_block = block;
+		block->data = *data;
+		world->unknown1210 = data->size;
+		result = true;
+	}
+	return result;
 }
 
 // @retail 0x6ac30
@@ -716,10 +723,10 @@ struct s_key_450d14;
 s_match_450d14 *__stdcall function_6a3b0(void *table, s_key_450d14 *key, long index)
 {
 	c_class_6a600 *world = (c_class_6a600 *)table;
-	s_machine_table *machine_table = (s_machine_table *)g_4e8c20;
-	dword machine_mask = machine_table->machine_mask;
 	s_machine_address machines[16];
+	s_machine_table *machine_table = (s_machine_table *)g_4e8c20;
 	memcpy(machines, machine_table->machines, sizeof(machines));
+	dword machine_mask = machine_table->machine_mask;
 
 	long machine_index = NONE;
 	for (long i = 0; i < 16; i++)
@@ -1960,8 +1967,9 @@ void function_680f0(void)
  function_68f30((c_class_6a600 *)g_4cf77c);
  if (g_4cf772) goto done;
  {
+  long state = ((c_class_6a600 *)g_4cf77c)->state;
   c_class_6a600 *world = (c_class_6a600 *)g_4cf77c;
-  if ((world->state == 3 || world->state == 5) && world->flag2c)
+  if ((state == 3 || state == 5) && world->flag2c)
   {
    function_068750();
    if (g_4cf772) goto done;

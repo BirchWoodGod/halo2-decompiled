@@ -220,12 +220,12 @@ long function_101fb0(long object_index)
 // @retail 0x102100
 bool function_102100(long link_arg, long object_index, bool *out_a, bool *out_b)
 {
-	volatile short  link_index = (short)link_arg;
+	short link_index = (short)link_arg;
 	s_object *object = OBJECT_HEADER(object_index)->object;
 	s_object_tag *tag = OBJECT_TAG(object);
 	s_object_link *link = &object->links[link_index];
-	s_tag_link *tag_link = &tag->links[link_index];
 	bool result = false;
+	s_tag_link *tag_link = &tag->links[link_index];
 	bool blocked = false;
 	real rate;
 
@@ -281,15 +281,16 @@ bool function_102100(long link_arg, long object_index, bool *out_a, bool *out_b)
 
 	if (result)
 	{
-		if ((object->flags12c & 1) && object->child_index != NONE)
+		s_object *holder = OBJECT_HEADER(object_index)->object;
+		if ((holder->flags12c & 1) && holder->child_index != NONE)
 		{
-			s_object *child = OBJECT_HEADER(object->child_index)->object;
+			s_object *child = OBJECT_HEADER(holder->child_index)->object;
 			short first = child->attachments.first;
 			long first_index = NONE;
 			if (first != NONE)
 				first_index = child->attachments.objects[first];
 
-			child = OBJECT_HEADER(object->child_index)->object;
+			child = OBJECT_HEADER(holder->child_index)->object;
 			short second = child->attachments.second;
 			long second_index = NONE;
 			if (second != NONE)

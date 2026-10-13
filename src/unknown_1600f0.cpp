@@ -468,53 +468,56 @@ static inline bool voice_player_hears(long listener_index, long talker_index)
 // @retail 0x162de0
 void function_162de0(void)
 {
-	dword users = 0;
+	struct { dword talking; dword users; s_game_engine_player_iterator iterator; } state;
 	long user_index;
+
+	state.users = 0;
 
 	for (user_index = local_user_next(NONE); user_index != NONE; user_index = local_user_next(user_index))
 	{
-		long player_index = g_4e8c20->entries[user_index];
-
-		if (user_index != NONE && player_index != NONE)
+		if (user_index != NONE)
 		{
-			s_game_engine_player_iterator iterator;
-			dword talking;
-			long other_index;
+			long player_index = g_4e8c20->entries[user_index];
 
-			iterator.index = NONE;
-			iterator.datum_index = NONE;
-			talking = 0;
-			iterator.data = g_4e8c24;
-			while (function_19f240((long *)&iterator))
+			if (player_index != NONE)
 			{
-				long talker = iterator.datum_index;
+				long other_index;
 
-				if (talker != player_index && *(short *)(iterator.datum + 0x28) == NONE)
+				state.iterator.index = NONE;
+				state.iterator.datum_index = NONE;
+				state.talking = 0;
+				state.iterator.data = g_4e8c24;
+				while (function_19f240((long *)&state.iterator))
 				{
-					long talker_index = talker & 0xffff;
-					long listener_index = player_index & 0xffff;
+					long talker = state.iterator.datum_index;
 
-					if (g_4c99b8 && g_476fcc && function_53750(talker_index) &&
-						voice_player_hears(listener_index, talker_index))
+					if (talker != player_index && *(short *)(state.iterator.datum + 0x28) == NONE)
 					{
-						g_4e9b38[user_index][talker_index]++;
-						talking |= 1 << talker_index;
+						long talker_index = talker & 0xffff;
+						long listener_index = player_index & 0xffff;
+
+						if (g_4c99b8 && g_476fcc && function_53750(talker_index) &&
+							voice_player_hears(listener_index, talker_index))
+						{
+							g_4e9b38[user_index][talker_index]++;
+							state.talking |= 1 << talker_index;
+						}
 					}
 				}
-			}
-			for (other_index = 0; other_index < 16; other_index++)
-			{
-				if (!(talking & (1 << other_index)))
+				for (other_index = 0; other_index < 16; other_index++)
 				{
-					g_4e9b38[user_index][other_index] = 0;
+					if (!((word)state.talking & (1 << other_index)))
+					{
+						g_4e9b38[user_index][other_index] = 0;
+					}
 				}
+				state.users |= 1 << user_index;
 			}
-			users |= 1 << user_index;
 		}
 	}
 	for (user_index = 0; user_index < 4; user_index++)
 	{
-		if (!(users & (1 << user_index)))
+		if (!((word)state.users & (1 << user_index)))
 		{
 			memset(g_4e9b38[user_index], 0, sizeof(g_4e9b38[user_index]));
 		}

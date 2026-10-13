@@ -1610,7 +1610,8 @@ bool function_1058b0(long weapon_index, long state, bool force)
 	function_b7360(weapon_index);
 	if (force || weapon_state_replaceable(weapon->state, state))
 	{
-		if (WEAPON_GET(weapon_index)->animation_state_offset != NONE)
+		s_weapon *current = WEAPON_GET(weapon_index);
+		if (current->animation_state_offset != NONE)
 		{
 			s_animation_state *animation = (s_animation_state *)((byte *)weapon + weapon->animation_state_offset);
 			long set;
@@ -1929,12 +1930,13 @@ bool function_100b80(long magazine_index, long weapon_index, long count)
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
 	long available = function_1008f0(magazine_index, weapon_index, false);
+	long definition_index = weapon->definition_index;
 	bool result = false;
+	long taken = 0;
 
 	function_106030(weapon_index);
 	if (available >= count)
 	{
-		long taken = 0;
 
 		if (magazine_index >= 0 && magazine_index < definition->magazine_count)
 		{
@@ -1955,7 +1957,7 @@ bool function_100b80(long magazine_index, long weapon_index, long count)
 				long other_index = unit->weapon_indices[i];
 
 				if (other_index != NONE && other_index != weapon_index &&
-					WEAPON_GET(other_index)->definition_index == weapon->definition_index)
+					WEAPON_GET(other_index)->definition_index == definition_index)
 				{
 					s_weapon_magazine *magazine = &WEAPON_GET(other_index)->magazines[magazine_index];
 					short unloaded = magazine->rounds_unloaded;
@@ -1977,6 +1979,7 @@ bool function_100b80(long magazine_index, long weapon_index, long count)
 void function_a7cd0(long weapon_index);
 
 /* finishes reloading a magazine: moves rounds from the reserve into it */
+
 // @retail 0x102b90
 void function_102b90(long weapon_index, short magazine_index)
 {
@@ -2265,6 +2268,18 @@ point3f *function_b9dd0(long object_index, point3f *result);
 bool function_11c120(s_location const *location, point3f const *point, short *zone_index);
 real function_d1210(long object_index);
 
+struct s_weapon_bits_102540
+{
+	byte unknown000[0x10a];
+	word : 2;
+	word flag10a_2 : 1;
+	word : 13;
+	byte unknown10c[0x16c - 0x10c];
+	word : 1;
+	word flag16c_1 : 1;
+	word : 14;
+};
+
 // @retail 0x102540
 bool function_102540(long weapon_index, short barrel_index, bool ignore_magazine_state)
 {
@@ -2275,36 +2290,38 @@ bool function_102540(long weapon_index, short barrel_index, bool ignore_magazine
 	{
 		s_weapon_barrel *barrel = &weapon->barrels[barrel_index];
 		s_weapon_barrel_definition *barrel_definition = &definition->barrels[barrel_index];
-		long unit_index = (weapon->item_flags & 1) ? weapon->unit_index : NONE;
+		long unit_index = NONE;
+		if (weapon->item_flags & 1)
+			unit_index = weapon->unit_index;
 		if (TEST_FIELD_BIT(definition->flag11) && weapon->heat >= 1.0f && barrel->flag6 && !function_106030(weapon_index))
-			return result;
+			goto done;
 		if (TEST_FIELD_BIT(definition->flag25) && weapon->parent_index != NONE &&
-			(bool)((*(byte *)((byte *)WEAPON_GET(weapon->parent_index) + 0x10a) >> 2) & 1))
-			return result;
+			TEST_FIELD_BIT(((s_weapon_bits_102540 *)WEAPON_GET(weapon->parent_index))->flag10a_2))
+			goto done;
 		word flags = *(word *)((byte *)barrel + 4);
 		if ((flags & 4) || barrel->state == 2)
-			return result;
+			goto done;
 		if (TEST_FIELD_BIT(definition->flag19) && unit_index != NONE &&
 			((1 << g_4e0300->data[(unit_index & 0xffff) * 12 + 3]) & 2) && function_d1210(unit_index) > 0.0f)
-			return result;
-		if ((bool)((*((byte *)weapon + 0x16c) >> 1) & 1))
-			return result;
+			goto done;
+		if (TEST_FIELD_BIT(((s_weapon_bits_102540 *)weapon)->flag16c_1))
+			goto done;
 		if (definition->trigger_count == 1 && definition->barrel_count == 2 && definition->triggers[0].behavior == 5 &&
 			weapon->barrels[barrel_index == 0].state == 2)
-			return result;
+			goto done;
 		short magazine_index = barrel_definition->magazine_index;
 		if (magazine_index != NONE)
 		{
 			s_weapon_magazine *magazine = &weapon->magazines[magazine_index];
 			if (magazine->rounds_loaded < barrel_definition->rounds_minimum && !TEST_FIELD_BIT(barrel_definition->flag2) &&
 				(definition->reload_style == 1 || (flags & 0x40)))
-				return result;
+				goto done;
 			if (magazine->rounds_loaded < barrel_definition->rounds_per_shot && (flags & 0x40))
-				return result;
+				goto done;
 			if (magazine->state && !ignore_magazine_state)
 			{
 				if (definition->reload_style != 1)
-					return result;
+					goto done;
 				function_105fa0(weapon_index, 0);
 				function_105a80(5, weapon_index, magazine_index);
 			}
@@ -2313,6 +2330,7 @@ bool function_102540(long weapon_index, short barrel_index, bool ignore_magazine
 		result = true;
 		if (function_11c120((s_location *)((byte *)weapon + 0x28), function_b9dd0(weapon_index, &point), NULL))
 			result = false;
+	done:;
 	}
 	return result;
 }
@@ -2382,7 +2400,7 @@ void function_100520(long weapon_index, s_weapon_status *status)
 		if (state > 0 && state <= 6)
 			active = true;
 		status->magazines[i].active = active;
-		status->magazines[i].idle = weapon->magazines[i].state == 0;
+		status->magazines[i].idle = state == 0;
 		status->magazines[i].loaded = WEAPON_GET(weapon_index)->magazines[i].rounds_loaded;
 		status->magazines[i].loaded_maximum = magazine->rounds_loaded_maximum;
 		status->magazines[i].unloaded = (short)function_1008f0(i, weapon_index, false);
@@ -2797,6 +2815,17 @@ s_weapon_type_definition_view g_467cd0 =
 
 bool function_1023d0(long weapon_index, long barrel_index);
 
+struct s_weapon_flags_view_1023d0
+{
+    word flag0 : 1;
+    word flag1 : 1;
+    word flag2 : 1;
+    word flag3 : 1;
+    word flag4 : 1;
+    word flag5 : 1;
+    word : 10;
+};
+
 static __forceinline bool weapon_barrel_ammunition_check(long weapon_index, long barrel_index)
 {
     s_weapon *weapon = WEAPON_GET(weapon_index);
@@ -2813,7 +2842,7 @@ static __forceinline bool weapon_barrel_ammunition_check(long weapon_index, long
             if (function_1008f0(magazine_index, weapon_index, false) > 0 &&
                 magazine->rounds_loaded < magazine_definition->rounds_loaded_maximum)
             {
-                if (!(bool)((((byte)weapon->value_16e) >> 5) & 1) && weapon->parent_index != NONE)
+                if (!TEST_FIELD_BIT(((s_weapon_flags_view_1023d0 const *)&weapon->value_16e)->flag5) && weapon->parent_index != NONE)
                     function_fdc70(weapon_index, barrel_definition->magazine_index);
                 return true;
             }

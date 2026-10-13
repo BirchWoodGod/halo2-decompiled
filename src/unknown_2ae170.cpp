@@ -420,7 +420,7 @@ bool c_pcm_codec::get_packet(s_sound_stream *stream, XMEDIAPACKET *packet)
 	long size = (long)SOUND_CHUNK_SIZE(chunk) - 0x48;
 	long volatile offset = stream->offset;
 
-	if (offset > MAX(size, 0)) offset = MAX(size, 0);
+	offset = offset > MAX(size, 0) ? MAX(size, 0) : offset;
 
 	packet->pvBuffer = data + offset;
 	packet->hCompletionEvent = (HANDLE)chunk;

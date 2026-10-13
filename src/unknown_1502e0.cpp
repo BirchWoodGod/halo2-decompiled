@@ -356,23 +356,19 @@ struct s_tail_player_identifier
 // @retail 0x1529a0
 s_tail_traits *function_1529a0(long player_index)
 {
-	s_tail_player_identifier *player = (s_tail_player_identifier *)tail_player_get(player_index);
+	byte const *identifier = ((s_tail_player_identifier *)tail_player_get(player_index))->identifier;
 	s_tail_scenario *scenario = (s_tail_scenario *)g_4e0350;
 	bool alternate = false;
-	s_tail_options_player *entry;
-	long i;
 
 	if (scenario->entry_count > 0 && scenario->entries[0].value2c == 1)
-	{
 		alternate = true;
-	}
-	entry = ((s_tail_options *)g_4e6948)->players;
-	for (i = 0; i < 16; i++, entry++)
+	for (long i = 0; i < 16; i++)
 	{
-		if (memcmp(player->identifier, entry->identifier, sizeof(entry->identifier)) == 0)
-		{
+		s_tail_options_player *entry = &((s_tail_options *)g_4e6948)->players[i];
+		long difference = memcmp(entry->identifier, identifier, sizeof(entry->identifier));
+
+		if (difference == 0)
 			return &entry->traits[alternate ? 1 : 0];
-		}
 	}
 	return 0;
 }
@@ -783,11 +779,21 @@ struct s_player_target_unit
 	point3f position;
 	real radius;
 	byte unknown40[0x10a - 0x40];
-	byte flags;
-	byte unknown10b[0x248 - 0x10b];
+	word flag0 : 1;
+	word flag1 : 1;
+	word flag2 : 1;
+	word : 13;
+	byte unknown10c[0x248 - 0x10c];
 	long parent_index;
 	byte unknown24c[0x348 - 0x24c];
-	byte flags348;
+	word flag348_0 : 1;
+	word flag348_1 : 1;
+	word flag348_2 : 1;
+	word flag348_3 : 1;
+	word flag348_4 : 1;
+	word flag348_5 : 1;
+	word flag348_6 : 1;
+	word : 9;
 };
 
 __declspec(noinline) bool function_f5dc0(long object_index);
@@ -802,7 +808,7 @@ static __forceinline void player_object_target_candidate_evaluate(long object_in
 	s_target_candidate *const *best_reference = &best;
 	s_tail_player *player = tail_player_get(*player_reference);
 	s_player_target_unit *object = (s_player_target_unit *)tail_object_get(object_index);
-	if (!(object->flags & 4))
+	if (!TEST_FIELD_BIT(object->flag2))
 	{
 		if (!function_f5dc0(object_index))
 		{
@@ -831,7 +837,7 @@ static __forceinline void player_object_target_candidate_evaluate(long object_in
 		else if (player->unit_index != NONE)
 		{
 			s_player_target_unit *unit = (s_player_target_unit *)tail_object_get(player->unit_index);
-			if (!(object->flags348 & 0x40) && object->parent_index == NONE)
+			if (!TEST_FIELD_BIT(object->flag348_6) && object->parent_index == NONE)
 			{
 				vector3f delta;
 				vector3d_from_points3d(&unit->position, &object->position, &delta);
@@ -902,7 +908,8 @@ void function_152660(s_tail_transfer_options *options)
 		s_tail_transfer_traits *traits = 0;
 		for (long i = 0; i < 16; i++)
 		{
-			if (memcmp(((s_tail_player_identifier *)player)->identifier, options->players[i].identifier, 12) == 0)
+			long difference = memcmp(((s_tail_player_identifier *)player)->identifier, options->players[i].identifier, 12);
+			if (difference == 0)
 				traits = (s_tail_transfer_traits *)&options->players[i].traits[alternate ? 1 : 0];
 		}
 		if (traits)
@@ -916,15 +923,15 @@ void function_152660(s_tail_transfer_options *options)
 				long other = NONE;
 				if (unit->seat_index != NONE)
 				{
-					long now = g_510c54->game_time;
 					for (long selection = 0; selection < 2; selection++)
 					{
+						long now = g_510c54->game_time;
 						long chosen = NONE;
 						long shortest = 0x7fffffff;
 						for (long slot = 0; slot < 4; slot++)
 						{
-							long weapon = unit->weapons[slot];
 							long age = now - unit->weapon_times[slot];
+							long weapon = unit->weapons[slot];
 							if (weapon != NONE && (!selection || weapon != primary) && age < shortest)
 							{
 								shortest = age;
@@ -1547,7 +1554,8 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
     long const *owner_reference = &owner_index;
     bool *const *failed_reference = &failed;
     long result = NONE;
-    if (state->kind != 0)
+    short kind = state->kind;
+    if (kind != 0)
     {
         s_tag_iterator iterator;
         iterator.datum_index = 0;
@@ -1563,15 +1571,15 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
                 byte *seat = *(byte **)(definition + 0x2d4);
                 long ammunition = *(long *)(seat + 0x90);
                 if (ammunition != NONE)
-                    found = state->kind == (short)g_4e3b44[ammunition & 0xffff].bytes[0x128];
+                    found = kind == (short)g_4e3b44[ammunition & 0xffff].bytes[0x128];
                 else if (*(long *)(seat + 0x98) != NONE)
-                    found = state->kind == (short)seat[0x88];
+                    found = kind == (short)seat[0x88];
             }
-            if (found || state->kind == (short)definition[0x1fc]) break;
+            if (found || kind == (short)definition[0x1fc]) break;
         }
         if (tag != NONE)
         {
-            byte creation[0xb4];
+            byte creation[0xc4];
             function_b7930(creation, tag, *owner_reference, NULL);
             result = function_b7b40(creation);
             if (result != NONE)
@@ -1587,7 +1595,7 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
             }
             else **failed_reference = true;
         }
-        else if (state->kind != 0) **failed_reference = true;
+        else if (kind != 0) **failed_reference = true;
     }
     return result;
 }
@@ -1599,6 +1607,8 @@ byte function_150380(long player_index);
 void __stdcall function_e64e0(vector3f const *move, vector3f const *forward, bool flag,
     vector3f *output, long mode);
 
+struct s_xy_150400 { real i; real j; };
+
 // @retail 0x150400
 void function_150400(long player_index, vector3f const *forward, vector3f const *movement,
     vector3f *new_forward, vector3f *new_movement)
@@ -1608,31 +1618,36 @@ void function_150400(long player_index, vector3f const *forward, vector3f const 
     vector3f *const *new_movement_reference = &new_movement;
     s_tail_player *player = tail_player_get(player_index);
     vector3f facing = *(*local_41f0cc_2);
-    real x = movement->i, y = movement->j;
+    s_xy_150400 xy = *(s_xy_150400 const *)movement;
     if (function_150380(player_index))
     {
         byte *unit = (byte *)tail_object_get(player->unit_index);
         s_horizontal_axes axes;
         function_1502e0(*local_41f0cc_2, (vector3f const *)(unit + 0x70), &axes);
+        real move_i = movement->i;
+        real move_j = movement->j;
+        real scaled_i = axes.forward.i * move_i;
+        real scaled_j = axes.forward.j * move_i;
+        real scaled_k = axes.forward.k * move_i;
         vector3f world;
-        world.i = axes.forward.i * movement->i + axes.left.i * movement->j;
-        world.j = axes.forward.j * movement->i + axes.left.j * movement->j;
-        world.k = axes.forward.k * movement->i + axes.left.k * movement->j;
+        world.i = axes.left.i * move_j + scaled_i;
+        world.j = axes.left.j * move_j + scaled_j;
+        world.k = axes.left.k * move_j + scaled_k;
         function_e64e0(&world, *local_41f0cc_2, false, &facing, 0);
         function_1502e0(&facing, (vector3f const *)(unit + 0x70), &axes);
-        x = axes.forward.j * world.j + axes.forward.k * world.k + axes.forward.i * world.i;
-        y = axes.left.k * world.k + axes.left.j * world.j + axes.left.i * world.i;
-        real square = y * y + x * x;
+        xy.i = axes.forward.j * world.j + axes.forward.k * world.k + axes.forward.i * world.i;
+        xy.j = axes.left.k * world.k + axes.left.j * world.j + axes.left.i * world.i;
+        real square = xy.j * xy.j + xy.i * xy.i;
         if (square > 1.0f)
         {
             real inverse = 1.0f / (real)sqrt(square);
-            x *= inverse;
-            y *= inverse;
+            xy.i *= inverse;
+            xy.j *= inverse;
         }
     }
     **new_forward_reference = facing;
-    (*new_movement_reference)->j = y;
-    (*new_movement_reference)->i = x;
+    (*new_movement_reference)->j = xy.j;
+    (*new_movement_reference)->i = xy.i;
     (*new_movement_reference)->k = 0.0f;
 }
 
@@ -1644,7 +1659,6 @@ bool __stdcall function_cd0c0(long unit_index, long weapon_index, short mode);
 // @retail 0x152bf0
 bool function_152bf0(byte const *loadout, long unit_index)
 {
-    bool result = false;
     if (loadout[0])
     {
         byte *unit = (byte *)tail_object_get(unit_index);
@@ -1653,7 +1667,7 @@ bool function_152bf0(byte const *loadout, long unit_index)
         long primary = function_152a50((s_loadout_state_152a50 *)(loadout + 2), unit_index, &failed);
         long special = function_152a50((s_loadout_state_152a50 *)(loadout + 0x12), unit_index, &failed);
         long secondary = function_152a50((s_loadout_state_152a50 *)(loadout + 0xa), unit_index, &failed);
-        result = !failed;
+        bool result = !failed;
         for (long i = 0; i < 2; ++i)
         {
             unit[0x23e + i] = 0;
@@ -1665,9 +1679,8 @@ bool function_152bf0(byte const *loadout, long unit_index)
         { function_b8540(secondary); result = false; }
         if (special != NONE && !function_cd0c0(unit_index, special, 7))
         { function_b8540(special); return false; }
+        return result;
     }
-    if (result)
-    	return true;
     return false;
 }
 
@@ -1778,23 +1791,26 @@ void __stdcall function_150e30(long player_index, long object_index)
     byte *unit = (byte *)tail_object_get(player->unit_index);
     byte *object = (byte *)tail_object_get(object_index);
     long parent_index = *(long *)(object + 0x14);
+    bool parent_ok = false;
     if (parent_index != NONE)
     {
-        byte parent_type = ((s_tail_object_header *)g_4e0300->data)[parent_index & 0xffff].type;
-        if (parent_type != 11 && parent_type != 7) return;
+        long parent_type = ((s_tail_object_header *)g_4e0300->data)[parent_index & 0xffff].type;
+        parent_ok = parent_type == 11 || parent_type == 7;
     }
+    if (*(long *)(object + 0x14) != NONE && !parent_ok) return;
     if (*(long *)(object + 0x14c) == player->unit_index) return;
-    real z = *(real *)(object + 0x38) - *(real *)(unit + 0x38);
-    real x = *(real *)(object + 0x30) - *(real *)(unit + 0x30);
     real y = *(real *)(object + 0x34) - *(real *)(unit + 0x34);
+    real x = *(real *)(object + 0x30) - *(real *)(unit + 0x30);
+    real z = *(real *)(object + 0x38) - *(real *)(unit + 0x38);
     real radius = *(real *)(unit + 0x3c) + 0.3f;
-    if (radius * radius <= z * z + x * x + y * y) return;
+    if (!(z * z + x * x + y * y < radius * radius)) return;
     long weapon_index = NONE;
     short rounds;
-    for (short i = 0; i < 4; ++i)
+    short i = 0;
+    do
     {
         long current = *(signed char *)(unit + 0x212);
-        if (current < 0) current = 0;
+        current = current < 0 ? 0 : current;
         long slot = (current + i) % 4;
         weapon_index = *(long *)(unit + 0x218 + slot * 4);
         if (weapon_index != NONE && function_ffc60(weapon_index, object_index, player->unit_index, player->local_index, &rounds))
@@ -1803,19 +1819,20 @@ void __stdcall function_150e30(long player_index, long object_index)
                 function_191ec4(*(long *)tail_object_get(weapon_index), player->local_index, rounds);
             break;
         }
-    }
+        ++i;
+    } while (i < 4);
     s_object *pickup = function_badc0(object_index, 8);
     if (pickup)
     {
         byte *definition = g_4e3b44[*(long *)pickup & 0xffff].bytes;
         short kind = *(short *)(definition + 0x12c);
-        if (kind == 6)
+        if (kind != 6)
         {
-            if (function_ccba0(player->unit_index, object_index))
-                function_191e51(*(long *)pickup, player->local_index);
+            if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
+                function_151ea0(player_index, object_index);
         }
-        else if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
-            function_151ea0(player_index, object_index);
+        else if (function_ccba0(player->unit_index, object_index))
+            function_191e51(*(long *)pickup, player->local_index);
     }
     byte type = ((s_tail_object_header *)g_4e0300->data)[object_index & 0xffff].type;
     if ((1 << type) & 4)

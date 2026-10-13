@@ -192,12 +192,12 @@ void function_153bd0(long index, real scale)
 		values.value[5] = 1.0f;
 		request.type = 1;
 		request.priority = 2;
-		request.shake = *(s_speed_shake const *)g_4686cc;
 		request.duration = 1.0f;
+		request.amount = scale;
+		request.shake = *(s_speed_shake const *)g_4686cc;
 		s_speed_table_entry *entry = &g_502120->entries[index];
 		entry->value80 = scale;
 		entry->value84 = scale;
-		request.amount = scale;
 		function_154d70(&request, slot, scale);
 		function_155240(&values, slot, scale);
 	}
@@ -558,15 +558,16 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                     if (effect->request.duration > 0.05f && effect->request.amount > 0.05f)
                     {
                         s_speed_request request = effect->request;
-                        request.shake.scale = 1.0f;
                         if (active)
                         {
+                            request.shake.scale = 1.0f;
                             request.shake.vector.i = 0.0f;
                             request.shake.vector.j = 0.6f;
                             request.shake.vector.k = 0.8f;
                         }
                         else
                         {
+                            request.shake.scale = 1.0f;
                             request.shake.vector.i = 1.0f;
                             request.shake.vector.j = 0.0f;
                             request.shake.vector.k = 0.0f;
@@ -637,6 +638,8 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                 function_caf60(unit_index, &origin);
                 function_b9dd0(((long *)owner)[1], &target);
                 s_player_axes_153d10 *axes = (s_player_axes_153d10 *)state;
+                vector3f const *forward = &axes->forward;
+                vector3f const *up = &axes->up;
                 vector3f delta = { target.x - origin.x, target.y - origin.y, target.z - origin.z };
                 vector3f cross;
                 vector3f relative;
@@ -644,8 +647,8 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                 cross.j = axes->forward.k * axes->up.i - axes->up.k * axes->forward.i;
                 cross.k = axes->forward.i * axes->up.j - axes->forward.j * axes->up.i;
                 relative.i = cross.k * delta.k + cross.j * delta.j + cross.i * delta.i;
-                relative.j = axes->forward.k * delta.k + axes->forward.j * delta.j + axes->forward.i * delta.i;
-                relative.k = axes->up.k * delta.k + axes->up.j * delta.j + axes->up.i * delta.i;
+                relative.j = forward->k * delta.k + forward->j * delta.j + forward->i * delta.i;
+                relative.k = up->k * delta.k + up->j * delta.j + up->i * delta.i;
                 *(real *)((byte *)slot + 0x8c) = relative.i;
                 *(real *)((byte *)slot + 0x90) = relative.k;
                 *(real *)((byte *)slot + 0x94) = relative.j;
@@ -675,6 +678,20 @@ void function_141ce0(real a, real b, real c, transform4x3f *out);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 real function_17c900(short curve, real input);
 
+/* a random real in [0, 1] from the seed; the cast keeps its 1/65535 scale
+   apart from the caller's constants, as retail has it */
+static inline real random_real_1546f0(dword *seed)
+{
+	return (real)(_random(seed, 0, 0) * (1.f / 65535.f));
+}
+
+static inline void point_set_1546f0(point3f *point, real x, real y, real z)
+{
+	point->x = x;
+	point->y = y;
+	point->z = z;
+}
+
 // @retail 0x1546f0
 void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
 {
@@ -696,12 +713,13 @@ void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
         s_random_globals *random = g_4e7408;
         g_502120->value228 = amount;
         function_141ce0(
-            (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->angles[0] * amount,
-            (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->angles[1] * amount,
-            (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->angles[2] * amount, &transform);
-        transform.position.x = (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->point.x * amount;
-        transform.position.y = (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->point.y * amount;
-        transform.position.z = (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->point.z * amount;
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->angles[0] * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->angles[1] * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->angles[2] * amount, &transform);
+        point_set_1546f0(&transform.position,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->point.y * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->point.x * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->point.z * amount);
         function_142a60(matrix, &transform, matrix);
     }
     else

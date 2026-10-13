@@ -769,7 +769,7 @@ void function_b75a0(long object_index, point3f const *point, vector3f const *for
 	struct s_location const *location, bool unknown);
 bool function_109e00(long object_index, vector3f *velocity, bool definition_flag_required);
 void function_fa820(long projectile_index, vector3f const *impulse);
-bool __stdcall function_bc1d0(long object_index, point3f *point);
+bool __stdcall function_bc1d0(long object_index, point3f const *point, long ignore_unit_index);
 void __stdcall function_a7870(long object_index);
 void function_fd560(long projectile_index, long object_index, long node_index, point3f const *point,
 	vector3f const *forward);
@@ -913,7 +913,7 @@ void __stdcall function_e7900(long unit_index, bool spread, point3f const *origi
 				velocity.k -= projectile->linear_velocity.k;
 				function_fa820(projectile_index, &velocity);
 				function_cafc0(unit_index, &origin);
-				if (!function_bc1d0(unit_index, &origin))
+				if (!function_bc1d0(projectile_index, &origin, unit_index))
 				{
 					function_b8540(projectile_index);
 					function_d0e60(unit_index, 0, 0);
@@ -4566,17 +4566,14 @@ void function_ee7f0(long unit_index, long state)
 }
 
 
-// Disabled: protected caller supplies flags without the required weapon index.
-#if 0
 void __stdcall function_104080(long object_index);
 void function_b7360(long object_index);
 long function_101f20(long weapon_index);
 bool function_cd660(long unit_index);
-bool function_1cd070(void *state, long animation, long first, long second, long third, long flags, long mode);
 long function_1039a0(long object_index, long tag_index, long effect_index, real scale_a, real scale_b);
-short function_1685a6(long weapon_index, long animation, bool ready);
+short first_person_weapon_animation_ticks(long weapon_index, long animation_name, short type);
 
-// Retail 0xfff40
+// @retail 0xfff40
 void __stdcall function_fff40(long weapon_index, bool silent, bool immediate)
 {
     byte *object = *(byte **)(g_4e0300->data + (weapon_index & 0xffff) * 12 + 8);
@@ -4587,12 +4584,12 @@ void __stdcall function_fff40(long weapon_index, bool silent, bool immediate)
     byte *active = *(byte **)(g_4e0300->data + (weapon_index & 0xffff) * 12 + 8);
     if (*(short *)(active + 0x12a) != NONE)
     {
-        void *state = current + *(short *)(current + 0x12a);
+        s_animation_state *state = (s_animation_state *)(current + *(short *)(current + 0x12a));
         long kind = 0x07000001;
         long unit = function_101f20(weapon_index);
         if (unit != NONE && function_cd660(unit)) kind = 0x0400054b;
-        if (function_1cd070(state, 0x05000024, 0x07000101, kind, 0x07000001, 0x82, 0x3f)
-            || (kind == 0x0400054b && function_1cd070(state, 0x05000024, 0x07000101, 0x07000001, 0x07000001, 0x82, 0x3f)))
+        if (state->animation_set(0x05000024, 0x07000101, kind, 0x07000001, 0x82, 0x3f)
+            || (kind == 0x0400054b && state->animation_set(0x05000024, 0x07000101, 0x07000001, 0x07000001, 0x82, 0x3f)))
             *(long *)(current + 0x178) = 9;
     }
     active = *(byte **)(g_4e0300->data + (weapon_index & 0xffff) * 12 + 8);
@@ -4611,8 +4608,8 @@ void __stdcall function_fff40(long weapon_index, bool silent, bool immediate)
     else
     {
         object[0x16c] &= ~0x20;
-        *(short *)(object + 0x19e) = (short)real_to_long((real)*(short *)((byte *)g_510c54 + 2) * *(real *)(definition + 0x138));
-        *(short *)(object + 0x17c) = function_1685a6(weapon_index, 0x05000024, true);
+        *(short *)(object + 0x19e) = (short)unit_action_round_long((real)*(short *)((byte *)g_510c54 + 2) * *(real *)(definition + 0x138));
+        *(short *)(object + 0x17c) = first_person_weapon_animation_ticks(weapon_index, 0x05000024, 1);
     }
 }
-#endif
+

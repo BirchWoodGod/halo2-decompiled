@@ -203,6 +203,8 @@ static __forceinline long liquid_datum_ab(s_record_pool *pool, long index)
     return result;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0xc3ad0
 long __stdcall function_c3ad0(long tag_index, long object_index)
 {
@@ -249,8 +251,22 @@ long __stdcall function_c3ad0(long tag_index, long object_index)
                 liquid->flags = (liquid->flags & ~2) | 1;
                 liquid->time = definition->kind == 0 ? -1.0f : 0.0f;
                 liquid->field_3 = 0;
-                liquid->object_index = object_index;
-                liquid->value = definition->kind == 0 ? 0.0f : 1.0f;
+                /* the object index stored in both arms; the barrier keeps the
+                   compiler from hoisting the store above the branch, so the
+                   arms' common tail is merged at the join */
+                real value;
+                if (definition->kind == 0)
+                {
+                    value = 0.0f;
+                    liquid->object_index = object_index;
+                }
+                else
+                {
+                    value = 1.0f;
+                    _ReadWriteBarrier();
+                    liquid->object_index = object_index;
+                }
+                liquid->value = value;
                 liquid->tag_index = tag_index;
                 for (long i = 0; i < definition->count; i++)
                     function_50690((s_random_draw *)(liquid->entries + i * 0x50));
@@ -260,6 +276,7 @@ long __stdcall function_c3ad0(long tag_index, long object_index)
     // Keep the result in the stack slot used by the common return.
     return *(volatile long *)&result;
 }
+#pragma function(_ReadWriteBarrier)
 
 #include "object_markers.h"
 

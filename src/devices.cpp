@@ -885,8 +885,8 @@ void device_motion_start(s_device_motion *motion, real target, real duration, re
 		if (!(0.000001f > distance))
 		{
 			real cruise_time = remaining - ramp_down_time;
-			real half_ramp_up_time = ramp_up_time * 0.5f;
 			real half_ramp_down_time = ramp_down_time * 0.5f;
+			real half_ramp_up_time = ramp_up_time * 0.5f;
 			real denominator = cruise_time + half_ramp_down_time + half_ramp_up_time;
 			real velocity;
 
@@ -1021,12 +1021,13 @@ bool __stdcall function_107ed0(long device_index, long name, real seconds)
 					{
 						s_animation_state *state = device_get_animation_state(device);
 						bool had_animation = false;
-						real speed = 0.0f;
+						real speed;
 						transform4x3f original;
 						transform4x3f adjusted;
 						transform4x3f sampled;
 						transform4x3f start;
 						function_1420f0(&original, &device->field_xcc658c, &device->forward, &device->up);
+						speed = 0.0f;
 						adjusted = original;
 						if (device->flags & 8)
 						{

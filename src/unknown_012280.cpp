@@ -38,6 +38,8 @@ LPVOID WINAPI function_12c090(SIZE_T size, DWORD attributes);
 void *g_510c3c;
 bool g_510c40;
 
+__forceinline LPVOID __stdcall XMemAlloc(SIZE_T dwSize, DWORD dwAllocAttributes);
+
 // @retail 0x12280
 LPVOID __stdcall XMemAlloc(SIZE_T dwSize, DWORD dwAllocAttributes)
 {
