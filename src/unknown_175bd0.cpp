@@ -158,7 +158,7 @@ struct s_effect_color_query
 };
 
 long function_d2bb0(void *source, s_effect_color_query *query);
-long __stdcall function_d2a50(long a, long b, long c, s_effect_color_query *query, long d, point3f const *point);
+long __stdcall function_d2a50(long a, long b, bool c, s_effect_color_query *query, long d, point3f const *point);
 __declspec(noinline) bool function_11c050(s_location const *location);
 __declspec(noinline) bool function_11c080(s_location const *location);
 bool function_11c120(s_location const *location, point3f const *point, short *zone_index);

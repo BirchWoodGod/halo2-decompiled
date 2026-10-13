@@ -374,21 +374,14 @@ long function_1eb020(long tag_index, long body_index, short *material_index)
  if (shape->kind() == 0x13) shape = shape->child;
  long kind = shape->kind();
  if (kind == 2 || (kind > 9 && kind <= 11))
- {
   shape = shape->get_child(shape->first_key(buffer));
-  if (shape->kind() == 0x11) shape = shape->child;
-  if (shape->kind() == 0x15) shape = shape->child;
- }
- else
- {
-  if (shape->kind() == 0x11) shape = shape->child;
-  if (shape->kind() == 0x15) shape = shape->child;
- }
+ if (shape->kind() == 0x11) shape = shape->child;
+ if (shape->kind() == 0x15) shape = shape->child;
  byte *data = shape->user;
  short index = *(short *)(data + 4);
  if (index != NONE)
  {
-  long *entry = (long *)(*(byte **)(definition + 0x44) + index * 12);
+  long *entry = (long *)(*(byte **)(*(byte *volatile *)&definition + 0x44) + index * 12);
   result = entry[1];
   if (!function_188640(result)) result = entry[0];
  }
