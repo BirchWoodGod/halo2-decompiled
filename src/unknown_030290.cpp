@@ -171,7 +171,7 @@ void function_30290(point3f const *p, s_view const *view, s_camera const *camera
 }
 
 // @retail 0x30710
-bool function_30710(vector3f const *v, short_rectangle2d const *rect, point2f *out, s_camera const *camera, s_view const *view)
+bool function_30710(s_camera const *camera, short_rectangle2d const *rect, vector3f const *v, point2f *out, s_view const *view)
 {
 	bool result = false;
 	if (!rect)

@@ -34,7 +34,7 @@ struct s_object_values
 void function_b58c0(long index, dword mask);
 struct s_statborg;
 void function_1968b0(long team, long index, long counter, long value);
-void function_1e9df0(long field, long counter, s_statborg *statistics, long team, long delta);
+void function_1e9df0(long field, long counter, long team, s_statborg *statistics, long delta);
 long function_196ef0(byte code);
 void function_196e60(long player_index, long counter, long code, long delta);
 void function_225880(long player_index);
@@ -278,7 +278,7 @@ void function_1e9ce0(long player_index, long counter, s_statborg *statistics,
 	{
 		byte *player = g_4e8c24->data + index * g_4e8c24->size;
 		if (*(short *)player && (char)player[0xc0] != NONE)
-			function_1e9df0(field, counter, statistics, (char)player[0xc0], delta);
+			function_1e9df0(field, counter, (char)player[0xc0], statistics, delta);
 	}
 }
 
@@ -770,7 +770,7 @@ byte *textures = definition + (alternate ? 0x20 : 0);
 
 // The new statistic callers allow this body without the earlier LTCG regressions.
 // @retail 0x1e9df0
-void function_1e9df0(long field, long counter, s_statborg *statistics, long team, long volatile delta)
+void function_1e9df0(long field, long counter, long team, s_statborg *statistics, long volatile delta)
 {
  short *entry = &((s_object_values *)statistics)->team_values[team][field];
  long value = *entry + (short)delta;
