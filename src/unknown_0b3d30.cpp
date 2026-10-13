@@ -360,7 +360,9 @@ long function_b4670(long kind, long controller, struct _XUID owner, wchar_t cons
         s_type_9df9da *task = function_6b910(task_index);
         if (task)
         {
-            FILETIME expiration = { 0, 0 };
+            FILETIME expiration;
+            expiration.dwHighDateTime = 0;
+            expiration.dwLowDateTime = 0;
             HRESULT status = XOnlineStorageUploadByServerPath(facility, controller, path, expiration, directory, 0, 0, (XONLINETASK_HANDLE *)&task->handle);
             if (status >= 0)
             {
