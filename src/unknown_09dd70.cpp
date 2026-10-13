@@ -297,7 +297,9 @@ bool c_unit_type::v15(long arg_0, long arg_1, long arg_2, long arg_3, s_bitstrea
         local_2->field_f4 = function_9e522(function_1959c0(arg_4, 6), 62, 0.0f, 1.0f);
         *local_1 |= 0x800000;
     }
-    return local_0 && arg_4->bit_position <= arg_4->size_in_bytes * 8;
+    if (local_0 && arg_4->bit_position <= arg_4->size_in_bytes * 8)
+        return true;
+    return false;
 }
 
 static __forceinline void function_9dfc1(s_bitstream *arg_0, real arg_1, real arg_2, long arg_3)
@@ -365,8 +367,10 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
             if (flags_writer_begin(&local_1, 11, "parent-vehicle-exists"))
             {
                 long local_4 = local_3->field_94;
-                if (local_4 != NONE && arg_5 && !function_99640((c_handle_table_450cd0 *)(*(byte **)(*(byte **)(*(byte **)arg_5 + 4) + 8) + 0x30), local_4))
-                    goto local_8;
+                bool eligible = true;
+                if (local_4 != NONE && arg_5)
+                    eligible = function_99640((c_handle_table_450cd0 *)(*(byte **)(*(byte **)(*(byte **)arg_5 + 4) + 8) + 0x30), local_4);
+                if (eligible)
                 {
                     function_194830(local_2, local_4 != NONE);
                     if (local_3->field_94 != NONE)
@@ -375,10 +379,8 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
                         function_1947e0(local_2, local_3->field_98, 5);
                     }
                 }
-                goto local_9;
-            local_8:
-                local_1.discarded |= 1 << local_1.index;
-            local_9:;
+                else
+                    local_1.discarded = (1 << local_1.index) | local_1.discarded;
             }
             flags_writer_end(&local_1);
             if (flags_writer_begin(&local_1, 12, "desired-aiming-vector-exists"))

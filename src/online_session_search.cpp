@@ -899,16 +899,19 @@ PRIVATE inline void *function_90891(long arg_0)
 	return local_1;
 }
 
+#pragma intrinsic(_ReadWriteBarrier)
 #pragma inline_depth(0)
 // @retail 0x90880
 bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3, long arg_4, long arg_5, long arg_6, long arg_7, s_909ff const *arg_8, long arg_9)
 {
 	s_surface_description *local_0 = function_192e60(arg_1);
+	_ReadWriteBarrier();
 	arg_0->unknown88 = 50 * sizeof(s_search_result);
 	{
 		long local_12 = arg_0->unknown88;
+		c_allocator *allocation_interface = g_4d87f8->allocator;
 		s_allocator_globals *local_10 = g_4d87f8;
-		void *local_11 = local_10->allocator->allocate(local_12, 0, 0);
+		void *local_11 = allocation_interface->allocate(local_12, 0, 0);
 		if (!local_11)
 		{
 			local_10->allocator->compact(0);
@@ -920,8 +923,9 @@ bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3,
 	}
 	{
 		long local_12 = arg_0->unknown88;
+		c_allocator *allocation_interface = g_4d87f8->allocator;
 		s_allocator_globals *local_10 = g_4d87f8;
-		void *local_11 = local_10->allocator->allocate(local_12, 0, 0);
+		void *local_11 = allocation_interface->allocate(local_12, 0, 0);
 		if (!local_11)
 		{
 			local_10->allocator->compact(0);
@@ -935,8 +939,9 @@ bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3,
 	arg_0->unknown9c = arg_0->seen_capacity * sizeof(XNKID);
 	{
 		long local_12 = arg_0->unknown9c;
+		c_allocator *allocation_interface = g_4d87f8->allocator;
 		s_allocator_globals *local_10 = g_4d87f8;
-		void *local_11 = local_10->allocator->allocate(local_12, 0, 0);
+		void *local_11 = allocation_interface->allocate(local_12, 0, 0);
 		if (!local_11)
 		{
 			local_10->allocator->compact(0);
@@ -958,16 +963,24 @@ bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3,
 		SEARCH_FLAG(arg_0, 0x15) = local_1->field_0 == 5;
 		SEARCH_LONG(arg_0, 0x18) = function_193250(local_0);
 		long local_2 = function_1931a0(arg_4, local_0);
+		long highest = local_2;
+		if (arg_5 >= local_2)
+			highest = arg_5;
 		SEARCH_LONG(arg_0, 0x60) = local_2;
-		SEARCH_LONG(arg_0, 0x68) = local_2 > arg_5 ? local_2 : arg_5;
-		SEARCH_LONG(arg_0, 0x64) = local_1->field_51c[SEARCH_LONG(arg_0, 0x68)];
-		long local_3 = SEARCH_LONG(arg_0, 0x68) - SEARCH_LONG(arg_0, 0x60);
-		long local_4 = SEARCH_LONG(arg_0, 0x64) - arg_4;
-		arg_0->unknown20 = local_3 > local_4 ? local_3 : local_4;
+		SEARCH_LONG(arg_0, 0x68) = highest;
+		long rating = local_1->field_51c[highest];
+		long local_3 = highest - local_2;
+		long local_4 = rating - arg_4;
+		long span = local_4;
+		if (local_3 > local_4)
+			span = local_3;
+		SEARCH_LONG(arg_0, 0x64) = rating;
+		arg_0->unknown20 = span;
 		SEARCH_LONG(arg_0, 0x38) = arg_2;
 		arg_0->unknown1c = 0;
-		SEARCH_FLAG(arg_0, 0x3c) = arg_8 != 0;
-		if (arg_8)
+		bool has_extra = arg_8 != 0;
+		SEARCH_FLAG(arg_0, 0x3c) = has_extra;
+		if (has_extra)
 			*(s_909ff *)((byte *)arg_0 + 0x3d) = *arg_8;
 		SEARCH_LONG(arg_0, 0x58) = arg_6;
 		SEARCH_LONG(arg_0, 0x5c) = arg_7;
@@ -982,10 +995,10 @@ bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3,
 		if (arg_0->results)
 		{
 			void *local_12 = arg_0->results;
-			long local_10;
-			g_4d87f8->allocator->get_info(local_12, &local_10);
+			g_4d87f8->allocator->get_info(local_12, &arg_1);
+			c_allocator *release_interface = g_4d87f8->allocator;
 			s_allocator_globals *local_11 = g_4d87f8;
-			local_11->allocator->release(local_12, NONE);
+			release_interface->release(local_12, NONE);
 			if (local_12)
 				local_11->count--;
 			arg_0->results = 0;
@@ -993,10 +1006,10 @@ bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3,
 		if (arg_0->unknown90)
 		{
 			void *local_12 = arg_0->unknown90;
-			long local_10;
-			g_4d87f8->allocator->get_info(local_12, &local_10);
+			g_4d87f8->allocator->get_info(local_12, &arg_1);
+			c_allocator *release_interface = g_4d87f8->allocator;
 			s_allocator_globals *local_11 = g_4d87f8;
-			local_11->allocator->release(local_12, NONE);
+			release_interface->release(local_12, NONE);
 			if (local_12)
 				local_11->count--;
 			arg_0->unknown90 = 0;
@@ -1004,10 +1017,10 @@ bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3,
 		if (arg_0->seen)
 		{
 			void *local_12 = arg_0->seen;
-			long local_10;
-			g_4d87f8->allocator->get_info(local_12, &local_10);
+			g_4d87f8->allocator->get_info(local_12, &arg_1);
+			c_allocator *release_interface = g_4d87f8->allocator;
 			s_allocator_globals *local_11 = g_4d87f8;
-			local_11->allocator->release(local_12, NONE);
+			release_interface->release(local_12, NONE);
 			if (local_12)
 				local_11->count--;
 			arg_0->seen = 0;
@@ -1016,6 +1029,7 @@ bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3,
 	return arg_0->active;
 }
 #pragma inline_depth(255)
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x90840
 void function_90840(s_session_search *arg_0)
