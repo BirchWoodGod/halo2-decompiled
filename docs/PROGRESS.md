@@ -2,6 +2,82 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 8006 functions match
+
+```
+matched 8006 of 11318 game functions (977236 of 2784283 bytes, 35.10%)
+```
+
+9 new matches, none lost:
+- Deep lane 3, round 45 (+4), in the render range: `0x1e930`, `0x460d0`, `0x3e4e0` and `0x445d0`, each from 33 to 37 differences; `0x441b0` is down to 7.
+- The second machine's lane P, round 18 (#386, +4): `0x1392f8`, `0x13e1a0`, `0x13ccf0` and `0x135820`.
+- The second machine's lane J, round 16 (#385, +1): `0x90f70`.
+
+## 2026-10-12: 7997 functions match
+
+```
+matched 7997 of 11318 game functions (975262 of 2784283 bytes, 35.03%)
+```
+
+2 new matches, none lost:
+- Deep lane 1, rounds 38 and 41 (+2): `0x24ad0b` and `0x24bc12` (from 105 differences) match, among this machine's least-worked functions; the second machine's `0x11b520` now takes the unit before the animation graph, with every call updated, including those in this machine's script functions.
+
+## 2026-10-12: 7995 functions match
+
+```
+matched 7995 of 11318 game functions (974760 of 2784283 bytes, 35.01%)
+```
+
+3 new matches, none lost:
+- Claude lane 1, round 5 (+3), on Opus 5.5 at extra-high effort, working functions earlier rounds couldn't move: `0x24c676` tests both list fields before reading them, which gives retail's argument register and matches its caller `0x24bd61` as well, and `0x12190` ends at its unreachable marker after the free, as retail does. The lane also found that a call cycle retail has, broken in our build by a stub, keeps some functions on the default convention.
+
+## 2026-10-12: 7992 functions match
+
+```
+matched 7992 of 11318 game functions (974527 of 2784283 bytes, 35.00%)
+```
+
+38 new matches, none lost:
+- The third machine's second batch (#384, +31), over its lanes N, Q, R, S, T and H: among them eight matches in `0x1766b0`–`0x179850`, `0x143070`, which now takes its matrix and vector in its siblings' order, and `0x1520a0`, which no longer needs a `volatile` read.
+- The second machine's lane D lower, round 18 (#383, +4): `0x5b650` and `0x5e150` return one result, and the callers `0x945f0` (lane J) and `0x162d00` (the third machine) now match unchanged.
+- Deep lane 3, round 44 (+3), in the render range: `0x12420`, `0x36ab0` and `0x174d0`.
+
+## 2026-10-12: 7954 functions match
+
+```
+matched 7954 of 11318 game functions (966803 of 2784283 bytes, 34.72%)
+```
+
+3 new matches, none lost:
+- The second machine's lane D upper, round 18 (#382, +3): `0x8aed0`, `0x85600` and `0x8b2a0`, and four matched functions no longer need a `volatile` access to match.
+
+## 2026-10-12: 7951 functions match
+
+```
+matched 7951 of 11318 game functions (966210 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 34 (+2), writing this machine's unwritten functions: `0x24ba99` matches on its first draft, and `0x2c3b0` replaces its stub, which gives the second machine's caller `0x22a648` retail's call and matches it. Thirteen more render and UI functions are now written, some kept disabled where a draft would cost an existing match.
+
+## 2026-10-12: 7949 functions match
+
+```
+matched 7949 of 11318 game functions (966138 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 43 (+2), in the render range: `0x3f830` matches, and `0x36880` keeps its rectangle on the stack through a named reference, the third machine's lead from #375. That matches the third machine's caller `0x1634d0` and takes `0x36880` from 76 differences to 55; `0x15720` and `0x22c30` are each about ten closer.
+
+## 2026-10-12: 7947 functions match
+
+```
+matched 7947 of 11318 game functions (965514 of 2784283 bytes, 34.68%)
+```
+
+3 new matches, none lost:
+- Claude lane 1, round 4 (+3): the two interpolator getters behind `0x2abc10` and `0x2abca0` set their default result after the lookup, as retail does, and `0xc12d0` reads its light definition through a volatile pointer to the tag data and writes its last clamp the other way round; `0xa3df0` is two differences closer.
+
 ## 2026-10-12: 7944 functions match
 
 ```

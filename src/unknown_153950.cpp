@@ -23,6 +23,15 @@ real function_17ca10(real x, short curve);
 real function_30bf0(vector3f *v);
 vector3f *random_unit_vector(vector3f *result, dword *seed);
 
+static __forceinline bool local_player_present(long index)
+{
+	bool result = false;
+
+	if (index != NONE)
+		result = g_4e8c20->entries[index] != NONE;
+	return result;
+}
+
 // @retail 0x153950
 void function_153950(void)
 {
@@ -52,7 +61,7 @@ void function_153950(void)
 	{
 		s_speed_slot *slot = speed->slots + index;
 
-		if (index != NONE && g_4e8c20->entries[index] != NONE)
+		if (local_player_present(index))
 		{
 			real quarter_second = (real)g_510c54->field_2_3 * 0.25f;
 			long rounded;

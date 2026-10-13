@@ -16,7 +16,7 @@ struct s_view_context_storage
     long field_c;
     long field_10;
     bool field_14;
-    bool field_15;
+    byte field_15;
     byte unknown_16[0x2];
     long field_18;
     long field_1c;

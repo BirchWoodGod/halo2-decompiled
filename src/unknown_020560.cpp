@@ -8,6 +8,7 @@
 
 #include "unknown_11c920.h"
 #include "frame_storage.h"
+#include "depth_parameters_storage.h"
 #include <string.h>
 #include <math.h>
 #include <xtl.h>
@@ -101,7 +102,7 @@ void function_20e50(long index);
 
 hash_table *g_51f400;
 extern __int64 g_485aa0;
-dword g_4850c8;
+s_depth_parameters_13450 g_depth_parameters_storage;
 real g_5234c8;
 dword g_4b81fc[0xa6];
 D3DPIXELSHADERDEF g_484f68;

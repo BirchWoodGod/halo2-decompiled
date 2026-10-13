@@ -359,8 +359,9 @@ void function_16c2f0(short camera_point_index, short ticks, long object_index)
 		camera->active = true;
 		seconds = (real)ticks * (1.0f / 30.0f);
 		long point_type = point->type;
-		*(volatile short *)&camera->point.type = (short)point_type;
-		*(volatile short *)&camera->point.point_index = camera_point_index;
+		s_camera_point_state *state = &camera->point;
+		state->type = (short)point_type;
+		state->point_index = camera_point_index;
 		camera->position = point->position;
 		function_11df60((vector3f const *)point->orientation, &camera->forward, &camera->up);
 		camera->ticks = camera_seconds_to_ticks_round(seconds);
