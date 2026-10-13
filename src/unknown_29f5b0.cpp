@@ -714,11 +714,15 @@ bool function_29f850(long list_index, long object_index, real degrees)
 	volatile bool result = false;
 	long reference_index;
 	long unit_index = object_list_get_first_inlined(list_index, &reference_index);
-	while (unit_index != NONE)
+	if (unit_index != NONE)
 	{
-		if (unit_try_and_get(unit_index) && unit_can_see_object(object_index, unit_index, degrees))
-			return true;
-		unit_index = function_x457076(&reference_index);
+		do
+		{
+			if (unit_try_and_get(unit_index) && unit_can_see_object(object_index, unit_index, degrees))
+				return true;
+			unit_index = function_x457076(&reference_index);
+		} while (unit_index != NONE);
+		return result;
 	}
 	return result;
 }
@@ -730,15 +734,19 @@ bool function_29f970(long list_index, short cutscene_flag_index, real degrees)
 	volatile bool result = false;
 	long reference_index;
 	long unit_index = object_list_get_first_inlined(list_index, &reference_index);
-	while (unit_index != NONE)
+	if (unit_index != NONE)
 	{
-		if (unit_try_and_get(unit_index) &&
-			cutscene_flag_index >= 0 && cutscene_flag_index < ((s_scenario_cutscene_flags_view *)g_4e0350)->cutscene_flag_count &&
-			function_cc2b0(unit_index, &((s_scenario_cutscene_flags_view *)g_4e0350)->cutscene_flags[cutscene_flag_index].position, degrees * DEGREES_TO_RADIANS))
+		do
 		{
-			return true;
-		}
-		unit_index = function_x457076(&reference_index);
+			if (unit_try_and_get(unit_index) &&
+				cutscene_flag_index >= 0 && cutscene_flag_index < ((s_scenario_cutscene_flags_view *)g_4e0350)->cutscene_flag_count &&
+				function_cc2b0(unit_index, &((s_scenario_cutscene_flags_view *)g_4e0350)->cutscene_flags[cutscene_flag_index].position, degrees * DEGREES_TO_RADIANS))
+			{
+				return true;
+			}
+			unit_index = function_x457076(&reference_index);
+		} while (unit_index != NONE);
+		return result;
 	}
 	return result;
 }

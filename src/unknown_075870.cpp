@@ -2046,10 +2046,11 @@ bool __stdcall function_78a90(long first, long second, const void *context)
 // @retail 0x78ac0
 void function_78ac0(s_network_observer *observer)
 {
-	bool enabled = observer->flag4e00;
-	for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++)
+	byte enabled = observer->flag4e00;
+	byte *local_0 = (byte *)observer->channels + 0x48c;
+	for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++, local_0 += sizeof(s_network_observer_channel))
 	{
-		s_network_observer_channel *base = &observer->channels[i];
+		s_network_observer_channel *base = (s_network_observer_channel *)(local_0 - 0x48c);
 		s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)base;
 		if (channel->state)
 		{
@@ -2096,9 +2097,10 @@ void function_78ac0(s_network_observer *observer)
 			}
 		}
 	}
-	for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++)
+	local_0 = (byte *)observer->channels + 0x4f4;
+	for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++, local_0 += sizeof(s_network_observer_channel))
 	{
-		s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)&observer->channels[i];
+		s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)(local_0 - 0x4f4);
 		if (channel->state && channel->active && channel->probe_pending)
 		{
 			long tolerance = *(long *)((byte *)observer->configuration + (channel->has_callback ? 0x1dc : 0x1d4));
@@ -2133,15 +2135,18 @@ void function_78ac0(s_network_observer *observer)
 		sort_4byte(indices, count, &scratch, function_78a90, values);
 		for (long i = 0; i < count; i++) function_7a330(observer, indices[i]);
 		function_79260(observer);
-		for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++)
+		byte *local_1 = (byte *)observer->channels + 0x4dc;
+		long local_2 = MAXIMUM_OBSERVER_CHANNELS;
+		do
 		{
-			s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)&observer->channels[i];
+			s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)(local_1 - 0x4dc);
 			if (channel->state && channel->active && channel->probe_state == 3)
 			{
 				channel->probe_state = 1;
 				channel->probe_failures = 0;
 			}
-		}
+			local_1 += sizeof(s_network_observer_channel);
+		} while (--local_2);
 		observer->time4f30 = observer_time_get();
 	}
 	function_79260(observer);
@@ -2219,6 +2224,8 @@ static __forceinline long function_779f4(s_network_statistics *arg_0)
 }
 #pragma optimize("", on)
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x779f0
 void network_observer_update_channel_budgets(s_network_observer *observer)
 {
@@ -2296,7 +2303,9 @@ void network_observer_update_channel_budgets(s_network_observer *observer)
 			{
 				observer->value4f20 = (observer->value4e28 << 10) / count;
 				observer->real4f24 = observer_budget_rate(observer, observer->value4f20, false);
+				_ReadWriteBarrier();
 				observer->real4f28 = observer_budget_rate(observer, observer->value4f20, true);
+				_ReadWriteBarrier();
 				real frame_rate = network_frame_rate();
 				bool limited = false;
 				if (observer->real4f24 + 0.0001f < observer->configuration->real110 * frame_rate) limited = true;
@@ -2335,6 +2344,8 @@ void network_observer_update_channel_budgets(s_network_observer *observer)
 		observer->time4f08 = observer_time_get();
 	}
 }
+
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x78880
 void __stdcall function_78880(void *p)

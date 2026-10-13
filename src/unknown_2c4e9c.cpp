@@ -1719,7 +1719,7 @@ c_class_1473c9 *__stdcall function_2c8896(s_screen_parameters *parameters)
 }
 
 /* the screen id of each kind of emblem */
-static long emblem_screen_id(long mode)
+static __forceinline long emblem_screen_id(long mode)
 {
 	long screen_id;
 
@@ -1728,9 +1728,11 @@ static long emblem_screen_id(long mode)
 	case 0:
 		screen_id = 0x31;
 		break;
-	default:
+	case 1:
 		screen_id = 0xe9;
 		break;
+	default:
+		__assume(0);
 	}
 	return screen_id;
 }

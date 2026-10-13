@@ -38,8 +38,8 @@ bool function_1d5bf0(s_havok_component *arg_0, s_physics_model_owner *arg_1, cha
   arg_7, arg_4, arg_6, &local_6, &local_7, &local_8, &local_3, arg_5, &local_4, &local_5);
  if (local_9)
  {
-  long local_21 = local_1[0];
   byte *local_10 = *(byte **)((byte *)arg_1 + 0x48);
+  long local_21 = local_1[0];
   byte *local_11 = *(byte **)(local_10 + 0x3c) + local_21 * 0x90;
   long local_12 = local_3 ? 7 : arg_2[local_21];
   long local_13 = function_1d69d0(arg_0, local_12, arg_1, *arg_5, local_21);

@@ -497,7 +497,8 @@ long function_21aeb0(long definition_index, short sound_class, long identifier, 
 	if (looping_sound_system_available())
 	{
 		result = record_pool_allocate(LOOPING_SOUNDS);
-		if (result != NONE)
+		if (result == NONE)
+			goto done;
 		{
 			s_type_5ef569 *sound = (s_type_5ef569 *)LOOPING_SOUNDS->data + (result & 0xffff);
 			sound->sound_class = sound_class;
@@ -530,6 +531,7 @@ long function_21aeb0(long definition_index, short sound_class, long identifier, 
 			}
 		}
 	}
+done:
 	return result;
 }
 
