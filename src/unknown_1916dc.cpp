@@ -338,10 +338,10 @@ struct s_type_7ba8e9;
 struct s_13e703 { short field_0, field_2; };
 void function_caf60(long unit_index, point3f *point);
 point3f *transform4x3f_apply_point(transform4x3f const *matrix, point3f const *point, point3f *out);
-bool function_30710(vector3f const *v, short_rectangle2d const *rect, point2f *out,
-	s_camera const *camera, s_view const *view);
+bool function_30710(s_camera const *camera, short_rectangle2d const *rect,
+	vector3f const *v, point2f *out, s_view const *view);
 long function_13e615(short index);
-s_type_7ba8e9 *function_137610(long group_index, short frame_index, short sequence_index);
+s_type_7ba8e9 *function_137610(long group_index, short sequence_index, short frame_index);
 D3DTexture *function_12360(s_bitmap_view *bitmap, real priority);
 void function_13e703(byte const *bitmap, s_13e703 const *position, box2f const *bounds,
 	real scale, real angle, real alpha);
@@ -358,7 +358,7 @@ void function_191fd8(long player_index)
 	function_caf60(*(long *)(player + 0x2c), &position);
 	position.z += 0.3f;
 	transform4x3f_apply_point((transform4x3f const *)camera, &position, &transformed);
-	if (function_30710((vector3f const *)&transformed, NULL, &projected, camera, view))
+	if (function_30710(camera, NULL, (vector3f const *)&transformed, &projected, view))
 	{
 		s_type_7ba8e9 *bitmap = function_137610(function_13e615(9), 0, 0);
 		if (function_12360((s_bitmap_view *)bitmap, 0.0f))

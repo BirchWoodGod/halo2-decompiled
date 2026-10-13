@@ -364,7 +364,7 @@ void function_16de20(short index, s_16e150_bits const *table, dword *output)
 		for (;;)
 		{
 			s_word_bit_iterator iterator;
-			iterator.count = (short)word_count;
+			iterator.count = (short)((table->count + 31) >> 5);
 			iterator.index = 0;
 			iterator.remaining = *output;
 			iterator.words = output;
