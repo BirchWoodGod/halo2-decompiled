@@ -112,6 +112,7 @@ struct s_animation_state
 	bool update(animation_event_callback callback, long user, long node_count, s_blend_orientation *orientations,
 		s_blend_orientation const *targets);
 	c_type_709360 overlay_find(long set, long weapon_class, long weapon_type);
+	c_type_709360 overlay_or_animation_get(long weapon_class, long set, long weapon_type);
 	bool channel_play_indexed(c_animation_channel *channel, long set, short item_index, short animation_index,
 		short *found_item_index, short *found_animation_index);
 	__declspec(noinline) bool play_indexed(long set, short item_index, short animation_index, short *found_item_index,
@@ -121,8 +122,11 @@ struct s_animation_state
 
 /* an overlay of the set, or else its animation (0x1cbad0), and that animation's
    definition (0x1cba80, unknown_165ce5.cpp calls it) */
-c_type_709360 animation_state_overlay_or_animation_get(s_animation_state *state, long weapon_class, long set,
-	long weapon_type);
+inline c_type_709360 animation_state_overlay_or_animation_get(s_animation_state *state, long weapon_class, long set,
+	long weapon_type)
+{
+	return state->overlay_or_animation_get(weapon_class, set, weapon_type);
+}
 s_animation const *function_1cba80(s_animation_state *state, long weapon_class, long weapon_type, long set);
 
 #endif

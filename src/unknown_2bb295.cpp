@@ -24,7 +24,7 @@ bool function_19a76d(short index);
 void function_121100(long *value);
 void function_148d42(long value);
 void dialog_ok_show(long a, long dialog_id, long b, short user_flags, dialog_choice_callback chosen, dialog_closed_callback closed);
-void function_2c83e6(long type, long a, long b, word user_flags);
+void __stdcall function_2c83e6(long type, long a, long b, word user_flags);
 
 /* the squad settings that open a screen (unknown_2b116a.cpp) */
 void function_2bb8ac(s_controller_reference **controller);

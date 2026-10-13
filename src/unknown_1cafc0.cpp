@@ -33,7 +33,7 @@ void function_1dd1c0(s_graph_tag *graph, transform4x3f *matrices, rigid_transfor
 struct s_1d9240;
 void function_1d9240(s_1d9240 *p, char flag, real x);
 real function_1d9430(s_1d9240 const *p);
-void function_1d9470(s_1d9240 const *p, s_blend_orientation const *targets, long count, dword const *mask,
+void function_1d9470(s_1d9240 const *p, long count, dword const *mask, s_blend_orientation const *targets,
 	s_blend_orientation *orientations);
 
 bool g_46fbf4 = true;
@@ -1114,7 +1114,7 @@ void s_animation_state::nodes_compute(transform4x3f *matrices, rigid_transform_s
 void s_animation_state::orientations_blend(s_blend_orientation const *targets, short count, dword const *mask,
 	s_blend_orientation *orientations)
 {
-	function_1d9470((s_1d9240 const *)&unknown64, targets, count, mask, orientations);
+	function_1d9470((s_1d9240 const *)&unknown64, count, mask, targets, orientations);
 }
 
 // @retail 0x1cb5f0
@@ -1561,23 +1561,22 @@ c_type_709360 s_animation_state::overlay_find(long set, long weapon_class, long 
 }
 
 // @retail 0x1cbad0
-c_type_709360 animation_state_overlay_or_animation_get(s_animation_state *state, long weapon_class, long set,
-	long weapon_type)
+c_type_709360 s_animation_state::overlay_or_animation_get(long weapon_class, long set, long weapon_type)
 {
 	c_type_709360 animation_id;
 
 	if (weapon_class == 0x7000101 || weapon_class == NONE)
 	{
-		weapon_class = state->unknown74;
+		weapon_class = unknown74;
 	}
 	if (weapon_type == 0x7000101 || weapon_type == NONE)
 	{
-		weapon_type = state->unknown78;
+		weapon_type = unknown78;
 	}
-	animation_id = state->overlay_find(set, weapon_class, weapon_type);
+	animation_id = overlay_find(set, weapon_class, weapon_type);
 	if (animation_id.index == NONE)
 	{
-		animation_id = state->animation_get(set, weapon_class, weapon_type);
+		animation_id = animation_get(set, weapon_class, weapon_type);
 	}
 	return animation_id;
 }

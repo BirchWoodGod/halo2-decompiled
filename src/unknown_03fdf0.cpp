@@ -1,5 +1,5 @@
 #include "render_source_storage.h"
-// @flags /O2 /Gr
+// @flags /O2 /arch:SSE /Gr
 #include "material_records_storage.h"
 /* UNKNOWN_03FDF0.CPP: cached light geometry and material pass dispatch */
 

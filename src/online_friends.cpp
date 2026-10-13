@@ -405,8 +405,10 @@ bool function_8d230(const XONLINE_FRIEND *friend_, s_friend_presence_status *sta
 				status->state = (flags & 2) ? 6 : 5;
 			else if (flags & 4)
 				status->state = (flags & 8) ? 4 : 2;
+			else if (flags & 8)
+				status->state = 3;
 			else
-				status->state = (((dword)flags & 8) | 4) >> 2;
+				status->state = 1;
 			if (friend_->StateDataSize == 4)
 			{
 				status->value04 = (*(const dword *)data >> 28) & 3;
