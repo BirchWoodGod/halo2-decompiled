@@ -1904,7 +1904,31 @@ void function_159460(long player_index, bool *leading, bool *tied)
 	s_engine_player *player = (s_engine_player *)g_4e8c24->data + absolute_index;
 	bool is_tied = false;
 
-	if (!(function_x340af0()))
+	if (function_x340af0())
+	{
+		long score = function_1587f0(player->team);
+
+		for (long team = 0; team < 8; team++)
+		{
+			if (team != player->team && game_engine_team_is_active(team))
+			{
+				long difference = function_1587f0(team) - score;
+
+				if (difference == 0)
+				{
+					is_tied = true;
+				}
+				else if (difference > 0)
+				{
+					goto not_leading;
+				}
+			}
+		}
+		*leading = true;
+		*tied = is_tied;
+		return;
+	}
+	else
 	{
 		long score = function_1587b0(player_index);
 		s_engine_player_iterator iterator;
@@ -1924,38 +1948,17 @@ void function_159460(long player_index, bool *leading, bool *tied)
 				}
 				if (difference > 0)
 				{
-					*leading = false;
-					*tied = false;
-					return;
-				}
-			}
-		}
-	}
-	else
-	{
-		long score = function_1587f0(player->team);
-
-		for (long team = 0; team < 8; team++)
-		{
-			if (team != player->team && game_engine_team_is_active(team))
-			{
-				long difference = function_1587f0(team) - score;
-
-				if (difference == 0)
-				{
-					is_tied = true;
-				}
-				else if (difference > 0)
-				{
-					*leading = false;
-					*tied = false;
-					return;
+					goto not_leading;
 				}
 			}
 		}
 	}
 	*leading = true;
 	*tied = is_tied;
+	return;
+not_leading:
+	*leading = false;
+	*tied = false;
 }
 
 #include "object_iterator.h"
@@ -4898,8 +4901,14 @@ void function_159880(void)
         real fade = local_user == NONE ? 1.0f : *(real *)((byte *)globals + 0xe4 + local_user * 4);
         if (fade > 0.0f)
         {
-            color4f color = {fade, g_468718->x, g_468718->y, g_468718->z};
-            s_short_rectangle bounds = {0, 0, (short)(g_4b9dd6 - g_4b9dd2), (short)(g_4b9dd4 - g_4b9dd0)};
+            color4f color;
+            color.alpha = fade;
+            *(point3f *)&color.red = *g_468718;
+            s_short_rectangle bounds;
+            bounds.left = 0;
+            bounds.top = 0;
+            bounds.right = (short)(g_4b9dd6 - g_4b9dd2);
+            bounds.bottom = (short)(g_4b9dd4 - g_4b9dd0);
             function_36580();
             function_36880(&color, &bounds);
         }
