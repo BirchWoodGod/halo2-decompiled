@@ -81,7 +81,7 @@ struct s_data_datum_iterator
 	long index;
 };
 
-__declspec(noinline) bool data_datum_iterator_next(s_data_datum_iterator *iterator);
+inline __declspec(noinline) bool data_datum_iterator_next(s_data_datum_iterator *iterator);
 long record_pool_next_used(s_record_pool *data, long datum_index);
 long function_16bc00(s_record_pool *data, long index);
 

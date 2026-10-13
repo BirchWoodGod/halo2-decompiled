@@ -899,7 +899,13 @@ long function_e5670(long unit_index);
 bool function_14af40(bool value, point3f const *point, vector3f const *vector, long object_index,
     bool a, void *surface, point3f *hit_point);
 long __stdcall function_d1e10(void const *surface, s_effect_color_query *query, long flags, long value);
-bool function_14b120(void *source, void *surface);
+/* the collision a surface query starts from, passed by value */
+struct s_surface_query_source
+{
+    void *collision;
+};
+
+bool function_14b120(s_surface_query_source source, void *surface);
 
 PRIVATE vector3f const g_4406e4 = { 0.0f, 0.0f, -10.0f };
 PRIVATE vector3f const g_4406f0[5] =
@@ -952,7 +958,8 @@ long function_d2bb0(void *source, s_effect_color_query *query)
     byte surface[0x38];
     s_effect_color_query **query_reference = &query;
     long result = 2;
-    if (function_14b120(source, surface))
+    s_surface_query_source query_source = { source };
+    if (function_14b120(query_source, surface))
         result = function_d1e10(surface, *query_reference, 0, 0);
     return result;
 }

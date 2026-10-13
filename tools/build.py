@@ -16,7 +16,9 @@ convention here too; so does one marked "// @retail 0x... standard". Sources
 in src/stubs/ are compiled without /GL, so they keep the standard calling
 conventions retail uses for code outside the project. A generated ballast
 object, which the linker discards, keeps inlining decisions stable as the
-program grows (see INLINE_THRESHOLD).
+program grows (see INLINE_THRESHOLD). The members of the SDK's d3d8ltcg.lib
+that retail holds are linked as objects, in retail's order, before the
+libraries (see D3D_OBJECTS); d3d_objects extracts them into build/d3d8ltcg.
 
 build(units=...) builds a reduced image instead, build/reduced.img with its
 map build/reduced.map: only the listed sources (with their stand-ins), the
@@ -62,6 +64,24 @@ SIZE_FLAGS = ['/O1', '/Ob0', '/Gr']
 ARGUMENT_STRIDE = 16
 LIBRARIES = ['libcmt.lib', 'libcpmt.lib', 'xapilib.lib', 'xboxkrnl.lib', 'dsound.lib', 'xonlines.lib',
              'xvoice.lib', 'xnet.lib', 'd3d8ltcg.lib', 'xgraphicsltcg.lib', 'd3dx8.lib']
+# The members of the SDK's d3d8ltcg.lib that retail holds, in retail's layout
+# order: each of retail's Direct3D functions was matched to the same function
+# in our image, whose map names the member it comes from, and the members are
+# listed by the retail addresses of their functions. build() links them as
+# objects, in this order, after the program's objects and before the libraries
+# (the library's other members still come from the library). Link-time code
+# generation gives the functions of a call cycle their conventions by the
+# order in which it reaches them; with these members left in the library it
+# reaches the push-buffer cycle (SetFence, MakeRequestedSpace, BlockOnTime)
+# differently from retail's link, and gives BlockOnTime, not
+# MakeRequestedSpace, its argument in a register. Linked this way the split
+# is retail's (a full check gained 10 functions and lost none). Leaving any of
+# several members to the library undoes it, so keep the list whole.
+D3D_LIBRARY = 'd3d8ltcg.lib'
+D3D_OBJECTS = ['d3ddev', 'state', 'vshader', 'd3dbase', 'present', 'clear', 'pshader', 'pusher', 'drawprim',
+               'resource', 'surface', 'dxgcreate', 'floatmath', 'math', 'pixeljar', 'mpcore', 'mpintr', 'mpdac',
+               'mpmode', 'lazy', 'shadersnapshot', 'mphal', 'pushres', 'debug', 'combiner']
+D3D_FOLDER = 'd3d8ltcg'  # build/d3d8ltcg: the D3D_OBJECTS, extracted from the SDK (never committed)
 EXE_NAME = 'halo2.exe'
 MAP_NAME = 'halo2.map'
 REDUCED_NAME = 'reduced'  # build(units=...): build/reduced.img, build/reduced.map, build/gen/entry_reduced.cpp
@@ -377,6 +397,7 @@ def tool_arg(arg):
 
 
 def run_tool(tool, args, cwd, xdk):
+    """Runs one of the SDK's tools and returns what it printed."""
     include, lib = (tool_arg(os.path.join(xdk, d)) for d in ('include', 'lib'))
     env = dict(os.environ, INCLUDE=include, LIB=lib)
     args = [tool_arg(a) for a in args]
@@ -384,6 +405,41 @@ def run_tool(tool, args, cwd, xdk):
                        capture_output=True, text=True)
     if p.returncode:
         raise SystemExit(f'{tool} failed:\n{p.stdout}{p.stderr}')
+    return p.stdout
+
+
+def d3d_objects(root, xdk):
+    """The paths of the D3D_OBJECTS, in order, in build/d3d8ltcg. They are
+    extracted from the SDK's d3d8ltcg.lib with its lib tool, and extracted
+    again only when the library changes (its size and time, which a stamp
+    file in the folder records)."""
+    library = os.path.join(xdk, 'lib', D3D_LIBRARY)
+    if not os.path.isfile(library):
+        raise SystemExit(f'{library} not found: the build links {len(D3D_OBJECTS)} of its members as objects '
+                         '(D3D_OBJECTS in tools/build.py). Set XDK_DIR to the xbox folder of Xbox SDK 5849.')
+    folder = os.path.join(root, 'build', D3D_FOLDER)
+    paths = [os.path.join(folder, f'{stem}.obj') for stem in D3D_OBJECTS]
+    stat = os.stat(library)
+    key, stamp = f'{D3D_LIBRARY} {stat.st_size} {stat.st_mtime_ns}\n', os.path.join(folder, 'extracted.txt')
+    if os.path.exists(stamp) and all(map(os.path.isfile, paths)):
+        with open(stamp, encoding='utf-8') as f:
+            if f.read() == key:
+                return paths
+    os.makedirs(folder, exist_ok=True)
+    members = {}  # a member's file name: its paths in the library
+    for line in filter(None, map(str.strip, run_tool('Lib.Exe', ['/LIST', library], folder, xdk).splitlines())):
+        members.setdefault(re.split(r'[\\/]', line)[-1].lower(), []).append(line)
+    for stem, path in zip(D3D_OBJECTS, paths):
+        found = members.get(f'{stem}.obj', [])
+        if len(found) != 1:
+            raise SystemExit(f'{library} has {"more than one member" if found else "no member"} named {stem}.obj, '
+                             'which the build links as an object (D3D_OBJECTS in tools/build.py). Set XDK_DIR to '
+                             'the xbox folder of Xbox SDK 5849.')
+        run_tool('Lib.Exe', [f'/EXTRACT:{found[0]}', f'/OUT:{path}.tmp', library], folder, xdk)
+        os.replace(path + '.tmp', path)
+    with open(stamp, 'w', encoding='utf-8') as f:
+        f.write(key)
+    return paths
 
 
 def _stale(target, sources, newest_header):
@@ -552,6 +608,12 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=(), jobs=1, reuse
     if not os.path.exists(os.path.join(xdk, 'bin', 'vc71', 'CL.Exe')):
         raise SystemExit(f'Xbox SDK 5849 not found at {xdk}. Put its xbox folder at sdk/xbox, '
                          'or set XDK_DIR to it.')
+    # the map names an object by its file name alone, so a source must not share one with a D3D member
+    clash = sorted(n for n in _source_names(root) if os.path.splitext(n)[0].lower() in D3D_OBJECTS)
+    if clash:
+        raise SystemExit(f'src/{clash[0]} builds an object with the name of a {D3D_LIBRARY} member that the build '
+                         'links as an object (D3D_OBJECTS in tools/build.py); rename the source.')
+    d3d = d3d_objects(root, xdk)
     src, out = os.path.join(root, 'src'), os.path.join(root, 'build')
     obj_dir, gen = os.path.join(out, 'obj'), os.path.join(out, 'gen')
     os.makedirs(obj_dir, exist_ok=True)
@@ -667,12 +729,14 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=(), jobs=1, reuse
     with open(response, 'w', encoding='utf-8') as f:
         f.write(''.join(f'"{tool_arg(obj)}"\n' for obj in objects))
         f.write(''.join(f'/INCLUDE:{symbol}\n' for symbol in include))
+    # the D3D members go after the program's objects and before the libraries (see D3D_OBJECTS)
     link = ['/LTCG', '/NODEFAULTLIB', '/ENTRY:entry', '/SUBSYSTEM:CONSOLE', '/MAP:' + map_path, '/MAPINFO:FIXUPS',
-            '/FIXED:NO', *force, f'/OUT:{exe}', '@' + tool_arg(response), *LIBRARIES]
+            '/FIXED:NO', *force, f'/OUT:{exe}', '@' + tool_arg(response), *d3d, *LIBRARIES]
     if reuse:
         stamp = exe + '.inputs'
+        linked = objects + d3d
         inputs = ''.join(f'{line}\n' for line in [*link, *include, *(
-            f'{obj} {stat.st_mtime_ns} {stat.st_size}' for obj, stat in zip(objects, map(os.stat, objects)))])
+            f'{obj} {stat.st_mtime_ns} {stat.st_size}' for obj, stat in zip(linked, map(os.stat, linked)))])
         if all(map(os.path.exists, (exe, map_path, stamp))):
             with open(stamp, encoding='utf-8') as f:
                 if f.read() == inputs:

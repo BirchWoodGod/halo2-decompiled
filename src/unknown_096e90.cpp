@@ -133,6 +133,16 @@ static __forceinline void function_97241(c_vtable_450d1c *arg_0, s_node_450d1c *
     local_0->manager->v2(arg_1->unknown04, arg_1->size, arg_1->data, arg_2);
 }
 
+static __forceinline void function_97242(s_link_450d1c *arg_0)
+{
+	long local_0;
+	if (!g_4d87f8->allocator->get_info(arg_0, &local_0))
+		local_0 = NONE;
+	s_allocator_globals *local_1 = g_4d87f8;
+	local_1->allocator->release(arg_0, NONE);
+	local_1->count--;
+}
+
 // @retail 0x97240
 void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bitstream *stream, long reserved_bits)
 {
@@ -202,12 +212,7 @@ void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bits
 				else
 				{
 					function_194710(stream, true);
-					long info;
-					if (!g_4d87f8->allocator->get_info(link, &info))
-						info = NONE;
-					s_allocator_globals *globals = g_4d87f8;
-					globals->allocator->release(link, NONE);
-					globals->count--;
+					function_97242(link);
 				}
 			}
 			else
@@ -272,7 +277,7 @@ long c_vtable_450d1c::v5(dword a1, s_bitstream *stream, long max_blocks, s_block
 			s_block_450c94 *block = (s_block_450c94 *)stream;
 			stream = (s_bitstream *)(block + 1);
 			long produced = *local_1;
-			count++;
+			(*(long volatile *)&count)++;
 			block->index = NONE;
 			block->unknown00 = type;
 			block->count = produced;
@@ -293,20 +298,28 @@ void c_vtable_450d1c::v6(s_block_450c94 *block)
 	owner->manager->v1(local_1->unknown00, (dword *)&local_1->unknown08[0], local_1->count, (dword *)local_1->data);
 }
 
+PRIVATE __forceinline void function_976f1(s_request_450d1c *arg_0)
+{
+	long local_0;
+	if (!g_4d87f8->allocator->get_info(arg_0, &local_0))
+		local_0 = NONE;
+	s_allocator_globals *local_1 = g_4d87f8;
+	local_1->allocator->release(arg_0, NONE);
+	local_1->count--;
+}
+
 // @retail 0x976f0
 void c_vtable_450d1c::function_976f0(long key, bool flag)
 {
 	s_request_450d1c **link = &requests;
 	s_request_450d1c *request = *link;
-	if (request == 0)
-		return;
-	while (request->key != key)
+	while (request != 0 && request->key != key)
 	{
 		link = &request->next;
 		request = *link;
-		if (request == 0)
-			return;
 	}
+	if (request == 0)
+		return;
 
 	s_link_450d1c *current = request->links;
 	while (current != 0)
@@ -340,12 +353,7 @@ void c_vtable_450d1c::function_976f0(long key, bool flag)
 
 	*link = request->next;
 	request_count--;
-	long info;
-	if (!g_4d87f8->allocator->get_info(request, &info))
-		info = NONE;
-	s_allocator_globals *globals = g_4d87f8;
-	globals->allocator->release(request, NONE);
-	globals->count--;
+	function_976f1(request);
 }
 // @retail 0x976c0
 void c_vtable_450d1c::v7(void *a1)
