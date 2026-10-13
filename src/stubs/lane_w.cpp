@@ -79,8 +79,7 @@ void __cdecl function_2ddbd0(void *data, s_visibility_sphere_query const *query,
 bool __stdcall function_32350(long index, real alpha) { return false; }
 
 struct transform4x3f;
-// @stub 0xb92d0
-void function_b92d0(long index, transform4x3f const *old_parent, transform4x3f const *new_parent) {}
+
 
 class __declspec(align(16)) c_z_capsule_temp
 {
@@ -111,3 +110,5 @@ struct s_view_source;
 void function_31170(long, s_view_camera *, long, s_view_source *, bool, real)
 {
 }
+
+

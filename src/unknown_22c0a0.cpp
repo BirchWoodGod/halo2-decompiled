@@ -16,9 +16,9 @@ struct s_fixed_memory_entry
 void *c_havok_fixed_memory::function_22c330(long alignment, long limit,
 	long offset, long size, s_fixed_memory_entry *entry)
 {
-	bool fits = limit >= offset;
+	void *buffer = m_buffer;
 	void *result = NULL;
-	if (fits)
+	if (limit >= offset)
 	{
 		switch (alignment)
 		{
@@ -34,7 +34,7 @@ void *c_havok_fixed_memory::function_22c330(long alignment, long limit,
 		{
 			entry->offset = offset;
 			entry->size = size;
-			result = (byte *)m_buffer + offset;
+			result = (byte *)buffer + offset;
 		}
 	}
 	return result;

@@ -141,17 +141,18 @@ bool function_108c60(long object_index)
 // @retail 0x108cd0
 void function_108cd0(long object_index)
 {
-	s_object_handlers **list = OBJECT_TYPE_DEFINITION(object_index)->handlers;
-	s_object_handlers **slot = list;
-	while (*list)
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION(object_index);
+	long i = 0;
+	s_object_handlers **slot = &definition->handlers[0];
+	while (definition->handlers[i])
 	{
 		s_object_handlers *handlers = *slot;
 		if (handlers->handler44)
 		{
 			handlers->handler44(object_index);
 		}
-		list++;
-		slot = list;
+		i++;
+		slot = &definition->handlers[i];
 	}
 }
 

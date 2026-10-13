@@ -195,16 +195,16 @@ void function_141ce0(
 	cos_b = (real)cos(b);
 	sin_b = (real)sin(b);
 	cos_a = (real)cos(a);
-	sin_b_sin_c = sin_b * angle_c.y;
-	sin_b_cos_c = sin_b * angle_c.x;
 	sin_a = (real)sin(a);
+	sin_b_cos_c = sin_b * angle_c.x;
+	sin_b_sin_c = sin_b * angle_c.y;
 	out->scale = 1.f;
 	out->forward.j = sin_a * angle_c.x - sin_b_sin_c * cos_a;
 	out->forward.i = cos_a * cos_b;
 	out->forward.k = sin_b_cos_c * cos_a + sin_a * angle_c.y;
 	out->left.i = 0.f - sin_a * cos_b;
-	out->left.k = cos_a * angle_c.y - sin_b_cos_c * sin_a;
 	out->left.j = sin_b_sin_c * sin_a + cos_a * angle_c.x;
+	out->left.k = cos_a * angle_c.y - sin_b_cos_c * sin_a;
 	out->up.i = 0.f - sin_b;
 	out->up.j = 0.f - cos_b * angle_c.y;
 	out->up.k = cos_b * angle_c.x;
@@ -461,15 +461,16 @@ static __forceinline void matrix4x3_basis_store(transform4x3f *out, point3f cons
 	out->position = *position;
 }
 
-static __forceinline void plane_vector_normalize(vector3f *out, real j)
+static __forceinline void plane_vector_normalize(vector3f *out)
 {
-    real magnitude = (real)sqrt(out->i * out->i + j * j + out->k * out->k);
+    real k = out->k;
+    real magnitude = (real)sqrt(out->i * out->i + out->j * out->j + k * k);
     if (!(fabs(magnitude) < 0.0001f))
     {
         real inverse = 1.f / magnitude;
         out->i = inverse * out->i;
-        out->j = j * inverse;
-        out->k = inverse * out->k;
+        out->j = out->j * inverse;
+        out->k = inverse * k;
     }
 }
 
@@ -478,7 +479,7 @@ static __forceinline void function_x7a3668(plane3f const *plane, transform4x3f *
 	vector3f w;
 	point3f position;
 	function_11d000(&plane->n, &w);
-	plane_vector_normalize(&w, w.j);
+	plane_vector_normalize(&w);
 	position.x = plane->d * plane->n.i;
 	position.y = plane->n.j * plane->d;
 	position.z = plane->n.k * plane->d;
@@ -502,13 +503,12 @@ vector3f *matrix4x3_rotation_between(
 	transform4x3f const *b,
 	vector3f *out)
 {
-	transform4x3f const * const *a_reference = &a;
 	transform4x3f inverse;
 	transform4x3f relative;
 	quaternionf rotation;
 	real angle;
 
-	function_141590((*a_reference), &inverse);
+	function_141590(a, &inverse);
 	function_142a60(b, &inverse, &relative);
 	function_141f60(&relative.rotation, &rotation);
 	function_11d790(&rotation, out, &angle);

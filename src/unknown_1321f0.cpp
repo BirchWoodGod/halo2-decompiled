@@ -64,7 +64,7 @@ struct s_132d60
 
 extern long g_4e7414;
 extern bool g_4e7411;
-short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, long maximum_count, short *clusters);
+short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, short maximum_count, short *clusters);
 void sort_4byte(long *elements, unsigned long count, void *unused, bool (__stdcall *compare)(long, long, const void *), const void *context);
 
 // @retail 0x132d60
