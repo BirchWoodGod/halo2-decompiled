@@ -4315,7 +4315,7 @@ c_clan_options_list::c_clan_options_list(word user_flags) :
 	handler(this, (list_item_method)&c_clan_options_list::handle_item)
 {
 	long controller = get_controller_index();
-	bool online = function_19a935();
+	volatile bool online = function_19a935();
 	s_clan_membership membership;
 
 	data = user_interface_data_new("clan options list", 4, 4);
