@@ -783,11 +783,21 @@ struct s_player_target_unit
 	point3f position;
 	real radius;
 	byte unknown40[0x10a - 0x40];
-	byte flags;
-	byte unknown10b[0x248 - 0x10b];
+	word flag0 : 1;
+	word flag1 : 1;
+	word flag2 : 1;
+	word : 13;
+	byte unknown10c[0x248 - 0x10c];
 	long parent_index;
 	byte unknown24c[0x348 - 0x24c];
-	byte flags348;
+	word flag348_0 : 1;
+	word flag348_1 : 1;
+	word flag348_2 : 1;
+	word flag348_3 : 1;
+	word flag348_4 : 1;
+	word flag348_5 : 1;
+	word flag348_6 : 1;
+	word : 9;
 };
 
 __declspec(noinline) bool function_f5dc0(long object_index);
@@ -802,7 +812,7 @@ static __forceinline void player_object_target_candidate_evaluate(long object_in
 	s_target_candidate *const *best_reference = &best;
 	s_tail_player *player = tail_player_get(*player_reference);
 	s_player_target_unit *object = (s_player_target_unit *)tail_object_get(object_index);
-	if (!(object->flags & 4))
+	if (!TEST_FIELD_BIT(object->flag2))
 	{
 		if (!function_f5dc0(object_index))
 		{
@@ -831,7 +841,7 @@ static __forceinline void player_object_target_candidate_evaluate(long object_in
 		else if (player->unit_index != NONE)
 		{
 			s_player_target_unit *unit = (s_player_target_unit *)tail_object_get(player->unit_index);
-			if (!(object->flags348 & 0x40) && object->parent_index == NONE)
+			if (!TEST_FIELD_BIT(object->flag348_6) && object->parent_index == NONE)
 			{
 				vector3f delta;
 				vector3d_from_points3d(&unit->position, &object->position, &delta);
@@ -1547,7 +1557,8 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
     long const *owner_reference = &owner_index;
     bool *const *failed_reference = &failed;
     long result = NONE;
-    if (state->kind != 0)
+    short kind = state->kind;
+    if (kind != 0)
     {
         s_tag_iterator iterator;
         iterator.datum_index = 0;
@@ -1563,15 +1574,15 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
                 byte *seat = *(byte **)(definition + 0x2d4);
                 long ammunition = *(long *)(seat + 0x90);
                 if (ammunition != NONE)
-                    found = state->kind == (short)g_4e3b44[ammunition & 0xffff].bytes[0x128];
+                    found = kind == (short)g_4e3b44[ammunition & 0xffff].bytes[0x128];
                 else if (*(long *)(seat + 0x98) != NONE)
-                    found = state->kind == (short)seat[0x88];
+                    found = kind == (short)seat[0x88];
             }
-            if (found || state->kind == (short)definition[0x1fc]) break;
+            if (found || kind == (short)definition[0x1fc]) break;
         }
         if (tag != NONE)
         {
-            byte creation[0xb4];
+            byte creation[0xc4];
             function_b7930(creation, tag, *owner_reference, NULL);
             result = function_b7b40(creation);
             if (result != NONE)
@@ -1587,7 +1598,7 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
             }
             else **failed_reference = true;
         }
-        else if (state->kind != 0) **failed_reference = true;
+        else if (kind != 0) **failed_reference = true;
     }
     return result;
 }
