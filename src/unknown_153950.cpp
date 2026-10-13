@@ -678,6 +678,27 @@ void function_141ce0(real a, real b, real c, transform4x3f *out);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 real function_17c900(short curve, real input);
 
+/* a random real in [0, 1] from the seed; the cast keeps its 1/65535 scale
+   apart from the caller's constants, as retail has it */
+static inline real random_real_1546f0(dword *seed)
+{
+	return (real)(_random(seed, 0, 0) * (1.f / 65535.f));
+}
+
+static inline void point_set_1546f0(point3f *point, real x, real y, real z)
+{
+	point->x = x;
+	point->y = y;
+	point->z = z;
+}
+
+static inline void cross_product3d_1546f0(vector3f const *a, vector3f const *b, vector3f *result)
+{
+	result->i = a->j * b->k - a->k * b->j;
+	result->j = a->k * b->i - a->i * b->k;
+	result->k = a->i * b->j - a->j * b->i;
+}
+
 // @retail 0x1546f0
 void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
 {
@@ -699,12 +720,13 @@ void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
         s_random_globals *random = g_4e7408;
         g_502120->value228 = amount;
         function_141ce0(
-            (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->angles[0] * amount,
-            (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->angles[1] * amount,
-            (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->angles[2] * amount, &transform);
-        transform.position.x = (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->point.x * amount;
-        transform.position.y = (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->point.y * amount;
-        transform.position.z = (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->point.z * amount;
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->angles[0] * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->angles[1] * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->angles[2] * amount, &transform);
+        point_set_1546f0(&transform.position,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->point.y * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->point.x * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->point.z * amount);
         function_142a60(matrix, &transform, matrix);
     }
     else
@@ -716,33 +738,43 @@ void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
             if (slot->flags & 2)
                 amount = 1.0f;
             else
-                amount = function_17ca10(1.0f - (slot->bounds.duration - (real)slot->timer80) / slot->bounds.duration,
-                    *(short *)&slot->bounds.unknown04[0]) * slot->priority9c;
+            {
+                real duration = slot->bounds.duration;
+                real elapsed = (duration - (real)slot->timer80) / duration;
+                real priority = slot->priority9c;
+                amount = priority * function_17ca10(1.0f - elapsed, *(short *)&slot->bounds.unknown04[0]);
+            }
             real angle = amount * slot->bounds.unknown04[1];
             real sine = (real)sin(angle), cosine = (real)cos(angle);
             vector3f axis;
-            axis.i = g_4687b0->j * slot->forward.k - g_4687b0->k * slot->forward.j;
-            axis.j = slot->forward.i * g_4687b0->k - slot->forward.k * g_4687b0->i;
-            axis.k = g_4687b0->i * slot->forward.j - slot->forward.i * g_4687b0->j;
+            cross_product3d_1546f0(g_4687b0, &slot->forward, &axis);
             real x = axis.i, y = axis.j, z = axis.k;
+            real yy = y * y, zz = z * z, xx = x * x;
             transform4x3f transform;
             transform.scale = 1.0f;
-            transform.forward.i = x * x + (1.0f - x * x) * cosine;
+            real zs = z * sine;
+            real xs = x * sine;
+            real ys = y * sine;
+            transform.forward.i = (1.0f - xx) * cosine + xx;
             real xy = (1.0f - cosine) * y * x;
-            transform.left.i = xy - z * sine;
-            transform.forward.j = xy + z * sine;
-            transform.left.j = y * y + (1.0f - y * y) * cosine;
+            transform.left.i = xy - zs;
+            transform.forward.j = xy + zs;
+            transform.left.j = (1.0f - yy) * cosine + yy;
             real xz = (1.0f - cosine) * z * x;
-            transform.up.i = xz + y * sine;
-            transform.forward.k = xz - y * sine;
-            transform.up.k = z * z + (1.0f - z * z) * cosine;
+            transform.up.i = xz + ys;
+            transform.forward.k = xz - ys;
+            transform.up.k = (1.0f - zz) * cosine + zz;
             real yz = (1.0f - cosine) * z * y;
-            transform.up.j = yz - x * sine;
-            transform.left.k = yz + x * sine;
+            transform.up.j = yz - xs;
+            transform.left.k = yz + xs;
             real distance = slot->bounds.unknown04[2] * amount;
-            transform.position.x = slot->vector.i * amount + slot->forward.i * distance;
-            transform.position.y = slot->vector.j * amount + slot->forward.j * distance;
-            transform.position.z = slot->vector.k * amount + slot->forward.k * distance;
+            vector3f offset;
+            offset.i = slot->forward.i * distance;
+            offset.j = slot->forward.j * distance;
+            offset.k = slot->forward.k * distance;
+            transform.position.x = slot->vector.i * amount + offset.i;
+            transform.position.y = slot->vector.j * amount + offset.j;
+            transform.position.z = slot->vector.k * amount + offset.k;
             function_142a60(matrix, &transform, matrix);
         }
         if (slot->timer82 > 0 || (slot->flags & 4))
@@ -753,8 +785,12 @@ void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
             if (slot->flags & 4)
                 amount = 1.0f;
             else
-                amount = function_17ca10(1.0f - (slot->values50.value[0] - (real)slot->timer82 * time->rate) / slot->values50.value[0],
-                    *(short *)&slot->values50.value[1]) * slot->priority98;
+            {
+                real duration = slot->values50.value[0];
+                real elapsed = (duration - (real)slot->timer82 * time->rate) / duration;
+                real priority = slot->priority98;
+                amount = priority * function_17ca10(1.0f - elapsed, *(short *)&slot->values50.value[1]);
+            }
             real elapsed = (slot->values50.value[0] - (real)slot->timer82 * time->rate) / slot->values50.value[5];
             real curve = function_17c900(*(short *)&slot->values50.value[4], elapsed);
             real scale = (slot->values50.value[6] * curve + (1.0f - slot->values50.value[6])) * amount;

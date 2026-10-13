@@ -492,12 +492,12 @@ struct s_time_entry
 // @retail 0x1e67a0
 void function_1e67a0(s_character_physics_component *component, s_type_94656b *datum, byte a, byte b)
 {
-	point3f *point;
-	if (component->has_position)
-		point = &component->position;
-	else
-		point = (point3f *)g_4687b0;
-	datum->pointac = *point;
+	byte has_position = component->has_position;
+	/* the parameter itself moves on to the selected position */
+	component = (s_character_physics_component *)&component->position;
+	if (!has_position)
+		component = (s_character_physics_component *)g_4687b0;
+	datum->pointac = *(point3f *)component;
 	datum->byteb8 = a;
 	datum->byteb9 = b;
 	datum->unknown04 = 1;
@@ -529,12 +529,13 @@ void function_1e68a0(s_character_physics_update_input_datum_a *datum, s_source_a
 	datum->unknown04 = source->unknown08;
 	datum->unknown08 = source->unknown0c;
 	datum->unknown0c = a3;
-	datum->unknown10 = source->unknown00;
-	datum->unknown00 = a1;
+	long source_mode = source->unknown00;
+	*(long volatile *)&datum->unknown00 = a1;
 	datum->unknown40 = a2;
-	datum->flags = 0;
+	datum->unknown10 = source_mode;
+	*(dword volatile *)&datum->flags = 0;
 	datum->unknown14 = 0;
-	datum->flags = b0 ? 1 : 0;
+	if (b0) datum->flags = 1; else datum->flags = 0;
 	if (b1) datum->flags |= 2; else datum->flags &= ~2;
 	if (b2) datum->flags |= 4; else datum->flags &= ~4;
 	if (b3) datum->flags |= 8; else datum->flags &= ~8;

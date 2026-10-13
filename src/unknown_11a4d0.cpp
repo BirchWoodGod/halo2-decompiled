@@ -512,10 +512,10 @@ void function_11af10(long unit_index, long label)
 {
 	if (label)
 	{
-		long parent_index = unit_get_11a4d0(unit_index)->parent_index;
-		if (parent_index != NONE)
+		s_unit_11a4d0 *unit = unit_get_11a4d0(unit_index);
+		if (unit->parent_index != NONE)
 		{
-			s_unit_11a4d0 *parent = unit_get_11a4d0(parent_index);
+			s_unit_11a4d0 *parent = unit_get_11a4d0(unit->parent_index);
 			if (parent->object_type == 1)
 			{
 				s_unit_definition_11a4d0 *definition = unit_definition_get_11a4d0(parent);
@@ -758,15 +758,19 @@ bool function_11b520(long unit_index, long animation_graph_index, long animation
 	if (unit_index != NONE && animation_graph_index != NONE)
 	{
 		s_unit_11a4d0 *unit = unit_get_11a4d0(unit_index);
-		if (function_1101e0(animation_graph_index, unit_index, animation_name, flag,
-			((s_object_globals_11a4d0 *)g_4de2f4)->flag80))
+		bool global_flag = ((s_object_globals_11a4d0 *)g_4de2f4)->flag80;
+		if (function_1101e0(animation_graph_index, unit_index, animation_name, flag, global_flag))
 		{
-			s_unit_flags_11a4d0 *flags = (s_unit_flags_11a4d0 *)unit_get_11a4d0(unit_index);
+			struct s_flags_view
+			{
+				byte unknown000[4];
+				dword flags;
+			} *flags = (s_flags_view *)unit_get_11a4d0(unit_index);
 			s_unit_scripted_animation_11a4d0 *animation =
 				(s_unit_scripted_animation_11a4d0 *)((byte *)unit + unit->offset33e);
-			if (!TEST_FIELD_BIT(flags->flag1))
+			if (!(bool)((*(dword volatile *)&flags->flags >> 1) & 1))
 			{
-				flags->flag1 = true;
+				flags->flags |= 2;
 				function_b7360(unit_index);
 				function_b7290(unit_index);
 			}
@@ -774,10 +778,23 @@ bool function_11b520(long unit_index, long animation_graph_index, long animation
 				function_ba350(unit_index, 0.267f);
 			else
 				function_ba3d0(unit_index);
-			animation->flags |= 0x11;
+			*(word *)&animation->flags |= 0x11;
 			animation->attached_object_index = attached_object_index;
 			if (attached_object_index != NONE)
-				object_reset_default_placement(unit_index, (s_object_default_placement_view *)unit, true);
+			{
+				function_b9a50(unit_index);
+				if ((bool)((*(dword volatile *)((byte *)unit + 0xc0) >> 6) & 1))
+					function_b8840(unit_index);
+				function_b75a0(unit_index, g_468788, g_4687a8, g_4687b0, NULL, false);
+				function_b77d0(unit_index, g_4687a4, g_4687a4);
+				function_b7360(unit_index);
+
+				s_object_default_placement_view *placed = object_default_placement_get(unit_index);
+				placed->hidden = false;
+				if (!TEST_FIELD_BIT(placed->flag8) && g_4de2f4 && *(byte *)g_4de2f4)
+					function_b8600(unit_index, 0);
+				function_b7290(unit_index);
+			}
 			function_b9b90(unit_index, true);
 			function_bd020(unit_index);
 			result = true;

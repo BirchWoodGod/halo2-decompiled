@@ -171,8 +171,8 @@ short __stdcall function_1b4bd0(long actor_index, s_slot *slot, bool active)
 // @retail 0x1b4d10
 short __stdcall function_1b4d10(long actor_index, short level, long a, long b)
 {
-	s_actor_view *actor = (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 	short result = g_46fbe4;
+	s_actor_view *actor = (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 
 	actor->unknown41c = 3;
 	actor->unknown420 = 2;
@@ -575,6 +575,8 @@ real function_259a0(dword *seed);
 void *function_1e5380(long actor_index);
 bool function_255b10(long actor_index, s_type_c3b527 const *point, long target_index, bool unknown);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1b54d0
 short __stdcall function_1b54d0(long actor_index, s_slot *slot)
 {
@@ -603,6 +605,7 @@ short __stdcall function_1b54d0(long actor_index, s_slot *slot)
                     s_type_c3b527 point;
                     point.point.x = actor->position.x + direction.i * distance;
                     point.point.y = actor->position.y + direction.j * distance;
+                    _ReadWriteBarrier();
                     point.point.z = actor->position.z + direction.k * distance;
                     point.output_index = NONE;
                     function_255b10(actor_index, &point, NONE, false);
@@ -612,3 +615,4 @@ short __stdcall function_1b54d0(long actor_index, s_slot *slot)
     }
     return g_46fbe4;
 }
+#pragma function(_ReadWriteBarrier)

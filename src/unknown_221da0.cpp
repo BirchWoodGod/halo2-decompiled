@@ -192,8 +192,8 @@ dword function_191660(long string_handle, long index);
 
 /* fills the data block of one component of a sound effect */
 // @retail 0x2222c0
-void function_2222c0(s_effect_data_block *block, s_effect_component const *component, s_effect_component_overrides const *overrides,
-	s_effect_inputs const *inputs, long speaker)
+void function_2222c0(s_effect_component const *component, s_effect_component_overrides const *overrides,
+	s_effect_inputs const *inputs, long speaker, s_effect_data_block *block)
 {
 	long source_index = 0;
 	long i;
@@ -339,7 +339,7 @@ void function_2225a0(s_effect_overrides const *overrides, s_effect_components co
 		speaker_count = by_speaker ? 4 : 0;
 		for (speaker = by_speaker ? 0 : NONE; speaker < speaker_count; speaker++)
 		{
-			function_2222c0((s_effect_data_block *)&buffer[offset + 1], component, component_overrides, inputs, speaker);
+			function_2222c0(component, component_overrides, inputs, speaker, (s_effect_data_block *)&buffer[offset + 1]);
 			*buffer_size += ((s_effect_data_block *)&buffer[offset + 1])->header.size + 0xc;
 			offset += (((s_effect_data_block *)&buffer[offset + 1])->header.size + 0xf) >> 2;
 		}

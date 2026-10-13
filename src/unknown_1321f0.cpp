@@ -82,15 +82,15 @@ void function_132d60(s_132d60 *data)
 			g_4e7411 = true;
 			count = function_14a5b0(data->cluster_index, &data->point, radius, 0x200, clusters);
 			g_4e7411 = false;
-			if (count > 0x200)
-			{
-				count = 0x200;
-			}
 		}
 		else
 		{
 			count = 1;
 			clusters[0] = data->cluster_index;
+		}
+		if (count > 0x200)
+		{
+			count = 0x200;
 		}
 	}
 
@@ -187,7 +187,7 @@ void function_132a30(s_bit_vector_pool *data, long index, long section_index, bo
 	}
 }
 
-PRIVATE __forceinline double function_132e61(point3f const *arg_1, point3f const *arg_2)
+PRIVATE __forceinline real function_132e61(point3f const *arg_1, point3f const *arg_2)
 {
 	double local_1 = (double)arg_1->x - arg_2->x;
 	double local_2 = (double)arg_1->y - arg_2->y;
@@ -207,17 +207,19 @@ bool function_132e60(s_bit_vector_pool *data, point3f const *center, real radius
 	{
 		if (!visible)
 			result = function_165010((s_frustum_set_view *)data->context, section, center, radius, contained);
+		else
+			result = true;
 		if (result && !*contained && data->mode == 0 && radius <= 2.5f)
 			*contained = true;
 	}
 	else if (data->query_type == 1)
 	{
+		real sum = radius + data->radius;
 		vector3f delta;
 		vector3d_from_points3d(&data->center, center, &delta);
-		real sum = radius + data->radius;
-		if (!(sum * sum >= delta.k * delta.k + delta.i * delta.i + delta.j * delta.j))
-			return false;
-		*contained = function_132e61(&data->center, center) + radius <= data->radius;
+		result = delta.j * delta.j + delta.i * delta.i + delta.k * delta.k <= sum * sum;
+		if (result)
+			*contained = function_132e61(&data->center, center) + radius <= data->radius;
 	}
 	if (result && list && (data->flags2a60 & 1))
 	{
@@ -347,15 +349,14 @@ inline real function_135880(word value)
 {
 	union s_135881
 	{
-		dword field_0;
+		long field_0;
 		real field_00;
-		struct { dword field_0 : 13; dword field_d : 10; dword field_17 : 8; dword field_1f : 1; } field_000;
 	};
+	long local_2 = value >> 15;
+	local_2 = (local_2 << 8) | ((value & 0x1f) + 0x70);
+	local_2 = (local_2 << 10) | ((value >> 5) & 0x3ff);
 	s_135881 local_1;
-	local_1.field_0 = 0;
-	local_1.field_000.field_d = value >> 5;
-	local_1.field_000.field_1f = value >> 15;
-	local_1.field_000.field_17 = (value & 0x1f) + 0x70;
+	local_1.field_0 = local_2 << 13;
 	return local_1.field_00;
 }
 // @retail 0x134980
@@ -845,23 +846,16 @@ void __stdcall function_134390(s_bit_vector_pool *data)
 			long cluster_index = item->value;
 			s_visible_cluster *bounds = &((s_visibility_bsp *)g_4e0348)->clusters[cluster_index];
 			point3f center;
-			center.x = (bounds->bounds[0][0] + bounds->bounds[0][1]) * 0.5f;
-			center.y = (bounds->bounds[1][0] + bounds->bounds[1][1]) * 0.5f;
 			center.z = (bounds->bounds[2][0] + bounds->bounds[2][1]) * 0.5f;
+			center.y = (bounds->bounds[1][0] + bounds->bounds[1][1]) * 0.5f;
+			center.x = (bounds->bounds[0][0] + bounds->bounds[0][1]) * 0.5f;
 			real x = bounds->bounds[0][1] - center.x;
 			real y = bounds->bounds[1][1] - center.y;
 			real z = bounds->bounds[2][1] - center.z;
-			double radius = sqrt((double)z * z + (double)y * y + (double)x * x);
-			bool behind = true;
-			bool in_front = true;
-			if (data->flags2a60 & 0x200)
-			{
-				real distance = plane_distance_to_point(&data->plane, &center);
-				behind = distance < 0.0f;
-				in_front = distance > 0.0f;
-				if (fabs(distance) <= radius)
-					behind = in_front = true;
-			}
+			real radius = sqrt(z * z + y * y + x * x);
+			bool behind;
+			bool in_front;
+			function_132fd0(data, &center, &behind, &in_front, radius);
 			if (data->filter && (data->flags2a60 & 1))
 			{
 				c_entry_list *list = *(c_entry_list **)((byte *)data->filter + 0xc);
@@ -895,16 +889,9 @@ void __stdcall function_134390(s_bit_vector_pool *data)
 					bool contained, first, second;
 					if (function_132e60(data, &instance->center, instance->radius, filter, instance_index, (short)i, false, &contained, &first, &second) || (char)data->flags2a60 < 0)
 					{
-						bool behind = true;
-						bool in_front = true;
-						if (data->flags2a60 & 0x200)
-						{
-							real distance = plane_distance_to_point(&data->plane, &instance->center);
-							behind = distance < 0.0f;
-							in_front = distance > 0.0f;
-							if (fabs(distance) <= instance->radius)
-								behind = in_front = true;
-						}
+						bool behind;
+						bool in_front;
+						function_132fd0(data, &instance->center, &behind, &in_front, instance->radius);
 						short flags = (function_16e210(item->value, g_4b9f8c) ? 0x400 : 0) |
 							(in_front ? 0x4000 : 0) | (second ? 0x2000 : 0) | (first ? 0x1000 : 0) |
 							(contained ? 0x800 : 0) | (behind ? 0x8000 : 0);

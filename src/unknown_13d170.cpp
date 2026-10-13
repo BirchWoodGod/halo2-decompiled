@@ -5,7 +5,7 @@
 #include "data_array.h"
 #include "physical_memory.h"
 
-// @flags /O2 /Gr
+// @flags /O2 /arch:SSE /Gr
 
 /* the physical memory allocator (physical_memory.h): a named, doubly linked
    list of blocks kept in a data array that follows the object */
@@ -345,7 +345,8 @@ long __stdcall function_13d370(s_physical_object *physical, long size, long type
 			}
 		}
 		if (type == limit_index)
-			physical->limits[limit_index] = physical->limits[limit_index] < pages ? physical->limits[limit_index] : pages;
+			physical->limits[limit_index] = physical->limits[limit_index] > pages ? pages : physical->limits[limit_index];
 	}
 	return result;
 }
+

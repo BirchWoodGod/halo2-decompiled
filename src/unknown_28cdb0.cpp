@@ -222,6 +222,7 @@ PRIVATE __forceinline void function_28d091(real arg_0, real arg_1, real arg_2, r
     *arg_4 = (arg_1 - arg_0) * (arg_2 * arg_3) + arg_0;
 }
 
+#pragma optimize("p", on)
 // @retail 0x28d090
 void function_28d090()
 {
@@ -265,6 +266,8 @@ void function_28d090()
 		}
 	}
 }
+#pragma optimize("", on)
+
 // @retail 0x28d180
 void function_28d180()
 {

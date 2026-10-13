@@ -430,9 +430,9 @@ bool function_255b10(long arg_0, s_type_c3b527 const *arg_1, long arg_2, bool ar
 // @retail 0x255ce0
 bool function_255ce0(long arg_0)
 {
+	bool local_2 = false;
 	s_actor_view *local_0 = actor_get(arg_0);
 	byte *local_1 = (byte *)object_get(local_0->unknown018);
-	bool local_2 = false;
 	if (!function_110ab0(local_0->unknown018) && *(real *)(local_1 + 0xf8) == 0.f)
 	{
 		s_255ce0 *local_3 = (s_255ce0 *)local_0;

@@ -78,57 +78,75 @@ bool function_140420(word c)
 // @retail 0x140440
 void utf8_string_to_utf16_string(const char *source, word *destination, long destination_count)
 {
+	const byte *bytes = (const byte *)source;
 	long source_index = 0;
 	long destination_index = 0;
 
 	while (source[source_index])
 	{
-		const byte *s = (const byte *)source + source_index;
 		dword value;
 		long length;
 		bool valid = true;
+		dword lead = bytes[source_index];
 
-		if ((signed char)s[0] >= 0)
+		if (!(lead & 0x80))
 		{
-			value = s[0];
+			value = lead;
 			length = 1;
 		}
-		else if ((s[0] & 0xe0) == 0xc0)
+		else if ((lead & 0xe0) == 0xc0)
 		{
-			value = s[0] & ~0xe0u;
+			value = lead & ~0xe0u;
 			length = 2;
 		}
-		else if ((s[0] & 0xf0) == 0xe0)
+		else if ((lead & 0xf0) == 0xe0)
 		{
-			value = s[0] & ~0xf0u;
+			value = lead & ~0xf0u;
 			length = 3;
 		}
-		else if ((s[0] & 0xf8) == 0xf0)
+		else if ((lead & 0xf8) == 0xf0)
 		{
-			value = s[0] & ~0xf8u;
+			value = lead & ~0xf8u;
 			length = 4;
 		}
 		else
 		{
-			value = 0;
-			length = 0;
 			valid = false;
 		}
 
-		for (long i = 1; i < length && valid; i++)
+		if (valid)
 		{
-			value = (value << 6) | (s[i] & ~0xc0u);
-			if ((s[i] & 0xc0) != 0x80)
+			for (long i = 1; valid && i < length; i++)
 			{
-				valid = false;
+				dword continuation = bytes[source_index + i];
+
+				value = (value << 6) | (continuation & ~0xc0u);
+				if ((continuation & 0xc0) != 0x80)
+				{
+					valid = false;
+				}
 			}
 		}
 
-		source_index += valid ? length : 1;
+		if (valid)
+		{
+			source_index += length;
+		}
+		else
+		{
+			source_index++;
+		}
 
 		if (valid && destination_index < destination_count)
 		{
-			destination[destination_index] = (value > (dword)NONE) ? '?' : (word)value;
+			if (value <= (dword)NONE)
+			{
+				destination[destination_index] = (word)value;
+			}
+			else
+			{
+				destination[destination_index] = '?';
+			}
 			destination_index++;
 		}
 	}

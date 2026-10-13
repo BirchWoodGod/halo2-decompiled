@@ -327,8 +327,8 @@ dword function_135ca0(void const *pixels, short format, long index)
 	case 6:
 		{
 			dword value = ((word const *)pixels)[index];
-			dword result = 0xffffffe0 | (value >> 11);
-			result = (result << 3) | ((value >> 13) & 7);
+			long result = 0xffffffe0 | (value >> 11);
+			result = (result << 3) | (value >> 13);
 			result = (result << 6) | ((value >> 5) & 0x3f);
 			result = (result << 2) | ((value >> 9) & 3);
 			result = (result << 5) | (value & 0x1f);
@@ -336,21 +336,21 @@ dword function_135ca0(void const *pixels, short format, long index)
 		}
 	case 8:
 		{
-			dword value = ((word const *)pixels)[index];
-			dword high = ((value & 0x7c00) << 3) | (value & 0x3e0);
-			high = (high << 2) | (value & 0x7000);
-			high = (high << 1) | (value & 0x1f);
-			high = (high << 2) | (value & 0x380);
-			return (high << 1) | ((value >> 2) & 7) | (-(value >> 15) << 24);
+			word value = ((word const *)pixels)[index];
+			dword result = (value >> 10) & 0x1f;
+			result = (result << 3) | ((value >> 12) & 7);
+			result = (result << 5) | ((value >> 5) & 0x1f);
+			result = (result << 3) | ((value >> 7) & 7);
+			result = (result << 5) | (value & 0x1f);
+			return (result << 3) | ((value >> 2) & 7) | ((value >> 15) * 0xff000000);
 		}
 	case 9:
 		{
 			dword value = ((word const *)pixels)[index];
-			dword alpha = value >> 12;
 			dword red = (value >> 8) & 0xf;
 			dword green = (value >> 4) & 0xf;
 			dword blue = value & 0xf;
-			dword result = (alpha << 4) | alpha;
+			long result = ((value >> 12) << 4) | (value >> 12);
 			result = (result << 4) | red;
 			result = (result << 4) | red;
 			result = (result << 4) | green;
@@ -496,37 +496,42 @@ __forceinline long bitmap_round(real value)
 // @retail 0x1362b0
 dword function_1362b0(s_type_7ba8e9 const *bitmap, point2f const *uv, real detail)
 {
-	if (!bitmap->base_address)
-		return 0xffffffff;
-	long mipmap = 0;
-	if (detail < 1.0f && bitmap->mipmap_count > 0)
-		mipmap = bitmap_round((1.0f - detail) * bitmap->mipmap_count);
-	short width = bitmap->width >> (short)mipmap > 1 ? bitmap->width >> (short)mipmap : 1;
-	if (bitmap->flags & 2)
-		width += (byte)(-(byte)width) & 3;
-	short height = bitmap->height >> (short)mipmap > 1 ? bitmap->height >> (short)mipmap : 1;
-	if (bitmap->flags & 2)
-		height += (byte)(-(byte)height) & 3;
-	real value = width * uv->x - 0.5f;
-	long x;
-	if (!(width & (width - 1)))
-		x = bitmap_round(value) & (width - 1);
-	else
-		x = (bitmap_round(value) % width + width) % width;
-	value = height * uv->y - 0.5f;
-	long y;
-	if (!(height & (height - 1)))
-		y = bitmap_round(value) & (height - 1);
-	else
-		y = (bitmap_round(value) % height + height) % height;
-	void *pixels;
-	switch (bitmap->type)
+	if (bitmap->base_address)
 	{
-	case 0: pixels = function_135a30(bitmap, (short)mipmap, 0, 0); break;
-	case 1: pixels = function_135af0(bitmap, 0, 0, 0, (short)mipmap); break;
-	default: pixels = function_135c00(bitmap, 0, 0, 0, (short)mipmap); break;
+		long mipmap;
+		if (detail < 1.0f && bitmap->mipmap_count > 0)
+			mipmap = bitmap_round((1.0f - detail) * bitmap->mipmap_count);
+		else
+			mipmap = 0;
+		long width = (short)(bitmap->width >> (short)mipmap) > 1 ? (short)(bitmap->width >> (short)mipmap) : 1;
+		if (bitmap->flags & 2)
+			width += (byte)(-(byte)width) & 3;
+		long height = (short)(bitmap->height >> (short)mipmap) > 1 ? (short)(bitmap->height >> (short)mipmap) : 1;
+		if (bitmap->flags & 2)
+			height += (byte)(-(byte)height) & 3;
+		real value = (short)width * uv->x - 0.5f;
+		long x;
+		if (!((short)width & ((short)width - 1)))
+			x = bitmap_round(value) & ((short)width - 1);
+		else
+			x = (bitmap_round(value) % (short)width + (short)width) % (short)width;
+		value = (short)height * uv->y - 0.5f;
+		long y;
+		if (!((short)height & ((short)height - 1)))
+			y = bitmap_round(value) & ((short)height - 1);
+		else
+			y = (bitmap_round(value) % (short)height + (short)height) % (short)height;
+		void *pixels;
+		switch (bitmap->type)
+		{
+		case 0: pixels = function_135a30(bitmap, (short)mipmap, 0, 0); break;
+		case 1: pixels = function_135af0(bitmap, 0, 0, 0, (short)mipmap); break;
+		default: pixels = function_135c00(bitmap, 0, 0, 0, (short)mipmap); break;
+		}
+		s_136141 local_1;
+		local_1.field_0 = bitmap->base_address;
+		return function_136140((short)y, (short)width, local_1, *(long *)((byte *)bitmap + 0x34), pixels, (short)x, (short)height, bitmap->format, bitmap->flags);
 	}
-	s_136141 local_1;
-	local_1.field_0 = bitmap->base_address;
-	return function_136140((short)y, width, local_1, *(long *)((byte *)bitmap + 0x34), pixels, (short)x, height, bitmap->format, bitmap->flags);
+	return 0xffffffff;
 }
+

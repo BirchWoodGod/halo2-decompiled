@@ -33,8 +33,8 @@ struct s_object_values
 
 void function_b58c0(long index, dword mask);
 struct s_statborg;
-void function_1968b0(long team, long index, long counter, long value);
-void function_1e9df0(long field, long counter, s_statborg *statistics, long team, long delta);
+void function_1968b0(long index, long team, long counter, long value);
+void function_1e9df0(long field, long counter, long team, s_statborg *statistics, long delta);
 long function_196ef0(byte code);
 void function_196e60(long player_index, long counter, long code, long delta);
 void function_225880(long player_index);
@@ -101,7 +101,7 @@ void function_1ea5b0(long player_index, s_statborg *statistics, long threshold, 
 	{
 		long team = player->team;
 		long team_maximum = g_510ca0 && team != NONE ? g_511bf4.counters[team][12].value : NONE;
-		if ((short)team_maximum < *(short *)(row + 0x16)) function_1968b0(team, NONE, 12, *(short *)(row + 0x16));
+		if ((short)team_maximum < *(short *)(row + 0x16)) function_1968b0(NONE, team, 12, *(short *)(row + 0x16));
 	}
 	if (*(long *)(row + 0x1c) >= threshold) ++*(short *)(row + 0x18);
 	else *(short *)(row + 0x18) = 1;
@@ -267,7 +267,7 @@ void function_1e9ce0(long player_index, long counter, s_statborg *statistics,
 	*entry = (short)value;
 	if (g_55e4d0[g_4e9ae8->engine_index] && g_4e9ae8->value28 != NONE)
 		function_b58c0(g_4e9ae8->value28, 1 << index);
-	if (counter != NONE) function_1968b0(NONE, index, counter, *entry);
+	if (counter != NONE) function_1968b0(index, NONE, counter, *entry);
 	if (by_team)
 	{
 		by_team = false;
@@ -278,7 +278,7 @@ void function_1e9ce0(long player_index, long counter, s_statborg *statistics,
 	{
 		byte *player = g_4e8c24->data + index * g_4e8c24->size;
 		if (*(short *)player && (char)player[0xc0] != NONE)
-			function_1e9df0(field, counter, statistics, (char)player[0xc0], delta);
+			function_1e9df0(field, counter, (char)player[0xc0], statistics, delta);
 	}
 }
 
@@ -637,7 +637,7 @@ void function_1ea880(long arg_1f407d, long player_index, s_object_values *table)
 }
 
 struct s_statborg;
-void function_1968b0(long team, long index, long counter, long value);
+void function_1968b0(long index, long team, long counter, long value);
 
 struct s_request_screen_bounds
 {
@@ -770,7 +770,7 @@ byte *textures = definition + (alternate ? 0x20 : 0);
 
 // The new statistic callers allow this body without the earlier LTCG regressions.
 // @retail 0x1e9df0
-void function_1e9df0(long field, long counter, s_statborg *statistics, long team, long volatile delta)
+void function_1e9df0(long field, long counter, long team, s_statborg *statistics, long volatile delta)
 {
  short *entry = &((s_object_values *)statistics)->team_values[team][field];
  long value = *entry + (short)delta;
@@ -782,7 +782,7 @@ void function_1e9df0(long field, long counter, s_statborg *statistics, long team
  if (g_55e4d0[g_4e9ae8->engine_index] && g_4e9ae8->value28 != NONE)
   function_b58c0(g_4e9ae8->value28, 1 << (team + 16));
  if (counter != NONE)
-  function_1968b0(team, NONE, counter, *entry);
+  function_1968b0(NONE, team, counter, *entry);
 }
 
 

@@ -719,7 +719,7 @@ c_class_1473c9 *__stdcall function_2524a8(s_screen_parameters *parameters);
 bool function_124360(long index, s_saved_game_header *header, s_saved_game_read *read);
 void __stdcall function_2acab4(long a, long user_flags, long string_handle, bool (__stdcall *progress)(c_campaign_options_list *list, long unused, real *fraction, long *error), long b, c_campaign_options_list *list);
 void function_120d50(bool volatile *done, bool idle);
-bool __stdcall function_2b186e(c_campaign_options_list *list, long unused, real *fraction, long *error);
+long __stdcall function_2b186e(c_campaign_options_list *list, long unused, real *fraction, long *error);
 
 extern long g_54e7c0;
 extern long g_54e7c4;
@@ -781,7 +781,7 @@ void c_campaign_options_list::handle_item(s_controller_reference **controller, l
 					reading = function_124360(profile, &header, &read);
 					if (reading)
 					{
-						function_2acab4(4, 1 << (*controller)->controller_index, 0x1b000719, function_2b186e, 0, this);
+						function_2acab4(4, 1 << (*controller)->controller_index, 0x1b000719, (bool (__stdcall *)(c_campaign_options_list *, long, real *, long *))function_2b186e, 0, this);
 					}
 				}
 				if (!reading)
@@ -860,9 +860,9 @@ void c_campaign_options_list::v3()
 
 /* the progress of the saved game read, for the progress dialog */
 // @retail 0x2b186e
-bool __stdcall function_2b186e(c_campaign_options_list *list, long unused, real *fraction, long *error)
+long __stdcall function_2b186e(c_campaign_options_list *list, long unused, real *fraction, long *error)
 {
-	bool done = *(byte *)&list->read.done != 0;
+	long done = list->read.done != 0;
 
 	*fraction = list->read.progress;
 	if (list->read.done)
