@@ -658,6 +658,8 @@ bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority)
 // @retail 0x14480
 bool function_14480(long tag, short stage, short index)
 {
+    // Keep the stage in its stack slot across the bitmap lookup.
+    short const *stage_reference = &stage;
     bool result = false;
     if (tag != NONE)
     {
@@ -669,7 +671,7 @@ bool function_14480(long tag, short stage, short index)
             if (bitmap)
             {
                 if (function_12360((s_bitmap_view *)bitmap, 0.0f))
-                    function_14390(stage, bitmap, 0.0f);
+                    function_14390(*stage_reference, bitmap, 0.0f);
                 else result = true;
             }
         }
@@ -3334,7 +3336,7 @@ bool function_12420()
         D3DDevice_Swap(0);
         if (g_5093b0)
         {
-            D3DDevice_Release();
+            ((D3DDevice *)g_5093b0)->Release();
             g_5093b0 = NULL;
         }
     }
@@ -7635,7 +7637,6 @@ void function_12190()
     }
     memset(&g_4e6420, 0, 0x34);
     MmFreeContiguousMemory((void *)0x80061000);
-    __debugbreak();
     __assume(0);
 }
 
@@ -7692,7 +7693,12 @@ bool function_1eff0()
 extern long g_4e28f4[11];
 struct s_font_character_header;
 long font_cache_find_character(long font_index, long character);
-s_font_character_header *font_cache_get_character_header(long font_index, long character, dword flags);
+struct s_font_cache_flags
+{
+    dword wait : 1;
+    dword create : 1;
+};
+s_font_character_header *font_cache_get_character_header(long font_index, long character, s_font_cache_flags flags);
 void __stdcall function_1f5c0(long character);
 
 // @retail 0x1f490
@@ -7703,7 +7709,8 @@ void __stdcall function_1f490(long unused, long font, long character, long color
     long index = font_cache_find_character(g_4e28f4[font], character);
     if (index == NONE)
     {
-        font_cache_get_character_header(font, character, 3);
+        s_font_cache_flags flags = { true, true };
+        font_cache_get_character_header(font, character, flags);
         index = font_cache_find_character(g_4e28f4[font], character);
         if (index == NONE) return;
     }

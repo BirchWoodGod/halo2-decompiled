@@ -1485,8 +1485,6 @@ bool function_138800();
 // @retail 0x19b0e1
 long function_19b0e1(long screen_id)
 {
-	long const *screen_id_reference = &screen_id;
-	screen_id = *screen_id_reference;
 	long result = 0;
 
 	if (function_138800() && g_4e6948->state != 3)
@@ -1503,17 +1501,29 @@ long function_19b0e1(long screen_id)
 			result = 1;
 			break;
 		case 0x0e:
+			result = 3;
+			break;
 		case 0x17:
 		case 0x18:
 		case 0x19:
+			result = 3;
+			break;
 		case 0xa8:
 		case 0xa9:
 		case 0xaa:
+			result = 3;
+			break;
 		case 0xac:
 		case 0xad:
+			result = 3;
+			break;
 		case 0xaf:
 		case 0xb0:
+			result = 3;
+			break;
 		case 0xbf:
+			result = 3;
+			break;
 		case 0xdc:
 			result = 3;
 			break;
@@ -1521,6 +1531,8 @@ long function_19b0e1(long screen_id)
 		case 0x11:
 		case 0x3c:
 		case 0xce:
+			result = mode != NONE ? 3 : 0;
+			break;
 		case 0xcf:
 		case 0xd0:
 			result = mode != NONE ? 3 : 0;

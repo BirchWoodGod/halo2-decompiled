@@ -252,10 +252,11 @@ void player_configuration_verify(s_type_b07538 *configuration)
 	if (g_4e6948->state == 1)
 	{
 		long representation_index = 0;
-		s_scenario_starting_profile_view *profile = scenario->starting_profiles;
 
-		for (long i = 0; i < scenario->starting_profile_count; i++, profile++)
+		for (long i = 0; i < scenario->starting_profile_count; i++)
 		{
+			s_scenario_starting_profile_view *profile = &scenario->starting_profiles[i];
+
 			if (profile->representation_index != NONE)
 			{
 				representation_index = profile->representation_index;

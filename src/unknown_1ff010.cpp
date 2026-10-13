@@ -13,7 +13,7 @@ void *function_1e5280(long actor_index, long key);
 bool function_25d970(s_prop_datum *datum);
 
 bool weapon_barrel_aim(long weapon_index, short barrel_index, point3f const *origin, point3f const *target,
-	real const *unknown3, bool unknown5, vector3f *direction, real *speed_out, real *time, real *distance, bool *linear);
+	real const *unknown3, bool unknown5, vector3f *direction, real *time, real *speed_out, real *distance, bool *linear);
 
 struct s_weapon_aim_ranges
 {
@@ -64,10 +64,10 @@ bool function_1ffbd0(long actor_index, long weapon_index, short barrel_index,
 				point3f adjusted_origin = actor->position;
 				adjusted_origin.z = origin->z;
 				return weapon_barrel_aim(weapon_index, barrel_index, &adjusted_origin, target, NULL, flag,
-					direction, (real *)unknown0, (real *)unknown1, (real *)unknown2, (bool *)unknown3);
+					direction, (real *)unknown1, (real *)unknown0, (real *)unknown2, (bool *)unknown3);
 			}
 			result = weapon_barrel_aim(weapon_index, barrel_index, origin, target, use_fraction ? &fraction : NULL, flag,
-				direction, (real *)unknown0, (real *)unknown1, (real *)unknown2, (bool *)unknown3);
+				direction, (real *)unknown1, (real *)unknown0, (real *)unknown2, (bool *)unknown3);
 		}
 	}
 	return result;
