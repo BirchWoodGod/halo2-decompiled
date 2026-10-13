@@ -753,11 +753,10 @@ void __stdcall function_25eb70(
 
 		if (position->unknown4c)
 		{
-			real value;
+			real value = 0.f;
 
 			if (context->range08 > position->unknown18)
 			{
-				value = 0.f;
 			}
 			else if (context->range08 * 2.f > position->unknown18)
 			{
