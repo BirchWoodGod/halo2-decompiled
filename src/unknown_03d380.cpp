@@ -115,11 +115,11 @@ void decal_delete_group(long decal_index);
 // @retail 0x43820
 void __stdcall function_43820(long index)
 {
-	index &= 0xffff;
-	if (g_4c8798[index] != NONE)
+	dword *entry = g_4c8798 + (index & 0xffff);
+	if (*entry != NONE)
 	{
-		decal_delete_group(g_4c8798[index]);
-		g_4c8798[index] = NONE;
+		decal_delete_group(*entry);
+		*entry = NONE;
 	}
 }
 
@@ -470,24 +470,55 @@ void __stdcall function_16f0c0(dword flags)
 		g_4ea936 = 1;
 }
 
+/* the next used index at or after index, or NONE */
+static __forceinline long record_pool_next_used_index(s_record_pool *array, long index)
+{
+	if (index >= 0 && index < array->high_water_index)
+	{
+		long count = array->high_water_index;
+		dword *bits = array->bitmap;
+
+		do
+		{
+			if (bits[index >> 5] & (1 << (index & 0x1f)))
+				return index;
+			index++;
+		} while (index < count);
+	}
+	return NONE;
+}
+
+/* steps the iterator to the next used datum; its address, or NULL at the end */
+static __forceinline byte *record_pool_iterator_next_used(s_record_pool_iterator *iterator)
+{
+	s_record_pool *array = iterator->data;
+	long index = record_pool_next_used_index(array, iterator->index + 1);
+
+	if (index == NONE)
+		return NULL;
+
+	byte *datum = array->data + array->size * index;
+
+	iterator->index = index;
+	iterator->datum_index = (*(short *)datum << 16) | index;
+	return datum;
+}
+
 // @retail 0x17d190
 void __stdcall function_17d190(dword flags)
 {
 	if (g_4ea950->valid)
 	{
-		s_record_pool *array = g_4ea950;
-		long index = NONE;
-		long datum;
+		s_record_pool_iterator iterator;
 
-		for (;;)
+		iterator.data = g_4ea950;
+		iterator.index = NONE;
+		while (record_pool_iterator_next_used(&iterator))
 		{
-			index = data_find_index(array, index + 1);
-			if (index == NONE)
-				break;
-			datum = data_datum_index(array, index);
-			s_element_40 *element = ELEMENT(array, s_element_40, datum);
-			if (element->datum_index == datum)
-				g_4c8798[element->table_index & 0xffff] = datum;
+			s_element_40 *element = ELEMENT(g_4ea950, s_element_40, iterator.datum_index);
+
+			if (element->datum_index == iterator.datum_index)
+				g_4c8798[element->table_index & 0xffff] = iterator.datum_index;
 		}
 	}
 }

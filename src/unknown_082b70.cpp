@@ -364,8 +364,8 @@ void function_82740(const s_weapon_activity_result *input, s_unit_state_c6ef0 *s
 }
 
 
-void __stdcall function_a9f70(long object_index, long mode, const point3f *position);
-void __fastcall function_aa260(const vector3f *linear, long object_index, long mode,
+long __stdcall function_a9f70(long object_index, long mode, const point3f *position);
+void function_aa260(long selection, const vector3f *linear, long object_index, long mode,
  const point3f *position, const vector3f *forward, const vector3f *up, const vector3f *angular);
 
 // @retail 0x82980
@@ -385,8 +385,8 @@ void function_82980(long player_index, s_player_object_motion *motion)
     const vector3f *angular = &motion->angular;
     const vector3f *linear = &motion->linear;
     const point3f *position = &motion->position;
-    function_a9f70(object_index, 2, position);
-    function_aa260(linear, object_index, 2, position, *(const vector3f *volatile *)&local_0[1], *(const vector3f *volatile *)&local_0[0], angular);
+    long selection = function_a9f70(object_index, 2, position);
+    function_aa260(selection, linear, object_index, 2, position, *(const vector3f *volatile *)&local_0[1], *(const vector3f *volatile *)&local_0[0], angular);
    }
   }
  }

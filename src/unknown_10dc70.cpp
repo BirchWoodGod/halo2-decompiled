@@ -99,11 +99,11 @@ static inline s_vibration_state *vibration_state(long object_index)
 // @retail 0x10dc70
 bool function_10dc70(long object_index)
 {
-	bool result;
 	s_object *object = OBJECT_FROM_INDEX(object_index);
-	s_tag_data_1e8 *tag = (s_tag_data_1e8 *)g_4e3b44[object->tag_index & 0xFFFF].bytes;
-
 	s_vibration_state *state = VIBRATION_STATE(object);
+	s_tag_data_1e8 *tag = (s_tag_data_1e8 *)g_4e3b44[object->tag_index & 0xFFFF].bytes;
+	bool result = false;
+
 	if (vibration_state(object_index)->d38 != NONE)
 	{
 		if (state->r40 < 0.0001f)
@@ -124,11 +124,10 @@ bool function_10dc70(long object_index)
 			}
 			state->r40 = value;
 		}
-		return true;
+		result = true;
 	}
 	else
 	{
-		result = false;
 		real value = state->r40 - 0.075f;
 		if (!(value > 0.0f))
 		{
@@ -137,7 +136,11 @@ bool function_10dc70(long object_index)
 		state->r40 = value;
 		for (long i = 0; i < 12; i++)
 		{
-			real scale = tag->value > 0.0f ? tag->value : 0.9f;
+			real scale = 0.9f;
+			if (tag->value > 0.0f)
+			{
+				scale = tag->value;
+			}
 			signed char v = real_to_signed_byte((real)state->c50[i] * g_547648 * scale * 128.0f);
 			state->c50[i] = v;
 			if (v)
@@ -145,22 +148,21 @@ bool function_10dc70(long object_index)
 				result = true;
 			}
 		}
-	}
-
-	if (vibration_state(object_index)->s36 != NONE)
-	{
-		if (state->r40 != 0.0f)
+		if (vibration_state(object_index)->s36 != NONE)
 		{
-			state->countdown = 0xFF;
-		}
-		else if (state->countdown)
-		{
-			state->countdown--;
-		}
-		else
-		{
-			g_4e7408->seed = g_4e7408->seed * 0x19660d + 0x3c6ef35f;
-			state->countdown = (byte)(((g_4e7408->seed >> 16) * 225 >> 16) + 30);
+			if (state->r40 != 0.0f)
+			{
+				state->countdown = 0xFF;
+			}
+			else if (!state->countdown)
+			{
+				g_4e7408->seed = g_4e7408->seed * 0x19660d + 0x3c6ef35f;
+				state->countdown = (byte)(((g_4e7408->seed >> 16) * 225 >> 16) + 30);
+			}
+			else
+			{
+				state->countdown--;
+			}
 		}
 	}
 	return result;

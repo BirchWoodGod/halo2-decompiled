@@ -83,7 +83,7 @@ struct s_partition_location
 extern long g_4e7414;
 extern bool g_4e7411;
 short structure_clusters_from_bit_vector(dword const *bits, short *count, short maximum_count, short *clusters);
-short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, long maximum_count, short *clusters);
+short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, short maximum_count, short *clusters);
 
 // @retail 0x1cac60
 void function_1cac60(dword const *bits, s_cluster_partition *partition, long data_index,
