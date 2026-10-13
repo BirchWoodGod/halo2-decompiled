@@ -3382,7 +3382,7 @@ void __stdcall function_2a34d0(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44bfe4 = { _hs_type_void, 0, function_2a34d0, NULL, 1, { _hs_type_unit } };
 
-bool function_11b520(long animation_graph_index, long unit_index, long animation_name, bool flag, long object_index, bool b);
+bool function_11b520(long unit_index, long animation_graph_index, long animation_name, bool flag, long object_index, bool b);
 
 /* 201: boolean (unit, arg_0e6cbc, string_handle, boolean) */
 // @retail 0x2a3520
@@ -3393,7 +3393,7 @@ void __stdcall function_2a3520(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_11b520(arguments[1], arguments[0], arguments[2], *(bool *)&arguments[3], NONE, false);
+		*(bool *)&result = function_11b520(arguments[0], arguments[1], arguments[2], *(bool *)&arguments[3], NONE, false);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -3409,7 +3409,7 @@ void __stdcall function_2a3590(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_11b520(arguments[1], arguments[0], arguments[2], *(bool *)&arguments[3], NONE, true);
+		*(bool *)&result = function_11b520(arguments[0], arguments[1], arguments[2], *(bool *)&arguments[3], NONE, true);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -3425,7 +3425,12 @@ void __stdcall function_2a3600(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_11b520(arguments[1], arguments[0], arguments[2], *(bool *)&arguments[3], arguments[4], false);
+		bool interpolate = *(bool *)&arguments[3];
+		long object_index = arguments[4];
+		long animation_name = arguments[2];
+		long graph_index = arguments[1];
+		long unit = arguments[0];
+		*(bool *)&result = function_11b520(unit, graph_index, animation_name, interpolate, object_index, false);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -3441,7 +3446,12 @@ void __stdcall function_2a3670(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_11b520(arguments[1], arguments[0], arguments[2], *(bool *)&arguments[3], arguments[4], true);
+		bool interpolate = *(bool *)&arguments[3];
+		long object_index = arguments[4];
+		long animation_name = arguments[2];
+		long graph_index = arguments[1];
+		long unit = arguments[0];
+		*(bool *)&result = function_11b520(unit, graph_index, animation_name, interpolate, object_index, true);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -6891,7 +6901,7 @@ void __stdcall function_2a7cd0(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44d128 = { _hs_type_void, 0, function_2a7cd0, NULL, 0 };
 
-bool function_291ea0(long arg_80f1d4, long script_index, long actor_index, real *duration);
+bool function_291ea0(long arg_80f1d4, long actor_index, long script_index, real *duration);
 
 /* 417: void (string_handle) */
 // @retail 0x2a7cf0
@@ -6904,7 +6914,7 @@ void __stdcall function_2a7cf0(short function_index, long thread_index, bool ini
 		long script_index = g_502410;
 		if (script_index != NONE && g_50240c != NONE)
 		{
-			function_291ea0(arguments[0], script_index, g_50240c, NULL);
+			function_291ea0(arguments[0], g_50240c, script_index, NULL);
 		}
 		function_209ae0(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);

@@ -94,7 +94,7 @@ inline void dialogue_name_override(long *name, long value)
 
 /* plays the actor's variant of a vocalization; returns whether it found one */
 // @retail 0x291ea0
-bool function_291ea0(long arg_80f1d4, long script_index, long actor_index, real *duration)
+bool function_291ea0(long arg_80f1d4, long actor_index, long script_index, real *duration)
 {
 	s_scenario_ai_dialogue_view *scenario = (s_scenario_ai_dialogue_view *)g_4e0350;
 	volatile bool result = false;

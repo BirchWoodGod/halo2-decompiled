@@ -115,11 +115,11 @@ void decal_delete_group(long decal_index);
 // @retail 0x43820
 void __stdcall function_43820(long index)
 {
-	index &= 0xffff;
-	if (g_4c8798[index] != NONE)
+	dword *entry = g_4c8798 + (index & 0xffff);
+	if (*entry != NONE)
 	{
-		decal_delete_group(g_4c8798[index]);
-		g_4c8798[index] = NONE;
+		decal_delete_group(*entry);
+		*entry = NONE;
 	}
 }
 

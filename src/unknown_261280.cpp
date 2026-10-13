@@ -702,6 +702,15 @@ PRIVATE inline bool reference_owner_find(hash_table *table, void *key, void *dat
 	return false;
 }
 
+struct s_260670_state
+{
+	s_reference result;
+	bool within_limit;
+	bool finite_distance;
+	short selected;
+	real best_score;
+};
+
 // Disabled: activation changes matched 0x2605d0 and 0x261280 through LTCG.
 // @retail 0x260670 disabled
 s_reference __stdcall function_260670(long actor_index, s_2605d0_request const *request,
@@ -711,11 +720,12 @@ s_reference __stdcall function_260670(long actor_index, s_2605d0_request const *
 	s_type_967e20 *context = (s_type_967e20 *)request;
 	byte *parameters = (byte *)context;
 	s_type_b36ac5 *positions = (s_type_b36ac5 *)entries;
-	s_reference result = g_470fa0;
-	bool within_limit = false;
-	bool finite_distance = false;
-	short selected = NONE;
-	real best_score = 0.0f;
+	s_260670_state state;
+	state.result = g_470fa0;
+	state.within_limit = false;
+	state.finite_distance = false;
+	state.selected = NONE;
+	state.best_score = 0.0f;
 	s_path_source source;
 	s_path_settings settings;
 	long sorted_indices[512];
@@ -872,24 +882,24 @@ s_reference __stdcall function_260670(long actor_index, s_2605d0_request const *
 			}
 		}
 		if (*(real *)(parameters + 0x1c) > position->unknown18)
-			within_limit = true;
+			state.within_limit = true;
 		else
 		{
 			position->unknown4c = false;
 			if (FLT_MAX > position->unknown18)
-				finite_distance = true;
+				state.finite_distance = true;
 		}
 	}
-	if (!within_limit && !finite_distance && !parameters[0x56] && !actor[0x264] &&
+	if (!state.within_limit && !state.finite_distance && !parameters[0x56] && !actor[0x264] &&
 		(*(long *)(actor + 0x28c) == NONE || (*has_path && count > 0 && *(short *)(scratch + 0xae) < 8)))
 		++*(short *)(actor + 0x5e8);
 	else
 		*(short *)(actor + 0x5e8) = 0;
-	if (parameters[0x15] && !within_limit)
+	if (parameters[0x15] && !state.within_limit)
 	{
 		dword *seed = (dword *)g_4e7408;
 		*seed = *seed * 0x19660d + 0x3c6ef35f;
-		selected = (short)(((*seed >> 16) * count) >> 16);
+		state.selected = (short)(((*seed >> 16) * count) >> 16);
 		*has_path = false;
 		byte *history_actor = (byte *)actor_get(actor_index);
 		*(short *)(history_actor + 0x3fe) = 3;
@@ -900,7 +910,7 @@ s_reference __stdcall function_260670(long actor_index, s_2605d0_request const *
 			*(s_reference *)history = g_470fa0;
 			history += 6;
 		} while (--remaining);
-		if (!function_260160(actor_index, (s_prop_search *)context, &entries[selected]))
+		if (!function_260160(actor_index, (s_prop_search *)context, &entries[state.selected]))
 			goto done;
 	}
 	else
@@ -923,30 +933,30 @@ s_reference __stdcall function_260670(long actor_index, s_2605d0_request const *
 		{
 			short index = (short)sorted_indices[i];
 			s_type_b36ac5 *position = &positions[index];
-			if (!position->unknown4c || (parameters[0x67c] && best_score >= position->score + context->unknown680))
+			if (!position->unknown4c || (parameters[0x67c] && state.best_score >= position->score + context->unknown680))
 				break;
 			if (parameters[0x618])
 				function_25f7b0(actor_index, context, position);
 			position->unknown50 = position->score;
-			if (function_2600a0(actor_index, context, position) && position->score > best_score)
+			if (function_2600a0(actor_index, context, position) && position->score > state.best_score)
 			{
-				selected = index;
-				best_score = position->score;
+				state.selected = index;
+				state.best_score = position->score;
 			}
 		}
-		if (selected == NONE)
+		if (state.selected == NONE)
 			goto done;
 	}
 	if (reported_entry)
-		memcpy((void *)reported_entry, &positions[selected], sizeof(s_type_b36ac5));
-	result = positions[selected].reference;
+		memcpy((void *)reported_entry, &positions[state.selected], sizeof(s_type_b36ac5));
+	state.result = positions[state.selected].reference;
 	if (reported_owner)
 	{
 		long owner = NONE;
-		reference_owner_find((hash_table *)g_557c6c, *(void **)&result, &owner);
+		reference_owner_find((hash_table *)g_557c6c, *(void **)&state.result, &owner);
 		*(long *)reported_owner = owner != actor_index ? owner : NONE;
 	}
-	if (actor[0x3f2] && !actor[0x220] && !positions[selected].unknown5b)
+	if (actor[0x3f2] && !actor[0x220] && !positions[state.selected].unknown5b)
 		actor[0x3f2] = false;
 	if (parameters[0x56])
 	{
@@ -968,7 +978,7 @@ s_reference __stdcall function_260670(long actor_index, s_2605d0_request const *
 		*has_path = true;
 	}
 done:
-	return result;
+	return state.result;
 }
 
 #endif

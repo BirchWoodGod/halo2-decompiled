@@ -170,20 +170,30 @@ bool __stdcall function_1b82d0(long actor_index, s_slot *slot, long index)
 {
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_12 *state = (s_slot_12 *)slot;
-
-	if (actor->prop_index != state->unknown1c)
-		return false;
-
+	union
+	{
+		long prop_index;
+		bool temporary;
+	} local_0;
+	local_0.prop_index = state->unknown1c;
 	bool result = true;
 
-	if (actor->unknown040)
+	if (actor->prop_index != local_0.prop_index)
+		return false;
+
+	local_0.temporary = actor->unknown040;
+	if (local_0.temporary)
 	{
-		result = function_1f4810(actor_index, actor->prop_index, state->unknown0c ? 0.3f : 3.5f, 0);
-		if (!result)
+		if (state->unknown0c)
+			local_0.temporary = function_1f4810(actor_index, actor->prop_index, 0.3f, 0);
+		else
+			local_0.temporary = function_1f4810(actor_index, actor->prop_index, 3.5f, 0);
+		if (!local_0.temporary)
 		{
 			function_265c30(actor->prop_index, actor_index, true);
-			actor_get(actor_index)->unknown040 = result;
+			actor_get(actor_index)->unknown040 = local_0.temporary;
 		}
+		result = local_0.temporary;
 	}
 	return result;
 }
@@ -239,7 +249,7 @@ long __stdcall function_1b8070(long actor_index, s_slot *slot)
     iterator.reference.unknown2 = 0x12;
     iterator.reference.unknown0 = NONE;
     s_slot_memory_entry *entry;
-    s_slot_12 *state = (s_slot_12 *)slot;
+    register s_slot_12 *state = (s_slot_12 *)slot;
     long joint_index = NONE;
     while ((entry = function_26f0c0(&iterator)) != NULL)
     {
@@ -251,12 +261,13 @@ long __stdcall function_1b8070(long actor_index, s_slot *slot)
     }
     if (joint_index == NONE)
     {
-        joint_index = function_26e940(actor_index);
-        if (joint_index != NONE)
+        long candidate = function_26e940(actor_index);
+        if (candidate != NONE)
         {
             state->unknown0c = true;
-            state->element_index = joint_index;
+            state->element_index = candidate;
         }
+        joint_index = candidate;
     }
     if (joint_index != NONE)
     {
@@ -269,15 +280,14 @@ long __stdcall function_1b8070(long actor_index, s_slot *slot)
         else
         {
             long prop_index = function_25d810(element->target.unknown0, actor_index, false);
-            if (prop_index == NONE)
+            if (prop_index != NONE)
             {
-                if (joint_index != NONE)
-                    function_26ee40((s_joint_behavior_state *)slot);
-                return NONE;
+                state->unknown1c = prop_index;
+                if (prop_index != actor->prop_index)
+                    function_267770(prop_index, actor_index);
             }
-            state->unknown1c = prop_index;
-            if (prop_index != actor->prop_index)
-                function_267770(prop_index, actor_index);
+            else
+                goto failed;
         }
         real time = (real)g_510c54->field_2_3 * 10.0f;
         long ticks;
@@ -288,5 +298,13 @@ long __stdcall function_1b8070(long actor_index, s_slot *slot)
         }
         state->unknown20 = ticks;
     }
+done:
     return joint_index;
+failed:
+    if (joint_index != NONE)
+    {
+        function_26ee40((s_joint_behavior_state *)slot);
+        return NONE;
+    }
+    goto done;
 }

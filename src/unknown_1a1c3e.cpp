@@ -185,7 +185,7 @@ void __stdcall function_2548f0(point2f const *center, real scale);
 /* ---- the object lists ---- */
 
 // @retail 0x1a1c3e
-void motion_sensor_add_nearby_object(s_motion_sensor_player *sensor, long object_index)
+inline void motion_sensor_add_nearby_object(s_motion_sensor_player *sensor, long object_index)
 {
 	if (sensor->nearby_count < 16)
 	{
@@ -492,6 +492,14 @@ void motion_sensor_update_pulse(void)
 		g_51e98c = 0.4f;
 }
 
+PRIVATE inline real function_1a2337(point3f const *arg_0, point3f const *arg_1)
+{
+	point2f local_0;
+	local_0.x = arg_1->x - arg_0->x;
+	local_0.y = arg_1->y - arg_0->y;
+	return local_0.x * local_0.x + local_0.y * local_0.y;
+}
+
 // @retail 0x1a2336
 void motion_sensor_update_nearby_objects(void)
 {
@@ -519,8 +527,8 @@ void motion_sensor_update_nearby_objects(void)
 
 	s_data_datum_iterator iterator;
 	iterator.data = g_4e8c24;
-	iterator.datum_index = NONE;
 	iterator.index = NONE;
+	iterator.datum_index = NONE;
 	while (data_datum_iterator_next(&iterator))
 	{
 		s_sensor_player *player = (s_sensor_player *)iterator.datum;
@@ -528,15 +536,14 @@ void motion_sensor_update_nearby_objects(void)
 		{
 			s_sensor_object *unit = SENSOR_OBJECT(player->unit_index);
 			bool room = false;
-			s_motion_sensor_player *sensor = g_51e994->players;
-			for (i = 0; i < 4; i++, sensor++)
+			s_motion_sensor_player *sensor;
+			point3f *position;
+			for (i = 0, position = positions, sensor = g_51e994->players; i < 4; i++, sensor++, position++)
 			{
 				if (valid[i] && sensor->nearby_count < 16)
 				{
-					real dy = unit->position.y - positions[i].y;
-					real dx = unit->position.x - positions[i].x;
 					room = true;
-					if (range_squared >= dx * dx + dy * dy)
+					if (range_squared >= function_1a2337(position, &unit->position))
 						motion_sensor_add_nearby_object(sensor, player->unit_index);
 				}
 			}

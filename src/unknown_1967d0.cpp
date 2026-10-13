@@ -13,6 +13,8 @@
 s_counter_bits g_46ddc0[86];
 s_input_address g_51e8d4[16];
 
+#define PIN(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+
 // @retail 0x001967d0
 void function_1967d0(long a, long c, long b, long delta)
 {
@@ -23,24 +25,12 @@ void function_1967d0(long a, long c, long b, long delta)
 		if (a != NONE)
 		{
 			s_input_counter *counter = &g_511bf4.all[a * 0x1b5 + b];
-			word raw = *(word const *)counter;
-			long value = raw & 0x7fff;
-			value += delta;
-			if (value < minimum)
-				value = minimum;
-			else if (value > maximum)
-				value = maximum;
-			*(word *)counter = raw ^ ((raw ^ value) & 0x7fff);
+			counter->value = PIN(counter->value + delta, minimum, maximum);
 		}
 		if (c != NONE)
 		{
 			s_input_counter *counter = &g_511bf4.counters[0][c * 0x2d + b];
-			long value = counter->value + delta;
-			if (value < minimum)
-				value = minimum;
-			else if (value > maximum)
-				value = maximum;
-			counter->value = value;
+			counter->value = PIN(counter->value + delta, minimum, maximum);
 		}
 	}
 }
@@ -873,6 +863,187 @@ long __stdcall function_73b10(long a, long b);
 void function_73ca0(byte *results);
 void __stdcall function_b3e90(byte *results);
 void function_232d77(void);
+
+#include "unknown_157450.h"
+
+/* the results' flag: the game has teams (0x510ddb, inside the results at 0x510cb0) */
+byte g_510ddb;
+
+struct s_score_display;
+void function_23f3e0(s_score_display *display, long mode, bool fallback);
+long function_1587f0(long team);
+void function_199460(void);
+struct s_network_observer;
+struct s_simulation_world_owner;
+struct s_session_machine_address;
+struct s_machine_address;
+long simulation_watcher_find_machine(s_simulation_world_owner const *watcher, s_machine_address const *address);
+long network_observer_find_channel_by_machine(s_network_observer *observer, s_session_machine_address const *address, long owner);
+
+/* the players and teams in the order of their ranks (0x6c bytes, filled by 0x23f3e0) */
+struct s_results_ranking_195ed0
+{
+	long players[16];
+	short teams[8];
+	char player_ranks[16];
+	char team_ranks[8];
+	short player_count;
+	short team_count;
+};
+
+/* a player's record in the game results (0xa4 bytes, sixteen from 0x511034) */
+struct s_results_player_195ed0
+{
+	bool active;
+	byte address_index;
+	byte unknown02[0xe];
+	struct
+	{
+		byte unknown00[0x7c];
+		char team_index;
+		byte unknown7d[0x13];
+	} configuration;
+	char rank;
+	byte unknowna1[3];
+};
+
+/* inline copies of game_engine_team_is_active (0x161e60) and of the team
+   score (0x1587f0), which retail inlines here */
+static inline bool team_is_active_195ed0(long team)
+{
+	bool result = false;
+
+	if (function_x340af0() && team >= 0 && team < 8)
+	{
+		result = (function_xaee93d()->team_mask & (1 << team)) != 0;
+	}
+	return result;
+}
+
+static inline long team_score_195ed0(long team)
+{
+	long result = NONE;
+
+	if (game_engine_statborg_inline() && function_x340af0() && team_is_active_195ed0(team))
+	{
+		result = game_engine_statborg_inline()->teams[team].score;
+	}
+	return result;
+}
+
+/* updates the game results: the active teams, the players' configurations,
+   the ranks and scores, and which machines are still connected */
+// @retail 0x195ed0
+void function_195ed0(void)
+{
+	if (g_510ca0 && !g_510cb1)
+	{
+		if (!g_511020.flag)
+		{
+			function_199460();
+		}
+		for (long team = 0; team < 16; team++)
+		{
+			if (game_engine_team_is_active(team))
+			{
+				if (!g_511a74[team].active)
+				{
+					g_511a74[team].active = true;
+				}
+				if (!g_510ddb)
+				{
+					g_510ddb = true;
+				}
+			}
+		}
+		for (long index = 0; index < 16; index++)
+		{
+			s_machine_player *player = machine_player_try_get(index);
+
+			if (player)
+			{
+				s_results_player_195ed0 *record = (s_results_player_195ed0 *)input_device(index);
+
+				memcpy(&record->configuration, (byte *)player + 0x44, sizeof(record->configuration));
+				record->address_index = 0xff;
+				if (g_510ddb)
+				{
+					long team = record->configuration.team_index;
+
+					if (team != NONE)
+					{
+						s_input_entry *entry = &g_511a74[team];
+
+						if (!entry->active)
+						{
+							entry->active = true;
+							entry->value = 0;
+							entry->unknown01 = 0xff;
+						}
+					}
+				}
+				word *counter = (word *)&g_511bf4.groups[index][0];
+				*counter = (*counter & 0x8001) | 1;
+			}
+		}
+		if ((bool)((function_xaee93d()->flags >> 5) & 1))
+		{
+			s_results_ranking_195ed0 ranking;
+			long rank;
+
+			function_23f3e0((s_score_display *)&ranking, 1, false);
+			for (rank = 0; rank < ranking.team_count; rank++)
+			{
+				long team = ranking.teams[rank];
+				s_input_entry *entry = &g_511a74[team];
+
+				entry->unknown01 = ranking.team_ranks[rank] / 2;
+				entry->value = (short)(team_score_195ed0(team) < 0 ? 0 :
+					team_score_195ed0(team) > 0x7fff ? 0x7fff : function_1587f0(team));
+			}
+			for (rank = 0; rank < ranking.player_count; rank++)
+			{
+				((s_results_player_195ed0 *)input_device(ranking.players[rank] & 0xffff))->rank = ranking.player_ranks[rank] / 2;
+			}
+		}
+		function_199310(&g_510cb0);
+		for (long index = 0; index < 16; index++)
+		{
+			s_input_address *address = &g_51e8d4[index];
+
+			if (address->data[6])
+			{
+				if (!memcmp(g_4cf7cc, address->data, 6))
+				{
+					address->data[8] = true;
+					address->data[7] = true;
+				}
+				else
+				{
+					s_network_observer *observer;
+					bool connected;
+
+					address->data[8] = false;
+					observer = *(s_network_observer **)((byte *)g_4cf780 + 8);
+					connected = false;
+					if (observer && simulation_watcher_find_machine((s_simulation_world_owner *)g_4cf780,
+						(s_machine_address const *)address->data) != NONE)
+					{
+						long channel = network_observer_find_channel_by_machine(observer,
+							(s_session_machine_address const *)address->data, 3);
+
+						if (channel != NONE && *(long *)((byte *)observer + channel * 0x528 + 0xa8) == 7)
+						{
+							connected = true;
+						}
+					}
+					address->data[7] = connected;
+				}
+			}
+		}
+	}
+}
+
 
 /* starts the game results: the host records its own address and the
    results go to the session's link */

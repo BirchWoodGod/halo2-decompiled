@@ -424,8 +424,18 @@ void function_168b40(s_168b40_result *result, s_168b40_surface const *surface, t
 	result->unknown04 = surface->unknown00;
 	if (matrix)
 	{
-		transform4x3f_apply_normal(matrix, &surface->plane->n, &result->plane.n);
-		result->plane.d = matrix->scale * surface->plane->d + dot3f(&result->plane.n, (vector3f const *)&matrix->position);
+		plane3f const *plane = surface->plane;
+
+		real x = plane->i;
+		real y = plane->j;
+		real z = plane->k;
+		result->plane.i = matrix->up.i * z + matrix->left.i * y + matrix->forward.i * x;
+		result->plane.j = matrix->up.j * z + matrix->left.j * y + matrix->forward.j * x;
+		result->plane.k = matrix->up.k * z + matrix->left.k * y + matrix->forward.k * x;
+		real distance = matrix->position.z * result->plane.k + plane->d * matrix->scale;
+		distance += matrix->position.y * result->plane.j;
+		distance += result->plane.i * matrix->position.x;
+		result->plane.d = distance;
 		if (surface->flags & 0x8000)
 		{
 			result->plane.i = 0.0f - result->plane.i;
@@ -434,16 +444,18 @@ void function_168b40(s_168b40_result *result, s_168b40_surface const *surface, t
 			result->plane.d = 0.0f - result->plane.d;
 		}
 	}
-	else if (!(surface->flags & 0x8000))
+	else if (surface->flags & 0x8000)
 	{
-		result->plane = *surface->plane;
+		plane3f const *plane = surface->plane;
+
+		result->plane.i = 0.0f - plane->i;
+		result->plane.j = 0.0f - plane->j;
+		result->plane.k = 0.0f - plane->k;
+		result->plane.d = 0.0f - plane->d;
 	}
 	else
 	{
-		result->plane.i = 0.0f - surface->plane->i;
-		result->plane.j = 0.0f - surface->plane->j;
-		result->plane.k = 0.0f - surface->plane->k;
-		result->plane.d = 0.0f - surface->plane->d;
+		result->plane = *surface->plane;
 	}
 	result->unknown4c = surface->unknown08;
 	result->unknown50 = surface->unknown0c;
@@ -733,11 +745,11 @@ struct s_vehicle_ray
 bool __stdcall function_168f40(long flags, s_vehicle_ray const *ray,
 	long ignore_object_index, long ignore_object_index2)
 {
-	bool result = false;
 	point3f const *point = &ray->point;
 	long leaf = function_14a280(g_4e033c, 0, (point3f *)point);
 	if (leaf == NONE)
 		return true;
+	bool result = false;
 	if ((flags & 2) || (flags & 0xc))
 	{
 		s_1697c0_bsp *bsp = (s_1697c0_bsp *)g_4e0348;
@@ -1315,18 +1327,20 @@ void __stdcall function_16a280(long object_index, dword flags, point3f const *po
     real radius, real height, real thickness, long ignore_object_index, long ignore_object_index2,
     s_collection_245270 *collection)
 {
-	real dx;
     do
     {
-        s_collision_object_header *volatile header = &((s_collision_object_header *)g_4e0300->data)[object_index & 0xffff];
+        s_collision_object_header *header = &((s_collision_object_header *)g_4e0300->data)[object_index & 0xffff];
         s_collision_object *object = header->object;
         if (collision_object_test(object_index, header, object, flags, ignore_object_index, ignore_object_index2))
         {
-            dx = object->center.x - point->x;
-            volatile real dy = object->center.y - point->y;
-            real dz = object->center.z - point->z;
             real extent = object->radius + radius;
-            if (dx * dx + dy * dy + dz * dz <= extent * extent)
+            real dx = object->center.x - point->x;
+            real dy = object->center.y - point->y;
+            real dz = object->center.z - point->z;
+            real distance_squared = dx * dx;
+            distance_squared += dy * dy;
+            distance_squared += dz * dz;
+            if (distance_squared <= extent * extent)
             {
                 switch (object->type)
                 {
@@ -1347,8 +1361,9 @@ void __stdcall function_16a280(long object_index, dword flags, point3f const *po
                 case 11:
                 {
                     s_lookup lookup;
-                    if (lookup.initialize(object_index))
-                        function_1f0230(&lookup, point, radius, height, thickness, collection);
+                    s_lookup *lookup_pointer = &lookup;
+                    if (lookup_pointer->initialize(object_index))
+                        function_1f0230(lookup_pointer, point, radius, height, thickness, collection);
                     break;
                 }
                 default:
@@ -1372,6 +1387,7 @@ struct s_shape_counts
 };
 
 #include <xmmintrin.h>
+#include <string.h>
 
 PRIVATE __forceinline long shape_cluster_next(long *next)
 {
@@ -1392,9 +1408,7 @@ bool __stdcall function_16a440(dword flags, point3f const *position, real extent
     real radius, long ignore_object, long ignore_parent, s_shapes *shapes)
 {
     s_shape_counts *counts = (s_shape_counts *)shapes;
-    counts->count[0] = 0;
-    counts->count[1] = 0;
-    counts->count[2] = 0;
+    memset(counts, 0, sizeof(*counts));
     bool test_world = (flags & 1) != 0;
     if (test_world || (flags & 0xc))
     {

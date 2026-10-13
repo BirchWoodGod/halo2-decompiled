@@ -236,7 +236,10 @@ bool function_47fd0(long tag, short stage, short fallback, byte flags)
     else
         result = function_14480(*(long *)(g_485a80 + 0x34), stage, fallback);
     if (!result)
-        function_47ea0(stage, flags);
+        goto failure;
+    return result;
+failure:
+    function_47ea0(stage, flags);
     return result;
 }
 

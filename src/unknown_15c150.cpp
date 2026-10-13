@@ -59,11 +59,18 @@ void function_15ed60();
 bool function_158a50(long player_index);
 static __forceinline long real_to_long(real value);
 
-PRIVATE inline long transition_local_player_next(long index)
+PRIVATE inline long transition_local_player_next_15c150(long index)
 {
+	long result = NONE;
 	for (long i = index == NONE ? 0 : index + 1; i < 4; ++i)
-		if (g_4e8c20->entries[i] != NONE) return i;
-	return NONE;
+	{
+		if (g_4e8c20->entries[i] != NONE)
+		{
+			result = i;
+			break;
+		}
+	}
+	return result;
 }
 
 // @retail 0x15c150
@@ -106,9 +113,13 @@ void function_15c150()
 		*(long *)((byte *)globals + 0xc0c) = count > 8;
 		if (count > 8) *(word *)((byte *)globals + 0xc10) |= 1;
 		else *((byte *)globals + 0xc10) &= ~1;
-		if (g_55e4d0[globals->engine_index] && (*((byte *)g_4e6948 + 0x184) & 1))
-			for (long team = 0; team < 8; ++team)
-				if (function_161e10(team)) function_15ba90(team);
+		if (g_55e4d0[globals->engine_index])
+		{
+			bool teams = (*((byte *)g_4e6948 + 0x184) & 1) != 0;
+			if (teams)
+				for (long team = 0; team < 8; ++team)
+					if (function_161e10(team)) function_15ba90(team);
+		}
 		g_55e4d0[globals->engine_index]->p18();
 		if (g_4e6948->mode != 4)
 		{
@@ -124,8 +135,8 @@ void function_15c150()
 			(g_4e6948->mode == 4 || globals->lc04 == 1))
 			*(short *)((byte *)globals + 0xfa) = 0;
 		else ++*(short *)((byte *)globals + 0xfa);
-		for (long local = transition_local_player_next(NONE); local != NONE;
-			local = transition_local_player_next(local))
+		for (long local = transition_local_player_next_15c150(NONE); local != NONE;
+			local = transition_local_player_next_15c150(local))
 		{
 			long index = NONE;
 			if (local != NONE)
@@ -142,15 +153,17 @@ void function_15c150()
 				}
 				else
 				{
-					long elapsed = g_510c54->game_time - *(long *)((byte *)globals + 0x70);
-					if (elapsed < 0) elapsed = 0;
-					bool decrease = !(*((byte *)globals + 0xf4) & (1 << local)) && *(long *)(player + 0x2c) != NONE;
-					if (!decrease && *(long *)(player + 0x2c) == NONE && !function_158a50(index) && elapsed > g_510c54->field_2_3)
-						decrease = true;
-					if (decrease && g_510c54->game_time > real_to_long((real)g_510c54->field_2_3 * 1.5f))
+					long elapsed;
+					if ((!(*((byte *)globals + 0xf4) & (1 << local)) && *(long *)(player + 0x2c) != NONE) ||
+						(*(long *)(player + 0x2c) == NONE && !function_158a50(index) &&
+						((elapsed = g_510c54->game_time - *(long *)((byte *)globals + 0x70)) < 0 ? 0 : elapsed) > g_510c54->field_2_3))
 					{
-						real value = *fade - 3.0f / (real)g_510c54->field_2_3;
-						*fade = value < 0.0f ? 0.0f : value;
+						long time = g_510c54->game_time;
+						if (time > real_to_long((real)g_510c54->field_2_3 * 1.5f))
+						{
+							real value = *fade - 3.0f / (real)g_510c54->field_2_3;
+							*fade = value < 0.0f ? 0.0f : value;
+						}
 					}
 				}
 			}

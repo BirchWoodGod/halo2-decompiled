@@ -1,4 +1,4 @@
-// @flags /O2 /Gr
+// @flags /O2 /arch:SSE /Gr
 /* UNKNOWN_083A40.CPP: the simulation watcher (g_4cf780), which tracks the
    game's players for the simulation world (lane D) */
 
@@ -50,6 +50,12 @@ static inline s_watcher_membership *watcher_session_membership(c_class_58d20 *se
 	return result;
 }
 
+static inline void function_83001(c_class_6a600 *world, const s_machine_address *address)
+{
+	world->local_address = *address;
+	world->unknown0c = 1;
+}
+
 // @retail 0x83000
 void function_83000(s_simulation_world_owner *watcher)
 {
@@ -65,12 +71,12 @@ void function_83000(s_simulation_world_owner *watcher)
 	{
 		s_watcher_membership *members = 0;
 		long local = NONE;
-		if (watcher_session_membership(watcher->session))
-		{
-			members = watcher_session_membership(watcher->session);
-			local = watcher->session->current_member;
-		}
 		s_watcher_session_link *link = 0;
+		if (watcher->session->state && watcher->session->value4c != NONE)
+		{
+			local = watcher->session->current_member;
+			members = (s_watcher_membership *)&watcher->session->value4c;
+		}
 		if (g_527330.initialized)
 			link = (s_watcher_session_link *)g_527330.unknown48;
 		*(s_watcher_session_link **)watcher->unknown08 = link;
@@ -87,8 +93,7 @@ void function_83000(s_simulation_world_owner *watcher)
 		watcher->unknown1c = mask;
 		watcher->unknown20 = local;
 		memcpy(watcher->unknown24, machines, sizeof(machines));
-		watcher->world->local_address = ((s_machine_address *)watcher->unknown24)[local];
-		watcher->world->unknown0c = 1;
+		function_83001(watcher->world, &((s_machine_address *)watcher->unknown24)[local]);
 		*(long *)(watcher->world->unknown13 + 1) = watcher->unknown20;
 		watcher->unknown84 = true;
 		watcher->unknownc30 = true;
@@ -110,8 +115,7 @@ void function_83000(s_simulation_world_owner *watcher)
 		}
 		if (watcher->unknown20 != NONE)
 		{
-			watcher->world->local_address = ((s_machine_address *)watcher->unknown24)[watcher->unknown20];
-			watcher->world->unknown0c = 1;
+			function_83001(watcher->world, &((s_machine_address *)watcher->unknown24)[watcher->unknown20]);
 			*(long *)(watcher->world->unknown13 + 1) = watcher->unknown20;
 		}
 	}
@@ -396,6 +400,7 @@ struct s_watcher_machines
 };
 
 /* rebuilds the watcher's players from the game's */
+#pragma auto_inline(off)
 // @retail 0x83510
 void simulation_watcher_rebuild_players(s_simulation_world_owner *watcher)
 {
@@ -410,6 +415,7 @@ void simulation_watcher_rebuild_players(s_simulation_world_owner *watcher)
 	if (world->state != 3 && world->state != 5)
 		function_69610(world);
 }
+#pragma auto_inline(on)
 
 #define NUMBEROF(array) (sizeof(array) / sizeof((array)[0]))
 
@@ -642,11 +648,12 @@ void __stdcall function_83370(void *watcher_, dword flags)
  if (!(flags & 4))
  {
   s_watcher_machines *source = (s_watcher_machines *)g_4e8c20;
+  const dword *machines = source->machines;
   dword mask = source->count;
   s_machine_address addresses[16];
   s_machine_address local = watcher->world->local_address;
   long index = NONE;
-  memcpy(addresses, source->machines, sizeof(addresses));
+  memcpy(addresses, machines, sizeof(addresses));
   for (long i = 0; i < 16; i++)
    if ((mask & (1 << i)) && !memcmp(&addresses[i], &local, sizeof(local)))
     index = i;
@@ -669,8 +676,7 @@ void __stdcall function_83370(void *watcher_, dword flags)
   memset(watcher->unknown24, 0, sizeof(watcher->unknown24));
   if (valid)
    ((s_machine_address *)watcher->unknown24)[watcher->unknown20] = local;
-  watcher->world->local_address = ((s_machine_address *)watcher->unknown24)[watcher->unknown20];
-  watcher->world->unknown0c = 1;
+  function_83001(watcher->world, &((s_machine_address *)watcher->unknown24)[watcher->unknown20]);
   *(long *)(watcher->world->unknown13 + 1) = watcher->unknown20;
   function_14c630(watcher->unknown1c, (s_machine_address *)watcher->unknown24);
   players_set_local_machine(&((s_machine_address *)watcher->unknown24)[watcher->unknown20]);

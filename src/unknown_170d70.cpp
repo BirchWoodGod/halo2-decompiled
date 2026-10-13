@@ -1477,12 +1477,14 @@ void function_171830(point3f const *point, vector3f const *forward,
 		collision.material = NONE;
 		real sign = (real)((sample & 2) ? 1 : -1);
 		vector3f const *displacement = &offsets[sample & 1];
-		vector3f direction;
-		direction.i = displacement->i * sign + center.x - point->x;
-		direction.j = displacement->j * sign + center.y - point->y;
-		direction.k = displacement->k * sign + center.z - point->z;
+		point3f target;
+		target.x = displacement->i * sign + center.x;
+		target.y = displacement->j * sign + center.y;
+		target.z = displacement->k * sign + center.z;
 		long flags = 0x808c0f;
 		if (narrow) flags = 0x808c0d;
+		vector3f direction;
+		vector3d_from_points3d(point, &target, &direction);
 		if (function_1697c0(flags, point, &direction, NONE, NONE,
 			(s_collision_result_1697c0 *)&collision) && collision.fraction < best_fraction)
 		{

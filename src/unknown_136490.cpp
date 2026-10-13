@@ -133,18 +133,18 @@ PRIVATE __forceinline short function_136601(short arg_1, long arg_2)
 }
 
 // @retail 0x136600
-long function_136600(short width, short height, short mipmap_index, short depth, s_13eeb1 format, short alignment)
+long function_136600(short width, short height, short mipmap_index, short depth, short format, short alignment)
 {
 	short mipmap_width = width >> mipmap_index > 1 ? width >> mipmap_index : 1;
 	short mipmap_height = height >> mipmap_index > 1 ? height >> mipmap_index : 1;
 	short mipmap_depth = depth >> mipmap_index > 1 ? depth >> mipmap_index : 1;
-	long local_3 = (short)format;
+	long local_3 = format;
 	if (local_3 >= 14 && local_3 <= 16)
 	{
 		mipmap_width += -mipmap_width & 3;
 		mipmap_height += -mipmap_height & 3;
 	}
-	short row_size = function_136601((short)format, local_3) * mipmap_width / 8;
+	short row_size = function_136601(format, local_3) * mipmap_width / 8;
 	if (alignment > 0)
 	{
 		row_size = (row_size + alignment - 1) & ~(alignment - 1);
@@ -159,8 +159,7 @@ long function_1366d0(short width, short height, short depth, short format, short
 	long total = 0;
 	for (short mipmap_index = 0; mipmap_index <= (short)local_1; mipmap_index++)
 	{
-		s_13eeb1 local_2 = { *(long const *)&format };
-		total += function_136600(width, height, mipmap_index, depth, local_2, alignment);
+		total += function_136600(width, height, mipmap_index, depth, format, alignment);
 	}
 	return total;
 }
@@ -310,7 +309,7 @@ dword g_468848[256] =
 
 dword __cdecl pack_color4f(color4f const *color);
 dword __cdecl pack_color3f(color3f const *color);
-real function_135880(word value);
+inline real function_135880(word value);
 
 static __forceinline real bitmap_display_component(real value)
 {
@@ -326,9 +325,12 @@ dword function_135ca0(void const *pixels, short format, long index)
 	case 6:
 		{
 			dword value = ((word const *)pixels)[index];
-			dword high = (((value & 0xfffff800) | 0xffff0000) << 3) | (value & 0x7e0);
-			high = (high << 2) | (value & 0xffffe01f);
-			return (high << 3) | ((((value >> 1) & 0xe) | (value & 0x600)) >> 1);
+			dword result = 0xffffffe0 | (value >> 11);
+			result = (result << 3) | ((value >> 13) & 7);
+			result = (result << 6) | ((value >> 5) & 0x3f);
+			result = (result << 2) | ((value >> 9) & 3);
+			result = (result << 5) | (value & 0x1f);
+			return (result << 3) | ((value >> 2) & 7);
 		}
 	case 8:
 		{
@@ -342,12 +344,17 @@ dword function_135ca0(void const *pixels, short format, long index)
 	case 9:
 		{
 			dword value = ((word const *)pixels)[index];
-			dword red = (value >> 8) & 15;
-			dword green = (value >> 4) & 15;
-			dword blue = value & 15;
-			dword high = ((((value >> 8) & 0xfffffff0) << 12) | value) & 0xfffff000;
-			high |= ((red << 4) | red) << 4;
-			return (((((high | green) << 4 | green) << 4 | blue) << 4) | blue);
+			dword alpha = value >> 12;
+			dword red = (value >> 8) & 0xf;
+			dword green = (value >> 4) & 0xf;
+			dword blue = value & 0xf;
+			dword result = (alpha << 4) | alpha;
+			result = (result << 4) | red;
+			result = (result << 4) | red;
+			result = (result << 4) | green;
+			result = (result << 4) | green;
+			result = (result << 4) | blue;
+			return (result << 4) | blue;
 		}
 	case 10:
 	case 11:
@@ -366,9 +373,12 @@ dword function_135ca0(void const *pixels, short format, long index)
 		}
 	case 3:
 		{
-			dword value = ((word const *)pixels)[index];
-			dword intensity = value & 0xff;
-			return (((value << 8) | intensity) << 8) | intensity;
+			word value = ((word const *)pixels)[index];
+			dword intensity = (byte)value;
+			dword result = value >> 8;
+			result = (result << 8) | intensity;
+			result = (result << 8) | intensity;
+			return (result << 8) | intensity;
 		}
 	case 17:
 		return g_468848[((byte const *)pixels)[index]];

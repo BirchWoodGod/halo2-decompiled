@@ -277,8 +277,8 @@ void function_19e0f0(word const *string, long size, word *buffer, s_event *event
 			if (prefix_length > remaining)
 				prefix_length = remaining;
 			wcsncpy(destination, source, prefix_length);
-			remaining -= prefix_length;
 			destination += prefix_length;
+			remaining -= prefix_length;
 
 			long (__fastcall *const expand_token)(s_event *, long, word const *, word *, long) = function_19e1c0;
 			written = expand_token(event, token_length, token, destination, remaining);
@@ -292,9 +292,7 @@ void function_19e0f0(word const *string, long size, word *buffer, s_event *event
 
 	{
 		long length = wcslen(source);
-		if (remaining > length)
-			remaining = length;
-		wcsncpy(destination, source, remaining);
+		wcsncpy(destination, source, length <= remaining ? length : remaining);
 		destination[length] = 0;
 	}
 }

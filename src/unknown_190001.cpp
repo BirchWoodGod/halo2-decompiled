@@ -1024,7 +1024,7 @@ void function_1907d6(dword time)
 			continue;
 		}
 
-		short direction[2] = { 0, 0 };
+		short direction[2] = { 0 };
 		long value = 16;
 
 		if (state->analog_button_frames_down[0] == 1)
@@ -1091,12 +1091,12 @@ void function_1907d6(dword time)
 		if (state->thumbsticks[0] != 0 || state->thumbsticks[1] != 0)
 		{
 			direction[0] = state->thumbsticks[0];
-			if (abs(direction[0]) < 0x7332)
+			if (controller_direction_magnitude(direction[0]) < 0x7332)
 			{
 				direction[0] = 0;
 			}
 			direction[1] = state->thumbsticks[1];
-			if (abs(direction[1]) < 0x7332)
+			if (controller_direction_magnitude(direction[1]) < 0x7332)
 			{
 				direction[1] = 0;
 			}

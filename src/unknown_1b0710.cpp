@@ -129,7 +129,7 @@ short __stdcall function_1b0780(long actor_index)
 
 				function_1b0710(element->unknown80, actor_index, NULL, &maximum_distance_squared);
 				function_b9dd0(element->unknown80, &position);
-				if (distance_sq3f(&actor->position, &position) > maximum_distance_squared &&
+				if (distance_sq3f(&position, &actor->position) > maximum_distance_squared &&
 					(*(long *)&actor->unknown418 == *(long *)&g_470fa0 || !actor->unknown5d0 ||
 					function_210b60((s_type_c3b527 *)function_262b40(actor->unknown418), &actor->position) > maximum_distance_squared))
 				{
@@ -138,7 +138,7 @@ short __stdcall function_1b0780(long actor_index)
 
 					for (short i = 0; i < count; i++)
 					{
-						if (maximum_distance_squared > distance_sq3f(&entries[i].point, &position))
+						if (maximum_distance_squared > distance_sq3f(&position, &entries[i].point))
 						{
 							result = 3;
 							break;

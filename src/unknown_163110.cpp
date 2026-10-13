@@ -620,9 +620,7 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 	real near_distance = 1.52588e-5f > view->margin + margin ? 1.52588e-5f : view->margin + margin;
 
 	planes[0].normal = *(vector3f *)&view->point54;
-	planes[0].d = view->vector_e4.j * planes[0].normal.j;
-	planes[0].d += view->vector_e4.k * planes[0].normal.k;
-	planes[0].d += view->vector_e4.i * planes[0].normal.i;
+	planes[0].d = view->vector_e4.i * planes[0].normal.i + view->vector_e4.k * planes[0].normal.k + view->vector_e4.j * planes[0].normal.j;
 	planes[0].normal.i = -planes[0].normal.i;
 	planes[0].normal.j = -planes[0].normal.j;
 	planes[0].normal.k = -planes[0].normal.k;
@@ -634,9 +632,7 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 	negated.j = -view->point54.y;
 	negated.k = -view->point54.z;
 	planes[1].normal = negated;
-	planes[1].d = view->vector_b4.j * planes[1].normal.j;
-	planes[1].d += view->vector_b4.k * planes[1].normal.k;
-	planes[1].d += view->vector_b4.i * planes[1].normal.i;
+	planes[1].d = view->vector_b4.i * planes[1].normal.i + view->vector_b4.k * planes[1].normal.k + view->vector_b4.j * planes[1].normal.j;
 	planes[1].normal.i = -planes[1].normal.i;
 	planes[1].normal.j = -planes[1].normal.j;
 	planes[1].normal.k = -planes[1].normal.k;
