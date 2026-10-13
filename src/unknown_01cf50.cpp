@@ -765,31 +765,33 @@ void *function_1d5e0(s_bitmap_view *bitmap, long wait, long *pitch)
 bool function_143c0(long tag, short index, short stage, real priority)
 {
     bool result = false;
-    long slot = stage;
+    short slot = stage;
     if (tag == NONE)
     {
         tag = *(long *)(g_485a80 + 0x64);
         index = 0;
-        if (tag == NONE) return result;
     }
-    byte *group = g_4e3b44[tag & 0xffff].bytes;
-    _mm_prefetch((char const *)(*(byte **)(group + 0x48) + index * 0x74), _MM_HINT_T0);
-    _mm_prefetch((char const *)g_485af4, _MM_HINT_T0);
-    if (index < 0 || index >= *(long *)(group + 0x44))
+    if (tag != NONE)
     {
-        tag = *(long *)(g_485a80 + 0x64);
-        index = 0;
-        group = g_4e3b44[tag & 0xffff].bytes;
-    }
-    if (group && *(long *)(group + 0x44) > 0)
-    {
-        s_type_7ba8e9 *bitmap = function_137550(tag, index);
-        if (bitmap)
+        byte *group = g_4e3b44[tag & 0xffff].bytes;
+        _mm_prefetch((char const *)(*(byte **)(group + 0x48) + index * 0x74), _MM_HINT_T0);
+        _mm_prefetch((char const *)g_485af4, _MM_HINT_T0);
+        if (index < 0 || index >= *(long *)(group + 0x44))
         {
-            g_51f3c8[1][slot] = function_12310((s_bitmap_view *)bitmap, priority);
-            g_485af4[slot] = *(short *)((byte *)bitmap + 4);
-            g_485b04[slot] = *(short *)((byte *)bitmap + 6);
-            return true;
+            tag = *(long *)(g_485a80 + 0x64);
+            index = 0;
+            group = g_4e3b44[tag & 0xffff].bytes;
+        }
+        if (group && *(long *)(group + 0x44) > 0)
+        {
+            byte *bitmap = (byte *)function_137550(tag, index);
+            if (bitmap)
+            {
+                g_51f3c8[1][slot] = function_12310((s_bitmap_view *)bitmap, priority);
+                g_485af4[slot] = *(short *)(bitmap + 4);
+                g_485b04[slot] = *(short *)(bitmap + 6);
+                result = true;
+            }
         }
     }
     return result;
@@ -6900,9 +6902,9 @@ extern s_record_pool *g_54d574;
 void function_1f2b0()
 {
     if (g_4b62a0)
-        for (long i = 0; i < 512; ++i)
+        for (long i = 0; i < 512; i += 4)
         {
-            if (g_4b62b0[i].character_index != NONE)
+            if ((dword)g_4b62b0[i].character_index != 0xffffffffu)
             {
                 if (i != NONE)
                 {
@@ -6910,6 +6912,36 @@ void function_1f2b0()
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
                     g_4b62b0[i].character_index = NONE;
+                }
+            }
+            if ((dword)g_4b62b0[i + 1].character_index != 0xffffffffu)
+            {
+                if (i + 1 != NONE)
+                {
+                    long character = g_4b62b0[i + 1].character_index;
+                    if (character != NONE)
+                        *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
+                    g_4b62b0[i + 1].character_index = NONE;
+                }
+            }
+            if ((dword)g_4b62b0[i + 2].character_index != 0xffffffffu)
+            {
+                if (i + 2 != NONE)
+                {
+                    long character = g_4b62b0[i + 2].character_index;
+                    if (character != NONE)
+                        *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
+                    g_4b62b0[i + 2].character_index = NONE;
+                }
+            }
+            if ((dword)g_4b62b0[i + 3].character_index != 0xffffffffu)
+            {
+                if (i + 3 != NONE)
+                {
+                    long character = g_4b62b0[i + 3].character_index;
+                    if (character != NONE)
+                        *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
+                    g_4b62b0[i + 3].character_index = NONE;
                 }
             }
         }

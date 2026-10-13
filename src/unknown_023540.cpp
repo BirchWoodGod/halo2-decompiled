@@ -207,11 +207,8 @@ bool function_25820(s_render_view_2b790 const *source)
 		union { dword bits; real value; } caption;
 		caption.bits = g_4b9970[10];
 		if (caption.value != 0.0f) g_55eed8.scale = caption.value * 0.5f;
-		s_render_view_2b790 view = g_55eed8;
-		memcpy(view.camera, &view.position, sizeof(view.camera));
-		memcpy(g_55eed8.camera, view.camera, sizeof(view.camera));
-		function_2b790(&view, true);
-		g_55eed8.far_distance = view.far_distance;
+		memcpy(g_55eed8.camera, &g_55eed8.position, sizeof(g_55eed8.camera));
+		function_2b790(&g_55eed8, true);
 		if (!g_5093fc)
 		{
 			long target = function_25960();
@@ -707,12 +704,6 @@ bool __stdcall function_26710(long mode, real const *bounds, real const *t, real
 	case 0:
 		function_350e0(out, bounds, t, g_509400);
 		return true;
-	case 1: case 4:
-		out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
-		out[1] = (bounds[3] - bounds[2]) * t[1] + bounds[2];
-		out[2] = 0.0f;
-		out[3] = 1.0f;
-		return true;
 	case 2:
 		{
 			real span = g_48577c - g_485778;
@@ -733,6 +724,12 @@ bool __stdcall function_26710(long mode, real const *bounds, real const *t, real
 			out[3] = 0.0f;
 			return true;
 		}
+	case 1: case 4:
+		out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
+		out[1] = (bounds[3] - bounds[2]) * t[1] + bounds[2];
+		out[2] = 0.0f;
+		out[3] = 1.0f;
+		return true;
 	default: return false;
 	}
 }
