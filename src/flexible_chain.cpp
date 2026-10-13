@@ -131,10 +131,10 @@ long __stdcall function_115da0(long tag_index, long object_index)
 			record->fixed = definition->segment_count < 2;
 			point3f *origin = &record->origin;
 			origin->x = origin->y = origin->z = 0.f;
-			point3f position = *origin;
 			record->tag_index = tag_index;
 			record->object_index = object_index;
 			record->idle_ticks = 0;
+			point3f position = record->origin;
 			short i;
 			for (i = 0; i < definition->segment_count; ++i)
 			{
