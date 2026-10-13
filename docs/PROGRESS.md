@@ -2,6 +2,44 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7992 functions match
+
+```
+matched 7992 of 11318 game functions (974527 of 2784283 bytes, 35.00%)
+```
+
+38 new matches, none lost:
+- The third machine's second batch (#384, +31), over its lanes N, Q, R, S, T and H: among them eight matches in `0x1766b0`–`0x179850`, `0x143070`, which now takes its matrix and vector in its siblings' order, and `0x1520a0`, which no longer needs a `volatile` read.
+- The second machine's lane D lower, round 18 (#383, +4): `0x5b650` and `0x5e150` return one result, and the callers `0x945f0` (lane J) and `0x162d00` (the third machine) now match unchanged.
+- Deep lane 3, round 44 (+3), in the render range: `0x12420`, `0x36ab0` and `0x174d0`.
+
+## 2026-10-12: 7954 functions match
+
+```
+matched 7954 of 11318 game functions (966803 of 2784283 bytes, 34.72%)
+```
+
+3 new matches, none lost:
+- The second machine's lane D upper, round 18 (#382, +3): `0x8aed0`, `0x85600` and `0x8b2a0`, and four matched functions no longer need a `volatile` access to match.
+
+## 2026-10-12: 7951 functions match
+
+```
+matched 7951 of 11318 game functions (966210 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 2, round 34 (+2), writing this machine's unwritten functions: `0x24ba99` matches on its first draft, and `0x2c3b0` replaces its stub, which gives the second machine's caller `0x22a648` retail's call and matches it. Thirteen more render and UI functions are now written, some kept disabled where a draft would cost an existing match.
+
+## 2026-10-12: 7949 functions match
+
+```
+matched 7949 of 11318 game functions (966138 of 2784283 bytes, 34.70%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 43 (+2), in the render range: `0x3f830` matches, and `0x36880` keeps its rectangle on the stack through a named reference, the third machine's lead from #375. That matches the third machine's caller `0x1634d0` and takes `0x36880` from 76 differences to 55; `0x15720` and `0x22c30` are each about ten closer.
+
 ## 2026-10-12: 7947 functions match
 
 ```

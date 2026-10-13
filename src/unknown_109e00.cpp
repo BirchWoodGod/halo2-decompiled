@@ -103,13 +103,11 @@ bool function_109fd0(long object_index, vector3f *velocity)
 
 	if ((*object_index_reference) != NONE)
 	{
-		s_object_list_state *state = g_5107f0;
-
-		for (long i = 0; i < state->object_count; i++)
+		for (long i = 0; i < g_5107f0->object_count; i++)
 		{
-			if (state->object_indices[i] == (*object_index_reference))
+			if (g_5107f0->object_indices[i] == (*object_index_reference))
 			{
-				s_object_list_entry const *entry = state->entries + i;
+				s_object_list_entry const *entry = g_5107f0->entries + i;
 				*velocity = entry->linear_velocity;
 				result = true;
 				break;

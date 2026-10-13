@@ -853,8 +853,9 @@ bool network_session_interface_set_value4d08_and_stop_countdown(long value4d08, 
 	{
 		c_class_58d20 *session = network_session_get_current();
 		if (network_session_parameters_set_value4d08(session, string, value4d08, value4d0c) && network_session_start_countdown(session, 0, false, 0, 0))
-			return true;
-		return false;
+			result = true;
+		else
+			return false;
 	}
 	return result;
 }

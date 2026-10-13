@@ -2455,6 +2455,25 @@ finish:
 
 #endif
 
+PRIVATE __forceinline byte *function_54592(void *arg_0, const s_network_session_player *arg_1, dword arg_2, long arg_3, const dword *arg_4)
+{
+ dword *local_0 = (dword *)arg_0;
+ if (arg_2 & (1 << arg_3))
+ {
+  const dword *local_1 = (const dword *)&arg_1[arg_3];
+  local_0[0] = local_1[0];
+  local_0[1] = local_1[1];
+  local_0[2] = local_1[2];
+ }
+ else
+ {
+  local_0[0] = *(const volatile dword *)&arg_4[0];
+  local_0[1] = *(const volatile dword *)&arg_4[1];
+  local_0[2] = arg_4[2];
+ }
+ return (byte *)arg_0;
+}
+
 // @retail 0x54590
 void function_54590(void)
 {
@@ -2482,10 +2501,12 @@ void function_54590(void)
   voice_sprintf(reason, "player identifier change");
  }
  g_4c9878.unknown20 = mask;
- for (long i = 0; i < 16; i++)
+ for (long i = 0; i < 16; i += 4)
  {
-  const void *identity = mask & (1 << i) ? (const void *)&players[i] : empty;
-  memcpy(&g_4c9878.unknown24[i * 3], identity, sizeof(empty));
+  byte *local_0 = function_54592(&g_4c9878.unknown24[i * 3], players, mask, i, empty);
+  function_54592(local_0 + 0xc, players, mask, i + 1, empty);
+  function_54592(local_0 + 0x18, players, mask, i + 2, empty);
+  function_54592(local_0 + 0x24, players, mask, i + 3, empty);
  }
  voice_channels_reset(&g_525a00);
 }
