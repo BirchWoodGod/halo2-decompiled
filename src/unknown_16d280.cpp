@@ -114,6 +114,9 @@ void render_model_get_default_orientations(s_render_model_definition const *defi
 	}
 }
 
+/* retail calls this out of line from both of its callers (0x10f260, 0x11c380) */
+__declspec(noinline) long render_model_find_named_entry(long render_model_index, long name);
+
 // @retail 0x16da90
 long render_model_find_named_entry(long render_model_index, long name)
 {
@@ -440,15 +443,20 @@ void render_model_choose_permutations(long render_model_index, long variant_inde
 		s_16dce0_choice choices[32];
 		long count = 0;
 
-		if (variant_index != NONE && render_model_index != NONE && region_index != NONE)
+		if (variant_index != NONE)
 		{
-			s_model_variant *variant = &((s_16d280_render_model *)g_4e3b44[render_model_index & 0xffff].bytes)->variants[variant_index];
-			long variant_region_index = variant->region_indices[region_index];
+			s_model_variant *variant = &definition->variants[variant_index];
+			long variant_region_index = NONE;
 
+			if (render_model_index != NONE && variant_index != NONE && region_index != NONE)
+			{
+				variant_region_index = ((s_16d280_render_model *)g_4e3b44[render_model_index & 0xffff].bytes)->
+					variants[variant_index].region_indices[region_index];
+			}
 			if (variant_region_index != NONE)
 			{
-				model_variant_region_get_choices(&definition->variants[variant_index].regions[variant_region_index], NONE, 0, 0,
-					true, NUMBEROF(choices), &count, choices);
+				model_variant_region_get_choices(&variant->regions[variant_region_index], NONE, 0, 0, true,
+					NUMBEROF(choices), &count, choices);
 			}
 		}
 		if (count == 0)
@@ -459,7 +467,14 @@ void render_model_choose_permutations(long render_model_index, long variant_inde
 			{
 				if (!(region->permutations[permutation_index].flags & 1))
 				{
-					permutation_choice_add_default(&choices[count++], permutation_index);
+					choices[count].permutation_index = permutation_index;
+					choices[count].index = NONE;
+					choices[count].name = 0;
+					choices[count].unknown0c = 0;
+					choices[count].unknown10 = NONE;
+					choices[count].unknown14 = 0;
+					choices[count].weight = 1.0f;
+					count++;
 				}
 			}
 			if (count == 0 && region->permutation_count > 0)
