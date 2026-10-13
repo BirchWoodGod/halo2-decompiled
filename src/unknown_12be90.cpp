@@ -68,24 +68,31 @@ void function_12ba90(void)
 	}
 }
 
+/* retail's only caller (0x12b450, still a stub) ignores the result */
 // @retail 0x12bad0
-void function_12bad0(void)
+bool function_12bad0(void)
 {
-	bool local_0 = false;
+	bool result = false;
 	s_510c50_view *state = (s_510c50_view *)g_510c50;
-	bool revert = state->revert_requested != local_0;
-
-	if (revert && state->revert_checked != local_0)
-	{
-		revert = !function_163b60();
-	}
-	main_globals.unknown72 = local_0;
+	bool revert = state->revert_requested;
 	if (revert)
 	{
-		main_globals.unknown75 = local_0;
-		main_globals.unknown6f = true;
-		main_globals.unknown74 = true;
+		if (state->revert_checked)
+			revert = !function_163b60();
+		main_globals.unknown72 = false;
+		if (revert)
+		{
+			main_globals.unknown75 = false;
+			result = true;
+			main_globals.unknown6f = true;
+			main_globals.unknown74 = true;
+		}
 	}
+	else
+	{
+		main_globals.unknown72 = false;
+	}
+	return result;
 }
 
 // @retail 0x12bf00

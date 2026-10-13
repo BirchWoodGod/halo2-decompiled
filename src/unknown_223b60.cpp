@@ -77,14 +77,16 @@ void function_223e70(const word *rgb, S3TC_COLOR *out)
 		word w;
 		byte bytes[4];
 	} u;
-	dword c = *rgb;
+	word w = *rgb;
+	dword c = w;
 	byte b = (byte)(c << 3);
 	b |= b >> 5;
 	u.d = c;
 	u.w >>= 5;
 	byte g = (byte)(u.bytes[0] << 2);
 	g |= g >> 6;
-	byte r = (byte)((u.d >> 6) << 3);
+	byte r = (byte)(u.d >> 6);
+	r <<= 3;
 	r |= r >> 5;
 	u.bytes[0] = b;
 	u.bytes[1] = g;
