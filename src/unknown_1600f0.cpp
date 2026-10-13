@@ -1349,12 +1349,15 @@ void __stdcall function_1608e0(long player_index, s_score_panel_1608e0 *panel, r
 		color3f color;
 		color = *function_7f720(&color, (short)team);
 		byte *entry = scores + team * 0x12;
-		short seconds = *(short *)(entry + (g_4e6948->flag1128 ? 0x1c6 : 0x1c4));
+		short seconds;
+		if (g_4e6948->flag1128)
+			seconds = *(short *)(entry + 0x1c6);
+		else
+			seconds = *(short *)(entry + 0x1c4);
 		bool active = false;
 		if (game_engine_get())
 		{
 			byte teams = ((byte *)g_4e6948)[0x184] & 1;
-			volatile byte observed_teams = teams;
 			if (teams && team >= 0 && team < 8)
 				active = (g_4e9ae8->wc & (1 << team)) != 0;
 		}
@@ -1396,7 +1399,11 @@ void __stdcall function_1608e0(long player_index, s_score_panel_1608e0 *panel, r
 		work.position[1] += 0x14;
 		bool show_icon = team != NONE && *(long *)(player + 0x2c) == NONE && !(flags & 2);
 		byte *entry = scores + (index & 0xffff) * 0x1c;
-		short seconds = *(short *)(entry + (g_4e6948->flag1128 ? 6 : 4));
+		short seconds;
+		if (g_4e6948->flag1128)
+			seconds = *(short *)(entry + 6);
+		else
+			seconds = *(short *)(entry + 4);
 		s_player_row_columns *columns = (s_player_row_columns *)panel;
 		game_engine_player_row_build(work.position, row_alpha, index, (word *)(player + 0x44), place,
 			*(short *)(entry + 0x12), seconds, (bool)((flags >> 1) & 1), show_icon, team == NONE,
