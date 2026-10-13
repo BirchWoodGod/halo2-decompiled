@@ -177,6 +177,44 @@ long weighted_choice_random(long tag_index, long *extra)
 	return result;
 }
 
+/* the same code as above for the vehicle collections, which the linker folded into 0x19f1a0
+   (retail calls it from a separate block in 0x15aad0); keep the two bodies identical */
+long weighted_choice_random_15aad0(long tag_index, long *extra)
+{
+	s_weighted_choice_block *block = (s_weighted_choice_block *)g_4e3b44[tag_index & 0xffff].bytes;
+	long count = block->count;
+	s_weighted_choice *choices = block->choices;
+	long result = NONE;
+	real total = weighted_choices_total(block);
+
+	if (count > 1)
+	{
+		real value = (real)random_index(&g_4e7408->unknown0, (short)(long)total);
+
+		for (long i = 0; i < count; i++)
+		{
+			s_weighted_choice *choice = &choices[i];
+
+			value -= choice->weight;
+			if (value <= 0.0f)
+			{
+				result = choice->value;
+				if (extra)
+					*extra = choice->extra;
+				break;
+			}
+		}
+	}
+	else if (count > 0)
+	{
+		result = choices[0].value;
+		if (extra)
+			*extra = choices[0].extra;
+	}
+
+	return result;
+}
+
 
 struct s_weapon_rule_choice
 {

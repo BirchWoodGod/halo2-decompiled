@@ -764,7 +764,7 @@ PRIVATE inline void function_244d51(point3f *arg_0, real arg_1, real arg_2, real
 }
 
 // @retail 0x244ca0
-void function_244ca0(real height, real radius, s_line_list *list, long a, long b, long c, byte d, byte e, short f, point3f const *position)
+void function_244ca0(real height, real radius, s_line_list *list, long a, long b, long c, byte d, byte e, point3f const *position, short f)
 {
 	if (list->count_a < 0x100)
 	{

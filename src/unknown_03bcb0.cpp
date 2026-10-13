@@ -295,7 +295,7 @@ bool __stdcall function_4dfa0(long tag, long context, long pass, long stage, lon
 		out->value10 = (dword)material;
 		out->value08 = 0;
 		out->unknown14 = 0;
-		bool ready = function_4cbb0(*(long *)(material + 0x100), 0) != 0;
+		bool ready = function_4cbb0(*(long *)((byte *)out->value10 + 0x100), 0) != 0;
 		return ready;
 	}
 	return false;
@@ -334,6 +334,7 @@ complete:
 // @retail 0x4e0d0
 bool __stdcall function_4e0d0(long tag, long context, long pass, long stage, long entry, long handle, s_sort_record *out)
 {
+	byte result = 0;
 	(void)&tag; (void)&context; (void)&pass; (void)&stage;
 	(void)&entry; (void)&handle; (void)&out;
 	byte *table = *(byte **)((byte *)g_4e0348 + 0x238);
@@ -345,10 +346,10 @@ bool __stdcall function_4e0d0(long tag, long context, long pass, long stage, lon
 	byte *part = *(byte **)(definition + 0x14) + record[1] * 20;
 	if (function_12de70(block, 3) && *(word *)(record + 0xe) > 0)
 	{
+		out->value0c = handle;
 		out->unknown04 = 0;
 		out->group = 4;
 		out->subkey = 0xffff;
-		out->value0c = handle;
 		byte *material = record_material(tag, pass, stage, entry);
 		out->value10 = (dword)material;
 		switch (part[4])
@@ -358,9 +359,9 @@ bool __stdcall function_4e0d0(long tag, long context, long pass, long stage, lon
 		default: out->value08 = 0; break;
 		}
 		out->unknown14 = 0;
-		return function_4cbb0(*(long *)(material + 0x100), out->value08) != 0;
+		result = function_4cbb0(*(long *)(material + 0x100), out->value08) != 0;
 	}
-	return false;
+	return result;
 }
 
 typedef bool (__stdcall *t_record_fill)(long, void *, long, long, long, void *, s_sort_record *);
@@ -599,7 +600,7 @@ extern bool g_4ba019;
 extern real g_485b28[7];
 
 // @retail 0x1bf50
-bool function_1bf50(long tag, long level, real distance, long *out)
+bool function_1bf50(long level, long tag, real distance, long *out)
 {
     long selected = 0;
     long const *tag_pointer = &tag;
@@ -743,7 +744,7 @@ void function_41490(short group, long tag, short kind, real distance, t_record_f
 {
     byte *definition = g_4e3b44[tag & 0xffff].bytes;
     long pass;
-    function_1bf50(tag, *(word *)(definition + 0x3c), distance, &pass);
+    function_1bf50(*(word *)(definition + 0x3c), tag, distance, &pass);
     byte *groups = record_format_groups(tag);
     dword flags = *(dword *)(*(byte **)(groups + 4) + pass * 10 + 2);
     if (flags & 0x10006e)
@@ -786,17 +787,20 @@ void function_3d000(real const *state)
     direction[2] = (real)cos(state[30]);
     direction[3] = state[25];
     real mapped[4];
-    mapped[0] = (real)((direction[0] + 1.0) * 0.5);
-    mapped[1] = (real)((direction[1] + 1.0) * 0.5);
-    mapped[2] = (real)((direction[2] + 1.0) * 0.5);
+    mapped[0] = (real)((direction[0] + 1.0f) * 0.5f);
+    mapped[1] = (real)((direction[1] + 1.0f) * 0.5f);
+    mapped[2] = (real)((direction[2] + 1.0f) * 0.5f);
     mapped[3] = 0.4970000088214874f;
     D3DDevice_SetVertexShaderConstant(-73, mapped, 1);
     if (state[34] > 0.0001f && state[40] > 0.0001f && state[41] > 0.0001f &&
         state[41] - state[40] > 0.0001f)
     {
-        double inverse = 1.0 / state[34];
-        struct { real a, b; } local_low_high_record = { (real)(inverse * state[40] * 16777215.0), (real)(inverse * state[41] * 16777215.0) };
-        direction[0] = 1.0f / (local_low_high_record.b - local_low_high_record.a);
+        real inverse = 1.0f / state[34];
+        struct { real b, a; } local_low_high_record;
+        local_low_high_record.a = (real)(inverse * state[40] * 16777215.0);
+        local_low_high_record.b = (real)(inverse * state[41] * 16777215.0);
+        real inverse_range = 1.0f / (local_low_high_record.b - local_low_high_record.a);
+        direction[0] = inverse_range;
         direction[1] = 0.0f - direction[0] * local_low_high_record.a;
         direction[2] = 0.0f;
         direction[3] = 0.0f;
@@ -1075,7 +1079,7 @@ void function_41040(short index, long part_index, long group, byte weight,
     long material = material_override == NONE ? context->material : material_override;
     byte const *definition = g_4e3b44[material & 0xffff].bytes;
     long pass;
-    function_1bf50(material, *(word const *)(definition + 0x3c), priority, &pass);
+    function_1bf50(*(word const *)(definition + 0x3c), material, priority, &pass);
     byte const *groups = record_format_groups(material);
     dword flags = *(dword const *)(*(byte **)(groups + 4) + pass * 10 + 2);
     if (material_override != NONE)
@@ -1297,7 +1301,7 @@ bool __stdcall function_3bd00(real height, dword color)
 void function_40e30(short group, long tag, real distance, long level, word kind,
     dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context)
 {
-    if (group != NONE && function_1bf50(tag, level, distance, &level))
+    if (group != NONE && function_1bf50(level, tag, distance, &level))
         function_3b9d0(&g_4c1a48[group], tag, level, and_mask, or_mask, fill, value, context, 0);
 }
 #endif
@@ -1551,7 +1555,7 @@ void function_40e30(short group, long tag, real distance, long level, word kind,
     word const *kind_reference = &kind;
     (void)*kind_reference;
     bool (*select)(long, long, real, long *) = function_1bf50;
-    if (group != NONE && select(tag, *level_reference, distance, (long *)&distance))
+    if (group != NONE && select(*level_reference, tag, distance, (long *)&distance))
         function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
 }
 

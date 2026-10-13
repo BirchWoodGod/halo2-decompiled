@@ -441,7 +441,7 @@ long function_26b900(long prop_index, long actor_index, long clump_index)
 
 		while (next_clump_in_pool(&iterator))
 		{
-			other = iterator.current;
+			other = *(s_clump *volatile *)&iterator.current;
 			if (clump_index != iterator.pool.datum_index && (short)side == (short)function_20f040(other->team))
 			{
 				long other_prop_index = function_26b230(iterator.pool.datum_index, prop->type);
@@ -1454,8 +1454,8 @@ long function_269040(point3f const *center, short team)
 			iterator.pool.index = NONE;
 		}
 		bool active = g_4f55d0->active;
-  long volatile oldest = NONE;
-		long volatile oldest_time = 0x7fffffff;
+  long volatile oldest_time = 0x7fffffff;
+		long volatile oldest = NONE;
 		while (active && (iterator.current = (s_clump *)data_iterator_next_calling(&iterator.pool)) != NULL)
 		{
 			long time = ((s_clump_activity_view *)iterator.current)->active_time;

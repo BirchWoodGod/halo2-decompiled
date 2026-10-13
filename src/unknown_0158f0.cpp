@@ -1,3 +1,4 @@
+#include "surface_resource_pairs.h"
 // @flags /O2 /Gr
 #include "palette_cache_storage.h"
 #include "palette_storage.h"
@@ -30,10 +31,7 @@ long g_450768[2][24] = {
 dword g_43e8a8[12];
 long g_43e8d8[6];
 
-D3DResource *g_509378;
-D3DResource *g_509380;
-D3DResource *g_509374;
-D3DResource *g_50937c;
+s_surface_resource_pairs g_surface_resource_pairs;
 D3DResource *g_485ae4;
 D3DResource *g_485ae8;
 D3DResource *g_485aec;
@@ -117,8 +115,8 @@ dword **g_407488;
 
 // @retail 0x158f0
 bool function_0158f0(
-	byte a,
 	short b,
+	byte a,
 	long width,
 	long height,
 	long levels,
@@ -252,41 +250,6 @@ dword function_015cd0(long index, dword entry)
 		{
 			result = palette[entry & 0xff];
 		}
-	}
-	return result;
-}
-
-// @retail 0x15d00
-bool function_015d00(long count, dword **out)
-{
-	bool result = true;
-	if (count < 0x800)
-	{
-		((D3D::CDevice *)D3D__pDevice)->LazySetStateVB(0);
-		dword *const *fields = (dword *const *)D3D__pDevice;
-		dword *push = fields[0];
-		dword *requested_end = push + count + 1;
-		dword *threshold_end = fields[1] + 0x80;
-		if (requested_end < threshold_end)
-		{
-			*out = push;
-		}
-		else
-		{
-			dword fallback_size = D3D::CDevice::m_PushSegmentSize;
-			dword full_size = fallback_size;
-			dword requested_size = count * 4 + 0x208;
-			fallback_size >>= 1;
-			fallback_size = requested_size > fallback_size ? requested_size : fallback_size;
-			full_size = requested_size > full_size ? requested_size : full_size;
-			push = (dword *)D3D::MakeRequestedSpace(fallback_size, full_size);
-			*out = push;
-		}
-	}
-	else
-	{
-		*out = NULL;
-		result = false;
 	}
 	return result;
 }
