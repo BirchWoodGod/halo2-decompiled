@@ -1559,7 +1559,7 @@ void function_1484f4(void);
 long function_147f4f();
 void network_session_manager_leave_session_a(bool close);
 void network_session_manager_leave_session_b(bool close);
-c_class_1473c9 *function_149f1e(word user_flags, long load);
+c_class_1473c9 *function_149f1e(short user_flags, long load);
 c_class_1473c9 *__stdcall function_2521f8(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2519bb(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_24fa4c(s_screen_parameters *parameters);
@@ -1600,7 +1600,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 	}
 	else
 	{
-		switch (state)
+		if (state != 4) switch (state)
 		{
 		case 1:
 			if (menu == 1)
@@ -1621,8 +1621,14 @@ void function_19b1c9(long screen_id, long menu, long state)
 			switch (menu)
 			{
 			case 0:
+				in_game = true;
+				break;
 			case 1:
+				in_game = true;
+				break;
 			case 2:
+				in_game = true;
+				break;
 			case 6:
 				in_game = true;
 				break;
@@ -1632,13 +1638,11 @@ void function_19b1c9(long screen_id, long menu, long state)
 
 			if (in_game & players)
 			{
-				function_149f1e(0xffff, (long)function_24fa4c);
+				function_149f1e(NONE, (long)function_24fa4c);
 				return;
 			}
 			break;
 		}
-		case 4:
-			break;
 		case 5:
 			return;
 		case 6:
