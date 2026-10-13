@@ -926,6 +926,45 @@ static inline void view_cross_product(vector3f const *a, vector3f const *b, vect
 	result->k = b->j * a->i - a->j * b->i;
 }
 
+/* the rotation of `angle` about `axis` */
+static inline void rotation_matrix_from_axis_angle_171d90(s_rotation_matrix *m, vector3f const *axis, real angle)
+{
+	real s = (real)sin(angle);
+	real c = (real)cos(angle);
+	real i2 = axis->i * axis->i;
+	real j2 = axis->j * axis->j;
+	real k2 = axis->k * axis->k;
+	real one_minus_c = 1.f - c;
+	real tij = (one_minus_c * axis->i) * axis->j;
+	real tik = (one_minus_c * axis->k) * axis->i;
+	real tjk = (one_minus_c * axis->k) * axis->j;
+
+	m->m00 = (1.f - i2) * c + i2;
+	m->m01 = tij - s * axis->k;
+	m->m10 = tij + s * axis->k;
+	m->m11 = (1.f - j2) * c + j2;
+	m->m20 = tik - s * axis->j;
+	m->m02 = tik + s * axis->j;
+	m->m22 = (1.f - k2) * c + k2;
+	m->m12 = tjk - s * axis->i;
+	m->m21 = tjk + s * axis->i;
+}
+
+/* `in` rotated by `m` (in may be out) */
+static inline void rotation_matrix_transform_171d90(s_rotation_matrix const *m, vector3f const *in, vector3f *out)
+{
+	vector3f copy;
+
+	if (in == out)
+	{
+		copy = *in;
+		in = &copy;
+	}
+	out->i = (in->i * m->m00 + m->m02 * in->k) + m->m01 * in->j;
+	out->j = (in->k * m->m12 + m->m11 * in->j) + in->i * m->m10;
+	out->k = (in->j * m->m21 + in->k * m->m22) + in->i * m->m20;
+}
+
 // @retail 0x171d90
 void function_171d90(s_view_setup *view)
 {
@@ -939,15 +978,15 @@ void function_171d90(s_view_setup *view)
 	real angle_a = (real)atan(tan(half) * view->scale_x);
 	real angle_b = (real)atan(tan(half) * view->scale_y);
 
-	rotation_matrix_from_axis_angle(&m, g_4687b0, angle_a);
-	rotation_matrix_transform(&m, &view->forward, &view->forward);
-	rotation_matrix_transform(&m, &view->up, &view->up);
+	rotation_matrix_from_axis_angle_171d90(&m, g_4687b0, angle_a);
+	rotation_matrix_transform_171d90(&m, &view->forward, &view->forward);
+	rotation_matrix_transform_171d90(&m, &view->up, &view->up);
 
 	vector3f axis;
 	view_cross_product(&view->forward, &view->up, &axis);
-	rotation_matrix_from_axis_angle(&m, &axis, angle_b);
-	rotation_matrix_transform(&m, &view->forward, &view->forward);
-	rotation_matrix_transform(&m, &view->up, &view->up);
+	rotation_matrix_from_axis_angle_171d90(&m, &axis, angle_b);
+	rotation_matrix_transform_171d90(&m, &view->forward, &view->forward);
+	rotation_matrix_transform_171d90(&m, &view->up, &view->up);
 
 	real dot = view->forward.j * original.j + view->forward.k * original.k + view->forward.i * original.i;
 	real limit = 0.0001f;
