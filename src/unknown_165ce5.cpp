@@ -2084,7 +2084,7 @@ long __stdcall first_person_weapons_get_models(long user_index, long unit_index,
 			active |= TEST_FLAG(weapon->flags, _first_person_weapon_active_bit);
 			armed |= weapon->weapon_index != NONE;
 		}
-		if (active && armed && user->unit_index == unit_index && unit_index != NONE && user->character_index >= 0 &&
+		if (active && armed && user->unit_index == unit_index && user->unit_index != NONE && user->character_index >= 0 &&
 			user->character_index < ((s_first_person_globals_view *)g_4e034c)->representation_count)
 		{
 			s_player_representation *representation =

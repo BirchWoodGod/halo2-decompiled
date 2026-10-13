@@ -4955,14 +4955,16 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
     if (g_4e6948->mode == 4) return;
     byte *globals_tag = g_4e3b44[*(long *)((byte *)g_4e034c + 0x16c) & 0xffff].bytes;
     byte *preset = *(byte **)(*(byte **)(globals_tag + 0xc) + 0x534);
-    volatile long  arg_642c39 = g_510c54->field_2_3;
-    byte * volatile scenario = (byte *)g_4e0350;
+    long arg_642c39 = g_510c54->field_2_3;
+    byte *scenario = (byte *)g_4e0350;
     for (short i = 0; i < *(long *)(scenario + 0x120); ++i)
     {
         byte *placement = *(byte **)(scenario + 0x124) + i * 0x90;
         if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
         c_engine_peer *engine = game_engine_get();
-        long type = engine ? engine->p0() : NONE;
+        long type = NONE;
+        if (engine)
+            type = engine->p0();
         if (function_15a090(type, 4, (short *)(placement + 4)) == NONE) continue;
         long index = entries[i].index;
         byte *object = NULL;
@@ -4977,18 +4979,21 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
                     real z = *(real *)(placement + 0x48) - *(real *)(object + 0x38);
                     real y = *(real *)(placement + 0x44) - *(real *)(object + 0x34);
                     real x = *(real *)(placement + 0x40) - *(real *)(object + 0x30);
-                    reset = z*z + y*y + x*x <= 100.0f || function_15f060((point3f *)(object + 0x30), *(real *)(preset + 0x28));
+                    if (z*z + y*y + x*x > 100.0f)
+                        reset = function_15f060((point3f *)(object + 0x30), *(real *)(preset + 0x28));
+                    else
+                        reset = true;
                 }
-                if (reset) entries[i].value06 = 0;
-                else ++entries[i].value06;
+                if (!reset) ++entries[i].value06;
+                else entries[i].value06 = 0;
                 if (entries[i].value06 > *(short *)(placement + 0x10)) entries[i].value04 = 1;
             }
         }
         short *timer = &entries[i].value04;
         if (*timer == 0)
         {
-            bool schedule = index == NONE;
-            if (index != NONE)
+            bool schedule = entries[i].index == NONE;
+            if (entries[i].index != NONE)
             {
                 switch (*(short *)(placement + 0x12))
                 {

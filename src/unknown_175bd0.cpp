@@ -2275,6 +2275,35 @@ void function_179850(long effect_index, real dt)
 		function_1792b0(effect_index, dt);
 }
 
+static __forceinline s_effect_location_datum *effect_location_next_179fb0(s_effect_datum *effect, long *location_index)
+{
+	s_effect_location_datum *location = 0;
+
+	if (*location_index != NONE)
+	{
+		location = DATUM(g_4ea938, s_effect_location_datum, *location_index);
+		*location_index = location->next_index;
+		if (location->node_index != NONE && (location->node_index & 0x8000))
+			location = effect_location_next(effect, location_index, 0);
+	}
+	return location;
+}
+
+static __forceinline void transform_point_179fb0(transform4x3f const *matrix, point3f const *point, point3f *out)
+{
+	point3f p = *point;
+
+	if (matrix->scale != 1.0f)
+	{
+		p.x = matrix->scale * p.x;
+		p.y = matrix->scale * p.y;
+		p.z = matrix->scale * p.z;
+	}
+	out->x = matrix->up.i * p.z + matrix->left.i * p.y + matrix->forward.i * p.x + matrix->position.x;
+	out->y = matrix->up.j * p.z + matrix->left.j * p.y + matrix->forward.j * p.x + matrix->position.y;
+	out->z = matrix->up.k * p.z + matrix->left.k * p.y + matrix->forward.k * p.x + matrix->position.z;
+}
+
 // @retail 0x179fb0
 void function_179fb0(s_effect_datum *effect)
 {
@@ -2293,7 +2322,7 @@ void function_179fb0(s_effect_datum *effect)
 				long location_index = effect->location_indices[acceleration->location];
 				s_effect_location_datum *location;
 
-				while ((location = effect_location_next(effect, &location_index, 0)) != 0)
+				while ((location = effect_location_next_179fb0(effect, &location_index)) != 0)
 				{
 					point3f point;
 					vector3f forward;
@@ -2304,7 +2333,7 @@ void function_179fb0(s_effect_datum *effect)
 						transform4x3f matrix;
 
 						function_17aec0(effect, &matrix, location->node_index);
-						effect_matrix_transform_point(&matrix, &location->matrix.position, &point);
+						transform_point_179fb0(&matrix, &location->matrix.position, &point);
 						effect_matrix_transform_normal(&matrix, &location->matrix.forward, &forward);
 					}
 					else
@@ -2648,12 +2677,28 @@ long __stdcall function_177040(long particle_system_index, long effect_index)
 	return next_index;
 }
 
+static __forceinline s_effect_location_datum *effect_location_next_1778d0(s_effect_datum *effect, long *location_index)
+{
+	s_effect_location_datum *location = 0;
+
+	if (*location_index != NONE)
+	{
+		location = DATUM(g_4ea938, s_effect_location_datum, *location_index);
+		*location_index = location->next_index;
+		if (location->node_index != NONE && (location->node_index & 0x8000))
+			location = effect_location_next(effect, location_index, 0);
+	}
+	return location;
+}
+
 // @retail 0x1778d0
 bool function_1778d0(void)
 {
 	bool result = false;
 	long effect_index = data_datum_index(g_4ea93c, function_16bc00(g_4ea93c, 0));
 
+	if (effect_index == NONE)
+		return result;
 	while (effect_index != NONE)
 	{
 		s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
@@ -2679,7 +2724,7 @@ bool function_1778d0(void)
 					long location_index = effect->location_indices[0];
 					s_effect_location_datum *location;
 
-					while ((location = effect_location_next(effect, &location_index, 0)) != 0)
+					while ((location = effect_location_next_1778d0(effect, &location_index)) != 0)
 					{
 						point3f point;
 						vector3f delta;

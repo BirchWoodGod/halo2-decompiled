@@ -2752,7 +2752,7 @@ void game_engine_boot_player(long);
 // @retail 0x14d3a0
 void __stdcall function_14d3a0(byte const *input)
 {
-    byte const *const volatile *input_reference = &input;
+    byte const *const *input_reference = &input;
     players_update_connections();
     long pending[16];
     long count = 0;
@@ -2825,10 +2825,10 @@ void __stdcall function_14d3a0(byte const *input)
         if (unit != NONE && (*(dword *)(object + 0x134) & 1))
         {
             byte *game = (byte *)g_510c50;
-            if ((action->flags & 0x100) && game[6])
+            if (action->flags & 0x100)
             {
-                bool reset = true;
-                if (game[0x22]) reset = !function_163b60();
+                byte reset = game[6];
+                if (reset && game[0x22]) reset = !function_163b60();
                 if (reset)
                 {
                     main_globals.switch_structure_bsp = false;
