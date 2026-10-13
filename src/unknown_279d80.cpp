@@ -1455,6 +1455,224 @@ __forceinline void compute_orientations(long blend_method, long node_kind, bool 
 	compute_component_orientations(blend_method, node_kind, destination_mask, interpolate, 2, node_index, bit_flags, node_count, g_sampling_settings.inheritance);
 }
 
+__forceinline void function_288573(long arg_0, long arg_1, s_animation_output *arg_2, long arg_3)
+{
+	if (arg_0 == 1)
+	{
+		if (arg_1 == 0)
+		{
+			quaternion_blend(&arg_2->rotation, &g_504430.rotation, g_sampling_settings.blend_weight);
+		}
+		else if (arg_1 == 1)
+		{
+			orientation_vector_blend(arg_2, &g_504430, g_sampling_settings.blend_weight);
+		}
+		else
+		{
+			orientation_scale_blend(arg_2, &g_504430, g_sampling_settings.blend_weight);
+		}
+	}
+	else if (arg_0 == 2)
+	{
+		if (arg_1 == 0)
+		{
+			quaternion_multiply(&arg_2->rotation, &g_504430.rotation, &arg_2->rotation);
+		}
+		else if (arg_1 == 1)
+		{
+			arg_2->vector.i = arg_2->vector.i + g_504430.vector.i;
+			arg_2->vector.j = arg_2->vector.j + g_504430.vector.j;
+			arg_2->vector.k = arg_2->vector.k + g_504430.vector.k;
+		}
+		else
+		{
+			arg_2->scale = arg_2->scale * g_504430.scale;
+		}
+	}
+	else if (arg_0 == 3)
+	{
+		if (arg_1 == 0)
+		{
+			quaternion_scale(&g_504430.rotation, g_sampling_settings.blend_weight);
+			quaternion_multiply(&arg_2->rotation, &g_504430.rotation, &arg_2->rotation);
+		}
+		else if (arg_1 == 1)
+		{
+			arg_2->vector.i = g_sampling_settings.blend_weight * g_504430.vector.i + arg_2->vector.i;
+			arg_2->vector.j = g_sampling_settings.blend_weight * g_504430.vector.j + arg_2->vector.j;
+			arg_2->vector.k = g_sampling_settings.blend_weight * g_504430.vector.k + arg_2->vector.k;
+		}
+		else
+		{
+			arg_2->scale = ((g_504430.scale - 1.0f) * g_sampling_settings.blend_weight + 1.0f) * arg_2->scale;
+		}
+	}
+	else if (arg_0 == 4)
+	{
+		if (arg_1 == 0)
+		{
+			if (node_flags_test(g_55e530, arg_3))
+			{
+				quaternion_multiply(&g_502430[arg_3].rotation, &g_5044c0->rotation, &g_5044c0->rotation);
+			}
+		}
+		else if (arg_1 == 1)
+		{
+			if (node_flags_test(g_55e550, arg_3))
+			{
+				s_animation_output *local_0 = g_5044c0;
+
+				local_0->vector.i = g_502430[arg_3].position.x + local_0->vector.i;
+				local_0->vector.i = g_502430[arg_3].position.y + local_0->vector.i;
+				local_0->vector.i = g_502430[arg_3].position.z + local_0->vector.i;
+			}
+		}
+		else
+		{
+			if (node_flags_test(g_55e570, arg_3))
+			{
+				s_animation_output *local_0 = g_5044c0;
+				real local_1 = g_502430[arg_3].scale;
+
+				local_0->scale = local_0->scale * local_1;
+			}
+		}
+	}
+}
+
+__forceinline void function_288572(long arg_0, long arg_1, bool arg_2,
+	bool arg_3, long arg_4, long &arg_5, byte const *&arg_6, long arg_7,
+	s_graph_inheritance const *const &arg_8)
+{
+	bool local_0 = arg_0 == 0 || arg_0 == 4;
+	s_animation_output *local_1 = (s_animation_output *)g_sampling_settings.field_4c;
+
+	g_5044c0 = local_0 ? local_1 : &g_504430;
+	arg_6 = arg_4 == 0 ? g_sampling_settings.rotation_bit_flags : (arg_4 == 1 ? g_sampling_settings.translation_bit_flags : g_sampling_settings.scale_bit_flags);
+	for (arg_5 = 0; arg_5 < arg_7; )
+	{
+		long local_2 = *arg_6++;
+
+		if (local_2 == 0)
+		{
+			arg_5 += 8;
+			if (arg_1 == 0)
+			{
+				if (local_0)
+				{
+					g_5044c0 += 8;
+				}
+				else
+				{
+					local_1 += 8;
+				}
+			}
+		}
+		else
+		{
+			long local_3 = arg_5 + 8 > arg_7 ? arg_7 : arg_5 + 8;
+
+			for (; arg_5 < local_3; arg_5++)
+			{
+				if (local_2 & 1)
+				{
+					long local_4;
+
+					if (node_destination_get(arg_8, arg_1, arg_5, &local_4) &&
+						(!arg_2 || node_flags_test(g_sampling_settings.destination_node_mask, local_4)))
+					{
+						if (arg_1 != 0)
+						{
+							local_1 = (s_animation_output *)g_sampling_settings.field_4c + local_4;
+							if (local_0)
+							{
+								g_5044c0 = local_1;
+							}
+						}
+						component_decompress(arg_4);
+						if (!arg_3 && !local_0)
+						{
+							root_offset_scale(arg_1, arg_4, arg_5);
+						}
+						if (arg_3)
+						{
+							dword local_5 = g_sampling_settings.frame_index;
+							long local_6 = g_sampling_settings.next_frame_index;
+							real local_7 = g_sampling_settings.frame_fraction;
+
+							g_sampling_settings.frame_index = g_sampling_settings.blend_frame_index;
+							g_sampling_settings.next_frame_index = g_sampling_settings.blend_next_frame_index;
+							g_sampling_settings.frame_fraction = g_sampling_settings.blend_frame_fraction;
+							g_5044c0 = &g_504410;
+							component_decompress(arg_4);
+							component_interpolate(arg_4);
+							if (arg_0 != 4)
+							{
+								root_offset_scale(arg_1, arg_4, arg_5);
+							}
+							if (arg_0 == 0)
+							{
+								__assume(0);
+							}
+							function_288573(arg_0, arg_4, local_1, arg_1 == 0 ? arg_5 : local_4);
+							g_sampling_settings.frame_index = local_5;
+							g_sampling_settings.next_frame_index = local_6;
+							g_sampling_settings.frame_fraction = local_7;
+							g_5044c0 = &g_504430;
+						}
+						else
+						{
+							function_288573(arg_0, arg_4, local_1, arg_1 == 0 ? arg_5 : local_4);
+						}
+					}
+					if (arg_4 == 0)
+					{
+						g_5044b4++;
+					}
+					else if (arg_4 == 1)
+					{
+						g_5044b8++;
+					}
+					else
+					{
+						g_5044bc++;
+					}
+				}
+				if (arg_1 == 0)
+				{
+					if (local_0)
+					{
+						g_5044c0++;
+					}
+					else
+					{
+						local_1++;
+					}
+				}
+				local_2 >>= 1;
+			}
+		}
+	}
+}
+
+__forceinline void function_288571(long arg_0, long arg_1, bool arg_2, bool arg_3)
+{
+	long local_0;
+	byte const *local_1;
+	long local_2 = g_sampling_settings.node_count;
+
+	g_5044b4 = 0;
+	g_5044b8 = 0;
+	g_5044bc = 0;
+	function_288572(arg_0, arg_1, arg_2, arg_3, 0, local_0, local_1, local_2, g_sampling_settings.inheritance);
+	if (arg_1 == 2 && local_2 > 1)
+	{
+		local_2 = 1;
+	}
+	function_288572(arg_0, arg_1, arg_2, arg_3, 1, local_0, local_1, local_2, g_sampling_settings.inheritance);
+	function_288572(arg_0, arg_1, arg_2, arg_3, 2, local_0, local_1, local_2, g_sampling_settings.inheritance);
+}
+
 /* compute_orientations with the inheritance read once */
 __forceinline void compute_orientations_inheritance(long blend_method, long node_kind, bool destination_mask, bool interpolate)
 {
@@ -2004,7 +2222,7 @@ void function_288120(void)
 // @retail 0x288570
 void function_288570(void)
 {
-	compute_orientations(4, 0, true, true);
+	function_288571(4, 0, true, true);
 }
 
 // @retail 0x288bd0
