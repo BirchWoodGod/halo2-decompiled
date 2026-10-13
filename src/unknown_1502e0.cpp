@@ -621,6 +621,13 @@ struct s_player_pickup_definition
 
 bool __stdcall function_cd7b0(long unit_index, long weapon_index, bool *modes);
 
+/* two of the four answers of 0xcd7b0 */
+struct s_pickup_hands
+{
+	bool primary;
+	bool secondary;
+};
+
 // @retail 0x151780
 void function_151780(long object_index, long player_index, s_target_candidate *best)
 {
@@ -637,21 +644,19 @@ void function_151780(long object_index, long player_index, s_target_candidate *b
 		vector3f delta;
 		vector3d_from_points3d(&unit->position, &object->position, &delta);
 		real distance = delta.j * delta.j + delta.i * delta.i + delta.k * delta.k;
-		bool modes[4];
-		if (distance < radius * radius && function_cd7b0(player->unit_index, object_index, modes))
+		s_pickup_hands hands[2];
+		if (distance < radius * radius && function_cd7b0(player->unit_index, object_index, &hands[0].primary))
 		{
-			bool first = modes[0];
-			bool second = modes[1];
-			bool third = modes[2];
-			bool fourth = modes[3];
+			s_pickup_hands first = hands[0];
+			s_pickup_hands second = hands[1];
 			long flags = 0;
-			if (first)
+			if (first.primary)
 				flags = 1;
-			else if (third)
+			else if (second.primary)
 				flags = 2;
-			if (second)
+			if (first.secondary)
 				flags |= 4;
-			else if (fourth)
+			else if (second.secondary)
 				flags |= 8;
 			s_target_candidate candidate;
 			memset(&candidate, 0, sizeof(candidate));
@@ -695,11 +700,13 @@ void function_152df0(long player_index)
 {
 	long const *player_reference = &player_index;
 	s_tail_player *player = tail_player_get(*player_reference);
-	if (player->unit_index != NONE)
+	long unit_index = player->unit_index;
+	if (unit_index != NONE)
 	{
-		s_player_removed_unit *unit = (s_player_removed_unit *)tail_object_get(player->unit_index);
-		unit->flags |= 0x400;
-		function_b7360(player->unit_index);
+		s_player_removed_unit *unit = (s_player_removed_unit *)tail_object_get(unit_index);
+		word *flags = &unit->flags;
+		*flags |= 0x400;
+		function_b7360(unit_index);
 	}
 	if (g_4e6948->mode == 4)
 	{

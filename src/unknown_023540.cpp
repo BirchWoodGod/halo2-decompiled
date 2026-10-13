@@ -93,7 +93,7 @@ struct s_render_view_2b790
 struct s_2f970_view;
 bool function_2f970(s_2f970_view const *view, real *out);
 bool function_2b720(point3f *point, long *cluster, long *leaf);
-void cluster_get_sky(long cluster_index, long *sky_index, bool *found, vector3f *vector);
+bool cluster_get_sky(long cluster_index, long *sky_index, bool *found, vector3f *vector);
 void function_12e5e0(byte *out, long cluster_index, point3f const *position,
 	vector3f const *forward, byte kind, bool enabled);
 struct s_speed_result
