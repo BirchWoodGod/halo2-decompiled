@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8353 functions match
+
+```
+matched 8353 of 11318 game functions (1068855 of 2784283 bytes, 38.39%)
+```
+
+2 new matches, none lost:
+- Claude lane 1 round 15 (Opus): `0x2b13b3` and `0x2b130a`, through a new build feature: the `standard` marker now keeps a constructor's own calling convention (here `0x2c4ea0`'s)
+
 ## 2026-10-13: 8351 functions match
 
 ```
