@@ -681,6 +681,7 @@ bool function_14480(long tag, short stage, short index)
 // @retail 0x144f0
 void function_144f0(long tag, short stage, long fallback, short fallback_index, short index, real priority)
 {
+    long const *fallback_reference = &fallback;
     s_type_7ba8e9 *bitmap;
     if (tag != NONE)
     {
@@ -689,11 +690,11 @@ void function_144f0(long tag, short stage, long fallback, short fallback_index, 
         if (count > 0)
         {
             bitmap = function_137550(tag, (short)(index % count));
-            if ((long)*(short *)((byte *)bitmap + 0xa) == (long)fallback)
+            if ((long)*(short *)((byte *)bitmap + 0xa) == *fallback_reference)
                 goto selected;
         }
     }
-    tag = *(long *)(g_485a80 + fallback * 8 + 0x64);
+    tag = *(long *)(g_485a80 + *fallback_reference * 8 + 0x64);
     if (tag == NONE) return;
     bitmap = function_137550(tag, fallback_index);
     if (!bitmap) return;
@@ -3090,10 +3091,10 @@ void __stdcall function_1e930(long opaque)
         function_0222d0(D3DRS_ALPHATESTENABLE, 0);
         function_0222d0(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
         function_0222d0(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-        *(volatile long *)&opaque = D3DRS_BLENDOP;
-        function_0222d0((D3DRENDERSTATETYPE)*(volatile long *)&opaque, D3DBLENDOP_ADD);
-        *(volatile long *)&opaque = D3DRS_ZWRITEENABLE;
-        function_0222d0((D3DRENDERSTATETYPE)*(volatile long *)&opaque, 0);
+        opaque = D3DRS_BLENDOP;
+        function_0222d0(*(D3DRENDERSTATETYPE const *)&opaque, D3DBLENDOP_ADD);
+        opaque = D3DRS_ZWRITEENABLE;
+        function_0222d0(*(D3DRENDERSTATETYPE const *)&opaque, 0);
         g_484f68.PSFinalCombinerInputsEFG = 0x1400;
     }
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x14), 0);
