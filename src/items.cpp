@@ -555,18 +555,6 @@ struct s_item_collision_bsp
 	s_item_collision_instance *instances;
 };
 
-PRIVATE __forceinline void item_transform_plane(transform4x3f const *matrix,
-	plane3f const *plane, plane3f *result)
-{
-	vector3f normal;
-	normal.i = matrix->up.i * plane->k + matrix->left.i * plane->j + matrix->forward.i * plane->i;
-	normal.j = matrix->up.j * plane->k + matrix->left.j * plane->j + matrix->forward.j * plane->i;
-	normal.k = matrix->up.k * plane->k + matrix->left.k * plane->j + matrix->forward.k * plane->i;
-	result->n = normal;
-	result->d = matrix->position.z * normal.k + matrix->position.y * normal.j +
-		matrix->position.x * normal.i + matrix->scale * plane->d;
-}
-
 // @retail 0x10cf80
 void function_10cf80(vector3f const *impulse, long item_index, bool trigger_effect)
 {
@@ -586,34 +574,50 @@ void function_10cf80(vector3f const *impulse, long item_index, bool trigger_effe
 	vector3f angular_velocity;
 	s_object_marker marker;
 
-	if (!TEST_FIELD_BIT(item->flag5) ||
-		!(0.0001f > impulse->i * impulse->i + impulse->j * impulse->j + impulse->k * impulse->k))
+	if (TEST_FIELD_BIT(item->flag5))
 	{
-		if (TEST_FIELD_BIT(item->flag5) && function_b8d30(item_index, 0xc0000c1, &marker, 1, false))
+		if (!(0.0001f > impulse->i * impulse->i + impulse->j * impulse->j + impulse->k * impulse->k))
 		{
-			plane3f plane;
-			if (item->surface_index == NONE)
+			if (function_b8d30(item_index, 0xc0000c1, &marker, 1, false))
 			{
-				s_item_collision_data *collision = (s_item_collision_data *)g_4e0340;
-				bsp3d_get_plane((s_bsp3d *)collision, collision->surfaces[item->material_index].plane_index, &plane);
+				plane3f plane;
+				plane3f surface_plane;
+				if (item->surface_index == NONE)
+				{
+					s_item_collision_data *collision = (s_item_collision_data *)g_4e0340;
+					bsp3d_get_plane((s_bsp3d *)collision, collision->surfaces[item->material_index].plane_index, &plane);
+					surface_plane.i = plane.i;
+					surface_plane.j = plane.j;
+					surface_plane.k = plane.k;
+					surface_plane.d = plane.d;
+				}
+				else
+				{
+					s_item_collision_bsp *bsp = (s_item_collision_bsp *)g_4e0348;
+					s_item_collision_data *collision = (s_item_collision_data *)(bsp->sections +
+						bsp->instances[item->surface_index].section_index * 0xc8 + 0x70);
+					bsp3d_get_plane((s_bsp3d *)collision, collision->surfaces[item->material_index].plane_index, &plane);
+					transform4x3f const *matrix = &bsp->instances[item->surface_index].matrix;
+					surface_plane.i = matrix->up.i * plane.k + matrix->left.i * plane.j + matrix->forward.i * plane.i;
+					surface_plane.j = matrix->up.j * plane.k + matrix->left.j * plane.j + matrix->forward.j * plane.i;
+					surface_plane.k = matrix->up.k * plane.k + matrix->left.k * plane.j + matrix->forward.k * plane.i;
+					surface_plane.d = matrix->position.z * surface_plane.k + matrix->position.y * surface_plane.j +
+						matrix->position.x * surface_plane.i + matrix->scale * plane.d;
+				}
+				real distance = marker.matrix.position.z * surface_plane.k + marker.matrix.position.y * surface_plane.j +
+					surface_plane.i * marker.matrix.position.x - surface_plane.d;
+				real offset = 0.05f - distance;
+				point3f position;
+				position.x = surface_plane.i * offset + marker.matrix.position.x;
+				position.y = surface_plane.j * offset + marker.matrix.position.y;
+				position.z = surface_plane.k * offset + marker.matrix.position.z;
+				function_b75a0(item_index, &position, NULL, NULL, NULL, false);
 			}
-			else
-			{
-				s_item_collision_bsp *bsp = (s_item_collision_bsp *)g_4e0348;
-				s_item_collision_instance *instance = &bsp->instances[item->surface_index];
-				s_item_collision_data *collision = (s_item_collision_data *)(bsp->sections + instance->section_index * 0xc8 + 0x70);
-				bsp3d_get_plane((s_bsp3d *)collision, collision->surfaces[item->material_index].plane_index, &plane);
-				item_transform_plane(&instance->matrix, &plane, &plane);
-			}
-			real distance = marker.matrix.position.z * plane.k + marker.matrix.position.y * plane.j +
-				plane.i * marker.matrix.position.x - plane.d;
-			real offset = 0.05f - distance;
-			point3f position;
-			position.x = plane.i * offset + marker.matrix.position.x;
-			position.y = plane.j * offset + marker.matrix.position.y;
-			position.z = plane.k * offset + marker.matrix.position.z;
-			function_b75a0(item_index, &position, NULL, NULL, NULL, false);
+			function_10c850(item_index);
 		}
+	}
+	else
+	{
 		function_10c850(item_index);
 	}
 
