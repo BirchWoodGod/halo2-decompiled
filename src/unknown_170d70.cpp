@@ -1133,6 +1133,12 @@ box2f *g_4687dc = &g_5476cc;
 int __stdcall function_1429d0(transform4x3f const *matrix, long count, point3f const *source, point3f *destination);
 long function_11fc80(plane3f const *plane, bool keep_inside, real tolerance, long point_count, point3f const *points, long maximum_count, point3f *out);
 
+struct s_point_pool_173520
+{
+	long count;
+	point2f points[5120];
+};
+
 // @retail 0x173520
 s_projected_polygon_173520 *function_173520(long polygon_index, s_polygon_cache_173520 *cache)
 {
@@ -1155,18 +1161,22 @@ s_projected_polygon_173520 *function_173520(long polygon_index, s_polygon_cache_
 			result->distance = FLT_MAX;
 			box2f &bounds = result->bounds;
 			bounds = *g_4687dc;
-			result->points = cache->points + cache->point_count;
-			cache->point_count += 64;
+			s_point_pool_173520 *pool = (s_point_pool_173520 *)&cache->point_count;
+			long used = pool->count;
+			result->points = pool->points + used;
+			pool->count = used + 64;
 			result->count = (short)count;
 			result->field_0 = *(long const *)((byte const *)polygon + 0x18);
 			if (result->state)
 			{
-				long index = (result->state == 1 ? count - 1 : 0) * (long)sizeof(point2f);
-				long volatile step = (result->state == 1 ? -1 : 1) * (long)sizeof(point2f);
+				long index = result->state == 1 ? count - 1 : 0;
+				long step = result->state == 1 ? -1 : 1;
 				point3f const *local_cb4759 = clipped;
-				for (long remaining = count; remaining > 0; --remaining, ++local_cb4759, index += step)
+				long remaining = count;
+				if (remaining > 0)
+				do
 				{
-					point2f *point = (point2f *)((byte *)result->points + index);
+					point2f *point = result->points + index;
 					real inverse = -1.0f / local_cb4759->z;
 					point->x = local_cb4759->x * inverse;
 					point->y = local_cb4759->y * inverse;
@@ -1180,7 +1190,9 @@ s_projected_polygon_173520 *function_173520(long polygon_index, s_polygon_cache_
 						bounds.y1 = point->y;
 					real distance = 0.0f - local_cb4759->z;
 					result->distance = result->distance > distance ? distance : result->distance;
-				}
+					index += step;
+					++local_cb4759;
+				} while (--remaining != 0);
 				if (result->state == 3)
 				{
 					if (inside)
@@ -1196,20 +1208,21 @@ s_projected_polygon_173520 *function_173520(long polygon_index, s_polygon_cache_
 						bounds.x1 += 0.00390625f;
 						bounds.y0 -= 0.00390625f;
 						bounds.y1 += 0.00390625f;
-						result->points[0].x = bounds.x0;
-						result->points[0].y = bounds.y0;
-						result->points[1].x = bounds.x1;
-						result->points[1].y = bounds.y0;
-						result->points[2].x = bounds.x1;
-						result->points[2].y = bounds.y1;
-						result->points[3].x = bounds.x0;
-						result->points[3].y = bounds.y1;
+						point2f *corners = result->points;
+						corners[0].x = bounds.x0;
+						corners[0].y = bounds.y0;
+						corners[1].x = bounds.x1;
+						corners[1].y = bounds.y0;
+						corners[2].x = bounds.x1;
+						corners[2].y = bounds.y1;
+						corners[3].x = bounds.x0;
+						corners[3].y = bounds.y1;
 						result->count = 4;
 					}
 				}
 				if (cache->view[0x84] && result->distance > *(real *)(cache->view + 0x88))
 					result->state = 0;
-				cache->point_count = (result->points - cache->points) + result->count;
+				pool->count = (result->points - pool->points) + result->count;
 			}
 			cache->visited[word_index] |= bit;
 		}

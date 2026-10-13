@@ -1858,19 +1858,42 @@ static inline bool effect_location_in_zone(s_location const *location, point3f c
 	return result;
 }
 
+static inline bool effect_location_in_zone_178c80(s_location const *location, point3f const *point)
+{
+	bool result = false;
+	short cluster_index = location->cluster_index;
+
+	if (cluster_index != NONE)
+	{
+		s_effect_zone_bsp *bsp = (s_effect_zone_bsp *)g_4e0348;
+		s_effect_zone_cluster *cluster = bsp->clusters + cluster_index;
+		byte zone = cluster->zone;
+
+		if (zone != 0xff)
+		{
+			s_effect_zone *entry = &bsp->zones[zone & 0x7f];
+
+			if (entry->index != NONE)
+			{
+				if (!(zone & 0x80) || 0.0f > entry->plane.k * point->z + entry->plane.j * point->y + entry->plane.i * point->x - entry->plane.d)
+					result = true;
+			}
+		}
+	}
+	return result;
+}
+
 // @retail 0x178c80
 void function_178c80(real scale, s_effect_datum *effect, s_particle_system_datum *particle_system, s_effect_particle_system_definition *definition, real unknown, bool field_b4)
 {
-	real *scale_reference = &scale;
 	long location_index = effect->location_indices[definition->location_index];
 	s_effect_location_datum *location;
 	s_particle_system_spawn spawn;
 
 	if (effect->location.cluster_index != NONE)
 		particle_system->set_location(&effect->location);
-	dword color_a = effect->color_a;
 
-	spawn.scale = (*scale_reference);
+	spawn.scale = scale;
 	spawn.unknown = unknown;
 	spawn.location_index = particle_system->location_index;
 	{
@@ -1878,7 +1901,7 @@ void function_178c80(real scale, s_effect_datum *effect, s_particle_system_datum
 		bool tinted = particle_definition->tinted();
 		bool multiplied = particle_definition->multiplied();
 
-		function_175a80(tinted, color_a, effect->color_b, particle_system, multiplied);
+		function_175a80(tinted, effect->color_a, effect->color_b, particle_system, multiplied);
 	}
 	while ((location = effect_location_next(effect, &location_index, definition->location_mode)) != 0)
 	{
@@ -1890,10 +1913,10 @@ void function_178c80(real scale, s_effect_datum *effect, s_particle_system_datum
 			spawn_here = true;
 			break;
 		case 1:
-			spawn_here = !effect_location_in_zone(&effect->location, &location->matrix.position);
+			spawn_here = !effect_location_in_zone_178c80(&effect->location, &location->matrix.position);
 			break;
 		case 2:
-			spawn_here = effect_location_in_zone(&effect->location, &location->matrix.position);
+			spawn_here = effect_location_in_zone_178c80(&effect->location, &location->matrix.position);
 			break;
 		case 3:
 			spawn_here = false;
@@ -1905,9 +1928,8 @@ void function_178c80(real scale, s_effect_datum *effect, s_particle_system_datum
 		{
 			transform4x3f matrix;
 			transform4x3f *location_matrix = function_178bc0(location, effect, &matrix, field_b4);
-			bool node_first_person = location->node_index != NONE && (location->node_index & 0x8000);
 
-			function_175270(particle_system, &spawn, location_matrix, node_first_person);
+			function_175270(particle_system, &spawn, location_matrix, location->node_index != NONE && (location->node_index & 0x8000));
 		}
 	}
 }
