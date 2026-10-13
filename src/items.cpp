@@ -555,18 +555,6 @@ struct s_item_collision_bsp
 	s_item_collision_instance *instances;
 };
 
-PRIVATE __forceinline void item_transform_plane(transform4x3f const *matrix,
-	plane3f const *plane, plane3f *result)
-{
-	vector3f normal;
-	normal.i = matrix->up.i * plane->k + matrix->left.i * plane->j + matrix->forward.i * plane->i;
-	normal.j = matrix->up.j * plane->k + matrix->left.j * plane->j + matrix->forward.j * plane->i;
-	normal.k = matrix->up.k * plane->k + matrix->left.k * plane->j + matrix->forward.k * plane->i;
-	result->n = normal;
-	result->d = matrix->position.z * normal.k + matrix->position.y * normal.j +
-		matrix->position.x * normal.i + matrix->scale * plane->d;
-}
-
 // @retail 0x10cf80
 void function_10cf80(vector3f const *impulse, long item_index, bool trigger_effect)
 {
@@ -582,38 +570,52 @@ void function_10cf80(vector3f const *impulse, long item_index, bool trigger_effe
 	}
 
 	vector3f spin;
-	vector3f velocity;
-	vector3f angular_velocity;
 	s_object_marker marker;
 
-	if (!TEST_FIELD_BIT(item->flag5) ||
-		!(0.0001f > impulse->i * impulse->i + impulse->j * impulse->j + impulse->k * impulse->k))
+	if (TEST_FIELD_BIT(item->flag5))
 	{
-		if (TEST_FIELD_BIT(item->flag5) && function_b8d30(item_index, 0xc0000c1, &marker, 1, false))
+		if (!(0.0001f > impulse->i * impulse->i + impulse->j * impulse->j + impulse->k * impulse->k))
 		{
-			plane3f plane;
-			if (item->surface_index == NONE)
+			if (function_b8d30(item_index, 0xc0000c1, &marker, 1, false))
 			{
-				s_item_collision_data *collision = (s_item_collision_data *)g_4e0340;
-				bsp3d_get_plane((s_bsp3d *)collision, collision->surfaces[item->material_index].plane_index, &plane);
+				plane3f plane;
+				plane3f surface_plane;
+				if (item->surface_index == NONE)
+				{
+					s_item_collision_data *collision = (s_item_collision_data *)g_4e0340;
+					bsp3d_get_plane((s_bsp3d *)collision, collision->surfaces[item->material_index].plane_index, &plane);
+					surface_plane.i = plane.i;
+					surface_plane.j = plane.j;
+					surface_plane.k = plane.k;
+					surface_plane.d = plane.d;
+				}
+				else
+				{
+					s_item_collision_bsp *bsp = (s_item_collision_bsp *)g_4e0348;
+					s_item_collision_data *collision = (s_item_collision_data *)(bsp->sections +
+						bsp->instances[item->surface_index].section_index * 0xc8 + 0x70);
+					bsp3d_get_plane((s_bsp3d *)collision, collision->surfaces[item->material_index].plane_index, &plane);
+					transform4x3f const *matrix = &bsp->instances[item->surface_index].matrix;
+					surface_plane.i = matrix->up.i * plane.k + matrix->left.i * plane.j + matrix->forward.i * plane.i;
+					surface_plane.j = matrix->up.j * plane.k + matrix->left.j * plane.j + matrix->forward.j * plane.i;
+					surface_plane.k = matrix->up.k * plane.k + matrix->left.k * plane.j + matrix->forward.k * plane.i;
+					surface_plane.d = matrix->position.z * surface_plane.k + matrix->position.y * surface_plane.j +
+						matrix->position.x * surface_plane.i + matrix->scale * plane.d;
+				}
+				real distance = marker.matrix.position.z * surface_plane.k + marker.matrix.position.y * surface_plane.j +
+					surface_plane.i * marker.matrix.position.x - surface_plane.d;
+				real offset = 0.05f - distance;
+				point3f position;
+				position.x = surface_plane.i * offset + marker.matrix.position.x;
+				position.y = surface_plane.j * offset + marker.matrix.position.y;
+				position.z = surface_plane.k * offset + marker.matrix.position.z;
+				function_b75a0(item_index, &position, NULL, NULL, NULL, false);
 			}
-			else
-			{
-				s_item_collision_bsp *bsp = (s_item_collision_bsp *)g_4e0348;
-				s_item_collision_instance *instance = &bsp->instances[item->surface_index];
-				s_item_collision_data *collision = (s_item_collision_data *)(bsp->sections + instance->section_index * 0xc8 + 0x70);
-				bsp3d_get_plane((s_bsp3d *)collision, collision->surfaces[item->material_index].plane_index, &plane);
-				item_transform_plane(&instance->matrix, &plane, &plane);
-			}
-			real distance = marker.matrix.position.z * plane.k + marker.matrix.position.y * plane.j +
-				plane.i * marker.matrix.position.x - plane.d;
-			real offset = 0.05f - distance;
-			point3f position;
-			position.x = plane.i * offset + marker.matrix.position.x;
-			position.y = plane.j * offset + marker.matrix.position.y;
-			position.z = plane.k * offset + marker.matrix.position.z;
-			function_b75a0(item_index, &position, NULL, NULL, NULL, false);
+			function_10c850(item_index);
 		}
+	}
+	else
+	{
 		function_10c850(item_index);
 	}
 
@@ -650,13 +652,17 @@ void function_10cf80(vector3f const *impulse, long item_index, bool trigger_effe
 		spin.j *= random_speed;
 		spin.k *= random_speed;
 	}
-	velocity.i = item->linear_velocity.i + impulse->i;
-	velocity.j = item->linear_velocity.j + impulse->j;
-	velocity.k = item->linear_velocity.k + impulse->k;
-	angular_velocity.i = spin.i + item->angular_velocity.i;
-	angular_velocity.j = item->angular_velocity.j + spin.j;
-	angular_velocity.k = item->angular_velocity.k + spin.k;
-	function_b77d0(item_index, &velocity, &angular_velocity);
+	{
+		vector3f velocity;
+		vector3f angular_velocity;
+		velocity.i = item->linear_velocity.i + impulse->i;
+		velocity.j = item->linear_velocity.j + impulse->j;
+		velocity.k = item->linear_velocity.k + impulse->k;
+		angular_velocity.i = spin.i + item->angular_velocity.i;
+		angular_velocity.j = item->angular_velocity.j + spin.j;
+		angular_velocity.k = item->angular_velocity.k + spin.k;
+		function_b77d0(item_index, &velocity, &angular_velocity);
+	}
 	function_10d5f0(item_index);
 }
 
@@ -930,6 +936,19 @@ static __forceinline void item_spin_vector(vector3f *vector, s_item const *item)
     vector->k = original.k*item->spin_cosine + projection*item->spin_axis.k - cross.k*item->spin_sine;
 }
 
+struct s_item_flags_view_10b850
+{
+    byte unknown000[0x12c];
+    byte flag0 : 1;
+    byte flag1 : 1;
+    byte flag2 : 1;
+    byte flag3 : 1;
+    byte flag4 : 1;
+    byte flag5 : 1;
+    byte flag6 : 1;
+    byte flag7 : 1;
+};
+
 // @retail 0x10b850
 void __stdcall function_10b850(long object_index)
 {
@@ -992,7 +1011,7 @@ void __stdcall function_10b850(long object_index)
                 function_b9b90(object_index, true);
                 if (collision.type == 1 || collision.type == 3)
                 {
-                    item->flag5 = true; item->flag6 = false;
+                    ((s_item_flags_view_10b850 *)item)->flag5 = true; ((s_item_flags_view_10b850 *)item)->flag6 = false;
                     item->bsp_index = g_4686c4;
                     item->surface_index = collision.surface_index;
                     item->material_index = collision.material_index;
@@ -1004,7 +1023,7 @@ void __stdcall function_10b850(long object_index)
                     long other = *(long *)(hit + 0x40);
                     short node = *(byte *)(hit + 0x46);
                     transform4x3f *matrix = function_b8bd0(other, node);
-                    item->flag5 = false; item->flag6 = true;
+                    ((s_item_flags_view_10b850 *)item)->flag5 = false; ((s_item_flags_view_10b850 *)item)->flag6 = true;
                     *(long *)((byte *)item + 0x13c) = other;
                     *((byte *)item + 0x13b) = (byte)node;
                     function_142700(matrix, &point, (point3f *)((byte *)item + 0x140));
@@ -1142,82 +1161,80 @@ void function_bba20(long);
 long function_184000(long, long);
 void __stdcall function_b8540(long);
 
+static __forceinline void item_release_impulse_10b4d0(long object_index)
+{
+	real scale = g_510c54->rate * g_51e9c4->unknown0;
+	vector3f velocity = {g_4687bc->i*scale, g_4687bc->j*scale, g_4687bc->k*scale};
+	function_10cf80(&velocity, object_index, false);
+}
+
 // @retail 0x10b4d0
 bool __stdcall function_10b4d0(long object_index)
 {
-    struct { 
-        s_item * item;
-        byte * definition;
-    } locals;
-    locals.item = ITEM_GET(object_index);
-    locals.definition = g_4e3b44[locals.item->definition_index & 0xffff].bytes;
+    s_item *item;
+    byte *definition;
+    item = ITEM_GET(object_index);
+    definition = g_4e3b44[item->definition_index & 0xffff].bytes;
     bool result = false;
-    long parent = locals.item->parent_index;
-    if ((bool)((locals.item->object_flags >> 8) & 1))
+    long parent;
+    if ((bool)((item->object_flags >> 8) & 1))
     {
-        if (locals.item->flags_c1 & 1)
+        if (item->flags_c1 & 1)
         {
-            if (!(bool)((*(dword *)(locals.definition + 0xbc) >> 2) & 1))
+            if (!(bool)((*(dword *)(definition + 0xbc) >> 2) & 1))
             {
-                bool impulse = false;
-                if (TEST_FIELD_BIT(locals.item->flag5) && locals.item->bsp_index == g_4686c4)
+                if (TEST_FIELD_BIT(item->flag5) && item->bsp_index == g_4686c4)
                 {
-                    if (locals.item->value_136 & 8)
+                    if (item->value_136 & 8)
                     {
-                        if (!function_184000(locals.item->surface_index, locals.item->value_137))
+                        if (!(byte)function_184000(item->value_137, item->surface_index))
                         {
-                            locals.item->flag5 = false;
-                            impulse = true;
+                            item->flags_12c &= 0xdf;
+                            item_release_impulse_10b4d0(object_index);
                         }
                         result = true;
                     }
                 }
-                else if (TEST_FIELD_BIT(locals.item->flag6))
+                else if (TEST_FIELD_BIT(item->flag6))
                 {
-                    long other = *(long *)((byte *)locals.item + 0x13c);
+                    long other = *(long *)((byte *)item + 0x13c);
                     if (function_badc0(other, ~0UL))
                     {
                         point3f point;
-                        transform4x3f_apply_point(function_b8bd0(other, *((byte *)locals.item + 0x13b)),
-                            (point3f *)((byte *)locals.item + 0x140), &point);
-                        function_10d710(&locals.item->spin_axis, object_index, &point, NULL);
+                        transform4x3f_apply_point(function_b8bd0(other, *((byte *)item + 0x13b)),
+                            (point3f *)((byte *)item + 0x140), &point);
+                        function_10d710(&item->spin_axis, object_index, &point, NULL);
                     }
                     else
                     {
-                        locals.item->flag6 = false;
-                        impulse = true;
+                        item->flags_12c &= 0xbf;
+                        item_release_impulse_10b4d0(object_index);
                     }
                     result = true;
                 }
-                if (impulse)
-                {
-                    real scale = g_510c54->rate * g_51e9c4->unknown0;
-                    vector3f velocity = {g_4687bc->i*scale, g_4687bc->j*scale, g_4687bc->k*scale};
-                    function_10cf80(&velocity, object_index, false);
-                }
             }
-            if (TEST_FIELD_BIT(locals.item->flag4))
+            if (TEST_FIELD_BIT(item->flag4))
             {
-                locals.item->angular_velocity.i *= 0.9f;
-                locals.item->angular_velocity.j *= 0.9f;
-                locals.item->angular_velocity.k *= 0.9f;
+                item->angular_velocity.i *= 0.9f;
+                item->angular_velocity.j *= 0.9f;
+                item->angular_velocity.k *= 0.9f;
                 function_10d5f0(object_index);
                 result = true;
             }
         }
-        if (!(locals.item->flags_c1 & 1))
+        if (!(item->flags_c1 & 1))
         {
             function_bba20(object_index);
             result = true;
         }
-        if (locals.item->value_12e > 0)
+        if (item->value_12e > 0)
         {
-            --locals.item->value_12e;
-            if (g_4e6948->mode != 4 && locals.item->value_12e == 0)
+            --item->value_12e;
+            if (g_4e6948->mode != 4 && item->value_12e == 0)
             {
                 s_damage_owner owner;
                 function_bc190(object_index, &owner);
-                long damage_index = *(long *)(locals.definition + 0x110);
+                long damage_index = *(long *)(definition + 0x110);
                 if (damage_index != NONE)
                 {
                     point3f position;
@@ -1233,15 +1250,19 @@ bool __stdcall function_10b4d0(long object_index)
                     data.position = position;
                     function_d6c80(&data, NONE);
                 }
-                function_176780(object_index, (s_effect_owner const *)&owner, 0.0f, *(long *)(locals.definition + 0x128), 0.0f, NULL, NULL);
+                function_176780(object_index, (s_effect_owner const *)&owner, 0.0f, *(long *)(definition + 0x128), 0.0f, NULL, NULL);
                 function_b8540(object_index);
             }
             result = true;
         }
-        parent = locals.item->location_c8;
+        parent = item->location_c8;
     }
-    if (parent != NONE && *(long *)(locals.definition + 0x104) > 0)
-        function_16eb20((s_16eb20_block *)(locals.definition + 0x104));
+    else
+    {
+        parent = item->parent_index;
+    }
+    if (parent != NONE && *(long *)(definition + 0x104) > 0)
+        function_16eb20((s_16eb20_block *)(definition + 0x104));
     function_10b850(object_index);
     return result;
 }

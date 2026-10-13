@@ -535,9 +535,9 @@ color3f *function_131c20(color3f const *a, color3f const *b, dword flags, real t
 // @retail 0xbe8e0
 bool __stdcall function_be8e0(long object_index)
 {
-    bool result = false;
     byte *object = (byte *)((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
     byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+    bool result = false;
     if (definition[0x1c] & 1)
     {
         color3f *base = (color3f *)(object + *(short *)(object + 0x126));

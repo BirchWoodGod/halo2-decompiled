@@ -25,6 +25,8 @@ static __forceinline bool cluster_selection_matches(long cluster_index, long ind
     return false;
 }
 
+__declspec(noinline) bool function_3eb20(long cluster_index);
+
 // @retail 0x3eb20
 bool function_3eb20(long cluster_index)
 {

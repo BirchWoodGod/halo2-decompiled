@@ -95,10 +95,10 @@ bool function_2f970(s_2f970_view const *view, real *out)
     {
         real width = out[1] - out[0];
         real height = *(real const volatile *)&out[3] - out[2];
-        real x = (view->center_x + 1.0f) * 0.5f * width + out[0];
-        real y = (view->center_y + 1.0f) * 0.5f * height + out[2];
         real half_width = *(real const volatile *)&view->crop_scale * width * 0.5f;
         real half_height = *(real const volatile *)&view->crop_scale * height * 0.5f;
+        real x = (view->center_x + 1.0f) * 0.5f * width + out[0];
+        real y = (view->center_y + 1.0f) * 0.5f * height + out[2];
         out[0] = x - half_width;
         out[2] = y - half_height;
         out[3] = half_height + y;
@@ -106,8 +106,8 @@ bool function_2f970(s_2f970_view const *view, real *out)
     }
     else if (view->offset)
     {
-        real x = (out[1] - out[0]) * (1.0f / 640.0f) * view->offset_x;
-        real y = (*(real const volatile *)&out[3] - out[2]) * (1.0f / 480.0f) * view->offset_y;
+        real x = (real)((out[1] - out[0]) * (1.0f / 640.0f)) * view->offset_x;
+        real y = (real)((*(real const volatile *)&out[3] - out[2]) * (1.0f / 480.0f)) * view->offset_y;
         out[0] += x;
         real right = out[1] + x;
         real const &right_result = right;
@@ -526,14 +526,14 @@ extern bool g_510c48;
 // @retail 0x3f660
 void function_3f660(transform4x3f const *matrix)
 {
-    bool restore = g_47989c != NULL;
+    byte volatile restore = g_47989c != NULL;
     if (restore)
         function_146de0();
     byte *collection = g_510c44;
     g_510c48 = true;
     byte setup[0x54];
-    function_1726d0((s_view_setup *)setup, (point3f const *)((byte const *)matrix + 4),
-        (vector3f const *)((byte const *)matrix + 0x1c), (vector3f const *)((byte const *)matrix + 0x28));
+    function_1726d0((s_view_setup *)setup, &matrix->position,
+        &matrix->forward, &matrix->up);
     s_2f970_view view;
     function_2f800((s_2f800_source const *)setup, NULL, NULL, (s_2f800_view *)&view);
     view.top = view.left = 0;
@@ -543,10 +543,10 @@ void function_3f660(transform4x3f const *matrix)
     view.outer_left = view.left;
     view.outer_bottom = view.bottom;
     view.outer_right = view.right;
-    view.outer_left = (short)(view.outer_left + 48.0f);
-    view.outer_top = (short)(view.outer_top + 48.0f);
-    view.outer_right = (short)(view.outer_right - 48.0f);
-    view.outer_bottom = (short)(view.outer_bottom - 48.0f);
+    view.outer_left = (short)(*(short const volatile *)&view.outer_left + 48.0f);
+    view.outer_top = (short)(*(short const volatile *)&view.outer_top + 48.0f);
+    view.outer_right = (short)(*(short const volatile *)&view.outer_right - 48.0f);
+    view.outer_bottom = (short)(*(short const volatile *)&view.outer_bottom - 48.0f);
     view.crop = false;
     view.center_x = view.center_y = 0.0f;
     view.offset = false;

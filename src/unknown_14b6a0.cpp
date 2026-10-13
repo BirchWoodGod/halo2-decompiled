@@ -87,7 +87,7 @@ static __forceinline void players_pending_creation_process(s_record_pool_iterato
 		iterator_reference->index = absolute_index;
 		if (!(player[2] & 2))
 		{
-			__declspec(align(8)) s_player_creation_record record;
+			s_player_creation_record record;
 			memset(&record, 0, sizeof(record));
 			record.machine = *(s_machine_address *)(player + 0x14);
 			record.controller_index = *(short *)(player + 0x1c);
@@ -130,9 +130,9 @@ void function_14b6a0()
 		byte *player = players->data + (player_index & 0xffff) * 0x21c;
 		byte *scenario = (byte *)g_4e0350;
 		byte *record = *(byte **)(scenario + 0x134) + request * 14;
-		byte *markers = *(byte **)(scenario + 0x1e4);
 		if (*(short *)(record + 8) != NONE)
 		{
+			byte *markers = *(byte **)(scenario + 0x1e4);
 			point3f const *destination = (point3f *)(markers + *(short *)(record + 8) * 0x38 + 0x24);
 			point3f const *origin;
 			if (*(short *)(record + 6) != NONE)
@@ -148,13 +148,9 @@ void function_14b6a0()
 			s_record_pool_iterator iterator;
 			iterator.data = players;
 			iterator.index = NONE;
-			for (;;)
+			byte *current;
+			while ((current = data_iterator_next_calling(&iterator)) != 0)
 			{
-				long index = function_16bc00(iterator.data, iterator.index + 1);
-				if (index == NONE) break;
-				byte *current = iterator.data->data + iterator.data->size * index;
-				iterator.index = index;
-				if (!current) break;
 				long unit = *(long *)(current + 0x2c);
 				if (unit != NONE)
 				{
@@ -232,8 +228,8 @@ void function_14b6a0()
 		}
 		*(short *)((byte *)g_4e8c20 + 0xa4) = NONE;
 	}
-	for (long index = data_next_absolute_index_inlined(players, 0); index != NONE;
-		index = data_next_absolute_index_inlined(players, index + 1))
+	long index = NONE;
+	while ((index = data_next_absolute_index_inlined(players, index + 1)) != NONE)
 	{
 		byte *player = players->data + players->size * index;
 		if (!player) break;
