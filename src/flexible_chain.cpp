@@ -214,12 +214,11 @@ void __stdcall function_116080(short mode, long index)
 // @retail 0x1160c0
 void __stdcall function_1160c0(real dt)
 {
-	s_record_pool *pool = g_4e0334;
-	long index = data_datum_index(pool, function_16bc00(pool, 0));
+	long index = data_datum_index(g_4e0334, function_16bc00(g_4e0334, 0));
 	while (index != NONE)
 	{
 		long slot = index & 0xffff;
-		s_chain_record *record = (s_chain_record *)(pool->data + slot * sizeof(s_chain_record));
+		s_chain_record *record = (s_chain_record *)(g_4e0334->data + slot * sizeof(s_chain_record));
 		s_chain_definition *definition = (s_chain_definition *)g_4e3b44[record->tag_index & 0xffff].bytes;
 		if (!record->fixed)
 		{
@@ -227,10 +226,9 @@ void __stdcall function_1160c0(real dt)
 			if (record->object_index != NONE && record->idle_ticks < 5)
 			{
 				function_1161f0(record, definition, dt > .06666667f ? .06666667f : dt);
-				pool = g_4e0334;
 			}
 		}
-		index = data_datum_index(pool, data_find_index(pool, index == NONE ? 0 : slot + 1));
+		index = data_datum_index(g_4e0334, data_find_index(g_4e0334, index == NONE ? 0 : slot + 1));
 	}
 }
 
