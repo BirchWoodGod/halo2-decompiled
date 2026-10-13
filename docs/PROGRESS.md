@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8161 functions match
+
+```
+matched 8161 of 11318 game functions (1016900 of 2784283 bytes, 36.52%)
+```
+
+5 new matches, none lost:
+- Claude lane 1, round 10 (+5), on Opus 5.5: `0x3ea60` and `0x1c810` match once neighbouring globals that retail treats as one block become one struct global each (the node matrix cache, and the texture stage storage in `include/texture_stage_storage.h`); `0x2c8bf5` makes its call in every switch case, `0x1e4310` inlines a copy of a matched helper, and `0x1c4a0` is a constructor run at startup.
+
 ## 2026-10-13: 8156 functions match
 
 ```
