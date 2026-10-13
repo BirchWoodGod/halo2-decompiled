@@ -1103,8 +1103,8 @@ public:
 // @retail 0x15a140
 long c_engine_equipment::choose_15a140(long default_value, char option, long *name)
 {
-	s_multiplayer_globals_data *data = multiplayer_globals_data();
 	long result = default_value;
+	s_multiplayer_globals_data *data = multiplayer_globals_data();
 
 	switch (option)
 	{
@@ -1145,8 +1145,8 @@ long c_engine_equipment::choose_15a140(long default_value, char option, long *na
 // @retail 0x15a250
 long c_engine_equipment::choose_15a250(long default_value, char option, long *name)
 {
-	s_multiplayer_globals_data *data = multiplayer_globals_data();
 	long result = default_value;
+	s_multiplayer_globals_data *data = multiplayer_globals_data();
 
 	switch (option)
 	{
@@ -1175,8 +1175,8 @@ long c_engine_equipment::choose_15a250(long default_value, char option, long *na
 // @retail 0x15a310
 long c_engine_equipment::choose_15a310(long default_value, char option, long *name)
 {
-	s_multiplayer_globals_data *data = multiplayer_globals_data();
 	long result = default_value;
+	s_multiplayer_globals_data *data = multiplayer_globals_data();
 
 	switch (option)
 	{
@@ -1205,8 +1205,8 @@ long c_engine_equipment::choose_15a310(long default_value, char option, long *na
 // @retail 0x15a3d0
 long c_engine_equipment::choose_15a3d0(long default_value, char option, long *name)
 {
-	s_multiplayer_globals_data *data = multiplayer_globals_data();
 	long result = default_value;
+	s_multiplayer_globals_data *data = multiplayer_globals_data();
 
 	switch (option)
 	{
@@ -1250,25 +1250,22 @@ struct s_options_equipment
 // @retail 0x15a4d0
 long c_engine_equipment::choose(long default_value, long *name, char kind)
 {
-	s_options_equipment * options;
-	options = (s_options_equipment *)g_4e6948;
-
 	switch (kind)
 	{
 	case 1:
-		return choose_15a140(default_value, options->options[0], name);
+		return choose_15a140(default_value, ((s_options_equipment *)g_4e6948)->options[0], name);
 	case 2:
-		return choose_15a140(default_value, options->options[1], name);
+		return choose_15a140(default_value, ((s_options_equipment *)g_4e6948)->options[1], name);
 	case 3:
-		return choose_15a250(default_value, options->options[2], name);
+		return choose_15a250(default_value, ((s_options_equipment *)g_4e6948)->options[2], name);
 	case 4:
-		return choose_15a310(default_value, options->options[3], name);
+		return choose_15a310(default_value, ((s_options_equipment *)g_4e6948)->options[3], name);
 	case 5:
-		return choose_15a250(default_value, options->options[4], name);
+		return choose_15a250(default_value, ((s_options_equipment *)g_4e6948)->options[4], name);
 	case 6:
-		return choose_15a3d0(default_value, options->options[5], name);
+		return choose_15a3d0(default_value, ((s_options_equipment *)g_4e6948)->options[5], name);
 	case 7:
-		return choose_15a3d0(default_value, options->options[6], name);
+		return choose_15a3d0(default_value, ((s_options_equipment *)g_4e6948)->options[6], name);
 	default:
 		__assume(0);
 	}
@@ -1413,9 +1410,9 @@ done:
 }
 
 // @retail 0x15b1e0
-void function_15b1e0(long object_index, long index, s_netgame_entry_state *entries)
+void function_15b1e0(long object_index, s_netgame_entry_state *entries, long index)
 {
-	s_engine_object *object = engine_object_get(object_index);
+	s_engine_object *object = (((s_engine_object_header *)g_4e0300->data) + (object_index & 0xffff))->object;
 
 	if (g_4e6948->mode != 4)
 	{
@@ -1977,7 +1974,7 @@ void function_15adb0(s_netgame_entry_state *entries)
 		{
 			if (entries[index].index != NONE)
 			{
-				function_15b1e0(entries[index].index, index, entries);
+				function_15b1e0(entries[index].index, entries, index);
 			}
 			entries[index].value04 = 0;
 			entries[index].index = local.iterator.object_index;
@@ -3197,8 +3194,9 @@ void function_157be0(dword player_index)
 		}
 		if (g_4e6948->mode != 4)
 		{
+			s_engine_player *player = engine_player_get(player_index);
 			long lives = g_4e6948->value1b8;
-			engine_player_get(player_index)->value1ac = (short)(lives ? lives : NONE);
+			player->value1ac = (short)(lives ? lives : NONE);
 			game_engine_player_mark_dirty((short)index, 0x20);
 		}
 		s_engine_player *player = engine_player_get(player_index);
@@ -4604,7 +4602,7 @@ void function_15aad0(s_netgame_entry_state *entries, long index)
         *(point3f *)(creation + 0x1c) = *(point3f *)(placement + 0x40);
         function_11df60((vector3f const *)(placement + 0x4c), (vector3f *)(creation + 0x28), (vector3f *)(creation + 0x34));
         if ((*entries_reference)[*index_reference].index != NONE)
-            function_15b1e0((*entries_reference)[*index_reference].index, *index_reference, *entries_reference);
+            function_15b1e0((*entries_reference)[*index_reference].index, *entries_reference, *index_reference);
         long object_index = function_b7b40(creation);
         (*entries_reference)[*index_reference].index = object_index;
         (*entries_reference)[*index_reference].value04 = 0;
