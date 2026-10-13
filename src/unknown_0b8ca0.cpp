@@ -1640,27 +1640,31 @@ long __stdcall function_bb670(short name_index, bool force)
     {
         s_object_header_view *header = OBJECT_HEADER_GET(existing);
         byte *object = (byte *)header->object;
-        byte type = header->type;
+        long type = header->type;
         function_bf090(existing);
         *(short *)(object + 0x1a) = NONE;
         *(long *)((byte *)g_4de2f4 + 0x18) += 1;
-        object[0xaa] = type;
+        object[0xaa] = (byte)type;
         object[0xab] = 2;
         *(short *)(object + 0xa8) = NONE;
         *(long *)(object + 0xa4) = *(long *)((byte *)g_4de2f4 + 0x18);
         object[0xb0] = 0;
     }
     else if (existing != NONE) return result;
+    short remaining_name_index = *(short volatile const *)&name_index;
     byte *scenario = (byte *)g_4e0350;
-    byte *name = *(byte **)(scenario + 0x4c) + name_index * 0x24;
+    byte *name = *(byte **)(scenario + 0x4c) + remaining_name_index * 0x24;
     short placement_index = *(short *)(name + 0x22);
     if (placement_index != NONE)
     {
         long type = *(short *)(name + 0x20);
         byte *definition = (byte *)g_468630[type];
-        byte *placements = *(byte **)(scenario + *(short *)(definition + 0xa) + 4);
-        s_scenario_block *palette = (s_scenario_block *)(scenario + *(short *)(definition + 0xc));
-        result = function_bf0f0((s_type_4f0dcc *)(placements + placement_index * *(short *)(definition + 0xe)),
+        short palette_offset = *(short *)(definition + 0xc);
+        s_scenario_block *palette = (s_scenario_block *)(scenario + palette_offset);
+        short placement_size = *(short *)(definition + 0xe);
+        short placement_offset = *(short *)(definition + 0xa);
+        byte *placements = *(byte **)(scenario + placement_offset + 4);
+        result = function_bf0f0((s_type_4f0dcc *)(placements + placement_index * placement_size),
             type, placement_index, palette, true, false);
     }
     return result;

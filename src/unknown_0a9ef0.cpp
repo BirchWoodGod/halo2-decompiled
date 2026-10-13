@@ -225,7 +225,8 @@ void function_aab40(long object_index, point3f const *position, vector3f const *
         vector3f delta;
         vector3d_from_points3d((point3f *)(object + 0x64), position, &delta);
         bool type_zero = header[3] == 0;
-        bool moved = delta.k * delta.k + delta.i * delta.i + delta.j * delta.j > 1.0f;
+        bool moved = (real)(delta.j * delta.j) + (real)(delta.k * delta.k) +
+            (real)(delta.i * delta.i) > 1.0f;
         bool parent = *(long *)(object + 0x14) != NONE;
         bool flag = function_a76b0(object_index, false);
         update = !moved && !parent && !flag && type_zero;
