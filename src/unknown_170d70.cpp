@@ -66,7 +66,7 @@ void function_1701f0(long player_index)
 				out[i] = fifth[i] * t3 * 20.0f + fourth[i] * t2 * 12.0f + third[i] * t * 6.0f + second[i] * 2.0f;
 				if (out[i] > g_4449c0[group] || 0.0f - g_4449c0[group] > out[i])
 				{
-					for (long other = 0; other < 6; ++other)
+					for (short other = 0; other < 6; ++other)
 						if (other != group && state->times[other] == *time)
 							state->times[other] = 0.0f;
 					*time = 0.0f;
@@ -89,16 +89,18 @@ void function_1703f0(long player_index)
 {
 	real inverse_dt = (real)(1.0 / g_4e9bd0);
 	s_motion_channels_1701f0 *state = (s_motion_channels_1701f0 *)g_4e9bd4 + player_index;
+	real *delta = state->delta;
 	real *out = state->first_derivative;
 	real *fifth = state->fifth;
 	real *fourth = state->fourth;
 	real *third = state->third;
 	real *second = state->second;
 	real *first = state->first;
-	real *delta = state->delta;
-	for (long group = 0; group < 6; ++group)
+	real *time = state->times;
+	byte *channel = state->channel_flags;
+	for (short group = 0; group < 6; ++group)
 	{
-		real t = state->times[group] - g_4e9bd0;
+		real t = *time - g_4e9bd0;
 		if (t > 0.0f)
 		{
 			real t2 = t * t;
@@ -107,7 +109,7 @@ void function_1703f0(long player_index)
 			for (short i = 0; i < g_468d3c[group]; ++i)
 				out[i] = fifth[i] * t4 * 5.0f + fourth[i] * t3 * 4.0f + third[i] * t2 * 3.0f + second[i] * t * 2.0f + first[i];
 		}
-		else if ((state->flags & 1) && ((state->channel_flags[group] & 2) || (state->flags & 8)))
+		else if ((state->flags & 1) && ((*channel & 2) || (state->flags & 8)))
 			memset(out, 0, g_468d3c[group] * sizeof(real));
 		else if (state->flags & 1)
 		{
@@ -115,27 +117,41 @@ void function_1703f0(long player_index)
 				out[i] = 0.0f - delta[i] * inverse_dt;
 		}
 		long count = g_468d3c[group];
+		delta += count;
 		out += count;
 		fifth += count;
 		fourth += count;
 		third += count;
 		second += count;
 		first += count;
-		delta += count;
+		++time;
+		++channel;
 	}
 }
 
 vector3f *matrix4x3_rotation_between(transform4x3f const *a, transform4x3f const *b, vector3f *out);
 
+PRIVATE inline void cross_product_170c00(vector3f const *a, vector3f const *b, vector3f *result)
+{
+	result->i = a->j * b->k - a->k * b->j;
+	result->j = a->k * b->i - a->i * b->k;
+	result->k = a->i * b->j - a->j * b->i;
+}
+
+PRIVATE inline void point_set_170c00(point3f *point, real x, real y, real z)
+{
+	point->x = x;
+	point->y = y;
+	point->z = z;
+}
+
 PRIVATE inline void placement_basis_170c00(vector3f const *forward, vector3f const *up, transform4x3f *matrix)
 {
 	matrix->scale = 1.0f;
 	matrix->forward = *forward;
-	matrix->left.i = up->j * forward->k - forward->j * up->k;
-	matrix->left.j = forward->i * up->k - up->i * forward->k;
-	matrix->left.k = forward->j * up->i - forward->i * up->j;
+	cross_product_170c00(up, forward, &matrix->left);
 	matrix->up = *up;
-	matrix->position.x = matrix->position.y = matrix->position.z = 0.0f;
+	point_set_170c00(&matrix->position, 0.0f, 0.0f, 0.0f);
 }
 
 __declspec(noinline) vector3f *function_170c00(vector3f const *first_forward, vector3f const *first_up, vector3f const *second_forward, vector3f const *second_up, vector3f *out);
@@ -171,6 +187,16 @@ void function_170bb0(real const *first, real const *second, real *out)
 	} while (--rotation_count);
 }
 
+PRIVATE inline void rotate_vector_170d70(vector3f *v, vector3f const *axis, real sine, real cosine)
+{
+	real projection = (v->i * axis->i + axis->k * v->k + axis->j * v->j) * (1.f - cosine);
+	real cross_j = axis->i * v->k - v->i * axis->k;
+	real cross_k = v->i * axis->j - axis->i * v->j;
+	v->i = v->i * cosine + projection * axis->i - (axis->k * v->j - axis->j * v->k) * sine;
+	v->j = projection * axis->j + cosine * v->j - cross_j * sine;
+	v->k = projection * axis->k + cosine * v->k - cross_k * sine;
+}
+
 // @retail 0x170d70
 void function_170d70(vector3f const *rotation, vector3f *a, vector3f *b)
 {
@@ -181,21 +207,9 @@ void function_170d70(vector3f const *rotation, vector3f *a, vector3f *b)
 	{
 		real s = (real)sin(angle);
 		real c = (real)cos(angle);
-		real one_minus_c = 1.f - c;
 
-		real ka = (a->i * axis.i + axis.k * a->k + axis.j * a->j) * one_minus_c;
-		real pa1 = axis.i * a->k - a->i * axis.k;
-		real pa2 = a->i * axis.j - axis.i * a->j;
-		a->i = a->i * c + ka * axis.i - (axis.k * a->j - axis.j * a->k) * s;
-		a->j = ka * axis.j + c * a->j - pa1 * s;
-		a->k = ka * axis.k + c * a->k - pa2 * s;
-
-		real kb = (b->k * axis.k + b->j * axis.j + b->i * axis.i) * one_minus_c;
-		real pb1 = b->k * axis.i - b->i * axis.k;
-		real pb2 = b->i * axis.j - b->j * axis.i;
-		b->i = b->i * c + kb * axis.i - (b->j * axis.k - b->k * axis.j) * s;
-		b->j = b->j * c + kb * axis.j - pb1 * s;
-		b->k = b->k * c + kb * axis.k - pb2 * s;
+		rotate_vector_170d70(a, &axis, s, c);
+		rotate_vector_170d70(b, &axis, s, c);
 	}
 }
 
@@ -470,10 +484,10 @@ long function_173b80(s_flag_holder *holder)
 
 static inline long local_player_next(long index)
 {
-	long i = (index == NONE) ? 0 : index + 1;
 	long result = NONE;
+	long start = index == NONE ? 0 : index + 1;
 
-	for (; i < 4; i++)
+	for (long i = start; i < 4; i++)
 	{
 		if (g_4e8c20->entries[i] != NONE)
 		{
@@ -487,6 +501,7 @@ static inline long local_player_next(long index)
 // @retail 0x172750
 bool function_172750(long mode, point3f const *point, real radius)
 {
+	bool result = false;
 	real limit = radius * radius;
 
 	for (long i = local_player_next(NONE); i != NONE; i = local_player_next(i))
@@ -496,16 +511,18 @@ bool function_172750(long mode, point3f const *point, real radius)
 
 		if (i != NONE && g_4686c4 != NONE)
 			player = &g_4e9bd4[i].state;
-		real dx = player->position.x - point->x;
-		real dy = player->position.y - point->y;
-		real dz = player->position.z - point->z;
-		distance_squared = dx * dx + dy * dy + dz * dz;
+		vector3f delta;
+		vector3d_from_points3d(point, &player->position, &delta);
+		distance_squared = delta.j * delta.j + delta.k * delta.k + delta.i * delta.i;
 		if (mode == 1)
 			distance_squared = player->radius * player->radius * distance_squared;
 		if (limit > distance_squared)
-			return true;
+		{
+			result = true;
+			break;
+		}
 	}
-	return false;
+	return result;
 }
 
 /* ---- the rectangle pool ---- */
@@ -729,13 +746,11 @@ bool function_172ee0(long *cluster_map, s_pool_lists const *lists, s_pool *pool,
 		collection->cluster_count = count + 1;
 		collection->order[cluster_slot] = cluster_slot;
 		cluster_map[cluster_index] = cluster_slot;
-		cluster = &collection->clusters[cluster_slot];
-		cluster->index = (short)cluster_index;
-		memset(cluster->counts, 0, sizeof(cluster->counts));
-		memset(cluster->heads, 0xff, sizeof(cluster->heads));
+		collection->clusters[cluster_slot].index = (short)cluster_index;
+		memset(collection->clusters[cluster_slot].counts, 0, sizeof(collection->clusters[cluster_slot].counts));
+		memset(collection->clusters[cluster_slot].heads, 0xff, sizeof(collection->clusters[cluster_slot].heads));
 	}
-	else
-		cluster = &collection->clusters[cluster_slot];
+	cluster = &collection->clusters[cluster_slot];
 	do
 	{
 		short volume_index = collection->volume_count;

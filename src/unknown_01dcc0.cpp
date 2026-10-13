@@ -32,14 +32,17 @@ bool function_1db10(long index, long width, long height, long unused, bool alter
 	(void)&index;
 	(void)&width;
 	(void)&alternate;
-	(void)&unused;
-	long address = g_4e6440[g_4e6420];
+	long const *unused_reference = &unused;
+	long ignored = *unused_reference;
+	(void)ignored;
+	long allocator_index = g_4e6420;
+	long allocation_top = g_4e6440[allocator_index];
 	long size = ((((width + 63) & ~63) * height * 4) + 4095) & ~4095;
-	address -= size;
+	long address = allocation_top - size;
 	void *data = 0;
-	if (address >= g_4e642c[g_4e6420])
+	if (address >= g_4e642c[allocator_index])
 	{
-		g_4e6440[g_4e6420] = address;
+		g_4e6440[allocator_index] = address;
 		data = (void *)address;
 		if (data)
 		{
@@ -358,5 +361,4 @@ initial_done:
     if (!function_1db10(15, 64, 64, 0, false)) return false;
     return true;
 }
-
 

@@ -98,14 +98,13 @@ bool __stdcall function_1b5c00(long actor_index, s_slot *slot)
 {
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_22 *state = (s_slot_22 *)slot;
-	real delay = 8.0f;
+	real ticks = 8.0f;
 	s_character_db0_delays *character = (s_character_db0_delays *)function_1e4db0(actor_index);
-	real ticks;
 	long value;
 
 	if (character)
-		delay = function_259d0(&g_4e7408->unknown0, __FILE__, __LINE__, character->unknown4, character->unknown8);
-	ticks = g_510c54->field_2_3 * delay;
+		ticks = function_259d0(&g_4e7408->unknown0, __FILE__, __LINE__, character->unknown4, character->unknown8);
+	ticks = g_510c54->field_2_3 * ticks;
 	__asm
 	{
 		fld ticks
@@ -302,8 +301,8 @@ void function_25d420(long prop_ref_index, short type, long actor_index);
 // @retail 0x1b5e00
 short __stdcall function_1b5e00(long actor_index, short level, bool active)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	short result = g_46fbe4;
+	s_actor_view *actor = actor_get(actor_index);
 	s_slot_22 *state = (s_slot_22 *)&actor->slots[level];
 
 	if (actor->prop_index != NONE)

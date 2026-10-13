@@ -689,8 +689,10 @@ long function_1895f0(s_sound_position const *position, real scale, long tag_inde
 // @retail 0x10c880
 void function_10c880(long item_index, s_item_impact const *impact, vector3f const *velocity, point3f const *point)
 {
-	s_item *item = ITEM_GET(item_index);
-	s_item_impact_definition *definition = (s_item_impact_definition *)g_4e3b44[item->definition_index & 0xffff].bytes;
+	s_item_header *headers = (s_item_header *)g_4e0300->data;
+	s_tag_instance *tags = g_4e3b44;
+	s_item *item = headers[item_index & 0xffff].item;
+	s_item_impact_definition *definition = (s_item_impact_definition *)tags[item->definition_index & 0xffff].bytes;
 	vector3f direction = *velocity;
 	real scale = function_1201a0(&direction, g_4687bc) * (1.0f / 3.0f);
 	scale = scale < 0.0f ? 0.0f : (scale > 1.0f ? 1.0f : scale);
@@ -700,7 +702,7 @@ void function_10c880(long item_index, s_item_impact const *impact, vector3f cons
 		long kind = definition->kind;
 		if (impact->type == 4)
 		{
-			byte other_kind = ((s_item_impact_definition *)g_4e3b44[ITEM_GET(impact->object_index)->definition_index & 0xffff].bytes)->kind;
+			byte other_kind = ((s_item_impact_definition *)tags[headers[impact->object_index & 0xffff].item->definition_index & 0xffff].bytes)->kind;
 			kind = definition->kind > other_kind ? other_kind : definition->kind;
 		}
 		function_188180(&impact->point, &impact->normal, effect_index, item_index, kind + 10, kind,

@@ -245,6 +245,17 @@ static __forceinline long action_round(real value)
  return result;
 }
 
+static __forceinline void function_86f91(s_bitstream *stream, dword value, long bits)
+{
+ if (bits < 32 && value >= (dword)(1 << bits))
+ {
+  char message[256];
+  message[0] = 0;
+  csprintf_256(message, "%u exceeds max value of %u", value, 1 << bits);
+ }
+ function_195720(stream, value, bits);
+}
+
 // @retail 0x86f90
 void function_86f90(s_bitstream *stream, s_player_action *action)
 {
@@ -262,17 +273,17 @@ void function_86f90(s_bitstream *stream, s_player_action *action)
  stream_write_checked(stream, input->grenade + 1, 3);
  stream_write_checked(stream, input->slot + 1, 2);
  stream_write_checked(stream, input->seat + 1, 2);
- stream_write_checked(stream, input->target_type, 4);
+ function_86f91(stream, input->target_type, 4);
  if (input->target_type)
  {
   function_195720(stream, input->target, 32);
   switch (input->target_type)
   {
-  case 1: stream_write_checked(stream, input->target_byte, 4); break;
-  case 4: stream_write_checked(stream, input->target_slot, 5); break;
-  case 5: stream_write_checked(stream, input->target_slot, 5); break;
-  case 6: stream_write_checked(stream, input->target_slot, 5); break;
-  case 7: stream_write_checked(stream, input->target_byte, 4); break;
+  case 4:
+  case 5:
+  case 6: function_86f91(stream, input->target_slot, 5); break;
+  case 1:
+  case 7: function_86f91(stream, input->target_byte, 4); break;
   }
  }
  stream_write_bit(stream, input->value30 != NONE);
@@ -307,7 +318,7 @@ struct s_simulation_machine_list
  dword mask;
  byte addresses[16][6];
 };
-void simulation_write_machines(const s_simulation_machine_list *machines, s_bitstream *stream);
+void simulation_write_machines(s_bitstream *stream, const s_simulation_machine_list *machines);
 bool simulation_read_machines(s_bitstream *stream, s_simulation_machine_list *machines);
 
 // @retail 0x87d00
@@ -321,7 +332,7 @@ void function_87d00(s_bitstream *stream, void *message)
    function_86f90(stream, (s_player_action *)(block + 0xc + i * 0x5c));
  stream_write_bit(stream, *(bool *)(block + 0xdd0));
  if (*(bool *)(block + 0xdd0))
-  simulation_write_machines((s_simulation_machine_list *)(block + 0xdd4), stream);
+  simulation_write_machines(stream, (s_simulation_machine_list *)(block + 0xdd4));
  stream_write_checked(stream, *(dword *)(block + 0xe38), 5);
  for (long j = 0; j < *(long *)(block + 0xe38); j++)
   function_87930(stream, (s_simulation_player_update *)(block + 0xe3c + j * 0xc8));

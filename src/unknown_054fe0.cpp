@@ -702,18 +702,26 @@ static inline short session_get_value_5dd0_inline(c_class_58d20 *session)
 // @retail 0x63e00
 bool network_session_interface_can_add_player(void)
 {
+	bool result = false;
 	c_class_58d20 *session = network_session_get_live();
 	if (!session)
-		return false;
+		goto done;
 	if (session_get_value_498c(session) != 0)
-		return false;
+		goto done;
 	if (session->player_count >= session_get_maximum_player_count(session))
-		return false;
+		goto done;
 	if (g_527330.state == 6 || g_527330.state == 7 || g_527330.state == 8 || g_527330.state == 9)
-		return false;
-	if (session_get_value_5dd0_inline(session) != NONE)
-		return false;
-	return true;
+		goto done;
+	{
+		short local_0 = NONE;
+		if (SESSION_STATE_IS_LIVE(session->state))
+			local_0 = session->value5dd0;
+		if (local_0 != NONE)
+			goto done;
+	}
+	result = true;
+done:
+	return result;
 }
 
 // @retail 0x656e0
@@ -748,18 +756,32 @@ bool network_session_get_membership(c_class_58d20 *session, long *value4c, long 
 }
 
 
+struct s_64310
+{
+	long field_0;
+	long field_4;
+	dword field_8;
+	s_session_member *field_c;
+	s_network_session_player *field_10;
+};
+
 // @retail 0x64310
 bool network_session_interface_kick_player(long player_index)
 {
-	bool result = false;
+	volatile bool result = false;
 	c_class_58d20 *session = network_session_get_live();
 	if (session)
 	{
-		long host_member = session->current_member;
-		if (host_member == session->value50 && (session->player_mask & (1 << player_index)))
+		s_64310 local_0;
+		local_0.field_0 = session->current_member;
+		local_0.field_4 = session->value50;
+		local_0.field_8 = session->player_mask;
+		local_0.field_c = session->members;
+		local_0.field_10 = session->players;
+		if (local_0.field_0 == local_0.field_4 && (local_0.field_8 & (1 << player_index)))
 		{
-			long member_index = session->players[player_index].member_index;
-			if (member_index != host_member && network_session_delegate_leader(session, (const s_session_member_identity *)session->members[member_index].words))
+			long member_index = local_0.field_10[player_index].member_index;
+			if (member_index != local_0.field_0 && network_session_delegate_leader(session, (const s_session_member_identity *)local_0.field_c[member_index].words))
 				result = true;
 		}
 	}
@@ -769,15 +791,20 @@ bool network_session_interface_kick_player(long player_index)
 // @retail 0x643f0
 bool network_session_interface_ban_player(long player_index)
 {
-	bool result = false;
+	volatile bool result = false;
 	c_class_58d20 *session = network_session_get_live();
 	if (session)
 	{
-		long host_member = session->current_member;
-		if (host_member == session->value50 && (session->player_mask & (1 << player_index)))
+		s_64310 local_0;
+		local_0.field_0 = session->current_member;
+		local_0.field_4 = session->value50;
+		local_0.field_8 = session->player_mask;
+		local_0.field_c = session->members;
+		local_0.field_10 = session->players;
+		if (local_0.field_0 == local_0.field_4 && (local_0.field_8 & (1 << player_index)))
 		{
-			long member_index = session->players[player_index].member_index;
-			if (member_index != host_member && network_session_boot_machine(session, (const s_session_member_identity *)session->members[member_index].words))
+			long member_index = local_0.field_10[player_index].member_index;
+			if (member_index != local_0.field_0 && network_session_boot_machine(session, (const s_session_member_identity *)local_0.field_c[member_index].words))
 				result = true;
 		}
 	}
@@ -1150,7 +1177,7 @@ static inline long session_get_value_49f0(c_class_58d20 *session)
 
 /* sends the local machine's properties to the session when they change */
 // @retail 0x658c0
-void network_session_interface_update_local_properties(c_class_58d20 *session, s_session_member *member)
+static void network_session_interface_update_local_properties(c_class_58d20 *session, s_session_member *member)
 {
 	long owner = session->value10;
 	long last = g_4cd868.unknown3e8[owner];
