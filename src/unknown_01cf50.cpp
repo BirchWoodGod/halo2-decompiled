@@ -219,7 +219,8 @@ PRIVATE __forceinline void write_texture_corners(real u, real v)
 // @retail 0x15ec0
 void __stdcall function_15ec0(long index)
 {
-    long width = 0, height = 0;
+    long height = 0;
+    long width = 0;
     long count;
     if (g_4b4b58[index].data && !g_4b4b58[index].flag95)
         count = g_4b4b58[index].element_count;
@@ -761,31 +762,33 @@ void *function_1d5e0(s_bitmap_view *bitmap, long wait, long *pitch)
 bool function_143c0(long tag, short index, short stage, real priority)
 {
     bool result = false;
-    long slot = stage;
+    short slot = stage;
     if (tag == NONE)
     {
         tag = *(long *)(g_485a80 + 0x64);
         index = 0;
-        if (tag == NONE) return result;
     }
-    byte *group = g_4e3b44[tag & 0xffff].bytes;
-    _mm_prefetch((char const *)(*(byte **)(group + 0x48) + index * 0x74), _MM_HINT_T0);
-    _mm_prefetch((char const *)g_485af4, _MM_HINT_T0);
-    if (index < 0 || index >= *(long *)(group + 0x44))
+    if (tag != NONE)
     {
-        tag = *(long *)(g_485a80 + 0x64);
-        index = 0;
-        group = g_4e3b44[tag & 0xffff].bytes;
-    }
-    if (group && *(long *)(group + 0x44) > 0)
-    {
-        s_type_7ba8e9 *bitmap = function_137550(tag, index);
-        if (bitmap)
+        byte *group = g_4e3b44[tag & 0xffff].bytes;
+        _mm_prefetch((char const *)(*(byte **)(group + 0x48) + index * 0x74), _MM_HINT_T0);
+        _mm_prefetch((char const *)g_485af4, _MM_HINT_T0);
+        if (index < 0 || index >= *(long *)(group + 0x44))
         {
-            g_51f3c8[1][slot] = function_12310((s_bitmap_view *)bitmap, priority);
-            g_485af4[slot] = *(short *)((byte *)bitmap + 4);
-            g_485b04[slot] = *(short *)((byte *)bitmap + 6);
-            return true;
+            tag = *(long *)(g_485a80 + 0x64);
+            index = 0;
+            group = g_4e3b44[tag & 0xffff].bytes;
+        }
+        if (group && *(long *)(group + 0x44) > 0)
+        {
+            byte *bitmap = (byte *)function_137550(tag, index);
+            if (bitmap)
+            {
+                g_51f3c8[1][slot] = function_12310((s_bitmap_view *)bitmap, priority);
+                g_485af4[slot] = *(short *)(bitmap + 4);
+                g_485b04[slot] = *(short *)(bitmap + 6);
+                result = true;
+            }
         }
     }
     return result;
@@ -3533,8 +3536,10 @@ long __stdcall function_2e540(s_slot *slot, byte *data)
     offset.j = data[0x11] * (2.0f / 255.0f) - 1.0f;
     offset.k = data[0x12] * (2.0f / 255.0f) - 1.0f;
     byte *definition = g_4e3b44[tag & 0xffff].bytes;
-    real scale = definition[0x28] & 0x40 ? *(real *)(data + 0x14) : 1.0f;
-    if (tag != NONE && !(definition[0x28] & 2))
+    real scale = 1.0f;
+    if (definition[0x28] & 0x40)
+        scale = *(real *)(data + 0x14);
+    if (tag != NONE && !(g_4e3b44[tag & 0xffff].bytes[0x28] & 2))
     {
         real radius = *(real *)(definition + 0x10) * scale;
         if ((*(dword *)slot & 0x38) == 0x20)
@@ -3545,9 +3550,12 @@ long __stdcall function_2e540(s_slot *slot, byte *data)
         switch (*(short *)(definition + 0x14))
         {
         case 0:
-            position.x += -radius * g_4b9dac.i;
-            position.y += -radius * g_4b9dac.j;
-            position.z += -radius * g_4b9dac.k;
+            {
+            real negative_radius = -radius;
+            position.x += negative_radius * g_4b9dac.i;
+            position.y += negative_radius * g_4b9dac.j;
+            position.z += negative_radius * g_4b9dac.k;
+            }
             break;
         case 1:
             position.x += offset.i * (radius * 1.4142135381698608f);
@@ -3573,12 +3581,12 @@ long __stdcall function_2e540(s_slot *slot, byte *data)
                 else if (screen[2] > 16777215.0f) screen[2] = 16777215.0f;
                 if (screen[3] < 0.0f) screen[3] = 0.0f;
                 else if (screen[3] > 16777215.0f) screen[3] = 16777215.0f;
-                D3DDevice_Begin(D3DPT_TRIANGLEFAN);
-                D3DDevice_SetVertexData4f(0, left, top, screen[2], screen[3]);
-                D3DDevice_SetVertexData4f(0, right, top, screen[2], screen[3]);
-                D3DDevice_SetVertexData4f(0, right, bottom, screen[2], screen[3]);
-                D3DDevice_SetVertexData4f(0, left, bottom, screen[2], screen[3]);
-                D3DDevice_End();
+                D3DDevice::Begin(D3DPT_TRIANGLEFAN);
+                D3DDevice::SetVertexData4f(0, left, top, screen[2], screen[3]);
+                D3DDevice::SetVertexData4f(0, right, top, screen[2], screen[3]);
+                D3DDevice::SetVertexData4f(0, right, bottom, screen[2], screen[3]);
+                D3DDevice::SetVertexData4f(0, left, bottom, screen[2], screen[3]);
+                D3DDevice::End();
                 result = (long)area;
             }
         }
@@ -3977,25 +3985,25 @@ void __stdcall function_480a0(point3f const *point, real width, real height, rea
     if (width > 0.0f && height > 0.0f && function_48b00(point, 1.0f, screen, extent))
     {
         function_1cf50();
-        D3DDevice_Begin(D3DPT_TRIANGLEFAN);
-        D3DDevice_SetVertexDataColor(9, color);
+        D3DDevice::Begin(D3DPT_TRIANGLEFAN);
+        D3DDevice::SetVertexDataColor(9, color);
+        D3DDevice::SetVertexData2s(3, 1, 0);
         real wc = width * cosine;
-        real hs = height * sine;
-        real ws = width * sine;
         real hc = height * cosine;
+        real ws = width * sine;
+        real hs = height * sine;
         real a = (wc - hs) * extent[0];
         real b = (ws + hc) * extent[1];
-        D3DDevice_SetVertexData2s(3, 1, 0);
-        D3DDevice_SetVertexData4f(0, screen[0] + a, screen[1] - b, screen[2], screen[3]);
+        D3DDevice::SetVertexData4f(0, screen[0] + a, screen[1] - b, screen[2], screen[3]);
         real c = (hs + wc) * extent[0];
         real d = (ws - hc) * extent[1];
-        D3DDevice_SetVertexData2s(3, 1, 1);
-        D3DDevice_SetVertexData4f(0, screen[0] + c, screen[1] - d, screen[2], screen[3]);
-        D3DDevice_SetVertexData2s(3, 0, 1);
-        D3DDevice_SetVertexData4f(0, screen[0] - a, screen[1] + b, screen[2], screen[3]);
-        D3DDevice_SetVertexData2s(3, 0, 0);
-        D3DDevice_SetVertexData4f(0, screen[0] - c, screen[1] + d, screen[2], screen[3]);
-        D3DDevice_End();
+        D3DDevice::SetVertexData2s(3, 1, 1);
+        D3DDevice::SetVertexData4f(0, screen[0] + c, screen[1] - d, screen[2], screen[3]);
+        D3DDevice::SetVertexData2s(3, 0, 1);
+        D3DDevice::SetVertexData4f(0, screen[0] - a, screen[1] + b, screen[2], screen[3]);
+        D3DDevice::SetVertexData2s(3, 0, 0);
+        D3DDevice::SetVertexData4f(0, screen[0] - c, screen[1] + d, screen[2], screen[3]);
+        D3DDevice::End();
     }
 }
 
@@ -4113,7 +4121,7 @@ void function_47930(word flags, long format, long mode)
         function_1ccb0(40);
         real identity[12] = { 1.0f, 0.0f, 0.0f, 0.0f,
             0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f };
-        D3DDevice_SetVertexShaderConstantFast(78, identity, 3);
+        D3DDevice_SetVertexShaderConstant(78, identity, 3);
     }
     function_1c710(g_51f0f0);
     if (!(mode)) {
@@ -5873,9 +5881,8 @@ void function_2df00()
     g_51f3c8[1][2] = NULL;
     g_51f3c8[1][3] = NULL;
     function_1cf50();
-    D3DPIXELSHADERDEF program;
-    memset(&program, 0, sizeof(program));
-    dword *fields = (dword *)&program;
+    memset(&g_484f68, 0, sizeof(g_484f68));
+    dword *fields = (dword *)&g_484f68;
     fields[0xd8 / 4] = 1;
     fields[0xd4 / 4] = 0x11002;
     fields[0x88 / 4] = 0x8081524;
@@ -5884,18 +5891,15 @@ void function_2df00()
     fields[0xb8 / 4] = 0xd4;
     fields[0x20 / 4] = 0x50f0004;
     fields[0x24 / 4] = 0xc0d1400;
-    g_484f68 = program;
-    function_1ccf0(&program);
+    function_1ccf0(&g_484f68);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x54), 0);
     function_1c710(g_51f0f0);
     g_4c19c0 = false;
     g_4c1a04 = 0;
     function_20bb0(g_4b9ed4, 0xf, NULL, 0, false, (visibility_draw_callback)function_2e9e0);
-    for (long i = 0; i < (long)g_4c1a04; ++i)
-    {
-        point3f position = g_4c19c4[i].position;
-        function_46ea0(g_4c19c4[i].tag, &position);
-    }
+    long saved_count = (long)g_4c1a04;
+    for (long i = 0; i < saved_count; ++i)
+        function_46ea0(g_4c19c4[i].tag, &g_4c19c4[i].position);
 }
 
 struct s_501e0
@@ -6919,9 +6923,9 @@ extern s_record_pool *g_54d574;
 void function_1f2b0()
 {
     if (g_4b62a0)
-        for (long i = 0; i < 512; ++i)
+        for (long i = 0; i < 512; i += 4)
         {
-            if (g_4b62b0[i].character_index != NONE)
+            if ((dword)g_4b62b0[i].character_index != 0xffffffffu)
             {
                 if (i != NONE)
                 {
@@ -6929,6 +6933,36 @@ void function_1f2b0()
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
                     g_4b62b0[i].character_index = NONE;
+                }
+            }
+            if ((dword)g_4b62b0[i + 1].character_index != 0xffffffffu)
+            {
+                if (i + 1 != NONE)
+                {
+                    long character = g_4b62b0[i + 1].character_index;
+                    if (character != NONE)
+                        *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
+                    g_4b62b0[i + 1].character_index = NONE;
+                }
+            }
+            if ((dword)g_4b62b0[i + 2].character_index != 0xffffffffu)
+            {
+                if (i + 2 != NONE)
+                {
+                    long character = g_4b62b0[i + 2].character_index;
+                    if (character != NONE)
+                        *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
+                    g_4b62b0[i + 2].character_index = NONE;
+                }
+            }
+            if ((dword)g_4b62b0[i + 3].character_index != 0xffffffffu)
+            {
+                if (i + 3 != NONE)
+                {
+                    long character = g_4b62b0[i + 3].character_index;
+                    if (character != NONE)
+                        *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
+                    g_4b62b0[i + 3].character_index = NONE;
                 }
             }
         }

@@ -1015,15 +1015,14 @@ void __stdcall function_2cbc0(bool enabled)
 // @retail 0x3f2c0
 void function_3f2c0(s_planar_camera_source const *source, byte const *view, long object_index, long identifier)
 {
-	byte camera[0x1bc];
+	byte camera[0x1b4];
 	real offset = 0.0f;
 	function_441b0(source, (s_planar_camera *)camera, view);
 	byte *effect = (byte *)function_01fd20(0);
-	bool enabled = false;
-	if (effect && effect[0x3c])
+	bool enabled = effect && effect[0x3c];
+	if (enabled)
 	{
 		offset = *(real *)(effect + 0x40) - *(real *)(camera + 0x70);
-		enabled = true;
 	}
 	function_3d600();
 	s_bit_vector_pool *data = function_1320f0(0, 1, enabled, 0, camera,
