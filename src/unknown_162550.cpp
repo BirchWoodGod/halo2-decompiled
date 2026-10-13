@@ -36,12 +36,18 @@ bool g_476fcc;
 long g_4c9888;
 extern long g_4ba04c;
 
+long function_122540(long font);
+
 /* not decompiled yet (src/stubs/lane_h.cpp) */
 bool function_53750(long player_index);
 
-static inline bool function_4c9888_is_one()
+static inline bool engine_mode_one_active()
 {
-	return g_4c9888 == 1;
+	bool result = false;
+
+	if (g_4c99b8 && g_476fcc)
+		result = g_4c9888 == 1;
+	return result;
 }
 
 static inline s_marker_player *marker_player_get(long player_index)
@@ -56,12 +62,7 @@ bool function_162550(long player_index, s_marker_list *list)
 	s_marker_player *player = marker_player_get(player_index);
 	s_player_info *info = &g_4e9ae8->players[absolute_index];
 	bool result = true;
-	volatile long font_slot = (g_4ba04c <= 1) + 5;
-	s_font_header *font = font_get(g_4e28f4[font_slot]);
-	short height = 10;
-
-	if (font)
-		height = font->leading_height + font->descending_height + font->ascending_height;
+	short height = (short)function_122540((g_4ba04c <= 1) + 5);
 
 	list->r14 = 0.05f;
 	list->b0 = false;
@@ -102,7 +103,7 @@ bool function_162550(long player_index, s_marker_list *list)
 		}
 		list->color24 = *color;
 
-		if (g_4c99b8 && g_476fcc && function_4c9888_is_one() && function_53750(absolute_index))
+		if (engine_mode_one_active() && function_53750(absolute_index))
 		{
 			list->b1 = true;
 			list->color30 = *(s_color_bits *)g_468710;
@@ -122,6 +123,10 @@ bool function_162550(long player_index, s_marker_list *list)
 				list->b1 = true;
 				list->color30 = *(s_color_bits *)g_468710;
 				break;
+			case 3:
+				list->b1 = true;
+				list->color30 = *(s_color_bits *)g_46871c;
+				break;
 			case 4:
 				list->b1 = true;
 				list->color30 = *(s_color_bits *)g_468724;
@@ -130,7 +135,6 @@ bool function_162550(long player_index, s_marker_list *list)
 				list->b1 = true;
 				list->color30 = *(s_color_bits *)g_468714;
 				break;
-			case 3:
 			default:
 				list->b1 = true;
 				list->color30 = *(s_color_bits *)g_46871c;
@@ -143,8 +147,8 @@ bool function_162550(long player_index, s_marker_list *list)
 		list->position = info->v;
 		list->color24 = *(s_color_bits *)g_46871c;
 		list->color30 = *(s_color_bits *)g_46871c;
-		list->items[0].kind = 4;
 		list->r40 = 1.0f - (real)(short)info->w12 / (real)(short)info->w10;
+		list->items[0].kind = 4;
 		list->items[0].a = *(s_color_bits *)g_46871c;
 		list->items[0].b = *(s_color_bits *)g_46871c;
 	}
