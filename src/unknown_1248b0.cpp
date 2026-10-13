@@ -102,6 +102,8 @@ void input_update_device_changes(void)
 	dword device_changes = 0;
 	dword insertions;
 	dword removals;
+	dword memory_unit_insertions;
+	dword memory_unit_removals;
 
 	if (XGetDeviceChanges(XDEVICE_TYPE_GAMEPAD, &insertions, &removals))
 	{
@@ -151,7 +153,7 @@ void input_update_device_changes(void)
 			device_changes |= 0x8000;
 	}
 
-	if (XGetDeviceChanges(XDEVICE_TYPE_MEMORY_UNIT, &insertions, &removals))
+	if (XGetDeviceChanges(XDEVICE_TYPE_MEMORY_UNIT, &memory_unit_insertions, &memory_unit_removals))
 		g_4e61b8.memory_unit_change_time = GetTickCount();
 
 	function_2184a0(device_changes);
