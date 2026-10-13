@@ -461,15 +461,16 @@ static __forceinline void matrix4x3_basis_store(transform4x3f *out, point3f cons
 	out->position = *position;
 }
 
-static __forceinline void plane_vector_normalize(vector3f *out, real j)
+static __forceinline void plane_vector_normalize(vector3f *out)
 {
-    real magnitude = (real)sqrt(out->i * out->i + j * j + out->k * out->k);
+    real k = out->k;
+    real magnitude = (real)sqrt(out->i * out->i + out->j * out->j + k * k);
     if (!(fabs(magnitude) < 0.0001f))
     {
         real inverse = 1.f / magnitude;
         out->i = inverse * out->i;
-        out->j = j * inverse;
-        out->k = inverse * out->k;
+        out->j = out->j * inverse;
+        out->k = inverse * k;
     }
 }
 
@@ -478,7 +479,7 @@ static __forceinline void function_x7a3668(plane3f const *plane, transform4x3f *
 	vector3f w;
 	point3f position;
 	function_11d000(&plane->n, &w);
-	plane_vector_normalize(&w, w.j);
+	plane_vector_normalize(&w);
 	position.x = plane->d * plane->n.i;
 	position.y = plane->n.j * plane->d;
 	position.z = plane->n.k * plane->d;

@@ -113,18 +113,35 @@ long __stdcall function_e5bc0(long unit_index, long object_index, long previous_
 bool function_1df560(short team_a, short team_b);
 bool function_151320(s_target_candidate *candidate, s_target_candidate *best, long player_index);
 
+/* the object fields 0x1515e0 reads */
+struct s_1515e0_object
+{
+	byte unknown00[0x10a];
+	word unknown10a_0 : 1;
+	word unknown10a_1 : 1;
+	word unknown10a_2 : 1;
+	word unknown10a_3 : 1;
+	word unknown10a_4 : 1;
+	word unknown10a_5 : 1;
+	word unknown10a_6 : 1;
+	word unknown10a_7 : 1;
+	word unknown10b_0 : 8;
+	byte unknown10c[0x138 - 0x10c];
+	short team;
+};
+
 // @retail 0x1515e0
 void function_1515e0(long object_index, long player_index, s_target_candidate *best)
 {
 	long const *player_reference = &player_index;
 	s_target_candidate *const *best_reference = &best;
+	s_1515e0_object *object = (s_1515e0_object *)tail_object_get(object_index);
 	byte *player = (byte *)tail_player_get(*player_reference);
-	byte *object = (byte *)tail_object_get(object_index);
 	long unit_index = *(long *)(player + 0x2c);
 	byte type = ((s_tail_object_header *)g_4e0300->data)[unit_index & 0xffff].type;
-	if (((1 << type) & 1) && !(bool)((object[0x10a] >> 2) & 1))
+	if (((1 << type) & 1) && !TEST_FIELD_BIT(object->unknown10a_2))
 	{
-		if (function_1df560(*(short *)(object + 0x138), (short)*(char *)(player + 0xc0)))
+		if (function_1df560(object->team, (short)*(char *)(player + 0xc0)))
 			*(long *)((byte *)*best_reference + 8) = function_e5bc0(unit_index, object_index, *(long *)((byte *)*best_reference + 8));
 		else if (function_e5470(*player_reference, object_index))
 		{
