@@ -36,8 +36,6 @@ bool g_476fcc;
 long g_4c9888;
 extern long g_4ba04c;
 
-long function_122540(long font);
-
 /* not decompiled yet (src/stubs/lane_h.cpp) */
 bool function_53750(long player_index);
 
@@ -55,6 +53,18 @@ static inline s_marker_player *marker_player_get(long player_index)
 	return (s_marker_player *)(g_4e8c24->data + (player_index & 0xffff) * sizeof(s_marker_player));
 }
 
+/* the same body as function_122540 (font_loading.cpp), with the table entry read into a local */
+static inline long font_height_162550(long font)
+{
+	long index = g_4e28f4[font];
+	s_font_header *header = font_get(index);
+	long result = 10;
+
+	if (header)
+		result = header->leading_height + header->descending_height + header->ascending_height;
+	return result;
+}
+
 // @retail 0x162550
 bool function_162550(long player_index, s_marker_list *list)
 {
@@ -62,7 +72,7 @@ bool function_162550(long player_index, s_marker_list *list)
 	s_marker_player *player = marker_player_get(player_index);
 	s_player_info *info = &g_4e9ae8->players[absolute_index];
 	bool result = true;
-	short height = (short)function_122540((g_4ba04c <= 1) + 5);
+	short height = (short)font_height_162550(g_4ba04c > 1 ? 5 : 6);
 
 	list->r14 = 0.05f;
 	list->b0 = false;

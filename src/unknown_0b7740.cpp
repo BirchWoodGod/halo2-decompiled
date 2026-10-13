@@ -678,7 +678,7 @@ done:
 struct s_16760c_render_model;
 bool __stdcall function_bab40(long object_index, long name, real *value);
 
-// @retail 0xbd970
+// @retail 0xbd970 standard
 void __stdcall function_bd970(long object_index, s_16760c_render_model *render_model, s_animation_state *state, long node_mask, long node_count, byte *orientations)
 {
     short index = NONE;
