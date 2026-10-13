@@ -570,15 +570,13 @@ bool function_101640(long weapon_index)
 // @retail 0x101980
 void function_101980(long weapon_index, short rounds_loaded, short magazine_index, short rounds_total)
 {
-	long const *weapon_index_reference = &weapon_index;
-	weapon_index = *weapon_index_reference;
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
-	short maximum = definition->magazines[magazine_index].rounds_loaded_maximum;
+	s_weapon_magazine_definition *magazine_definition = &definition->magazines[magazine_index];
 	short loaded = rounds_loaded < 0 ? 0 : rounds_loaded;
 	short unloaded = rounds_total - loaded < 0 ? 0 : rounds_total - loaded;
 
-	weapon->magazines[magazine_index].rounds_loaded = loaded <= maximum ? loaded : maximum;
+	weapon->magazines[magazine_index].rounds_loaded = loaded > magazine_definition->rounds_loaded_maximum ? magazine_definition->rounds_loaded_maximum : loaded;
 	weapon->magazines[magazine_index].rounds_unloaded = unloaded;
 }
 
@@ -1305,31 +1303,13 @@ void function_105a80(short state, long weapon_index, short magazine_index)
 	s_weapon_magazine *magazine = &weapon->magazines[magazine_index];
 	s_weapon_magazine_definition *magazine_definition = &WEAPON_DEFINITION(weapon)->magazines[magazine_index];
 	bool empty = magazine->rounds_loaded == 0;
-	long first_person_state = NONE;
 	short secondary_ticks = NONE;
 	short ticks = NONE;
+	long first_person_state = NONE;
 
 	switch (state)
 	{
-	case 0:
-		break;
-	case 1:
-	case 2:
-		first_person_state = function_105ba0(state, empty);
-		if (first_person_state != NONE)
-		{
-			long animation = first_person_weapon_state_animation((short)first_person_state);
-
-			ticks = first_person_weapon_animation_ticks(weapon_index, animation, 0);
-			if (state == 2)
-				secondary_ticks = NONE;
-			else
-				secondary_ticks = first_person_weapon_animation_ticks(weapon_index, animation, 3);
-		}
-		break;
-	case 3:
-		break;
-	case 4:
+	case 6:
 	{
 		real time = (real)g_510c54->field_2_3 * magazine_definition->value_18;
 		long rounded;
@@ -1342,6 +1322,26 @@ void function_105a80(short state, long weapon_index, short magazine_index)
 		ticks = (short)rounded;
 		break;
 	}
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+		first_person_state = function_105ba0(state, empty);
+		if (first_person_state != NONE)
+		{
+			long animation = first_person_weapon_state_animation((short)first_person_state);
+
+			ticks = first_person_weapon_animation_ticks(weapon_index, animation, 0);
+			if (state == 2)
+				secondary_ticks = NONE;
+			else
+				secondary_ticks = first_person_weapon_animation_ticks(weapon_index, animation, 3);
+		}
+		break;
+	case 0:
+		break;
+	case 5:
+		break;
 	default:
 		__assume(0);
 	}
@@ -1353,20 +1353,46 @@ void function_105a80(short state, long weapon_index, short magazine_index)
 		function_105fa0(weapon_index, first_person_state);
 }
 
+/* the item flags of a weapon as the item code declares them */
+struct s_weapon_item_flags_view
+{
+	byte unknown000[0x12c];
+	union
+	{
+		byte flags;
+		struct
+		{
+			word in_inventory : 1;
+			word flag1 : 1;
+			word flag2 : 1;
+			word flag3 : 1;
+			word flag4 : 1;
+			word flag5 : 1;
+			word flag6 : 1;
+			word flag7 : 1;
+			word : 8;
+		};
+	};
+};
+
+static inline long weapon_get_owner_unit_index(long weapon_index);
+
 // @retail 0x101db0
 void function_101db0(long weapon_index, real heat)
 {
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
 	bool overheat_disabled = false;
+	long unit_index = weapon_get_owner_unit_index(weapon_index);
 
-	if (TEST_FIELD_BIT(weapon->in_inventory) && weapon->unit_index != NONE)
+	if (unit_index != NONE)
 	{
-		long player_index = ((s_weapon_unit_header *)((s_record_pool volatile *)g_4e0300)->data)[weapon->unit_index & 0xffff].unit->player_index;
-		if (player_index != NONE)
-			overheat_disabled = function_159dd0(player_index);
+		s_weapon_unit *unit = WEAPON_UNIT_GET(unit_index);
+
+		if (unit->player_index != NONE)
+			overheat_disabled = function_159dd0(unit->player_index);
 	}
-	if ((bool)((*(byte const volatile *)((byte *)weapon + 0x12c) >> 3) & 1) && weapon->heat < 1.0f && !overheat_disabled)
+	if (TEST_FIELD_BIT(((s_weapon_item_flags_view *)weapon)->flag3) && weapon->heat < 1.0f && !overheat_disabled)
 	{
 		weapon->heat = heat + weapon->heat;
 		if (weapon->heat >= 1.0f)
@@ -1783,10 +1809,7 @@ bool __stdcall function_105c20(long weapon_index, long animation_name)
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
 	bool result = false;
 
-	weapon->animation_254.graph_index = NONE;
-	weapon->animation_254.index = NONE;
-	weapon->value258 = 0.0f;
-	weapon->value250 = NONE;
+	function_105be0(weapon_index);
 	if (weapon->unit_index != NONE)
 	{
 		long player_index = WEAPON_UNIT_GET(weapon->unit_index)->player_index;
@@ -1805,8 +1828,9 @@ bool __stdcall function_105c20(long weapon_index, long animation_name)
 
 					if (state.initialize(player_animation->graph_index, NONE, true))
 					{
-						c_type_709360 animation_id = state.overlay_find(animation_name, state.unknown74, state.unknown78);
+						c_type_709360 animation_id;
 
+						animation_id = state.overlay_find(animation_name, state.unknown74, state.unknown78);
 						if (animation_id.index != NONE ||
 							(animation_id = state.animation_get(animation_name, state.unknown74, state.unknown78)).index != NONE)
 						{
@@ -1957,21 +1981,20 @@ void function_a7cd0(long weapon_index);
 void function_102b90(long weapon_index, short magazine_index)
 {
 	s_weapon *weapon = WEAPON_GET(weapon_index);
-	s_weapon_magazine_definition *magazine_definition = &WEAPON_DEFINITION(weapon)->magazines[magazine_index];
 	s_weapon_magazine *magazine = &weapon->magazines[magazine_index];
+	s_weapon_magazine_definition *magazine_definition = &WEAPON_DEFINITION(weapon)->magazines[magazine_index];
 
 	if (magazine_definition->flags & 1)
 		magazine->rounds_loaded = 0;
 
 	long available = function_1008f0(magazine_index, weapon_index, false);
 	long reloaded = magazine_definition->rounds_reloaded > available ? available : magazine_definition->rounds_reloaded;
-	word loaded = magazine->rounds_loaded;
-	long rounds = (short)(loaded + reloaded);
+	short rounds = (short)(magazine->rounds_loaded + reloaded);
 
 	if (rounds > magazine_definition->rounds_loaded_maximum)
 		rounds = magazine_definition->rounds_loaded_maximum;
-	if (TEST_FIELD_BIT(weapon->item_flag3))
-		function_100b80(magazine_index, weapon_index, rounds - (short)loaded);
+	if (TEST_FIELD_BIT(((s_weapon_item_flags_view *)weapon)->flag3))
+		function_100b80(magazine_index, weapon_index, rounds - magazine->rounds_loaded);
 	magazine->rounds_loaded = rounds;
 	magazine->ticks_0c = NONE;
 	magazine->ticks_0e = NONE;
@@ -2112,7 +2135,7 @@ bool function_105e80(volatile long weapon_index)
 }
 
 // @retail 0x1055b0
-void function_1055b0(vector3f *direction, vector3f const *axis, short index, short mode, real spacing, long flags)
+void function_1055b0(vector3f *direction, vector3f const *axis, short index, short mode, real spacing, short flags)
 {
 	real offset;
 	if (flags & 1)
@@ -2121,17 +2144,18 @@ void function_1055b0(vector3f *direction, vector3f const *axis, short index, sho
 			offset = 0.0f;
 		else
 		{
-			index--;
-			flags = index;
-			if (flags & 1)
+			short &value = flags;
+
+			value = index - 1;
+			if (value & 1)
 			{
-				*(short *)&flags >>= 1;
-				offset = (real)(short)flags;
+				value >>= 1;
+				offset = (real)value;
 			}
 			else
 			{
-				flags = -(short)((short)flags >> 1);
-				offset = (real)(short)flags;
+				value = -(value >> 1);
+				offset = (real)value;
 			}
 		}
 	}
@@ -2147,14 +2171,14 @@ void function_1055b0(vector3f *direction, vector3f const *axis, short index, sho
 	{
 	case 1:
 	{
-		real dot = (direction->j * axis->j + direction->k * axis->k + direction->i * axis->i) * (1.0f - cosine);
-		vector3f cross;
-		cross.i = direction->j * axis->k - direction->k * axis->j;
-		cross.j = direction->k * axis->i - direction->i * axis->k;
-		cross.k = direction->i * axis->j - direction->j * axis->i;
-		direction->i = direction->i * cosine + axis->i * dot - cross.i * sine;
-		direction->j = direction->j * cosine + axis->j * dot - cross.j * sine;
-		direction->k = direction->k * cosine + axis->k * dot - cross.k * sine;
+		real dot = (1.0f - cosine) * dot3f(direction, axis);
+		real cross_i = direction->j * axis->k - direction->k * axis->j;
+		real cross_j = direction->k * axis->i - direction->i * axis->k;
+		real cross_k = direction->i * axis->j - direction->j * axis->i;
+
+		direction->i = direction->i * cosine + axis->i * dot - cross_i * sine;
+		direction->j = direction->j * cosine + axis->j * dot - cross_j * sine;
+		direction->k = direction->k * cosine + axis->k * dot - cross_k * sine;
 	}
 	}
 }
@@ -3600,26 +3624,56 @@ PRIVATE __forceinline void weapon_emission_rotate(vector3f *direction, vector3f 
     *direction = result;
 }
 
+/* whether the game runs in mode 4 */
+static inline bool weapon_game_mode_is_4(void)
+{
+    bool result = false;
+
+    if (g_4e6948->mode == 4)
+        result = true;
+    return result;
+}
+
 // @retail 0x104150
 void __stdcall function_104150(long weapon_index, short barrel_index)
 {
     long const *weapon_reference = &weapon_index;
     short const *barrel_reference = &barrel_index;
     s_weapon *weapon = WEAPON_GET(*weapon_reference);
-    s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
     s_weapon_barrel *barrel = &weapon->barrels[*barrel_reference];
+    s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
     byte *barrel_definition = (byte *)&definition->barrels[*barrel_reference];
-    long unit_index = (weapon->item_flags & 1) ? weapon->unit_index : NONE;
+    long unit_index = NONE;
+    if (weapon->item_flags & 1) unit_index = weapon->unit_index;
+    long owner_index = function_101fb0(*weapon_reference);
+    dword seed = (dword)*weapon_reference;
+    long special_marker = NONE;
+    bool create_projectile = true;
+    bool network_projectile = false;
+    bool synchronize = false;
+    short projectile_code = NONE;
     bool dual = function_101690(*weapon_reference);
     real scale = function_d1490(unit_index, *weapon_reference);
-    if ((bool)((WEAPON_LONG_AT(definition, 0x12c) >> 27) & 1)) scale = dual ? 1.0f : 0.0f;
-    bool synchronize = false, network_projectile = false, create_projectile = true;
+    long synchronized_target = NONE;
+    short synchronized_node = NONE;
+    point3f synchronized_point = *g_468788;
+    if (TEST_FIELD_BIT(definition->flag27)) scale = dual ? 1.0f : 0.0f;
     long mode = g_4e6948->mode;
-    short firing_mode = WEAPON_SHORT_AT(barrel_definition, 0x34);
-    if (mode >= 4 && mode <= 5 && firing_mode != 1)
+    if (mode >= 4 && mode <= 5)
     {
-        synchronize = true;
-        if (firing_mode != 2) { network_projectile = true; create_projectile = mode != 4; }
+        switch (WEAPON_SHORT_AT(barrel_definition, 0x34))
+        {
+        case 1:
+            break;
+        case 2:
+            synchronize = true;
+            break;
+        default:
+            synchronize = true;
+            network_projectile = true;
+            create_projectile = !weapon_game_mode_is_4();
+            break;
+        }
     }
     s_object_marker markers[64];
     short marker_count = function_b8d30(function_101ec0(*weapon_reference),
@@ -3639,15 +3693,11 @@ void __stdcall function_104150(long weapon_index, short barrel_index)
         real reciprocal = 1.0f / (real)marker_count;
         average.x *= reciprocal; average.y *= reciprocal; average.z *= reciprocal;
     }
-    dword seed = (dword)*weapon_reference;
-    long special_marker = NONE;
     if (WEAPON_BYTE_AT(barrel, 4) & 0x20)
     {
         seed = seed * 0x19660d + 0x3c6ef35f;
         special_marker = (long)(seed >> 16) % marker_count;
     }
-    short projectile_code = NONE;
-    long owner_index = function_101fb0(*weapon_reference);
     long projectile_tag = WEAPON_LONG_AT(barrel_definition, 0x90);
     if (projectile_tag != NONE && owner_index != NONE)
     {
@@ -3659,9 +3709,6 @@ void __stdcall function_104150(long weapon_index, short barrel_index)
             projectile_code = function_15cca0(player_index, code);
         }
     }
-    long synchronized_target = NONE;
-    short synchronized_node = NONE;
-    point3f synchronized_point = *g_468788;
     vector3f repeated_direction;
     for (short marker_index = 0; marker_index < marker_count; ++marker_index)
     {
@@ -3857,7 +3904,7 @@ void __stdcall function_104150(long weapon_index, short barrel_index)
                     WEAPON_LONG_AT(projectile, 0x1a4) = weapon->definition_index;
                     function_fa100(index);
                     byte *projectile_tag_bytes = g_4e3b44[WEAPON_LONG_AT(projectile, 0) & 0xffff].bytes;
-                    if (synchronize && firing_mode == 2 && (WEAPON_LONG_AT(projectile, 0x12c) & 0x800) &&
+                    if (synchronize && WEAPON_SHORT_AT(barrel_definition, 0x34) == 2 && (WEAPON_LONG_AT(projectile, 0x12c) & 0x800) &&
                         (WEAPON_LONG_AT(projectile_tag_bytes, 0xbc) & 0x20) && (WEAPON_LONG_AT(projectile, 0x12c) & 0x2000))
                     {
                         long parent_index = WEAPON_LONG_AT(projectile, 0x150);
@@ -3882,7 +3929,7 @@ void __stdcall function_104150(long weapon_index, short barrel_index)
             }
         }
         long damage_tag = WEAPON_LONG_AT(barrel_definition, 0x98);
-        if (mode != 4 && damage_tag != NONE)
+        if (g_4e6948->mode != 4 && damage_tag != NONE)
         {
             byte damage[0x88];
             memset(damage, 0, sizeof(damage));
@@ -3907,7 +3954,7 @@ void __stdcall function_104150(long weapon_index, short barrel_index)
             function_d6c80((s_type_1e6529 *)damage, unit_index);
         }
     }
-    if (synchronize) function_a7d50(*weapon_reference, weapon->definition_index,
+    if (synchronize) function_a7d50(*weapon_reference, *barrel_reference,
         synchronized_target, synchronized_node, &synchronized_point);
 }
 

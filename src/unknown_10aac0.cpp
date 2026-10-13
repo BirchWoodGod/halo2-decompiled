@@ -26,7 +26,6 @@ struct s_interpolated_values
 // @retail 0x10aac0
 bool function_10aac0(long object_index, long name, real *value, long *index)
 {
-	long const *name_reference = &name;
 	bool result = false;
 
 	*index = NONE;
@@ -36,7 +35,7 @@ bool function_10aac0(long object_index, long name, real *value, long *index)
 
 		for (long i = 0; i < sizeof(values->object_indices) / sizeof(values->object_indices[0]); i++)
 		{
-			if (values->object_indices[i] == object_index && values->entries[i].name == *name_reference)
+			if (values->object_indices[i] == object_index && values->entries[i].name == name)
 			{
 				s_interpolated_value *entry = &values->entries[i];
 				real initial_value = entry->initial_value;
