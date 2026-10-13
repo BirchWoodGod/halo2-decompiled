@@ -596,9 +596,9 @@ void players_update_connections(void)
 
 			bool connected = simulation_machine_is_ready(&player->machine_address);
 
-			if (TEST_FIELD_BIT(player->flags.connected) != connected)
+			if (TEST_FLAG(player->flags_word, 0) != connected)
 			{
-				player->flags.connected = connected;
+				SET_FLAG(player->flags_word, 0, connected);
 				if (connected)
 				{
 					c_engine_peer *engine = g_55e4d0[g_4e9ae8->engine_index];
@@ -1177,10 +1177,10 @@ void player_action_update_latches(long player_index, s_player_action *action)
 
 	action->buttons = buttons & ~player->latched_buttons;
 	player->latched_buttons = buttons & 0x16100074;
-	primary_was_down = TEST_FLAG(player->latched_flags, 0);
 	primary_down = TEST_FLAG(action->flags, 0);
-	secondary_was_down = TEST_FLAG(player->latched_flags, 4);
 	secondary_down = TEST_FLAG(action->flags, 4);
+	primary_was_down = TEST_FLAG(player->latched_flags, 0);
+	secondary_was_down = TEST_FLAG(player->latched_flags, 4);
 
 	SET_FLAG(action->flags, 2, primary_down && !primary_was_down);
 	SET_FLAG(action->flags, 3, !primary_down && primary_was_down);
@@ -1220,8 +1220,7 @@ struct s_unit_player_assignment
 // @retail 0x14cad0
 void function_14cad0(long player_index, long unit_index)
 {
-	long volatile const *player_reference = &player_index;
-	s_player *player = player_get(*player_reference);
+	s_player *player = player_get(player_index);
 	s_unit_player_assignment *unit;
 	if (player->unit_index != unit_index)
 	{
@@ -1234,7 +1233,7 @@ void function_14cad0(long player_index, long unit_index)
 				function_1682bf(NONE, player->user_index, NONE);
 			}
 			unit->player_index = NONE;
-			unit->previous_player_index = *player_reference;
+			unit->previous_player_index = player_index;
 			long target = ((s_unit_player_assignment *)object_get_unchecked(player->unit_index))->field_d4;
 			if (target != NONE)
 			{
@@ -1254,7 +1253,7 @@ void function_14cad0(long player_index, long unit_index)
 		if (unit_index != NONE)
 		{
 			unit = (s_unit_player_assignment *)object_get_unchecked(unit_index);
-			unit->player_index = *player_reference;
+			unit->player_index = player_index;
 			unit->previous_player_index = NONE;
 			long target = ((s_unit_player_assignment *)object_get_unchecked(unit_index))->field_d4;
 			if (target != NONE)
@@ -1284,7 +1283,7 @@ void function_14cad0(long player_index, long unit_index)
 			}
 			if (g_55e4d0[g_4e9ae8->engine_index])
 			{
-				unit->field_f0 = function_1588b0(*player_reference, 2);
+				unit->field_f0 = function_1588b0(player_index, 2);
 			}
 		}
 		function_152340();
