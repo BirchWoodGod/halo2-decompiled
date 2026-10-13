@@ -686,7 +686,7 @@ void function_144f0(long tag, short stage, long fallback, short fallback_index, 
     if (tag != NONE)
     {
         byte *group = g_4e3b44[tag & 0xffff].bytes;
-        long count = *(long *)(group + 0x44);
+        long count = *(long const volatile *)(group + 0x44);
         if (count > 0)
         {
             bitmap = function_137550(tag, (short)(index % count));

@@ -1056,7 +1056,7 @@ void function_1ed70(color4f const *color, s_1ed70_point const *points, short cou
     dword packed = pack_color4f(color);
     function_1ee60(2);
     dword *device = (dword *)D3D__pDevice;
-    dword *push = (dword *)device[0];
+    dword volatile *push = (dword *)device[0];
     if (push >= (dword *)device[1])
         push = D3DDevice_MakeSpace();
     dword swapped = (packed & 0xff00ff00) | ((packed & 0xff) << 16) | ((packed >> 16) & 0xff);
