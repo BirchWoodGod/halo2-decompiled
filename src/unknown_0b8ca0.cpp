@@ -862,7 +862,7 @@ struct s_object_cluster_link
     long next;
 };
 
-// Disabled: the persistent partition address changes 1697c0 and loses eight matched callers/wrappers in the full check.
+// Disabled: the persistent partition address changes M3-owned 1697c0 and loses eight matched callers/wrappers.
 #if 0
 // Retail 0xb8a80
 short function_b8a80(long object_index, s_object_link_iterator *iterator)
@@ -1011,7 +1011,7 @@ void __stdcall function_a9260(long unit_index, s_unit_melee_hit const *hit, long
 // Disabled: protected 0x142a60 uses implicit registers without binding its formal inputs.
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 
-// Disabled: LTCG removes both input transform initializations because outside-owned 142a60 assembly reads implicit ECX/EDX rather than formal inputs; five new fast source trials remained84 differences,61/359 bytes
+// Disabled: the closest opaque-call draft changes matched b75a0 when active.
 #if 0
 // Retail 0xb98e0
 void __stdcall function_b98e0(long object_index, transform4x3f const *matrix)
@@ -1042,8 +1042,10 @@ void __stdcall function_b98e0(long object_index, transform4x3f const *matrix)
     orientation.position.y = 0.0f;
     orientation.position.z = 0.0f;
     transform4x3f result;
-    function_142a60(matrix, &translation, &result);
-    function_142a60(&result, &orientation, &result);
+    typedef int (__fastcall *compose_proc)(transform4x3f const *, transform4x3f const *, transform4x3f *);
+    compose_proc volatile compose = function_142a60;
+    compose(matrix, &translation, &result);
+    compose(&result, &orientation, &result);
     function_b75a0(object_index, &result.position, &result.forward, &result.up, 0, false);
 }
 #endif
@@ -1248,7 +1250,7 @@ bool function_bf510(long object_index, s_location *location);
 void function_108960(long object_index);
 void function_bfcc0();
 void function_c00a0();
-void function_1c4a80(long object_index, long position_unchanged, long force);
+void function_1c4a80(long object_index, bool position_unchanged, bool force);
 
 // @retail 0xb6bb0
 void function_b6bb0()
@@ -1291,8 +1293,8 @@ void function_b6bb0()
 bool __stdcall function_b7430(long object_index, point3f const *position, vector3f const *forward,
     vector3f const *up, s_location const *location, bool update, bool physics, bool force, bool keep_partition);
 
-// Disabled: two source forms break matched b75a0 and 14e970; retain closest complete body and original stub
-// Disabled: Closest32-difference/364-byte draft changes matched b75a0(68 differences) and14e970(2); five new trials after the bounds improvement all stayed32
+// Disabled: this exact 360-byte draft still changes matched b75a0 and 14e970
+// when b8540 is stubbed, so retain the complete body with its original stub.
 #if 0
 // Retail 0xb7430
 bool __stdcall function_b7430(long object_index, point3f const *position, vector3f const *forward,
@@ -1319,8 +1321,8 @@ bool __stdcall function_b7430(long object_index, point3f const *position, vector
         *(vector3f *)(object + 0x70) = *forward;
         *(vector3f *)(object + 0x7c) = *up;
         object = (byte *)OBJECT_GET(object_index);
-        long component = *(long *)(object + 0xd4);
-        if (component != NONE) function_b58c0(component, 4);
+        if (*(long *)(object + 0xd4) != NONE)
+            function_b58c0(*(long *)(object + 0xd4), 4);
     }
     if (physics)
     {

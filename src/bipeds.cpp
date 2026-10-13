@@ -3945,7 +3945,7 @@ bool __stdcall function_1cd8a0(s_animation_state *state, long arg_159e6d, vector
 bool __stdcall function_1cdb00(s_animation_state *state, long arg_159e6d, vector3f const *control);
 void function_e6f90(long unit_index);
 void __stdcall function_b87b0(long object_index);
-void function_1c4a80(long object_index, long a, long b);
+void function_1c4a80(long object_index, bool a, bool b);
 void __stdcall function_b8600(long object_index, long unknown);
 
 /* applies the biped's character physics move: its facing and up, its
