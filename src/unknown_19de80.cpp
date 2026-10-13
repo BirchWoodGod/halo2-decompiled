@@ -277,8 +277,8 @@ void function_19e0f0(word const *string, long size, word *buffer, s_event *event
 			if (prefix_length > remaining)
 				prefix_length = remaining;
 			wcsncpy(destination, source, prefix_length);
-			remaining -= prefix_length;
 			destination += prefix_length;
+			remaining -= prefix_length;
 
 			long (__fastcall *const expand_token)(s_event *, long, word const *, word *, long) = function_19e1c0;
 			written = expand_token(event, token_length, token, destination, remaining);
@@ -292,11 +292,19 @@ void function_19e0f0(word const *string, long size, word *buffer, s_event *event
 
 	{
 		long length = wcslen(source);
-		if (remaining > length)
-			remaining = length;
-		wcsncpy(destination, source, remaining);
+		wcsncpy(destination, source, length <= remaining ? length : remaining);
 		destination[length] = 0;
 	}
+}
+
+/* whether the current game engine plays with teams */
+static inline bool teams_enabled_19e1c0()
+{
+	bool result = false;
+
+	if (g_55e4d0[g_4e9ae8->engine_index])
+		result = TEST_FIELD_BIT(g_4e6948->flags184.bit0);
+	return result;
 }
 
 /* writes the text of one token for the event, returning its length */
@@ -356,14 +364,14 @@ long function_19e1c0(s_event *event, long token_length, word const *token, word 
 		if (result < 0)
 			result = remaining;
 	}
-	else if (!wcsncmp(L"#cause_team_opponent_score", token, token_length) &&
-		g_55e4d0[g_4e9ae8->engine_index] && TEST_FIELD_BIT(g_4e6948->flags184.bit0))
+	else if (!wcsncmp(L"#cause_team_opponent_score", token, token_length) && teams_enabled_19e1c0())
 	{
-		long best_score = 0x80000000;
+		long best_score;
 		long team;
 		long mode;
 
 		text[0] = 0;
+		best_score = 0x80000000;
 		for (team = 0; team < 8; team++)
 		{
 			if (function_161e10(team) && team != event->cause_team && function_1587f0(team) >= best_score)

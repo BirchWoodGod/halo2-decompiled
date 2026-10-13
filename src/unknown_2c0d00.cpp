@@ -774,7 +774,16 @@ void function_2c2910(point2f const *center, point2f const *points, point2f const
     }
     point2f direction;
     vector2d_from_points2d(previous, points, &direction);
-    if (normalize_offset_direction_2c(&direction) == 0.0f)
+    real magnitude = (real)sqrt(length_sq2f(&direction));
+    if (fabs(magnitude) < 0.0001f)
+        magnitude = 0.0f;
+    else
+    {
+        real inverse = 1.0f / magnitude;
+        direction.x = inverse * direction.x;
+        direction.y = direction.y * inverse;
+    }
+    if (magnitude == 0.0f)
         direction = *g_46877c;
     result->x = points[0].x + direction.x * radius;
     result->y = points[0].y + direction.y * radius;

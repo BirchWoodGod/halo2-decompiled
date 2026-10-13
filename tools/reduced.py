@@ -97,6 +97,14 @@ def reduced_units(va, rows, markers, depth=None):
 
 
 LTCG_LIBRARIES = {name[:-len('.lib')] for name in build.LIBRARIES if name.endswith('ltcg.lib')}  # built with /GL
+LIBRARY_MEMBERS = {f'{stem}.obj' for stem in build.D3D_OBJECTS}  # library members the build links as objects
+
+
+def library_object(name):
+    """Whether a map's object (its Lib:Object column) is library code: taken
+    from a library ('library:object.obj'), or one of the library members the
+    build links as objects (build.D3D_OBJECTS), which the map names alone."""
+    return ':' in name or name in LIBRARY_MEMBERS
 
 
 def library_symbols(linkmap):
@@ -220,7 +228,7 @@ class FullBuild(Image):
         obj_dir) went into this build unchanged: a library's always does, a
         source's when it is older than the build."""
         obj = os.path.join(self.obj_dir, symbol.object)
-        return ':' in symbol.object or (os.path.exists(obj) and os.path.getmtime(obj) < self.built)
+        return library_object(symbol.object) or (os.path.exists(obj) and os.path.getmtime(obj) < self.built)
 
 
 CALLED = re.compile(r'([A-Za-z_]\w*)\s*\(')

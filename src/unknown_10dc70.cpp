@@ -204,7 +204,7 @@ struct s_vibration_output
 	signed char values[12];
 };
 
-real function_10e8e0(real t);
+inline real function_10e8e0(real t);
 
 #define VIBRATION_VERSION 0x96c
 
@@ -217,6 +217,7 @@ void function_10de40(s_vibration_curve_set *set, s_vibration_output *output, rea
 		s_vibration_curves *curves = set->curves;
 		if (curves && curves->version == VIBRATION_VERSION)
 		{
+			long used = 0;
 			real previous[24];
 			memset(previous, 0, sizeof(previous));
 			for (long i = 0; i < 12; i++)
@@ -236,7 +237,6 @@ void function_10de40(s_vibration_curve_set *set, s_vibration_output *output, rea
 			memset(output->values, 0, sizeof(output->values));
 
 			long channel_count = curves->channel_count;
-			long used = 0;
 			s_vibration_channel *channel = curves->channels;
 			s_vibration_key *keys_base = (s_vibration_key *)(channel + channel_count);
 			real t_first, v_first, t_last, v_last, t_key, t0, v0, t1, v1;
@@ -293,7 +293,7 @@ void function_10de40(s_vibration_curve_set *set, s_vibration_output *output, rea
 								}
 								if (t1 - t0 > 0.0001f)
 								{
-									volatile real  fraction = (time - t0) / (t1 - t0);
+									real fraction = (time - t0) / (t1 - t0);
 									real smooth = function_10e8e0(fraction);
 									result = (v1 - v0) * smooth + v0;
 									if (fabs(result) < 0.0001f)
@@ -351,7 +351,7 @@ void function_10de40(s_vibration_curve_set *set, s_vibration_output *output, rea
 }
 
 // @retail 0x10e8e0
-real function_10e8e0(real t)
+inline real function_10e8e0(real t)
 {
 	real result = t * t * 3.0f - t * t * t * 2.0f;
 

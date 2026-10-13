@@ -5477,25 +5477,22 @@ real g_509334;
 dword g_509338;
 void function_28980(long index);
 
-#if 0
-// Disabled: retail passes the shared music-state address to the silence helper.
 struct s_main_menu_music;
-extern s_main_menu_music g_54e7e0;
-real main_menu_music_silence_fraction(s_main_menu_music *music);
+real main_menu_music_silence_fraction(s_main_menu_music const *music);
 dword function_235ca9();
 real __stdcall function_122dd0(byte *map_name, long mode, long type);
 
-// @retail 0x2c52e7 disabled
+// @retail 0x2c52e7
 void __stdcall function_2c52e7(char const *map_name)
 {
 	real progress = function_122dd0((byte *)map_name, 0, 0);
 	real step = 1.0f;
 	real duration = (real)(long)function_235ca9();
 	dword now = GetTickCount();
-	real elapsed = (real)(now - g_509338);
+	dword elapsed_ticks = now - g_509338;
 	g_509338 = now;
 	if (duration > 0.0f)
-		step = (elapsed > 0.0f ? elapsed : 0.0f) / duration;
+		step = (real)(((double)elapsed_ticks > 0.0 ? (double)elapsed_ticks : 0.0) / duration);
 	if (0.0f > g_509330)
 		g_509330 = progress;
 	if (!(0.001f >= 1.0f - g_509330))
@@ -5507,14 +5504,15 @@ void __stdcall function_2c52e7(char const *map_name)
 		else if (progress > 1.0f) progress = 1.0f;
 	}
 	else progress = 1.0f;
-	real target = main_menu_music_silence_fraction(&g_54e7e0) * 0.3f + progress * 0.7f;
-	if (!(target < g_509334))
+	// Read music through the existing canonical member const view at its later use.
+	real target = main_menu_music_silence_fraction((s_main_menu_music const *)&g_54d598.m1248) * 0.3f + progress * 0.7f;
+	if (target >= g_509334)
 	{
 		g_509334 += step;
 		if (!(target > g_509334)) g_509334 = target;
 	}
 }
-#endif
+
 
 // @retail 0x2c5224
 void c_level_select_screen::v18(void *parameters)

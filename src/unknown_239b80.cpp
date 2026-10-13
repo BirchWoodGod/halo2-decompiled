@@ -330,7 +330,7 @@ bool function_23a160(point2f const *point, real radius, short volatile count, po
 		long next = (i + 1 >= count) ? 0 : i + 1;
 		vector2f edge;
 		polygon_difference_23a220(&points[next], &points[i], &edge);
-		real length_squared = edge.j * edge.j + edge.i * edge.i;
+		real length_squared = (real)(edge.i * edge.i) + (real)(edge.j * edge.j);
 		if (length_squared != 0.f)
 		{
 			real cross = edge.j * offset.i - edge.i * offset.j;

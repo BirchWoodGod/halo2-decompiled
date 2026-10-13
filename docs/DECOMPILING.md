@@ -66,6 +66,11 @@ This is the procedure for one function, written for a person or a subagent.
    - *Direct3D:* a function that calls the public D3D API must call the public
      D3D API. `d3d8ltcg.lib` is linked, and LTCG inlines parts of it into the
      caller just as it did in retail. Never write a stub for a D3D internal.
+     The 25 members of it that retail holds are linked as objects, in
+     retail's order, before the libraries (`D3D_OBJECTS` in `tools/build.py`):
+     LTCG gives the push-buffer functions their calling conventions by the
+     order in which it reaches them. The first build extracts them from your
+     SDK into `build/d3d8ltcg/`.
 6. **Run** `python tools/check.py --fast <va>` after each edit (see
    [The fast check](#the-fast-check)), and `python tools/check.py <va>`
    before you keep a change. Repeat until it prints `MATCH`.
