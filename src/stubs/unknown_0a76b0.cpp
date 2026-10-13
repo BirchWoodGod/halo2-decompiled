@@ -4,8 +4,6 @@
 #include "unknown_0259d0.h"
 
 struct s_object;
-// @stub 0x1a7cc0
-void __stdcall function_1a7cc0(long actor_index) {}
 // @stub 0x1f38c0
 void function_1f38c0(long actor_index) {}
 // @stub 0x1fc7e0

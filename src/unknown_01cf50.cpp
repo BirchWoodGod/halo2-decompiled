@@ -665,7 +665,7 @@ bool function_14480(long tag, short stage, short index)
     if (tag != NONE)
     {
         byte *group = g_4e3b44[tag & 0xffff].bytes;
-        long count = *(long *)(group + 0x44);
+        long count = *(long const volatile *)(group + 0x44);
         if (count > 0)
         {
             s_type_7ba8e9 *bitmap = function_137550(tag, (short)(index % count));

@@ -2571,6 +2571,17 @@ void function_17a8a0(s_effect_location_datum *location, bool detached, vector3f 
 	}
 }
 
+static inline vector3f *effect_matrix_transform_normal_17a380(transform4x3f const *matrix, vector3f const *vector, vector3f *out)
+{
+	real x = vector->i;
+	real y = vector->j;
+	real z = vector->k;
+	out->i = matrix->up.i * z + matrix->left.i * y + matrix->forward.i * x;
+	out->j = matrix->up.j * z + matrix->left.j * y + matrix->forward.j * x;
+	out->k = matrix->up.k * z + matrix->left.k * y + matrix->forward.k * x;
+	return out;
+}
+
 // @retail 0x17a380
 void __stdcall function_17a380(s_effect_datum *effect)
 {
@@ -2584,7 +2595,10 @@ void __stdcall function_17a380(s_effect_datum *effect)
 
 		if (location_index < 0 || location_index >= definition->location_count || part->tag_index == NONE || location_index == NONE)
 			continue;
-		if (!(TEST_FIELD_BIT(effect->flag5) ? part->create_in_mode != 1 : part->create_in_mode != 2))
+		bool reversed = TEST_FIELD_BIT(effect->flag5);
+		short mode = part->create_in_mode;
+		bool in_mode = reversed ? mode != 1 : mode != 2;
+		if (!in_mode)
 			continue;
 
 		long next_index = effect->location_indices[location_index];
@@ -2604,8 +2618,8 @@ void __stdcall function_17a380(s_effect_datum *effect)
 
 				function_17aec0(effect, &matrix, location->node_index);
 				effect_matrix_transform_point(&matrix, &location->matrix.position, &point);
-				effect_matrix_transform_normal(&matrix, &location->matrix.forward, &forward);
-				effect_matrix_transform_normal(&matrix, &location->matrix.up, &up);
+				effect_matrix_transform_normal_17a380(&matrix, &location->matrix.forward, &forward);
+				effect_matrix_transform_normal_17a380(&matrix, &location->matrix.up, &up);
 			}
 			else
 			{

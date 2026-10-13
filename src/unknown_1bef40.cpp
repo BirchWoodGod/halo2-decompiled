@@ -57,8 +57,8 @@ long function_1469f0(real seconds);
 // @retail 0x1bf0f0
 short __stdcall function_1bf0f0(long actor_index, s_slot *slot, bool active)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	s_slot_0a *state = (s_slot_0a *)slot;
+	s_actor_view *actor = actor_get(actor_index);
 	short result = g_46fbe8;
 	_ReadWriteBarrier();
 	if (REFERENCE_EQUAL(state->reference, g_470fa0))
@@ -76,9 +76,8 @@ short __stdcall function_1bf0f0(long actor_index, s_slot *slot, bool active)
 				state->unknown12--;
 			else if (function_2684f0(actor) >= 10)
 			{
-				real wait;
 				real delay = function_259d0(&g_4e7408->unknown0, __FILE__, __LINE__, 3.0f, 5.0f);
-				wait = function_259d0(&g_4e7408->unknown0, __FILE__, __LINE__, 0.0f, 0.5f);
+				real wait = function_259d0(&g_4e7408->unknown0, __FILE__, __LINE__, 0.0f, 0.5f);
 				state->unknown10 = (short)function_1469f0(delay);
 				state->unknown12 = (short)function_1469f0(wait);
 				function_262800(actor_index, state->reference, false);

@@ -171,8 +171,8 @@ short __stdcall function_1b4bd0(long actor_index, s_slot *slot, bool active)
 // @retail 0x1b4d10
 short __stdcall function_1b4d10(long actor_index, short level, long a, long b)
 {
-	s_actor_view *actor = (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 	short result = g_46fbe4;
+	s_actor_view *actor = (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 
 	actor->unknown41c = 3;
 	actor->unknown420 = 2;

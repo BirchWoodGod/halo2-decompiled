@@ -77,9 +77,11 @@ bool function_70ea0(c_session_state_matchmaking *arg_0)
 		s_session_search *local_4 = (s_session_search *)&arg_0->flag97c;
 		if (!arg_0->flag97c)
 		{
-			const s_909ff *local_5 = NULL;
+			const s_909ff *local_5;
 			if (*(bool *)((byte *)arg_0 + 0x93c))
 				local_5 = (const s_909ff *)((byte *)arg_0 + 0x93d);
+			else
+				local_5 = NULL;
 			function_90880(local_4, *(long *)((byte *)arg_0 + 0x18),
 				*(long *)((byte *)arg_0 + 0x7b4), *(long *)((byte *)arg_0 + 0x960),
 				*(long *)((byte *)arg_0 + 0x958), *(long *)((byte *)arg_0 + 0x95c),
@@ -101,14 +103,14 @@ bool function_70ea0(c_session_state_matchmaking *arg_0)
 				{
 					s_70ea0 local_8;
 					memset(&local_8, 0, sizeof(local_8));
-					local_8.field_0 = 2;
-					local_8.field_4 = *(long *)((byte *)arg_0 + 0x94c);
-					local_8.field_8 = *(long *)((byte *)arg_0 + 0x950);
-					local_8.field_c = (long)time(NULL) - arg_0->unknown968;
-					local_8.field_10 = *(long *)((byte *)arg_0 + 0xa60);
 					local_8.field_14 = *(long *)((byte *)arg_0 + 0x960);
 					local_8.field_18 = *(long *)((byte *)arg_0 + 0x958);
 					local_8.field_1c = *(long *)((byte *)arg_0 + 0x95c);
+					local_8.field_0 = 2;
+					local_8.field_4 = *(long *)((byte *)arg_0 + 0x94c);
+					local_8.field_8 = *(long *)((byte *)arg_0 + 0x950);
+					local_8.field_10 = *(long *)((byte *)arg_0 + 0xa60);
+					local_8.field_c = (long)time(NULL) - arg_0->unknown968;
 					memcpy(local_8.field_20, (byte *)arg_0 + 0x93d, sizeof(local_8.field_20));
 					s_session_id local_9 = *network_session_get_id(local_1);
 					if (function_59e50(local_2, 2, local_7.unknown00,
@@ -125,9 +127,9 @@ bool function_70ea0(c_session_state_matchmaking *arg_0)
 					arg_0->mode = 8;
 				local_0 = true;
 			}
-			else if (*(long *)((byte *)local_4 + 8) != 1)
+			else if (*(long *)((byte *)arg_0 + 0x984) != 1)
 			{
-				if (*(long *)((byte *)local_4 + 8) == 0)
+				if (*(long *)((byte *)arg_0 + 0x984) == 0)
 					network_session_set_mode(local_1, 6);
 				else
 					arg_0->mode = 15;
@@ -144,8 +146,9 @@ bool function_70ea0(c_session_state_matchmaking *arg_0)
 		local_3 = local_1->state;
 		if (local_3 == 5 || local_3 == 6 || local_3 == 7 || local_3 == 8)
 		{
+			long local_18 = arg_0->unknowna7c;
 			long local_11 = g_510548 ? g_51054c : GetTickCount();
-			if (local_11 - arg_0->unknowna7c > *(long *)((byte *)arg_0 + 0x96c) + g_network_configuration.value198)
+			if (local_11 - local_18 > *(long *)((byte *)arg_0 + 0x96c) + g_network_configuration.value198)
 			{
 				network_session_set_mode(local_1, 6);
 				local_0 = true;
