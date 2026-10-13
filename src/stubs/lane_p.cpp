@@ -5,11 +5,7 @@
 
 
 struct transform4x3f;
-// @stub 0xbd610
-transform4x3f const *__stdcall function_bd610(long arg_1, byte const *arg_2, transform4x3f const *arg_3)
-{
-	return 0;
-}
+
 
 struct short_rectangle2d;
 class c_1fa50
@@ -34,4 +30,10 @@ bool function_22b7dd(byte const *arg_1, long arg_2)
 bool function_22af8d(long arg_1, byte const *arg_2)
 {
     return false;
+}
+
+// @stub 0xbd610
+transform4x3f const *__stdcall function_bd610(long arg_1, byte const *arg_2, transform4x3f const *arg_3)
+{
+	return 0;
 }

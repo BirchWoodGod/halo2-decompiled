@@ -764,14 +764,17 @@ void c_game_engine_derived::v45(long a, long b)
 void c_game_engine_derived::v46(long a, long b)
 {
 	s_record_pool *objects = g_4e0300;
-	long index = ((s_object_header *)objects->data)[a & 0xffff].object->s17e;
+	s_object_header *headers = (s_object_header *)objects->data;
+	s_object *object = headers[a & 0xffff].object;
+	long index = object->s17e;
+	long none = NONE;
 
 	if (index >= 0 && index < 3)
 	{
-		if (b != NONE)
+		if (b != none)
 		{
-			long owner = ((s_object_header *)objects->data)[b & 0xffff].object->owner;
-			if (owner != NONE)
+			long owner = headers[b & 0xffff].object->owner;
+			if (owner != none)
 			{
 				s_event e;
 				long team = event_player_get(owner)->team;
@@ -781,7 +784,7 @@ void c_game_engine_derived::v46(long a, long b)
 				function_19eb90(&e);
 			}
 		}
-		g_51ecc4->bytes18[index] = NONE;
+		g_51ecc4->bytes18[index] = (byte)none;
 	}
 }
 
