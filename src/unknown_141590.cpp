@@ -195,16 +195,16 @@ void function_141ce0(
 	cos_b = (real)cos(b);
 	sin_b = (real)sin(b);
 	cos_a = (real)cos(a);
-	sin_b_sin_c = sin_b * angle_c.y;
-	sin_b_cos_c = sin_b * angle_c.x;
 	sin_a = (real)sin(a);
+	sin_b_cos_c = sin_b * angle_c.x;
+	sin_b_sin_c = sin_b * angle_c.y;
 	out->scale = 1.f;
 	out->forward.j = sin_a * angle_c.x - sin_b_sin_c * cos_a;
 	out->forward.i = cos_a * cos_b;
 	out->forward.k = sin_b_cos_c * cos_a + sin_a * angle_c.y;
 	out->left.i = 0.f - sin_a * cos_b;
-	out->left.k = cos_a * angle_c.y - sin_b_cos_c * sin_a;
 	out->left.j = sin_b_sin_c * sin_a + cos_a * angle_c.x;
+	out->left.k = cos_a * angle_c.y - sin_b_cos_c * sin_a;
 	out->up.i = 0.f - sin_b;
 	out->up.j = 0.f - cos_b * angle_c.y;
 	out->up.k = cos_b * angle_c.x;
@@ -502,13 +502,12 @@ vector3f *matrix4x3_rotation_between(
 	transform4x3f const *b,
 	vector3f *out)
 {
-	transform4x3f const * const *a_reference = &a;
 	transform4x3f inverse;
 	transform4x3f relative;
 	quaternionf rotation;
 	real angle;
 
-	function_141590((*a_reference), &inverse);
+	function_141590(a, &inverse);
 	function_142a60(b, &inverse, &relative);
 	function_141f60(&relative.rotation, &rotation);
 	function_11d790(&rotation, out, &angle);
