@@ -139,7 +139,7 @@ PRIVATE __forceinline s_actor_point_group *actor_point_next_group(s_actor_point_
 	{
 		s_record_pool *pool = request->pool;
 		long index = function_16bc00(pool, request->datum_index + 1);
-		s_actor_point_group *group = NULL;
+		s_actor_point_group *group;
 		if (index != NONE)
 		{
 			group = (s_actor_point_group *)(pool->data + pool->size * index);
@@ -150,6 +150,7 @@ PRIVATE __forceinline s_actor_point_group *actor_point_next_group(s_actor_point_
 		{
 			request->datum_index = pool->maximum_count;
 			request->iterator_index = NONE;
+			group = NULL;
 		}
 		*(s_actor_point_group **)((byte *)request + 0x10) = group;
 		if (group)
