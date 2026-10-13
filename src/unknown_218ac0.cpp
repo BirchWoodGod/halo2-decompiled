@@ -144,11 +144,12 @@ short sound_definition_rate_limit_pitch_range(long stage_index, s_sound_definiti
 
 	if (rate_limit)
 	{
-		short pitch_range_index = rate_limit->stages[stage_index].pitch_range_index;
+		s_sound_rate_limit_stage *stages = rate_limit->stages;
+		short *pitch_range_index = &stages[stage_index].pitch_range_index;
 
-		if (pitch_range_index != NONE)
+		if (*pitch_range_index != NONE)
 		{
-			result = pitch_range_index;
+			result = *pitch_range_index;
 		}
 	}
 	return result;

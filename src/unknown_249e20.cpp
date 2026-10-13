@@ -126,8 +126,8 @@ void function_249c90(dword *bits_a, s_structure_bsp_view *bsp, long index, dword
 {
 	if (bsp->audibility_count > 0)
 	{
-		s_structure_audibility *local_0 = *(s_structure_audibility *const volatile *)&bsp->audibility;
-		long count = (*(long const volatile *)&bsp->cluster_count + 31) >> 5;
+		s_structure_audibility *local_0 = bsp->audibility;
+		long count = (bsp->cluster_count + 31) >> 5;
 		dword *bits = local_0->bits;
 		long row = 2 * index;
 		dword *source_b = bits + count * (row + 1);
