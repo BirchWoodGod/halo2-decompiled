@@ -17,12 +17,12 @@ void function_1e54d0(void *state, long mode);
 bool function_e4050(long object_index);
 
 // @retail 0xe5790
-void function_e5790(long biped_index)
+void function_e5790(long object_index)
 {
-    byte *biped = ((s_e5790_object_header *)g_4e0300->data)[biped_index & 0xffff].biped;
+    byte *biped = ((s_e5790_object_header *)g_4e0300->data)[object_index & 0xffff].biped;
 
     function_1e54d0(biped + 0x3dc, 3);
-    if (function_e4050(biped_index))
+    if (function_e4050(object_index))
     {
         biped[0x3f9] = 0;
         biped[0x3f8] = 0;
