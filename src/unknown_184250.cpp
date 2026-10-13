@@ -131,9 +131,7 @@ void __stdcall function_184250(s_type_1e6529 const *arg_0)
 		}
 		if (local_3)
 		{
-			s_184251 local_12;
-			local_12.field_0 = false;
-			function_2e90a0(local_12);
+			function_2e90a0(s_184251(false));
 		}
 	}
 }
