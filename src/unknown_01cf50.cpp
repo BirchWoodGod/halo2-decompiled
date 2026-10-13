@@ -645,12 +645,14 @@ s_type_7ba8e9 *function_137550(long group_index, short bitmap_index);
 // @retail 0x14390
 bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority)
 {
-    long slot = stage;
     if (bitmap)
     {
+        long slot = stage;
         g_51f3c8[1][slot] = function_12310((s_bitmap_view *)bitmap, priority);
-        g_485af4[slot] = *(short *)((byte *)bitmap + 4);
-        g_485b04[slot] = *(short *)((byte *)bitmap + 6);
+        long height = *(short *)((byte *)bitmap + 6);
+        long width = *(short *)((byte *)bitmap + 4);
+        g_485af4[slot] = width;
+        g_485b04[slot] = height;
     }
     return true;
 }
