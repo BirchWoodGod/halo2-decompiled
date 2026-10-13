@@ -40,10 +40,10 @@ bool network_session_handle_peer_ready(c_class_58d20 *session, long remote_index
 bool network_session_handle_player_refuse(c_class_58d20 *session, const s_network_message_player_refuse *message, long remote_index);
 bool network_session_handle_player_remove(c_class_58d20 *session, long remote_index, const s_network_message_player_remove *message);
 bool network_session_handle_peer_reestablish(c_class_58d20 *session, const s_type_99af70 *address);
-bool network_session_handle_peer_properties(c_class_58d20 *session, long remote_index, const s_network_message_peer_properties *message);
-bool network_session_handle_delegate_leader(c_class_58d20 *session, long remote_index, const s_network_message_peer_identity *message);
+bool __stdcall network_session_handle_peer_properties(c_class_58d20 *session, long remote_index, const s_network_message_peer_properties *message);
+bool __stdcall network_session_handle_delegate_leader(c_class_58d20 *session, long remote_index, const s_network_message_peer_identity *message);
 bool network_session_handle_host_handoff_acknowledge(c_class_58d20 *session, long remote_index, const byte *message);
-bool network_session_handle_boot_machine(c_class_58d20 *session, long remote_index, const s_network_message_peer_identity *message);
+bool __stdcall network_session_handle_boot_machine(c_class_58d20 *session, long remote_index, const s_network_message_peer_identity *message);
 void network_session_handle_join_abort_reply(c_class_58d20 *session, const s_type_99af70 *address);
 bool network_session_member_leave(c_class_58d20 *session, long member_index);
 bool network_session_handle_parameters_request(const s_network_message_parameters_request *message, c_class_58d20 *session, long remote_index);

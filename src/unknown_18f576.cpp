@@ -360,7 +360,7 @@ bool function_18ffc3(long index, s_player_slot_blockb82 *block)
 }
 
 struct s_type_fb9815;
-void machine_identifier_build(s_type_fb9815 *identifier, long index);
+inline void machine_identifier_build(s_type_fb9815 *identifier, long index);
 long __stdcall function_64610(dword *xuid);
 void function_2172a0(long handle);
 void function_190c34(long index);

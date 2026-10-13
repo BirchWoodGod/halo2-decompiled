@@ -1306,31 +1306,36 @@ bool simulation_world_queue_block(c_class_6a600 *world, const s_simulation_block
 	bool result = false;
 	long expected = world->unknown1210 + 1;
 
-	if (!world_receiving_join_data(world))
-	{
-		if (data->size < expected)
-			return result;
-		if (data->size == expected && (world->unknown18 == 4 || world->flag25))
-		{
-			if (function_6ab90(world, data))
-			{
-				while (world->flag25 && g_4e6948 && g_4e6948->flag1120 && !(g_4cf770 && g_4cf772) && !world->flag2c)
-				{
-					bool buffered;
-					if (function_69300(world, &buffered) <= 0)
-						break;
-					function_137fe0();
-				}
-				result = true;
-			}
-			else
-			{
-				g_4cf771 = true;
-			}
-			return result;
-		}
-	}
+	if (world_receiving_join_data(world))
+		goto invalid;
+	if (data->size < expected)
+		goto done;
+	if (data->size != expected || (world->unknown18 != 4 && !world->flag25))
+		goto invalid;
+	goto valid;
+
+invalid:
 	world->flag2c = true;
+	goto done;
+
+valid:
+	if (function_6ab90(world, data))
+	{
+		while (world->flag25 && g_4e6948 && g_4e6948->flag1120 && !(g_4cf770 && g_4cf772) && !world->flag2c)
+		{
+			bool buffered;
+			if (function_69300(world, &buffered) <= 0)
+				break;
+			function_137fe0();
+		}
+		result = true;
+	}
+	else
+	{
+		g_4cf771 = true;
+	}
+
+done:
 	return result;
 }
 
@@ -1992,6 +1997,7 @@ void simulation_watcher_reset(s_simulation_world_owner *watcher);
 void function_83000(s_simulation_world_owner *watcher);
 void function_195a40(void);
 
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x67ee0
 void function_67ee0(void)
 {
@@ -1999,6 +2005,7 @@ void function_67ee0(void)
  {
   g_4cf771 = false;
   g_4cf772 = false;
+  _ReadWriteBarrier();
   long mode = g_4e6948->mode;
   s_simulation_distribution *distribution = 0;
   if (mode >= 4 && mode <= 5)
@@ -2015,6 +2022,7 @@ void function_67ee0(void)
   g_4cf778 = true;
  }
 }
+#pragma function(_ReadWriteBarrier)
 
 
 struct s_player_object_motion
