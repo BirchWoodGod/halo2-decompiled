@@ -526,6 +526,13 @@ struct s_camera_effect_tag_153d10
     long sound_index;
 };
 
+struct s_player_axes_153d10
+{
+	byte unknown00[0x20];
+	vector3f forward;
+	vector3f up;
+};
+
 // @retail 0x153d10
 void __stdcall function_153d10(long user_index, long tag_index, void *owner, void *direction, long unused, real scale, real priority, bool directional)
 {
@@ -628,17 +635,16 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                 point3f origin, target;
                 function_caf60(unit_index, &origin);
                 function_b9dd0(((long *)owner)[1], &target);
-                vector3f *forward = (vector3f *)((byte *)state + 0x20);
-                vector3f *up = (vector3f *)((byte *)state + 0x2c);
+                s_player_axes_153d10 *axes = (s_player_axes_153d10 *)state;
                 vector3f delta = { target.x - origin.x, target.y - origin.y, target.z - origin.z };
                 vector3f cross;
                 vector3f relative;
-                cross.i = forward->j * up->k - forward->k * up->j;
-                cross.j = forward->k * up->i - up->k * forward->i;
-                cross.k = forward->i * up->j - forward->j * up->i;
+                cross.i = axes->forward.j * axes->up.k - axes->forward.k * axes->up.j;
+                cross.j = axes->forward.k * axes->up.i - axes->up.k * axes->forward.i;
+                cross.k = axes->forward.i * axes->up.j - axes->forward.j * axes->up.i;
                 relative.i = cross.k * delta.k + cross.j * delta.j + cross.i * delta.i;
-                relative.j = forward->k * delta.k + forward->j * delta.j + forward->i * delta.i;
-                relative.k = up->k * delta.k + up->j * delta.j + up->i * delta.i;
+                relative.j = axes->forward.k * delta.k + axes->forward.j * delta.j + axes->forward.i * delta.i;
+                relative.k = axes->up.k * delta.k + axes->up.j * delta.j + axes->up.i * delta.i;
                 *(real *)((byte *)slot + 0x8c) = relative.i;
                 *(real *)((byte *)slot + 0x90) = relative.k;
                 *(real *)((byte *)slot + 0x94) = relative.j;
