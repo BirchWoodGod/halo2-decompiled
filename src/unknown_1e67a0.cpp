@@ -492,12 +492,12 @@ struct s_time_entry
 // @retail 0x1e67a0
 void function_1e67a0(s_character_physics_component *component, s_type_94656b *datum, byte a, byte b)
 {
-	point3f *point;
-	if (component->has_position)
-		point = &component->position;
-	else
-		point = (point3f *)g_4687b0;
-	datum->pointac = *point;
+	byte has_position = component->has_position;
+	/* the parameter itself moves on to the selected position */
+	component = (s_character_physics_component *)&component->position;
+	if (!has_position)
+		component = (s_character_physics_component *)g_4687b0;
+	datum->pointac = *(point3f *)component;
 	datum->byteb8 = a;
 	datum->byteb9 = b;
 	datum->unknown04 = 1;

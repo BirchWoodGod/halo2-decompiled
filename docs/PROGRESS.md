@@ -2,6 +2,36 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8353 functions match
+
+```
+matched 8353 of 11318 game functions (1068855 of 2784283 bytes, 38.39%)
+```
+
+2 new matches, none lost:
+- Claude lane 1 round 15 (Opus): `0x2b13b3` and `0x2b130a`, through a new build feature: the `standard` marker now keeps a constructor's own calling convention (here `0x2c4ea0`'s)
+
+## 2026-10-13: 8351 functions match
+
+```
+matched 8351 of 11318 game functions (1068701 of 2784283 bytes, 38.38%)
+```
+
+19 new matches, none lost:
+- Machine 3 batch 8 (#423): 17 functions, among them `0x12b070`, `0x1df640`, `0x21f960` and `0x257c60`
+- Machine 2's last PR, lane M round 27 (#422): `0x1a9cf0`
+- Deep lane 4 round 5: `0x14480`
+
+## 2026-10-13: 8332 functions match
+
+```
+matched 8332 of 11318 game functions (1064514 of 2784283 bytes, 38.23%)
+```
+
+8 new matches, none lost:
+- Claude lane 1 round 14 (Opus): `0xbdc40`, `0x1e9df0` (with machine 3's `0x1968b0` taking the index first), `0x2b186e`, `0x265290`, `0x2bc000`, `0x1e67a0`, `0x1e2a00` and `0x2c88d5`
+- Closer: `0x1e13f0` 59 to 29, `0x44720` 140 to 34 under SSE, `0x3d2c0` 53 to 30, `0x26d3f0` 22 to 9 and more (deep lanes 2 and 3)
+
 ## 2026-10-13: 8324 functions match
 
 ```

@@ -1719,7 +1719,7 @@ c_class_1473c9 *__stdcall function_2c8896(s_screen_parameters *parameters)
 }
 
 /* the screen id of each kind of emblem */
-static long emblem_screen_id(long mode)
+static __forceinline long emblem_screen_id(long mode)
 {
 	long screen_id;
 
@@ -1728,9 +1728,11 @@ static long emblem_screen_id(long mode)
 	case 0:
 		screen_id = 0x31;
 		break;
-	default:
+	case 1:
 		screen_id = 0xe9;
 		break;
+	default:
+		__assume(0);
 	}
 	return screen_id;
 }
@@ -3295,19 +3297,24 @@ struct s_campaign_level
 	long bitmap_tag_index;
 };
 
-// @retail 0x2c4ea0
+/* the standard marker on a constructor (docs/DECOMPILING.md): (1) retail
+   keeps the plain thiscall here (`this` in ecx, both arguments pushed,
+   `ret 8`); without the marker LTCG passes `this` in edi, and with it the
+   two callers 0x2b130a and 0x2b13b3 match. (2) retail holds no reference to
+   its address and both callers are LTCG code; retail's LTCG kept the
+   default convention because the constructor lies on a call cycle through
+   0x18f1c0, which is still a stub here. (3) tried: a virtual destructor,
+   five body shapes, register pressure, probe callers sorted first or last,
+   and a throwaway LTCG 0x18f1c0 that closed the cycle (it fixed 0x1483c3
+   but not this one): `this` stayed in edi in every one. */
+// @retail 0x2c4ea0 standard
 c_campaign_level_handles_list::c_campaign_level_handles_list(word user_flags, bool alternate) :
 	c_class_1474e8(user_flags),
 	handler(this, (list_item_method)&c_campaign_level_handles_list::handle_item)
 {
 	this->alternate = alternate;
 	*(volatile bool *)&unlocked = false;
-	struct
-	{
-		c_campaign_level_handles_list *receiver;
-		s_data_datum_iterator iterator;
-	} scan;
-	scan.receiver = this;
+	s_data_datum_iterator iterator;
 
 	s_record_pool *levels = function_19c670();
 	long last_level = function_190565();
@@ -3320,14 +3327,14 @@ c_campaign_level_handles_list::c_campaign_level_handles_list(word user_flags, bo
 	g_54e7c0 = 1;
 	data = user_interface_data_new("campaign level handles", levels->high_water_index, 8);
 	function_16b790(data);
-	scan.iterator.index = NONE;
-	scan.iterator.datum_index = NONE;
-	scan.iterator.data = levels;
-	while (data_datum_iterator_next(&scan.iterator))
+	iterator.index = NONE;
+	iterator.datum_index = NONE;
+	iterator.data = levels;
+	while (data_datum_iterator_next(&iterator))
 	{
-		s_map_entry *level = (s_map_entry *)scan.iterator.datum;
+		s_map_entry *level = (s_map_entry *)iterator.datum;
 
-		if (!scan.receiver->alternate || level->map_id >= 0x69)
+		if (!this->alternate || level->map_id >= 0x69)
 		{
 			s_map_entry *item = &((s_map_entry *)data->data)[record_pool_allocate(data) & 0xffff];
 			s_campaign_level *definition = (s_campaign_level *)function_19c1f0(level->map_id);

@@ -36,7 +36,7 @@ void function_1967d0(long a, long c, long b, long delta)
 }
 
 // @retail 0x001968b0
-void function_1968b0(long c, long a, long b, long value)
+void function_1968b0(long a, long c, long b, long value)
 {
 	if (g_510ca0 && !g_510ca1)
 	{

@@ -946,13 +946,12 @@ bool __stdcall function_265290(long actor_index, long prop_ref_index)
     *(short *)(actor + 0x358) = 3;
     *(long *)(actor + 0x360) = *(long *)(reference + 0x20);
     dword const &range = *(dword *)(definition + 4);
-    long const &owner = *(long *)(object + 0x248);
-    long const *owner_reference = &owner;
-    *(long *)(actor + 0x364) = owner;
+    *(long *)(actor + 0x364) = *(long *)(object + 0x248);
     *(dword *)(actor + 0x36c) = range;
     *(short *)(actor + 0x35a) = 0;
     *(long *)(actor + 0x368) = prop_ref_index;
-    if (*owner_reference != NONE)
+    long owner = *(long *)(actor + 0x364);
+    if (owner != NONE)
     {
      byte *unit = *(byte **)(g_4e0300->data + (owner & 0xffff) * 12 + 8);
      if (!function_1df560(*(short *)(actor + 0x24), *(short *)(unit + 0x138)))
