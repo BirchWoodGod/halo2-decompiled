@@ -1,7 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
 #include "object_masks_storage.h"
-#include "instance_marks_storage.h"
-#include "cluster_marks_storage.h"
 #include "light_visibility_storage.h"
 #include "partition_colliding_storage.h"
 #include "partition_noncolliding_storage.h"
@@ -64,9 +62,8 @@ struct s_132d60
 	real radius;
 };
 
-s_cluster_marks_storage g_cluster_marks_storage;
-s_instance_marks_storage g_instance_marks_storage;
-
+extern long g_4e7414;
+extern bool g_4e7411;
 short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, short maximum_count, short *clusters);
 void sort_4byte(long *elements, unsigned long count, void *unused, bool (__stdcall *compare)(long, long, const void *), const void *context);
 
@@ -694,6 +691,8 @@ void function_133050(s_bit_vector_pool *data, long object_index, short section, 
 	}
 }
 
+extern long g_4e7c1c;
+long g_4e7c20[1024];
 bool function_16e210(long cluster_index, long value);
 
 struct s_visible_cluster
@@ -1106,6 +1105,7 @@ struct s_2cb30_globals
 };
 
 extern s_2cb30_globals g_4c0b78;
+extern bool g_4e7c18;
 bool g_4e0304;
 struct s_view_collection_1733e0;
 void __stdcall function_173130(long camera_count, byte *cameras, long cluster_index, s_view_collection_1733e0 *collection);

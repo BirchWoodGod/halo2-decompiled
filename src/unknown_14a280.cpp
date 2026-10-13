@@ -1,5 +1,4 @@
 #include "unknown_11c920.h"
-#include "cluster_marks_storage.h"
 #include "unknown_0259d0.h"
 #include "globals.h"
 #include <math.h>
@@ -101,8 +100,10 @@ struct s_structure_bsp_portals_view
 /* the structure bsp's collision bsp (unknown_11bed0.cpp) */
 extern s_bsp3d *g_4e033c;
 
-/* the flood fill's pass, and the pass that last reached each cluster, are in
-   cluster_marks_storage.h */
+/* the flood fill's pass, and the pass that last reached each cluster
+   (unknown_180b60.cpp) */
+extern long g_4e7414;
+long g_4e7418[0x200];
 
 short function_120850(vector3f const *v);
 bool function_23a160(point2f const *point, real radius, short count, point2f const *points);
@@ -215,6 +216,8 @@ short __stdcall function_14a5b0(short cluster_index, point3f const *point, real 
 	}
 	return count;
 }
+
+extern bool g_4e7411;
 
 /* the clusters a cone reaches from one, through their portals: a portal
    counts when its sphere is within the distance along the direction and
