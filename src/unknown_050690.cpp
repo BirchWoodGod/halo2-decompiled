@@ -1,4 +1,4 @@
-// @flags /O2 /Gr
+// @flags /O2 /arch:SSE /Gr
 /* UNKNOWN_050690.CPP: random seeds drawn from the game's random generator
    (lane D) */
 
