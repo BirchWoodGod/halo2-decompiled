@@ -2,6 +2,57 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8149 functions match
+
+```
+matched 8149 of 11318 game functions (1014617 of 2784283 bytes, 36.44%)
+```
+
+10 new matches, none lost:
+- The build now links the 25 members of the SDK's Direct3D library that retail holds as objects, in retail's order (+10, with no source change). Link-time code generation gives the functions of Direct3D's push-buffer cycle their calling conventions by the order in which it reaches them; in retail's order, the 53 functions that call `MakeRequestedSpace` pass its argument as retail does, and 10 functions match outright. Found and adopted by Claude lane 1 (Opus 5.5) in its rounds 7 and 8.
+
+## 2026-10-13: 8139 functions match
+
+```
+matched 8139 of 11318 game functions (1012714 of 2784283 bytes, 36.37%)
+```
+
+54 new matches, none lost:
+- The second machine's fifteen PRs (#390–#394, #396–#405, +39): lane D +22 (lower +16, upper +6), lane B +4, lane J +3, lane P +3, lanes AC and L +2 each (`0x120850` marked `inline`, which also matches the third machine's `0x14a5b0` and lane O's `0x245270`), lanes F and M +1 each, and the permuter lane +1.
+- The third machine's batch 4 (#395, +13), including the scenery type table's slot 0x30, which now holds `0x10a0f0` as retail's does.
+- Deep lane 3, round 47 (+2), in the render range: `0x1db10` and `0x3fd70`, on the new Codex model.
+
+## 2026-10-12: 8085 functions match
+
+```
+matched 8085 of 11318 game functions (997681 of 2784283 bytes, 35.83%)
+```
+
+68 new matches, none lost:
+- The third machine's batch 3 (#389, +63), over its lanes N, Q, R, S, T and H, with fixes that change behaviour to retail's: `0x142a60` reads both scales before its assembly block (which also brings several callers of other owners much closer), `0x105a80` takes retail's switch cases, and four call sites pass the arguments retail passes.
+- The second machine's lane F, round 23 (#388, +4): `0x187df0`, and the third machine's `0x105dd0`, `0x107980` and `0x166cd1`, whose callee `0x189060` now takes retail's registers.
+- Deep lane 1, round 43 (+1): `0x22f28c`; `0xbffa0` is 15 differences closer.
+
+## 2026-10-12: 8017 functions match
+
+```
+matched 8017 of 11318 game functions (980395 of 2784283 bytes, 35.21%)
+```
+
+4 new matches, none lost:
+- Claude lane 1, round 6 (+4), on Opus 5.5: `0x398d0` names the globals it keeps in registers in the order retail loads them, `0x4fe20` writes out two Direct3D state updates so a barrier can sit between them, `0xc3ad0` stores the object index in both arms of a branch, and `0x43820` forms its table entry's pointer before the test. The lane also traced 53 unmatched functions to the convention of one Direct3D library routine.
+
+## 2026-10-12: 8013 functions match
+
+```
+matched 8013 of 11318 game functions (979136 of 2784283 bytes, 35.17%)
+```
+
+7 new matches, none lost:
+- The second machine's lane M, round 24 (#387, +4): `0x1a60f0`, `0x1ae3b0`, `0x1a71f0` and `0x1a79e0`.
+- Deep lane 2, round 35 (+3), writing this machine's unwritten functions in group 1: `0xa9260`, `0xb92d0` and `0xbc1d0` match on their first drafts, with retail's parameters at every call.
+- Deep lane 3, round 46: no new match; six render functions are closer, two of them by about half.
+
 ## 2026-10-12: 8006 functions match
 
 ```

@@ -984,7 +984,10 @@ long voice_find_player(long unknown14)
 			for (long i = 0; i < 16; i++)
 			{
 				if ((mask & (1 << i)) && players[i].member_index == member && players[i].unknown14 == unknown14)
-					return i;
+				{
+					result = i;
+					break;
+				}
 			}
 		}
 	}
@@ -1950,20 +1953,21 @@ local_0:
 // @retail 0x57b60
 long voice_players_share_team(long other, long player)
 {
-	if (voice_available() && g_4c9878.mode == 3)
+	if (!voice_available() || g_4c9878.mode != 3)
+		return true;
+	s_network_session_player *players = NULL;
+	byte *membership = (byte *)voice_get_membership();
+	if (membership)
+		players = (s_network_session_player *)(membership + 0x10d4);
+	dword mask = voice_get_player_mask_inlined();
+	if ((mask & (1 << other)) && (mask & (1 << player)))
 	{
-		s_network_session_player *players = voice_get_players_inlined();
-		dword mask = voice_get_player_mask_inlined();
-		if ((mask & (1 << other)) && (mask & (1 << player)))
-		{
-			long other_team = (char)players[other].propertiesa8[0x7c];
-			long team = (char)players[player].propertiesa8[0x7c];
-			if (other_team != NONE && team != NONE && other_team == team)
-				return true;
-		}
-		return false;
+		long other_team = (char)players[other].propertiesa8[0x7c];
+		long team = (char)players[player].propertiesa8[0x7c];
+		if (other_team != NONE && team != NONE && other_team == team)
+			return true;
 	}
-	return true;
+	return false;
 }
 
 // @retail 0x56c60

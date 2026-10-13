@@ -25,6 +25,7 @@ long camera_scripting_cluster_get(void);
 // @retail 0x138b30
 void function_138b30(dword *arg_1, bool arg_2, long arg_3)
 {
+	long const *local_0 = &arg_3;
 	s_138b30 *local_1 = (s_138b30 *)g_4e0348;
 	memset(arg_1, 0, 0x40);
 	s_game_options_view *local_2 = g_4e6948;
@@ -43,17 +44,12 @@ void function_138b30(dword *arg_1, bool arg_2, long arg_3)
 				break;
 			}
 		}
-        short local_7;
-        if (local_3 != NONE && g_4686c4 != NONE)
-        {
-            local_7 = (short)(g_4e9bd4[local_3].state.unknown0c[4]
-                | (g_4e9bd4[local_3].state.unknown0c[5] << 8));
-        }
-        else
-        {
-            s_138b31 const *local_6 = 0;
-            local_7 = local_6->field_10;
-        }
+		s_138b31 const *local_6 = 0;
+		if (local_3 != NONE && g_4686c4 != NONE)
+		{
+			local_6 = (s_138b31 const *)((byte const *)&g_4e9bd4[local_3] + 0xb8);
+		}
+		short local_7 = local_6->field_10;
 		if (local_7 != NONE)
 		{
 			function_13e3e0(arg_1,

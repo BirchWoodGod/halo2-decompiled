@@ -4189,9 +4189,13 @@ void function_4fe20(void)
     {
         function_47930(2, 0, 6);
         g_4b82ec = 0;
-        D3DDevice_SetRenderState(D3DRS_ALPHATESTENABLE, 0);
-        D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
+        /* alpha test off and stage 0's colour sign cleared, written out: the
+           barrier keeps the stage's two dirty-flag updates apart */
+        D3DDevice_SetRenderState_Simple(D3DSIMPLERENDERSTATEENCODE[D3DRS_ALPHATESTENABLE], 0);
+        D3D__DirtyFlags |= D3DDIRTYFLAG_TEXTURE_STATE_0;
         _ReadWriteBarrier();
+        D3D__RenderState[D3DRS_ALPHATESTENABLE] = 0;
+        D3D__TextureState[0][D3DTSS_COLORSIGN] = 0;
         D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
         g_4b82e8 = 1;
         D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 1);

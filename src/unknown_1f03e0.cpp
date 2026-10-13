@@ -64,20 +64,19 @@ bool __stdcall function_1f0230(s_lookup *lookup, point3f const *point, real radi
         transform4x3f const *matrix = (transform4x3f const *)lookup->pointer_b + (position & 0xff);
         transform4x3f inverse;
         function_141590(matrix, &inverse);
-        point3f scaled;
-        scaled.x = point->x;
-        scaled.y = point->y;
-        scaled.z = point->z;
+        real scaled_x = point->x;
+        real scaled_y = point->y;
+        real scaled_z = point->z;
         if (inverse.scale != 1.0f)
         {
-            scaled.x *= inverse.scale;
-            scaled.y *= inverse.scale;
-            scaled.z *= inverse.scale;
+            scaled_x *= inverse.scale;
+            scaled_y *= inverse.scale;
+            scaled_z *= inverse.scale;
         }
         point3f local;
-        local.x = inverse.up.i * scaled.z + inverse.left.i * scaled.y + inverse.forward.i * scaled.x + inverse.position.x;
-        local.y = inverse.up.j * scaled.z + inverse.left.j * scaled.y + inverse.forward.j * scaled.x + inverse.position.y;
-        local.z = inverse.up.k * scaled.z + inverse.left.k * scaled.y + inverse.forward.k * scaled.x + inverse.position.z;
+        local.x = inverse.up.i * scaled_z + inverse.left.i * scaled_y + inverse.forward.i * scaled_x + inverse.position.x;
+        local.y = inverse.up.j * scaled_z + inverse.left.j * scaled_y + inverse.forward.j * scaled_x + inverse.position.y;
+        local.z = inverse.up.k * scaled_z + inverse.left.k * scaled_y + inverse.forward.k * scaled_x + inverse.position.z;
         s_1de2c2 hits;
         if (function_1dde10((s_bsp3d *)iterator.current, 0, NULL, &local, inverse.scale * radius, &hits))
         {

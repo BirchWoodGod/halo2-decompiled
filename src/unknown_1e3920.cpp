@@ -840,26 +840,29 @@ void __stdcall function_1e2570(long actor_index, word type, long object_index, r
 	}
 }
 
-#if 0
 // Activating this body changes the matched forwarding caller 0x1ca260.
 #include "unknown_1fb7e0.h"
-// @retail 0x1e18f0 disabled
+// Disabled: round 35: closest checked draft 48 differences loses matched forwarding caller 1ca260
+#if 0
+// Retail 0x1e18f0
 void __fastcall function_1e18f0(long actor_index, long old_weapon, long player_index, long new_weapon)
 {
  long const *player_reference = &player_index;
  long const *weapon_reference = &new_weapon;
+ s_record_pool *objects = g_4e0300;
+ s_tag_instance *definitions = g_4e3b44;
  byte *player = g_4e8c24->data + (*player_reference & 0xffff) * 0x21c;
  real old_value = 0.0f;
  real new_value = 0.0f;
  if (old_weapon != NONE)
  {
-  byte *object = *(byte **)(g_4e0300->data + (old_weapon & 0xffff) * 12 + 8);
-  old_value = *(real *)(g_4e3b44[*(long *)object & 0xffff].bytes + 0x238);
+  byte *object = *(byte **)(objects->data + (old_weapon & 0xffff) * 12 + 8);
+  old_value = *(real *)(definitions[*(long *)object & 0xffff].bytes + 0x238);
  }
  if (*weapon_reference != NONE)
  {
-  byte *object = *(byte **)(g_4e0300->data + (*weapon_reference & 0xffff) * 12 + 8);
-  new_value = *(real *)(g_4e3b44[*(long *)object & 0xffff].bytes + 0x238);
+  byte *object = *(byte **)(objects->data + (*weapon_reference & 0xffff) * 12 + 8);
+  new_value = *(real *)(definitions[*(long *)object & 0xffff].bytes + 0x238);
  }
  long unit = actor_get(actor_index)->unknown018;
  if (new_value > old_value)
@@ -876,6 +879,7 @@ void __fastcall function_1e18f0(long actor_index, long old_weapon, long player_i
   function_20ba60(0xbe, unit, *(long *)(player + 0x2c), NONE, NONE, 0);
 }
 #endif
+
 
 /* Actor equipment cleanup uses retail SSE arithmetic. */
 

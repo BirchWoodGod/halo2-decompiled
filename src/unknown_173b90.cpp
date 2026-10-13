@@ -554,7 +554,7 @@ void function_175610(s_particle_value_cache *cache, s_particle_system_datum *sys
 }
 
 // @retail 0x173c10
-void function_173c10(dword mask, s_particle_value_cache *cache)
+void function_173c10(s_particle_value_cache *cache, dword mask)
 {
 	function_173ba0(~cache->mask & mask, cache->field_48, cache->field_4c, cache->field_50, cache->values);
 	cache->mask |= mask;
@@ -592,18 +592,18 @@ void __stdcall function_175430(s_particle_system_datum *system, point3f const *p
 	}
 	if (system->location_index != NONE)
 	{
-		s_particle_location_datum *location = DATUM(locations, s_particle_location_datum, system->location_index);
 		s_particle_value_cache cache;
-		cache.field_48 = system;
 		cache.field_4c = 0;
 		cache.field_50 = 0;
+		s_particle_location_datum *location = DATUM(locations, s_particle_location_datum, system->location_index);
+		cache.field_48 = system;
 		cache.mask = 0;
 		if (location != cache.field_4c)
 		{
 			cache.field_4c = location;
 			cache.mask = 0;
 		}
-		function_173c10(0x1ffff, &cache);
+		function_173c10(&cache, 0x1ffff);
 		function_248cc0((s_248cc0 *)location, (s_247fd0 *)&cache, system, position, velocity);
 	}
 }
