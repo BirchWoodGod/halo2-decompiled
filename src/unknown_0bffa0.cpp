@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include "unknown_123b30.h"
+#include "unknown_0b68c0.h"
 #include "crc.h"
 // @flags /O2 /arch:SSE /Gr
 #include "projection_storage.h"
@@ -36,10 +37,6 @@ struct s_5107e8
 
 extern s_5107e8 *g_5107e8;
 real function_17ca10(real x, short curve);
-
-extern void *g_4e0310;
-extern void *g_4e0314;
-extern void *g_4e0318;
 
 __declspec(noinline) void function_c0040();
 
@@ -1029,14 +1026,9 @@ struct s_light_delete_view
     byte unknown5c[0x110 - 0x5c];
 };
 
-struct s_cluster_partition
-{
-    long *cluster_first_data_references;
-    s_record_pool *data_references;
-    s_record_pool *cluster_references;
-};
-
 void function_1cae40(s_cluster_partition *partition, long data_index, long *first_cluster_reference);
+
+void __declspec(noinline) function_c3220(long light_index);
 
 // @retail 0xc3220
 void function_c3220(long light_index)
@@ -1044,13 +1036,7 @@ void function_c3220(long light_index)
     s_light_delete_view *light = &((s_light_delete_view *)g_4e030c->data)[light_index & 0xffff];
     if (light->flags & 2)
     {
-        s_cluster_partition partition =
-        {
-            (long *)g_4e0310,
-            (s_record_pool *)g_4e0314,
-            (s_record_pool *)g_4e0318
-        };
-        function_1cae40(&partition, light_index, &light->first_cluster_reference);
+        function_1cae40(&g_4e0310_partition, light_index, &light->first_cluster_reference);
         light->flags &= ~8;
     }
 }
@@ -1253,10 +1239,11 @@ long __stdcall function_c0520(long tag_index, long placement_index, bool force,
             vector3f *forward = (vector3f *)(light + 0xac);
             *forward = matrix.up;
             *(vector3f *)(light + 0xb8) = matrix.left;
+            point3f const *source_point = (point3f const *)(source + 8);
             vector3f direction;
-            direction.i = *(real const *)(source + 0x4c) - *(real const *)(source + 8);
-            direction.j = *(real const *)(source + 0x50) - ((point3f const *)(source + 8))->y;
-            direction.k = *(real const *)(source + 0x54) - ((point3f const *)(source + 8))->z;
+            direction.i = *(real const *)(source + 0x4c) - source_point->x;
+            direction.j = *(real const *)(source + 0x50) - source_point->y;
+            direction.k = *(real const *)(source + 0x54) - source_point->z;
             real length = function_30bf0(&direction);
             if (!(length != 0.0f))
                 direction = matrix.up;

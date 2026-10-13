@@ -876,26 +876,22 @@ done:
 // @retail 0x1a77a0
 short function_1a77a0(long actor_index, long argument, short level)
 {
-	s_slot *slot = actor_slot_get(actor_index, level);
-	short state = slot->unknown4;
 	short count = 0;
 	short index = NONE;
-	short out;
-	short result = function_1a7030(actor_index, level, argument, &out);
+	long local_0 = actor_index;
+	s_slot *slot = actor_slot_get(local_0, level);
+	short state = slot->unknown4;
+	short result = function_1a7030(local_0, level, argument, (short *)&actor_index);
 
 	if (result == g_46fbec)
 		return g_46fbe4;
 	if (result == g_46fbe4)
 	{
 		bool valid;
-		s_action_node **nodes = function_1a73c0(actor_index, slot->type, &valid, &count);
+		s_action_node **nodes = function_1a73c0(local_0, slot->type, &valid, &count);
 
 		if (state < count - 1)
-		{
-			short score;
-
-			result = function_1a75f0(actor_index, nodes, state == NONE ? 0 : state, count, slot, argument, NONE, valid, state != NONE, &score, &index);
-		}
+			result = function_1a75f0(local_0, nodes, state == NONE ? 0 : state, count, slot, argument, NONE, valid, state != NONE, (short *)&argument, &index);
 		if (result != g_46fbe4)
 			slot->unknown4 = index;
 	}
@@ -1807,8 +1803,9 @@ struct s_1a5370
 bool __stdcall function_1a5370(s_sort_weight_view const *arg_0, point3f const *arg_1,
 	vector3f const *arg_2, long arg_3, short arg_4, s_sort_candidate_view *arg_5)
 {
+	/* the weights stay in their stack slot, as in retail */
+	s_sort_weight_view const *const *local_9 = &arg_0;
 	bool local_0 = false;
-	volatile bool local_6 = local_0;
 	s_sort_candidate_view local_1[0x40];
 	long local_2 = function_14a280(g_4e033c, 0, (point3f *)arg_1);
 	if (local_2 != NONE)
@@ -1816,7 +1813,7 @@ bool __stdcall function_1a5370(s_sort_weight_view const *arg_0, point3f const *a
 		short local_3 = ((s_1a5370 *)g_4e0348)->field_30[local_2].field_0;
 		if (local_3 != NONE)
 		{
-			long local_4 = function_1a54a0(arg_0, local_3, arg_1, arg_2, arg_3, arg_4, local_1);
+			long local_4 = function_1a54a0(*local_9, local_3, arg_1, arg_2, arg_3, arg_4, local_1);
 			if (local_4 > 0)
 			{
 				g_51e99c = (s_sort_globals *)arg_0;
@@ -1828,10 +1825,10 @@ bool __stdcall function_1a5370(s_sort_weight_view const *arg_0, point3f const *a
                     if (function_1a67f0(arg_1, (point3f *)((byte *)local_8 - 0x0c), *(long *)((byte *)local_8 - 0x14), arg_3))
 					{
 						*arg_5 = local_1[local_5];
-						return true;
+						local_0 = true;
+						break;
 					}
 				}
-				return local_6;
 			}
 		}
 	}

@@ -383,7 +383,8 @@ long function_2d000(long object_index, long tag, long instance)
 					byte *mappings = *(byte **)(definition + 0x64);
 					long section = *(word *)(mappings + instance * 12 + 2);
 					byte *sections = *(byte **)(definition + 0x44);
-					if (function_12de70((s_geometry_block_info *)(sections + section * 0x38 + 0xc), 3))
+					byte *section_record = sections + section * 0x38;
+					if (function_12de70((s_geometry_block_info *)(section_record + 0xc), 3))
 						result = 1;
 				}
 			}
@@ -393,7 +394,8 @@ long function_2d000(long object_index, long tag, long instance)
 			byte *mappings = *(byte **)(definition + 0x54);
 			long section = *(word *)(mappings + instance * 12 + 2);
 			byte *sections = *(byte **)(definition + 0x44);
-			if (function_12de70((s_geometry_block_info *)(sections + section * 0x38 + 0xc), 3))
+			byte *section_record = sections + section * 0x38;
+			if (function_12de70((s_geometry_block_info *)(section_record + 0xc), 3))
 			{
 				byte *instances = *(byte **)((byte *)g_4e0348 + 0x144);
 				result = *(short *)(instances + instance * 0x58 + 0x56) != 0;
@@ -466,12 +468,12 @@ void __stdcall function_44040(long cell, short mask)
             byte *group = (byte *)g_4ea950->data + (*(long *)(entry + 0x38) & 0xffff) * 0x40;
             if (*(short *)(group + 8) != (short)g_4ba038)
             {
-                byte *definition = g_4e3b44[*(long *)(entry + 0x2c) & 0xffff].bytes;
+                byte *definition = g_4e3b44[*(long *)(entry + 0x2c) & 0xffff].bytes + 0x6c;
                 *(short *)(group + 8) = (short)g_4ba038;
-                long tag = *(long *)(definition + 0x8c);
-                long bitmap = *(signed char *)(entry + 0x29);
-                if (g_4c878c != tag || g_4c8788 != bitmap)
+                long tag = *(long *)(definition + 0x20);
+                if (g_4c878c != tag || g_4c8788 != *(signed char *)(entry + 0x29))
                 {
+                    long bitmap = *(signed char *)(entry + 0x29);
                     g_4c8788 = bitmap;
                     g_4c878c = tag;
                     function_144f0(tag, 0, 1, (short)bitmap, 0, 0.0f);
@@ -485,9 +487,12 @@ void __stdcall function_44040(long cell, short mask)
                     D3DDevice_SetVertexData4ub(10, (byte)(color >> 16), (byte)(color >> 8), (byte)color, (byte)(color >> 24));
                     D3DDevice_SetVertexDataColor(11, 0);
                 }
+                long block_index = *(long *)(entry + 4) & 0xffff;
+                long vertex_count = *(short *)(entry + 0x2a) * 4;
                 s_physical_object *manager = (s_physical_object *)g_509448;
-                s_physical_block *block = (s_physical_block *)manager->blocks->data + (*(long *)(entry + 4) & 0xffff);
-                D3DDevice_DrawVertices(D3DPT_QUADLIST, ((dword)block->offset << manager->page_shift) >> 4, *(short *)(entry + 0x2a) * 4);
+                s_physical_block *block = (s_physical_block *)manager->blocks->data + block_index;
+                dword first_vertex = ((dword)block->offset << manager->page_shift) >> 4;
+                D3DDevice_DrawVertices(D3DPT_QUADLIST, first_vertex, vertex_count);
             }
             handle = *(long *)(entry + 0x34);
         }
@@ -1012,15 +1017,14 @@ void __stdcall function_2cbc0(bool enabled)
 // @retail 0x3f2c0
 void function_3f2c0(s_planar_camera_source const *source, byte const *view, long object_index, long identifier)
 {
-	byte camera[0x1bc];
+	byte camera[0x1b4];
 	real offset = 0.0f;
 	function_441b0(source, (s_planar_camera *)camera, view);
 	byte *effect = (byte *)function_01fd20(0);
-	bool enabled = false;
-	if (effect && effect[0x3c])
+	bool enabled = effect && effect[0x3c];
+	if (enabled)
 	{
 		offset = *(real *)(effect + 0x40) - *(real *)(camera + 0x70);
-		enabled = true;
 	}
 	function_3d600();
 	s_bit_vector_pool *data = function_1320f0(0, 1, enabled, 0, camera,

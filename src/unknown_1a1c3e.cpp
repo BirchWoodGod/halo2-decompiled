@@ -325,9 +325,10 @@ char motion_sensor_object_type(long local_player_index, long object_index)
 						else
 						{
 							s_sensor_definition *definition = SENSOR_DEFINITION(object->definition_index);
-							result = 4;
 							if (definition->block_count > 1 && definition->block[0].type == 0xa000082)
 								result = 5;
+							else
+								result = 4;
 						}
 					}
 					else
@@ -339,12 +340,20 @@ char motion_sensor_object_type(long local_player_index, long object_index)
 				{
 					result = function_1df560(object->team138, team) ? 3 : 2;
 					if (g_4e6948->state == 2 && object->unknown13c != NONE && function_53750(object->unknown13c & 0xffff))
-						result = result == 3 ? 8 : 7;
+					{
+						if (result == 3)
+							result += 5;
+						else
+							result = 7;
+					}
 				}
 			}
 			else if (mask & 0x1000)
 			{
-				result = function_1df560(object->team12e, team) ? 3 : 2;
+				if (function_1df560(object->team12e, team))
+					result = 3;
+				else
+					result = 2;
 			}
 		}
 	}
@@ -703,6 +712,9 @@ void motion_sensor_render(long local_player_index, short const *origin)
 	}
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x1a2965
 bool motion_sensor_enemy_vehicle_ahead(long local_player_index)
 {
@@ -714,6 +726,7 @@ bool motion_sensor_enemy_vehicle_ahead(long local_player_index)
 		s_sensor_player *player = SENSOR_PLAYER(player_index);
 		if (player->unit_index != NONE)
 		{
+			_ReadWriteBarrier();
 			long unit_index = player->unit_index;
 			s_motion_sensor_player *sensor = &g_51e994->players[local_player_index];
 			s_sensor_object *unit = SENSOR_OBJECT(unit_index);
@@ -766,6 +779,8 @@ bool motion_sensor_enemy_vehicle_ahead(long local_player_index)
 	}
 	return result;
 }
+
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x1a2b6b
 bool motion_sensor_enemy_nearby(long local_player_index)

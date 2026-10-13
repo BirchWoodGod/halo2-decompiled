@@ -334,6 +334,8 @@ s_object *function_baeb0(s_type_f1af8e *iterator)
 	return result;
 }
 
+__declspec(noinline) long function_baf40(long object_index);
+
 // @retail 0xbaf40
 long function_baf40(long object_index)
 {

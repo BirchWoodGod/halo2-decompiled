@@ -818,7 +818,12 @@ bool __stdcall function_14df40(long *unit_index)
 		{
 			if (unit_object->unknownaa == 0)
 			{
-				if (function_e4050(unit) || (unit_object->unknown348 & 1))
+				if (function_e4050(unit))
+				{
+					*unit_index = player->unit_index;
+					return true;
+				}
+				else if ((unit_object->unknown348 & 1))
 				{
 					*unit_index = player->unit_index;
 					return true;
@@ -2640,11 +2645,12 @@ void function_14d8b0(void)
         long &ticks = *(long *)(player + 0x16c);
         if ((player[2] & 4) && (unit = *(long *)(player + 0x2c)) != NONE)
         {
+            real rate = g_510c54->rate;
             ++ticks;
-            real time = g_510c54->rate * (real)ticks;
+            real time = rate * (real)ticks;
             if (time >= 3.0f)
             {
-                if (!(bool)((object_get_unchecked(unit)[0x10a] >> 5) & 1))
+                if (!TEST_FIELD_BIT(((s_unit_flags_14d8b0 *)(object_get_unchecked(unit) + 0x10a))->bit5))
                 {
                     if (g_4e6948->mode != 4)
                     {
@@ -2752,7 +2758,7 @@ void game_engine_boot_player(long);
 // @retail 0x14d3a0
 void __stdcall function_14d3a0(byte const *input)
 {
-    byte const *const volatile *input_reference = &input;
+    byte const *const *input_reference = &input;
     players_update_connections();
     long pending[16];
     long count = 0;
@@ -2825,10 +2831,10 @@ void __stdcall function_14d3a0(byte const *input)
         if (unit != NONE && (*(dword *)(object + 0x134) & 1))
         {
             byte *game = (byte *)g_510c50;
-            if ((action->flags & 0x100) && game[6])
+            if (action->flags & 0x100)
             {
-                bool reset = true;
-                if (game[0x22]) reset = !function_163b60();
+                byte reset = game[6];
+                if (reset && game[0x22]) reset = !function_163b60();
                 if (reset)
                 {
                     main_globals.switch_structure_bsp = false;
