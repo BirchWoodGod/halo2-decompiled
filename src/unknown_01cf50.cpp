@@ -702,7 +702,8 @@ void function_144f0(long tag, short stage, long fallback, short fallback_index, 
     bitmap = function_137550(tag, fallback_index);
     if (!bitmap) return;
 selected:
-    function_14390(stage, bitmap, priority);
+    real selected_priority = priority;
+    function_14390(stage, bitmap, selected_priority);
 }
 
 short g_55ece0, g_55ece2;
