@@ -313,6 +313,8 @@ s_balance_optimizer::s_balance_optimizer()
 	improved = false;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x91a30
 bool balance_teams_greedy(s_balance_problem *problem, long team_count, s_balance_team const *pool, long maximum_team_size)
 {
@@ -325,7 +327,9 @@ bool balance_teams_greedy(s_balance_problem *problem, long team_count, s_balance
 	{
 		s_balance_party party;
 		remaining.remove_largest_party(&party);
-		problem->solution.teams[solution->smallest_team()].add_party(&party);
+		long target = solution->smallest_team();
+		_ReadWriteBarrier();
+		problem->solution.teams[target].add_party(&party);
 	}
 	long largest = solution->teams[0].players.count;
 	for (long i = 1; i < solution->team_count; i++)
@@ -337,6 +341,7 @@ bool balance_teams_greedy(s_balance_problem *problem, long team_count, s_balance
 	problem->success = success;
 	return success;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x91bd0
 void s_balance_optimizer::try_swap(long team_a, long team_b)

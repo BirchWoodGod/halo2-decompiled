@@ -122,6 +122,18 @@ static inline void quaternion_transform_vector(
 	out->k = v->k * s + q->k * dot + cross.k * w2;
 }
 
+/* the cross product, every component computed before the stores */
+static inline void cross_product3d_1417b0(vector3f const *a, vector3f const *b, vector3f *out)
+{
+	real k = a->i * b->j - a->j * b->i;
+	real j = a->k * b->i - a->i * b->k;
+	real i = a->j * b->k - a->k * b->j;
+
+	out->i = i;
+	out->j = j;
+	out->k = k;
+}
+
 /* the rotation that takes one unit vector to another */
 // @retail 0x1417b0
 void matrix4x3_rotation_between_vectors(
@@ -130,13 +142,14 @@ void matrix4x3_rotation_between_vectors(
 	vector3f const *arg_bc44c6)
 {
 	struct { real cosine_half, sine_half; quaternionf rotation; } state;
-	real cosine = arg_5f338b->i * arg_bc44c6->i + arg_5f338b->j * arg_bc44c6->j + arg_5f338b->k * arg_bc44c6->k;
+	real dot = arg_5f338b->i * arg_bc44c6->i + arg_5f338b->j * arg_bc44c6->j + arg_5f338b->k * arg_bc44c6->k;
+	real cosine = dot;
 
-	if (cosine < -1.f)
+	if (dot < -1.f)
 	{
 		cosine = -1.f;
 	}
-	else if (cosine > 1.f)
+	else if (dot > 1.f)
 	{
 		cosine = 1.f;
 	}
@@ -147,11 +160,13 @@ void matrix4x3_rotation_between_vectors(
 
 	if (sine != 0.f)
 	{
+		state.rotation.i = arg_5f338b->j * arg_bc44c6->k - arg_5f338b->k * arg_bc44c6->j;
+		state.rotation.j = arg_5f338b->k * arg_bc44c6->i - arg_5f338b->i * arg_bc44c6->k;
+		state.rotation.k = arg_5f338b->i * arg_bc44c6->j - arg_5f338b->j * arg_bc44c6->i;
 		real scale = state.sine_half / sine;
-
-		state.rotation.i = (arg_5f338b->j * arg_bc44c6->k - arg_5f338b->k * arg_bc44c6->j) * scale;
-		state.rotation.j = (arg_5f338b->k * arg_bc44c6->i - arg_5f338b->i * arg_bc44c6->k) * scale;
-		state.rotation.k = (arg_5f338b->i * arg_bc44c6->j - arg_5f338b->j * arg_bc44c6->i) * scale;
+		state.rotation.i *= scale;
+		state.rotation.j *= scale;
+		state.rotation.k *= scale;
 		state.rotation.w = state.cosine_half;
 	}
 	else if (cosine < 0.f)
@@ -171,13 +186,9 @@ void matrix4x3_rotation_between_vectors(
 	if (!function_143120(&matrix->forward, &matrix->left, &matrix->up))
 	{
 		function_30bf0(&matrix->up);
-		matrix->left.i = matrix->up.j * matrix->forward.k - matrix->up.k * matrix->forward.j;
-		matrix->left.j = matrix->up.k * matrix->forward.i - matrix->up.i * matrix->forward.k;
-		matrix->left.k = matrix->up.i * matrix->forward.j - matrix->up.j * matrix->forward.i;
+		cross_product3d_1417b0(&matrix->up, &matrix->forward, &matrix->left);
 		function_30bf0(&matrix->left);
-		matrix->forward.i = matrix->left.j * matrix->up.k - matrix->left.k * matrix->up.j;
-		matrix->forward.j = matrix->left.k * matrix->up.i - matrix->left.i * matrix->up.k;
-		matrix->forward.k = matrix->left.i * matrix->up.j - matrix->left.j * matrix->up.i;
+		cross_product3d_1417b0(&matrix->left, &matrix->up, &matrix->forward);
 	}
 }
 

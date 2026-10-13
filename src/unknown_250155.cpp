@@ -3007,6 +3007,11 @@ void function_2501c0(c_screen_24fd74 *screen, s_game_variant *variant)
 // @retail 0x251d84
 void function_251d84(c_matchmaking_screen *screen)
 {
+    struct s_local_text
+    {
+        word text[0x100];
+        word *data() { return text; }
+    };
     byte *variant=network_session_interface_get_data_4db0();
     c_class_1a2c81 *title=screen->find_child(6, 2, false);
     c_class_1a2c81 *teams=screen->find_child(6, 13, false);
@@ -3021,10 +3026,10 @@ void function_251d84(c_matchmaking_screen *screen)
     if (caption) caption->function_253b1a(0xf0001df);
     if (function_19a107())
     {
-        word buffer[0x100];
-        buffer[0]=0;
-        function_251c91(screen, buffer);
-        teams->function_22f52e()->set_text(buffer);
+        s_local_text buffer;
+        buffer.text[0]=0;
+        function_251c91(screen, buffer.text);
+        teams->function_22f52e()->set_text(buffer.data());
     }
     if (variant && setting5)
     {
@@ -3032,16 +3037,16 @@ void function_251d84(c_matchmaking_screen *screen)
         function_250a43(variant, bitmap);
         if (definition)
         {
-            word separator[0x100];
-            separator[0]=0;
+            s_local_text separator;
+            separator.text[0]=0;
             if (definition->string_list_index!=NONE)
-                function_1a0180(definition->string_list_index, function_230195(definition, 0, 0), separator);
-            function_25092c((s_game_variant *)variant, 0, setting0, separator, screen->texts[0].text);
-            function_25092c((s_game_variant *)variant, 1, setting1, separator, screen->texts[1].text);
-            function_25092c((s_game_variant *)variant, 2, setting2, separator, screen->texts[2].text);
-            function_25092c((s_game_variant *)variant, 3, setting3, separator, screen->texts[3].text);
-            function_25092c((s_game_variant *)variant, 4, setting4, separator, screen->texts[4].text);
-            function_25092c((s_game_variant *)variant, 5, setting5, separator, screen->texts[5].text);
+                function_1a0180(definition->string_list_index, function_230195(definition, 0, 0), separator.text);
+            function_25092c((s_game_variant *)variant, 0, setting0, separator.text, screen->texts[0].text);
+            function_25092c((s_game_variant *)variant, 1, setting1, separator.text, screen->texts[1].text);
+            function_25092c((s_game_variant *)variant, 2, setting2, separator.text, screen->texts[2].text);
+            function_25092c((s_game_variant *)variant, 3, setting3, separator.text, screen->texts[3].text);
+            function_25092c((s_game_variant *)variant, 4, setting4, separator.text, screen->texts[4].text);
+            function_25092c((s_game_variant *)variant, 5, setting5, separator.text, screen->texts[5].text);
         }
     }
     if (title) title->value6e=network_session_manager_get_value49ac()!=NONE;

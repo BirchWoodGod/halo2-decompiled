@@ -641,7 +641,7 @@ real function_3eb70(void)
 }
 
 // @retail 0x350e0
-void function_350e0(real *out, real const *a, real const *b, real x)
+void function_350e0(real const *a, real const *b, real *out, real x)
 {
 	real scale;
 	real v;
@@ -1098,14 +1098,14 @@ void function_4b3d0(s_vector_perturbation *state)
 	state->magnitude_fraction = function_36a40(state->magnitude_fraction, state->magnitude_spread * g_509418, 0.0f, 1.0f);
 	_ReadWriteBarrier();
 	real first = state->first_fraction * state->direction_scale;
-	state->perturbation.i = state->first_axis.i * first + state->base_direction.i;
-	state->perturbation.j = state->first_axis.j * first + state->base_direction.j;
-	state->perturbation.k = state->first_axis.k * first + state->base_direction.k;
+	state->perturbation.i = (real)(state->first_axis.i * first) + state->base_direction.i;
+	state->perturbation.j = (real)(state->first_axis.j * first) + state->base_direction.j;
+	state->perturbation.k = (real)(state->first_axis.k * first) + state->base_direction.k;
 	_ReadWriteBarrier();
 	real second = state->second_fraction * state->direction_scale;
-	state->perturbation.i = state->second_axis.i * second + state->perturbation.i;
-	state->perturbation.j = state->second_axis.j * second + state->perturbation.j;
-	state->perturbation.k = state->second_axis.k * second + state->perturbation.k;
+	state->perturbation.i = (real)(state->second_axis.i * second) + state->perturbation.i;
+	state->perturbation.j = (real)(state->second_axis.j * second) + state->perturbation.j;
+	state->perturbation.k = (real)(state->second_axis.k * second) + state->perturbation.k;
 	function_30bf0(&state->perturbation);
 	real magnitude = state->magnitude * state->magnitude_fraction;
 	state->perturbation.i *= magnitude;
@@ -1508,7 +1508,7 @@ bool __stdcall function_34100(long mode, real const *rectangle, real const *coor
     switch (mode)
     {
     case 0:
-        function_350e0(out, rectangle, coordinates, parameters[0]);
+        function_350e0(rectangle, coordinates, out, parameters[0]);
         out[0] *= parameters[24];
         out[1] *= parameters[24];
         return true;
