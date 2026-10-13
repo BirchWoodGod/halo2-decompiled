@@ -1177,7 +1177,7 @@ static inline long session_get_value_49f0(c_class_58d20 *session)
 
 /* sends the local machine's properties to the session when they change */
 // @retail 0x658c0
-void network_session_interface_update_local_properties(c_class_58d20 *session, s_session_member *member)
+static void network_session_interface_update_local_properties(c_class_58d20 *session, s_session_member *member)
 {
 	long owner = session->value10;
 	long last = g_4cd868.unknown3e8[owner];
