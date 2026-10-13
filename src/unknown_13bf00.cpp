@@ -243,17 +243,22 @@ static __forceinline short real_to_short(real value)
 	return (short)result;
 }
 
+static __forceinline real function_13ccf1(void)
+{
+	real result = 0.0f;
+	if ((g_4e6948 && g_4e6948->flag && g_4e6948->index != NONE && g_4e6948->state == 3) || !g_485ac2)
+	{
+		result = g_510c50->unknown0 * 0.125f;
+	}
+	return result;
+}
+
 /* the screen between the letterbox bars, and the two bars */
 // @retail 0x13ccf0
 void function_13ccf0(short_rectangle2d *screen, short_rectangle2d *top_bar, short_rectangle2d *bottom_bar)
 {
-	real letterbox = 0.0f;
+	real letterbox = function_13ccf1();
 	real height;
-
-	if ((g_4e6948 && g_4e6948->flag && g_4e6948->index != NONE && g_4e6948->state == 3) || !g_485ac2)
-	{
-		letterbox = g_510c50->unknown0 * 0.125f;
-	}
 
 	height = (real)(g_4b9dd4 - g_4b9dd0);
 	screen->left = real_to_short((real)g_4b9dd2);

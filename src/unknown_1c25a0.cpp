@@ -739,18 +739,10 @@ void __stdcall function_1c36f0(long parent_index, long object_index)
 
 /* sets the flags of the object's havok component and rebuilds it, with the
    component's active state handled around the change.
-   Standard convention (see docs/DECOMPILING.md):
-   1. Retail keeps it __stdcall (both arguments on the stack, ret 8). With the
-      marker this body matches byte for byte; without it LTCG passes the
-      object index in eax.
-   2. No data or code in retail holds its address. Its twelve callers
-      (0xdbc80 0xe0c70 0xe0ef0 0xe16b0 0xe18d0 0xe24f0 0x1c38a0 0x1c4040
-      0x1d2460 0x1e54d0 0x1ec690 0x278f00) all push both arguments; 0x1d2460
-      itself takes its component in ecx, a register convention.
-   3. Tried: declaring it __stdcall alone does nothing under LTCG; /GL- on
-      the file would break the register convention of its callee 0x1cf120,
-      which takes the component index in eax. */
-// @retail 0x1c3770 standard
+   Retail keeps both arguments on the stack (ret 8). With the attachment
+   helper call at 0xb93b0 -> 0xb7300 kept out of line, the code-reference
+   cycle preserves this convention without an address-escape marker. */
+// @retail 0x1c3770
 void __stdcall function_1c3770(long object_index, dword flags)
 {
 	s_physics_object *object = physics_object_get(object_index);

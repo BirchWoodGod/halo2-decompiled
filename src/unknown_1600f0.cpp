@@ -282,12 +282,12 @@ struct s_game_engine_player_info
 // @retail 0x162a30
 void function_162a30(long player_index)
 {
-	long const *const player_reference = &player_index;
-	s_game_engine_player_info *info = (s_game_engine_player_info *)&g_4e9ae8->players[(*player_reference) & 0xffff];
+	long index = player_index & 0xffff;
+	s_game_engine_player_info *info = (s_game_engine_player_info *)&g_4e9ae8->players[index];
 
 	if (g_4e6948->mode != 4)
 	{
-		short previous = info->state;
+		long previous = info->state;
 
 		if (info->state_ticks != 0 && --info->state_ticks == 0)
 		{
@@ -314,7 +314,7 @@ void function_162a30(long player_index)
 		}
 		if (previous != info->state && game_engine_get())
 		{
-			long slot = g_4e9ae8->slots[(short)(*player_reference)];
+			long slot = g_4e9ae8->slots[(short)index];
 
 			if (slot != NONE)
 			{
@@ -326,8 +326,7 @@ void function_162a30(long player_index)
 	{
 		long time = info->timer - 1;
 
-		if (time <= 0)
-			time = 0;
+		time = time > 0 ? time : 0;
 		info->timer = (short)time;
 		if ((short)time == 0)
 		{

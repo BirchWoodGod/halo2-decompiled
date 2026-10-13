@@ -100,21 +100,25 @@ void function_441b0(s_planar_camera_source const *source, s_planar_camera *state
 {
 	memset(state, 0, sizeof(*state));
 	state->disabled = false;
-	state->matrix.left = source->horizontal;
-	function_30bf0(&state->matrix.left);
-	state->matrix.up.i = 0.0f - source->normal.i;
-	state->matrix.up.j = 0.0f - source->normal.j;
-	state->matrix.up.k = 0.0f - source->normal.k;
-	function_30bf0(&state->matrix.up);
-	matrix_cross(&state->matrix.left, &state->matrix.up, &state->matrix.forward);
+	vector3f *left = &state->matrix.left;
+	*left = source->horizontal;
+	function_30bf0(left);
+	vector3f *up = &state->matrix.up;
+	up->i = 0.0f - source->normal.i;
+	up->j = 0.0f - source->normal.j;
+	up->k = 0.0f - source->normal.k;
+	function_30bf0(up);
+	vector3f *const *vector_reference = &left;
+	matrix_cross(*vector_reference, up, &state->matrix.forward);
 	function_30bf0(&state->matrix.forward);
 	state->matrix.position = source->origin;
 	state->matrix.scale = 1.0f;
 	function_141590(&state->matrix, &state->inverse);
 	state->has_plane = true;
 	state->offset = source->offset;
-	state->plane.n = source->normal;
-	state->plane.d = source->normal.k * source->origin.z + source->normal.j * source->origin.y + source->normal.i * source->origin.x + source->offset;
+	vector3f const &normal = source->normal;
+	state->plane.n = normal;
+	state->plane.d = normal.k * source->origin.z + normal.j * source->origin.y + normal.i * source->origin.x + source->offset;
 	*(bool *)state->unknown84 = true;
 	state->depth = source->depth;
 	box2f const *rectangle = (box2f const *)(view + 0x68);
@@ -291,7 +295,8 @@ bool __stdcall function_4dfa0(long tag, long context, long pass, long stage, lon
 		out->value10 = (dword)material;
 		out->value08 = 0;
 		out->unknown14 = 0;
-		return function_4cbb0(*(long *)(material + 0x100), 0) != 0;
+		bool ready = function_4cbb0(*(long *)(material + 0x100), 0) != 0;
+		return ready;
 	}
 	return false;
 }
