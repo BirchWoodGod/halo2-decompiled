@@ -298,15 +298,13 @@ void c_vtable_450d1c::function_976f0(long key, bool flag)
 {
 	s_request_450d1c **link = &requests;
 	s_request_450d1c *request = *link;
-	if (request == 0)
-		return;
-	while (request->key != key)
+	while (request != 0 && request->key != key)
 	{
 		link = &request->next;
 		request = *link;
-		if (request == 0)
-			return;
 	}
+	if (request == 0)
+		return;
 
 	s_link_450d1c *current = request->links;
 	while (current != 0)
