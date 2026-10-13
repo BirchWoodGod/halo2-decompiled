@@ -800,7 +800,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0005aed0,116,game,speed,a16 pad,,,,src/unknown_059ad0.cpp,matched
 0005af50,27,game,speed,a16 pad,,,,src/unknown_059ad0.cpp,matched
 0005af70,65,game,speed,a16 pad,,,,src/unknown_059ad0.cpp,matched
-0005afc0,118,game,speed,a16 pad,,,00062f40,src/unknown_059ad0.cpp,todo
+0005afc0,118,game,speed,a16 pad,,,00062f40,src/unknown_059ad0.cpp,matched
 0005b040,25,game,speed,a16 pad,,,,src/unknown_05b040.cpp,matched
 0005b060,26,game,speed,a16 pad,,,,src/unknown_05b040.cpp,matched
 0005b080,35,game,speed,a16 pad,,,,src/unknown_05b040.cpp,matched
