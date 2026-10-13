@@ -598,7 +598,7 @@ bool function_7e080(const byte *data, long size, s_session_message_values *value
 	const byte *buffer = data;
 	bool result = false;
 	s_session_message_values *const *values_reference = &values;
-	if (size > 0 && buffer)
+	if (buffer && size > 0)
 	{
 		s_bitstream stream;
 		stream.unknown08 = 1;
