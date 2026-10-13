@@ -295,7 +295,7 @@ bool __stdcall function_4dfa0(long tag, long context, long pass, long stage, lon
 		out->value10 = (dword)material;
 		out->value08 = 0;
 		out->unknown14 = 0;
-		bool ready = function_4cbb0(*(long *)(material + 0x100), 0) != 0;
+		bool ready = function_4cbb0(*(long *)((byte *)out->value10 + 0x100), 0) != 0;
 		return ready;
 	}
 	return false;

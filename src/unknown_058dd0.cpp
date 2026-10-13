@@ -472,6 +472,9 @@ void c_session_state_start_match::leave(long a)
 }
 #pragma inline_depth(255)
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 /* ---- matchmaking ---- */
 
 // @retail 0x70a20
@@ -551,18 +554,18 @@ void c_session_state_matchmaking::leave(long a)
 // @retail 0x72b50
 bool c_session_state_post_match::update()
 {
+	bool result;
 	s_session_owner *o = owner;
 	c_class_58d20 *a = o->session_a;
 	c_class_58d20 *b = o->session_b;
-	bool result = function_06dfa0();
+	result = function_06dfa0();
+	volatile bool local_0 = result;
 	if (!result && !o->failed)
 	{
 		if (b->type == 5 && (a->type == 13 || a->type == 12))
 		{
 			if (!SESSION_STATE_IS_LIVE(b->state) || !a->function_058d20())
-			{
-				return result;
-			}
+				goto local_1;
 			long index = b->member_index;
 			s_session_snapshot snapshot;
 			s_session_snapshot compare;
@@ -571,14 +574,16 @@ bool c_session_state_post_match::update()
 			network_session_get_key(b, (s_session_id *)snapshot.unknown04, snapshot.unknown0c, NULL, &snapshot.unknown00);
 			memcpy(snapshot.words, b->members[index].words, sizeof(snapshot.words));
 			if (!network_session_get_data5ddc(a, (s_parameters_part *)&compare) || memcmp(&compare, &snapshot, sizeof(snapshot)) != 0)
-			{
 				network_session_host_set_data5ddc(a, (const s_parameters_part *)&snapshot);
-			}
-			return result;
+			result = local_0;
 		}
-		network_session_leave(b, false);
-		return true;
+		else
+		{
+			network_session_leave(b, false);
+			result = true;
+		}
 	}
+local_1:
 	return result;
 }
 
@@ -1289,8 +1294,18 @@ void function_72330(c_session_state_matchmaking *state)
 		values->limit = NONE;
 		s_surface_description *variant = (s_surface_description *)values->unknown1c;
 		long type = *(long *)variant;
-		if (type == 5 || type == 3 || type == 4)
+		if (type == 5) goto local_special;
+		switch (type)
 		{
+		case 3:
+		case 4:
+			break;
+		default:
+			goto local_default;
+		}
+	local_special:
+		{
+			_ReadWriteBarrier();
 			if (matchmaking_variant_width(variant) > 0 && function_72458(variant) > 0)
 			{
 				long count = level / function_193440(variant);
@@ -1301,11 +1316,14 @@ void function_72330(c_session_state_matchmaking *state)
 				}
 			}
 		}
-		else if (level >= function_1932c0(variant))
+		goto local_done;
+	local_default:
+		if (level >= function_1932c0(variant))
 		{
 			if (level > function_193300(variant)) level = function_193300(variant);
 			values->limit = level;
 		}
+	local_done:;
 	}
 	if (state->mode == 3)
 	{
@@ -1315,6 +1333,7 @@ void function_72330(c_session_state_matchmaking *state)
 		if (state->mode == 3) *(bool *)state->unknown14 = true;
 	}
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x70570
 long function_70570(c_session_state_matchmaking *state)

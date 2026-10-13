@@ -34,8 +34,8 @@ local_0:
   long first_value = first->unknown94;
   long second_value = second->unknown94;
   if (first_value > maximum) first_value = maximum;
-  if (second_value > maximum) second_value = maximum;
-  real score = (real)(first_value - second_value) * g_network_configuration.real34;
+  if (second_value <= maximum) maximum = second_value;
+  real score = (real)(first_value - maximum) * g_network_configuration.real34;
   real delta = (real)(*(const long *)(second->properties.unknown74 + 8) - local_3) * g_network_configuration.real38;
   if (delta > 0.f)
    score += (real)pow(delta, g_network_configuration.real3c);
