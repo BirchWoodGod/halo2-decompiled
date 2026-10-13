@@ -204,12 +204,11 @@ int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, t
 // @retail 0x112dc0
 void __stdcall function_112dc0(long unit_index, transform4x3f *matrix)
 {
-	s_unit_animation_object_header *headers = (s_unit_animation_object_header *)g_4e0300->data;
-	s_unit_animation_object *unit = headers[unit_index & 0xffff].object;
-	long parent_index = UNIT_ANIMATION_CONTROL(unit)->unknown28;
-	if (parent_index != NONE && function_badc0(parent_index, (dword)NONE))
+	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
+	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
+	if (control->unknown28 != NONE && function_badc0(control->unknown28, (dword)NONE))
 	{
-		s_unit_animation_object *parent = headers[parent_index & 0xffff].object;
+		s_unit_animation_object *parent = UNIT_ANIMATION_OBJECT(control->unknown28);
 		transform4x3f *nodes = (transform4x3f *)((byte *)parent + parent->node_matrices_offset);
 		function_142a60(nodes, matrix, matrix);
 	}
@@ -630,22 +629,30 @@ void function_113870(long unit_index)
 }
 
 
+/* retail calls 0x1cb410 out of line here */
+#pragma inline_depth(0)
+PRIVATE __forceinline bool channel_start_114330(s_animation_state *state, c_animation_channel *channel,
+	c_type_709360 animation_id)
+{
+	return state->channel_start(channel, animation_id, 0x10000551, NONE, NONE, 1, 0x803f);
+}
+#pragma inline_depth(255)
+
 // @retail 0x114330
 void function_114330(long unit_index)
 {
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_animation_state *state = UNIT_ANIMATION_STATE(unit);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
-	long weapon_class = state->unknown74;
-	long weapon_type = state->unknown78;
+	long weapon[2] = { state->unknown74, state->unknown78 };
 
 	if (state->graph_tag_index != NONE)
 	{
-		c_type_709360 animation_id = GRAPH_GET(state->graph_tag_index)->overlay_get(state->unknown70, weapon_class,
-			weapon_type, 0x10000551, NULL, NULL, NULL);
+		c_type_709360 animation_id = GRAPH_GET(state->graph_tag_index)->overlay_get(state->unknown70, weapon[0],
+			weapon[1], 0x10000551, NULL, NULL, NULL);
 
 		if (animation_id.index != NONE &&
-			state->channel_start(&control->channel_dc, animation_id, 0x10000551, NONE, NONE, 1, 0x803f))
+			channel_start_114330(state, &control->channel_dc, animation_id))
 		{
 			control->flag7 = false;
 		}
@@ -879,24 +886,28 @@ bool function_1140b0(long unit_index, long name)
 {
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
+	long const *name_reference = &name;
 	bool result = false;
-	if (control->channel_9c.unknown08 == name)
+	if (control->channel_9c.unknown08 == *name_reference)
 	{
 		channel_reset_114240(&control->channel_9c);
 		function_ba350(unit_index, 0.267f);
-		return true;
+		result = true;
 	}
-	if (control->channel_bc.unknown08 == name)
+	else if (control->channel_bc.unknown08 == *name_reference)
 	{
 		channel_reset_114240(&control->channel_bc);
 		function_ba350(unit_index, 0.267f);
-		return true;
+		result = true;
 	}
-	long first, second;
-	if (function_10f630(unit_index, &first, &second) && second == name)
+	else
 	{
-		function_10f430(unit_index, 0x7000101, 0x7000101, 0x7000101, 0x7000001, 0.0f, false, 0);
-		return true;
+		long first, second;
+		if (function_10f630(unit_index, &first, &second) && second == *name_reference)
+		{
+			function_10f430(unit_index, 0x7000101, 0x7000101, 0x7000101, 0x7000001, 0.0f, false, 0);
+			result = true;
+		}
 	}
 	return result;
 }
@@ -1021,7 +1032,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 		if (graph)
 		{
 			if (function_1dd0b0(graph, animation_name).index == NONE)
-				return false;
+				goto done_1101e0;
 
 			s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 			s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
@@ -1032,7 +1043,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 			if (state->graph_tag_index != animation_graph_index &&
 				!state->initialize(animation_graph_index, definition->model_tag_index, true))
 			{
-				return false;
+				goto done_1101e0;
 			}
 
 			c_type_709360 animation_id = function_1dd0b0(GRAPH_GET(state->graph_tag_index), animation_name);
@@ -1058,6 +1069,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 			function_114330(unit_index);
 		}
 	}
+done_1101e0:
 	return result;
 }
 

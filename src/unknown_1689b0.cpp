@@ -440,9 +440,10 @@ void function_168b40(s_168b40_result *result, s_168b40_surface const *surface, t
 		result->plane.i = matrix->up.i * z + matrix->left.i * y + matrix->forward.i * x;
 		result->plane.j = matrix->up.j * z + matrix->left.j * y + matrix->forward.j * x;
 		result->plane.k = matrix->up.k * z + matrix->left.k * y + matrix->forward.k * x;
-		real distance = matrix->position.z * result->plane.k + plane->d * matrix->scale;
-		distance += matrix->position.y * result->plane.j;
-		distance += result->plane.i * matrix->position.x;
+		point3f const *position = &matrix->position;
+		real distance = position->z * result->plane.k + plane->d * matrix->scale;
+		distance += position->y * result->plane.j;
+		distance += result->plane.i * position->x;
 		result->plane.d = distance;
 		if (surface->flags & 0x8000)
 		{

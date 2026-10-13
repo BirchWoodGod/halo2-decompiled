@@ -799,7 +799,7 @@ void __stdcall function_16c840(long user_index, long unused, s_observer_command 
 						direction = &camera->point.left;
 						plane.n = *direction;
 						plane.d = dot3f((vector3f *)&command->object_matrix.position, &plane.n);
-						length_squared = dot3f(&plane.n, direction);
+						length_squared = (plane.n.k * direction->k + plane.n.j * direction->j) + plane.n.i * direction->i;
 						if (length_squared != 0.0f)
 						{
 							t = 0.0f - plane_distance_to_point(&plane, (point3f *)&camera->point.offset) / length_squared;
@@ -862,12 +862,15 @@ void __stdcall function_16c840(long user_index, long unused, s_observer_command 
 		{
 			real t = camera_velocity_profile_evaluate(&camera->pan.profile, g_510c54->game_time - camera->pan.start_time);
 			quaternionf rotation;
-			matrix3x3 matrix;
 			real length_squared;
 
 			command->timer = 0.0f;
 			t = PIN(t, 0.0f, 1.0f);
-			function_141f60(function_142d10(&camera->up, &camera->forward, &matrix), &rotation);
+			{
+				matrix3x3 matrix;
+
+				function_141f60(function_142d10(&camera->up, &camera->forward, &matrix), &rotation);
+			}
 			function_11da10(&rotation, &camera->pan.rotation, &rotation, t);
 			length_squared = rotation.i * rotation.i + rotation.j * rotation.j + rotation.k * rotation.k + rotation.w * rotation.w;
 			if (length_squared > 0.0f)
@@ -886,9 +889,11 @@ void __stdcall function_16c840(long user_index, long unused, s_observer_command 
 				rotation.k = 0.0f;
 				rotation.w = 1.0f;
 			}
-			function_141e10(&matrix, &rotation);
-			command->forward = matrix.forward;
-			command->up = matrix.up;
+			transform4x3f transform;
+
+			function_141e10(&transform.rotation, &rotation);
+			command->forward = transform.forward;
+			command->up = transform.up;
 			real fraction = PIN(t, 0.0f, 1.0f);
 			camera = camera_scripting_state;
 			command->position.x = camera->position.x * (1.0f - fraction) + camera->pan.position.x * fraction;

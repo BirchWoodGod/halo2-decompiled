@@ -4261,10 +4261,6 @@ struct s_player_view_15bb20
     short dead_count;
 };
 
-static __forceinline long long_max_15bb20(long a, long b)
-{
-    return a > b ? a : b;
-}
 
 // @retail 0x15bb20
 void __stdcall function_15bb20(long player_index)
@@ -4340,8 +4336,7 @@ void __stdcall function_15bb20(long player_index)
             !function_162c50(player_index, &player_index))
         {
                 long maximum = real_to_long((real)g_510c54->field_2_3 * 0.25f);
-                long elapsed = (long)g_4e9af0.timers[player->local_index] + 1;
-                g_4e9af0.timers[player->local_index] = (byte)(elapsed > maximum ? maximum : elapsed);
+                g_4e9af0.timers[player->local_index] = (byte)((long)g_4e9af0.timers[player->local_index] + 1 > maximum ? maximum : (long)g_4e9af0.timers[player->local_index] + 1);
                 if (input)
                 {
                     short delta = (short &)input->values[0x36];
@@ -4354,8 +4349,7 @@ void __stdcall function_15bb20(long player_index)
         }
         else
         {
-            long remaining = (long)g_4e9af0.timers[player->local_index] - 1;
-            g_4e9af0.timers[player->local_index] = (byte)long_max_15bb20(remaining, 0);
+            g_4e9af0.timers[player->local_index] = (byte)((long)g_4e9af0.timers[player->local_index] - 1 > 0 ? (long)g_4e9af0.timers[player->local_index] - 1 : 0);
         }
     }
 }
