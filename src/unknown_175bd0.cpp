@@ -1987,7 +1987,7 @@ void function_179020(long effect_index, real scale, real unknown)
 // @retail 0x179190
 long function_179190(s_effect_datum *effect)
 {
-	s_effect_datum *const volatile *effect_argument = &effect;
+	s_effect_datum *const *effect_argument = &effect;
 	effect = *effect_argument;
 	s_effect_definition *definition = TAG_GET(s_effect_definition, effect->tag_index);
 	long restart_index = definition->restart_event_index;
@@ -2017,6 +2017,8 @@ long function_179190(s_effect_datum *effect)
 	return event_index;
 }
 
+// retail does not inline the delay draw (0x259d0) into this loop
+#pragma inline_depth(0)
 // @retail 0x1792b0
 bool function_1792b0(long effect_index, real dt)
 {
@@ -2074,7 +2076,9 @@ bool function_1792b0(long effect_index, real dt)
 			{
 				s_effect_event *event = &definition->events[effect->event_index];
 
-				((byte *)effect)[2] |= 1;
+				word *flags = &effect->flags;
+
+				*flags |= 1;
 				effect->unknown60 = 0.0f;
 				effect->unknown68 = -1.0f;
 				if (event->duration_lower == event->duration_upper)
@@ -2093,6 +2097,8 @@ bool function_1792b0(long effect_index, real dt)
 event_done:
 	return effect == 0;
 }
+
+#pragma inline_depth()
 
 // @retail 0x1794e0
 bool __stdcall function_1794e0(long effect_index)
@@ -2781,10 +2787,7 @@ void __stdcall function_179e80(s_effect_datum *effect)
 	for (long i = 0; i < event->beam_count; i++)
 	{
 		s_effect_beam *beam = &event->beams[i];
-		real progress = 0.0f;
-
-		if (effect->event_delay > 0.0f)
-			progress = effect->unknown60 / effect->event_delay;
+		real progress = effect->event_delay > 0.0f ? effect->unknown60 / effect->event_delay : 0.0f;
 
 		long location_index = effect->location_indices[beam->location];
 
@@ -2792,7 +2795,7 @@ void __stdcall function_179e80(s_effect_datum *effect)
 		{
 			s_effect_location_datum *location = DATUM(g_4ea938, s_effect_location_datum, location_index);
 
-			location_index = location->next_index;
+			long next_index = location->next_index;
 			if (location->node_index != NONE)
 			{
 				transform4x3f node_matrix;
@@ -2806,6 +2809,7 @@ void __stdcall function_179e80(s_effect_datum *effect)
 			{
 				function_156b60(beam, progress, &location->matrix);
 			}
+			location_index = next_index;
 		}
 	}
 }

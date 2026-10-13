@@ -1647,7 +1647,6 @@ bool __stdcall function_cd0c0(long unit_index, long weapon_index, short mode);
 // @retail 0x152bf0
 bool function_152bf0(byte const *loadout, long unit_index)
 {
-    bool result = false;
     if (loadout[0])
     {
         byte *unit = (byte *)tail_object_get(unit_index);
@@ -1656,7 +1655,7 @@ bool function_152bf0(byte const *loadout, long unit_index)
         long primary = function_152a50((s_loadout_state_152a50 *)(loadout + 2), unit_index, &failed);
         long special = function_152a50((s_loadout_state_152a50 *)(loadout + 0x12), unit_index, &failed);
         long secondary = function_152a50((s_loadout_state_152a50 *)(loadout + 0xa), unit_index, &failed);
-        result = !failed;
+        bool result = !failed;
         for (long i = 0; i < 2; ++i)
         {
             unit[0x23e + i] = 0;
@@ -1668,9 +1667,8 @@ bool function_152bf0(byte const *loadout, long unit_index)
         { function_b8540(secondary); result = false; }
         if (special != NONE && !function_cd0c0(unit_index, special, 7))
         { function_b8540(special); return false; }
+        return result;
     }
-    if (result)
-    	return true;
     return false;
 }
 
