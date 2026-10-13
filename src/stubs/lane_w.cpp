@@ -30,12 +30,6 @@ struct s_speed_result;
 
 
 struct s_bit_vector_pool;
-// @stub 0x1320f0
-s_bit_vector_pool *function_1320f0(long, long, bool, long, unsigned char const *,
-	unsigned char const *, float, void *, float, long)
-{
-	return 0;
-}
 
 
 
