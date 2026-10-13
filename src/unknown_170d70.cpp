@@ -165,26 +165,26 @@ vector3f *function_170c00(vector3f const *first_forward, vector3f const *first_u
 	return matrix4x3_rotation_between(&first, &second, out);
 }
 
-__declspec(noinline) void function_170bb0(real const *first, real const *second, real *out);
+__declspec(noinline) void function_170bb0(real *out, real const *second, real const *first);
 
 // @retail 0x170bb0
-void function_170bb0(real const *first, real const *second, real *out)
+void function_170bb0(real *out, real const *second, real const *first)
 {
-	long count = 10;
-	long rotation_count = 1;
+	long channel_index = 0;
 
 	do
 	{
 		*out++ = *first++ - *second++;
-	} while (--count);
-	do
+	} while (++channel_index < 10);
+	for (; channel_index < 11; channel_index++)
 	{
-		function_170c00((vector3f const *)first, (vector3f const *)(first + 3),
-			(vector3f const *)second, (vector3f const *)(second + 3), (vector3f *)out);
-		first += 6;
+		/* the subtracted state's basis goes first */
+		function_170c00((vector3f const *)second, (vector3f const *)(second + 3),
+			(vector3f const *)first, (vector3f const *)(first + 3), (vector3f *)out);
 		second += 6;
+		first += 6;
 		out += 3;
-	} while (--rotation_count);
+	}
 }
 
 PRIVATE inline void rotate_vector_170d70(vector3f *v, vector3f const *axis, real sine, real cosine)
@@ -1438,12 +1438,14 @@ void function_171830(point3f const *point, vector3f const *forward,
 		collision.material = NONE;
 		real sign = (real)((sample & 2) ? 1 : -1);
 		vector3f const *displacement = &offsets[sample & 1];
-		vector3f direction;
-		direction.i = displacement->i * sign + center.x - point->x;
-		direction.j = displacement->j * sign + center.y - point->y;
-		direction.k = displacement->k * sign + center.z - point->z;
+		point3f target;
+		target.x = displacement->i * sign + center.x;
+		target.y = displacement->j * sign + center.y;
+		target.z = displacement->k * sign + center.z;
 		long flags = 0x808c0f;
 		if (narrow) flags = 0x808c0d;
+		vector3f direction;
+		vector3d_from_points3d(point, &target, &direction);
 		if (function_1697c0(flags, point, &direction, NONE, NONE,
 			(s_collision_result_1697c0 *)&collision) && collision.fraction < best_fraction)
 		{
