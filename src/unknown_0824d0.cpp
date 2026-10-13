@@ -91,8 +91,8 @@ void function_824d0(const byte *input, s_weapon_activity_result *output, long ob
  *(long *)(result + 0xc) = *(const long *)(input + 0x18);
  if (*(const dword *)(input + 0x10) & 1) *(word *)(result + 0x10) |= 1; else result[0x10] &= ~1;
  if (*(const dword *)(input + 0x10) & 2) *(word *)(result + 0x10) |= 2; else result[0x10] &= ~2;
- if (*(const dword *)(input + 0x10) & 0x800) result[0x10] |= 4; else result[0x10] &= ~4;
- if (*(const dword *)(input + 0x10) & 0x4000) result[0x10] |= 8; else result[0x10] &= ~8;
+ if (*(const dword *)(input + 0x10) & 0x800) *(word *)(result + 0x10) |= 4; else result[0x10] &= ~4;
+ if (*(const dword *)(input + 0x10) & 0x4000) *(word *)(result + 0x10) |= 8; else result[0x10] &= ~8;
  *(long *)(result + 0x12) = *(long *)(object + 0x210);
  if (*(const short *)(input + 6) == *(short *)(result + 0x12))
   *(long *)(result + 0x12) = *(const long *)(input + 6);
