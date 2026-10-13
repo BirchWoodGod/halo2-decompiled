@@ -79,10 +79,12 @@ void function_14bac0();
 
 static __forceinline void players_pending_creation_process(s_record_pool_iterator * iterator_reference)
 {
-byte *player;
-	while ((player = data_iterator_next_inlined(&(*iterator_reference))) != NULL)
+	long absolute_index;
+	while ((absolute_index = data_next_absolute_index_inlined(iterator_reference->data, iterator_reference->index + 1)) != NONE)
 	{
-		long index = (*iterator_reference).datum_index;
+		byte *player = iterator_reference->data->data + iterator_reference->data->size * absolute_index;
+		long index = (*(short *)player << 16) | absolute_index;
+		iterator_reference->index = absolute_index;
 		if (!(player[2] & 2))
 		{
 			__declspec(align(8)) s_player_creation_record record;

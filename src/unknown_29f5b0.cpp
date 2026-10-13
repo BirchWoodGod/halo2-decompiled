@@ -6901,7 +6901,7 @@ void __stdcall function_2a7cd0(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44d128 = { _hs_type_void, 0, function_2a7cd0, NULL, 0 };
 
-bool function_291ea0(long arg_80f1d4, long script_index, long actor_index, real *duration);
+bool function_291ea0(long arg_80f1d4, long actor_index, long script_index, real *duration);
 
 /* 417: void (string_handle) */
 // @retail 0x2a7cf0
@@ -6914,7 +6914,7 @@ void __stdcall function_2a7cf0(short function_index, long thread_index, bool ini
 		long script_index = g_502410;
 		if (script_index != NONE && g_50240c != NONE)
 		{
-			function_291ea0(arguments[0], script_index, g_50240c, NULL);
+			function_291ea0(arguments[0], g_50240c, script_index, NULL);
 		}
 		function_209ae0(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);

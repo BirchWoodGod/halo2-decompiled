@@ -112,6 +112,7 @@ bool function_23a160(point2f const *point, real radius, short count, point2f con
 // @retail 0x14a370
 bool function_14a370(s_structure_bsp_portals_view const *bsp, point3f const *point, short portal_index, real radius)
 {
+	bool result = false;
 	s_structure_portal const *portal = &bsp->portals[portal_index];
 	plane3f const *plane = (plane3f const *)&bsp->field_18->planes[portal->plane_index];
 	real distance = plane_distance_to_point(plane, point);
@@ -150,11 +151,11 @@ bool function_14a370(s_structure_bsp_portals_view const *bsp, point3f const *poi
 			}
 			if (function_23a160(&point2d, (real)sqrt(radius * radius - distance * distance), (short)portal->vertex_count, vertices))
 			{
-				return true;
+				result = true;
 			}
 		}
 	}
-	return false;
+	return result;
 }
 
 // @retail 0x14a550

@@ -391,7 +391,7 @@ c_class_1473c9 *function_149ef3(word user_flags, long load)
 
 /* opens a screen in channel 5 */
 // @retail 0x149f1e
-c_class_1473c9 *function_149f1e(word user_flags, long load)
+c_class_1473c9 *function_149f1e(short user_flags, long load)
 {
 	s_screen_parameters parameters;
 

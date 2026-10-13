@@ -708,10 +708,13 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 		}
 	}
 
+	long segment = 0;
 	long segment_count = point_count / 2;
 	long total = 0;
+	if (segment_count > 0)
+	{
 	point3f *cursor = projected_points;
-	for (long segment = 0; segment < segment_count; segment++)
+	do
 	{
 		if (!segment_culled[segment])
 		{
@@ -722,6 +725,7 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 			for (long k = 0; k < 2; k++)
 			{
 				point3f t;
+				point3f *out = &output[k];
 				transform_point(&view->matrix, &local_points[segment * 2 + k], &t);
 				real w = t.z > -1.52588e-5f ? -1.52588e-5f : t.z;
 				real factor = -1.0f / w;
@@ -730,7 +734,7 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 				s.y = t.y * factor;
 				s.z = t.z;
 				if (projected_points)
-					output[k] = s;
+					*out = s;
 				if (bounds->x0 > s.x)
 					bounds->x0 = s.x;
 				if (s.x > bounds->x1)
@@ -745,6 +749,8 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 					bounds->z1 = s.z;
 			}
 		}
+		segment++;
+	} while (segment < segment_count);
 	}
 
 	if (projected_count)

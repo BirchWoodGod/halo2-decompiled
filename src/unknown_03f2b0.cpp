@@ -234,9 +234,9 @@ long g_509440;
 void function_3fd70(void)
 {
 	long j = 0;
+	g_50943c = j;
 	for (long i = 0; i < 16; ++i)
 		g_4c6b00[7].values[i] = NONE;
-	g_50943c = j;
 	for (; j < 8; ++j)
 	{
 		g_4c6b00[j].index = NONE;
@@ -435,7 +435,11 @@ bool function_3e320(long tag, byte const *indices)
     {
         long index = indices[i];
         if (index != 255)
-            result &= function_12de70(&data->sections[index].block, 3);
+        {
+            byte *section = (byte *)data->sections + index * sizeof(s_geometry_section);
+            if (function_12de70((s_geometry_block_info *)(section + 0x38), 3) == false)
+                result = false;
+        }
     }
     return result;
 }

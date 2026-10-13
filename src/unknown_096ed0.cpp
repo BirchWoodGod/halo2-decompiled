@@ -577,16 +577,16 @@ bool c_aggregate_450cf4::v4(long a1, s_bitstream *out, long a3, long reserved_bi
 	{
 		for (long i = 0; i < total; i++)
 		{
-			long *local_0 = &list_raw[i].v[2];
-			long which = local_0[-2];
-			if (local_0[0] <= budget)
+			long *local_0 = &list_raw[i].v[1];
+			long which = local_0[-1];
+			if (local_0[1] <= budget)
 			{
 				c_handle_table_450cd0 *child = children[which];
 				s_bitstream *stream = &streams[which];
 				if (child != 0)
 				{
 					long before = stream->bit_position;
-					child->v3(local_0[2], local_0[1], source_value, a1, (long)stream, (stream->size_in_bytes << 3) - before - budget);
+					child->v3(local_0[3], local_0[2], source_value, a1, (long)stream, (stream->size_in_bytes << 3) - before - budget);
 					budget += before - stream->bit_position;
 					if (budget <= 0)
 						break;

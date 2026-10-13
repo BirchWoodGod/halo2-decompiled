@@ -248,7 +248,7 @@ void c_class_2c9e69::select_last_variant()
 void c_class_2c9e69::v20(c_class_1a2c81 *item, long unused)
 {
 	long datum = ((c_class_14750b *)item)->value70;
-	c_text_widget_45a5e0 *text = (c_text_widget_45a5e0 *)item->find_child(6, 0, false);
+	c_text_widget_45a5e0 *volatile text = (c_text_widget_45a5e0 *)item->find_child(6, 0, false);
 	c_class_1a2c81 *icon = item->find_child(8, 2, false);
 
 	if (datum != NONE)
@@ -257,9 +257,10 @@ void c_class_2c9e69::v20(c_class_1a2c81 *item, long unused)
 
 		if (entry->variant == NONE)
 		{
-			if (text)
+			c_text_widget_45a5e0 *empty_text = text;
+			if (empty_text)
 			{
-				text->function_253b1a(0x120001db);
+				empty_text->function_253b1a(0x120001db);
 			}
 		}
 		else if (text)

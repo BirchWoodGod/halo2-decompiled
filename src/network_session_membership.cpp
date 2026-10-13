@@ -64,13 +64,21 @@ void network_session_add_player(c_class_58d20 *session, long member_index, const
 	}
 }
 
+PRIVATE __forceinline bool function_60201(long arg_0)
+{
+	if (arg_0 == 5 || arg_0 == 6 || arg_0 == 7 || arg_0 == 8)
+		return true;
+	volatile long local_0 = arg_0;
+	return false;
+}
+
 // @retail 0x60200
 void network_session_remove_player(c_class_58d20 *session, long player_index)
 {
 	s_network_session_player *player = &session->players[player_index];
 
 	long state = session->state;
-	if (SESSION_STATE_IS_HOSTING(state))
+	if (function_60201(state))
 	{
 		s_network_session_reservation *reservation = 0;
 		if (session_find_reservation(session, player, &reservation))
@@ -391,6 +399,7 @@ void network_session_enter_state_5(c_class_58d20 *session)
 	long state = session->state;
 	if (!SESSION_STATE_IS_HOSTING(state))
 	{
+		volatile long local_0 = state;
 		bool any = false;
 		network_session_reset_membership(session, true);
 		for (long i = 0; i < session->member_count; i++)
@@ -682,11 +691,12 @@ long function_1931a0(long count, s_surface_description *p);
 // @retail 0x63220
 long session_summary_get_player_value(s_session_summary *summary, long player_index, long variant_index)
 {
+	const long *local_0 = &variant_index;
 	long value = summary->player_values248[player_index];
 	if (value != NONE)
 	{
-		s_surface_description *variant = function_192e60(variant_index);
-		if (variant)
+		s_surface_description *variant = function_192e60(*(const volatile long *)local_0);
+		if (*(const volatile long *)local_0)
 		{
 			long highest = session_summary_get_machine_highest_value(summary, summary->player_machines[player_index]);
 			if (highest != NONE)

@@ -7,9 +7,6 @@ struct s_damage_info;
 struct s_damage_region_accumulator;
 struct s_damage_object;
 
-/* sets a region's permutation */
-// @stub 0xe6460
-void __stdcall function_e6460(long object_index) { }
 struct s_type_1e6529;
 #include "unknown_0259d0.h"
 /* the objects in a sphere */

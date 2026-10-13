@@ -242,6 +242,7 @@ long function_132b80(s_bit_vector_pool *data, long mode, s_132b80_frustum const 
 	long cluster, void *filter, point3f const *center, real radius, bool use_plane,
 	real plane_offset, long count, dword flags)
 {
+	long const *local_0 = &cluster;
 	data->location.cluster_index = cluster;
 	data->location.bsp_index = g_4686c4;
 	data->location.leaf_index = NONE;
@@ -342,7 +343,7 @@ dword function_132b10(bool b, bool d, bool c, bool f, bool g, bool e, bool a)
 
 /* a 16 bit real: sign, ten bits of mantissa, then five of exponent */
 // @retail 0x135880
-real function_135880(word value)
+inline real function_135880(word value)
 {
 	union s_135881
 	{
@@ -1106,6 +1107,61 @@ void function_132900(s_bit_vector_pool *arg_1, s_sort_context const *arg_2, s_so
 			local_2++;
 		}
 	}
+}
+
+struct s_2cb30_state;
+struct s_2cb30_globals
+{
+	long current;
+	long previous;
+	s_2cb30_state *state;
+	byte unknown0c[0x9b0 - 0xc];
+};
+
+extern s_2cb30_globals g_4c0b78;
+extern bool g_4e7c18;
+bool g_4e0304;
+struct s_view_collection_1733e0;
+void __stdcall function_173130(long camera_count, byte *cameras, long cluster_index, s_view_collection_1733e0 *collection);
+void function_1733e0(s_view_collection_1733e0 *collection, long cluster_index, byte const *camera);
+
+// @retail 0x1320f0
+s_bit_vector_pool *function_1320f0(long mode, long count, bool use_plane, long flags, byte const *frusta,
+	byte const *center, real radius, void *filter, real plane_offset, long cluster)
+{
+	s_bit_vector_pool *data = &g_547f88;
+	if (mode)
+		data = &g_54aa68;
+	long type = function_132b80(data, mode, (s_132b80_frustum const *)frusta, cluster, filter,
+		(point3f const *)center, radius, use_plane, plane_offset, count, flags);
+	g_4c0b78.state = (s_2cb30_state *)data;
+	function_1348e0(data);
+	switch (type)
+	{
+	case 0:
+		function_173130(count, (byte *)frusta, data->location.cluster_index, (s_view_collection_1733e0 *)data->context);
+		if (data->filter)
+			function_132900(data, (s_sort_context const *)data->context, *(s_sort_context const **)data->filter);
+		break;
+	case 1:
+		function_132d60((s_132d60 *)data);
+		break;
+	case 2:
+		function_1733e0((s_view_collection_1733e0 *)data->context, cluster, frusta);
+		break;
+	}
+	g_4e7c1c++;
+	g_4e7c18 = true;
+	function_134390(data);
+	g_4e7c18 = false;
+	g_4de2fc++;
+	g_4de2f8 = true;
+	g_4e0308++;
+	g_4e0304 = true;
+	function_132220(data);
+	g_4de2f8 = false;
+	g_4e0304 = false;
+	return data;
 }
 
 s_visibility_pool_storage g_visibility_pool_storage;

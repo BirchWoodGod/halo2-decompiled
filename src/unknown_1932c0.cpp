@@ -748,8 +748,8 @@ void function_212f40(long preset, s_game_variant *variant);
 // @retail 0x193010
 void function_193010(s_game_variant_block *block, long type)
 {
-    s_map_preset_193010 const *presets;
-    long count;
+    s_map_preset_193010 const *presets = NULL;
+    long count = 0;
     memset(block, 0, sizeof(*block));
     if (type == 2)
     {
@@ -776,10 +776,8 @@ void function_193010(s_game_variant_block *block, long type)
         presets = g_445218;
         count = 5;
     }
-    else
+    if (presets)
     {
-        goto fallback;
-    }
     block->map_count = count;
     for (long i = 0; i < count; i++)
     {
@@ -803,13 +801,15 @@ void function_193010(s_game_variant_block *block, long type)
         *(dword *)(map->settings + 0x48) &= ~0x20;
         *(long *)(map->settings + 0x58) = 0;
     }
-    return;
-fallback:
+    }
+    else
+    {
     block->maps[0].map_id = 30000;
     block->map_count = 1;
     function_19d220((s_game_variant *)block->maps[0].settings, 4);
     *(long *)(block->maps[0].settings + 0x50) = 5;
     *(dword *)(block->maps[0].settings + 0x48) &= ~0x10;
+    }
 }
 
 struct s_built_variant;

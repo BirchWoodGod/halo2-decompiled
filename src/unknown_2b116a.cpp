@@ -4156,7 +4156,7 @@ void c_player_profile_edit_list::v20(c_class_1a2c81 *item, long unused)
 	}
 }
 
-c_class_1473c9 *function_149f1e(word user_flags, long load);
+c_class_1473c9 *function_149f1e(short user_flags, long load);
 
 /* opens the chosen part of the profile editor */
 // @retail 0x2b79f9
@@ -5506,7 +5506,7 @@ void __stdcall function_2c52e7(char const *map_name)
 	else progress = 1.0f;
 	// Read music through the existing canonical member const view at its later use.
 	real target = main_menu_music_silence_fraction((s_main_menu_music const *)&g_54d598.m1248) * 0.3f + progress * 0.7f;
-	if (!(target < g_509334))
+	if (target >= g_509334)
 	{
 		g_509334 += step;
 		if (!(target > g_509334)) g_509334 = target;

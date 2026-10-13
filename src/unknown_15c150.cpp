@@ -311,7 +311,8 @@ void function_15c6f0()
 					long index = (salt << 16) | i;
 					byte *statistics = transition_statistics(globals);
 					short score = *(short *)(statistics + (index & 0xffff) * 0x1c + 6);
-					long value = function_23f260(g_4e6948->flag1128 != 0, index, NONE) / 2;
+					bool mode = g_4e6948->flag1128 != 0;
+					long value = function_23f260(mode, index, NONE) / 2;
 					function_196ab0(i, score, (short)value);
 					if (!(player[2] & 2))
 					{
