@@ -123,10 +123,10 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	memcpy(&speed.shake, g_4686d4, sizeof(speed.shake));
 	speed.type = 0;
 	speed.amount = 0.0f;
-	long object_index = NONE;
+	volatile long object_index = NONE;
 	g_4ba050 = view->player_index;
-	struct location_indices { long cluster, leaf; } location = {
-		g_4ba054[view->player_index], g_4ba064[view->player_index] };
+	struct location_indices { long leaf, cluster; } location = {
+		g_4ba064[view->player_index], g_4ba054[view->player_index] };
 	bool invalid;
 	if (function_2b720(&view->position, &location.cluster, &location.leaf))
 	{
