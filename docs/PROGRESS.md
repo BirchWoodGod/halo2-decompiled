@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8252 functions match
+
+```
+matched 8252 of 11318 game functions (1041868 of 2784283 bytes, 37.42%)
+```
+
+9 new matches, none lost:
+- Claude lane 1 round 13 (Opus): `0x1f2b0`, `0xb4050` (in its own SSE file: retail's code uses `cmov`), `0x148d0d`, `0x231ae9` and `0x23f260`
+- Deep lane 2 round 41: `0x2c8159`, `0xb2ea0` and `0xd2a50`, from 92 to 98 differences
+- Deep lane 3 round 52: `0x1f490`
+
 ## 2026-10-13: 8243 functions match
 
 ```
