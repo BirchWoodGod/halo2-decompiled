@@ -668,7 +668,11 @@ void function_1990b0(long *device_count, long *devices, long *entry_count, long 
 			if (input_device(i)->active)
 				devices[(*device_count)++] = i;
 		}
-		sort_4byte(devices, *device_count, &entries, function_199010, 0);
+		{
+			long temporary;
+
+			sort_4byte(devices, *device_count, &temporary, function_199010, 0);
+		}
 
 		*entry_count = 0;
 		for (i = 0; i < 16; i++)
@@ -676,7 +680,11 @@ void function_1990b0(long *device_count, long *devices, long *entry_count, long 
 			if (g_511a74[i].active)
 				entries[(*entry_count)++] = i;
 		}
-		sort_4byte(entries, *entry_count, &entries, function_199060, 0);
+		{
+			long temporary;
+
+			sort_4byte(entries, *entry_count, &temporary, function_199060, 0);
+		}
 	}
 	else
 	{

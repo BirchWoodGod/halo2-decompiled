@@ -1060,7 +1060,12 @@ void function_16e330(long tag_index, long section_index)
 
 							for (bitmap_index = 0; bitmap_index < group->bitmap_count; bitmap_index++)
 							{
-								bitmap_predict_inline(&group->bitmaps[bitmap_index], 0xe);
+								s_bitmap_predict_view *bitmap = &group->bitmaps[bitmap_index];
+
+								if (bitmap)
+								{
+									bitmap_predict_inline(bitmap, 0xe);
+								}
 							}
 						}
 					}
