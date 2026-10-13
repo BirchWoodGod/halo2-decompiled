@@ -412,7 +412,7 @@ real function_30bf0(vector3f *v);
 void function_baff0(long object_index, point3f const *origin, point3f *arg_149545, vector3f *normal);
 bool function_d6f90(long object_index, point3f const *point, s_type_1e6529 const *data);
 long unit_get_player_index(long unit_index);
-void __stdcall function_153d10(short team, long definition_index, void *a, void *b, long c, real d, real e, long f);
+void __stdcall function_153d10(long team, long definition_index, void *a, void *b, long c, real d, real e, bool f);
 bool function_d74b0(byte const *owner);
 
 void __stdcall function_184250(s_type_1e6529 const *data);
