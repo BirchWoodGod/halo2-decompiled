@@ -2326,15 +2326,15 @@ void function_177d10(s_effect_datum *effect, dword *seed, vector3f const *forwar
 		real s = (real)sin(angle);
 		real c = (real)cos(angle);
 		vector3f axis = g_4417f0[random_index(seed, 0x402)];
-		real t = (direction->i * axis.i + direction->j * axis.j + direction->k * axis.k) * (1.0f - c);
-		vector3f cross;
+		real axis_k = axis.k;
+		real t = (direction->i * axis.i + direction->j * axis.j + direction->k * axis_k) * (1.0f - c);
+		real cross_j = direction->k * axis.i - direction->i * axis_k;
+		real cross_k = direction->i * axis.j - direction->j * axis.i;
+		real cross_i = direction->j * axis_k - direction->k * axis.j;
 
-		cross.j = direction->k * axis.i - direction->i * axis.k;
-		cross.i = direction->j * axis.k - direction->k * axis.j;
-		cross.k = direction->i * axis.j - direction->j * axis.i;
-		direction->i = direction->i * c + axis.i * t - cross.i * s;
-		direction->j = direction->j * c + axis.j * t - cross.j * s;
-		direction->k = direction->k * c + axis.k * t - cross.k * s;
+		direction->i = direction->i * c + axis.i * t - cross_i * s;
+		direction->j = direction->j * c + axis.j * t - cross_j * s;
+		direction->k = direction->k * c + axis_k * t - cross_k * s;
 	}
 	velocity->i = direction->i * speed;
 	velocity->j = direction->j * speed;
