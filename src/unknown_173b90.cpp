@@ -312,7 +312,7 @@ void __stdcall function_174990(real dt)
 void particle_system_link(s_particle_system_datum *particle_system, long *last_index, long *first_index)
 {
 	s_record_pool *data = g_510c74;
-	long particle_system_index = (particle_system->salt << 16) | (particle_system - (s_particle_system_datum *)data->data);
+	long particle_system_index = ((dword)particle_system->salt << 16) | (particle_system - (s_particle_system_datum *)data->data);
 
 	particle_system->next_index = NONE;
 	if (*first_index == NONE)
@@ -322,7 +322,7 @@ void particle_system_link(s_particle_system_datum *particle_system, long *last_i
 		s_particle_system_datum *last = DATUM(data, s_particle_system_datum, *last_index);
 
 		last->next_index = particle_system_index;
-		particle_system->previous_index = (last->salt << 16) | (last - (s_particle_system_datum *)data->data);
+		particle_system->previous_index = ((dword)last->salt << 16) | (last - (s_particle_system_datum *)data->data);
 		*last_index = particle_system_index;
 	}
 	else

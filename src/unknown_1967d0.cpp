@@ -35,14 +35,12 @@ void function_1967d0(long a, long c, long b, long delta)
 		if (c != NONE)
 		{
 			s_input_counter *counter = &g_511bf4.counters[0][c * 0x2d + b];
-			word raw = *(word const *)counter;
-			long value = raw & 0x7fff;
-			value += delta;
+			long value = counter->value + delta;
 			if (value < minimum)
 				value = minimum;
 			else if (value > maximum)
 				value = maximum;
-			*(word *)counter = raw ^ ((raw ^ value) & 0x7fff);
+			counter->value = value;
 		}
 	}
 }
