@@ -161,7 +161,8 @@ bool __stdcall function_14a8e0(s_structure_collision_result const *collision,
 bool function_14b120(void *source, void *surface)
 {
     void *const *source_reference = &source;
-    bool volatile result = false;
+    bool result = false;
+    bool *const result_reference = &result;
     byte local_collision[0x5c];
     *(short *)(local_collision + 0x24) = NONE;
     if (!g_4e0344 || g_4e0344->count <= 0 || !g_4e0348)
@@ -186,9 +187,9 @@ bool function_14b120(void *source, void *surface)
         else if (function_bf9a0(object_index, (long *)((byte *)triangle + 0xc),
             (long *)((byte *)triangle + 0x10)))
         {
-            result = function_14a8e0((s_structure_collision_result const *)*source_reference,
+            *result_reference = function_14a8e0((s_structure_collision_result const *)*source_reference,
                 *(long *)((byte *)triangle + 0xc), triangle);
-            return result;
+            return *result_reference;
         }
         if (!excluded)
         {
@@ -199,10 +200,8 @@ bool function_14b120(void *source, void *surface)
         }
     }
     if (!excluded && found)
-        result = structure_get_lightmap_triangle(collision, triangle);
-    if (result)
-    	return true;
-    return false;
+        *result_reference = structure_get_lightmap_triangle(collision, triangle);
+    return *result_reference;
 }
 
 struct s_16e1b0_list;
