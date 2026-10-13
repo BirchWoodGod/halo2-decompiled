@@ -503,6 +503,7 @@ void function_212f40(long preset, s_game_variant *variant)
 
 extern bool g_55c14c;
 void function_125d60(void);
+void function_120d50(bool volatile *done, bool idle);
 
 // @retail 0x2160b0
 bool function_2160b0(long file_index, char *path)
@@ -517,14 +518,7 @@ bool function_2160b0(long file_index, char *path)
         } location;
         location.path[0] = 0;
         location.name[0] = 0;
-        if (!g_55c14c)
-        {
-            while (!g_55c14c)
-            {
-                SwitchToThread();
-                function_125d60();
-            }
-        }
+        function_120d50(&g_55c14c, true);
         if (function_216800(file_index, &location))
         {
             strncpy(path, location.path, 0x100);
@@ -555,16 +549,15 @@ void __stdcall function_215e60(long file_index)
     (void)&file_index;
     if (file_index != NONE)
     {
-        if (!g_55c14c)
-        {
-            while (!g_55c14c)
-            {
-                SwitchToThread();
-                function_125d60();
-            }
-        }
+        function_120d50(&g_55c14c, true);
         long unit = (file_index >> 4) & 15;
-        s_saved_game_file_location location;
+        struct
+        {
+            s_saved_game_file_location location;
+            byte unknown40[4];
+            wchar_t name[128];
+        } local_0;
+        s_saved_game_file_location &location = local_0.location;
         location.name[0] = 0;
         location.display_name[0] = 0;
         if (function_216800(file_index, &location))
@@ -575,7 +568,7 @@ void __stdcall function_215e60(long file_index)
                 char drive;
                 if (function_1249f0(unit, &drive))
                 {
-                    wchar_t name[128];
+                    wchar_t *name = local_0.name;
                     name[0] = 0;
                     function_216da0(name, file_index & 15, location.display_name, location.language);
                     XDeleteSaveGame(function_216400(unit, root, 8), name);
@@ -603,74 +596,73 @@ long function_215c00(long type, wchar_t const *display_name)
     long result = NONE;
     long const *type_reference = &type;
     (void)&display_name;
-    if (!g_55c14c)
-    {
-        while (!g_55c14c)
-        {
-            SwitchToThread();
-            function_125d60();
-        }
-    }
+    function_120d50(&g_55c14c, true);
     if (g_51ea14)
     {
         long count = function_217590(0);
-        if ((g_51ea14 && *(long *)((byte *)g_51ea14 + 0xbef8) >= 0x1000) || count >= 0x1000)
+        if ((!g_51ea14 || *(long *)((byte *)g_51ea14 + 0xbef8) < 0x1000) && count < 0x1000)
         {
-            g_55c154 = 1;
-            goto done;
-        }
-        long index = g_55c280;
-        wchar_t name[128];
-        name[0] = 0;
-        if (function_216da0(name, (*type_reference), display_name, index))
-        {
-            char directory[256] = "";
-            char root[8];
-            function_216400(0, root, 8);
-            if (!XCreateSaveGame(root, name, 1, 0, directory, sizeof(directory)))
+            long index = g_55c280;
+            wchar_t name[128];
+            name[0] = 0;
+            if (function_216da0(name, (*type_reference), display_name, index))
             {
-                s_saved_game_file_location location;
-                memset(&location, 0, sizeof(location));
-                char path[256];
-                path[0] = 0;
-                wcsncpy(location.display_name, display_name, 16);
-                location.display_name[16] = 0;
-                location.type = (*type_reference);
-                location.language = (char)index;
-                strncpy(location.name, directory, sizeof(location.name));
-                location.name[sizeof(location.name) - 1] = 0;
-                function_216d70(path, location.name, (*type_reference));
-                struct
+                char directory[256] = "";
+                char root[8];
+                function_216400(0, root, 8);
+                if (!XCreateSaveGame(root, name, 1, 0, directory, sizeof(directory)))
                 {
-                    dword signature;
-                    word flags;
-                    short location;
+                    struct
+                    {
+                        s_saved_game_file_location location;
+                        byte unknown40[4];
+                    } local_0;
+                    s_saved_game_file_location &location = local_0.location;
+                    memset(&location, 0, sizeof(location));
                     char path[256];
-                    __int64 state;
-                } file;
-                if (function_136710((s_type_acf665 *)&file, false, path) &&
-                    function_1367d0((s_type_acf665 *)&file) &&
-                    function_216f80((*type_reference), (s_saved_game_file_location *)directory) &&
-                    function_216990(0, (c_location_record const *)&location, &index))
-                {
-                    long generation = *(long *)((byte *)g_51ea14 + 0x4befc);
-                    result = (((generation & 0x1ff) << 14 | (index & 0x1fff)) << 8) | ((*type_reference) & 15);
+                    path[0] = 0;
+                    wcsncpy(location.display_name, display_name, 16);
+                    location.display_name[16] = 0;
+                    location.type = (*type_reference);
+                    location.language = (char)index;
+                    strncpy(location.name, directory, sizeof(location.name));
+                    location.name[sizeof(location.name) - 1] = 0;
+                    function_216d70(path, location.name, (*type_reference));
+                    struct
+                    {
+                        dword signature;
+                        word flags;
+                        short location;
+                        char path[256];
+                        __int64 state;
+                    } file;
+                    if (function_136710((s_type_acf665 *)&file, false, path) &&
+                        function_1367d0((s_type_acf665 *)&file) &&
+                        function_216f80((*type_reference), (s_saved_game_file_location *)directory) &&
+                        function_216990(0, (c_location_record const *)&location, &index))
+                    {
+                        long generation = *(long *)((byte *)g_51ea14 + 0x4befc);
+                        result = (((generation & 0x1ff) << 14 | (index & 0x1fff)) << 8) | ((*type_reference) & 15);
+                    }
+                    else
+                    {
+                        wchar_t remove_name[128];
+                        remove_name[0] = 0;
+                        function_216da0(remove_name, (*type_reference), display_name, location.language);
+                        XDeleteSaveGame(root, remove_name);
+                    }
                 }
                 if (result == NONE)
-                {
-                    wchar_t remove_name[128];
-                    remove_name[0] = 0;
-                    function_216da0(remove_name, (*type_reference), display_name, location.language);
-                    XDeleteSaveGame(root, remove_name);
-                }
+                    g_55c154 = saved_game_storage_has_free_blocks(saved_game_file_type_size_in_blocks((*type_reference))) ? 4 : 2;
+                else
+                    g_55c154 = 0;
             }
-            if (result == NONE)
-                g_55c154 = saved_game_storage_has_free_blocks(saved_game_file_type_size_in_blocks((*type_reference))) ? 4 : 2;
-            else
-                g_55c154 = 0;
+        }
+        else
+        {
+            g_55c154 = 1;
         }
     }
-done:
     return result;
 }
 
