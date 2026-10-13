@@ -585,9 +585,13 @@ static inline s_long_pair *session_get_data_4999(c_class_58d20 *session)
 s_long_pair *network_session_interface_get_data_4999(void)
 {
 	s_long_pair *result = 0;
-	c_class_58d20 *session = network_session_get_live();
-	if (session)
-		result = session_get_data_4999(session);
+	if (g_527330.initialized)
+	{
+		long state = ((c_class_58d20 *)g_527330.session_a)->state;
+		c_class_58d20 *session = (c_class_58d20 *)g_527330.session_a;
+		if (state && SESSION_STATE_IS_LIVE(state) && session->flag4998)
+			result = &session->data4999;
+	}
 	return result;
 }
 
@@ -977,7 +981,7 @@ bool network_session_interface_start_countdown(long user_index, bool start, long
 
 /* ---- the local users' players in a session (lane D, round 4) ---- */
 
-bool network_session_player_add(c_class_58d20 *session, const byte *properties, const dword *identity, long slot, long unknown18, long unknownac);
+bool network_session_player_add(c_class_58d20 *session, long slot, const dword *identity, long unknown18, const byte *properties, long unknownac);
 bool network_session_player_set_properties(c_class_58d20 *session, const byte *properties, long slot, long volatile unknown0c, long unknowna0);
 bool network_session_player_remove(c_class_58d20 *session, long slot);
 
@@ -1013,7 +1017,7 @@ void network_session_interface_add_user(c_class_58d20 *session, long user_index)
 	}
 	else if (elapsed >= g_network_configuration.valuec84)
 	{
-		if (network_session_player_add(session, user->properties, (const dword *)&user->xuid, user_index, user->unknown10, user->unknowna4))
+		if (network_session_player_add(session, user_index, (const dword *)&user->xuid, user->unknown10, user->properties, user->unknowna4))
 			user->unknowna8[owner] = session_interface_time_get();
 		else
 			user->unknowncc[owner] = true;
