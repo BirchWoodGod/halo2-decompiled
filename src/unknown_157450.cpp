@@ -2062,7 +2062,7 @@ void function_15d6c0(long player_index, long maximum, long minimum)
 }
 
 // @retail 0x15a090
-long function_15a090(short const *types, long type, long count)
+long function_15a090(long type, long count, short const *types)
 {
 	long const *count_reference = &count;
 	long result = NONE;
@@ -2889,12 +2889,34 @@ bool function_15dd40(long player_index)
 	return result;
 }
 
+/* the test of function_15b2f0, which 0x15ba20 inlines */
+struct s_engine_running_state
+{
+	byte unknown00[0x6c];
+	short w6c;
+	byte unknown6e[0xc04 - 0x6e];
+	long lc04;
+	byte unknownc08[0xc14 - 0xc08];
+	long engine_index;
+};
+
+static inline bool engine_running_inline()
+{
+	s_engine_running_state *g = (s_engine_running_state *)g_4e9ae8;
+	bool mode_gate_open = false;
+
+	if (g_55e4d0[g->engine_index] && g->w6c == 1 && (g_4e6948->mode == 4 || g->lc04 == 1))
+		mode_gate_open = true;
+
+	return mode_gate_open;
+}
+
 // @retail 0x15ba20
 void function_15ba20(void)
 {
 	long winner = NONE;
 	bool few_teams = false;
-	if (function_15b2f0() && function_158d20(&winner, &few_teams))
+	if (engine_running_inline() && function_158d20(&winner, &few_teams))
 		function_15b3a0(winner, few_teams);
 }
 
@@ -4277,16 +4299,6 @@ void __stdcall function_15bb20(long player_index)
 long function_23f360(long mode, long team);
 long function_23f260(long mode, long player_index, long value);
 
-PRIVATE __forceinline long sweep_rank_mode()
-{
-    long mode;
-    if (g_4e6948->flag1128)
-        mode = 1;
-    else
-        mode = 0;
-    return mode;
-}
-
 // @retail 0x158e90
 long function_158e90(long team)
 {
@@ -4321,7 +4333,8 @@ bool function_158f50()
     while (function_19f240((long *)&iterator))
     {
         ++count;
-        if (function_23f260(sweep_rank_mode(), iterator.index, NONE) / 2 > 0)
+        bool flag = g_4e6948->flag1128;
+        if (function_23f260(flag != 0, iterator.index, NONE) / 2 > 0)
         {
             result = false;
             break;
@@ -4918,7 +4931,7 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
         if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
         c_engine_peer *engine = game_engine_get();
         long type = engine ? engine->p0() : NONE;
-        if (function_15a090((short *)(placement + 4), type, 4) == NONE) continue;
+        if (function_15a090(type, 4, (short *)(placement + 4)) == NONE) continue;
         long index = entries[i].index;
         byte *object = NULL;
         if (index != NONE)
