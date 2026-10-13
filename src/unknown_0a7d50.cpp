@@ -36,10 +36,9 @@ struct s_event_object_header
 bool function_a76b0(long index, long which);
 long function_a5930(long index);
 
-PRIVATE __forceinline long event_player(long index)
+PRIVATE __forceinline long event_player(long index, long mode)
 {
     long player = NONE;
-    long mode = g_4e6948->mode;
     if (mode >= 4 && mode <= 5)
     {
         byte *object = EVENT_OBJECT(index);
@@ -147,7 +146,7 @@ void function_a7d50(long index, long group, long target, short node, point3f con
             {
                 long player;
                 if (mode != 4)
-                    player = event_player(subject);
+                    player = event_player(subject, mode);
                 else
                 {
                     if (!function_a76b0(subject, 1))
@@ -206,10 +205,12 @@ void function_a85c0(long index, s_collision_result_1697c0 const *collision,
         if (*(long *)(object + 0xd4) != NONE)
         {
             byte const *input = (byte const *)collision;
-            long target = *(long *)(input + 0x40);
-            if (*(long *)input == 4 && target != NONE && *(long *)(EVENT_OBJECT(target) + 0xd4) != NONE)
+            long target;
+            if (*(long *)input == 4 && (target = *(long *)(input + 0x40)) != NONE && *(long *)(EVENT_OBJECT(target) + 0xd4) != NONE)
             {
-                s_collision_target_event_data data;
+                struct { long target; s_collision_target_event_data data; } packet;
+                s_collision_target_event_data &data = packet.data;
+                packet.target = target;
                 data.definition = *(long *)object;
                 data.direction = *direction;
                 data.first_scale = first_scale;
@@ -219,7 +220,7 @@ void function_a85c0(long index, s_collision_result_1697c0 const *collision,
                 data.material = *(short const *)(input + 0x24);
                 data.node = *(short const *)(input + 0x46);
                 data.flag = flag;
-                function_b5a70(NONE, 6, 1, (long)&target, sizeof(data), &data, g_4ceddc);
+                function_b5a70(NONE, 6, 1, (long)&packet.target, sizeof(data), &data, g_4ceddc);
             }
             else
             {

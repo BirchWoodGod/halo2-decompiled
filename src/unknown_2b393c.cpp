@@ -173,7 +173,7 @@ dword friend_get_flags(XUID const *xuid)
 }
 #include <wchar.h>
 struct s_screen_view_2b39;
-long function_2b3923(s_screen_view_2b39 *screen);
+inline __declspec(noinline) long function_2b3923(s_screen_view_2b39 *screen);
 struct s_name_buffer;
 void function_08cc20(s_name_buffer *buffer, wchar_t const *name);
 bool network_session_interface_has_user(XUID const *xuid);
