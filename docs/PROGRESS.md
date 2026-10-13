@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8369 functions match
+
+```
+matched 8369 of 11318 game functions (1072398 of 2784283 bytes, 38.52%)
+```
+
+16 new matches, none lost:
+- Machine 3 lane P round 22 (#425): `0x137bd0`, which unblocked machine 1's `0x3b9d0`, `0x40f60` and `0xd4bc0`, plus four more
+- Machine 3 Codex lanes: B round 25 (#429) +2, D lower round 25 (#427) +2, Y round 20 (#426) +1, AC round 30 (#428) +1
+- Deep lane 2 round 43: `0x1fb360` (a blocker machine 3 handed over) and `0x1e68a0`
+
 ## 2026-10-13: 8353 functions match
 
 ```
