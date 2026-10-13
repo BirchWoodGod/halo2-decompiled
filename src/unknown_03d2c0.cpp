@@ -87,7 +87,8 @@ void function_3d2c0()
         if (function_badc0(target, 3)) object_index = target;
     }
     g_4c1bd0 = object_index;
-    if (object_index == NONE)
+    // Keep the later published-object read separate from the local selection.
+    if (*(long const *)&g_4c1bd0 == NONE)
     {
         g_4c1bd0 = g_4b72c0;
         if (g_4c1bd0 == NONE && g_4b9ed8 != NONE && !function_155760(g_4b9ed8))
@@ -129,12 +130,12 @@ s_lighting_record *function_3db00(long object_index, real priority)
     }
     byte *parent = ((s_3dd10_object_header *)g_4e0300->data)[parent_index & 0xffff].object;
     byte *definition = g_4e3b44[*(long *)parent & 0xffff].bytes;
-    bool special = (bool)(((*(dword *)(parent + 4)) >> 13) & 1) || (bool)((definition[2] >> 1) & 1);
+    long special = 0;
+    if ((bool)(((*(dword *)(parent + 4)) >> 13) & 1)) special = 1;
+    if ((bool)((definition[2] >> 1) & 1)) special |= 1;
     s_effect_color_query query;
     function_d1850(parent_index, 1, &query);
-    s_lighting_record lighting;
-    function_d4080(&query, *(short *)definition, &lighting, special);
-    g_55ee60 = lighting;
+    function_d4080(&query, *(short *)definition, &g_55ee60, special);
     return &g_55ee60;
 }
 // @retail 0x3ddd0
