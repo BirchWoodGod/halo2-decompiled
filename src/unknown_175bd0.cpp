@@ -328,7 +328,7 @@ bool function_179730(long effect_index);
 bool function_179810(long effect_index);
 bool function_175f50(long object_index);
 void function_17b750(long *values, long value);
-void function_178360(long effect_index, long unknown18, long object_index, long unknown58, s_effect_marker *markers, long marker_count);
+void function_178360(long effect_index, long object_index, long unknown58, s_effect_marker *markers, long marker_count, long unknown18);
 bool function_1789f0(s_effect_datum *effect);
 void function_17b5d0(s_effect_datum *effect, long object_index, s_effect_parameters *parameters, bool search);
 void function_177310(long effect_index);
@@ -708,11 +708,13 @@ void function_177260(long effect_index, bool flag)
 		function_1771a0(effect);
 		if (TEST_FIELD_BIT(effect->flag1))
 		{
+			word *flags = &effect->flags;
+
 			if (flag)
-				((byte *)effect)[2] |= 0x10;
+				*flags |= 0x10;
 			else
-				((byte *)effect)[2] &= ~0x10;
-			((byte *)effect)[2] |= 4;
+				*flags &= ~0x10;
+			*flags |= 4;
 		}
 		else
 		{
@@ -1309,7 +1311,7 @@ long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 			if (effect->object_index != NONE && g_510c7c && function_175f50(effect->object_index))
 				effect->flag5 = true;
 			function_17b750(effect->location_indices, NONE);
-			function_178360(effect_index, parameters->unknown18, effect->object_index, effect->unknown58, parameters->markers, parameters->marker_count);
+			function_178360(effect_index, effect->object_index, effect->unknown58, parameters->markers, parameters->marker_count, parameters->unknown18);
 			if (!TEST_FIELD_BIT(parameters->attached))
 				function_1789f0(effect);
 			if (TEST_FIELD_BIT(definition->flag3) || TEST_FIELD_BIT(definition->flag4))
@@ -1327,8 +1329,7 @@ long __stdcall effect_new_from_parameters(s_effect_parameters *parameters)
 			else
 				function_179850(effect_index, 0.0f);
 			g_510c78 = 0;
-			if (!record_pool_lookup(g_4ea93c, effect_index))
-				result = NONE;
+			result = record_pool_lookup(g_4ea93c, effect_index) ? effect_index : NONE;
 		}
 	}
 	return result;
@@ -1586,7 +1587,7 @@ static inline long effect_marker_find(s_effect_marker const *markers, long marke
 }
 
 // @retail 0x178360
-void function_178360(long effect_index, long unknown18, long object_index, long unknown58, s_effect_marker *markers, long marker_count)
+void function_178360(long effect_index, long object_index, long unknown58, s_effect_marker *markers, long marker_count, long unknown18)
 {
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 	long default_marker_index = effect_marker_find(markers, marker_count, 0x30000d9);
@@ -2873,7 +2874,7 @@ void function_1776e0(long unknown58, long object_index, bool attach)
 			if (effect->object_index == object_index && TEST_FIELD_BIT(effect->flag7))
 			{
 				effect->unknown58 = unknown58;
-				function_178360(effect_index, NONE, effect->object_index, unknown58, 0, 0);
+				function_178360(effect_index, effect->object_index, unknown58, 0, 0, NONE);
 			}
 		}
 		else if (effect->unknown58 == unknown58 && effect->object_index == object_index)
@@ -2965,7 +2966,7 @@ void function_17b1d0(long object_index)
 			s_effect_datum *effect = (s_effect_datum *)record_pool_lookup_checked(g_4ea93c, effect_index);
 
 			if (effect)
-				function_178360(effect_index, NONE, effect->object_index, effect->unknown58, 0, 0);
+				function_178360(effect_index, effect->object_index, effect->unknown58, 0, 0, NONE);
 			return;
 		}
 	}

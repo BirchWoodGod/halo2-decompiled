@@ -190,12 +190,13 @@ void function_153bd0(long index, real scale)
 		values.value[2] = scale * 0.01;
 		values.value[0] = 1.0f;
 		values.value[5] = 1.0f;
-		request.shake = *(s_speed_shake const *)g_4686cc;
-		request.duration = 1.0f;
-		g_502120->entries[index].value80 = scale;
-		g_502120->entries[index].value84 = scale;
 		request.type = 1;
 		request.priority = 2;
+		request.shake = *(s_speed_shake const *)g_4686cc;
+		request.duration = 1.0f;
+		s_speed_table_entry *entry = &g_502120->entries[index];
+		entry->value80 = scale;
+		entry->value84 = scale;
 		request.amount = scale;
 		function_154d70(&request, slot, scale);
 		function_155240(&values, slot, scale);
