@@ -2207,7 +2207,7 @@ __declspec(noinline) void function_245c0(s_245c0_state *state, real *histogram, 
 void function_245c0(s_245c0_state *state, real *histogram, short mode)
 {
     state->curve.histogram = histogram;
-    if (mode > 0 && mode <= 3)
+    if ((word)(mode - 1) < 3)
     {
         if (!(state->frame_count & 7))
         {
