@@ -512,10 +512,10 @@ void function_11af10(long unit_index, long label)
 {
 	if (label)
 	{
-		long parent_index = unit_get_11a4d0(unit_index)->parent_index;
-		if (parent_index != NONE)
+		s_unit_11a4d0 *unit = unit_get_11a4d0(unit_index);
+		if (unit->parent_index != NONE)
 		{
-			s_unit_11a4d0 *parent = unit_get_11a4d0(parent_index);
+			s_unit_11a4d0 *parent = unit_get_11a4d0(unit->parent_index);
 			if (parent->object_type == 1)
 			{
 				s_unit_definition_11a4d0 *definition = unit_definition_get_11a4d0(parent);

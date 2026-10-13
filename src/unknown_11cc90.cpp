@@ -15,10 +15,9 @@ real function_11cc90(
 	vector2f const *b)
 {
 	real d = a->i * b->i + a->j * b->j;
-	real angle;
-	d = d < -1.f ? -1.f : d > 1.f ? 1.f : d;
-	angle = function_11cd21(d);
-	if (a->j * b->i - a->i * b->j < 0.f)
+	real c = d < -1.f ? -1.f : d > 1.f ? 1.f : d;
+	real angle = function_11cd21(c);
+	if (a->i * b->j - a->j * b->i > 0.f)
 		return 0.f - angle;
 	return angle;
 }
@@ -69,16 +68,14 @@ real function_11ce20(
 // @retail 0x11cf50
 real function_11cf50(vector3f const *a, vector3f const *b)
 {
-	real d, angle;
 	real local_0;
 	if (((long const *)a)[0] == ((long const *)b)[0] && ((long const *)a)[1] == ((long const *)b)[1] && ((long const *)a)[2] == ((long const *)b)[2])
 		local_0 = 0.f;
 	else
 	{
-		d = a->k * b->k + a->j * b->j + a->i * b->i;
-		d = d < -1.f ? -1.f : d > 1.f ? 1.f : d;
-		angle = function_11cd21(d);
-		local_0 = angle;
+		real d = a->k * b->k + a->j * b->j + a->i * b->i;
+		real c = d < -1.f ? -1.f : d > 1.f ? 1.f : d;
+		local_0 = function_11cd21(c);
 	}
 	return local_0;
 }
