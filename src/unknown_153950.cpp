@@ -409,11 +409,10 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 		function_30bf0(&v);
 
 		s_unknown_185ab0_entry *view = g_4ed284->entries + index;
-		real yaw = view->yaw;
-		real pitch = view->pitch;
+		s_view_angles angles = view->angles;
 
-		w.i = (real)(cos(yaw) * cos(pitch));
-		w.j = (real)(sin(yaw) * cos(pitch));
+		w.i = (real)(cos(angles.yaw) * cos(angles.pitch));
+		w.j = (real)(sin(angles.yaw) * cos(angles.pitch));
 		w.k = 0.0f;
 		function_30bf0(&w);
 
@@ -444,7 +443,7 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 
 			s_random_globals *random = g_4e7408;
 			real scale = function_259d0(&random->seed, __FILE__, __LINE__, slot->bounds.lower, slot->bounds.upper);
-			real rotation = function_x82e52f(&random->seed, __FILE__, __LINE__) * 6.2831855f;
+			real rotation = function_259d0(&random->seed, __FILE__, __LINE__, 0.0f, 6.2831855f);
 			vector3f *up = g_4687b0;
 			vector3f *e = &slot->forward;
 			vector3f *u = &slot->vector;
@@ -460,13 +459,14 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 			real s = (real)sin(rotation);
 			real c = (real)cos(rotation);
 			real t = (u->k * e->k + u->j * e->j + e->i * u->i) * (1.0f - c);
-			real x = u->i;
-			real y = u->j;
-			real z = u->k;
+			vector3f axis_cross;
+			axis_cross.i = u->j * e->k - u->k * e->j;
+			axis_cross.j = u->k * e->i - u->i * e->k;
+			axis_cross.k = u->i * e->j - u->j * e->i;
 
-			u->i = e->i * t + x * c - (y * e->k - z * e->j) * s;
-			u->j = e->j * t + y * c - (z * e->i - x * e->k) * s;
-			u->k = e->k * t + z * c - (x * e->j - y * e->i) * s;
+			u->i = e->i * t + u->i * c - axis_cross.i * s;
+			u->j = e->j * t + u->j * c - axis_cross.j * s;
+			u->k = e->k * t + u->k * c - axis_cross.k * s;
 			u->i = u->i * scale;
 			u->j = u->j * scale;
 			u->k = u->k * scale;
@@ -676,8 +676,8 @@ void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
     s_game_speed *speed = g_510c5c;
     if (speed->flags & 1)
     {
-        real amount = *(real *)&speed->value20;
         transform4x3f transform = *g_4687d0;
+        real amount = *(real *)&speed->value20;
         if (speed->timer24 > 0)
         {
             if (speed->flags & 2)
@@ -709,24 +709,24 @@ void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
                 amount = function_17ca10(1.0f - (slot->bounds.duration - (real)slot->timer80) / slot->bounds.duration,
                     *(short *)&slot->bounds.unknown04[0]) * slot->priority9c;
             real angle = amount * slot->bounds.unknown04[1];
+            real sine = (real)sin(angle), cosine = (real)cos(angle);
             vector3f axis;
             axis.i = g_4687b0->j * slot->forward.k - g_4687b0->k * slot->forward.j;
             axis.j = slot->forward.i * g_4687b0->k - slot->forward.k * g_4687b0->i;
             axis.k = g_4687b0->i * slot->forward.j - slot->forward.i * g_4687b0->j;
-            real sine = (real)sin(angle), cosine = (real)cos(angle);
             real x = axis.i, y = axis.j, z = axis.k;
             transform4x3f transform;
             transform.scale = 1.0f;
             transform.forward.i = x * x + (1.0f - x * x) * cosine;
-            transform.left.j = y * y + (1.0f - y * y) * cosine;
-            transform.up.k = z * z + (1.0f - z * z) * cosine;
             real xy = (1.0f - cosine) * y * x;
-            real xz = (1.0f - cosine) * z * x;
-            real yz = (1.0f - cosine) * z * y;
             transform.left.i = xy - z * sine;
             transform.forward.j = xy + z * sine;
+            transform.left.j = y * y + (1.0f - y * y) * cosine;
+            real xz = (1.0f - cosine) * z * x;
             transform.up.i = xz + y * sine;
             transform.forward.k = xz - y * sine;
+            transform.up.k = z * z + (1.0f - z * z) * cosine;
+            real yz = (1.0f - cosine) * z * y;
             transform.up.j = yz - x * sine;
             transform.left.k = yz + x * sine;
             real distance = slot->bounds.unknown04[2] * amount;
