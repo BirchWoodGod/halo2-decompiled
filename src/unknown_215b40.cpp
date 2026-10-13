@@ -217,11 +217,12 @@ void __stdcall function_217080(s_game_variant const *variant)
 			s_cached_location_entry entry;
 			unsigned __int64 words[0x1e8 / 8];
 		} value;
+		s_cached_location_table *files = (s_cached_location_table *)g_51ea14;
 		*(s_game_variant *)value.entry.data = **variant_reference;
 		value.entry.type = saved_game_file_type_from_variant((s_game_variant *)value.entry.data);
-		s_cached_location_table *files = (s_cached_location_table *)g_51ea14;
-		s_cached_location_entry *destination = &files->entries[files->count++];
-		*destination = value.entry;
+		long index = files->count;
+		files->count = index + 1;
+		files->entries[index] = value.entry;
 	}
 }
 
