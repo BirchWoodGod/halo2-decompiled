@@ -175,7 +175,7 @@ short function_155810(long unit_index, short *mode)
 			s_camera_seat *seat = &definition->seats[unit->seat_index];
 			bool flag6 = seat->flag6;
 
-			if (seat->flag4)
+			if (TEST_FIELD_BIT(seat->flag4))
 			{
 				result = 1;
 			}
