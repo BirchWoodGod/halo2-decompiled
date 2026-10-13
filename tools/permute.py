@@ -2164,7 +2164,7 @@ class FastScorer(Scorer):
 
 def prepare_scratch(scratch):
     # only the build caches: a working tree's build/ also holds reports and images
-    for d in ('src', 'include', 'config', os.path.join('build', 'obj'), os.path.join('build', 'gen')):
+    for d in ('src', 'include', 'config', *(os.path.join('build', b) for b in ('obj', 'gen', build.D3D_FOLDER))):
         s = os.path.join(ROOT, d)
         if os.path.isdir(s):
             shutil.copytree(s, os.path.join(scratch, d), copy_function=shutil.copy2)

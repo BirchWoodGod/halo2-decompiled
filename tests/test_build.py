@@ -382,3 +382,56 @@ def test_standin_names_number_each_sources_markers_in_order():
               build.Marked('src/ui.cpp', 0x30, 'c', 'void', [])]
     assert build.standin_names(marked) == {('src/ui.cpp', 0x10): 'standin_ui_0', ('src/hud.cpp', 0x20): 'standin_hud_0',
                                            ('src/ui.cpp', 0x30): 'standin_ui_1'}
+
+
+def fake_lib_tool(monkeypatch, members):
+    """Stands in for the SDK's lib tool: /LIST prints the members, /EXTRACT
+    writes the member's name to the /OUT file. Returns each run's first argument."""
+    runs = []
+
+    def run_tool(tool, args, cwd, xdk):
+        runs.append(args[0])
+        if args[0] == '/LIST':
+            return ''.join(f'{m}\n' for m in members)
+        with open(args[1][len('/OUT:'):], 'w') as f:
+            f.write(args[0][len('/EXTRACT:'):])
+        return ''
+    monkeypatch.setattr(build, 'run_tool', run_tool)
+    return runs
+
+
+def test_d3d_objects_are_extracted_in_order_once_per_library(tmp_path, monkeypatch):
+    assert len(build.D3D_OBJECTS) == len(set(build.D3D_OBJECTS)) == 25
+    xdk = tmp_path / 'xdk'
+    (xdk / 'lib').mkdir(parents=True)
+    library = xdk / 'lib' / 'd3d8ltcg.lib'
+    library.write_bytes(b'library')
+    runs = fake_lib_tool(monkeypatch, [f'obj\\i386\\{stem}.obj' for stem in ['texture', *reversed(build.D3D_OBJECTS)]])
+    paths = build.d3d_objects(str(tmp_path), str(xdk))
+    assert paths == [str(tmp_path / 'build' / 'd3d8ltcg' / f'{stem}.obj') for stem in build.D3D_OBJECTS]
+    assert open(paths[0]).read() == 'obj\\i386\\d3ddev.obj' and len(runs) == 26
+    assert build.d3d_objects(str(tmp_path), str(xdk)) == paths and len(runs) == 26  # kept
+    stat = library.stat()
+    os.utime(library, ns=(stat.st_atime_ns, stat.st_mtime_ns + 10 ** 9))  # a new library
+    build.d3d_objects(str(tmp_path), str(xdk))
+    assert len(runs) == 52
+
+
+def test_d3d_objects_need_the_library_and_every_member(tmp_path, monkeypatch):
+    xdk = tmp_path / 'xdk'
+    with pytest.raises(SystemExit, match='d3d8ltcg.lib not found'):
+        build.d3d_objects(str(tmp_path), str(xdk))
+    (xdk / 'lib').mkdir(parents=True)
+    (xdk / 'lib' / 'd3d8ltcg.lib').write_bytes(b'library')
+    fake_lib_tool(monkeypatch, [f'obj\\i386\\{stem}.obj' for stem in build.D3D_OBJECTS if stem != 'pusher'])
+    with pytest.raises(SystemExit, match='no member named pusher.obj'):
+        build.d3d_objects(str(tmp_path), str(xdk))
+
+
+def test_build_refuses_a_source_named_like_a_d3d_member(tmp_path):
+    (tmp_path / 'xdk' / 'bin' / 'vc71').mkdir(parents=True)
+    (tmp_path / 'xdk' / 'bin' / 'vc71' / 'CL.Exe').write_bytes(b'')
+    (tmp_path / 'src').mkdir()
+    (tmp_path / 'src' / 'pusher.cpp').write_text('')
+    with pytest.raises(SystemExit, match='src/pusher.cpp'):
+        build.build(root=str(tmp_path), xdk=str(tmp_path / 'xdk'))
