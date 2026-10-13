@@ -492,6 +492,18 @@ void __stdcall function_198540(s_input_record const *previous, s_input_record co
 	}
 }
 
+/* copies the counters an update flags into the record's counters */
+static inline void counters_apply_1988e0(s_input_counter *counters, long count, s_input_counter const *update)
+{
+	long i;
+
+	for (i = 0; i < count; i++)
+	{
+		if (update[i].flag)
+			counters[i].value = update[i].value;
+	}
+}
+
 // @retail 0x001988e0
 void function_1988e0(s_input_record *record, s_input_update *update)
 {
@@ -542,33 +554,15 @@ void function_1988e0(s_input_record *record, s_input_update *update)
 	for (i = 0; i < 16; i++)
 	{
 		s_counter_group_update *group = &update->groups[i];
-		s_input_counter *counters = record->groups[i];
-		
+
 		if (group->flag0)
-		{
-			for (j = 0; j < 45; j++)
-			{
-				if (group->first[j].flag)
-					counters[j].value = group->first[j].value;
-			}
-		}
+			counters_apply_1988e0(record->groups[i], 45, group->first);
 		if (group->flag1)
-		{
-			for (j = 0; j < 32; j++)
-			{
-				if (group->second[j].flag)
-					counters[45 + j].value = group->second[j].value;
-			}
-		}		for (j = 0; j < 45; j++)
+			counters_apply_1988e0(&record->groups[i][45], 32, group->second);
+		for (j = 0; j < 45; j++)
 		{
 			if (group->entries[j].flag)
-			{
-				for (k = 0; k < 7; k++)
-				{
-					if (group->entries[j].counters[k].flag)
-						counters[78 + j * 8 + k].value = group->entries[j].counters[k].value;
-				}
-			}
+				counters_apply_1988e0(&record->groups[i][78 + j * 8], 7, group->entries[j].counters);
 		}
 	}
 
@@ -577,19 +571,11 @@ void function_1988e0(s_input_record *record, s_input_update *update)
 		for (j = 0; j < 16; j++)
 		{
 			s_pair_update *pair = &update->pairs[i][j];
-			s_input_counter *counters = record->pairs[i][j];
+
 			if (pair->flag)
 			{
-				k = 2;
-				do
-				{
-					if (pair->counters[0].flag)
-						counters[0].value = pair->counters[0].value;
-					if (pair->counters[1].flag)
-						counters[1].value = pair->counters[1].value;
-					k--;
-				}
-				while (k);
+				for (k = 0; k < 2; k++)
+					counters_apply_1988e0(record->pairs[i][j], 2, pair->counters);
 			}
 		}
 	}
@@ -597,15 +583,9 @@ void function_1988e0(s_input_record *record, s_input_update *update)
 	for (i = 0; i < 16; i++)
 	{
 		s_counters_update *group = &update->counters[i];
-		s_input_counter *counters = record->counters[i];
+
 		if (group->flag)
-		{
-			for (j = 0; j < 45; j++)
-			{
-				if (group->counters[j].flag)
-					counters[j].value = group->counters[j].value;
-			}
-		}
+			counters_apply_1988e0(record->counters[i], 45, group->counters);
 	}
 
 	for (i = 0; i < 4; i++)

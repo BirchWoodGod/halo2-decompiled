@@ -3436,6 +3436,13 @@ void function_15ebd0(void)
 	}
 }
 
+/* the two ids of the game options (+0x10, +0x14), read as a pair */
+struct s_seed_pair_15a640
+{
+	long a;
+	long b;
+};
+
 // @retail 0x15a640
 long function_15a640(long tag_index)
 {
@@ -3445,7 +3452,8 @@ long function_15a640(long tag_index)
     long mode = *(signed char *)((byte *)g_4e6948 + 0x210);
     if (mode == 19)
     {
-        dword seed = (g_4e6948->id_b ^ g_4e6948->id_a) * 1664525 + 1013904223;
+        s_seed_pair_15a640 ids = *(s_seed_pair_15a640 const *)&g_4e6948->id_a;
+        dword seed = (ids.a ^ ids.b) * 1664525 + 1013904223;
         mode = (long)(seed >> 16) % 17 + 2;
     }
     switch (mode)
@@ -3497,20 +3505,26 @@ long function_15a640(long tag_index)
     case 8:
         switch (index)
         {
-        case 0: index = 5; break;
-        case 1: index = 5; break;
-        case 2: index = 5; break;
-        case 3: index = 5; break;
-        case 4: index = 15; break;
-        case 6: index = 12; break;
-        case 7: index = 12; break;
-        case 8: index = 12; break;
-        case 9: index = 15; break;
-        case 10: index = 12; break;
-        case 11: index = 12; break;
-        case 13: index = 15; break;
-        case 14: index = 12; break;
-        case 16: index = 15; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+            index = 5;
+            break;
+        case 4:
+        case 9:
+        case 13:
+        case 16:
+            index = 15;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 10:
+        case 11:
+        case 14:
+            index = 12;
+            break;
         }
         break;
     case 9:
@@ -3544,70 +3558,85 @@ long function_15a640(long tag_index)
     case 11:
         switch (index)
         {
-        case 0: index = 3; break;
-        case 1: index = 3; break;
-        case 2: index = 3; break;
-        case 3: index = 3; break;
-        case 5: index = 3; break;
-        case 6: index = 10; break;
-        case 7: index = 10; break;
-        case 8: index = 10; break;
-        case 9: index = 10; break;
-        case 10: index = 10; break;
-        case 11: index = 10; break;
-        case 12: index = 10; break;
-        case 14: index = 10; break;
-        case 15: index = 10; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 5:
+            index = 3;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 14:
+        case 15:
+            index = 10;
+            break;
         }
         break;
     case 12:
         switch (index)
         {
-        case 0: index = 4; break;
-        case 1: index = 4; break;
-        case 2: index = 4; break;
-        case 3: index = 4; break;
-        case 4: index = 4; break;
-        case 5: index = 4; break;
-        case 6: index = 13; break;
-        case 7: index = 13; break;
-        case 8: index = 13; break;
-        case 9: index = 13; break;
-        case 10: index = 13; break;
-        case 11: index = 13; break;
-        case 12: index = 13; break;
-        case 13: index = 13; break;
-        case 14: index = 13; break;
-        case 15: index = 13; break;
-        case 16: index = 13; break;
-        case 17: index = 13; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            index = 4;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+            index = 13;
+            break;
         }
         break;
     case 13:
-        if (index == 4) index = 3;
-        else if (index == 13) index = 10;
+        switch (index)
+        {
+        case 4: index = 3; break;
+        case 13: index = 10; break;
+        }
         break;
     case 14:
         switch (index)
         {
-        case 0: index = 0; break;
-        case 1: index = 0; break;
-        case 2: index = 0; break;
-        case 3: index = 0; break;
-        case 4: index = 0; break;
-        case 5: index = 0; break;
-        case 6: index = 6; break;
-        case 7: index = 6; break;
-        case 8: index = 6; break;
-        case 9: index = 6; break;
-        case 10: index = 6; break;
-        case 11: index = 6; break;
-        case 12: index = 6; break;
-        case 13: index = 6; break;
-        case 14: index = 6; break;
-        case 15: index = 6; break;
-        case 16: index = 6; break;
-        case 17: index = 6; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            index = 0;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+            index = 6;
+            break;
         }
         break;
     case 15:
@@ -3650,14 +3679,28 @@ long function_15a640(long tag_index)
     case 17:
         switch (index)
         {
-        case 0: index = 6; break;
-        case 1: index = 9; break;
-        case 2: index = 9; break;
-        case 3: index = 10; break;
-        case 4: index = 13; break;
-        case 5: index = 12; break;
-        case 16: index = 7; break;
-        case 17: index = 8; break;
+        case 0:
+            index = 6;
+            break;
+        case 1:
+        case 2:
+            index = 9;
+            break;
+        case 3:
+            index = 10;
+            break;
+        case 4:
+            index = 13;
+            break;
+        case 5:
+            index = 12;
+            break;
+        case 16:
+            index = 7;
+            break;
+        case 17:
+            index = 8;
+            break;
         }
         break;
     case 18:
@@ -3715,6 +3758,11 @@ static inline long death_seconds_to_ticks(real seconds)
     return result;
 }
 
+static __forceinline long nonnegative_15ce70(long value)
+{
+	return value < 0 ? 0 : value;
+}
+
 // @retail 0x15ce70
 void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte damage)
 {
@@ -3724,15 +3772,13 @@ void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte
     long damage_modifier = damage >> 6;
     long award = NONE;
     bool special = damage_type == 3 || damage_type == 0x1a || damage_type == 0x18 || damage_type == 0x17 || damage_type == 0x14;
-    long elapsed = g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time;
-    if (elapsed < 0) elapsed = 0;
+    long elapsed = nonnegative_15ce70(g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time);
     *(long *)((byte *)victim + 0x1b4) = elapsed;
     if (attacker_index != NONE)
     {
         s_engine_player *attacker = engine_player_get(attacker_index);
         bool different = attacker_index != victim_index;
-        bool same_team = false;
-        if (game_engine_get()) same_team = game_engine_get()->p27(attacker->team, victim->team);
+        bool same_team = game_engine_get() ? game_engine_get()->p27(attacker->team, victim->team) : false;
         if (!different)
             *(long *)victim->unknown168 += death_seconds_to_ticks((real)*(long *)((byte *)g_4e6948 + 0x1c0));
         else if (!same_team && !victim->value164)
@@ -3761,8 +3807,7 @@ void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte
         break;
     case 1:
         {
-            long now = g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time;
-            if (now < 0) now = 0;
+            long now = nonnegative_15ce70(g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time);
             long next = (now / interval + 1) * interval;
             while (next < now + delay) next += interval;
             victim->value164 = next - now;
@@ -4958,14 +5003,16 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
     if (g_4e6948->mode == 4) return;
     byte *globals_tag = g_4e3b44[*(long *)((byte *)g_4e034c + 0x16c) & 0xffff].bytes;
     byte *preset = *(byte **)(*(byte **)(globals_tag + 0xc) + 0x534);
-    volatile long  arg_642c39 = g_510c54->field_2_3;
-    byte * volatile scenario = (byte *)g_4e0350;
+    long arg_642c39 = g_510c54->field_2_3;
+    byte *scenario = (byte *)g_4e0350;
     for (short i = 0; i < *(long *)(scenario + 0x120); ++i)
     {
         byte *placement = *(byte **)(scenario + 0x124) + i * 0x90;
         if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
         c_engine_peer *engine = game_engine_get();
-        long type = engine ? engine->p0() : NONE;
+        long type = NONE;
+        if (engine)
+            type = engine->p0();
         if (function_15a090(type, 4, (short *)(placement + 4)) == NONE) continue;
         long index = entries[i].index;
         byte *object = NULL;
@@ -4980,18 +5027,21 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
                     real z = *(real *)(placement + 0x48) - *(real *)(object + 0x38);
                     real y = *(real *)(placement + 0x44) - *(real *)(object + 0x34);
                     real x = *(real *)(placement + 0x40) - *(real *)(object + 0x30);
-                    reset = z*z + y*y + x*x <= 100.0f || function_15f060((point3f *)(object + 0x30), *(real *)(preset + 0x28));
+                    if (z*z + y*y + x*x > 100.0f)
+                        reset = function_15f060((point3f *)(object + 0x30), *(real *)(preset + 0x28));
+                    else
+                        reset = true;
                 }
-                if (reset) entries[i].value06 = 0;
-                else ++entries[i].value06;
+                if (!reset) ++entries[i].value06;
+                else entries[i].value06 = 0;
                 if (entries[i].value06 > *(short *)(placement + 0x10)) entries[i].value04 = 1;
             }
         }
         short *timer = &entries[i].value04;
         if (*timer == 0)
         {
-            bool schedule = index == NONE;
-            if (index != NONE)
+            bool schedule = entries[i].index == NONE;
+            if (entries[i].index != NONE)
             {
                 switch (*(short *)(placement + 0x12))
                 {

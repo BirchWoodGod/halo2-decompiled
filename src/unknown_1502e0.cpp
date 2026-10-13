@@ -908,7 +908,8 @@ void function_152660(s_tail_transfer_options *options)
 		s_tail_transfer_traits *traits = 0;
 		for (long i = 0; i < 16; i++)
 		{
-			if (memcmp(((s_tail_player_identifier *)player)->identifier, options->players[i].identifier, 12) == 0)
+			long difference = memcmp(((s_tail_player_identifier *)player)->identifier, options->players[i].identifier, 12);
+			if (difference == 0)
 				traits = (s_tail_transfer_traits *)&options->players[i].traits[alternate ? 1 : 0];
 		}
 		if (traits)
@@ -922,15 +923,15 @@ void function_152660(s_tail_transfer_options *options)
 				long other = NONE;
 				if (unit->seat_index != NONE)
 				{
-					long now = g_510c54->game_time;
 					for (long selection = 0; selection < 2; selection++)
 					{
+						long now = g_510c54->game_time;
 						long chosen = NONE;
 						long shortest = 0x7fffffff;
 						for (long slot = 0; slot < 4; slot++)
 						{
-							long weapon = unit->weapons[slot];
 							long age = now - unit->weapon_times[slot];
+							long weapon = unit->weapons[slot];
 							if (weapon != NONE && (!selection || weapon != primary) && age < shortest)
 							{
 								shortest = age;
@@ -1327,9 +1328,14 @@ void __stdcall function_152f80(void *address, void *option_data)
 {
     byte const *machine_address = (byte const *)address;
     s_player_rebind_option const *options = (s_player_rebind_option const *)option_data;
-    long controllers[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
+    long controllers[16];
     long users[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
-    long assigned[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
+    long assigned[16];
+    for (long i = 0; i < 16; i++)
+    {
+        controllers[i] = NONE;
+        assigned[i] = NONE;
+    }
     dword options_used = 0;
     dword users_used = 0;
     dword controllers_used = 0;
@@ -1356,12 +1362,10 @@ void __stdcall function_152f80(void *address, void *option_data)
                     if (player->local_index == NONE || entry->controller_index != player->controller_index) continue;
                     break;
                 case 2:
-                    if (player->local_index != NONE) continue;
-                    break;
-                case 3:
+                    if (player->local_index == NONE) continue;
                     break;
                 default:
-                    __assume(0);
+                    break;
                 }
                 users[index] = entry->local_index;
                 assigned[index] = option;
@@ -1792,23 +1796,26 @@ void __stdcall function_150e30(long player_index, long object_index)
     byte *unit = (byte *)tail_object_get(player->unit_index);
     byte *object = (byte *)tail_object_get(object_index);
     long parent_index = *(long *)(object + 0x14);
+    bool parent_ok = false;
     if (parent_index != NONE)
     {
-        byte parent_type = ((s_tail_object_header *)g_4e0300->data)[parent_index & 0xffff].type;
-        if (parent_type != 11 && parent_type != 7) return;
+        long parent_type = ((s_tail_object_header *)g_4e0300->data)[parent_index & 0xffff].type;
+        parent_ok = parent_type == 11 || parent_type == 7;
     }
+    if (*(long *)(object + 0x14) != NONE && !parent_ok) return;
     if (*(long *)(object + 0x14c) == player->unit_index) return;
-    real z = *(real *)(object + 0x38) - *(real *)(unit + 0x38);
-    real x = *(real *)(object + 0x30) - *(real *)(unit + 0x30);
     real y = *(real *)(object + 0x34) - *(real *)(unit + 0x34);
+    real x = *(real *)(object + 0x30) - *(real *)(unit + 0x30);
+    real z = *(real *)(object + 0x38) - *(real *)(unit + 0x38);
     real radius = *(real *)(unit + 0x3c) + 0.3f;
-    if (radius * radius <= z * z + x * x + y * y) return;
+    if (!(z * z + x * x + y * y < radius * radius)) return;
     long weapon_index = NONE;
     short rounds;
-    for (short i = 0; i < 4; ++i)
+    short i = 0;
+    do
     {
         long current = *(signed char *)(unit + 0x212);
-        if (current < 0) current = 0;
+        current = current < 0 ? 0 : current;
         long slot = (current + i) % 4;
         weapon_index = *(long *)(unit + 0x218 + slot * 4);
         if (weapon_index != NONE && function_ffc60(weapon_index, object_index, player->unit_index, player->local_index, &rounds))
@@ -1817,19 +1824,20 @@ void __stdcall function_150e30(long player_index, long object_index)
                 function_191ec4(*(long *)tail_object_get(weapon_index), player->local_index, rounds);
             break;
         }
-    }
+        ++i;
+    } while (i < 4);
     s_object *pickup = function_badc0(object_index, 8);
     if (pickup)
     {
         byte *definition = g_4e3b44[*(long *)pickup & 0xffff].bytes;
         short kind = *(short *)(definition + 0x12c);
-        if (kind == 6)
+        if (kind != 6)
         {
-            if (function_ccba0(player->unit_index, object_index))
-                function_191e51(*(long *)pickup, player->local_index);
+            if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
+                function_151ea0(player_index, object_index);
         }
-        else if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
-            function_151ea0(player_index, object_index);
+        else if (function_ccba0(player->unit_index, object_index))
+            function_191e51(*(long *)pickup, player->local_index);
     }
     byte type = ((s_tail_object_header *)g_4e0300->data)[object_index & 0xffff].type;
     if ((1 << type) & 4)
