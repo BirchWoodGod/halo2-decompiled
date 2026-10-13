@@ -2144,19 +2144,13 @@ void function_1055b0(vector3f *direction, vector3f const *axis, short index, sho
 			offset = 0.0f;
 		else
 		{
-			short &value = flags;
+			short value = index - 1;
 
-			value = index - 1;
 			if (value & 1)
-			{
 				value >>= 1;
-				offset = (real)value;
-			}
 			else
-			{
 				value = -(value >> 1);
-				offset = (real)value;
-			}
+			offset = (real)value;
 		}
 	}
 	else

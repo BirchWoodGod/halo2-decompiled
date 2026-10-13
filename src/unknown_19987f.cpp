@@ -1600,60 +1600,68 @@ void function_19b1c9(long screen_id, long menu, long state)
 	}
 	else
 	{
-		if (state != 4) switch (state)
+		if (state != 4)
 		{
-		case 1:
-			if (menu == 1)
-			{
-				return;
-			}
-			break;
-		case 2:
-			if (menu == 2 || function_149f1e(function_1901fc(), (long)function_2519bb))
-			{
-				return;
-			}
-			break;
-		case 3:
-		{
-			bool in_game = false;
+			bool stay = true;
 
-			switch (menu)
+			switch (state)
 			{
-			case 0:
-				in_game = true;
-				break;
 			case 1:
-				in_game = true;
+				stay = false;
+				if (menu == 1)
+					stay = true;
 				break;
 			case 2:
-				in_game = true;
+				if (menu != 2)
+					stay = function_149f1e(function_1901fc(), (long)function_2519bb) != 0;
 				break;
-			case 6:
-				in_game = true;
+			case 3:
+			{
+				bool in_game = false;
+
+				switch (menu)
+				{
+				case 0:
+					in_game = true;
+					break;
+				case 1:
+					in_game = true;
+					break;
+				case 2:
+					in_game = true;
+					break;
+				case 6:
+					in_game = true;
+					break;
+				}
+
+				bool players = player_slot_count_active() > 0;
+
+				if (in_game & players)
+				{
+					function_149f1e(NONE, (long)function_24fa4c);
+					return;
+				}
+				stay = false;
 				break;
 			}
-
-			bool players = player_slot_count_active() > 0;
-
-			if (in_game & players)
-			{
-				function_149f1e(NONE, (long)function_24fa4c);
+			case 5:
 				return;
+			case 6:
+				function_1484f4();
+				return;
+			case 7:
+				if (screen_id != 0xcc)
+				{
+					function_149f1e(function_1901fc(), (long)function_24f8c6);
+				}
+				return;
+			default:
+				stay = false;
+				break;
 			}
-			break;
-		}
-		case 5:
-			return;
-		case 6:
-			function_1484f4();
-			return;
-		case 7:
-			if (screen_id != 0xcc)
-			{
-				function_149f1e(function_1901fc(), (long)function_24f8c6);
-			}
-			return;
+			if (stay)
+				return;
 		}
 		network_session_manager_leave_session_a(false);
 		network_session_manager_leave_session_b(false);

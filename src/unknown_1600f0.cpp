@@ -10,6 +10,7 @@
 #include <string.h>
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+#define FLOOR(n, floor) ((n) < (floor) ? (floor) : (n))
 
 /* the multiplayer globals' fields read here that globals.h does not name */
 struct s_mp_globals_view
@@ -540,16 +541,12 @@ bool g_55e754;
 // @retail 0x162470
 long function_162470(bool flag)
 {
-	volatile long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
-	s_mp_globals *globals = g_4e9ae8;
-	long elapsed = g_510c54->game_time - ((s_mp_globals_time_view *)globals)->start_time;
-	long time_left;
+	long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
+	long elapsed = FLOOR(g_510c54->game_time - ((s_mp_globals_time_view *)g_4e9ae8)->start_time, 0);
+	long time_left = FLOOR(g_510c54->field_2_3 * time_limit - elapsed, 0);
 	long result;
 
-	elapsed = elapsed < 0 ? 0 : elapsed;
-	time_left = g_510c54->field_2_3 * time_limit - elapsed;
-	time_left = time_left < 0 ? 0 : time_left;
-	result = g_55e4d0[globals->engine_index]->p25(time_left, flag, true);
+	result = g_55e4d0[g_4e9ae8->engine_index]->p25(time_left, flag, true);
 	if (flag)
 	{
 		if (result != time_left)
