@@ -3285,6 +3285,8 @@ void function_161ef0(long string_handle, word *buffer);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 void function_19e0f0(word const *string, long size, word *buffer, s_event *event);
 
+int unicode_string_vsnprintf(word *buffer, long maximum_count, const word *format, ...);
+
 // @retail 0x15f120
 bool function_15f120(long player_index, word *buffer, long size, long suppress_score)
 {
@@ -3298,15 +3300,13 @@ bool function_15f120(long player_index, word *buffer, long size, long suppress_s
 		short state = function_xaee93d()->value6c;
 		if (state == 1)
 		{
-			s_local_engine_player local = g_4e9af0.players[user_index];
-			s_engine_local_notice *notice = (s_engine_local_notice *)&local;
-			if (notice->type != NONE && notice->definition_index != NONE)
+			if (g_4e9af0.players[user_index].index != NONE && g_4e9af0.players[user_index].value08 != NONE)
 			{
 				s_engine_notice_settings *settings = ((s_engine_notice_root *)g_4e3b44[g_4e034c->index & 0xffff].bytes)->settings;
-				s_engine_notice_definition *definition = &settings->notices[notice->definition_index];
+				s_engine_notice_definition *definition = &settings->notices[g_4e9af0.players[user_index].value08];
 				long string_handle = function_15eaf0() ? definition->team_text : definition->text;
-				if ((!(byte)*suppress_reference || (notice->type != 25 && notice->type != 5 && notice->type != 26 &&
-					notice->type != 6 && notice->type != 27 && notice->type != 7)) && string_handle != NONE && string_handle != 0)
+				if ((!(byte)*suppress_reference || (g_4e9af0.players[user_index].index != 25 && g_4e9af0.players[user_index].index != 5 && g_4e9af0.players[user_index].index != 26 &&
+					g_4e9af0.players[user_index].index != 6 && g_4e9af0.players[user_index].index != 27 && g_4e9af0.players[user_index].index != 7)) && string_handle != NONE && string_handle != 0)
 				{
 					text[0] = 0;
 					function_1a0180(settings->string_list, string_handle, text);
@@ -3320,21 +3320,21 @@ bool function_15f120(long player_index, word *buffer, long size, long suppress_s
 		{
 			text[0] = 0;
 			function_161ef0(0x0c000108, text);
-			unicode_string_snprintf(buffer, *size_reference, text);
+			unicode_string_vsnprintf(buffer, *size_reference, text);
 			return true;
 		}
 		else if (state == 2)
 		{
 			text[0] = 0;
 			function_161ef0(0x0d000109, text);
-			unicode_string_snprintf(buffer, *size_reference, text);
+			unicode_string_vsnprintf(buffer, *size_reference, text);
 			return true;
 		}
 		else if (state == 3)
 		{
 			text[0] = 0;
 			function_161ef0(0x1900010a, text);
-			unicode_string_snprintf(buffer, *size_reference, text);
+			unicode_string_vsnprintf(buffer, *size_reference, text);
 			return true;
 		}
 	}
@@ -4661,33 +4661,39 @@ void function_159e20(void)
             function_b83b0(unit, true);
             function_b8460(unit, true);
         }
-        s_type_f1af8e iterator;
-        iterator.type_mask = clear_all ? ~0UL : 0xfffff83fUL;
-        if (!iterator.type_mask) iterator.type_mask = ~0UL;
-        iterator.flags = 0;
-        iterator.index = 0;
-        iterator.object_index = NONE;
-        iterator.signature = 0x86868686;
-        byte *object;
-        while ((object = (byte *)function_baeb0(&iterator)) != NULL)
+        struct { byte *object; s_type_f1af8e iterator; } state;
+        dword type_mask = NONE;
+        if (!clear_all) type_mask = 0xfffff83f;
+        function_bae80(&state.iterator, type_mask, 0);
+        while ((state.object = (byte *)function_baeb0(&state.iterator)) != NULL)
         {
-            long index = iterator.object_index;
+            byte *object = state.object;
+            long index = state.iterator.object_index;
+            long current = index;
             long root = NONE;
-            for (long current = index; current != NONE;)
+            while (current != NONE)
             {
                 root = current;
                 current = *(long *)((byte *)engine_object_get(current) + 0x14);
             }
-            bool remove = clear_all;
+            bool remove;
             if (*(char *)(object + 0xaf) == NONE && engine_object_get(root)->netgame_entry == NONE)
             {
-                long type = *(char *)(object + 0xaa);
-                if (type == 2)
-                    remove = *(short *)(g_4e3b44[*(long *)object & 0xffff].bytes + 0x290) == 0;
-                else if (type == 11)
+                switch (*(char *)(object + 0xaa))
+                {
+                case 2:
+                    remove = *(short *)(g_4e3b44[*(long *)engine_object_get(index) & 0xffff].bytes + 0x290) == 0;
+                    break;
+                case 11:
                     remove = clear_all || (bool)((*(dword *)(object + 4) >> 14) & 1);
-                else remove = true;
+                    break;
+                default:
+                    remove = true;
+                    break;
+                }
             }
+            else
+                remove = clear_all;
             if (remove)
             {
                 function_b83b0(index, true);
@@ -4697,19 +4703,15 @@ void function_159e20(void)
     }
     else if (clear_all)
     {
-        s_type_f1af8e iterator;
-        iterator.type_mask = ~0UL;
-        iterator.flags = 0;
-        iterator.index = 0;
-        iterator.object_index = NONE;
-        iterator.signature = 0x86868686;
-        byte *object;
-        while ((object = (byte *)function_baeb0(&iterator)) != NULL)
+        struct { byte *object; s_type_f1af8e iterator; } state;
+        function_bae80(&state.iterator, ~0UL, 0);
+        while ((state.object = (byte *)function_baeb0(&state.iterator)) != NULL)
         {
+            byte *object = state.object;
             if (*(long *)(object + 0x14) == NONE && *(long *)(object + 0xd4) == NONE)
             {
-                function_b83b0(iterator.object_index, true);
-                function_b8460(iterator.object_index, true);
+                function_b83b0(state.iterator.object_index, true);
+                function_b8460(state.iterator.object_index, true);
             }
         }
     }
@@ -4737,6 +4739,18 @@ PRIVATE real const g_444908[2] = { 90.0f, 15.0f };
 PRIVATE real const g_444910[2] = { 15.0f, 5.0f };
 PRIVATE real const g_444918[2] = { 90.0f, 10.0f };
 
+struct s_object_flags_159ac0
+{
+	byte unknown00[0x10a];
+	word : 2;
+	word bit_10a_2 : 1;
+	word : 13;
+	byte unknown10c[0x12c - 0x10c];
+	word : 2;
+	word bit_12c_2 : 1;
+	word : 13;
+};
+
 // @retail 0x159ac0
 void function_159ac0(void)
 {
@@ -4744,56 +4758,47 @@ void function_159ac0(void)
     {
         long now = g_510c54->game_time;
         long mode = *(long *)((byte *)g_4e9ae8 + 0xc0c);
-        s_type_f1af8e iterator;
-        iterator.type_mask = 0x81f;
-        iterator.flags = 0;
-        iterator.index = 0;
-        iterator.object_index = NONE;
-        iterator.signature = 0x86868686;
-        byte *object;
-        while ((object = (byte *)function_baeb0(&iterator)) != NULL)
+        struct { byte *object; s_type_f1af8e iterator; } state;
+        function_bae80(&state.iterator, 0x81f, 0);
+        while ((state.object = (byte *)function_baeb0(&state.iterator)) != NULL)
         {
-            long index = iterator.object_index;
+            byte *object = state.object;
+            long index = state.iterator.object_index;
             if ((index & 0xffff) % 30 != g_510c54->game_time % 30) continue;
-            long mask = 1 << *(char *)(object + 0xaa);
-            bool remove = false;
-            if (mask & 0x1c)
+            long type = *(char *)(object + 0xaa);
+            if ((1 << type) & 0x1c)
             {
                 bool available = true;
-                short special = 0;
-                if (mask & 4)
+                long special = 0;
+                if ((1 << *(char *)(object + 0xaa)) & 4)
                 {
                     byte *definition = g_4e3b44[*(long *)engine_object_get(index) & 0xffff].bytes;
                     special = *(short *)(definition + 0x290);
                     available = function_100f00(index);
                 }
-                if (special)
-                    remove = g_55e4d0[g_4e9ae8->engine_index]->p38(index) && !function_161cd0(index);
-                else
+                if (!special)
                 {
-                    if (*(char *)(object + 0xaf) != NONE && !(bool)((object[0x12c] >> 2) & 1) && available) continue;
+                    if (*(char *)(object + 0xaf) != NONE && !TEST_FIELD_BIT(((s_object_flags_159ac0 *)object)->bit_12c_2) && available) continue;
                     if (function_161cd0(index) && available) continue;
                     if (object[0x12c] & 1) continue;
-                    remove = (real)(now - *(long *)(object + 0x150)) * g_510c54->rate >= g_4448f8[mode];
+                    if (g_4448f8[mode] > (real)(now - *(long *)(object + 0x150)) * g_510c54->rate) continue;
                 }
+                else if (!g_55e4d0[g_4e9ae8->engine_index]->p38(index) || function_161cd0(index)) continue;
             }
-            else if (mask & 1)
+            else if ((1 << type) & 1)
             {
-                if (!(bool)((object[0x10a] >> 2) & 1)) continue;
-                remove = (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate >= g_444900[mode] ||
-                    (real)(now - *(long *)(object + 0x2e0)) * g_510c54->rate >= g_444908[mode];
+                if (!TEST_FIELD_BIT(((s_object_flags_159ac0 *)object)->bit_10a_2)) continue;
+                if (g_444900[mode] > (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate &&
+                    g_444908[mode] > (real)(now - *(long *)(object + 0x2e0)) * g_510c54->rate) continue;
             }
             else
             {
                 if (!(bool)((*(dword *)(object + 4) >> 14) & 1) || now < *(long *)(object + 0x20)) continue;
-                remove = (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate >= g_444910[mode] ||
-                    (real)(now - *(long *)(object + 0x20)) * g_510c54->rate >= g_444918[mode];
+                if (g_444910[mode] > (real)(now - *(long *)(object + 0xbc)) * g_510c54->rate &&
+                    g_444918[mode] > (real)(now - *(long *)(object + 0x20)) * g_510c54->rate) continue;
             }
-            if (remove)
-            {
-                function_b9b90(index, false);
-                function_b8540(index);
-            }
+            function_b9b90(index, false);
+            function_b8540(index);
         }
     }
 }
