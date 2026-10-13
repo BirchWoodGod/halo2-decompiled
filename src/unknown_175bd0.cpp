@@ -2535,23 +2535,7 @@ void __stdcall function_17a380(s_effect_datum *effect)
 				function_16a8e0(0xd800005, &point, radius, object_index, NONE, &point, &radius);
 				detached = true;
 			}
-			switch (part->create_in)
-			{
-			case 0:
-				create = true;
-				break;
-			case 1:
-				create = !function_11c120(&effect->location, &point, 0);
-				break;
-			case 2:
-				create = function_11c120(&effect->location, &point, 0);
-				break;
-			case 3:
-				create = false;
-				break;
-			default:
-				__assume(0);
-			}
+			create = function_178020(part->create_in, &point, &effect->location);
 			if (create)
 			{
 				real scale = 1.0f;

@@ -87,7 +87,7 @@ static __forceinline void players_pending_creation_process(s_record_pool_iterato
 		iterator_reference->index = absolute_index;
 		if (!(player[2] & 2))
 		{
-			__declspec(align(8)) s_player_creation_record record;
+			s_player_creation_record record;
 			memset(&record, 0, sizeof(record));
 			record.machine = *(s_machine_address *)(player + 0x14);
 			record.controller_index = *(short *)(player + 0x1c);
