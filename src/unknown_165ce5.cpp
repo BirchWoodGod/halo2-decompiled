@@ -2156,9 +2156,9 @@ long __stdcall first_person_weapons_get_models(long user_index, long unit_index,
 			}
 			if (count < maximum_count && body_render_model_index != NONE && unit_render_model_index != NONE && unit_nodes)
 			{
-				s_first_person_render_model *body = (s_first_person_render_model *)g_4e3b44[body_render_model_index & 0xffff].bytes;
 				s_first_person_render_model *unit_model =
 					(s_first_person_render_model *)g_4e3b44[unit_render_model_index & 0xffff].bytes;
+				s_first_person_render_model *body = (s_first_person_render_model *)g_4e3b44[body_render_model_index & 0xffff].bytes;
 
 				if (body->node_count == unit_model->node_count &&
 					*(long *)((byte *)body + 0x44) == *(long *)((byte *)unit_model + 0x44) &&
