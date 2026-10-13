@@ -167,8 +167,8 @@ real function_1f8940(long actor_index);
 // @retail 0x1b3380
 bool __stdcall function_1b3380(long actor_index, s_slot *slot)
 {
-    s_actor_view *actor = actor_get(actor_index);
     bool result = true;
+    s_actor_view *actor = actor_get(actor_index);
     if (actor->unknown040)
     {
         if (!REFERENCE_EQUAL(actor->unknown418, g_470fa0) &&
