@@ -739,8 +739,7 @@ bool session_search_select(s_session_search *search, s_search_session *session)
 	s_search_result *selected = 0;
 	long candidate_count = 0;
 	long ready_count = 0;
-	bool active = search->active;
-	if (active)
+	if (search->active)
 	{
 		for (s_search_result *entry = search->results; entry < search->results + MAXIMUM_SEARCH_RESULTS; entry++)
 		{
@@ -760,22 +759,22 @@ bool session_search_select(s_session_search *search, s_search_session *session)
 				}
 			}
 		}
-		result = selected && (ready_count == candidate_count ||
+		if (selected && (ready_count == candidate_count ||
 			(ready_count >= (candidate_count >> 2) &&
-			session_search_elapsed(search->start_time) > g_4ce394));
-		if (result)
+			session_search_elapsed(search->start_time) > g_4ce394)))
 		{
-			s_search_session *output = *(s_search_session *volatile *)&session;
-			if (output)
+			if (session)
 			{
-				memset(output, 0, sizeof(*output));
-				output->kind = selected->session_kind;
-				output->id = selected->session_id;
-				output->key = selected->session_key;
-				output->address = selected->session_address;
-				output->value = selected->field90;
+				memset(session, 0, sizeof(*session));
+				session->kind = selected->session_kind;
+				session->id = selected->session_id;
+				session->key = selected->session_key;
+				session->address = selected->session_address;
+				session->value = selected->field90;
 			}
+			return true;
 		}
+		return false;
 	}
 	return result;
 }
