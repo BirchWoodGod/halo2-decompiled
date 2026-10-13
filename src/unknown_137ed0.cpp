@@ -5,9 +5,6 @@
 
 
 
-extern word g_485ac8;
-extern short g_485aca;
-extern long g_485acc, g_485ad0;
 real g_485b20;
 extern double g_4ba040;
 void function_17bc40(real arg_1);

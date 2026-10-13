@@ -137,7 +137,7 @@ void __stdcall function_46230(short target, real const *bounds)
 // @retail 0x32ac0
 bool function_32ac0(void)
 {
-    bool volatile result = false;
+    byte result = 0;
     if (function_14480(*(long *)(g_485a80 + 0x34), 0, 0))
         return result;
     g_4670bc = true;
@@ -343,7 +343,7 @@ void *g_5093b0;
 
 short bitmap_get_mipmap_count(short width, short height, short depth, short format,
 	bool linear, short maximum_levels);
-bool function_0158f0(byte linear, short format, long width, long height,
+bool function_0158f0(short format, byte linear, long width, long height,
 	long levels, long usage_index, D3DTexture **out);
 bool function_0159b0(long edge, short format, long levels, long usage_index,
 	D3DCubeTexture **out);
@@ -353,11 +353,11 @@ bool function_015a60(short format, long width, long height, long depth,
 // @retail 0x1d000
 bool function_1d000(byte *bitmap)
 {
-	short width = *(short *)(bitmap + 4);
 	volatile short height = *(short *)(bitmap + 6);
-	char depth = *(char *)(bitmap + 8);
-	short format = *(short *)(bitmap + 0xc);
 	bool linear = (bitmap[0xe] & 0x10) != 0;
+	char depth = *(char *)(bitmap + 8);
+	short width = *(short *)(bitmap + 4);
+	short format = *(short *)(bitmap + 0xc);
 	void **texture = (void **)(bitmap + 0x50);
 	*texture = NULL;
 	short levels = bitmap_get_mipmap_count(width, height, depth, format, linear,
@@ -368,7 +368,7 @@ bool function_1d000(byte *bitmap)
 		switch (*(short *)(bitmap + 0xa))
 		{
 		case 0:
-			return function_0158f0(linear, format, width, height, levels, 0,
+			return function_0158f0(format, linear, width, height, levels, 0,
 				(D3DTexture **)texture);
 		case 1:
 			return function_015a60(format, width, height, depth, levels, 0,
@@ -486,7 +486,7 @@ void function_13d50(s_buffer_pair const *values, long mode, long count)
 s_texture_stage_storage g_texture_stage_storage;
 long g_5093d8;
 
-extern D3DResource *g_509374, *g_509378, *g_50937c, *g_509380;
+#include "surface_resource_pairs.h"
 D3DTexture *g_509354[2];
 D3DSurface *g_50935c, *g_509360, *g_509364, *g_509370;
 D3DTexture *g_509368, *g_50936c;
@@ -586,7 +586,8 @@ void function_14980(void)
 real g_4670c8 = 1.0f;
 extern byte g_5093fc;
 extern __int64 g_485aa0;
-long g_485af4[4], g_485b04[4];
+#include "texture_stage_dimensions.h"
+s_texture_stage_dimensions g_texture_stage_dimensions;
 
 #include "unknown_03bcb0.h"
 struct s_bitmap_view;
@@ -2473,11 +2474,11 @@ PRIVATE __forceinline real maximum_25ca0(real first, real second)
 // @retail 0x25ca0
 void function_25ca0(bool enabled)
 {
-    volatile real divisor = maximum_25ca0(0.0001f, g_4b9fa4);
-    real value = g_4b9ff8;
-    value *= 1.0f / divisor;
-    value = 0.0f - value;
     real constants[4];
+    *(volatile real *)&constants[3] = maximum_25ca0(0.0001f, g_4b9fa4);
+    real value = g_4b9ff8;
+    value *= 1.0f / *(volatile real *)&constants[3];
+    value = 0.0f - value;
     constants[0] = value < 0.0f ? 0.0f : value > 1.0f ? 1.0f : value;
     constants[1] = 0.0f;
     constants[2] = g_4b9f18;
@@ -2914,14 +2915,11 @@ D3DSurface g_484f50;
 // @retail 0x14850
 bool function_14850()
 {
-    volatile bool result = true;
-    D3DTexture *texture;
-    function_0158f0(0, 11, 64, 64, 0, 1, &texture);
-    g_509374 = texture;
-    g_509378 = D3DTexture_GetSurfaceLevel2(texture, 0);
-    function_0158f0(0, 11, 64, 64, 0, 1, &texture);
-    g_50937c = texture;
-    g_509380 = D3DTexture_GetSurfaceLevel2(texture, 0);
+    bool result = true;
+    function_0158f0(11, 0, 64, 64, 0, 1, &g_surface_resource_pairs.pairs[0].texture);
+    g_509378 = D3DTexture_GetSurfaceLevel2(g_509374, 0);
+    function_0158f0(11, 0, 64, 64, 0, 1, &g_surface_resource_pairs.pairs[1].texture);
+    g_509380 = D3DTexture_GetSurfaceLevel2(g_50937c, 0);
     if (!g_509374 || !g_509378 || !g_50937c || !g_509380)
         result = false;
     g_484f50.Common = 0x50001;
@@ -2939,18 +2937,15 @@ struct short_rect_pair
     struct { short v0, v1, v2, v3; } a, b;
 };
 extern short_rect_pair g_485a8a;
-extern short g_485aca;
 
-word g_485ac8;
-long g_485acc, g_485ad0;
+s_runtime_device_configuration g_runtime_device_configuration;
 long g_467008, g_46700c;
 bool g_5093bc;
 
 // @retail 0x128c0
 bool function_128c0(s_128c0_settings const *settings)
 {
-    g_485ac8 = *(word const *)settings;
-    g_485aca = settings->interval;
+    g_runtime_device_configuration.packed = *(dword const *)settings;
     g_485acc = settings->quality;
     g_485ad0 = settings->extra;
     volatile bool result = true;
@@ -3051,7 +3046,7 @@ extern D3DResource *g_485ae4, *g_485ae8, *g_485aec;
 bool function_1d0e0()
 {
     D3DTexture *texture;
-    if (!function_0158f0(0, 9, 4, 4, 0, 0, &texture))
+    if (!function_0158f0(9, 0, 4, 4, 0, 0, &texture))
     {
         g_485ae4 = texture;
         return false;
@@ -6927,42 +6922,46 @@ void function_1f2b0()
         {
             if ((dword)g_4b62b0[i].character_index != 0xffffffffu)
             {
-                if (i != NONE)
+                long index = i;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
             if ((dword)g_4b62b0[i + 1].character_index != 0xffffffffu)
             {
-                if (i + 1 != NONE)
+                long index = i + 1;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i + 1].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i + 1].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
             if ((dword)g_4b62b0[i + 2].character_index != 0xffffffffu)
             {
-                if (i + 2 != NONE)
+                long index = i + 2;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i + 2].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i + 2].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
             if ((dword)g_4b62b0[i + 3].character_index != 0xffffffffu)
             {
-                if (i + 3 != NONE)
+                long index = i + 3;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i + 3].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i + 3].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
         }
@@ -7799,7 +7798,8 @@ void __stdcall function_1f490(long unused, long font, long character, long color
     {
         positions[0] = x + (draw_shadow ? scale : 0.0f);
         positions[1] = y + (draw_shadow ? scale : 0.0f);
-        function_1f3a0((short const *)rectangle, positions[0], positions[1], (long)width, (long)height,
+        real const *position_values = (real const *)positions;
+        function_1f3a0((short const *)rectangle, position_values[0], position_values[1], (long)width, (long)height,
             (short)(long)u, (short)(long)v, scale, draw_shadow ? shadow : color,
             (t_1f3a0_callback)callback, (void *)context);
         if (!draw_shadow) break;
