@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7995 functions match
+
+```
+matched 7995 of 11318 game functions (974760 of 2784283 bytes, 35.01%)
+```
+
+3 new matches, none lost:
+- Claude lane 1, round 5 (+3), on Opus 5.5 at extra-high effort, working functions earlier rounds couldn't move: `0x24c676` tests both list fields before reading them, which gives retail's argument register and matches its caller `0x24bd61` as well, and `0x12190` ends at its unreachable marker after the free, as retail does. The lane also found that a call cycle retail has, broken in our build by a stub, keeps some functions on the default convention.
+
 ## 2026-10-12: 7992 functions match
 
 ```
