@@ -2182,6 +2182,11 @@ bool __stdcall function_1794e0(long effect_index)
 	return effect == 0;
 }
 
+static inline bool effect_object_visible_179730(s_effect_datum *effect)
+{
+	return function_3eb20(effect->location.cluster_index) && effect->object_index != NONE;
+}
+
 // @retail 0x179730
 bool function_179730(long effect_index)
 {
@@ -2191,7 +2196,7 @@ bool function_179730(long effect_index)
 
 	if (effect->location.cluster_index != NONE)
 	{
-		if ((function_3eb20(effect->location.cluster_index) && effect->object_index != NONE) || (g_510c50 && ((byte *)g_510c50)[5]))
+		if (effect_object_visible_179730(effect) || (g_510c50 && ((byte *)g_510c50)[5]))
 			hidden = false;
 		else if (TEST_FIELD_BIT(definition->flag2))
 			hidden = !function_11c080(&effect->location);
@@ -2200,16 +2205,14 @@ bool function_179730(long effect_index)
 	}
 	if (hidden != (((byte)effect->flags >> 3) & 1))
 	{
+		word *flags = &effect->flags;
+
 		if (hidden)
-		{
-			effect->flag3 = true;
-			if (!TEST_FIELD_BIT(effect->flag1) && !TEST_FIELD_BIT(effect->flag9) && function_177610(effect_index))
-				effect = 0;
-		}
+			*flags |= 8;
 		else
-		{
-			effect->flag3 = false;
-		}
+			*flags &= ~8;
+		if (hidden && !TEST_FIELD_BIT(effect->flag1) && !TEST_FIELD_BIT(effect->flag9) && function_177610(effect_index))
+			effect = 0;
 	}
 	return effect == 0;
 }
