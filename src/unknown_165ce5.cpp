@@ -1725,18 +1725,19 @@ static __forceinline void first_person_orientations_from_model(s_16760c_render_m
 	}
 }
 
-static __forceinline void first_person_channel_sample_sway(c_animation_channel *channel, real value, real positive_frame,
-	real negative_frame, real weight, long node_count, byte *orientations)
+
+static __forceinline void first_person_channel_sample_sway_16760c(c_animation_channel *channel, real const *value,
+	real positive_frame, real negative_frame, real weight, long node_count, byte *orientations)
 {
-	if (value > 0.0f)
+	if (*value > 0.0f)
 	{
 		channel->set_frame_position(positive_frame);
-		channel->sample(weight * value, NULL, node_count, (real_quaternion_transform *)orientations);
+		channel->sample(weight * *value, NULL, node_count, (real_quaternion_transform *)orientations);
 	}
-	else if (0.0f > value)
+	else if (0.0f > *value)
 	{
 		channel->set_frame_position(negative_frame);
-		channel->sample(0.0f - weight * value, NULL, node_count, (real_quaternion_transform *)orientations);
+		channel->sample(0.0f - weight * *value, NULL, node_count, (real_quaternion_transform *)orientations);
 	}
 }
 
@@ -1787,14 +1788,11 @@ void __stdcall function_16760c(long user_index, long field_x11c898)
 			state->sample(0, 1.0f, NULL, (real_quaternion_transform *)orientations, 0, 0, weapon->orientation_count);
 			function_bd970(weapon_index, arg_2f82bc, state, 0, weapon->orientation_count, orientations);
 			animation = state->channels[0].function_1c6440();
+			blend_time = 0.4f;
 			if (animation && (((byte *)animation)[0x18] & 0x10))
 			{
 				blend_time = 0.2f;
 				full_blend = false;
-			}
-			else
-			{
-				blend_time = 0.4f;
 			}
 			function_1d9240((s_1d9240 *)&user->unknown202c, full_blend, blend_time);
 			if (user->unknown202c.unknown1)
@@ -1825,22 +1823,17 @@ void __stdcall function_16760c(long user_index, long field_x11c898)
 					if (weapon->indices.unknown6 != NONE &&
 						state->channel_play(&channel, *(c_type_709360 *)&weapon->indices.unknown4, 0))
 					{
-						if (channel.function_1c6440()->frame_count < 9)
+						if (channel.function_1c6440()->frame_count >= 9)
 						{
-							weapon->indices.unknown4 = NONE;
-							weapon->indices.unknown6 = NONE;
-						}
-						else
-						{
-							first_person_channel_sample_sway(&channel, *(real *)&user->unknown2030[0x0], 0.0f, 1.0f, weight,
+							first_person_channel_sample_sway_16760c(&channel, (real const *)&user->unknown2030[0x0], 0.0f, 1.0f, weight,
 								weapon->orientation_count, orientations);
-							first_person_channel_sample_sway(&channel, *(real *)&user->unknown2030[0x4], 3.0f, 2.0f, weight,
+							first_person_channel_sample_sway_16760c(&channel, (real const *)&user->unknown2030[0x4], 3.0f, 2.0f, weight,
 								weapon->orientation_count, orientations);
 							if (!aimed)
 							{
-								first_person_channel_sample_sway(&channel, *(real *)&user->unknown2030[0x10], 4.0f, 5.0f, weight,
+								first_person_channel_sample_sway_16760c(&channel, (real const *)&user->unknown2030[0x10], 4.0f, 5.0f, weight,
 									weapon->orientation_count, orientations);
-								first_person_channel_sample_sway(&channel, *(real *)&user->unknown2030[0x14], 7.0f, 6.0f, weight,
+								first_person_channel_sample_sway_16760c(&channel, (real const *)&user->unknown2030[0x14], 7.0f, 6.0f, weight,
 									weapon->orientation_count, orientations);
 							}
 							if (weapon->indices.unknownc > 0.0f)
@@ -1849,6 +1842,11 @@ void __stdcall function_16760c(long user_index, long field_x11c898)
 								channel.sample(weapon->indices.unknownc * weight, NULL, weapon->orientation_count,
 									(real_quaternion_transform *)orientations);
 							}
+						}
+						else
+						{
+							weapon->indices.unknown4 = NONE;
+							weapon->indices.unknown6 = NONE;
 						}
 					}
 				}

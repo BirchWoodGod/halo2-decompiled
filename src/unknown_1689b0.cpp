@@ -1523,9 +1523,9 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 		struct
 		{
 			point3f face_sum;
-			real nearest_squared;
 			point3f edge_sum;
 		} accumulators;
+		real nearest_squared_local;
 		accumulators.edge_sum = *g_468788;
 		accumulators.face_sum = *g_468788;
 		long edge_count = 0;
@@ -1545,7 +1545,7 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 				projected.x = (0.0f - distance) * prism->plane.i + point->x;
 				projected.y = prism->plane.j * (0.0f - distance) + point->y;
 				projected.z = (0.0f - distance) * prism->plane.k + point->z;
-				accumulators.nearest_squared = 3.4028234663852886e+38f;
+				nearest_squared_local = 3.4028234663852886e+38f;
 				bool inside = true;
 				long count = prism->point_count > 8 ? 8 : prism->point_count;
 				point3f closest;
@@ -1598,9 +1598,9 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 						difference.k = clamped.z - projected.z;
 						real separation = difference.i * difference.i + difference.k * difference.k +
 							difference.j * difference.j;
-						if (accumulators.nearest_squared > separation)
+						if (nearest_squared_local > separation)
 						{
-							accumulators.nearest_squared = separation;
+							nearest_squared_local = separation;
 							closest = clamped;
 						}
 					}
@@ -1609,7 +1609,7 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 				if (inside)
 					closest = projected;
 				else
-					separation = accumulators.nearest_squared;
+					separation = nearest_squared_local;
 				if (radius_squared > separation)
 				{
 					bool face = true;

@@ -440,12 +440,14 @@ extern bool g_4c99b8;
 extern bool g_476fcc;
 bool function_53750(long player_index);
 
-static inline long local_user_next(long user_index)
+
+
+static inline long local_user_next_162de0(long user_index)
 {
 	long result = NONE;
-	long i;
+	long start = user_index == NONE ? 0 : user_index + 1;
 
-	for (i = user_index == NONE ? 0 : user_index + 1; i < 4; i++)
+	for (long i = start; i < 4; i++)
 	{
 		if (g_4e8c20->entries[i] != NONE)
 		{
@@ -456,14 +458,28 @@ static inline long local_user_next(long user_index)
 	return result;
 }
 
-static inline bool voice_player_hears(long listener_index, long talker_index)
+static inline bool voice_hears_mask_162de0(long listener_index, long talker_index)
 {
-	dword muted = g_527104.settings.initialized ? g_527104.settings.unknownc8[listener_index] : 0;
-	dword heard = g_527104.settings.initialized ? g_527104.settings.unknown108[listener_index] : 0;
+	dword muted = 0;
 
+	if (g_527104.settings.initialized)
+		muted = g_527104.settings.unknownc8[listener_index];
+
+	dword heard = 0;
+
+	if (g_527104.settings.initialized)
+		heard = g_527104.settings.unknown108[listener_index];
 	return ((muted | heard) & (1 << talker_index)) != 0;
 }
 
+static inline bool voice_talker_heard_162de0(long listener_index, long talker_index)
+{
+	if (!g_4c99b8 || !g_476fcc)
+		return false;
+	if (!function_53750(talker_index))
+		return false;
+	return voice_hears_mask_162de0(listener_index, talker_index);
+}
 /* counts, per local user, the frames each other player has been talking */
 // @retail 0x162de0
 void function_162de0(void)
@@ -473,7 +489,7 @@ void function_162de0(void)
 
 	state.users = 0;
 
-	for (user_index = local_user_next(NONE); user_index != NONE; user_index = local_user_next(user_index))
+	for (user_index = local_user_next_162de0(NONE); user_index != NONE; user_index = local_user_next_162de0(user_index))
 	{
 		if (user_index != NONE)
 		{
@@ -493,14 +509,10 @@ void function_162de0(void)
 
 					if (talker != player_index && *(short *)(state.iterator.datum + 0x28) == NONE)
 					{
-						long talker_index = talker & 0xffff;
-						long listener_index = player_index & 0xffff;
-
-						if (g_4c99b8 && g_476fcc && function_53750(talker_index) &&
-							voice_player_hears(listener_index, talker_index))
+						if (voice_talker_heard_162de0(player_index & 0xffff, talker & 0xffff))
 						{
-							g_4e9b38[user_index][talker_index]++;
-							state.talking |= 1 << talker_index;
+							g_4e9b38[user_index][talker & 0xffff]++;
+							state.talking |= 1 << (talker & 0xffff);
 						}
 					}
 				}
@@ -515,11 +527,13 @@ void function_162de0(void)
 			}
 		}
 	}
-	for (user_index = 0; user_index < 4; user_index++)
+	short (*row)[16];
+
+	for (user_index = 0, row = g_4e9b38; user_index < 4; user_index++, row++)
 	{
 		if (!((word)state.users & (1 << user_index)))
 		{
-			memset(g_4e9b38[user_index], 0, sizeof(g_4e9b38[user_index]));
+			memset(row, 0, sizeof(*row));
 		}
 	}
 }
