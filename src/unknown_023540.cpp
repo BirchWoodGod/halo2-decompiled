@@ -2035,7 +2035,7 @@ void function_24ee0(s_24ee0_state const *state, short mode)
     }
 }
 
-extern long g_485af4[4], g_485b04[4];
+#include "texture_stage_dimensions.h"
 extern dword g_4b8308, g_4b8438, g_4b8450, g_4b82ec, g_4b8448, g_4b843c;
 extern dword g_4b82e0, g_4b82fc;
 bool function_01dd60(long index, long *width, long *height);
