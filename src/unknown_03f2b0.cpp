@@ -466,12 +466,12 @@ void __stdcall function_44040(long cell, short mask)
             byte *group = (byte *)g_4ea950->data + (*(long *)(entry + 0x38) & 0xffff) * 0x40;
             if (*(short *)(group + 8) != (short)g_4ba038)
             {
-                byte *definition = g_4e3b44[*(long *)(entry + 0x2c) & 0xffff].bytes;
+                byte *definition = g_4e3b44[*(long *)(entry + 0x2c) & 0xffff].bytes + 0x6c;
                 *(short *)(group + 8) = (short)g_4ba038;
-                long tag = *(long *)(definition + 0x8c);
-                long bitmap = *(signed char *)(entry + 0x29);
-                if (g_4c878c != tag || g_4c8788 != bitmap)
+                long tag = *(long *)(definition + 0x20);
+                if (g_4c878c != tag || g_4c8788 != *(signed char *)(entry + 0x29))
                 {
+                    long bitmap = *(signed char *)(entry + 0x29);
                     g_4c8788 = bitmap;
                     g_4c878c = tag;
                     function_144f0(tag, 0, 1, (short)bitmap, 0, 0.0f);
@@ -482,12 +482,16 @@ void __stdcall function_44040(long cell, short mask)
                 {
                     g_4c8784 = color;
                     g_4c8780 = false;
-                    D3DDevice_SetVertexData4ub(10, (byte)(color >> 16), (byte)(color >> 8), (byte)color, (byte)(color >> 24));
+                    void (WINAPI *volatile set_vertex_data_4ub)(INT, BYTE, BYTE, BYTE, BYTE) = D3DDevice_SetVertexData4ub;
+                    set_vertex_data_4ub(10, (byte)(color >> 16), (byte)(color >> 8), (byte)color, (byte)(color >> 24));
                     D3DDevice_SetVertexDataColor(11, 0);
                 }
+                long block_index = *(long *)(entry + 4) & 0xffff;
+                long vertex_count = *(short *)(entry + 0x2a) * 4;
                 s_physical_object *manager = (s_physical_object *)g_509448;
-                s_physical_block *block = (s_physical_block *)manager->blocks->data + (*(long *)(entry + 4) & 0xffff);
-                D3DDevice_DrawVertices(D3DPT_QUADLIST, ((dword)block->offset << manager->page_shift) >> 4, *(short *)(entry + 0x2a) * 4);
+                s_physical_block *block = (s_physical_block *)manager->blocks->data + block_index;
+                dword first_vertex = ((dword)block->offset << manager->page_shift) >> 4;
+                D3DDevice_DrawVertices(D3DPT_QUADLIST, first_vertex, vertex_count);
             }
             handle = *(long *)(entry + 0x34);
         }
