@@ -22,6 +22,17 @@
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
+namespace D3D
+{
+	struct CDevice
+	{
+		static dword m_PushSegmentSize;
+	};
+
+	dword WINAPI SetFence(dword flags);
+	dword volatile *WINAPI MakeRequestedSpace(dword fallback_size, dword requested_size);
+}
+
 extern bool g_4ba019;
 bool function_143c0(long tag, short index, short stage, real priority);
 
@@ -939,7 +950,17 @@ void function_1ef70(void)
 	if (g_4b6298)
 	{
 		real size = 1.0f;
-		D3DDevice::End();
+		dword *device = (dword *)D3D__pDevice;
+		dword *push = (dword *)device[0];
+		if (push >= (dword *)device[1])
+			push = D3DDevice_MakeSpace();
+		push[0] = D3DPUSH_ENCODE(D3DPUSH_SET_BEGIN_END, 1);
+		push[1] = 0;
+		device[0] = (dword)(push + 2);
+		dword flags = device[2];
+		device[2] = flags & ~0x1800;
+		if (flags & 0x1000)
+			D3D::SetFence(1);
 		D3DDevice_SetRenderState(D3DRS_LINEWIDTH, *(dword *)&size);
 		g_4b6298 = 0;
 	}
@@ -1027,13 +1048,32 @@ struct s_1ed70_point
 };
 
 // @retail 0x1ed70
-void function_1ed70(color4f const *color, s_1ed70_point const *points, volatile short count)
+void function_1ed70(color4f const *color, s_1ed70_point const *points, short count)
 {
+    s_1ed70_point const *const *points_reference = &points;
+    short const *count_reference = &count;
+    short vertex_count = *count_reference;
     dword packed = pack_color4f(color);
     function_1ee60(2);
-    D3DDevice_SetVertexDataColor(9, packed);
-    for (short i = 0; i < count; ++i)
-        D3DDevice_SetVertexData2s(0, points[i].x, points[i].y);
+    dword *device = (dword *)D3D__pDevice;
+    dword volatile *push = (dword *)device[0];
+    if (push >= (dword *)device[1])
+        push = D3DDevice_MakeSpace();
+    dword swapped = (packed & 0xff00ff00) | ((packed & 0xff) << 16) | ((packed >> 16) & 0xff);
+    push[0] = 0x41964;
+    push[1] = swapped;
+    device[0] = (dword)(push + 2);
+    if (vertex_count > 0)
+    {
+        s_1ed70_point const *point = *points_reference;
+        long remaining = (word)vertex_count;
+        do
+        {
+            D3DDevice_SetVertexData2s(0, point->x, point->y);
+            ++point;
+        }
+        while (--remaining);
+    }
     function_1ef70();
 }
 
@@ -1132,6 +1172,7 @@ bool __stdcall function_246a0(void *context)
 }
 
 typedef long (__stdcall *visibility_draw_callback)(s_slot *slot, byte *data);
+bool function_0bfe60(dword const *flags, long bit);
 
 // @retail 0x20bb0
 void __stdcall function_20bb0(long player, dword mask, long const *indices, long count, bool query, visibility_draw_callback draw)
@@ -1152,7 +1193,8 @@ void __stdcall function_20bb0(long player, dword mask, long const *indices, long
                 {
                     long test = index * 3 + set;
                     HRESULT status = S_OK;
-                    if (g_51f40c.bitsets[set][index >> 5] & (1 << (index & 31)))
+                    dword *bitset = g_51f40c.bitsets[set];
+                    if (function_0bfe60(bitset, index))
                     {
                         UINT pixels;
                         ULONGLONG timestamp;
@@ -1163,14 +1205,24 @@ void __stdcall function_20bb0(long player, dword mask, long const *indices, long
                     long total = 0;
                     if (status == S_OK)
                     {
-                        D3DDevice_BeginVisibilityTest();
+                        dword *device = (dword *)D3D__pDevice;
+                        dword volatile *push = (dword volatile *)device[0];
+                        if (push >= (dword volatile *)device[1])
+                        {
+                            dword full_size = D3D::CDevice::m_PushSegmentSize;
+                            push = D3D::MakeRequestedSpace(full_size >> 1, full_size);
+                        }
+                        push[0] = 0x817c8;
+                        push[1] = 1;
+                        push[2] = 1;
+                        device[0] = (dword)(push + 3);
                         total = draw(slot, slot->data);
                         status = D3DDevice_EndVisibilityTest(test);
                         total = PIN(total, 0, 65535);
                     }
                     slot->k = total;
                     if (status == S_OK)
-                        g_51f40c.bitsets[set][index >> 5] |= 1 << (index & 31);
+                        bitset[index >> 5] |= 1 << (index & 31);
                 }
                 else
                     draw(slot, slot->data);

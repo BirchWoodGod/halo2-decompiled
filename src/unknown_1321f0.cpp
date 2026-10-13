@@ -936,8 +936,7 @@ void __stdcall function_134390(s_bit_vector_pool *data)
 }
 
 #include <xmmintrin.h>
-extern void *g_4e0310;
-extern void *g_4e0314;
+#include "unknown_0b68c0.h"
 long function_c3950(long object_index, long *indices, long maximum);
 
 struct s_visibility_link

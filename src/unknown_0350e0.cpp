@@ -552,9 +552,14 @@ void render_model_get_default_orientations(s_render_model_definition const *defi
 void render_model_build_node_matrices(vector3f const *forward, vector3f const *up, point3f const *position,
 	s_render_model_definition const *definition, transform4x3f *matrices, rigid_transform_scaled const *orientations);
 
-bool g_4c5038;
-long g_4c503c;
-transform4x3f g_4c5040[255];
+// The flag, the count and the matrices are one block: the matrices are passed by address.
+struct s_node_matrix_cache
+{
+	bool valid;
+	long count;
+	transform4x3f matrices[255];
+};
+s_node_matrix_cache g_4c5038;
 
 void function_4c690(long tag, transform4x3f const *nodes);
 bool __stdcall function_3ebd0(vector3f const *offset, transform4x3f const *matrices, transform4x3f *out, long count);
@@ -575,23 +580,21 @@ void function_3ede0(void)
 		if (index != NONE) data = g_4e3b44[index & 0xffff].bytes;
 		byte *definition = g_4e3b44[*(long *)(data + 4) & 0xffff].bytes;
 		long count = *(long *)(definition + 0x48);
-		if (count != g_4c503c)
+		if (count != g_4c5038.count)
 		{
-			g_4c503c = count;
-			g_4c5038 = false;
+			g_4c5038.count = count;
+			g_4c5038.valid = false;
 			return;
 		}
-		if (g_4c5038)
+		if (g_4c5038.valid)
 		{
-			function_3ebd0(g_4687a4, g_4c5040, matrices, count);
+			function_3ebd0(g_4687a4, g_4c5038.matrices, matrices, count);
 			function_14bc0((short)g_4858b8, 0, true);
 			function_4c690(*(long *)(data + 4), matrices);
 		}
 	}
 }
 
-extern "C" void _ReadWriteBarrier(void);
-#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x3ea60
 void function_3ea60(void)
 {
@@ -612,16 +615,12 @@ void function_3ea60(void)
 		byte *definition = g_4e3b44[*(long *)(data + 4) & 0xffff].bytes;
 		scratch.count = *(long *)(definition + 0x48);
 		render_model_get_default_orientations((s_render_model_definition *)definition, scratch.orientations);
-		vector3f *second = g_4687b0;
-		g_4c5038 = true;
-		// Keep the flag store before the count reload.
-		_ReadWriteBarrier();
-		g_4c503c = *(long *)(definition + 0x48);
-		render_model_build_node_matrices(g_4687a8, second, g_468788,
-			(s_render_model_definition *)definition, g_4c5040, scratch.orientations);
+		g_4c5038.valid = true;
+		g_4c5038.count = *(long *)(definition + 0x48);
+		render_model_build_node_matrices(g_4687a8, g_4687b0, g_468788,
+			(s_render_model_definition *)definition, g_4c5038.matrices, scratch.orientations);
 	}
 }
-#pragma function(_ReadWriteBarrier)
 
 __declspec(noinline) real function_3eb70(void);
 
@@ -1101,14 +1100,14 @@ void function_4b3d0(s_vector_perturbation *state)
 	state->magnitude_fraction = function_36a40(state->magnitude_fraction, state->magnitude_spread * g_509418, 0.0f, 1.0f);
 	_ReadWriteBarrier();
 	real first = state->first_fraction * state->direction_scale;
-	state->perturbation.i = state->first_axis.i * first + state->base_direction.i;
-	state->perturbation.j = state->first_axis.j * first + state->base_direction.j;
-	state->perturbation.k = state->first_axis.k * first + state->base_direction.k;
+	state->perturbation.i = (real)(state->first_axis.i * first) + state->base_direction.i;
+	state->perturbation.j = (real)(state->first_axis.j * first) + state->base_direction.j;
+	state->perturbation.k = (real)(state->first_axis.k * first) + state->base_direction.k;
 	_ReadWriteBarrier();
 	real second = state->second_fraction * state->direction_scale;
-	state->perturbation.i = state->second_axis.i * second + state->perturbation.i;
-	state->perturbation.j = state->second_axis.j * second + state->perturbation.j;
-	state->perturbation.k = state->second_axis.k * second + state->perturbation.k;
+	state->perturbation.i = (real)(state->second_axis.i * second) + state->perturbation.i;
+	state->perturbation.j = (real)(state->second_axis.j * second) + state->perturbation.j;
+	state->perturbation.k = (real)(state->second_axis.k * second) + state->perturbation.k;
 	function_30bf0(&state->perturbation);
 	real magnitude = state->magnitude * state->magnitude_fraction;
 	state->perturbation.i *= magnitude;
@@ -1831,7 +1830,7 @@ vector3f *function_11d000(vector3f const *v, vector3f *out);
 // @retail 0x3eec0
 void function_3eec0()
 {
-    if (g_4b9ee9 && g_4b9eec != NONE && g_4c5038)
+    if (g_4b9ee9 && g_4b9eec != NONE && g_4c5038.valid)
     {
         s_cluster_tag_table *table = (s_cluster_tag_table *)g_4e0350;
         long index = NONE;
