@@ -3596,15 +3596,15 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0010af80,131,game,speed,a16 pad,,,000b7680 0010af80,src/unknown_10af20.cpp,matched
 0010b010,377,game,speed,a16 pad,,,000b7360 000b7740 000b9b90 000bba20 001c4b00,src/unknown_10af20.cpp,todo
 0010b190,289,game,speed,a16 pad,,,0010c850 001697c0,src/items.cpp,matched
-0010b2c0,146,game,speed,a16 pad,,,0010dad0,src/items.cpp,todo
-0010b360,367,game,speed,a16 pad,,,00030bf0 000b75a0,src/items.cpp,todo
+0010b2c0,146,game,speed,a16 pad,,,0010dad0,src/items.cpp,matched
+0010b360,367,game,speed,a16 pad,,,00030bf0 000b75a0,src/items.cpp,matched
 0010b4d0,892,game,speed,a16 pad,,,000b8540 000b8bd0 000b9dd0 000ba300 000badc0 000bba20 000bc190 000d6660 000d6c80 0010b850 0010cf80 0010d5f0 0010d710 00142570 0016eb20 00176780 00184000,src/items.cpp,todo
 0010b850,4096,game,speed,a16 pad,,,00030bf0 000b75a0 000b7740 000b8bd0 000b8d30 000b92d0 000b9b90 000bb950 00109a00 0010b360 0010c880 0010d5f0 0010d710 00142700 00168f40 001697c0 00181db0 001c4b00,src/items.cpp,todo
 0010c850,48,game,unknown,a16,,,000b9b90,src/items.cpp,matched
 0010c880,375,game,unknown,a16,,,001201a0 00188180 00188dd0 001895f0,src/items.cpp,todo
 0010ca00,119,game,speed,a16 pad,,,000baeb0,src/items.cpp,matched
-0010ca80,571,game,speed,a16 pad,,,000a7870 000a7a60 000b8b70 000b9d20 000bb950 000bef30 000bfa40 00100f00 001060a0 0010ccc0 0010dad0 0015e250 0015e460,src/items.cpp,todo
-0010ccc0,131,game,speed,a16 pad,,,0015e300,src/items.cpp,todo
+0010ca80,571,game,speed,a16 pad,,,000a7870 000a7a60 000b8b70 000b9d20 000bb950 000bef30 000bfa40 00100f00 001060a0 0010ccc0 0010dad0 0015e250 0015e460,src/items.cpp,near
+0010ccc0,131,game,speed,a16 pad,,,0015e300,src/items.cpp,matched
 0010cd50,156,game,speed,a16 pad,,,000b7290 000b7300 000b87b0 000b8b70 000b9a90 000b9d20 000bef30,src/items.cpp,near
 0010cdf0,197,game,speed,a16 pad,,,000b8600 000b8b70 000b9d20 000bef30 0016e5e0,src/items.cpp,matched
 0010cec0,143,game,speed,a16 pad,,,000b8b70 000b8ee0 000b9d20 000bef30 0010cdf0,src/items.cpp,matched
