@@ -1063,15 +1063,8 @@ void function_1f19c0(byte const *request, s_shape_state *history, byte *out)
         {
             byte *contact = contacts + i * 0x48;
             vector3f *normal = (vector3f *)(contact + 0x28);
-            real local_11 = normal->k * velocity->k;
-            local_11 += normal->j * velocity->j;
-            local_11 += velocity->i * normal->i;
-            real speed = 0.0f - local_11;
-            vector3f const *local_12 = (vector3f const *)(request + 0x28);
-            real local_13 = normal->k * local_12->k;
-            local_13 += normal->j * local_12->j;
-            local_13 += local_12->i * normal->i;
-            real approach = 0.0f - local_13 * *(real *)(request + 0x34);
+            real speed = 0.0f - shape_dot(*normal, *velocity);
+            real approach = 0.0f - shape_dot(*normal, *(vector3f *)(request + 0x28)) * *(real *)(request + 0x34);
             bool flag = ((*(byte *)(contact + 0x44) >> 1) & 1) != 0;
             bool supported = (flying || (*(byte *)(contact + 0x44) & 4)) && approach >= -0.001f;
             if (normal->k > highest_z)

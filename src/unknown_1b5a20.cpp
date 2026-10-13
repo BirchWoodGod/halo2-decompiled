@@ -302,8 +302,8 @@ void function_25d420(long prop_ref_index, short type, long actor_index);
 // @retail 0x1b5e00
 short __stdcall function_1b5e00(long actor_index, short level, bool active)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	short result = g_46fbe4;
+	s_actor_view *actor = actor_get(actor_index);
 	s_slot_22 *state = (s_slot_22 *)&actor->slots[level];
 
 	if (actor->prop_index != NONE)

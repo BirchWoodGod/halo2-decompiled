@@ -941,8 +941,9 @@ bool __stdcall function_1ac610(long arg_0, point3f const *arg_1,
 }
 
 
+struct s_1f4a20_entry;
 struct s_1f4a20_source;
-bool function_1f4a20(long arg_0, s_reference arg_1, s_object_marker const *arg_2,
+bool function_1f4a20(long arg_0, s_reference arg_1, s_1f4a20_entry const *arg_2,
 	bool arg_3, s_type_c3b527 *arg_4, vector3f *arg_5,
 	signed char *arg_6, bool *arg_7, s_1f4a20_source const *arg_8);
 
@@ -963,8 +964,8 @@ struct s_1ac9e1
 };
 
 // @retail 0x1ac9e0
-bool function_1ac9e0(long arg_0, s_reference arg_1, s_1f4a20_source const *arg_2,
-	byte *arg_4, bool arg_5, long arg_3, s_object_marker const *arg_6, s_1ac9e1 *arg_7)
+bool function_1ac9e0(long arg_0, s_reference arg_1, s_1f4a20_entry const *arg_2,
+	byte *arg_4, bool arg_5, long arg_3, s_1f4a20_source const *arg_6, s_1ac9e1 *arg_7)
 {
 	s_actor_view *local_1 = actor_get(arg_0);
 	bool local_0 = false;
@@ -974,8 +975,8 @@ bool function_1ac9e0(long arg_0, s_reference arg_1, s_1f4a20_source const *arg_2
 		*(long *)((byte *)local_2 + 0x14) != NONE &&
 		*(long *)((byte *)local_2 + 0x14) != 0xffff)
 	{
-		bool local_8 = function_1f4a20(arg_0, arg_1, arg_6, false, &arg_7->field_1c,
-			&arg_7->field_8, &arg_7->field_2c, &local_0, arg_2);
+		bool local_8 = function_1f4a20(arg_0, arg_1, arg_2, false, &arg_7->field_1c,
+			&arg_7->field_8, &arg_7->field_2c, &local_0, arg_6);
 		if (local_8)
 		{
 			arg_7->field_19 = true;
@@ -1072,8 +1073,8 @@ bool __stdcall function_1acb50(long arg_0, s_slot *arg_1)
 		ai_scratch_buffer_release(local_10);
 		return local_16;
 	}
-	local_16 = function_1ac9e0(arg_0, local_14, (s_1f4a20_source const *)&local_7.field_00,
-		local_10, local_13, local_12, (s_object_marker const *)local_9, (s_1ac9e1 *)arg_1);
+	local_16 = function_1ac9e0(arg_0, local_14, (s_1f4a20_entry const *)&local_7.field_00,
+		local_10, local_13, local_12, (s_1f4a20_source const *)local_9, (s_1ac9e1 *)arg_1);
 	ai_scratch_buffer_release(local_10);
 	return local_16;
 }
