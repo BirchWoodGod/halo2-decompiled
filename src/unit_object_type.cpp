@@ -466,7 +466,7 @@ extern const long g_467430[5];
 bool function_10f9b0(long unit_index, long state_name, long action_name, long a, transform4x3f *matrix, bool flag);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 void function_15e050(long object_index, short value);
-void __stdcall function_153d10(short team, long definition_index, void *a, void *b, long c, real d, real e, long f);
+void __stdcall function_153d10(long team, long definition_index, void *a, void *b, long c, real d, real e, bool f);
 void __stdcall object_get_damage_owner(long object_index, s_damage_owner *owner);
 void function_107370(long device_index, real value);
 void function_184060(long unknown3c, byte unknown59, s_type_1e6529 *data, long unknown50);

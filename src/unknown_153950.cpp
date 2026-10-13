@@ -527,16 +527,16 @@ struct s_camera_effect_tag_153d10
 };
 
 // @retail 0x153d10
-void __stdcall function_153d10(short user_index, long tag_index, void *owner, void *direction, long unused, real scale, real priority, long directional)
+void __stdcall function_153d10(long user_index, long tag_index, void *owner, void *direction, long unused, real scale, real priority, bool directional)
 {
     long local_index = user_index;
     if (local_index == NONE)
         return;
     s_camera_effect_tag_153d10 *definition = (s_camera_effect_tag_153d10 *)g_4e3b44[tag_index & 0xffff].bytes;
     s_speed_slot *slot = &g_510c5c->slots[local_index];
-    long player_index = g_4e8c20->entries[local_index];
-    if (player_index != NONE)
+    if (local_player_present(local_index))
     {
+        long player_index = g_4e8c20->entries[local_index];
         long unit_index = *(long *)(g_4e8c24->data + (player_index & 0xffff) * 0x21c + 0x2c);
         if (unit_index != NONE)
         {
@@ -545,7 +545,7 @@ void __stdcall function_153d10(short user_index, long tag_index, void *owner, vo
             for (long i = 0; i < definition->count; i++)
             {
                 s_camera_effect_153d10 *effect = &definition->effects[i];
-                if (effect->type != (active ? 1 : 0))
+                if ((active && effect->type != 1) || (!active && effect->type != 0))
                 {
                     if (effect->request.duration > 0.05f && effect->request.amount > 0.05f)
                     {
@@ -610,10 +610,16 @@ void __stdcall function_153d10(short user_index, long tag_index, void *owner, vo
             slot->decay[2] = 0xff;
             return;
         }
-        long unit_index = NONE;
-        long player = g_4e8c20->entries[local_index];
-        if (player != NONE)
+        long unit_index;
+        if (local_player_present(local_index))
+        {
+            long player = g_4e8c20->entries[local_index];
             unit_index = *(long *)(g_4e8c24->data + (player & 0xffff) * 0x21c + 0x2c);
+        }
+        else
+        {
+            unit_index = NONE;
+        }
         if (function_badc0(unit_index, 3) && function_badc0(((long *)owner)[1], (dword)NONE))
         {
             s_player_state *state = function_16f3a0(local_index);
@@ -625,10 +631,12 @@ void __stdcall function_153d10(short user_index, long tag_index, void *owner, vo
                 vector3f *forward = (vector3f *)((byte *)state + 0x20);
                 vector3f *up = (vector3f *)((byte *)state + 0x2c);
                 vector3f delta = { target.x - origin.x, target.y - origin.y, target.z - origin.z };
+                vector3f cross;
                 vector3f relative;
-                relative.i = (forward->k * up->i - up->k * forward->i) * delta.j
-                    + (forward->i * up->j - forward->j * up->i) * delta.k
-                    + (forward->j * up->k - forward->k * up->j) * delta.i;
+                cross.i = forward->j * up->k - forward->k * up->j;
+                cross.j = forward->k * up->i - up->k * forward->i;
+                cross.k = forward->i * up->j - forward->j * up->i;
+                relative.i = cross.k * delta.k + cross.j * delta.j + cross.i * delta.i;
                 relative.j = forward->k * delta.k + forward->j * delta.j + forward->i * delta.i;
                 relative.k = up->k * delta.k + up->j * delta.j + up->i * delta.i;
                 *(real *)((byte *)slot + 0x8c) = relative.i;
