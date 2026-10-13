@@ -98,7 +98,7 @@ struct s_28e601
 void function_b9fc0(long arg_0, vector3f *arg_1, vector3f *arg_2);
 vector3f *function_11d090(vector3f const *arg_0, vector3f *arg_1);
 
-__forceinline void function_28e65d(vector3f const *arg_0, vector3f const *arg_1, vector3f *arg_2)
+__forceinline void function_28e65d(vector3f const *arg_1, vector3f const *arg_0, vector3f *arg_2)
 {
 	real local_1 = arg_1->i * arg_0->k - arg_1->k * arg_0->i;
 	real local_2 = arg_1->k * arg_0->j - arg_1->j * arg_0->k;
@@ -116,10 +116,10 @@ void function_28e600(long arg_0, s_28e600 *arg_1)
 	{
 		arg_1->field_8c = local_0->field_1f0;
 		vector3f local_1;
-		function_28e65d(&arg_1->field_8c, &arg_1->field_80, &local_1);
+		function_28e65d(&arg_1->field_80, &arg_1->field_8c, &local_1);
 		if (function_30bf0(&local_1) > 0.0f)
 		{
-			function_28e65d(&local_1, &arg_1->field_8c, &arg_1->field_80);
+			function_28e65d(&arg_1->field_8c, &local_1, &arg_1->field_80);
 			if (function_30bf0(&arg_1->field_80) != 0.0f)
 				return;
 		}

@@ -372,13 +372,12 @@ void function_27a060(s_graph_tag *graph, c_type_709360 animation_id, long node_c
 	s_animation *animation = function_1daea0(graph, animation_id);
 	s_animation_data data;
 	real last_frame;
-	real frame;
 
 	function_1ddb40(&data, graph, animation_id);
 	last_frame = (real)(animation->frame_count - 1) + 0.0001f;
-	frame = last_frame * ratio;
-	frame = PIN(frame, 0.0f, last_frame);
-	function_2798a0(&data, frame, weight, graph, animation, node_count, inheritance, node_mask, transforms, true,
+	real const frame = PIN(last_frame * ratio, 0.0f, last_frame);
+	function_2798a0(&data, frame, weight, graph, animation, node_count,
+		inheritance, node_mask, transforms, true,
 		false, 0.0f, 0.0f);
 }
 
