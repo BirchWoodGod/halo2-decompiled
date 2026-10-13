@@ -1903,6 +1903,7 @@ void function_159460(long player_index, bool *leading, bool *tied)
 	long absolute_index = player_index & 0xffff;
 	s_engine_player *player = (s_engine_player *)g_4e8c24->data + absolute_index;
 	bool is_tied = false;
+	bool is_leading = true;
 
 	if (function_x340af0())
 	{
@@ -1920,13 +1921,11 @@ void function_159460(long player_index, bool *leading, bool *tied)
 				}
 				else if (difference > 0)
 				{
-					goto not_leading;
+					is_leading = false;
+					break;
 				}
 			}
 		}
-		*leading = true;
-		*tied = is_tied;
-		return;
 	}
 	else
 	{
@@ -1948,17 +1947,22 @@ void function_159460(long player_index, bool *leading, bool *tied)
 				}
 				if (difference > 0)
 				{
-					goto not_leading;
+					is_leading = false;
+					break;
 				}
 			}
 		}
 	}
-	*leading = true;
-	*tied = is_tied;
-	return;
-not_leading:
-	*leading = false;
-	*tied = false;
+	if (is_leading)
+	{
+		*leading = true;
+		*tied = is_tied;
+	}
+	else
+	{
+		*leading = false;
+		*tied = false;
+	}
 }
 
 #include "object_iterator.h"
@@ -2354,7 +2358,7 @@ void function_15b980(bool skip_event)
 	}
 }
 
-void function_1e9df0(long field, long counter, s_statborg *statistics, long team, long delta);
+void function_1e9df0(long field, long counter, long team, s_statborg *statistics, long delta);
 void function_1e9ce0(long player_index, long counter, s_statborg *statistics, long field, long delta, bool by_team);
 
 // @retail 0x15b650
@@ -2395,7 +2399,7 @@ void __stdcall function_15b650(long team, long delta)
 	}
 	if (score != old_score)
 	{
-		function_1e9df0(0, NONE, statistics, selected_team, score - old_score);
+		function_1e9df0(0, NONE, selected_team, statistics, score - old_score);
 		switch (g_4e6948->mode_180)
 		{
 		case 1: function_1967d0(NONE, selected_team, 0xe, score - old_score); break;
@@ -2439,7 +2443,7 @@ void function_15b3a0(long player_or_team, bool value)
 	{
 		if (score_teams_enabled())
 		{
-			function_1e9df0(7, 6, &globals->statborg, player_or_team, 1);
+			function_1e9df0(7, 6, player_or_team, &globals->statborg, 1);
 			s_engine_player_iterator iterator;
 
 			iterator.data = g_4e8c24;
@@ -3436,6 +3440,13 @@ void function_15ebd0(void)
 	}
 }
 
+/* the two ids of the game options (+0x10, +0x14), read as a pair */
+struct s_seed_pair_15a640
+{
+	long a;
+	long b;
+};
+
 // @retail 0x15a640
 long function_15a640(long tag_index)
 {
@@ -3445,7 +3456,8 @@ long function_15a640(long tag_index)
     long mode = *(signed char *)((byte *)g_4e6948 + 0x210);
     if (mode == 19)
     {
-        dword seed = (g_4e6948->id_b ^ g_4e6948->id_a) * 1664525 + 1013904223;
+        s_seed_pair_15a640 ids = *(s_seed_pair_15a640 const *)&g_4e6948->id_a;
+        dword seed = (ids.a ^ ids.b) * 1664525 + 1013904223;
         mode = (long)(seed >> 16) % 17 + 2;
     }
     switch (mode)
@@ -3497,20 +3509,26 @@ long function_15a640(long tag_index)
     case 8:
         switch (index)
         {
-        case 0: index = 5; break;
-        case 1: index = 5; break;
-        case 2: index = 5; break;
-        case 3: index = 5; break;
-        case 4: index = 15; break;
-        case 6: index = 12; break;
-        case 7: index = 12; break;
-        case 8: index = 12; break;
-        case 9: index = 15; break;
-        case 10: index = 12; break;
-        case 11: index = 12; break;
-        case 13: index = 15; break;
-        case 14: index = 12; break;
-        case 16: index = 15; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+            index = 5;
+            break;
+        case 4:
+        case 9:
+        case 13:
+        case 16:
+            index = 15;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 10:
+        case 11:
+        case 14:
+            index = 12;
+            break;
         }
         break;
     case 9:
@@ -3544,70 +3562,85 @@ long function_15a640(long tag_index)
     case 11:
         switch (index)
         {
-        case 0: index = 3; break;
-        case 1: index = 3; break;
-        case 2: index = 3; break;
-        case 3: index = 3; break;
-        case 5: index = 3; break;
-        case 6: index = 10; break;
-        case 7: index = 10; break;
-        case 8: index = 10; break;
-        case 9: index = 10; break;
-        case 10: index = 10; break;
-        case 11: index = 10; break;
-        case 12: index = 10; break;
-        case 14: index = 10; break;
-        case 15: index = 10; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 5:
+            index = 3;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 14:
+        case 15:
+            index = 10;
+            break;
         }
         break;
     case 12:
         switch (index)
         {
-        case 0: index = 4; break;
-        case 1: index = 4; break;
-        case 2: index = 4; break;
-        case 3: index = 4; break;
-        case 4: index = 4; break;
-        case 5: index = 4; break;
-        case 6: index = 13; break;
-        case 7: index = 13; break;
-        case 8: index = 13; break;
-        case 9: index = 13; break;
-        case 10: index = 13; break;
-        case 11: index = 13; break;
-        case 12: index = 13; break;
-        case 13: index = 13; break;
-        case 14: index = 13; break;
-        case 15: index = 13; break;
-        case 16: index = 13; break;
-        case 17: index = 13; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            index = 4;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+            index = 13;
+            break;
         }
         break;
     case 13:
-        if (index == 4) index = 3;
-        else if (index == 13) index = 10;
+        switch (index)
+        {
+        case 4: index = 3; break;
+        case 13: index = 10; break;
+        }
         break;
     case 14:
         switch (index)
         {
-        case 0: index = 0; break;
-        case 1: index = 0; break;
-        case 2: index = 0; break;
-        case 3: index = 0; break;
-        case 4: index = 0; break;
-        case 5: index = 0; break;
-        case 6: index = 6; break;
-        case 7: index = 6; break;
-        case 8: index = 6; break;
-        case 9: index = 6; break;
-        case 10: index = 6; break;
-        case 11: index = 6; break;
-        case 12: index = 6; break;
-        case 13: index = 6; break;
-        case 14: index = 6; break;
-        case 15: index = 6; break;
-        case 16: index = 6; break;
-        case 17: index = 6; break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            index = 0;
+            break;
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+            index = 6;
+            break;
         }
         break;
     case 15:
@@ -3650,14 +3683,28 @@ long function_15a640(long tag_index)
     case 17:
         switch (index)
         {
-        case 0: index = 6; break;
-        case 1: index = 9; break;
-        case 2: index = 9; break;
-        case 3: index = 10; break;
-        case 4: index = 13; break;
-        case 5: index = 12; break;
-        case 16: index = 7; break;
-        case 17: index = 8; break;
+        case 0:
+            index = 6;
+            break;
+        case 1:
+        case 2:
+            index = 9;
+            break;
+        case 3:
+            index = 10;
+            break;
+        case 4:
+            index = 13;
+            break;
+        case 5:
+            index = 12;
+            break;
+        case 16:
+            index = 7;
+            break;
+        case 17:
+            index = 8;
+            break;
         }
         break;
     case 18:
@@ -3715,6 +3762,11 @@ static inline long death_seconds_to_ticks(real seconds)
     return result;
 }
 
+static __forceinline long nonnegative_15ce70(long value)
+{
+	return value < 0 ? 0 : value;
+}
+
 // @retail 0x15ce70
 void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte damage)
 {
@@ -3724,15 +3776,13 @@ void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte
     long damage_modifier = damage >> 6;
     long award = NONE;
     bool special = damage_type == 3 || damage_type == 0x1a || damage_type == 0x18 || damage_type == 0x17 || damage_type == 0x14;
-    long elapsed = g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time;
-    if (elapsed < 0) elapsed = 0;
+    long elapsed = nonnegative_15ce70(g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time);
     *(long *)((byte *)victim + 0x1b4) = elapsed;
     if (attacker_index != NONE)
     {
         s_engine_player *attacker = engine_player_get(attacker_index);
         bool different = attacker_index != victim_index;
-        bool same_team = false;
-        if (game_engine_get()) same_team = game_engine_get()->p27(attacker->team, victim->team);
+        bool same_team = game_engine_get() ? game_engine_get()->p27(attacker->team, victim->team) : false;
         if (!different)
             *(long *)victim->unknown168 += death_seconds_to_ticks((real)*(long *)((byte *)g_4e6948 + 0x1c0));
         else if (!same_team && !victim->value164)
@@ -3761,8 +3811,7 @@ void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte
         break;
     case 1:
         {
-            long now = g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time;
-            if (now < 0) now = 0;
+            long now = nonnegative_15ce70(g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time);
             long next = (now / interval + 1) * interval;
             while (next < now + delay) next += interval;
             victim->value164 = next - now;
@@ -4212,6 +4261,11 @@ struct s_player_view_15bb20
     short dead_count;
 };
 
+static __forceinline long long_max_15bb20(long a, long b)
+{
+    return a > b ? a : b;
+}
+
 // @retail 0x15bb20
 void __stdcall function_15bb20(long player_index)
 {
@@ -4236,23 +4290,23 @@ void __stdcall function_15bb20(long player_index)
         }
         else
             player->seat_timer = NONE;
-        if (player->unit_index != NONE)
+    }
+    if (player->unit_index != NONE)
+    {
+        if (player->dead_timer != NONE && g_4e6948->mode == 4)
+            ++player->dead_count;
+        player->dead_timer = NONE;
+        if (player->alive_timer == NONE)
         {
-            if (player->dead_timer != NONE && g_4e6948->mode == 4)
-                ++player->dead_count;
-            player->dead_timer = NONE;
-            if (player->alive_timer == NONE)
+            player->alive_timer = 0;
+            if (g_4e6948->mode != 4)
             {
-                player->alive_timer = 0;
-                if (g_4e6948->mode != 4)
-                {
-                    player->value1b0 = NONE;
-                    function_a7840((short)player_index, 0x40);
-                }
+                player->value1b0 = NONE;
+                function_a7840((short)player_index, 0x40);
             }
-            else if (player->alive_timer < 0x7f)
-                ++player->alive_timer;
         }
+        else if (player->alive_timer < 0x7f)
+            ++player->alive_timer;
     }
     else
     {
@@ -4263,13 +4317,12 @@ void __stdcall function_15bb20(long player_index)
         player->alive_timer = NONE;
     }
 
-    short user = player->local_index;
-    long controller = *(long *)((byte *)player + 0x24);
-    if (user != NONE && controller != NONE)
+    if (player->local_index != NONE && *(long *)((byte *)player + 0x24) != NONE)
     {
         s_input_state *input = NULL;
-        if (g_4e61cc[(short)controller] != 0)
-            input = g_4e61b9 ? &g_4e630c : &g_4e61dc[(short)controller];
+        short controller = (short)*(long *)((byte *)player + 0x24);
+        if (g_4e61cc[controller] != 0)
+            input = g_4e61b9 ? &g_4e630c : &g_4e61dc[controller];
         long ticks = g_510c54->field_2_3;
         long minimum_time = ticks * 3;
         bool active = input && input->values[0xd] != 0;
@@ -4302,7 +4355,7 @@ void __stdcall function_15bb20(long player_index)
         else
         {
             long remaining = (long)g_4e9af0.timers[player->local_index] - 1;
-            g_4e9af0.timers[player->local_index] = (byte)(remaining > 0 ? remaining : 0);
+            g_4e9af0.timers[player->local_index] = (byte)long_max_15bb20(remaining, 0);
         }
     }
 }
@@ -4420,9 +4473,9 @@ void __stdcall function_15e530(c_1fa50 const *text, real alpha, point2f const *p
 {
     (void)&text;
     (void)&alpha;
-    (void)&point;
-    short_rectangle2d bounds = g_4b9dd8;
+    point2f const *const *point_reference = &point;
     long font_index = (g_4ba04c <= 1) + 5;
+    short_rectangle2d bounds = g_4b9dd8;
     s_font_header *font = font_get(g_4e28f4[font_index]);
     long height = 10;
     if (font)
@@ -4438,11 +4491,14 @@ void __stdcall function_15e530(c_1fa50 const *text, real alpha, point2f const *p
                 rgb = &alternate_score_text_color;
         }
     }
-    real scale = (g_4b9ed8 >= 0 && g_4b9ed8 < 4) ? g_4e69c0[g_4b9ed8] : 1.0f;
-    color4f color = { scale * alpha, rgb->red, rgb->green, rgb->blue };
-    color4f shadow = { scale * alpha, g_468718->x, g_468718->y, g_468718->z };
-    real x = point->x - g_4b9dd2;
-    real y = point->y - g_4b9dd0;
+    color4f color;
+    *(color3f *)&color.red = *rgb;
+    color.alpha = ((g_4b9ed8 >= 0 && g_4b9ed8 < 4) ? g_4e69c0[g_4b9ed8] : 1.0f) * alpha;
+    color4f shadow;
+    *(point3f *)&shadow.red = *g_468718;
+    shadow.alpha = ((g_4b9ed8 >= 0 && g_4b9ed8 < 4) ? g_4e69c0[g_4b9ed8] : 1.0f) * alpha;
+    real x = (*point_reference)->x - g_4b9dd2;
+    real y = (*point_reference)->y - g_4b9dd0;
     bounds.left = (short)(x - 300.0f);
     bounds.right = (short)(x + 300.0f);
     bounds.top = (short)(y - (short)height);
@@ -4511,7 +4567,7 @@ void function_15be20()
 }
 
 #include <wchar.h>
-bool function_30710(vector3f const *vector, short_rectangle2d const *bounds, point2f *point, s_camera const *camera, s_view const *view);
+bool function_30710(s_camera const *camera, short_rectangle2d const *bounds, vector3f const *vector, point2f *point, s_view const *view);
 void parse_text(word *text);
 
 // @retail 0x159250
@@ -4561,7 +4617,7 @@ void function_159250(long player_index, real alpha)
 		transformed.k += g_4b9e14.right.k * x;
 		transformed.k += g_4b9e14.up.k * y;
 		transformed.k += g_4b9e14.position.z;
-		if (function_30710(&transformed, 0, &point, (s_camera const *)&g_4b9e14, (s_view const *)&g_camera_storage))
+		if (function_30710((s_camera const *)&g_4b9e14, 0, &transformed, &point, (s_view const *)&g_camera_storage))
 		{
 			text[0] = 0;
 			wcsncpy((wchar_t *)text, (wchar_t const *)((byte *)player + 0x44), 0xff);
@@ -4961,6 +5017,7 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
     {
         byte *placement = *(byte **)(scenario + 0x124) + i * 0x90;
         if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
+        short *timer = &entries[i].value04;
         c_engine_peer *engine = game_engine_get();
         long type = NONE;
         if (engine)
@@ -4986,10 +5043,9 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
                 }
                 if (!reset) ++entries[i].value06;
                 else entries[i].value06 = 0;
-                if (entries[i].value06 > *(short *)(placement + 0x10)) entries[i].value04 = 1;
+                if (entries[i].value06 > *(short *)(placement + 0x10)) *timer = 1;
             }
         }
-        short *timer = &entries[i].value04;
         if (*timer == 0)
         {
             bool schedule = entries[i].index == NONE;

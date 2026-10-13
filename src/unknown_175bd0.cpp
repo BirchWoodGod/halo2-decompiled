@@ -1771,9 +1771,13 @@ void function_1786f0(s_effect_marker_source const *source, s_effect_object_marke
 			up.k = 0.0f;
 		}
 		position = *(point3f const *)&up;
-		forward.i = matrix->forward.k * marker->forward.k + matrix->forward.j * marker->forward.j + matrix->forward.i * marker->forward.i;
-		forward.j = matrix->left.k * marker->forward.k + matrix->left.j * marker->forward.j + matrix->left.i * marker->forward.i;
-		forward.k = matrix->up.k * marker->forward.k + matrix->up.j * marker->forward.j + matrix->up.i * marker->forward.i;
+		real i = marker->forward.i;
+		real j = marker->forward.j;
+		real k = marker->forward.k;
+
+		forward.i = matrix->forward.k * k + matrix->forward.j * j + matrix->forward.i * i;
+		forward.j = matrix->left.k * k + matrix->left.j * j + matrix->left.i * i;
+		forward.k = matrix->up.k * k + matrix->up.j * j + matrix->up.i * i;
 	}
 	else
 	{
@@ -1936,7 +1940,7 @@ void function_178c80(real scale, s_effect_datum *effect, s_particle_system_datum
 
 
 // @retail 0x178eb0
-s_particle_system_datum *function_178eb0(long definition_index, long effect_index)
+s_particle_system_datum *function_178eb0(long effect_index, long definition_index)
 {
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 	s_effect_event *event = &TAG_GET(s_effect_definition, effect->tag_index)->events[effect->event_index];
@@ -2028,7 +2032,7 @@ void function_179020(long effect_index, real scale, real unknown)
 		{
 			s_particle_system_datum *particle_system = effect_event_slot_particle_system(effect, definition);
 
-			if (particle_system || (particle_system = function_178eb0(i, effect_index)) != 0)
+			if (particle_system || (particle_system = function_178eb0(effect_index, i)) != 0)
 			{
 				if (definition->location_index != NONE)
 					function_178c80(scale, effect, particle_system, definition, unknown, field_b4);

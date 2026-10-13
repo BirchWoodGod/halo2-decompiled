@@ -167,7 +167,7 @@ void function_01ddd0(long index, dword width, dword height)
 	dword value = (x - 0x1000000) | (y - 0x1000) | (width - 1);
 	e->width = width;
 	e->height = height;
-	value = e->flag94 ? value : 0;
+	value *= (dword)(bool)e->flag94;
 	e->sub_header[4] = value;
 	e->elements[0][4] = value;
 }

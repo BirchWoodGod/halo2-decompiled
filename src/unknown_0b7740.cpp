@@ -678,7 +678,7 @@ done:
 struct s_16760c_render_model;
 bool __stdcall function_bab40(long object_index, long name, real *value);
 
-// @retail 0xbd970
+// @retail 0xbd970 standard
 void __stdcall function_bd970(long object_index, s_16760c_render_model *render_model, s_animation_state *state, long node_mask, long node_count, byte *orientations)
 {
     short index = NONE;
@@ -1032,11 +1032,13 @@ void __stdcall function_b9b90(long object_index, bool disabled);
 // @retail 0xb77d0
 void __stdcall function_b77d0(long object_index, vector3f const *linear_velocity, vector3f const *angular_velocity)
 {
-    vector3f const *volatile *angular_reference = &angular_velocity;
-    function_b7740(object_index, linear_velocity, *angular_reference, false);
-    function_1c4b00(object_index, (void *)linear_velocity, (void *)*angular_reference, 1);
-    if ((*angular_reference && (*angular_reference)->i * (*angular_reference)->i + (*angular_reference)->j * (*angular_reference)->j + (*angular_reference)->k * (*angular_reference)->k > 0.0001f) ||
-        (linear_velocity && linear_velocity->i * linear_velocity->i + linear_velocity->j * linear_velocity->j + linear_velocity->k * linear_velocity->k > 0.0001f))
+    // Retail keeps the linear velocity parameter on the stack.
+    vector3f const *const *linear_reference = &linear_velocity;
+    linear_velocity = *linear_reference;
+    function_b7740(object_index, linear_velocity, angular_velocity, false);
+    function_1c4b00(object_index, (void *)linear_velocity, (void *)angular_velocity, 1);
+    if ((linear_velocity && linear_velocity->i * linear_velocity->i + linear_velocity->j * linear_velocity->j + linear_velocity->k * linear_velocity->k > 0.0001f) ||
+        (angular_velocity && angular_velocity->i * angular_velocity->i + angular_velocity->j * angular_velocity->j + angular_velocity->k * angular_velocity->k > 0.0001f))
     {
         function_b9b90(object_index, false);
         function_b7360(object_index);

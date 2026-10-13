@@ -3268,12 +3268,14 @@ void c_playlist_listing_screen::v3()
 
 		if (item)
 		{
-			long index = item->index;
+			long candidate = item->index;
+			bool valid = candidate != NONE;
+			volatile long index = candidate;
 
-			if (index != NONE)
+			if (valid)
 			{
 				c_class_1a2c81 *name_text = find_child(6, 3, false);
-				c_class_1a2c81 *volatile description_text = find_child(6, 4, false);
+				c_class_1a2c81 *description_text = find_child(6, 4, false);
 
 				if (name_text)
 				{
@@ -4313,7 +4315,7 @@ c_clan_options_list::c_clan_options_list(word user_flags) :
 	handler(this, (list_item_method)&c_clan_options_list::handle_item)
 {
 	long controller = get_controller_index();
-	bool online = function_19a935();
+	volatile bool online = function_19a935();
 	s_clan_membership membership;
 
 	data = user_interface_data_new("clan options list", 4, 4);
@@ -5536,13 +5538,27 @@ c_list_45af88::c_list_45af88(word user_flags) : c_list_24a64d(user_flags)
 
 // @retail 0x2b19a1 deleting c_list_45af88
 
+/* s_profile_list_entry as this screen holds it: retail builds it with the
+   entry constructor written inline */
+struct s_profile_list_entry_inline
+{
+    __forceinline s_profile_list_entry_inline()
+    {
+        profile_index = NONE;
+        memset(&settings, 0, sizeof(settings));
+    }
+    long profile_index;
+    s_player_profile_settings settings;
+    byte unknown1e4[0x248 - 0x1e4];
+};
+
 class c_screen_45b0b8 : public c_screen_with_menu
 {
 public:
     c_screen_45b0b8(long a, long b, word user_flags);
     virtual screen_load_proc get_load_proc();
     c_list_45af88 profile_choices;
-    s_profile_list_entry selected;
+    s_profile_list_entry_inline selected;
     bool value19b4;
 };
 
@@ -5883,8 +5899,11 @@ void c_class_2b01eb::v3()
  {
   s_bitmap_block *block = definition;
   real rate = *(real *)((byte *)block + 0x24);
-  real period = 0.0f;
-  if (rate >= 0.001f) period = 1000.0f / *(real *)((byte *)block + 0x24);
+  real period;
+  if (rate >= 0.001f)
+   period = 1000.0f / *(real *)((byte *)block + 0x24);
+  else
+   period = 0.0f;
   dword frame_duration = (long)period;
   dword elapsed = now - start_time;
   real seconds = (dword)value78 > 0 ? (real)(dword)(now - value78) * 0.001f : 0.0f;
@@ -5913,8 +5932,8 @@ void c_class_2b01eb::v3()
   }
   value7c += *(real *)((byte *)definition + 0x10) * seconds;
   value80 += *(real *)((byte *)definition + 0x14) * seconds;
-  if (value7c > 1.0f) { real value = value7c; do { real next = value - 1.0f; value = next; } while (value > 1.0f); value7c = value; }
-  if (value80 > 1.0f) { real value = value80; do { real next = value - 1.0f; value = next; } while (value > 1.0f); value80 = value; }
+  if (value7c > 1.0f) { volatile real value = value7c; do { value = value - 1.0f; } while (value > 1.0f); value7c = value; }
+  if (value80 > 1.0f) { volatile real value = value80; do { value = value - 1.0f; } while (value > 1.0f); value80 = value; }
   if (value7c < 0.0f) { real value = value7c; do { value += 1.0f; } while (value < 0.0f); value7c = value; }
   if (value80 < 0.0f) { real value = value80; do { value += 1.0f; } while (value < 0.0f); value80 = value; }
  }

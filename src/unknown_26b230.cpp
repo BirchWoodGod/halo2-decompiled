@@ -829,17 +829,20 @@ short function_269e60(long object_index, s_clump_activity_view const *clump, lon
 	long const *prop_reference = &prop_index;
 	s_prop_candidate_view *const *candidate_reference = &candidate;
 	bool const *force_reference = &force;
-	bool unsupported = false;
-	short type = 0;
-	short priority = 0;
+	short type;
+	short priority;
+	bool unsupported;
+	type = priority = 0;
+	unsupported = false;
 	s_slot_object_view *object = (s_slot_object_view *)function_badc0(object_index, (dword)NONE);
 	if (object)
 	{
 		if (candidate)
 		{
-			if (g_4de300[object_index & 0xffff] == g_4de2fc)
+			long object_slot = object_index & 0xffff;
+			if (g_4de300[object_slot] == g_4de2fc)
 				goto done;
-			g_4de300[object_index & 0xffff] = g_4de2fc;
+			g_4de300[object_slot] = g_4de2fc;
 		}
 		if (prop_index != NONE)
 			force = prop_get(prop_index)->unknown10 > g_510c54->game_time;
@@ -1451,8 +1454,8 @@ long function_269040(point3f const *center, short team)
 			iterator.pool.index = NONE;
 		}
 		bool active = g_4f55d0->active;
-  long volatile oldest = NONE;
-		long volatile oldest_time = 0x7fffffff;
+  long volatile oldest_time = 0x7fffffff;
+		long volatile oldest = NONE;
 		while (active && (iterator.current = (s_clump *)data_iterator_next_calling(&iterator.pool)) != NULL)
 		{
 			long time = ((s_clump_activity_view *)iterator.current)->active_time;

@@ -418,6 +418,14 @@ static inline vector3f *transform4x3f_apply_normal(transform4x3f const *matrix, 
 	return out;
 }
 
+static __forceinline void plane_negate_168b40(plane3f const *plane, plane3f *out)
+{
+	out->i = 0.0f - plane->i;
+	out->j = 0.0f - plane->j;
+	out->k = 0.0f - plane->k;
+	out->d = 0.0f - plane->d;
+}
+
 // @retail 0x168b40
 void function_168b40(s_168b40_result *result, s_168b40_surface const *surface, transform4x3f const *matrix)
 {
@@ -438,10 +446,7 @@ void function_168b40(s_168b40_result *result, s_168b40_surface const *surface, t
 		result->plane.d = distance;
 		if (surface->flags & 0x8000)
 		{
-			result->plane.i = 0.0f - result->plane.i;
-			result->plane.j = 0.0f - result->plane.j;
-			result->plane.k = 0.0f - result->plane.k;
-			result->plane.d = 0.0f - result->plane.d;
+			plane_negate_168b40(&result->plane, &result->plane);
 		}
 	}
 	else if (surface->flags & 0x8000)
@@ -1318,7 +1323,7 @@ bool function_1691a0(long instance_index, dword flags, dword test_flags, point3f
 void __stdcall function_df5f0(long object_index, point3f *center, real *height, real *radius);
 struct s_line_list;
 void function_244ca0(real height, real radius, s_line_list *list, long a, long b, long c,
-    byte d, byte e, short f, point3f const *position);
+    byte d, byte e, point3f const *position, short f);
 bool __stdcall function_1f0230(s_lookup *lookup, point3f const *point, real radius,
     real height, real thickness, s_collection_245270 *collection);
 
@@ -1351,7 +1356,7 @@ void __stdcall function_16a280(long object_index, dword flags, point3f const *po
                     function_df5f0(object_index, &center, &object_height, &object_radius);
                     center.z += object_height;
                     function_244ca0(object_height + height, object_radius + thickness,
-                        (s_line_list *)collection, object_index, NONE, NONE, 0, 0xff, NONE, &center);
+                        (s_line_list *)collection, object_index, NONE, NONE, 0, 0xff, &center, NONE);
                     break;
                 }
                 case 1:
@@ -1419,7 +1424,8 @@ bool __stdcall function_16a440(dword flags, point3f const *position, real extent
         if (found && test_world)
             function_245aa0((s_245aa0 const *)&hits, (s_source_245400 const *)g_4e0340,
                 0, height, radius, NONE, NONE, (s_collection_245270 *)shapes);
-        if ((hits.field_c0c.field_0 > 0 && (flags & 4)) || (flags & 8))
+        long leaf_count = hits.field_c0c.field_0;
+        if ((leaf_count > 0 && (flags & 4)) || (flags & 8))
         {
             ++g_4e7414;
             g_4e7411 = true;
@@ -1431,7 +1437,7 @@ bool __stdcall function_16a440(dword flags, point3f const *position, real extent
                 if (!(flags & 0x1fff0)) flags |= 0x1fff0;
             }
             s_1697c0_bsp *bsp = (s_1697c0_bsp *)g_4e0348;
-            for (long leaf = 0; leaf < hits.field_c0c.field_0; ++leaf)
+            for (long leaf = 0; leaf < leaf_count; ++leaf)
             {
                 long cluster = collision_leaf_cluster(hits.field_c0c.field_4[leaf]);
                 if (g_4e7418[(short)cluster] == g_4e7414) continue;
@@ -1537,9 +1543,9 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 		struct
 		{
 			point3f face_sum;
-			real nearest_squared;
 			point3f edge_sum;
 		} accumulators;
+		real nearest_squared_local;
 		accumulators.edge_sum = *g_468788;
 		accumulators.face_sum = *g_468788;
 		long edge_count = 0;
@@ -1559,7 +1565,7 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 				projected.x = (0.0f - distance) * prism->plane.i + point->x;
 				projected.y = prism->plane.j * (0.0f - distance) + point->y;
 				projected.z = (0.0f - distance) * prism->plane.k + point->z;
-				accumulators.nearest_squared = 3.4028234663852886e+38f;
+				nearest_squared_local = 3.4028234663852886e+38f;
 				bool inside = true;
 				long count = prism->point_count > 8 ? 8 : prism->point_count;
 				point3f closest;
@@ -1612,9 +1618,9 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 						difference.k = clamped.z - projected.z;
 						real separation = difference.i * difference.i + difference.k * difference.k +
 							difference.j * difference.j;
-						if (accumulators.nearest_squared > separation)
+						if (nearest_squared_local > separation)
 						{
-							accumulators.nearest_squared = separation;
+							nearest_squared_local = separation;
 							closest = clamped;
 						}
 					}
@@ -1623,7 +1629,7 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 				if (inside)
 					closest = projected;
 				else
-					separation = accumulators.nearest_squared;
+					separation = nearest_squared_local;
 				if (radius_squared > separation)
 				{
 					bool face = true;
