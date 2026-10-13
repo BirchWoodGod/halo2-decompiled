@@ -1419,7 +1419,8 @@ bool __stdcall function_16a440(dword flags, point3f const *position, real extent
         if (found && test_world)
             function_245aa0((s_245aa0 const *)&hits, (s_source_245400 const *)g_4e0340,
                 0, height, radius, NONE, NONE, (s_collection_245270 *)shapes);
-        if ((hits.field_c0c.field_0 > 0 && (flags & 4)) || (flags & 8))
+        long leaf_count = hits.field_c0c.field_0;
+        if ((leaf_count > 0 && (flags & 4)) || (flags & 8))
         {
             ++g_4e7414;
             g_4e7411 = true;
@@ -1431,7 +1432,7 @@ bool __stdcall function_16a440(dword flags, point3f const *position, real extent
                 if (!(flags & 0x1fff0)) flags |= 0x1fff0;
             }
             s_1697c0_bsp *bsp = (s_1697c0_bsp *)g_4e0348;
-            for (long leaf = 0; leaf < hits.field_c0c.field_0; ++leaf)
+            for (long leaf = 0; leaf < leaf_count; ++leaf)
             {
                 long cluster = collision_leaf_cluster(hits.field_c0c.field_4[leaf]);
                 if (g_4e7418[(short)cluster] == g_4e7414) continue;
