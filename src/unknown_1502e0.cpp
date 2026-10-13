@@ -745,7 +745,8 @@ void function_152df0(long player_index)
 	}
 	function_14cad0(*player_reference, NONE);
 	player->previous_unit_index = NONE;
-	if (g_4cf770 && !g_4cf77b)
+	/* read through its address: retail loads the flag after the previous_unit_index store */
+	if (*(byte const *)&g_4cf770 && !g_4cf77b)
 		function_69580((c_class_6a600 *)g_4cf77c, *player_reference);
 	player->machine_index = NONE;
 	memset(player->machine_address, 0, sizeof(player->machine_address));

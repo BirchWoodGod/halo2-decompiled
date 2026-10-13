@@ -1089,7 +1089,8 @@ static inline char random_option(short range)
 	return (char)(random_index((dword *)&g_4e7408->unknown0, range) + 1);
 }
 
-/* the chooser of the engine's default equipment (its methods ignore this) */
+/* the engine's netgame entries, with the chooser of their default equipment
+   (the choosers ignore this) */
 class c_engine_equipment
 {
 public:
@@ -1098,6 +1099,9 @@ public:
 	long choose_15a310(long default_value, char option, long *name);
 	long choose_15a3d0(long default_value, char option, long *name);
 	long choose(long default_value, long *name, char kind);
+	void release_entry(long object_index, long index);
+
+	s_netgame_entry_state entries[100];
 };
 
 // @retail 0x15a140
@@ -1410,7 +1414,7 @@ done:
 }
 
 // @retail 0x15b1e0
-void function_15b1e0(long object_index, s_netgame_entry_state *entries, long index)
+void c_engine_equipment::release_entry(long object_index, long index)
 {
 	s_engine_object *object = (((s_engine_object_header *)g_4e0300->data) + (object_index & 0xffff))->object;
 
@@ -1980,7 +1984,7 @@ void function_15adb0(s_netgame_entry_state *entries)
 		{
 			if (entries[index].index != NONE)
 			{
-				function_15b1e0(entries[index].index, entries, index);
+				((c_engine_equipment *)entries)->release_entry(entries[index].index, index);
 			}
 			entries[index].value04 = 0;
 			entries[index].index = local.iterator.object_index;
@@ -2717,7 +2721,7 @@ void function_1583d0(short old_value, short new_value, long player_index)
 {
 	if (game_engine_get() && g_4e6948->mode != 4 && old_value != new_value)
 	{
-		if (old_value < new_value)
+		if (old_value > new_value)
 		{
 			s_engine_player *player = engine_player_get(player_index);
 			if (player->unit_index != NONE)
@@ -4299,26 +4303,13 @@ long function_158e90(long team)
     return function_23f360(flag != 0, team) / 2;
 }
 
-PRIVATE __forceinline bool sweep_team_active(long team)
-{
-    bool result = false;
-    if (g_55e4d0[g_4e9ae8->engine_index])
-    {
-        byte teams = ((byte *)g_4e6948)[0x184] & 1;
-        volatile byte observed_teams = teams;
-        if (teams && team >= 0 && team < 8)
-            result = (function_xaee93d()->team_mask & (1 << team)) != 0;
-    }
-    return result;
-}
-
 // @retail 0x158eb0
 bool function_158eb0()
 {
     bool result = true;
     for (long team = 0; team < 8; ++team)
     {
-        if (sweep_team_active(team) && function_158e90(team) > 0)
+        if (engine_team_is_active(team) && function_158e90(team) > 0)
         {
             result = false;
             break;
@@ -4614,7 +4605,7 @@ void function_15aad0(s_netgame_entry_state *entries, long index)
         *(point3f *)(creation + 0x1c) = *(point3f *)(placement + 0x40);
         function_11df60((vector3f const *)(placement + 0x4c), (vector3f *)(creation + 0x28), (vector3f *)(creation + 0x34));
         if ((*entries_reference)[*index_reference].index != NONE)
-            function_15b1e0((*entries_reference)[*index_reference].index, *entries_reference, *index_reference);
+            ((c_engine_equipment *)*entries_reference)->release_entry((*entries_reference)[*index_reference].index, *index_reference);
         long object_index = function_b7b40(creation);
         (*entries_reference)[*index_reference].index = object_index;
         (*entries_reference)[*index_reference].value04 = 0;
