@@ -456,29 +456,31 @@ void function_155380(void)
             switch (g_4e8c3c)
             {
             case 0:
-                entry->value10 = 0.0f;
-                entry->value14 = 0.0f;
-                function_155dd0(index, function_23c110, false);
-                break;
             case 1:
+            {
+                real *value14 = &entry->value14;
+                *value14 = 0.0f;
                 entry->value10 = 0.0f;
-                entry->value14 = 0.0f;
                 function_155dd0(index, function_23c110, false);
                 break;
+            }
             case 2:
                 function_23cea0((s_view_state *)&entry->value10, index);
                 function_155dd0(index, function_23d090, false);
                 break;
             case 4:
+            {
+                real *value14 = &entry->value14;
+                *value14 = 0.0f;
                 entry->value10 = 0.0f;
-                entry->value14 = 0.0f;
                 function_155dd0(index, function_23c110, false);
                 break;
+            }
             case 3:
                 break;
             }
-            real *target = (real *)((byte *)entry + 0x118);
             dword const *value = g_47fca0[0];
+            real *target = (real *)((byte *)entry + 0x118);
             long remaining = 4;
             do
             {
@@ -491,8 +493,10 @@ void function_155380(void)
             entry->unknown00[0] = 1;
         }
     }
-    *(word *)((byte *)g_510c6c + 2) = 0;
-    *(long *)((byte *)g_510c6c + 0x3c) = NONE;
+    short *mode = (short *)((byte *)g_510c6c + 2);
+    long *object = (long *)((byte *)g_510c6c + 0x3c);
+    *mode = 0;
+    *object = NONE;
 }
 
 struct s_observer_command

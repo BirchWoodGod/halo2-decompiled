@@ -95,8 +95,8 @@ matrix3x3 *function_142eb0(
 
 // @retail 0x143070
 vector3f *function_143070(
-	vector3f const *v,
 	matrix3x3 const *m,
+	vector3f const *v,
 	vector3f *out)
 {
 	vector3f temp;

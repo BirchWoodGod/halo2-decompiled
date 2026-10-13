@@ -198,8 +198,8 @@ struct s_font_cache_flags
 	dword create : 1;
 };
 
-long font_cache_get_character(long font_index, long character, dword flags);
-bool font_cache_character_load_pixels(long datum_index, dword flags);
+long font_cache_get_character(long font_index, long character, s_font_cache_flags flags);
+bool font_cache_character_load_pixels(long datum_index, s_font_cache_flags flags);
 PRIVATE long font_cache_find_character(long font_index, long character);
 PRIVATE long font_cache_new_character(long font_index, long character);
 PRIVATE void font_cache_delete_character(long datum_index);
@@ -249,9 +249,10 @@ void font_cache_update(void)
 	while ((prediction = (s_font_prediction *)data_iterator_next_inlined(&iterator)) != NULL)
 	{
 		long datum_index = iterator.datum_index;
-		long character_index = font_cache_get_character(prediction->font_index, prediction->character, 2);
+		s_font_cache_flags flags = { false, true };
+		long character_index = font_cache_get_character(prediction->font_index, prediction->character, flags);
 
-		if (character_index != NONE && font_cache_character_load_pixels(character_index, 2))
+		if (character_index != NONE && font_cache_character_load_pixels(character_index, flags))
 		{
 			if (font_cache_character_get_header(character_index))
 			{
@@ -262,15 +263,15 @@ void font_cache_update(void)
 }
 
 // @retail 0x1407d0
-long font_cache_get_character(long font_index, long character, dword flags)
+long font_cache_get_character(long font_index, long character, s_font_cache_flags flags)
 {
 	long font = g_4e28f4[font_index];
 	long datum_index = font_cache_find_character(font, character);
-	bool wait = TEST_FIELD_BIT(((s_font_cache_flags *)&flags)->wait);
+	bool wait = TEST_FIELD_BIT(flags.wait);
 
 	if (datum_index == NONE)
 	{
-		if (!TEST_FIELD_BIT(((s_font_cache_flags *)&flags)->create))
+		if (!TEST_FIELD_BIT(flags.create))
 		{
 			return NONE;
 		}
@@ -304,9 +305,9 @@ long font_cache_get_character(long font_index, long character, dword flags)
 }
 
 // @retail 0x140870
-bool font_cache_character_load_pixels(long datum_index, dword flags)
+bool font_cache_character_load_pixels(long datum_index, s_font_cache_flags flags)
 {
-	bool wait = (flags & 1) != 0;
+	bool wait = TEST_FIELD_BIT(flags.wait);
 	bool result = false;
 
 	if (datum_index != NONE)
@@ -331,14 +332,14 @@ bool font_cache_character_load_pixels(long datum_index, dword flags)
 }
 
 // @retail 0x140900
-s_font_character_header *font_cache_get_character_header(long font_index, long character, dword flags)
+s_font_character_header *font_cache_get_character_header(long font_index, long character, s_font_cache_flags flags)
 {
 	s_font_character_header *result = NULL;
 	long datum_index = font_cache_get_character(font_index, character, flags);
 
 	if (datum_index != NONE && font_cache_character_load_pixels(datum_index, flags))
 	{
-		return font_cache_character_get_header(datum_index);
+		result = font_cache_character_get_header(datum_index);
 	}
 
 	return result;
@@ -347,7 +348,8 @@ s_font_character_header *font_cache_get_character_header(long font_index, long c
 // @retail 0x140960
 bool font_cache_character_copy_pixels(long datum_index, void *destination)
 {
-	bool result = font_cache_character_load_pixels(datum_index, 3);
+	s_font_cache_flags flags = { true, true };
+	bool result = font_cache_character_load_pixels(datum_index, flags);
 
 	if (result)
 	{
@@ -811,8 +813,9 @@ PRIVATE long font_cache_read(long font_index, void *buffer, long size, dword off
 // @retail 0x1414d0
 bool font_cache_predict_character(s_13eeb1 font_index, s_13eeb1 character)
 {
-	s_font_character_header *(*get_header)(long, long, dword) = font_cache_get_character_header;
-	if (get_header(font_index, character, 2))
+	s_font_cache_flags flags = { false, true };
+	s_font_character_header *(*get_header)(long, long, s_font_cache_flags) = font_cache_get_character_header;
+	if (get_header(font_index, character, flags))
 	{
 		return true;
 	}

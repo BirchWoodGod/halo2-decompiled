@@ -185,7 +185,10 @@ signed char *function_3d430(long object_index)
     {
         long cache = function_3ddd0(object_index);
         if (cache != NONE)
-            result = (signed char *)(g_509434->data + (cache & 0xffff) * 0x100 + 0xc0 + g_4ba050 * 16);
+        {
+            // Reload the shared channel index after cache setup.
+            result = (signed char *)(g_509434->data + (cache & 0xffff) * 0x100 + 0xc0 + *(long const *)&g_4ba050 * 16);
+        }
     }
     return result;
 }
@@ -232,8 +235,8 @@ byte *__stdcall function_3dc90(long object_index)
 void function_3e420(long tag, long object_index, signed char *output, byte level)
 {
     (void)&level;
-    byte *definition = g_4e3b44[tag & 0xffff].bytes;
     signed char *current = NULL;
+    byte *definition = g_4e3b44[tag & 0xffff].bytes;
     if (object_index != NONE) current = function_3d430(object_index);
     for (long i = 0; i < *(long *)(definition + 0x1c); ++i)
     {
