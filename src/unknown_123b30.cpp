@@ -12,6 +12,7 @@ it from callers optimized for size.
 #include "unknown_11c920.h"
 #include "counters_storage.h"
 #include "unknown_123b30.h"
+#include "unknown_5020dc_storage.h"
 #include "crc.h"
 #include "data_array.h"
 #include "loop_allocator.h"
@@ -262,8 +263,6 @@ bool game_state_core_read(char const *name, void *buffer, dword size)
 }
 
 #include "main_globals.h"
-extern long g_5020e4;
-extern bool g_5020f2[2];
 void __stdcall game_state_cache_lock_release(void *arg_0, long arg_1);
 bool game_state_cache_read(short arg_0);
 bool __stdcall function_11c1b0(short arg_0, bool arg_1);

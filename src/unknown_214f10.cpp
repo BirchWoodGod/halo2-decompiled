@@ -8,6 +8,8 @@
 #include "unknown_11c920.h"
 #include "async.h"
 #include "unknown_12b400.h"
+#include "unknown_123b30.h"
+#include "unknown_5020dc_storage.h"
 #include <xtl.h>
 #include <string.h>
 
@@ -20,15 +22,7 @@ void function_125d60(void);
 char const *g_470050;
 
 bool g_5020d8;
-dword g_5020dc;
-long g_5020e0;
-long g_5020e4;
-bool volatile g_5020e8;
-dword g_5020ec;
-short g_5020f0;
-bool g_5020f2[2];
-bool g_5020f4;
-s_file_handle g_5020f8[2];
+s_game_state_cache g_game_state_cache;
 
 // @retail 0x214f10
 void *game_state_cache_allocate(long cpu_size, long gpu_size)
@@ -130,7 +124,6 @@ void __stdcall game_state_cache_lock_update(void *address, long user_data)
 	}
 }
 
-#pragma optimize("g", off)
 // @retail 0x215180
 void __stdcall game_state_cache_lock_release(void *address, long user_data)
 {
@@ -147,7 +140,6 @@ void __stdcall game_state_cache_lock_release(void *address, long user_data)
 	}
 }
 
-#pragma optimize("g", on)
 
 // @retail 0x2151f0
 void game_state_cache_write(short slot)
