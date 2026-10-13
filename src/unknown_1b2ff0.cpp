@@ -177,7 +177,7 @@ bool __stdcall function_1b3380(long actor_index, s_slot *slot)
             function_262800(actor_index, actor->unknown418, false);
             result = function_1b3070(actor_index, &((s_slot_6d *)slot)->choice);
             if (!result)
-                return result;
+                goto done;
         }
         byte *scratch = ai_scratch_buffer_get();
         s_2605d0_request request;
@@ -206,5 +206,6 @@ bool __stdcall function_1b3380(long actor_index, s_slot *slot)
         }
         ai_scratch_buffer_release(scratch);
     }
+done:
     return result;
 }

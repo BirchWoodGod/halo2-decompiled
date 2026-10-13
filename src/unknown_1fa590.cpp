@@ -369,6 +369,7 @@ short function_296230(long object_index);
 long function_1fa3a0(long structure_index, long surface_index, long object_index,
     long node_index, point3f const *point)
 {
+    long const *node_reference = &node_index;
     long result = NONE;
     long type = object_index != NONE ? 4 : (structure_index != NONE ? 3 : 1);
     s_contact_surface_table *table = NULL;
@@ -387,7 +388,7 @@ long function_1fa3a0(long structure_index, long surface_index, long object_index
                     for (short i = 0; i < owner->range_count; i++)
                     {
                         s_contact_surface_range *range = &owner->ranges[i];
-                        if (range->key == node_index)
+                        if (range->key == *node_reference)
                         {
                             result = range->first;
                             if (result == NONE || surface_index < 0 || surface_index > range->last - result)
