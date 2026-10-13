@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 8013 functions match
+
+```
+matched 8013 of 11318 game functions (979136 of 2784283 bytes, 35.17%)
+```
+
+7 new matches, none lost:
+- The second machine's lane M, round 24 (#387, +4): `0x1a60f0`, `0x1ae3b0`, `0x1a71f0` and `0x1a79e0`.
+- Deep lane 2, round 35 (+3), writing this machine's unwritten functions in group 1: `0xa9260`, `0xb92d0` and `0xbc1d0` match on their first drafts, with retail's parameters at every call.
+- Deep lane 3, round 46: no new match; six render functions are closer, two of them by about half.
+
 ## 2026-10-12: 8006 functions match
 
 ```
