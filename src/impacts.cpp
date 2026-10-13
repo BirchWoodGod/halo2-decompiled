@@ -898,9 +898,11 @@ void impact_orientation_get(
 				real x;
 				real y;
 
-				delta.j = constraint->position.y - position->y;
-				delta.k = constraint->position.z - position->z;
-				delta.i = constraint->position.x - position->x;
+				point3f const *point = &constraint->position;
+				delta.i = point->x - position->x;
+				delta.j = point->y - position->y;
+				delta.k = point->z - position->z;
+
 				x = dot3f(&matrix_a.forward, &delta);
 				y = dot3f(&matrix_a.left, &delta);
 				if (!(local_1.field_0 > x))
