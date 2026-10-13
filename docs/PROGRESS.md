@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8351 functions match
+
+```
+matched 8351 of 11318 game functions (1068701 of 2784283 bytes, 38.38%)
+```
+
+19 new matches, none lost:
+- Machine 3 batch 8 (#423): 17 functions, among them `0x12b070`, `0x1df640`, `0x21f960` and `0x257c60`
+- Machine 2's last PR, lane M round 27 (#422): `0x1a9cf0`
+- Deep lane 4 round 5: `0x14480`
+
 ## 2026-10-13: 8332 functions match
 
 ```

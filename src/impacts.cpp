@@ -647,7 +647,7 @@ PRIVATE __forceinline vector3f const *function_227813(s_impact_object *arg_0, ve
 	vector3f const *local_1 = &arg_0->unknown70;
 	real local_0 = local_1->k * arg_1->k;
 	local_0 += arg_0->unknown70.j * arg_1->j;
-	local_0 += arg_1->i * local_1->i;
+	local_0 += arg_0->unknown70.i * arg_1->i;
 	if (!(local_0 >= 0.0f))
 		local_0 = -local_0;
 	if (!(local_0 < 0.9f))
@@ -1223,7 +1223,6 @@ void function_2266a0(
 	s_impact *impact = impact_get(impact_index);
 	s_havok_component *component = havok_component_get(impact->component_a);
 	s_impact_array *impacts;
-	long i;
 
 	if (impact->sort_index != NONE)
 	{
@@ -1238,7 +1237,7 @@ void function_2266a0(
 		}
 		else
 		{
-			for (i = 0; i < component->unknown88.size; i++)
+			for (long i = 0; i < component->unknown88.size; i++)
 			{
 				s_havok_component_element48 *constraint = &component->unknown88.data[i];
 
@@ -1248,7 +1247,7 @@ void function_2266a0(
 					constraint->impact_index = NONE;
 				}
 			}
-			for (i = 0; i < component->unknown7c.size; i++)
+			for (long i = 0; i < component->unknown7c.size; i++)
 			{
 				s_havok_component_element0c *contact = &component->unknown7c.data[i];
 
@@ -1261,7 +1260,7 @@ void function_2266a0(
 		}
 	}
 	impacts = impact_array_get(component->unknown20);
-	for (i = 0; i < impacts->count; i++)
+	for (long i = 0; i < impacts->count; i++)
 	{
 		if (impacts->impacts[i] == impact_index)
 		{

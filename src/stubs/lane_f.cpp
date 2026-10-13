@@ -33,8 +33,6 @@ struct s_packed_clc;
 
 
 struct s_186ab2;
-// @stub 0x1a4900
-void __stdcall function_1a4900(long arg_0, s_186ab2 *arg_1, vector3f *arg_2) { }
 
 struct s_cluster_query;
 
