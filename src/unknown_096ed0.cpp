@@ -17,9 +17,11 @@ void replication_table_release_chain(s_handle_peers *peers, long count, long con
 long c_handle_table_450cd0::v1(long a1, long max_count, void *output)
 {
 	long count = 0;
+	if (!unknown09)
+		return count;
 	long index = unknown5024;
 	s_entry_450c94 *out = (s_entry_450c94 *)output;
-	if (unknown09 && index != NONE)
+	if (index != NONE)
 	{
 		do
 		{

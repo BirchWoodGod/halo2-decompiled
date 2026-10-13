@@ -3428,9 +3428,9 @@ void __stdcall function_2a3600(short function_index, long thread_index, bool ini
 		bool interpolate = *(bool *)&arguments[3];
 		long object_index = arguments[4];
 		long animation_name = arguments[2];
-		long animation_graph = arguments[1];
+		long graph_index = arguments[1];
 		long unit = arguments[0];
-		*(bool *)&result = function_11b520(unit, animation_graph, animation_name, interpolate, object_index, false);
+		*(bool *)&result = function_11b520(unit, graph_index, animation_name, interpolate, object_index, false);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -3449,9 +3449,9 @@ void __stdcall function_2a3670(short function_index, long thread_index, bool ini
 		bool interpolate = *(bool *)&arguments[3];
 		long object_index = arguments[4];
 		long animation_name = arguments[2];
-		long animation_graph = arguments[1];
+		long graph_index = arguments[1];
 		long unit = arguments[0];
-		*(bool *)&result = function_11b520(unit, animation_graph, animation_name, interpolate, object_index, true);
+		*(bool *)&result = function_11b520(unit, graph_index, animation_name, interpolate, object_index, true);
 		function_209ae0(thread_index, result);
 	}
 }
