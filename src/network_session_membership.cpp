@@ -399,6 +399,7 @@ void network_session_enter_state_5(c_class_58d20 *session)
 	long state = session->state;
 	if (!SESSION_STATE_IS_HOSTING(state))
 	{
+		volatile long local_0 = state;
 		bool any = false;
 		network_session_reset_membership(session, true);
 		for (long i = 0; i < session->member_count; i++)
