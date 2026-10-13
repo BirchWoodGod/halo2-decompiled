@@ -285,7 +285,7 @@ void function_109660(long object_index, long entry_index)
 		{
 			s_carrier_physics_definition *definition = (s_carrier_physics_definition *)g_4e3b44[physics_index & 0xffff].bytes;
 			long body_index = carrier_component_default_body(component);
-			volatile bool found = false;
+			bool found = false;
 			for (long i = 0; i < component->count && !found; i++)
 			{
 				s_carrier_body_entry *body = &component->bodies[i];

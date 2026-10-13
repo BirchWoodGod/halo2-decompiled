@@ -1610,7 +1610,8 @@ bool function_1058b0(long weapon_index, long state, bool force)
 	function_b7360(weapon_index);
 	if (force || weapon_state_replaceable(weapon->state, state))
 	{
-		if (WEAPON_GET(weapon_index)->animation_state_offset != NONE)
+		s_weapon *current = WEAPON_GET(weapon_index);
+		if (current->animation_state_offset != NONE)
 		{
 			s_animation_state *animation = (s_animation_state *)((byte *)weapon + weapon->animation_state_offset);
 			long set;
