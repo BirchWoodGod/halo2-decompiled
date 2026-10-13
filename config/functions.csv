@@ -8108,7 +8108,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0022f1b2,28,game,size,packed,,,0022f1ce 00321379,src/unknown_22f118.cpp,matched
 0022f1ce,41,game,size,packed,,,001473d0 0019b8b1 0022f092,src/unknown_22f118.cpp,matched
 0022f1f7,149,game,size,ebp packed,,,0006cb60 001480ff 0014a1c3 001906b4 0022e315 0022f4cd 0022f8df,src/unknown_22f118.cpp,matched
-0022f28c,227,game,size,ebp packed,,,00012360 001473b6 00149f49 00190262 0022e391 0022f0ff 0022f871 00236299,src/unknown_22f118.cpp,todo
+0022f28c,227,game,size,ebp packed,,,00012360 001473b6 00149f49 00190262 0022e391 0022f0ff 0022f871 00236299,src/unknown_22f118.cpp,matched
 0022f36f,50,game,size,ebp packed,,,00149f49 001901fc,src/unknown_22f118.cpp,matched
 0022f3a1,20,game,size,packed,,,0008d7c0 001905bf,src/unknown_22f118.cpp,matched
 0022f3b5,275,game,size,ebp packed,,,0006d210 00148893 00148d0d 0019b5af 00216ce0 0022f3a1 003303f3,src/unknown_22f118.cpp,matched
