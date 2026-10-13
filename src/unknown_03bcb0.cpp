@@ -602,8 +602,8 @@ extern real g_485b28[7];
 bool function_1bf50(long tag, long level, real distance, long *out)
 {
     long selected = 0;
-    long const *tag_reference = &tag;
-    byte *groups = record_format_groups(*tag_reference);
+    long const *tag_pointer = &tag;
+    byte *groups = record_format_groups(*tag_pointer);
     long count = *(long *)groups;
     if (g_4ba019)
         distance *= 2.0f;
@@ -612,7 +612,7 @@ bool function_1bf50(long tag, long level, real distance, long *out)
         real threshold = g_485b28[level] * distance;
         for (selected = 0; selected < count; ++selected)
         {
-            byte *entries = *(byte **)(record_format_groups(*tag_reference) + 4);
+            byte *entries = *(byte **)(record_format_groups(*tag_pointer) + 4);
             if (threshold >= *(real *)(entries + selected * 10 + 6))
                 break;
         }
