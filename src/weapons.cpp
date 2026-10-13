@@ -696,23 +696,21 @@ void function_102f70(long weapon_index, short barrel_index)
 	}
 }
 
-static __forceinline s_weapon_trigger_definition *weapon_trigger_definition_get(short const volatile *index, s_weapon_definition *definition)
-{
-	return &definition->triggers[*index];
-}
-
 // @retail 0x103a90
 bool function_103a90(long weapon_index, short trigger_index)
 {
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
-	short const volatile *trigger_reference = &trigger_index;
-	s_weapon_trigger_definition *trigger = weapon_trigger_definition_get(trigger_reference, definition);
-	short barrel_index = trigger->primary_barrel;
+	s_weapon_trigger_definition *trigger = &definition->triggers[trigger_index];
 	bool result = true;
 
-	if (barrel_index != NONE && barrel_index < definition->barrel_count && weapon->barrels[barrel_index].state)
-		result = false;
+	if (trigger->primary_barrel != NONE)
+	{
+		short barrel_index = trigger->primary_barrel;
+
+		if (barrel_index < definition->barrel_count && weapon->barrels[barrel_index].state)
+			result = false;
+	}
 	if (weapon->heat >= 1.0f)
 		result = false;
 	return result;
