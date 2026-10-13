@@ -441,7 +441,7 @@ long function_26b900(long prop_index, long actor_index, long clump_index)
 
 		while (next_clump_in_pool(&iterator))
 		{
-			other = iterator.current;
+			other = *(s_clump *volatile *)&iterator.current;
 			if (clump_index != iterator.pool.datum_index && (short)side == (short)function_20f040(other->team))
 			{
 				long other_prop_index = function_26b230(iterator.pool.datum_index, prop->type);

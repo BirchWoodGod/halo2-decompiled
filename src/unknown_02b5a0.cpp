@@ -283,7 +283,7 @@ struct s_3dfe0_cache
     byte unknowna8[0x58];
 };
 bool g_467464 = true;
-long function_d1850(long object_index, long value, s_effect_color_query *query);
+long function_d1850(long object_index, bool value, s_effect_color_query *query);
 void function_d4080(s_effect_color_query const *query, long type, s_lighting_record *record, bool flag);
 void function_ba1d0(long object_index, vector3f *linear_velocity, vector3f *angular_velocity);
 real magnitude3d(vector3f const *vector);
