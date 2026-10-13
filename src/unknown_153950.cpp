@@ -192,12 +192,12 @@ void function_153bd0(long index, real scale)
 		values.value[5] = 1.0f;
 		request.type = 1;
 		request.priority = 2;
-		request.shake = *(s_speed_shake const *)g_4686cc;
 		request.duration = 1.0f;
+		request.amount = scale;
+		request.shake = *(s_speed_shake const *)g_4686cc;
 		s_speed_table_entry *entry = &g_502120->entries[index];
 		entry->value80 = scale;
 		entry->value84 = scale;
-		request.amount = scale;
 		function_154d70(&request, slot, scale);
 		function_155240(&values, slot, scale);
 	}
@@ -558,15 +558,16 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                     if (effect->request.duration > 0.05f && effect->request.amount > 0.05f)
                     {
                         s_speed_request request = effect->request;
-                        request.shake.scale = 1.0f;
                         if (active)
                         {
+                            request.shake.scale = 1.0f;
                             request.shake.vector.i = 0.0f;
                             request.shake.vector.j = 0.6f;
                             request.shake.vector.k = 0.8f;
                         }
                         else
                         {
+                            request.shake.scale = 1.0f;
                             request.shake.vector.i = 1.0f;
                             request.shake.vector.j = 0.0f;
                             request.shake.vector.k = 0.0f;
@@ -637,6 +638,8 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                 function_caf60(unit_index, &origin);
                 function_b9dd0(((long *)owner)[1], &target);
                 s_player_axes_153d10 *axes = (s_player_axes_153d10 *)state;
+                vector3f const *forward = &axes->forward;
+                vector3f const *up = &axes->up;
                 vector3f delta = { target.x - origin.x, target.y - origin.y, target.z - origin.z };
                 vector3f cross;
                 vector3f relative;
@@ -644,8 +647,8 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                 cross.j = axes->forward.k * axes->up.i - axes->up.k * axes->forward.i;
                 cross.k = axes->forward.i * axes->up.j - axes->forward.j * axes->up.i;
                 relative.i = cross.k * delta.k + cross.j * delta.j + cross.i * delta.i;
-                relative.j = axes->forward.k * delta.k + axes->forward.j * delta.j + axes->forward.i * delta.i;
-                relative.k = axes->up.k * delta.k + axes->up.j * delta.j + axes->up.i * delta.i;
+                relative.j = forward->k * delta.k + forward->j * delta.j + forward->i * delta.i;
+                relative.k = up->k * delta.k + up->j * delta.j + up->i * delta.i;
                 *(real *)((byte *)slot + 0x8c) = relative.i;
                 *(real *)((byte *)slot + 0x90) = relative.k;
                 *(real *)((byte *)slot + 0x94) = relative.j;
