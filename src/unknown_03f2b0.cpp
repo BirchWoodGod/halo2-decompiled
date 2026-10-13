@@ -383,7 +383,8 @@ long function_2d000(long object_index, long tag, long instance)
 					byte *mappings = *(byte **)(definition + 0x64);
 					long section = *(word *)(mappings + instance * 12 + 2);
 					byte *sections = *(byte **)(definition + 0x44);
-					if (function_12de70((s_geometry_block_info *)(sections + section * 0x38 + 0xc), 3))
+					byte *section_record = sections + section * 0x38;
+					if (function_12de70((s_geometry_block_info *)(section_record + 0xc), 3))
 						result = 1;
 				}
 			}
@@ -393,7 +394,8 @@ long function_2d000(long object_index, long tag, long instance)
 			byte *mappings = *(byte **)(definition + 0x54);
 			long section = *(word *)(mappings + instance * 12 + 2);
 			byte *sections = *(byte **)(definition + 0x44);
-			if (function_12de70((s_geometry_block_info *)(sections + section * 0x38 + 0xc), 3))
+			byte *section_record = sections + section * 0x38;
+			if (function_12de70((s_geometry_block_info *)(section_record + 0xc), 3))
 			{
 				byte *instances = *(byte **)((byte *)g_4e0348 + 0x144);
 				result = *(short *)(instances + instance * 0x58 + 0x56) != 0;

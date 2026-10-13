@@ -687,7 +687,7 @@ extern real g_485ae0;
 
 real g_4b9c74[5][14];
 real g_4b9d90, g_4b9d94;
-void function_350e0(real *out, real const *a, real const *b, real x);
+void function_350e0(real const *a, real const *b, real *out, real x);
 
 // @retail 0x26710
 bool __stdcall function_26710(long mode, real const *bounds, real const *t, real *out, long unused)
@@ -702,8 +702,8 @@ bool __stdcall function_26710(long mode, real const *bounds, real const *t, real
 	switch (mode)
 	{
 	case 0:
-		function_350e0(out, bounds, t, g_509400);
-		return true;
+		function_350e0(bounds, t, out, g_509400);
+		break;
 	case 2:
 		{
 			real span = g_48577c - g_485778;
@@ -712,7 +712,7 @@ bool __stdcall function_26710(long mode, real const *bounds, real const *t, real
 			out[1] = 0.0f;
 			out[2] = 0.0f - g_485778 * scale;
 			out[3] = 0.0f;
-			return true;
+			break;
 		}
 	case 3:
 		{
@@ -722,16 +722,17 @@ bool __stdcall function_26710(long mode, real const *bounds, real const *t, real
 			out[1] = 0.0f;
 			out[2] = 0.0f - g_485790 * scale;
 			out[3] = 0.0f;
-			return true;
+			break;
 		}
 	case 1: case 4:
 		out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
 		out[1] = (bounds[3] - bounds[2]) * t[1] + bounds[2];
 		out[2] = 0.0f;
 		out[3] = 1.0f;
-		return true;
+		break;
 	default: return false;
 	}
+	return true;
 }
 
 extern "C" void _ReadWriteBarrier(void);
@@ -1213,7 +1214,7 @@ bool __stdcall function_27520(long mode, real const *bounds, real const *t, real
     switch (mode)
     {
     case 0:
-        function_350e0(out, bounds, t, g_509400);
+        function_350e0(bounds, t, out, g_509400);
         return true;
     case 1:
         out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
@@ -1245,7 +1246,8 @@ scaled:
         out[2] = 0.0f;
         out[3] = 1.0f;
         out[0] *= g_4b9d90;
-        out[1] *= g_4b9d90;
+        // Read the scale again after the first output store.
+        out[1] *= *(real const *)&g_4b9d90;
         return true;
     default:
         return false;
@@ -1262,7 +1264,7 @@ bool __stdcall function_298f0(long mode, real const *bounds, real const *t, real
     switch (mode)
     {
     case 0:
-        function_350e0(out, bounds, t, g_509400);
+        function_350e0(bounds, t, out, g_509400);
         return true;
     case 2:
         if (g_4b99b0[0x41] && g_4b99b0[1])
