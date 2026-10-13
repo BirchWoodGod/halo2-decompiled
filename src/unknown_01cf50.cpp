@@ -586,7 +586,8 @@ void function_14980(void)
 real g_4670c8 = 1.0f;
 extern byte g_5093fc;
 extern __int64 g_485aa0;
-long g_485af4[4], g_485b04[4];
+#include "texture_stage_dimensions.h"
+s_texture_stage_dimensions g_texture_stage_dimensions;
 
 #include "unknown_03bcb0.h"
 struct s_bitmap_view;

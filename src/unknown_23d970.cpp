@@ -317,6 +317,15 @@ PRIVATE __forceinline bool observer_next_index_23dba0(s_record_pool *players, lo
 	return false;
 }
 
+PRIVATE __forceinline s_player *observer_next_player_23dba0(s_record_pool *players, long *index, long *datum)
+{
+	if (!observer_next_index_23dba0(players, index) || *index == NONE)
+		return NULL;
+	s_player *player = (s_player *)(g_4e8c24->data + players->size * *index);
+	*datum = (player->identifier << 16) | *index;
+	return player;
+}
+
 // @retail 0x23dba0
 bool function_23dba0(long player_index)
 {
@@ -325,15 +334,10 @@ bool function_23dba0(long player_index)
 	long index = NONE;
 	bool result = false;
 
-	for (;;)
+	long datum;
+	s_player *player;
+	while ((player = observer_next_player_23dba0(players, &index, &datum)) != NULL)
 	{
-		if (!observer_next_index_23dba0(players, &index))
-			break;
-		if (index == NONE)
-			break;
-		s_record_pool *current_players = g_4e8c24;
-		s_player *player = (s_player *)(current_players->data + players->size * index);
-		long datum = (player->identifier << 16) | index;
 		if (datum != player_index && player->team == team)
 		{
 			result = true;

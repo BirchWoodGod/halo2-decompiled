@@ -599,7 +599,7 @@ extern bool g_4ba019;
 extern real g_485b28[7];
 
 // @retail 0x1bf50
-bool function_1bf50(long tag, long level, real distance, long *out)
+bool function_1bf50(long level, long tag, real distance, long *out)
 {
     long selected = 0;
     long const *tag_pointer = &tag;
@@ -743,7 +743,7 @@ void function_41490(short group, long tag, short kind, real distance, t_record_f
 {
     byte *definition = g_4e3b44[tag & 0xffff].bytes;
     long pass;
-    function_1bf50(tag, *(word *)(definition + 0x3c), distance, &pass);
+    function_1bf50(*(word *)(definition + 0x3c), tag, distance, &pass);
     byte *groups = record_format_groups(tag);
     dword flags = *(dword *)(*(byte **)(groups + 4) + pass * 10 + 2);
     if (flags & 0x10006e)
@@ -1075,7 +1075,7 @@ void function_41040(short index, long part_index, long group, byte weight,
     long material = material_override == NONE ? context->material : material_override;
     byte const *definition = g_4e3b44[material & 0xffff].bytes;
     long pass;
-    function_1bf50(material, *(word const *)(definition + 0x3c), priority, &pass);
+    function_1bf50(*(word const *)(definition + 0x3c), material, priority, &pass);
     byte const *groups = record_format_groups(material);
     dword flags = *(dword const *)(*(byte **)(groups + 4) + pass * 10 + 2);
     if (material_override != NONE)
@@ -1297,7 +1297,7 @@ bool __stdcall function_3bd00(real height, dword color)
 void function_40e30(short group, long tag, real distance, long level, word kind,
     dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context)
 {
-    if (group != NONE && function_1bf50(tag, level, distance, &level))
+    if (group != NONE && function_1bf50(level, tag, distance, &level))
         function_3b9d0(&g_4c1a48[group], tag, level, and_mask, or_mask, fill, value, context, 0);
 }
 #endif
@@ -1551,7 +1551,7 @@ void function_40e30(short group, long tag, real distance, long level, word kind,
     word const *kind_reference = &kind;
     (void)*kind_reference;
     bool (*select)(long, long, real, long *) = function_1bf50;
-    if (group != NONE && select(tag, *level_reference, distance, (long *)&distance))
+    if (group != NONE && select(*level_reference, tag, distance, (long *)&distance))
         function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
 }
 
