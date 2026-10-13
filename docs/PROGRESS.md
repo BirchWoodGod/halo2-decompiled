@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 8017 functions match
+
+```
+matched 8017 of 11318 game functions (980395 of 2784283 bytes, 35.21%)
+```
+
+4 new matches, none lost:
+- Claude lane 1, round 6 (+4), on Opus 5.5: `0x398d0` names the globals it keeps in registers in the order retail loads them, `0x4fe20` writes out two Direct3D state updates so a barrier can sit between them, `0xc3ad0` stores the object index in both arms of a branch, and `0x43820` forms its table entry's pointer before the test. The lane also traced 53 unmatched functions to the convention of one Direct3D library routine.
+
 ## 2026-10-12: 8013 functions match
 
 ```
