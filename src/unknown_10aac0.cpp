@@ -26,17 +26,16 @@ struct s_interpolated_values
 // @retail 0x10aac0
 bool function_10aac0(long object_index, long name, real *value, long *index)
 {
-	long *object_index_reference = &object_index;
 	bool result = false;
 
 	*index = NONE;
-	if ((*object_index_reference) != NONE)
+	if (object_index != NONE)
 	{
 		s_interpolated_values *values = (s_interpolated_values *)g_5107f4;
 
 		for (long i = 0; i < sizeof(values->object_indices) / sizeof(values->object_indices[0]); i++)
 		{
-			if (values->object_indices[i] == (*object_index_reference) && values->entries[i].name == name)
+			if (values->object_indices[i] == object_index && values->entries[i].name == name)
 			{
 				s_interpolated_value *entry = &values->entries[i];
 				real initial_value = entry->initial_value;
@@ -49,7 +48,8 @@ bool function_10aac0(long object_index, long name, real *value, long *index)
 				else
 					*value = final_value;
 				*index = i;
-				return true;
+				result = true;
+				break;
 			}
 		}
 	}
