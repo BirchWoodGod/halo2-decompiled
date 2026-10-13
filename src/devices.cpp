@@ -885,8 +885,8 @@ void device_motion_start(s_device_motion *motion, real target, real duration, re
 		if (!(0.000001f > distance))
 		{
 			real cruise_time = remaining - ramp_down_time;
-			real half_ramp_up_time = ramp_up_time * 0.5f;
 			real half_ramp_down_time = ramp_down_time * 0.5f;
+			real half_ramp_up_time = ramp_up_time * 0.5f;
 			real denominator = cruise_time + half_ramp_down_time + half_ramp_up_time;
 			real velocity;
 
