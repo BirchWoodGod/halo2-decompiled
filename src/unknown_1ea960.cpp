@@ -378,6 +378,7 @@ long function_1eb020(long tag_index, long body_index, short *material_index)
   shape = shape->get_child(shape->first_key(buffer));
   if (shape->kind() == 0x11) shape = shape->child;
   if (shape->kind() == 0x15) shape = shape->child;
+  definition = *(byte *volatile *)&definition;
  }
  else
  {

@@ -191,7 +191,7 @@ void function_236299(long sound)
 }
 
 struct s_type_7ba8e9;
-s_type_7ba8e9 *function_137610(long group_index, short frame_index, short sequence_index);
+s_type_7ba8e9 *function_137610(long group_index, short sequence_index, short frame_index);
 
 /* the user interface globals' cursor bitmap */
 struct s_user_interface_globals_cursor
@@ -209,7 +209,7 @@ s_type_7ba8e9 *function_236235(short frame_index, short sequence_index)
 
 	if (globals && globals->cursor_bitmap_index != NONE)
 	{
-		result = function_137610(globals->cursor_bitmap_index, frame_index, sequence_index);
+		result = function_137610(globals->cursor_bitmap_index, sequence_index, frame_index);
 	}
 	return result;
 }
@@ -667,7 +667,7 @@ void function_23675a(s_bitmap_view *bitmap, s_texture_rect const *texture, dword
 	(void)&mode;
 	point2f corners[4];
 	real height = bounds->y1 - bounds->y0;
-	real width = bounds->x1 - bounds->x0;
+	volatile real width = bounds->x1 - bounds->x0;
 	real right = bounds->x0 + width;
 	real bottom = bounds->y0 + height;
 	corners[0].x = bounds->x0;

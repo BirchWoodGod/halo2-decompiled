@@ -45,8 +45,14 @@ struct s_screen_view_2c83
 	long valuec9c;
 };
 
-// @retail 0x2c83e6
-void function_2c83e6(long type, long a, long b, word user_flags)
+// Retail's body matches with the standard convention. Enabling the setting
+// handler otherwise moves type and a into ECX and EDX and breaks its callers.
+// Retail has no literal code or data pointer to this function; its callers
+// 0x2b75e8, 0x2bb978 and 0x2c8159 push all four arguments.
+// Const parameter references and explicit parameter-address expressions both
+// leave the two register arguments in place when the handler is enabled.
+// @retail 0x2c83e6 standard
+void __stdcall function_2c83e6(long type, long a, long b, word user_flags)
 {
 	long types[9] = { 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e };
 	s_screen_parameters parameters;
@@ -1498,16 +1504,6 @@ void c_variant_parameter_setting_list::select_current_value()
 	}
 }
 
-/* 0x2c8159, the list's handler, is written below but left out: as a third
-   caller of function_2c83e6 it moves that function's first two arguments
-   into registers (retail keeps all four on the stack), which breaks it and
-   function_2bb978. The placeholder keeps the handler's slot. */
-void c_variant_parameter_setting_list::handle_item(s_controller_reference **controller, long *item)
-{
-	get_screen()->start_animation(3);
-}
-
-#if 0
 /* opens the settings of the game engine (unknown_2bb295.cpp's
    0x2bb978 does the same) */
 static __forceinline void open_game_engine_settings(long field_xcb8724, s_controller_reference **controller)
@@ -1565,7 +1561,6 @@ void c_variant_parameter_setting_list::handle_item(s_controller_reference **cont
 	}
 	get_screen()->start_animation(3);
 }
-#endif
 
 // @retail 0x2c8252
 c_variant_parameter_setting_screen::c_variant_parameter_setting_screen(long a, long b, word user_flags) :
@@ -1724,7 +1719,7 @@ c_class_1473c9 *__stdcall function_2c8896(s_screen_parameters *parameters)
 }
 
 /* the screen id of each kind of emblem */
-static long emblem_screen_id(long mode)
+static __forceinline long emblem_screen_id(long mode)
 {
 	long screen_id;
 
@@ -1733,9 +1728,11 @@ static long emblem_screen_id(long mode)
 	case 0:
 		screen_id = 0x31;
 		break;
-	default:
+	case 1:
 		screen_id = 0xe9;
 		break;
+	default:
+		__assume(0);
 	}
 	return screen_id;
 }
@@ -4139,24 +4136,3 @@ bool __stdcall function_2c55c4(long unused)
 }
 
 void function_2b10a3(dword const *appearance, c_class_2b0b5e *widget, long type);
-// @retail 0x2cb350
-void c_screen_45d398::v3()
-{
-	if (!ANIMATION_FLAG(animation, 1))
-	{
-		short color = (short)list.get_focused_datum();
-		long index = this->index;
-		long previous_color = (char)g_54e5d0.settings.colors[index];
-		long valid_color = color < -1 ? -1 : (color > 17 ? 17 : color);
-		if (valid_color == color)
-			previous_color = color;
-		g_54e5d0.settings.colors[index] = (byte)previous_color;
-	}
-	c_class_2b0b5e *model = (c_class_2b0b5e *)find_child(7, 0, false);
-	if (model)
-		function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 0);
-	model = (c_class_2b0b5e *)find_child(7, 1, false);
-	if (model)
-		function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 1);
-	c_class_1a2c81::v3();
-}

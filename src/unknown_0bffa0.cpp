@@ -597,7 +597,7 @@ void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_li
         {
             double slope = tan(shape->cone.values[2] * 0.5f);
             cone->slope_x = (real)slope;
-            cone->slope_y = (real)(slope * cone->aspect);
+            cone->slope_y = (real)slope * cone->aspect;
         }
         cone->width = shape->cone.values[0];
         cone->height = cone->aspect * shape->cone.values[0];
@@ -1254,11 +1254,11 @@ long __stdcall function_c0520(long tag_index, long placement_index, bool force,
                     direction = matrix.up;
             }
             real distance;
-            if ((short)shape.kind != 0)
+            if ((short)shape.kind == 0)
+                distance = shape.sphere.radius_a > shape.sphere.radius_b ? shape.sphere.radius_a : shape.sphere.radius_b;
+            else
                 distance = (forward->k * direction.k + forward->j * direction.j +
                     forward->i * direction.i) * shape.cone.values[4];
-            else
-                distance = shape.sphere.radius_a > shape.sphere.radius_b ? shape.sphere.radius_a : shape.sphere.radius_b;
             *(real *)(light + 0x90) = direction.i * distance + position->x;
             *(real *)(light + 0x94) = direction.j * distance + position->y;
             *(real *)(light + 0x98) = direction.k * distance + position->z;

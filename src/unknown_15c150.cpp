@@ -36,7 +36,7 @@ long function_23f260(long mode, long player_index, long value);
 long function_23f360(long mode, long team);
 void function_196ab0(long index, long axis, short button);
 void function_196b00(long index, long value, char button);
-void function_1968b0(long team, long index, long counter, long value);
+void function_1968b0(long index, long team, long counter, long value);
 void function_15be20();
 void function_23f000();
 void function_159ac0();
@@ -153,13 +153,11 @@ void function_15c150()
 				}
 				else
 				{
-					long elapsed;
 					if ((!(*((byte *)globals + 0xf4) & (1 << local)) && *(long *)(player + 0x2c) != NONE) ||
 						(*(long *)(player + 0x2c) == NONE && !function_158a50(index) &&
-						((elapsed = g_510c54->game_time - *(long *)((byte *)globals + 0x70)) < 0 ? 0 : elapsed) > g_510c54->field_2_3))
+						(g_510c54->game_time - *(long *)((byte *)globals + 0x70) < 0 ? 0 : g_510c54->game_time - *(long *)((byte *)globals + 0x70)) > g_510c54->field_2_3))
 					{
-						long time = g_510c54->game_time;
-						if (time > real_to_long((real)g_510c54->field_2_3 * 1.5f))
+						if (g_510c54->game_time > real_to_long((real)g_510c54->field_2_3 * 1.5f))
 						{
 							real value = *fade - 3.0f / (real)g_510c54->field_2_3;
 							*fade = value < 0.0f ? 0.0f : value;
@@ -332,9 +330,9 @@ void function_15c6f0()
 						long player_team = *(char *)(player + 0xc0);
 						if (player_team != NONE)
 						{
-							function_1968b0(player_team, i, 3, 1);
+							function_1968b0(i, player_team, 3, 1);
 							if (!preserve && function_158e90(player_team) == 0)
-								function_1968b0(*(char *)(player + 0xc0), i, 4, 1);
+								function_1968b0(i, *(char *)(player + 0xc0), 4, 1);
 						}
 					}
 					if (*(char *)(player + 0xc0) != NONE && !((word)teams & (1 << *(char *)(player + 0xc0))))
@@ -369,9 +367,9 @@ void function_15c6f0()
 					function_196ab0(i, score, (short)value);
 					if (!(player[2] & 2))
 					{
-						function_1968b0(NONE, i, 3, 1);
+						function_1968b0(i, NONE, 3, 1);
 						if (!preserve && function_23f260(g_4e6948->flag1128 != 0, index, NONE) / 2 == 0)
-							function_1968b0(NONE, i, 4, 1);
+							function_1968b0(i, NONE, 4, 1);
 					}
 				}
 			}

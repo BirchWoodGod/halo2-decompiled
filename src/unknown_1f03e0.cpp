@@ -494,7 +494,7 @@ void function_1f1460(byte const *state, s_shape_state const *ground, vector3f *a
         bool rotate = true;
         if (function_30bf0(&axis) == 0.0f)
         {
-            real dot = old_up->k * up.k + old_up->j * up.j + old_up->i * up.i;
+            real dot = old_up->j * up.j + old_up->k * up.k + old_up->i * up.i;
             if (dot > 0.0f)
                 rotate = false;
             else
