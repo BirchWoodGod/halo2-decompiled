@@ -733,11 +733,11 @@ struct s_vehicle_ray
 bool __stdcall function_168f40(long flags, s_vehicle_ray const *ray,
 	long ignore_object_index, long ignore_object_index2)
 {
-	bool result = false;
 	point3f const *point = &ray->point;
 	long leaf = function_14a280(g_4e033c, 0, (point3f *)point);
 	if (leaf == NONE)
 		return true;
+	bool result = false;
 	if ((flags & 2) || (flags & 0xc))
 	{
 		s_1697c0_bsp *bsp = (s_1697c0_bsp *)g_4e0348;
