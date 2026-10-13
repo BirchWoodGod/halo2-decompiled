@@ -13,7 +13,11 @@
 struct s_action_node
 {
 	short key;
-	short flags;
+	union
+	{
+		short flags;
+		bool field_2;
+	};
 	short unknown4;
 	byte unknown6[2];
 	real unknown8;

@@ -733,6 +733,19 @@ void function_022750(const real *a, long size, const real *b, real *out, real t)
 		out[i] = (a[i] - b[i]) * t + b[i];
 }
 
+PRIVATE __forceinline real normalize_projection_vector(vector3f *normal)
+{
+    real length = (real)sqrt(normal->k * normal->k + normal->j * normal->j + normal->i * normal->i);
+    if (length > 0.0001f)
+    {
+        real inverse = 1.0f / length;
+        normal->j *= inverse;
+        normal->k *= inverse;
+        normal->i *= inverse;
+    }
+    return length;
+}
+
 // @retail 0x22c30
 real function_022c30(const point3f *a, const point3f *c, const point3f *b)
 {
@@ -748,13 +761,10 @@ real function_022c30(const point3f *a, const point3f *c, const point3f *b)
 	v1_reference->j = a->y - b->y;
 	v1_reference->k = a->z - b->z;
 
-	real length = (real)sqrt(v1_reference->k * v1_reference->k + v1_reference->j * v1_reference->j + v1_reference->i * v1_reference->i);
+	real length = normalize_projection_vector(v1_reference);
 	if (length > 0.0001f)
 	{
 		real inverse = 1.0f / length;
-		v1_reference->j *= inverse;
-		v1_reference->k *= inverse;
-		v1_reference->i *= inverse;
 		result = (v1_reference->k * v2.k + v1_reference->j * v2.j + v1_reference->i * v2.i) * inverse;
 	}
 
