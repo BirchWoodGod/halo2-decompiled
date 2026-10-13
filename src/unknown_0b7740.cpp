@@ -534,7 +534,8 @@ void function_bdc40(point3f const *position, vector3f const *forward, vector3f c
     translation.position = *position;
     rotation.scale = 1.0f;
     rotation.forward = *forward;
-    rotation.left.i = up->j * forward->k - forward->j * up->k;
+    vector3f const *f = forward; /* the first row reads the forward axis through its own pointer */
+    rotation.left.i = up->j * f->k - f->j * up->k;
     rotation.left.j = forward->i * up->k - up->i * forward->k;
     rotation.left.k = forward->j * up->i - forward->i * up->j;
     rotation.up = *up;
@@ -549,11 +550,21 @@ void function_bdc40(point3f const *position, vector3f const *forward, vector3f c
     }
     if (scale != 1.0f)
     {
-        identity_transform_ab(&temporary);
         temporary.scale = scale;
+        temporary.forward.i = 1.0f;
+        temporary.forward.j = 0.0f;
+        temporary.forward.k = 0.0f;
+        temporary.left.i = 0.0f;
+        temporary.left.j = 1.0f;
+        temporary.left.k = 0.0f;
+        temporary.up.i = 0.0f;
+        temporary.up.j = 0.0f;
+        temporary.up.k = 1.0f;
+        temporary.position.x = 0.0f;
+        temporary.position.y = 0.0f;
+        temporary.position.z = 0.0f;
         function_142a60(&rotation, &temporary, &rotation);
     }
-    transform4x3f const *base;
     if (parent)
     {
         if (parent->scale != 1.0f || parent_mirrored)
@@ -575,11 +586,10 @@ void function_bdc40(point3f const *position, vector3f const *forward, vector3f c
             parent = &temporary;
         }
         function_142a60(parent, &translation, out);
-        base = out;
+        function_142a60(out, &rotation, out);
     }
     else
-        base = &translation;
-    function_142a60(base, &rotation, out);
+        function_142a60(&translation, &rotation, out);
 }
 
 extern long g_4e7414;

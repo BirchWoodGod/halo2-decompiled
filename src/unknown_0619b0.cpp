@@ -8,6 +8,25 @@
 
 inline long count_bits(dword value);
 
+static __forceinline bool session_member_score_order(const s_session_member *first, const s_session_member *second, long player_count)
+ {
+  long local_3 = *(const long *)(first->properties.unknown74 + 8);
+  long maximum = g_network_configuration.value84[player_count];
+  long first_value = first->unknown94;
+  long second_value = second->unknown94;
+  if (first_value > maximum) first_value = maximum;
+  if (second_value <= maximum) maximum = second_value;
+  real score = (real)(first_value - maximum) * g_network_configuration.real34;
+  real delta = (real)(*(const long *)(second->properties.unknown74 + 8) - local_3) * g_network_configuration.real38;
+  if (delta > 0.f)
+   score += (real)pow(delta, g_network_configuration.real3c);
+  else
+   score -= (real)pow(-delta, g_network_configuration.real3c);
+  if (score > 0.3f)
+   return true;
+  return false;
+ }
+
 // @retail 0x619b0
 bool function_619b0(const s_session_member *members, long second_index, long first_index, long player_count)
 {
@@ -28,21 +47,5 @@ bool function_619b0(const s_session_member *members, long second_index, long fir
 local_0:
   return true;
  }
- {
-  long local_3 = *(const long *)(first->properties.unknown74 + 8);
-  long maximum = g_network_configuration.value84[player_count];
-  long first_value = first->unknown94;
-  long second_value = second->unknown94;
-  if (first_value > maximum) first_value = maximum;
-  if (second_value <= maximum) maximum = second_value;
-  real score = (real)(first_value - maximum) * g_network_configuration.real34;
-  real delta = (real)(*(const long *)(second->properties.unknown74 + 8) - local_3) * g_network_configuration.real38;
-  if (delta > 0.f)
-   score += (real)pow(delta, g_network_configuration.real3c);
-  else
-   score -= (real)pow(-delta, g_network_configuration.real3c);
-  if (score > 0.3f)
-   goto local_0;
-  return false;
- }
+ return session_member_score_order(first, second, player_count);
 }

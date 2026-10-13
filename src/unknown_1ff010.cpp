@@ -229,7 +229,9 @@ bool function_1ff7d0(long actor_index, point3f const *point, real enemy_radius, 
 	bool result = true;
 	short count = 0;
 	s_actor_point_request request;
+#pragma inline_depth(0)
 	function_1e4770(&request, actor->unknown024, point, 2, radius);
+#pragma inline_depth()
 	s_actor_view *other = (s_actor_view *)function_1e47d0(&request);
 	while (other)
 	{
@@ -249,14 +251,13 @@ bool function_1ff7d0(long actor_index, point3f const *point, real enemy_radius, 
 		other = (s_actor_view *)function_1e47d0(&request);
 	}
 	{
-		s_record_pool *players = g_4e8c24;
 		long index = NONE;
 		for (;;)
 		{
-			index = data_next_absolute_index_inlined(players, index + 1);
+			index = data_next_absolute_index_inlined(g_4e8c24, index + 1);
 			if (index == NONE)
 				break;
-			byte *player = players->data + players->size * index;
+			byte *player = g_4e8c24->data + g_4e8c24->size * index;
 			if (!player)
 				break;
 			long object_index = *(long *)(player + 0x2c);
