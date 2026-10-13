@@ -96,9 +96,11 @@ void function_1703f0(long player_index)
 	real *third = state->third;
 	real *second = state->second;
 	real *first = state->first;
+	real *time = state->times;
+	byte *channel = state->channel_flags;
 	for (short group = 0; group < 6; ++group)
 	{
-		real t = state->times[group] - g_4e9bd0;
+		real t = *time - g_4e9bd0;
 		if (t > 0.0f)
 		{
 			real t2 = t * t;
@@ -107,7 +109,7 @@ void function_1703f0(long player_index)
 			for (short i = 0; i < g_468d3c[group]; ++i)
 				out[i] = fifth[i] * t4 * 5.0f + fourth[i] * t3 * 4.0f + third[i] * t2 * 3.0f + second[i] * t * 2.0f + first[i];
 		}
-		else if ((state->flags & 1) && ((state->channel_flags[group] & 2) || (state->flags & 8)))
+		else if ((state->flags & 1) && ((*channel & 2) || (state->flags & 8)))
 			memset(out, 0, g_468d3c[group] * sizeof(real));
 		else if (state->flags & 1)
 		{
@@ -122,6 +124,8 @@ void function_1703f0(long player_index)
 		third += count;
 		second += count;
 		first += count;
+		++time;
+		++channel;
 	}
 }
 
@@ -134,15 +138,20 @@ PRIVATE inline void cross_product_170c00(vector3f const *a, vector3f const *b, v
 	result->k = a->i * b->j - a->j * b->i;
 }
 
+PRIVATE inline void point_set_170c00(point3f *point, real x, real y, real z)
+{
+	point->x = x;
+	point->y = y;
+	point->z = z;
+}
+
 PRIVATE inline void placement_basis_170c00(vector3f const *forward, vector3f const *up, transform4x3f *matrix)
 {
 	matrix->scale = 1.0f;
 	matrix->forward = *forward;
 	cross_product_170c00(up, forward, &matrix->left);
 	matrix->up = *up;
-	matrix->position.x = 0.0f;
-	matrix->position.y = 0.0f;
-	matrix->position.z = 0.0f;
+	point_set_170c00(&matrix->position, 0.0f, 0.0f, 0.0f);
 }
 
 __declspec(noinline) vector3f *function_170c00(vector3f const *first_forward, vector3f const *first_up, vector3f const *second_forward, vector3f const *second_up, vector3f *out);
