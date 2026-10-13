@@ -148,15 +148,23 @@ bool pending_message_request_send(s_pending_message_header *header, long value10
 
 long g_55e700;
 
+static __forceinline void function_81051(word *arg_0, word arg_1, bool arg_2)
+{
+	if (arg_2)
+		*arg_0 |= arg_1;
+	else
+		*arg_0 &= ~arg_1;
+}
+
 // @retail 0x81050
 void function_81050(long result, s_pending_message_header *header)
 {
 	*(short *)&header->unknown0c = header->state;
-	dword old_flags = header->flags;
 	bool completed = false;
 	((short *)&header->unknown0c)[1] = (short)result;
 	header->state = 0;
 	header->pending_index = NONE;
+	dword old_flags = header->flags;
 	if (result == 1)
 	{
 		completed = true;
@@ -177,11 +185,12 @@ void function_81050(long result, s_pending_message_header *header)
 	s_pending_definition *definition = (s_pending_definition *)header->unknown00;
 	if (definition)
 	{
+		short local_0 = *(short *)&header->unknown0c;
 		old_flags |= header->flags & 4;
 		bool (__stdcall *callback)(s_pending_message_header *) = 0;
-		if (*(short *)&header->unknown0c == 2)
+		if (local_0 == 2)
 			callback = definition->sent;
-		else if (*(short *)&header->unknown0c == 1)
+		else if (local_0 == 1)
 			callback = definition->received;
 		if (callback && !callback(header))
 		{
@@ -198,10 +207,8 @@ retry:
 		if (definition && definition->retry)
 		{
 			bool handled = definition->retry(header);
-			if (handled) header->flags |= 2;
-			else header->flags &= ~2;
-			if (handled) header->flags |= 8;
-			else header->flags &= ~8;
+			function_81051(&header->flags, 2, handled);
+			function_81051(&header->flags, 8, handled);
 			if (handled)
 				return;
 		}

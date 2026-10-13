@@ -225,25 +225,46 @@ static inline bool texture_cache_lock_exists(s_texture_cache_lock *lock)
 	return false;
 }
 
+static inline bool texture_cache_lock_exists_12c400(s_texture_cache_lock *lock)
+{
+	s_texture_cache_lock *other = g_4e645c;
+
+	if (g_4e645c)
+	{
+		do
+		{
+			if (other == lock)
+			{
+				return true;
+			}
+			other = other->next;
+		} while (other);
+	}
+	return false;
+}
+
 // @retail 0x12c400
 void texture_cache_update_locks(void)
 {
 	s_texture_cache_lock *lock = g_4e645c;
 
-	while (lock)
+	if (g_4e645c)
 	{
-		if (lock->update)
+		do
 		{
-			lock->update(lock->address, lock->user_data);
-		}
-		if (!texture_cache_lock_exists(lock))
-		{
-			lock = g_4e645c;
-		}
-		else
-		{
-			lock = lock->next;
-		}
+			if (lock->update)
+			{
+				lock->update(lock->address, lock->user_data);
+			}
+			if (!texture_cache_lock_exists_12c400(lock))
+			{
+				lock = g_4e645c;
+			}
+			else
+			{
+				lock = lock->next;
+			}
+		} while (lock);
 	}
 }
 

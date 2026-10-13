@@ -119,44 +119,29 @@ extern long g_4ba050, g_4ba054[4], g_4ba064[4];
 // @retail 0x2b790
 void function_2b790(s_render_view_2b790 *view, bool enabled)
 {
+	struct location_indices { long cluster, leaf; bool invalid; volatile long object; } location;
 	s_speed_result speed;
 	memcpy(&speed.shake, g_4686d4, sizeof(speed.shake));
 	speed.type = 0;
 	speed.amount = 0.0f;
-	long object_index = NONE;
+	location.object = NONE;
 	g_4ba050 = view->player_index;
-	long cluster = g_4ba054[view->player_index];
-	long leaf = g_4ba064[view->player_index];
-	bool invalid;
-	if (function_2b720(&view->position, &cluster, &leaf))
+	location.cluster = g_4ba054[view->player_index];
+	location.leaf = g_4ba064[view->player_index];
+	if (function_2b720(&view->position, &location.cluster, &location.leaf))
 	{
-		g_4ba054[view->player_index] = cluster;
-		g_4ba064[view->player_index] = leaf;
-		invalid = false;
+		g_4ba054[view->player_index] = location.cluster;
+		g_4ba064[view->player_index] = location.leaf;
+		location.invalid = false;
 	}
-	else invalid = true;
+	else location.invalid = true;
 	union { vector3f color; real bounds[4]; } sky;
 	sky.color = *(vector3f const *)&g_4686cc->red;
 	bool found = false;
 	long sky_index;
-	cluster_get_sky(cluster, &sky_index, &found, &sky.color);
-	byte kind = 0;
-	if (cluster != NONE)
-	{
-		short index = (short)sky_index;
-		byte *scenario = (byte *)g_4e0350;
-		if (index >= 0 && index < *(long *)(scenario + 8))
-		{
-			long tag = *(long *)(*(byte **)(scenario + 0xc) + index * 8 + 4);
-			if (tag != NONE)
-			{
-				byte *definition = g_4e3b44[tag & 0xffff].bytes;
-				kind = definition && *(long *)(definition + 4) != NONE;
-			}
-		}
-	}
+	byte kind = cluster_get_sky(location.cluster, &sky_index, &found, &sky.color);
 	byte geometry[0x120];
-	function_12e5e0(geometry, cluster, &view->position, &view->forward, kind, true);
+	function_12e5e0(geometry, location.cluster, &view->position, &view->forward, kind, true);
 	if (found) *(vector3f *)(geometry + 4) = sky.color;
 	if (geometry[0x18])
 	{
@@ -168,13 +153,13 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	if (view->object_index != NONE)
 	{
 		long player = g_4e8c20->entries[view->object_index];
-		object_index = *(long *)((byte *)g_4e8c24->data + (player & 0xffff) * 0x21c + 0x24);
-		function_154310(object_index, &speed);
+		location.object = *(long *)((byte *)g_4e8c24->data + (player & 0xffff) * 0x21c + 0x24);
+		function_154310(location.object, &speed);
 	}
 	if (view->scale > 0.0f)
-		function_2ba10((s_2f970_view const *)&view->position, cluster, view->player_index,
-			view->camera, enabled, leaf, invalid, &sky.color, 0, view->object_index,
-			object_index, kind, sky_index, geometry, false, NONE, view->lighting, 0, &speed);
+		function_2ba10((s_2f970_view const *)&view->position, location.cluster, view->player_index,
+			view->camera, enabled, location.leaf, location.invalid, &sky.color, 0, view->object_index,
+			location.object, kind, sky_index, geometry, false, NONE, view->lighting, 0, &speed);
 }
 
 bool function_256f0(transform4x3f *out);
@@ -2050,7 +2035,7 @@ void function_24ee0(s_24ee0_state const *state, short mode)
     }
 }
 
-extern long g_485af4[4], g_485b04[4];
+#include "texture_stage_dimensions.h"
 extern dword g_4b8308, g_4b8438, g_4b8450, g_4b82ec, g_4b8448, g_4b843c;
 extern dword g_4b82e0, g_4b82fc;
 bool function_01dd60(long index, long *width, long *height);

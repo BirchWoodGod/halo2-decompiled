@@ -1480,18 +1480,10 @@ selected:
     hkRigidBody *body = havok_component_rigid_body_get(index, component);
     if (!body->m_fixed && body->m_motion->getType() != 6)
     {
-     if (point)
+     if (point && change_a && !TEST_FIELD_BIT(component->flag1))
      {
-      if (change_a)
-      {
-       if (!TEST_FIELD_BIT(component->flag1))
-       {
-        havok_component_rigid_body_point_impulse_apply(index, component, point, &a);
-        i = local_0;
-       }
-       else
-        havok_component_rigid_body_linear_velocity_change(index, component, &a);
-      }
+      havok_component_rigid_body_point_impulse_apply(index, component, point, &a);
+      i = local_0;
      }
      else if (change_a)
       havok_component_rigid_body_linear_velocity_change(index, component, &a);
