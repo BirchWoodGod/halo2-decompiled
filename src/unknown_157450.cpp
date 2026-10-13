@@ -5017,6 +5017,7 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
     {
         byte *placement = *(byte **)(scenario + 0x124) + i * 0x90;
         if (i % arg_642c39 != g_510c54->game_time % arg_642c39) continue;
+        short *timer = &entries[i].value04;
         c_engine_peer *engine = game_engine_get();
         long type = NONE;
         if (engine)
@@ -5042,10 +5043,9 @@ void __stdcall function_15ae70(s_netgame_entry_state *entries)
                 }
                 if (!reset) ++entries[i].value06;
                 else entries[i].value06 = 0;
-                if (entries[i].value06 > *(short *)(placement + 0x10)) entries[i].value04 = 1;
+                if (entries[i].value06 > *(short *)(placement + 0x10)) *timer = 1;
             }
         }
-        short *timer = &entries[i].value04;
         if (*timer == 0)
         {
             bool schedule = entries[i].index == NONE;
