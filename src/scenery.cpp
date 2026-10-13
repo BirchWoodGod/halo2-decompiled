@@ -212,17 +212,14 @@ void function_b8b70(long object_index);
 void __stdcall function_10a0f0(long scenery_index, s_scenery_placement *placement)
 {
 	s_scenery *scenery = SCENERY_GET(scenery_index);
-	(void)&placement;
-	scenery->value_130 = NONE;
+	/* a second lookup of the same scenery; retail keeps the two flag stores apart */
+	s_scenery *object = SCENERY_GET(scenery_index);
+	object->value_130 = NONE;
 	scenery->flag22 = false;
-	scenery->flag23 = false;
+	object->flag23 = false;
 	scenery->value_132 = function_10a040(scenery->definition_index, placement);
 	switch (scenery->value_132)
 	{
-	case 0:
-	case 3:
-		scenery->flag23 = true;
-		break;
 	case 1:
 		if (g_4686c4 >= 0 && g_4686c4 < placement->entry_count)
 		{
@@ -231,6 +228,8 @@ void __stdcall function_10a0f0(long scenery_index, s_scenery_placement *placemen
 			if (entry->value != NONE)
 				scenery->flag22 = true;
 		}
+	case 0:
+	case 3:
 		scenery->flag23 = true;
 		break;
 	default:
@@ -307,7 +306,8 @@ struct s_scenery_type_definition
 	void (__stdcall *handler20)(long);
 	void *unknown24[2];
 	bool (__stdcall *handler2c)(long, void *, bool *);
-	void *unknown30[3];
+	void (__stdcall *handler30)(long, s_scenery_placement *);
+	void *unknown34[2];
 	void (__stdcall *handler3c)(long);
 	bool (__stdcall *handler40)(long);
 	void *unknown44[11];
@@ -326,6 +326,7 @@ s_scenery_type_definition g_467ff0 =
 	function_10a030,
 	{ 0 },
 	function_10a1b0,
+	function_10a0f0,
 	{ 0 },
 	function_10a240,
 	function_10a2f0,
@@ -498,8 +499,7 @@ bool function_10a520(long object_index)
 	s_scenery_definition *definition = TAG_DATA(s_scenery_definition, header->scenery->definition_index);
 	bool result = false;
 	byte info[0x54];
-	if (header->cluster_index == NONE)
-		return result;
+	if (header->cluster_index != NONE)
 	{
 		if (function_20a9a0((s_type_1a7926 *)info, object_index))
 			return true;
@@ -524,14 +524,15 @@ bool function_10a520(long object_index)
 								if (index != NONE && graph_region->parts[index].value == 1)
 									count++;
 							}
-							result = region->count == count;
-							if (!result)
-								return result;
+							if (region->count != count)
+								return false;
+							result = true;
 						}
 					}
 				}
 			}
 		}
+		return result;
 	}
 	return result;
 }
