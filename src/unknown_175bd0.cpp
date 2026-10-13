@@ -1940,7 +1940,7 @@ void function_178c80(real scale, s_effect_datum *effect, s_particle_system_datum
 
 
 // @retail 0x178eb0
-s_particle_system_datum *function_178eb0(long definition_index, long effect_index)
+s_particle_system_datum *function_178eb0(long effect_index, long definition_index)
 {
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 	s_effect_event *event = &TAG_GET(s_effect_definition, effect->tag_index)->events[effect->event_index];
@@ -2032,7 +2032,7 @@ void function_179020(long effect_index, real scale, real unknown)
 		{
 			s_particle_system_datum *particle_system = effect_event_slot_particle_system(effect, definition);
 
-			if (particle_system || (particle_system = function_178eb0(i, effect_index)) != 0)
+			if (particle_system || (particle_system = function_178eb0(effect_index, i)) != 0)
 			{
 				if (definition->location_index != NONE)
 					function_178c80(scale, effect, particle_system, definition, unknown, field_b4);

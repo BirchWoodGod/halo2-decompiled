@@ -68,11 +68,13 @@ void function_142f0(short mode)
     }
 }
 
+#pragma auto_inline(off)
 // @retail 0x48010
 void function_48010(real const *color)
 {
     D3DDevice_SetVertexData4f(9, color[1], color[2], color[3], color[0]);
 }
+#pragma auto_inline(on)
 
 
 dword g_4b8334;
@@ -245,7 +247,7 @@ failure:
 
 
 #include <math.h>
-extern IDirect3DBaseTexture8 *g_51f3c8[2][4];
+#include "texture_stage_storage.h"
 void function_1cf50(void);
 void function_01ddd0(long index, dword width, dword height);
 long function_48e70(real value);

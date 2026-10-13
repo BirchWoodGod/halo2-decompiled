@@ -229,10 +229,9 @@ long function_48e70(real value)
 	long shift = 150 - exponent;
 	long mantissa = ((bits & 0x7fffff) | 0x800000) >> shift;
 	long sign = bits >> 31;
-	long small = (exponent - 127) >> 31;
-	long result = ((mantissa ^ sign) - sign) & ~small;
+	long result = ((mantissa ^ sign) - sign) & ~((exponent - 127) >> 31);
 	long increment;
-	if (!sign && bits && (small || (((1 << shift) - 1) & bits & 0x7fffff)))
+	if (!sign && bits && (((exponent - 127) >> 31) || (((1 << shift) - 1) & bits & 0x7fffff)))
 		increment = 1;
 	else
 		increment = 0;

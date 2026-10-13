@@ -421,7 +421,9 @@ real function_31b40(vector3f *vector, vector3f const *axis)
 	vector3f cross;
 	cross.i = *(real const volatile *)&vector->j * axis->k - *(real const volatile *)&axis->j * vector->k;
 	cross.j = *(real const volatile *)&axis->i * vector->k - *(real const volatile *)&vector->i * axis->k;
+	real cross_j = cross.j;
 	cross.k = *(real const volatile *)&axis->j * vector->i - *(real const volatile *)&vector->j * axis->i;
+	cross.j = cross_j;
 	normalize_cross_vector(&cross);
 	vector3f const volatile &normalized = cross;
 	vector3f result;

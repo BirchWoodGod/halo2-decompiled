@@ -467,14 +467,6 @@ void function_246d80(s_particle_property const *property, real const *values, co
 real function_3eb70(void);
 typedef void (__stdcall *particle_callback_175610)(s_particle_175610 *, s_particle_value_cache *, point3f const *, vector3f const *, real, color4f const *, void *);
 
-/* `input` rotated by `matrix`, each row's first two products grouped as retail adds them */
-PRIVATE inline void particle_rotate_grouped_175610(matrix3x3 const *matrix, vector3f const *input, vector3f *output)
-{
-	vector3f value = *input;
-	output->i = (matrix->left.i * value.j + matrix->forward.i * value.i) + matrix->up.i * value.k;
-	output->j = (matrix->forward.j * value.i + matrix->up.j * value.k) + matrix->left.j * value.j;
-	output->k = (matrix->forward.k * value.i + matrix->up.k * value.k) + matrix->left.k * value.j;
-}
 
 // @retail 0x175610
 void function_175610(s_particle_value_cache *cache, s_particle_system_datum *system, s_particle_location_datum *location, particle_callback_175610 callback, void *context)
@@ -492,13 +484,13 @@ void function_175610(s_particle_value_cache *cache, s_particle_system_datum *sys
 		cache->mask &= 0xfffecf7f;
 	}
 	long emitter_index = *(long *)((byte *)location + 4);
-	long emitter_definition_index = 0;
+	long emitter_definition_offset = 0;
 	while (emitter_index != NONE)
 	{
 		s_particle_emitter_175610 *emitter = DATUM(g_51ec88, s_particle_emitter_175610, emitter_index);
 		long particle_index = emitter->first_particle_index;
 		s_emitter_definition_175610 *emitter_definition =
-			&(*(s_emitter_definition_175610 **)((byte *)definition + 0x34))[emitter_definition_index];
+			(s_emitter_definition_175610 *)(*(byte **)((byte *)definition + 0x34) + emitter_definition_offset);
 		if (particle_index != NONE)
 		{
 			real multiplier = 1.0f;
@@ -544,17 +536,23 @@ void function_175610(s_particle_value_cache *cache, s_particle_system_datum *sys
 					scale = function_246cd0(&emitter_definition->scale, cache->values) * multiplier;
 				if (definition->unknown0c)
 				{
-					particle_rotate_grouped_175610(rotation_result, (vector3f const *)&position, (vector3f *)&position);
+					vector3f value = *(vector3f const *)&position;
+					position.x = (rotation_result->left.i * value.j + rotation_result->forward.i * value.i) + rotation_result->up.i * value.k;
+					position.y = (rotation_result->forward.j * value.i + rotation_result->up.j * value.k) + rotation_result->left.j * value.j;
+					position.z = (rotation_result->forward.k * value.i + rotation_result->up.k * value.k) + rotation_result->left.k * value.j;
 					position.x = origin_result->x + position.x;
 					position.y = origin_result->y + position.y;
 					position.z = origin_result->z + position.z;
-					particle_rotate_grouped_175610(rotation_result, &velocity, &velocity);
+					value = velocity;
+					velocity.i = (rotation_result->left.i * value.j + rotation_result->forward.i * value.i) + rotation_result->up.i * value.k;
+					velocity.j = (rotation_result->forward.j * value.i + rotation_result->up.j * value.k) + rotation_result->left.j * value.j;
+					velocity.k = (rotation_result->forward.k * value.i + rotation_result->up.k * value.k) + rotation_result->left.k * value.j;
 				}
 				callback(particle, cache, &position, &velocity, scale, &color, context);
 			}
 		}
 		emitter_index = emitter->next_index;
-		emitter_definition_index++;
+		emitter_definition_offset += sizeof(s_emitter_definition_175610);
 	}
 }
 

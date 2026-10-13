@@ -1419,7 +1419,8 @@ bool __stdcall function_16a440(dword flags, point3f const *position, real extent
         if (found && test_world)
             function_245aa0((s_245aa0 const *)&hits, (s_source_245400 const *)g_4e0340,
                 0, height, radius, NONE, NONE, (s_collection_245270 *)shapes);
-        if ((hits.field_c0c.field_0 > 0 && (flags & 4)) || (flags & 8))
+        long leaf_count = hits.field_c0c.field_0;
+        if ((leaf_count > 0 && (flags & 4)) || (flags & 8))
         {
             ++g_4e7414;
             g_4e7411 = true;
@@ -1431,7 +1432,7 @@ bool __stdcall function_16a440(dword flags, point3f const *position, real extent
                 if (!(flags & 0x1fff0)) flags |= 0x1fff0;
             }
             s_1697c0_bsp *bsp = (s_1697c0_bsp *)g_4e0348;
-            for (long leaf = 0; leaf < hits.field_c0c.field_0; ++leaf)
+            for (long leaf = 0; leaf < leaf_count; ++leaf)
             {
                 long cluster = collision_leaf_cluster(hits.field_c0c.field_4[leaf]);
                 if (g_4e7418[(short)cluster] == g_4e7414) continue;
@@ -1537,9 +1538,9 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 		struct
 		{
 			point3f face_sum;
-			real nearest_squared;
 			point3f edge_sum;
 		} accumulators;
+		real nearest_squared_local;
 		accumulators.edge_sum = *g_468788;
 		accumulators.face_sum = *g_468788;
 		long edge_count = 0;
@@ -1559,7 +1560,7 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 				projected.x = (0.0f - distance) * prism->plane.i + point->x;
 				projected.y = prism->plane.j * (0.0f - distance) + point->y;
 				projected.z = (0.0f - distance) * prism->plane.k + point->z;
-				accumulators.nearest_squared = 3.4028234663852886e+38f;
+				nearest_squared_local = 3.4028234663852886e+38f;
 				bool inside = true;
 				long count = prism->point_count > 8 ? 8 : prism->point_count;
 				point3f closest;
@@ -1612,9 +1613,9 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 						difference.k = clamped.z - projected.z;
 						real separation = difference.i * difference.i + difference.k * difference.k +
 							difference.j * difference.j;
-						if (accumulators.nearest_squared > separation)
+						if (nearest_squared_local > separation)
 						{
-							accumulators.nearest_squared = separation;
+							nearest_squared_local = separation;
 							closest = clamped;
 						}
 					}
@@ -1623,7 +1624,7 @@ bool __stdcall function_16a8e0(long flags, point3f const *point, real radius,
 				if (inside)
 					closest = projected;
 				else
-					separation = accumulators.nearest_squared;
+					separation = nearest_squared_local;
 				if (radius_squared > separation)
 				{
 					bool face = true;

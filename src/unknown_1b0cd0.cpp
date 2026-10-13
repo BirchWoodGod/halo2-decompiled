@@ -92,7 +92,7 @@ bool __stdcall function_1b13b0(long actor_index, s_slot *slot, long index);
 short __stdcall function_1b0cd0(long actor_index)
 {
 	s_slot_entry_iterator iterator;
-	short result = 0;
+	long result = 0;
 
 	iterator.actor_index = actor_index;
 	iterator.reference.unknown2 = 0x7e;
@@ -462,35 +462,41 @@ void __stdcall function_1b1a90(long actor_index, s_slot *slot, s_slot_target_lis
 }
 
 /* invites the actors of the actor's group (or squad) of the same team */
+struct s_1b1d90_locals
+{
+	long field_00;
+	byte field_04[0xc];
+	s_ai_actor_iterator field_10;
+};
+
 // @retail 0x1b1d90
 short __stdcall function_1b1d90(long actor_index, long leader_index, s_slot *slot, long unknown)
 {
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_7e *state = (s_slot_7e *)slot;
-	long count = 0;
+	s_1b1d90_locals locals;
+	locals.field_00 = 0;
 
 	if (state->unknown20 != NONE)
 	{
-		s_ai_actor_iterator iterator;
-
-		ai_actor_iterator_new(state->unknown20, &iterator);
-		for (s_actor_view *other = (s_actor_view *)ai_actor_iterator_next(&iterator); other;
-			other = (s_actor_view *)ai_actor_iterator_next(&iterator))
+		ai_actor_iterator_new(state->unknown20, &locals.field_10);
+		for (s_actor_view *other = (s_actor_view *)ai_actor_iterator_next(&locals.field_10); other;
+			other = (s_actor_view *)ai_actor_iterator_next(&locals.field_10))
 		{
 			if (other != actor && actor->unknown004 == other->unknown004 &&
-				function_26eae0(leader_index, iterator.actor_index, 3, 1.0f))
+				function_26eae0(leader_index, locals.field_10.actor_index, 3, 1.0f))
 			{
-				count++;
+				locals.field_00++;
 			}
 		}
-		return (short)count;
+		return (short)locals.field_00;
 	}
 	if (actor->unknown030 != NONE)
 	{
-		s_squad_actor_iterator iterator;
+		s_squad_actor_iterator *iterator = (s_squad_actor_iterator *)&locals.field_10;
 
-		function_204d30(&iterator, actor->unknown030);
-		long other_index = iterator.next_actor_index;
+		function_204d30(iterator, actor->unknown030);
+		long other_index = iterator->next_actor_index;
 
 		while (g_4f55d0->active && other_index != NONE)
 		{
@@ -501,12 +507,11 @@ short __stdcall function_1b1d90(long actor_index, long leader_index, s_slot *slo
 			if (other != actor && actor->unknown004 == other->unknown004 &&
 				function_26eae0(leader_index, index, 3, 1.0f))
 			{
-				count++;
+				locals.field_00++;
 			}
 		}
-		return (short)count;
 	}
-	return 0;
+	return (short)locals.field_00;
 }
 
 s_slot_handler_2x g_47df60 =

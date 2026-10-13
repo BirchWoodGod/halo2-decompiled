@@ -8,6 +8,17 @@
 #include <xtl.h>
 #include "globals.h"
 
+namespace D3D
+{
+	struct CDevice
+	{
+		void LazySetStateVB(dword value);
+		static dword m_PushSegmentSize;
+	};
+
+	dword volatile *WINAPI MakeRequestedSpace(dword fallback_size, dword requested_size);
+}
+
 // Retail has two 24-entry format rows; unrelated data starts at 0x450828.
 // Values map bitmap formats to hardware formats, with -1 for unsupported ones.
 long g_450768[2][24] = {
@@ -248,13 +259,36 @@ dword function_015cd0(long index, dword entry)
 // @retail 0x15d00
 bool function_015d00(long count, dword **out)
 {
-	if (count >= 0x800)
+	bool result = true;
+	if (count < 0x800)
+	{
+		((D3D::CDevice *)D3D__pDevice)->LazySetStateVB(0);
+		dword *const *fields = (dword *const *)D3D__pDevice;
+		dword *push = fields[0];
+		dword *requested_end = push + count + 1;
+		dword *threshold_end = fields[1] + 0x80;
+		if (requested_end < threshold_end)
+		{
+			*out = push;
+		}
+		else
+		{
+			dword fallback_size = D3D::CDevice::m_PushSegmentSize;
+			dword full_size = fallback_size;
+			dword requested_size = count * 4 + 0x208;
+			fallback_size >>= 1;
+			fallback_size = requested_size > fallback_size ? requested_size : fallback_size;
+			full_size = requested_size > full_size ? requested_size : full_size;
+			push = (dword *)D3D::MakeRequestedSpace(fallback_size, full_size);
+			*out = push;
+		}
+	}
+	else
 	{
 		*out = NULL;
-		return false;
+		result = false;
 	}
-	*out = D3DDevice_BeginPush(count);
-	return true;
+	return result;
 }
 
 s_palette_storage g_palette_storage;

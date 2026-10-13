@@ -253,7 +253,7 @@ void network_session_interface_clear_user(long index)
 }
 
 struct s_type_fb9815;
-void machine_identifier_build(s_type_fb9815 *identifier, long index);
+inline void machine_identifier_build(s_type_fb9815 *identifier, long index);
 
 // @retail 0x64610
 long __stdcall function_64610(dword *xuid)
@@ -486,7 +486,10 @@ long network_session_interface_find_player_49b8(void)
 			for (long i = 0; i < 16; i++)
 			{
 				if ((session->player_mask & (1 << i)) && !memcmp(&session->players[i], key, 12))
-					return i;
+				{
+					result = i;
+					break;
+				}
 			}
 		}
 	}
@@ -848,6 +851,8 @@ PRIVATE __forceinline bool function_63f51(const char *arg_0, c_class_58d20 *arg_
  return network_session_parameters_set_value4d08(arg_1, arg_0, arg_2, arg_3);
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x63f50
 bool network_session_interface_set_value4d08(long value4d08, long value4d0c, const char *string)
 {
@@ -855,6 +860,7 @@ bool network_session_interface_set_value4d08(long value4d08, long value4d0c, con
 	c_class_58d20 *session = network_session_get_current();
 	if (session && session_is_established(session))
 	{
+		_ReadWriteBarrier();
 		if (session_is_leader(session))
 			{ result = function_63f51(string, session, value4d08, value4d0c); goto local_0; }
 		result = true;
@@ -862,6 +868,7 @@ bool network_session_interface_set_value4d08(long value4d08, long value4d0c, con
 local_0:
 	return result;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x63fb0
 bool network_session_interface_set_value49a4(long value)
