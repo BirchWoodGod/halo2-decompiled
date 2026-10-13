@@ -15,7 +15,7 @@ real function_30bf0(vector3f *v);
 void record_pool_release(s_record_pool *data, long datum_index);
 matrix3x3 *function_142da0(real yaw, real pitch, real roll, matrix3x3 *out);
 matrix3x3 *function_142eb0(matrix3x3 const *right, matrix3x3 const *left, matrix3x3 *out);
-vector3f *function_143070(vector3f const *v, matrix3x3 const *m, vector3f *out);
+vector3f *function_143070(matrix3x3 const *m, vector3f const *v, vector3f *out);
 
 /* what a shape belongs to (copied into a test's result) */
 struct s_shape_header

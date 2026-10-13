@@ -2,6 +2,35 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 7997 functions match
+
+```
+matched 7997 of 11318 game functions (975262 of 2784283 bytes, 35.03%)
+```
+
+2 new matches, none lost:
+- Deep lane 1, rounds 38 and 41 (+2): `0x24ad0b` and `0x24bc12` (from 105 differences) match, among this machine's least-worked functions; the second machine's `0x11b520` now takes the unit before the animation graph, with every call updated, including those in this machine's script functions.
+
+## 2026-10-12: 7995 functions match
+
+```
+matched 7995 of 11318 game functions (974760 of 2784283 bytes, 35.01%)
+```
+
+3 new matches, none lost:
+- Claude lane 1, round 5 (+3), on Opus 5.5 at extra-high effort, working functions earlier rounds couldn't move: `0x24c676` tests both list fields before reading them, which gives retail's argument register and matches its caller `0x24bd61` as well, and `0x12190` ends at its unreachable marker after the free, as retail does. The lane also found that a call cycle retail has, broken in our build by a stub, keeps some functions on the default convention.
+
+## 2026-10-12: 7992 functions match
+
+```
+matched 7992 of 11318 game functions (974527 of 2784283 bytes, 35.00%)
+```
+
+38 new matches, none lost:
+- The third machine's second batch (#384, +31), over its lanes N, Q, R, S, T and H: among them eight matches in `0x1766b0`–`0x179850`, `0x143070`, which now takes its matrix and vector in its siblings' order, and `0x1520a0`, which no longer needs a `volatile` read.
+- The second machine's lane D lower, round 18 (#383, +4): `0x5b650` and `0x5e150` return one result, and the callers `0x945f0` (lane J) and `0x162d00` (the third machine) now match unchanged.
+- Deep lane 3, round 44 (+3), in the render range: `0x12420`, `0x36ab0` and `0x174d0`.
+
 ## 2026-10-12: 7954 functions match
 
 ```

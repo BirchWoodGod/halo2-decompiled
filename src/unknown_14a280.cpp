@@ -361,7 +361,9 @@ real function_14b240(s_14b240_owner const *owner, s_bsp3d_disk const *disk, poin
 	offset.i -= projection.i;
 	offset.j -= projection.j;
 	offset.k -= projection.k;
-	height = dot3f(&projection, &plane->normal);
+	height = projection.j * plane->normal.j;
+	height += projection.k * plane->normal.k;
+	height += projection.i * plane->normal.i;
 	distance = length_sq3f(&offset);
 	if (disk->radius * disk->radius >= distance)
 	{

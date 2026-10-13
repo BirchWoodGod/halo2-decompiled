@@ -2526,7 +2526,8 @@ void function_36ab0(void)
         do
         {
             s_motion_material_entry *entry = (s_motion_material_entry *)((byte *)map->entries + i * 0x88);
-            long index = entry->state_index;
+            // Keep the entry address addition separate from the index read.
+            long index = *(long const volatile *)&entry->state_index;
             if (index != NONE)
                 function_39880((s_motion_state_groups *)g_4e3b44[index & 0xffff].bytes);
             ++i;
