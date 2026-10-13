@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 8006 functions match
+
+```
+matched 8006 of 11318 game functions (977236 of 2784283 bytes, 35.10%)
+```
+
+9 new matches, none lost:
+- Deep lane 3, round 45 (+4), in the render range: `0x1e930`, `0x460d0`, `0x3e4e0` and `0x445d0`, each from 33 to 37 differences; `0x441b0` is down to 7.
+- The second machine's lane P, round 18 (#386, +4): `0x1392f8`, `0x13e1a0`, `0x13ccf0` and `0x135820`.
+- The second machine's lane J, round 16 (#385, +1): `0x90f70`.
+
 ## 2026-10-12: 7997 functions match
 
 ```

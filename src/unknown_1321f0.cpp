@@ -767,45 +767,50 @@ void function_133390(s_bit_vector_pool const *arg_1)
 void __stdcall function_133520(s_bit_vector_pool *arg_1)
 {
 	s_visibility_bsp *local_1 = (s_visibility_bsp *)g_4e0348;
-	for (long local_2 = 0; local_2 < (*(c_entry_list *volatile const *)&arg_1->lists[3])->count; local_2++)
+	long local_2 = 0;
+	if (local_2 < arg_1->lists[3]->count)
 	{
-		c_entry_list *local_3 = arg_1->lists[3];
-		long local_4 = (short)local_3->longs_a[(short)local_2];
-		s_visible_instance *local_5 = &local_1->instances[(short)local_4];
-		dword local_6 = function_1332f0(arg_1, local_3->shorts_b[(short)local_2]);
-		point3f const *local_12 = &local_5->center;
-		real local_7 = local_12->y * g_4b9e2c + local_12->z * g_4b9e38 + local_12->x * g_4b9e20 + g_4b9e44;
-		if (!(local_7 >= 0.0f))
-			local_7 = 0.0f - local_7;
-		if (!(local_7 > 0.1f))
-			local_7 = 0.1f;
-		short local_8 = (*(c_entry_list *volatile const *)&arg_1->lists[3])->shorts_d[(short)local_2];
-		real local_9 = (local_5->radius / local_7) * g_4b9ed0 * 2.0f;
-		if (local_5->radius < 0.13f)
-			local_9 *= 1.75f;
-		real local_10 = (local_9 - 25.0f) * (1.0f / 7.0f);
-		if (0.0f > local_10)
-			local_10 = 0.0f;
-		else
+		do
 		{
-			real local_13 = local_10;
-			local_10 = 1.0f;
-			if (!(local_13 > 1.0f))
-				local_10 = local_13;
-		}
-		byte local_11 = (byte)(long)(local_10 * 255.0f);
-		if (!(arg_1->lists[3]->shorts_b[(short)local_2] & 0x800))
-			local_6 |= 0x40;
-		else
-			local_6 |= 1;
-		if (local_11 > 0)
-		{
-			function_2cbf0(0, 0, local_4, local_6 | 0x1008, NONE, 0xffffffff,
-				0, NULL, local_8, local_11, local_5, NONE, local_9, NONE, NONE,
-				false, false, false, 0.0f, 0.0f, 0.0f, 0, local_12, local_5->radius);
-		}
-		else
-			arg_1->lists[3]->shorts_b[(short)local_2] |= 1;
+			c_entry_list *local_3 = arg_1->lists[3];
+			long local_4 = (short)local_3->longs_a[(short)local_2];
+			s_visible_instance *local_5 = &local_1->instances[(short)local_4];
+			dword local_6 = function_1332f0(arg_1, local_3->shorts_b[(short)local_2]);
+			point3f const *local_12 = &local_5->center;
+			real local_7 = local_12->z * g_4b9e38 + local_12->y * g_4b9e2c + local_12->x * g_4b9e20 + g_4b9e44;
+			if (!(local_7 >= 0.0f))
+				local_7 = 0.0f - local_7;
+			if (!(local_7 > 0.1f))
+				local_7 = 0.1f;
+			real local_9 = (local_5->radius / local_7) * g_4b9ed0 * 2.0f;
+			short local_8 = (*(s_bit_vector_pool *volatile *)&arg_1)->lists[3]->shorts_d[(short)local_2];
+			if (local_5->radius < 0.13f)
+				local_9 *= 1.75f;
+			real local_10 = (local_9 - 25.0f) * (1.0f / 7.0f);
+			if (0.0f > local_10)
+				local_10 = 0.0f;
+			else
+			{
+				real local_13 = local_10;
+				local_10 = 1.0f;
+				if (!(local_13 > 1.0f))
+					local_10 = local_13;
+			}
+			byte local_11 = (byte)(long)(local_10 * 255.0f);
+			if (!(arg_1->lists[3]->shorts_b[(short)local_2] & 0x800))
+				local_6 |= 0x40;
+			else
+				local_6 |= 1;
+			if (local_11 > 0)
+			{
+				function_2cbf0(0, 0, local_4, local_6 | 0x1008, NONE, 0xffffffff,
+					0, NULL, local_8, local_11, local_5, NONE, local_9, NONE, NONE,
+					false, false, false, 0.0f, 0.0f, 0.0f, 0, local_12, local_5->radius);
+			}
+			else
+				arg_1->lists[3]->shorts_b[(short)local_2] |= 1;
+			local_2++;
+		} while (local_2 < (*(s_bit_vector_pool *volatile *)&arg_1)->lists[3]->count);
 	}
 }
 

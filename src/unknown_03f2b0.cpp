@@ -1130,9 +1130,10 @@ bool function_460d0(dword const *mask, short index, long part_index)
 {
 	// The render-entry index is passed on the stack in retail.
 	short const *index_reference = &index;
+	dword flags = g_4ba138[*index_reference].unknown00;
 	s_44940_entry *entry = &g_4ba138[*index_reference];
 	bool result = true;
-	if (entry->unknown00 & 0x40)
+	if (flags & 0x40)
 	{
 		byte *data;
 		result = false;
@@ -1145,16 +1146,17 @@ bool function_460d0(dword const *mask, short index, long part_index)
 		else
 		{
 			byte *structure = (byte *)g_4e0348;
-			byte *section;
-			if (!((byte)(entry->unknown00 >> 12) & 1))
-				section = *(byte **)(structure + 0xa0) + ((entry->flags >> 9) & 0x1ff) * 0xb0;
+			if (!((byte)(flags >> 12) & 1))
+			{
+				byte *section = *(byte **)(structure + 0xa0) + ((entry->flags >> 9) & 0x1ff) * 0xb0;
+				data = *(byte **)(section + 0x50);
+			}
 			else
 			{
 				byte *instances = *(byte **)(structure + 0x144);
 				short definition_index = *(short *)(instances + ((entry->flags >> 18) & 0x7ff) * 0x58 + 0x34);
-				section = *(byte **)(structure + 0x13c) + definition_index * 0xc8;
+				data = (byte *)*(dword const *)(*(byte **)(structure + 0x13c) + definition_index * 0xc8 + 0x50);
 			}
-			data = *(byte **)(section + 0x50);
 		}
 		byte *part = *(byte **)(data + 4) + part_index * 0x48;
 		long first = *(short *)(part + 0xa);
