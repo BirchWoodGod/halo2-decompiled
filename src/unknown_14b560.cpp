@@ -2325,6 +2325,19 @@ struct s_player_update_iterator
     s_record_pool_iterator cursor;
 };
 
+struct s_unit_flags_14d8b0
+{
+	word bit0 : 1;
+	word bit1 : 1;
+	word bit2 : 1;
+	word bit3 : 1;
+	word bit4 : 1;
+	word bit5 : 1;
+	word bit6 : 1;
+	word bit7 : 1;
+	word bit8 : 1;
+};
+
 // @retail 0x14d8b0
 void function_14d8b0(void)
 {
@@ -2344,12 +2357,13 @@ void function_14d8b0(void)
         long unit = *(long *)(player + 0x2c);
         if (unit != NONE && g_4e6948->mode != 4)
         {
-            long counter = 0;
+            long counter;
             if (((g_510c54->game_time + (short)index) % 16 == 0 || player[0x3e]) && function_cc460(unit))
             {
                 counter = player[0x3e] + 1;
                 if (counter > 254) counter = 254;
             }
+            else counter = 0;
             player[0x3e] = (byte)counter;
             long limit = player_round_ticks((real)g_510c54->field_2_3 * 0.5f);
             if (player[0x3e] > limit)
@@ -2357,22 +2371,21 @@ void function_14d8b0(void)
                 unit = *(long *)(player + 0x2c);
                 if (unit != NONE)
                 {
-                    byte *object = object_get_unchecked(unit);
-                    object[0x10a] |= 0x20;
+                    s_unit_flags_14d8b0 *flags = (s_unit_flags_14d8b0 *)(object_get_unchecked(unit) + 0x10a);
+                    flags->bit5 = true;
                     function_b7360(unit);
                 }
             }
         }
         else player[0x3e] = 0;
         long &ticks = *(long *)(player + 0x16c);
-        if ((player[2] & 4) && *(long *)(player + 0x2c) != NONE)
+        if ((player[2] & 4) && (unit = *(long *)(player + 0x2c)) != NONE)
         {
             ++ticks;
-            real time = (real)ticks * g_510c54->rate;
+            real time = g_510c54->rate * (real)ticks;
             if (time >= 3.0f)
             {
-                unit = *(long *)(player + 0x2c);
-                if (!(object_get_unchecked(unit)[0x10a] & 0x20))
+                if (!(bool)((object_get_unchecked(unit)[0x10a] >> 5) & 1))
                 {
                     if (g_4e6948->mode != 4)
                     {
