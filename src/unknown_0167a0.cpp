@@ -297,7 +297,7 @@ void function_2f6b0(s_2f6b0_point const *position, s_2f6b0_point const *grid,
 	s_2f6b0_point step;
 	step.x = (bounds.v3 - bounds.v1) / grid->x;
 	step.y = (bounds.v2 - bounds.v0) / grid->y;
-	volatile short x = bounds.v1;
+	long x = bounds.v1;
 	short y = bounds.v0;
 	bounds.v1 = x + (word)position->x * step.x;
 	bounds.v3 = x + (word)(span->x + position->x) * step.x;
@@ -587,6 +587,8 @@ color3f *unpack_color3f(dword pixel, color3f *color);
 // @retail 0x1b580
 bool function_1b580(byte const *definition, long component, long unused, long mode, real *out)
 {
+    long const *unused_reference = &unused;
+    (void)unused_reference;
     s_1b230_function const *curve = (s_1b230_function const *)(definition + 0xc);
     real value = function_1b230(curve, *(long const *)definition,
         *(long const *)(definition + 4), *(real const *)(definition + 8));

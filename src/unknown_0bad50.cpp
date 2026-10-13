@@ -581,54 +581,6 @@ bool function_ba8c0(s_object_function_ab const *function, long object_index, rea
 #pragma inline_depth()
 
 
-// @retail 0xbab40
-bool __stdcall function_bab40(long object_index, long name, real *value)
-{
-    real *saved_value = value;
-    *saved_value = 0.0f;
-    bool enabled = false;
-    s_object *object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-    if ((bool)(((dword)object->flags_c0 >> 9) & 1))
-    {
-        long &index = *(long *)&value;
-        if (function_10aac0(object_index, name, saved_value, &index))
-            return true;
-    }
-    if (!name || name == 0x030005a6)
-    {
-        *saved_value = 1.0f;
-        return true;
-    }
-    if (name == 0x040005a7)
-    {
-        *saved_value = 0.0f;
-        return false;
-    }
-    if (object_index != NONE && !function_108d90(object_index, name, saved_value, &enabled))
-    {
-        object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-        s_object_functions_definition_ab *definition = (s_object_functions_definition_ab *)g_4e3b44[*(long *)object & 0xffff].bytes;
-        bool found = false;
-        for (long i = 0; i < definition->count; ++i)
-        {
-            s_object_function_ab *function = &definition->functions[i];
-            if (function->output_name == name)
-            {
-                enabled = function_ba8c0(function, object_index, saved_value);
-                found = true;
-            }
-        }
-        if (!found)
-        {
-            if (TEST_FIELD_BIT(object->flag26) && object->parent_index != NONE)
-                return function_bab40(object->parent_index, name, saved_value);
-            *saved_value = 0.0f;
-            return false;
-        }
-    }
-    return enabled;
-}
-
 // @retail 0xba7f0
 void __stdcall function_ba7f0(long object_index, long region_index, long bit_index, long bit_mask)
 {
