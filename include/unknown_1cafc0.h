@@ -114,7 +114,7 @@ struct s_animation_state
 	c_type_709360 overlay_find(long set, long weapon_class, long weapon_type);
 	bool channel_play_indexed(c_animation_channel *channel, long set, short item_index, short animation_index,
 		short *found_item_index, short *found_animation_index);
-	bool play_indexed(long set, short item_index, short animation_index, short *found_item_index,
+	__declspec(noinline) bool play_indexed(long set, short item_index, short animation_index, short *found_item_index,
 		short *found_animation_index);
 	bool play(c_type_709360 animation_id, word channel_flags);
 };
