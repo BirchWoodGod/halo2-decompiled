@@ -1337,6 +1337,7 @@ void c_class_14750b::v14()
 				animation.type = 4;
 				animation.direction = 1;
 				animation.value14 = 0;
+				v5((s_widget_event *)&animation);
 			}
 			else
 			{
@@ -1358,8 +1359,8 @@ void c_class_14750b::v14()
 				animation.offset.y = 0.0f;
 				animation.offset.x = 0.0f;
 				animation.scale = 1.0f;
+				v5((s_widget_event *)&animation);
 			}
-			v5((s_widget_event *)&animation);
 		}
 	}
 }

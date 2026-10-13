@@ -48,12 +48,13 @@ static inline long online_task_new_inline(void)
 // @retail 0x92220
 long online_stats_read(word count, XONLINE_STAT_SPEC *specs)
 {
-	long task_index = NONE;
-	for (long i = 0; i < count; i++)
+	dword *local_0 = &specs[0].xuidUser.dwUserFlags;
+	for (long i = 0; i < count; i++, local_0 = (dword *)((byte *)local_0 + sizeof(*specs)))
 	{
-		if (specs[i].xuidUser.dwUserFlags == 0xbad00000 || (specs[i].xuidUser.dwUserFlags & 3))
-			goto local_0;
+		if (*local_0 == 0xbad00000 || (*local_0 & 3))
+			return NONE;
 	}
+	long task_index = NONE;
 	if (online_logon_connected())
 		task_index = online_task_new_inline();
 	if (task_index != NONE)
@@ -70,12 +71,10 @@ long online_stats_read(word count, XONLINE_STAT_SPEC *specs)
 			else
 			{
 				function_6b640(task_index);
-				task_index = NONE;
-				goto local_0;
+				return NONE;
 			}
 		}
 	}
-local_0:
 	return task_index;
 }
 

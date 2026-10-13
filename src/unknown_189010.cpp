@@ -463,10 +463,11 @@ extern s_sound_source_callbacks const g_444b1c;
 // @retail 0x189060
 long function_189060(long object_index, short value, real scale, point3f const *position, vector3f const *direction, long tag_index)
 {
+	short const *local_0 = &value;
 	s_sound_source_description description;
 
 	description.flags = 0;
-	function_1892a0(&description, position, direction, value, tag_index, object_index);
+	function_1892a0(&description, position, direction, *local_0, tag_index, object_index);
 	return function_189340(object_index, tag_index, 1, (s_sound_marker *)&description, function_189010(object_index, tag_index) ? &g_444b1c : &g_444afc, scale, NONE, NULL);
 }
 

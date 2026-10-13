@@ -490,6 +490,8 @@ struct s_camera_update_input
 };
 
 __declspec(noinline) void function_16f190(long user_index, s_observer_command *command);
+// retail calls 0x155d80 from function_1554b0; the build would inline it there
+__declspec(noinline) void function_155d80(long local_index, bool force);
 
 // @retail 0x1554b0
 void function_1554b0(real elapsed)
@@ -498,12 +500,15 @@ void function_1554b0(real elapsed)
     for (long index = 0; index < 4; index++)
     {
         s_entry_155760 *entry = &g_4e8c44[index];
-        if (index != NONE && g_4e8c20->entries[index] != NONE)
+        bool valid = false;
+        if (index != NONE)
+            valid = g_4e8c20->entries[index] != NONE;
+        if (valid)
         {
             s_camera_update_input input;
-            memset(&input, 0, sizeof(input));
             ((byte *)entry)[0x55] = 0;
             ((byte *)entry)[0x56] = 0;
+            memset(&input, 0, sizeof(input));
             input.local_index = index;
             input.elapsed = *(real *)g_4e8c38;
             switch (g_4e8c3c)
@@ -549,7 +554,6 @@ void function_1554b0(real elapsed)
                 ((void (__stdcall *)(void *, void *, s_observer_command *))entry->proc)(&entry->value10, &input, &command);
             }
         command_ready:
-            s_observer_command *stored = (s_observer_command *)((byte *)entry + 0x5c);
             if (command.flags & 1)
             {
                 if (entry->value != 0.0f)
@@ -568,11 +572,11 @@ void function_1554b0(real elapsed)
                     if (remaining < 0.0f) remaining = 0.0f;
                     entry->value = remaining;
                 }
-                *stored = command;
+                *(s_observer_command *)((byte *)entry + 0x5c) = command;
             }
             else
-                stored->flags &= ~1;
-            function_16f190(index, stored);
+                ((s_observer_command *)((byte *)entry + 0x5c))->flags &= ~1;
+            function_16f190(index, (s_observer_command *)((byte *)entry + 0x5c));
         }
     }
 }

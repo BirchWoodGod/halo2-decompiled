@@ -55,5 +55,4 @@ struct s_unit_move_result;
 
 
 struct s_unit_melee_hit;
-// @stub 0xa9260
-void function_a9260(long damage_index, s_unit_melee_hit const *hit) { }
+

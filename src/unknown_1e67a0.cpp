@@ -60,7 +60,7 @@ void function_b7360(long object_index);
 void function_bba20(long object_index);
 void __stdcall function_b87b0(long object_index);
 void __stdcall function_b8600(long object_index, long mode);
-void __stdcall function_1c4a80(long object_index, bool first, bool second);
+void function_1c4a80(long object_index, bool first, bool second);
 void function_b58c0(long object_index, dword mask);
 void function_1d08e0(short index, s_havok_component *component, transform4x3f *matrix);
 bool function_1c5210(transform4x3f const *matrix, void *shape, long component, long filter);
@@ -407,6 +407,7 @@ struct s_contact_dispatch_output
 // @retail 0x1e5b50
 void function_1e5b50(const byte *contact, s_contact_dispatch_output *output, const byte *state)
 {
+	byte selector = *state;
 	if (contact[0x14] & 0x20)
 	{
 		output->direction = 1;
@@ -414,7 +415,7 @@ void function_1e5b50(const byte *contact, s_contact_dispatch_output *output, con
 	}
 	else
 	{
-		switch (*state)
+		switch (selector)
 		{
 		case 1: function_1f1930((const s_shape_contact *)contact, (s_shape_side *)output); break;
 		case 2: function_1faeb0((const s_contact *)contact, (s_contact_result *)output); break;

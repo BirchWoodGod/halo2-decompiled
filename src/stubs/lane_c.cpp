@@ -599,8 +599,7 @@ struct s_2da8c0
 // @stub 0x2da8c0
 void s_2da8c0::function_2da8c0(hkRotation const *arg_0, hkRotation const *arg_1) {}
 
-// @stub 0x1e18f0
-void __fastcall function_1e18f0(long arg_0, long arg_1, long arg_2, long arg_3) {}
+
 
 struct s_1d1540 { void function_30be00(void *arg_0); };
 struct s_1d1541 { void function_30d2b0(void *arg_0); };

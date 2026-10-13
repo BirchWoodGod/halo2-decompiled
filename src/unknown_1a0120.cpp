@@ -169,7 +169,6 @@ bool string_table_load(s_string_table *table)
 	if (size & 0x1ff)
 		size = (size | 0x1ff) + 1;
 	location.offset = table->data_offset;
-	location.file_index = NONE;
 	function_122d60(location, size, table->data);
 
 	table->loaded = true;

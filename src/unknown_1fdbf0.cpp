@@ -345,7 +345,9 @@ bool function_1fddd0(long actor_index, point3f const *origin, vector3f *directio
         }
         vector3f forward;
         function_1fe120(actor_index, &forward);
-        real dot = direction->k * forward.k + direction->j * forward.j + direction->i * forward.i;
+        real dot = direction->k * forward.k;
+        dot += direction->j * forward.j;
+        dot += direction->i * forward.i;
         if (dot < 0.8660253882408142f)
         {
             vector3f axis;

@@ -637,10 +637,14 @@ void *function_1e5380(long actor_index);
 short __stdcall function_1b4560(long actor_index, s_slot *slot)
 {
     s_actor_view *actor = actor_get(actor_index);
-    if (actor->prop_index != NONE && !function_110ab0(actor->unknown018) && g_4f55d0->unknown340)
+    long object_index;
+    if (actor->prop_index != NONE &&
+        (object_index = actor->unknown018, !function_110ab0(object_index)) && g_4f55d0->unknown340)
     {
         s_prop_node_view *node = prop_node_get(actor->prop_index);
+#pragma inline_depth(0)
         s_prop_view_fields *view = (s_prop_view_fields *)function_25d740((s_prop_node *)node);
+#pragma inline_depth()
         if (view && view->unknown06 == 3 && *(long *)((byte *)view + 0x10) >= 0)
         {
             byte *entry = (byte *)function_1e5380(actor_index);

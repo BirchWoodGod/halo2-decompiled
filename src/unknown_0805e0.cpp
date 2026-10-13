@@ -314,13 +314,15 @@ bool function_153750(s_player_appearance *appearance);
 // @retail 0x80660
 bool function_80660(void)
 {
-	bool valid = g_4cf970 == 8;
+	bool valid = true;
+	if (g_4cf970 != 8)
+		valid = false;
 	if (g_4cf978 < 0 || g_4cf978 > 350)
 		valid = false;
 	for (long i = 0; valid && i < g_4cf978; i++)
 	{
 		s_player_configuration_cache_entry *entry = &g_4cf98c[i];
-		if (entry > g_4cf98c && memcmp(&entry[-1].player, &entry->player, 12) >= 0)
+		if (i > 0 && memcmp(&entry[-1].player, &entry->player, 12) >= 0)
 			valid = false;
 		if (valid)
 		{

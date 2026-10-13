@@ -37,10 +37,7 @@ struct s_bitmap_view;
 
 /* UI lane round 2: the custom game profile list (unknown_2c9ddb.cpp) */
 
-// @stub 0x2ca284
-void c_class_2c9e69::handle_item(s_controller_reference **controller, long *item)
-{
-}
+
 
 
 /* unknown_2b116a.cpp's list (only the member the stub defines) */
@@ -82,3 +79,8 @@ class c_class_1a2c81;
 struct s_saved_game_header;
 struct s_saved_game_read;
 class c_campaign_options_list;
+
+// @stub 0x2ca284
+void c_class_2c9e69::handle_item(s_controller_reference **controller, long *item)
+{
+}
