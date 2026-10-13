@@ -726,23 +726,25 @@ void function_022750(const real *a, long size, const real *b, real *out, real t)
 real function_022c30(const point3f *a, const point3f *c, const point3f *b)
 {
 	vector3f v1, v2;
-	real result = 0.0f;
+	vector3f *v1_reference = &v1;
+	real result;
 
 	v2.i = a->x - c->x;
 	v2.j = a->y - c->y;
 	v2.k = a->z - c->z;
-	v1.i = a->x - b->x;
-	v1.j = a->y - b->y;
-	v1.k = a->z - b->z;
+	result = 0.0f;
+	v1_reference->i = a->x - b->x;
+	v1_reference->j = a->y - b->y;
+	v1_reference->k = a->z - b->z;
 
-	real length = (real)sqrt(v1.k * v1.k + v1.j * v1.j + v1.i * v1.i);
+	real length = (real)sqrt(v1_reference->k * v1_reference->k + v1_reference->j * v1_reference->j + v1_reference->i * v1_reference->i);
 	if (length > 0.0001f)
 	{
 		real inverse = 1.0f / length;
-		v1.i *= inverse;
-		v1.j *= inverse;
-		v1.k *= inverse;
-		result = (v1.k * v2.k + v1.j * v2.j + v1.i * v2.i) * inverse;
+		v1_reference->j *= inverse;
+		v1_reference->k *= inverse;
+		v1_reference->i *= inverse;
+		result = (v1_reference->k * v2.k + v1_reference->j * v2.j + v1_reference->i * v2.i) * inverse;
 	}
 
 	return result;
@@ -892,9 +894,10 @@ void function_445d0(void)
 	case 11:
 		function_049740();
 		break;
-	case 16: break;
-	case 17: break;
+	case 16: goto reset;
+	case 17: goto reset;
 	}
+reset:
 	g_467130 = 0;
 	g_4858b4 = NONE;
 }

@@ -359,8 +359,9 @@ void function_16c2f0(short camera_point_index, short ticks, long object_index)
 		camera->active = true;
 		seconds = (real)ticks * (1.0f / 30.0f);
 		long point_type = point->type;
-		*(volatile short *)&camera->point.type = (short)point_type;
-		*(volatile short *)&camera->point.point_index = camera_point_index;
+		s_camera_point_state *state = &camera->point;
+		state->type = (short)point_type;
+		state->point_index = camera_point_index;
 		camera->position = point->position;
 		function_11df60((vector3f const *)point->orientation, &camera->forward, &camera->up);
 		camera->ticks = camera_seconds_to_ticks_round(seconds);
@@ -499,19 +500,22 @@ void function_16c110(long animation_graph_index, long animation_name, long objec
 	if (animation_graph_index != NONE)
 	{
 		s_animation_state state;
-		c_type_709360 animation_id;
 
 		state.initialize(animation_graph_index, NONE, true);
-		animation_id = function_1dd0b0(graph_tag_get(state.graph_tag_index), animation_name);
+		c_type_709360 animation_id = function_1dd0b0(graph_tag_get(state.graph_tag_index), animation_name);
 		if (animation_id.index != NONE)
 		{
 			transform4x3f matrix;
 			transform4x3f transform;
 
+			/* retail keeps object_index on the stack: reading it through its
+			   address keeps it there */
+			long const *object_index_reference = &object_index;
+
 			state.animation_matrix_get(animation_id, (real)frame * (1.0f / 30.0f), 0, &matrix);
-			if (object_index != NONE)
+			if (*object_index_reference != NONE)
 			{
-				s_camera_object *object = ((s_camera_object_header *)g_4e0300->data)[object_index & 0xffff].object;
+				s_camera_object *object = ((s_camera_object_header *)g_4e0300->data)[*object_index_reference & 0xffff].object;
 				byte *object_definition = (byte *)camera_tag_get(object->definition_index);
 				byte *model = (byte *)camera_tag_get(*(long *)(object_definition + 0x38));
 				byte *render_model = (byte *)camera_tag_get(*(long *)(model + 0x4));

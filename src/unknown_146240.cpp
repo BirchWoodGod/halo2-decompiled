@@ -149,6 +149,19 @@ static inline long game_time_speed_to_ticks(s_game_options_view *options, real s
 	return result;
 }
 
+/* sets the game speed: the ticks per second follow from it */
+static __forceinline void game_time_apply_speed(real speed)
+{
+	s_game_options_view *options = g_4e6948;
+	real rate = (speed > 0.01f) ? speed : 0.01f;
+	long ticks = game_time_speed_to_ticks(options, rate);
+	s_game_time_globals *globals = g_510c54;
+
+	globals->rate = 1.0f / (real)ticks;
+	globals->field_2_3 = (short)ticks;
+	globals->scale = (real)options->field_2_3 / (real)ticks;
+}
+
 /* the fields of the game options and the 0x510c50 state read here */
 struct s_game_time_options_view
 {
@@ -202,15 +215,13 @@ void function_146660(real seconds, real *elapsed, long *ticks_due)
 		if (options->field_1120 && !globals->unknown01 && globals->scale > 0.0f)
 		{
 			bool synchronous = false;
-			bool unlimited = false;
 			long maximum_ticks;
 			real ticks_elapsed;
 
-			if (g_510c50 && ((s_510c50_time_view *)g_510c50)->unlimited)
-			{
-				unlimited = true;
-			}
-			if (options->mode >= 2 && options->mode <= 5)
+			bool unlimited = g_510c50 && ((s_510c50_time_view *)g_510c50)->unlimited;
+			long mode = options->mode;
+
+			if (mode >= 2 && mode <= 5)
 			{
 				maximum_ticks = function_680c0(&synchronous);
 				globals = g_510c54;
@@ -312,25 +323,16 @@ void function_146860(real initial_speed, real speed, real duration)
 		globals->speed_timer = 0.0f;
 		globals->speed_duration = duration;
 		globals->speed_initial = initial_speed;
-		speed = initial_speed;
+		game_time_apply_speed(initial_speed);
 	}
-	game_time_set_speed_internal(speed);
+	else
+	{
+		game_time_apply_speed(speed);
+	}
 }
 
 // @retail 0x146980
 PRIVATE void game_time_set_speed_internal(real speed)
 {
-	s_game_options_view *options = g_4e6948;
-
-	if (!(speed > 0.01f))
-	{
-		speed = 0.01f;
-	}
-
-	long ticks = game_time_speed_to_ticks(options, speed);
-	s_game_time_globals *globals = g_510c54;
-
-	globals->rate = 1.0f / (real)ticks;
-	globals->field_2_3 = (short)ticks;
-	globals->scale = (real)options->field_2_3 / (real)ticks;
+	game_time_apply_speed(speed);
 }

@@ -232,6 +232,11 @@ extern real g_4670fc, g_467100, g_509428;
 void function_398d0(real seconds)
 {
 	real const *time_reference = &seconds;
+	/* referenced first in the order the path without a record loads them */
+	(void)g_509424;
+	(void)g_4670fc;
+	(void)g_509428;
+	(void)g_467100;
 	s_fade_record *record = g_50942c;
 	if (record && record->marker == 0xdeadbeef)
 	{
@@ -991,9 +996,11 @@ void function_3e4e0(dword *current, dword const *target, real step)
 	color3f a, b;
 	unpack_color3f(*current, &a);
 	unpack_color3f(*target, &b);
-	a.red += color_delta(b.red - a.red, 0.0f - step, step);
-	a.green += color_delta(b.green - a.green, 0.0f - step, step);
-	a.blue += color_delta(b.blue - a.blue, 0.0f - step, step);
+	real red_delta = b.red - a.red;
+	real lower = 0.0f - step;
+	a.red += color_delta(red_delta, lower, step);
+	a.green += color_delta(b.green - a.green, lower, step);
+	a.blue += color_delta(b.blue - a.blue, lower, step);
 	*current = pack_color3f(&a);
 }
 
@@ -1914,7 +1921,9 @@ void __stdcall function_3f830(byte const *tree, point3f const *center)
     g_509438 = NULL;
     if (*(long const *)(tree + 0x20) > 0)
     {
-        real tree_radius = (real)*(long const *)(tree + 0xc) * 8.0f * 0.5f;
+        real scaled_radius = (real)*(long const *)(tree + 0xc) * 8.0f;
+        dword scaled_bits = *(dword const *)&scaled_radius;
+        real tree_radius = *(real const *)&scaled_bits * 0.5f;
         ((c_octree_radius_view_ab const *)tree)->function_3f970( 0, (plane3f *)(context + 0x10c), (real *)&bounds,
             (point3f const *)tree, tree_radius);
     }
@@ -2524,7 +2533,8 @@ void function_36ab0(void)
         do
         {
             s_motion_material_entry *entry = (s_motion_material_entry *)((byte *)map->entries + i * 0x88);
-            long index = entry->state_index;
+            // Keep the entry address addition separate from the index read.
+            long index = *(long const volatile *)&entry->state_index;
             if (index != NONE)
                 function_39880((s_motion_state_groups *)g_4e3b44[index & 0xffff].bytes);
             ++i;

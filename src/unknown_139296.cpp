@@ -441,8 +441,9 @@ void function_1392f8(s_player_appearance const *appearance)
 	{
 		g_502234[i] = pack_color3f(&colors[i]);
 	}
+	byte *local_1 = &g_502244;
+	*local_1 = 4;
 	((s_new_hud_globals *)g_510c4c)->appearance = **appearance_reference;
-	g_502244 = 4;
 }
 
 struct s_new_hud_player
@@ -552,17 +553,14 @@ long function_13a690(long mode)
 
 	if (width < 640 || (short)(bottom - top) < 480)
 	{
+		result = 1;
 		if (width < 640 && (short)(bottom - top) < 480)
 		{
 			result = 2;
 		}
-		else
+		else if (function_016a90() && mode == 3)
 		{
-			result = 1;
-			if (function_016a90() && mode == 3)
-			{
-				result = 2;
-			}
+			result = 2;
 		}
 	}
 
@@ -1254,54 +1252,52 @@ void function_13b285(void);
 long players_first_active_local_player(void);
 long function_14de10(long arg_1);
 
-__forceinline long function_13a839(long const *arg_1)
+__forceinline long function_13a83a(long arg_1)
 {
-    return *(long const volatile *)arg_1;
+    long local_1;
+    if (function_14ddc0(arg_1))
+    {
+        long local_2 = function_14de70(arg_1);
+        local_1 = *(long *)(g_4e8c24->data + (local_2 & 0xffff) * 0x21c + 0x2c);
+    }
+    else
+        local_1 = NONE;
+    return local_1;
 }
 
 // @retail 0x13a838
 void __stdcall function_13a838(long arg_1)
 {
-    long local_13 = function_13a839(&arg_1);
-    byte *local_1 = (byte *)g_510c4c + local_13 * 0x6c;
-    struct { byte field_0[0x270]; byte *field_270; } local_14;
-    byte *local_2 = local_14.field_0;
-    byte *volatile *local_16 = &local_14.field_270;
-    *local_16 = local_1;
-    function_2003dc(local_13);
-    function_13992a(local_2, local_13);
-    function_13a720(local_13, (s_13a720_status const *)local_2);
+    long const *local_0 = &arg_1;
+    byte *local_1 = (byte *)g_510c4c + arg_1 * 0x6c;
+    byte local_2[0x270];
+    function_2003dc(arg_1);
+    function_13992a(local_2, arg_1);
+    function_13a720(arg_1, (s_13a720_status const *)local_2);
     if (local_2[0x130])
     {
         real local_3 = local_2[0x133] ? 1.0f : 0.0f;
-        real volatile *local_15 = (real *)(local_1 + 0x28);
+        real *local_15 = (real *)(local_1 + 0x28);
         if (*local_15 != local_3)
         {
+            real local_4 = 2.0f / g_510c54->field_2_3;
             if (local_3 > *local_15)
             {
-                real local_4 = 2.0f / g_510c54->field_2_3;
                 real local_5 = *local_15 + local_4;
                 *local_15 = local_5 > 1.0f ? 1.0f : local_5;
             }
             else
             {
-                real local_4 = 2.0f / g_510c54->field_2_3;
                 real local_5 = *local_15 - local_4;
                 *local_15 = local_5 > 0.0f ? local_5 : 0.0f;
             }
         }
     }
-    long local_6 = NONE;
-    if (function_14ddc0(local_13))
-    {
-        long local_7 = function_14de70(local_13);
-        local_6 = *(long *)(g_4e8c24->data + (local_7 & 0xffff) * 0x21c + 0x2c);
-    }
+    long local_6 = function_13a83a(arg_1);
     if (local_6 != NONE)
     {
         byte const *local_8 = *(byte **)(g_4e0300->data + (local_6 & 0xffff) * 12 + 8);
-        real local_9 = *(real *)(local_8 + 0xf0);
-        if (*(real *)local_1 > local_9)
+        if (*(real *)local_1 > *(real *)(local_8 + 0xf0))
         {
             if (*(real *)(local_1 + 4) < 0.0f || *(real *)(local_1 + 4) > 1.0f)
                 *(long *)(local_1 + 8) = g_510c54->game_time;
@@ -1310,27 +1306,33 @@ void __stdcall function_13a838(long arg_1)
                 *(real *)(local_1 + 4) = 0.0f;
             else
             {
-                *(real *)local_1 = local_9;
+                *(real *)local_1 = *(real *)(local_8 + 0xf0);
                 *(real *)(local_1 + 4) += (g_510c54->game_time - local_10) * g_510c54->rate;
+                *(long *)(local_1 + 8) = g_510c54->game_time;
             }
         }
         else
         {
-            bool local_11 = local_9 > *(real *)local_1;
-            *(real *)local_1 = local_9;
-            if (local_11)
+            if (*(real *)(local_8 + 0xf0) > *(real *)local_1)
+            {
+                *(real *)local_1 = *(real *)(local_8 + 0xf0);
                 *(real *)(local_1 + 4) = -1.0f;
-            else if (*(real *)(local_1 + 4) > 0.0f)
-                *(real *)(local_1 + 4) += (g_510c54->game_time - *(long *)(local_1 + 8)) * g_510c54->rate;
+            }
+            else
+            {
+                *(real *)local_1 = *(real *)(local_8 + 0xf0);
+                if (*(real *)(local_1 + 4) > 0.0f)
+                    *(real *)(local_1 + 4) += (g_510c54->game_time - *(long *)(local_1 + 8)) * g_510c54->rate;
+            }
             *(long *)(local_1 + 8) = g_510c54->game_time;
         }
     }
     long local_12 = *(long *)(local_2 + 0xc);
     if (local_12 != NONE)
-        function_13aa27(local_13, local_2 + 0x88, local_1 + 0x18, local_12, local_2);
+        function_13aa27(arg_1, local_2 + 0x88, local_1 + 0x18, local_12, local_2);
     local_12 = *(long *)(local_2 + 0x10);
     if (local_12 != NONE)
-        function_13aa27(local_13, local_2 + 0xc0, local_1 + 0x20, local_12, local_2);
+        function_13aa27(arg_1, local_2 + 0xc0, local_1 + 0x20, local_12, local_2);
 }
 
 // @retail 0x1391ed

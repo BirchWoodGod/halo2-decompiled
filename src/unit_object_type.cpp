@@ -348,7 +348,7 @@ void function_1520f0(long player_index);
 long __stdcall function_cdeb0(long unit_index, long state_name, long a, long b);
 bool function_100f00(long weapon_index);
 bool function_1e3370(long actor_index, void *unknown);
-void function_10cec0(long unit_index, long weapon_index, long parent_marker_name, long marker_name);
+void function_10cec0(long weapon_index, long unit_index, long parent_marker_name, long marker_name);
 void function_1c9c80(long object_index, long unknown2d0, word unknown2c8, real unknown2cc, long a, bool b);
 bool unit_has_weapon_definition(long unit_index, long definition_index);
 bool __stdcall function_cd0c0(long unit_index, long weapon_index, short mode);
@@ -466,7 +466,7 @@ extern const long g_467430[5];
 bool function_10f9b0(long unit_index, long state_name, long action_name, long a, transform4x3f *matrix, bool flag);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 void function_15e050(long object_index, short value);
-void __stdcall function_153d10(short team, long definition_index, void *a, void *b, long c, real d, real e, long f);
+void __stdcall function_153d10(long team, long definition_index, void *a, void *b, long c, real d, real e, bool f);
 void __stdcall object_get_damage_owner(long object_index, s_damage_owner *owner);
 void function_107370(long device_index, real value);
 void function_184060(long unknown3c, byte unknown59, s_type_1e6529 *data, long unknown50);
@@ -1746,7 +1746,7 @@ void __stdcall function_d0870(long weapon_index, long unit_index, bool secondary
 			marker_name = *(long *)(local_67e06b + 0x284);
 		}
 	}
-	function_10cec0(unit_index, weapon_index, parent_marker_name, marker_name);
+	function_10cec0(weapon_index, unit_index, parent_marker_name, marker_name);
 }
 
 /* drops every weapon the unit holds (mode 1: deletes them) */

@@ -311,11 +311,12 @@ short g_54e898;
 void function_1ee410(const s_lookup_source *source, short *result)
 {
     struct { short value; } local;
-    local.value = g_54e898;
-	if (source->tag_index != NONE)
+    long tag_index;
+    local.value = (tag_index = source->tag_index, g_54e898);
+	if (tag_index != NONE)
 	{
 		s_tag_instance_ref *tags = (s_tag_instance_ref *)g_4e3b44;
-		local.value = tags[(word)source->tag_index].data->entries[source->index].value10;
+		local.value = tags[tag_index & 0xffff].data->entries[source->index].value10;
 	}
 	else if (source->index != NONE)
 	{

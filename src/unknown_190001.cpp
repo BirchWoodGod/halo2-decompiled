@@ -600,7 +600,7 @@ void function_19034d(long index, long state, long unknown08, long unknown04, sho
 		source.unknown08 = unknown08;
 		source.unknown04 = unknown04;
 		online_presence_build(built, &source);
-		if (controller->presence != *(dword *)built)
+		if (memcmp(&controller->presence, built, sizeof(controller->presence)) != 0)
 		{
 			controller->presence = *(dword *)&presence;
 			controller->notification_dirty = true;

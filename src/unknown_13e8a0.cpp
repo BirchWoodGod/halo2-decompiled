@@ -491,9 +491,14 @@ struct s_text_cached_character
 };
 
 extern s_record_pool *g_54d574;
-long font_cache_get_character(long font_index, long character, dword flags);
-bool font_cache_character_load_pixels(long datum_index, dword flags);
-s_font_character_header *font_cache_get_character_header(long font_index, long character, dword flags);
+struct s_font_cache_flags
+{
+	dword wait : 1;
+	dword create : 1;
+};
+long font_cache_get_character(long font_index, long character, s_font_cache_flags flags);
+bool font_cache_character_load_pixels(long datum_index, s_font_cache_flags flags);
+s_font_character_header *font_cache_get_character_header(long font_index, long character, s_font_cache_flags flags);
 short function_122570(s_font_header const *header, dword first_character, dword second_character);
 
 struct s_text_line_measurement
@@ -517,9 +522,10 @@ s_text_line_measurement function_13ef40(s_text_iterator *iterator, point2f const
 		function_13f5a0(iterator);
 		if (iterator->token == _text_token_character)
 		{
-			long glyph_index = font_cache_get_character(iterator->font, iterator->character, 3);
+			s_font_cache_flags flags = { true, true };
+			long glyph_index = font_cache_get_character(iterator->font, iterator->character, flags);
 			s_font_character_header *header = NULL;
-			if (glyph_index != NONE && font_cache_character_load_pixels(glyph_index, 3))
+			if (glyph_index != NONE && font_cache_character_load_pixels(glyph_index, flags))
 			{
 				s_text_cached_character *glyph = &((s_text_cached_character *)g_54d574->data)[glyph_index & 0xffff];
 				if (glyph->state == 4)
@@ -601,7 +607,8 @@ void function_13f700(box2f const *bounds, box2f const *clip, short first,
 					break;
 				if (iterator.token == _text_token_character && ((long)iterator.character < 0 || (long)iterator.character > 31))
 				{
-					s_font_character_header *header = font_cache_get_character_header(iterator.font, iterator.character, 3);
+					s_font_cache_flags flags = { true, true };
+					s_font_character_header *header = font_cache_get_character_header(iterator.font, iterator.character, flags);
 					if (header)
 					{
 						real width = header->width;

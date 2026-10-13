@@ -296,11 +296,12 @@ void c_juggernaut_engine::v18()
 			long player_index = iterator.index;
 			long absolute_index = player_index & 0xffff;
 
-			if (g_510c9c->players & (1 << absolute_index))
+			if (juggernaut_is((short)player_index))
 			{
 				word flags = iterator.player->flags;
 
-				if (flags & 2 || flags & 1 && (function_15d770(player_index) || function_15db30(player_index)))
+				bool remove = flags & 2 || flags & 1 && (function_15d770(player_index) || function_15db30(player_index));
+				if (remove)
 				{
 					g_510c9c->players &= ~(1 << absolute_index);
 					juggernaut_globals_changed();

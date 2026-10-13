@@ -140,6 +140,13 @@ void function_10da60(long item_index, point3f *position)
 	}
 }
 
+static __forceinline void item_vector_scale(vector3f const *v, real scale, vector3f *out)
+{
+	out->i = v->i * scale;
+	out->j = v->j * scale;
+	out->k = v->k * scale;
+}
+
 /* normalizes the vector in place and returns its old length (0 when it is
    too short) */
 static inline real item_axis_normalize(vector3f *v)
@@ -152,10 +159,7 @@ static inline real item_axis_normalize(vector3f *v)
 	}
 	else
 	{
-		real inverse = 1.0f / length;
-		v->i = inverse * v->i;
-		v->j = v->j * inverse;
-		v->k = v->k * inverse;
+		item_vector_scale(v, 1.0f / length, v);
 	}
 	return length;
 }
@@ -241,7 +245,7 @@ bool __stdcall function_10b2c0(long item_index, long a, long b)
 {
 	s_item *item = ITEM_GET(item_index);
 
-	item->object_flags |= 0x1000;
+	ITEM_GET(item_index)->object_flags |= 0x1000;
 	item->spin_sine = 0.0f;
 	item->spin_cosine = 1.0f;
 	item->ignore_object_index = NONE;
@@ -288,7 +292,11 @@ struct s_item_definition
 	byte unknown000[0xbc];
 	dword flag0 : 1;
 	dword flag1 : 1;
-	dword : 30;
+	dword flag2 : 1;
+	dword flag3 : 1;
+	dword flag4 : 1;
+	dword flag5 : 1;
+	dword : 26;
 	byte unknown0c0[4];
 	real scale_multiplayer;
 	real scale;
@@ -352,18 +360,25 @@ bool __stdcall function_10ca00(long *item_index)
 
 void function_15e300(long object_index);
 
+static inline bool item_held_by_player(long item_index)
+{
+	s_item *item = ITEM_GET(item_index);
+	bool result = false;
+	if (TEST_FIELD_BIT(item->flag0))
+		result = ((s_item_unit *)ITEM_GET(item->unit_index))->player_index != NONE;
+	return result;
+}
+
 // @retail 0x10ccc0
 void function_10ccc0(long item_index)
 {
+	bool held_by_player = item_held_by_player(item_index);
 	s_item *item = ITEM_GET(item_index);
-	bool held_by_player = false;
 
-	if (item->flags_12c & 1)
-		held_by_player = ((s_item_unit *)ITEM_GET(item->unit_index))->player_index != NONE;
 	if (held_by_player)
-		item->flags_12c |= 8;
+		item->flag3 = true;
 	else
-		item->flags_12c &= ~8;
+		item->flag3 = false;
 	if (((1 << ((s_item_header *)g_4e0300->data)[item_index & 0xffff].type) & 4) && TEST_FIELD_BIT(item->flag16c_6))
 		function_15e300(item_index);
 }
@@ -473,6 +488,13 @@ real function_30bf0(vector3f *vector);
 void function_b75a0(long object_index, point3f const *position, vector3f const *forward,
 	vector3f const *up, s_location const *location, bool flag);
 
+static __forceinline void item_cross_product(vector3f const *a, vector3f const *b, vector3f *out)
+{
+	out->i = a->j * b->k - a->k * b->j;
+	out->j = a->k * b->i - a->i * b->k;
+	out->k = a->i * b->j - a->j * b->i;
+}
+
 // @retail 0x10b360
 void function_10b360(long object_index)
 {
@@ -481,15 +503,14 @@ void function_10b360(long object_index)
 	if (item->parent_index == NONE && !TEST_FIELD_BIT(item->object_flag7) &&
 		(definition[0xbc] & 1) && !(fabs(item->up.k - 1.0f) < 0.0001f))
 	{
+		item->up = *g_4687b0;
 		vector3f *up = &item->up;
-		*up = *g_4687b0;
-		real side_i = item->forward.k * up->j - up->k * item->forward.j;
-		real side_j = up->k * item->forward.i - item->forward.k * up->i;
-		real side_k = up->i * item->forward.j - item->forward.i * up->j;
 		vector3f *forward = &item->forward;
-		real forward_k = up->j * side_i - up->i * side_j;
-		real forward_j = up->i * side_k - up->k * side_i;
-		real forward_i = up->k * side_j - up->j * side_k;
+		vector3f side;
+		item_cross_product(&item->up, &item->forward, &side);
+		real forward_k = up->j * side.i - up->i * side.j;
+		real forward_j = up->i * side.k - up->k * side.i;
+		real forward_i = up->k * side.j - up->j * side.k;
 		forward->i = forward_i;
 		forward->j = forward_j;
 		forward->k = forward_k;
@@ -717,8 +738,8 @@ void function_10ca80(long object_index, long owner_index)
 {
     long const *owner_reference = &owner_index;
     s_record_pool *objects = g_4e0300;
+    s_item *item = *(s_item **)(objects->data + (object_index & 0xffff) * 12 + 8);
     byte *header = objects->data + (object_index & 0xffff) * 12;
-    s_item *item = *(s_item **)(header + 8);
     byte *item_flags = (byte *)item + 0x12c;
     struct s_node_flags { unsigned long : 29; unsigned long dirty : 1; unsigned long : 2; };
     s_node_flags volatile *node_flags = (s_node_flags volatile *)((byte *)item + 4);
@@ -731,7 +752,8 @@ void function_10ca80(long object_index, long owner_index)
                 function_bfa40(object_index, 0);
             item->object_flags &= ~0x20000000;
         }
-        *item_flags |= 5;
+        item->flag0 = true;
+        item->flag2 = true;
         item->unit_index = *owner_reference;
         byte *current = *(byte **)(objects->data + (object_index & 0xffff) * 12 + 8);
         if (current[4] & 1)
@@ -767,7 +789,7 @@ void function_10ca80(long object_index, long owner_index)
         if (g_4e6948->state == 1)
         {
             bool add = true;
-            if ((*item_flags & 8) && header[3] == 2 && function_100f00(object_index) &&
+            if (TEST_FIELD_BIT(item->flag3) && header[3] == 2 && function_100f00(object_index) &&
                 !(((byte *)item)[0x12d] & 1))
                 add = false;
             function_bb950(object_index, add, real_to_long((real)g_510c54->field_2_3 * 30.0f));
@@ -833,7 +855,7 @@ void function_10d710(vector3f const *facing, long object_index, point3f const *o
             }
             function_30bf0(&up);
             transform4x3f transform;
-            function_1420f0(&transform, origin, facing, &up);
+            function_1420f0(&transform, origin, &up, facing);
             transform.scale = *(real *)((byte *)item + 0xa0);
             function_b92d0(*object_reference, &marker, &transform);
             **position_reference = item->position;
@@ -844,15 +866,15 @@ void function_10d710(vector3f const *facing, long object_index, point3f const *o
 
 void __stdcall function_b8ee0(long parent_index, long marker_name, long object_index, long a);
 // @retail 0x10cec0
-void function_10cec0(long unit_index, long weapon_index, long parent_marker_name, long marker_name)
+void function_10cec0(long weapon_index, long unit_index, long parent_marker_name, long marker_name)
 {
     (void)&parent_marker_name;
     (void)&marker_name;
     function_10cdf0(weapon_index);
     function_b8ee0(unit_index, parent_marker_name, weapon_index, marker_name);
     byte *unit = (byte *)ITEM_GET(unit_index);
-    byte *definition = g_4e3b44[*(long *)unit & 0xffff].bytes;
-    if ((*(dword *)(definition + 0xbc) >> 5) & 1)
+    s_item_definition *definition = (s_item_definition *)g_4e3b44[*(long *)unit & 0xffff].bytes;
+    if (TEST_FIELD_BIT(definition->flag5))
     {
         s_item *item = ITEM_GET(weapon_index);
         if (!(*(byte *)&item->object_flags & 1))

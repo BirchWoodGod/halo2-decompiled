@@ -104,12 +104,18 @@ struct s_183919
 class hkWorld;
 extern hkWorld *g_51e9a4;
 
+struct s_18391a
+{
+ c_query_array_collector field_0;
+ s_183919 field_20[8];
+};
+
 // @retail 0x183910
 bool function_183910(long arg_0, point3f const *arg_1, point3f *arg_2, vector3f *arg_3)
 {
- bool local_2 = false;
  s_183914 *local_1 = &((s_183914 *)g_51e9b8->data)[arg_0 & 0xffff];
  s_183915 local_0 = *((s_183918 *)g_51e9a4)->field_cc;
+ bool local_2 = false;
  if (TEST_FIELD_BIT(local_1->field_4.field_5))
  {
   _control87(0x9001f, 0x8001f);
@@ -136,16 +142,16 @@ bool function_183910(long arg_0, point3f const *arg_1, point3f *arg_2, vector3f 
    s_183912 *local_9 = local_1->field_70[local_8].field_40;
    if (!local_9->field_40)
    {
-    __declspec(align(16)) c_query_array_collector local_10;
-    s_183919 local_11[8];
+    s_18391a local_23;
+    c_query_array_collector &local_10 = local_23.field_0;
     local_10.maximum = FLT_MAX;
-    local_10.entries.data = local_11;
+    local_10.entries.data = local_23.field_20;
     local_10.entries.capacity_and_flags = 0x80000008;
     local_10.entries.count = 0;
     c_183911 **local_12 = &local_9->field_c;
     long local_13 = (*local_12)->function_5();
     long local_14 = local_6->function_5();
-    local_0.field_0->field_218c[local_14][local_13](&local_5, local_12, &local_0, &local_10);
+    local_0.field_0->field_218c[local_14][local_13]((byte *)&local_5 + 0xc, local_12, &local_0, &local_10);
     s_183919 *local_15 = (s_183919 *)local_10.entries.data;
     for (long local_16 = 0; local_16 < local_10.entries.count; ++local_16)
     {
