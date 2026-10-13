@@ -2414,13 +2414,27 @@ struct s_round_limit_options
 	long limit_kind;
 };
 
+/* 0x1968b0's index half (the team half is dead here), clamped with the
+   ternary the out-of-line function uses */
+static __forceinline void input_counter_set_inlined_15b3a0(long a, long b, long value)
+{
+	if (g_510ca0 && !g_510ca1)
+	{
+		long minimum = g_46ddc0[b].minimum;
+		long maximum = g_46ddc0[b].maximum;
+		if (a != NONE)
+		{
+			s_input_counter *counter = &g_511bf4.all[a * 0x1b5 + b];
+			counter->value = value < minimum ? minimum : (value > maximum ? maximum : value);
+		}
+	}
+}
+
 // @retail 0x15b3a0
 void function_15b3a0(long player_or_team, bool value)
 {
 	s_game_engine_globals *globals = function_xaee93d();
 	long wins = 0;
-	bool const *value_reference = &value;
-	bool finish = (byte)*value_reference != 0;
 
 	if (player_or_team != NONE)
 	{
@@ -2445,7 +2459,7 @@ void function_15b3a0(long player_or_team, bool value)
 					{
 						function_b58c0(globals->index28, 1 << index);
 					}
-					input_counter_set_inlined(NONE, index, 6, *score);
+					input_counter_set_inlined_15b3a0(index, 6, *score);
 				}
 			}
 			wins = ((short *)&game_engine_statborg_inline()->teams[player_or_team])[7];
@@ -2458,42 +2472,18 @@ void function_15b3a0(long player_or_team, bool value)
 	}
 
 	long limit_kind = ((s_round_limit_options *)g_4e6948)->limit_kind;
-	if (limit_kind == 0)
+	if ((limit_kind == 0 && (short)globals->value6e >= 0) ||
+		(limit_kind == 1 && (short)globals->value6e >= 1) ||
+		(limit_kind == 2 && (short)globals->value6e >= 3) ||
+		(limit_kind == 3 && (short)globals->value6e >= 5) ||
+		(limit_kind == 4 && player_or_team != NONE && wins >= 2) ||
+		(limit_kind == 5 && player_or_team != NONE && wins >= 3) ||
+		(limit_kind == 6 && player_or_team != NONE && wins >= 4))
 	{
-		if ((short)globals->value6e >= 0)
-			finish = true;
+		value = true;
 	}
-	else if (limit_kind == 1)
-	{
-		if ((short)globals->value6e >= 1)
-			finish = true;
-	}
-	else if (limit_kind == 2)
-	{
-		if ((short)globals->value6e >= 3)
-			finish = true;
-	}
-	else if (limit_kind == 3)
-	{
-		if ((short)globals->value6e >= 5)
-			finish = true;
-	}
-	else if (limit_kind == 4)
-	{
-		if (player_or_team != NONE && wins >= 2)
-			finish = true;
-	}
-	else if (limit_kind == 5)
-	{
-		if (player_or_team != NONE && wins >= 3)
-			finish = true;
-	}
-	else if (limit_kind == 6)
-	{
-		if (player_or_team != NONE && wins >= 4)
-			finish = true;
-	}
-	if ((short)globals->value6e >= 31 || finish)
+	bool finished = (short)globals->value6e >= 31 || value;
+	if (finished)
 	{
 		if (g_4e6948->mode != 4)
 		{
@@ -4197,76 +4187,97 @@ extern s_input_state g_4e61dc[3];
 extern s_input_state g_4e630c;
 bool function_162c50(long player_index, long *spectated_player_index);
 
+/* the fields of a player that 0x15bb20 reads and writes, typed */
+struct s_player_view_15bb20
+{
+    short salt;
+    word flags;
+    byte unknown04[0x28 - 4];
+    short local_index;
+    byte unknown2a[2];
+    long unit_index;
+    byte unknown30[0x170 - 0x30];
+    long value170;
+    byte unknown174[0x194 - 0x174];
+    long value194;
+    byte unknown198[0x1a6 - 0x198];
+    char seat_timer;
+    char dead_timer;
+    char alive_timer;
+    byte unknown1a9[0x1b0 - 0x1a9];
+    long value1b0;
+    byte unknown1b4[0x218 - 0x1b4];
+    short dead_count;
+};
+
 // @retail 0x15bb20
 void __stdcall function_15bb20(long player_index)
 {
     long absolute_index = player_index & 0xffff;
-    s_engine_player *player = engine_player_get(player_index);
+    s_player_view_15bb20 *player = (s_player_view_15bb20 *)engine_player_get(player_index);
     if (player->value194 > 0)
         --player->value194;
     if (g_4e6948->mode != 4 && player->unit_index != NONE && function_15b2f0() &&
         g_510c54->game_time % g_510c54->field_2_3 == 0)
         function_1967d0(absolute_index, NONE, 13, 1);
 
-    char *seat_timer = (char *)player + 0x1a6;
-    char *dead_timer = (char *)player + 0x1a7;
-    char *alive_timer = (char *)player + 0x1a8;
-    if (player->unit_index != NONE)
+    long unit_index = player->unit_index;
+    if (unit_index != NONE)
     {
-        byte *unit = (byte *)engine_object_get(player->unit_index);
+        byte *unit = (byte *)engine_object_get(unit_index);
         if (*(long *)(unit + 0x14) != NONE && *(short *)(unit + 0x1fc) != NONE)
         {
-            if (*seat_timer == NONE)
-                *seat_timer = (char)(g_510c54->field_2_3 * 2);
-            else if (*seat_timer > 0)
-                --*seat_timer;
+            if (player->seat_timer == NONE)
+                player->seat_timer = (char)(g_510c54->field_2_3 * 2);
+            else if (player->seat_timer > 0)
+                --player->seat_timer;
         }
         else
-            *seat_timer = NONE;
+            player->seat_timer = NONE;
         if (player->unit_index != NONE)
         {
-            if (*dead_timer != NONE && g_4e6948->mode == 4)
-                ++*(short *)((byte *)player + 0x218);
-            *dead_timer = NONE;
-            if (*alive_timer == NONE)
+            if (player->dead_timer != NONE && g_4e6948->mode == 4)
+                ++player->dead_count;
+            player->dead_timer = NONE;
+            if (player->alive_timer == NONE)
             {
-                *alive_timer = 0;
+                player->alive_timer = 0;
                 if (g_4e6948->mode != 4)
                 {
-                    *(long *)((byte *)player + 0x1b0) = NONE;
+                    player->value1b0 = NONE;
                     function_a7840((short)player_index, 0x40);
                 }
             }
-            else if (*alive_timer < 0x7f)
-                ++*alive_timer;
+            else if (player->alive_timer < 0x7f)
+                ++player->alive_timer;
         }
     }
     else
     {
-        if (*dead_timer == NONE)
-            *dead_timer = (char)g_510c54->field_2_3;
-        else if (*dead_timer > 0)
-            --*dead_timer;
-        *alive_timer = NONE;
+        if (player->dead_timer == NONE)
+            player->dead_timer = (char)g_510c54->field_2_3;
+        else if (player->dead_timer > 0)
+            --player->dead_timer;
+        player->alive_timer = NONE;
     }
 
-    short user = *(short *)((byte *)player + 0x28);
+    short user = player->local_index;
     long controller = *(long *)((byte *)player + 0x24);
     if (user != NONE && controller != NONE)
     {
-        bool has_input = g_4e61cc[(short)controller] != 0;
-        bool primary_input = has_input && g_4e61b9;
-        bool active = has_input && (primary_input ? g_4e630c.values[0xd] :
-            g_4e61dc[(short)controller].values[0xd]) != 0;
+        s_input_state *input = NULL;
+        if (g_4e61cc[(short)controller] != 0)
+            input = g_4e61b9 ? &g_4e630c : &g_4e61dc[(short)controller];
         long ticks = g_510c54->field_2_3;
         long minimum_time = ticks * 3;
-        if (function_15b2f0())
-            g_4e9af0.unknown04[0] = 0;
-        else
+        bool active = input && input->values[0xd] != 0;
+        if (!function_15b2f0())
         {
             long elapsed = (long)g_4e9af0.unknown04[0] + 1;
             g_4e9af0.unknown04[0] = (byte)(elapsed > ticks ? ticks : elapsed);
         }
+        else
+            g_4e9af0.unknown04[0] = 0;
 
         if ((active || g_4e9af0.unknown04[0] == ticks ||
             (player->unit_index == NONE && player->value170 <= 1 && !(player->flags & 0x4000) &&
@@ -4274,24 +4285,22 @@ void __stdcall function_15bb20(long player_index)
             !function_162c50(player_index, &player_index))
         {
                 long maximum = real_to_long((real)g_510c54->field_2_3 * 0.25f);
-                user = *(short *)((byte *)player + 0x28);
-                long elapsed = (long)g_4e9af0.timers[user] + 1;
-                g_4e9af0.timers[user] = (byte)(elapsed > maximum ? maximum : elapsed);
-                if (has_input)
+                long elapsed = (long)g_4e9af0.timers[player->local_index] + 1;
+                g_4e9af0.timers[player->local_index] = (byte)(elapsed > maximum ? maximum : elapsed);
+                if (input)
                 {
-                    short delta = primary_input ? (short &)g_4e630c.values[0x36] :
-                        (short &)g_4e61dc[(short)controller].values[0x36];
+                    short delta = (short &)input->values[0x36];
                     real change = (real)(-delta);
                     change *= 3.0518509447574615e-05f;
-                    change *= 240.0f / (real)g_510c54->field_2_3;
-                    (real &)g_4e9af0.unknown04[4 + user * 4] += change;
+                    real scale = 240.0f / (real)g_510c54->field_2_3;
+                    change *= scale;
+                    (real &)g_4e9af0.unknown04[4 + player->local_index * 4] += change;
                 }
         }
         else
         {
-            user = *(short *)((byte *)player + 0x28);
-            long remaining = (long)g_4e9af0.timers[user] - 1;
-            g_4e9af0.timers[user] = (byte)(remaining > 0 ? remaining : 0);
+            long remaining = (long)g_4e9af0.timers[player->local_index] - 1;
+            g_4e9af0.timers[player->local_index] = (byte)(remaining > 0 ? remaining : 0);
         }
     }
 }
