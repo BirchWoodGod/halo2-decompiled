@@ -894,9 +894,10 @@ void function_445d0(void)
 	case 11:
 		function_049740();
 		break;
-	case 16: break;
-	case 17: break;
+	case 16: goto reset;
+	case 17: goto reset;
 	}
+reset:
 	g_467130 = 0;
 	g_4858b4 = NONE;
 }
