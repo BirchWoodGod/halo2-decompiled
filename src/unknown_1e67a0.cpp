@@ -535,20 +535,14 @@ void function_1e68a0(s_character_physics_update_input_datum_a *datum, s_source_a
 	datum->unknown10 = source_mode;
 	*(dword volatile *)&datum->flags = 0;
 	datum->unknown14 = 0;
-	datum->flags = b0 ? 1 : 0;
+	if (b0) datum->flags = 1; else datum->flags = 0;
 	if (b1) datum->flags |= 2; else datum->flags &= ~2;
 	if (b2) datum->flags |= 4; else datum->flags &= ~4;
 	if (b3) datum->flags |= 8; else datum->flags &= ~8;
 	if (b4) datum->flags |= 16; else datum->flags &= ~16;
-	datum->point1c.x = p1->x;
-	datum->point1c.y = p1->y;
-	datum->point1c.z = p1->z;
-	datum->point28.x = p2->x;
-	datum->point28.y = p2->y;
-	datum->point28.z = p2->z;
-	datum->point34.x = p3->x;
-	datum->point34.y = p3->y;
-	datum->point34.z = p3->z;
+	datum->point1c = *p1;
+	datum->point28 = *p2;
+	datum->point34 = *p3;
 }
 
 // @retail 0x1e6980

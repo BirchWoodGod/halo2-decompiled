@@ -7043,7 +7043,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 001e67a0,66,game,speed,a16 pad,,,,src/unknown_1e67a0.cpp,todo
 001e67f0,81,game,speed,a16 pad,,,,src/unknown_1e67a0.cpp,matched
 001e6850,73,game,speed,a16 pad,,,,src/unknown_1e67a0.cpp,matched
-001e68a0,215,game,speed,a16 pad,,,,src/unknown_1e67a0.cpp,todo
+001e68a0,215,game,speed,a16 pad,,,,src/unknown_1e67a0.cpp,matched
 001e6980,80,game,speed,a16 pad,,,,src/unknown_1e67a0.cpp,matched
 001e69d0,48,game,unknown,a16,,,,src/unknown_1e77c0.cpp,matched
 001e6a00,59,game,unknown,a16,,,,src/unknown_1e77c0.cpp,matched
@@ -7259,7 +7259,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 001fb2f0,64,game,speed,a16 pad,,,0016b5f0,src/unknown_1fb350.cpp,matched
 001fb330,18,game,unknown,a16,,,0016b7a0,src/unknown_1fb350.cpp,matched
 001fb350,10,game,speed,a16 pad,,,,src/unknown_1fb350.cpp,matched
-001fb360,344,game,speed,a16 pad,,,000cbf40 000cbf60 0016b840 001fb6f0 001fb760,src/unknown_1fb350.cpp,todo
+001fb360,344,game,speed,a16 pad,,,000cbf40 000cbf60 0016b840 001fb6f0 001fb760,src/unknown_1fb350.cpp,matched
 001fb4c0,76,game,speed,a16 pad,,,001fb760,src/unknown_1fb350.cpp,matched
 001fb510,473,game,speed,a16 pad,,,000b8540 000beb30 000c6de0 000cbf60 000f0fd0 0016ba40,src/unknown_1fb350.cpp,todo
 001fb6f0,109,game,speed,a16 pad,,,,src/unknown_1fb350.cpp,todo
@@ -10217,7 +10217,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 002a7cd0,19,game,speed,a16 pad,,,00209ae0 00277380,src/unknown_29f5b0.cpp,matched
 002a7cf0,116,game,speed,a16 pad,,,00209ae0 00209d50 00291ea0,src/unknown_29f5b0.cpp,todo
 002a7d70,125,game,speed,a16 pad,,,00209ae0 00209d50,src/unknown_29f5b0.cpp,matched
-002a7df0,66,game,speed,a16 pad,,,00209ae0 00209d50 002773d0,src/unknown_29f5b0.cpp,todo
+002a7df0,66,game,speed,a16 pad,,,00209ae0 00209d50 002773d0,src/unknown_29f5b0.cpp,near
 002a7e40,62,game,speed,a16 pad,,,00209ae0 00209d50 002775d0,src/unknown_29f5b0.cpp,matched
 002a7e80,92,game,speed,a16 pad,,,00209ae0 00209d50,src/unknown_29f5b0.cpp,matched
 002a7ee0,122,game,speed,a16 pad,,,00209ae0 00209d50,src/unknown_29f5b0.cpp,matched
