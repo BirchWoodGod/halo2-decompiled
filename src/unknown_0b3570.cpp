@@ -94,7 +94,8 @@ bool function_b2e30(void *entries, long count)
 		function_07ad50((byte *)&g_4d8eb4.session_id);
 		g_4d8ec4 = count;
 		g_4d8ec8 = entries;
-		memset(entries, 0, count * 0x784);
+		// Re-read the stored count so its global write stays ahead of the entry clear.
+		memset(entries, 0, (*(long const *)&g_4d8ec4) * 0x784);
 	}
 	return g_4d8eb4.active;
 }
