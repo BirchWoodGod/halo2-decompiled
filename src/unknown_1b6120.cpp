@@ -195,48 +195,11 @@ short __stdcall function_1b6450(long actor_index, s_slot *slot, bool active)
 		if (joint->unknown80)
 		{
 			if (--state->unknown1c > 0)
-				return result;
+				goto leave;
 		}
 		else
 		{
-			if (joint->unknown88 >= g_510c54->game_time)
-				return result;
-
-			joint->unknown88 = g_510c54->game_time;
-			for (short i = 0; i < 10; i++)
-			{
-				s_joint_participant_25 *participant = &joint->participants[i];
-
-				if (participant->actor_index != NONE && participant->status == 0)
-				{
-					s_actor_view *other = (s_actor_view *)record_pool_lookup(g_4f55f0, participant->actor_index);
-
-					if (other && other->unknown221 && actor->unknown009)
-					{
-						if (joint->unknown8c > 10 * g_510c54->field_2_3)
-							goto done;
-
-						joint->unknown8c++;
-						if (joint->state == 1 && !joint->unknown81 &&
-							function_26ba60(node->unknown08, actor_index, actor->unknown07c) &&
-							function_1fb7e0(0x4d, actor_index, NULL, joint->object_index, NONE))
-						{
-							joint->unknown81 = true;
-						}
-						return result;
-					}
-				}
-			}
-
-			s_prop_view_25 *view = (s_prop_view_25 *)prop_node_view(node);
-
-			if (view && view->unknown70.unknown0 == 0 && function_26ba60(node->unknown08, actor_index, actor->unknown07c))
-			{
-				s_50241c_element_25 *element = element_50241c_25_get(node->unknown08);
-
-				if (!element->unknown33)
-					element->unknown33 = function_1fb7e0(0x4f, actor_index, NULL, joint->object_index, NONE);
-			}
+			goto evaluate;
 		}
 	}
 
@@ -255,7 +218,51 @@ done:
 				view->unknown94 = joint->unknownb0;
 		}
 	}
+leave:
 	return result;
+
+evaluate:
+	{
+		if (joint->unknown88 >= g_510c54->game_time)
+			goto leave;
+
+		joint->unknown88 = g_510c54->game_time;
+		for (short i = 0; i < 10; i++)
+		{
+			s_joint_participant_25 *participant = &joint->participants[i];
+
+			if (participant->actor_index != NONE && participant->status == 0)
+			{
+				s_actor_view *other = (s_actor_view *)record_pool_lookup(g_4f55f0, participant->actor_index);
+
+				if (other && other->unknown221 && actor->unknown009)
+				{
+					if (joint->unknown8c > 10 * g_510c54->field_2_3)
+						goto done;
+
+					joint->unknown8c++;
+					if (joint->state == 1 && !joint->unknown81 &&
+						function_26ba60(node->unknown08, actor_index, actor->unknown07c) &&
+						function_1fb7e0(0x4d, actor_index, NULL, joint->object_index, NONE))
+					{
+						joint->unknown81 = true;
+					}
+					goto leave;
+				}
+			}
+		}
+
+		s_prop_view_25 *view = (s_prop_view_25 *)prop_node_view(node);
+
+		if (view && view->unknown70.unknown0 == 0 && function_26ba60(node->unknown08, actor_index, actor->unknown07c))
+		{
+			s_50241c_element_25 *element = element_50241c_25_get(node->unknown08);
+
+			if (!element->unknown33)
+				element->unknown33 = function_1fb7e0(0x4f, actor_index, NULL, joint->object_index, NONE);
+		}
+	}
+	goto done;
 }
 
 /* invites the clump members whose slot 0x22 is at the actor's prop */

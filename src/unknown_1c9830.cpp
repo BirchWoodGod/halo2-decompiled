@@ -164,9 +164,10 @@ bool function_1df640(short team_a, short team_b)
 	if (g_4e6948->state == _game_mode_campaign &&
 		team_a >= 0 && team_a < k_maximum_game_teams && team_b >= 0 && team_b < k_maximum_game_teams)
 	{
-		long bit = team_a * k_maximum_game_teams + team_b;
-
-		result = function_0bfe60(g_4f55ec->ally_bits, bit) && !function_0bfe60(g_4f55ec->peace_bits, bit);
+		if (!function_0bfe60(g_4f55ec->ally_bits, team_a * k_maximum_game_teams + team_b) ||
+			function_0bfe60(g_4f55ec->peace_bits, team_a * k_maximum_game_teams + team_b))
+			return false;
+		result = true;
 	}
 	return result;
 }

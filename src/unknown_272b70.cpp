@@ -1367,8 +1367,8 @@ void function_2742f0(short team_a, short team_b)
 	{
 		long difficulty = 1;
 		short ai_team = NONE;
-		short incident_threshold = NONE;
 		short incident_decay_ticks = NONE;
+		short incident_threshold = NONE;
 		bool player_alliance = false;
 
 		if (team_a == 1)
@@ -1381,9 +1381,9 @@ void function_2742f0(short team_a, short team_b)
 
 			if (g_4e6948->state == 1)
 				difficulty = g_4e6948->difficulty;
-			incident_decay_ticks = (short)ai_seconds_to_ticks_round(decay_seconds[(short)difficulty]);
 			incident_threshold = 5;
 			player_alliance = true;
+			incident_decay_ticks = (short)ai_seconds_to_ticks_round(decay_seconds[(short)difficulty]);
 		}
 		function_1df6c0(team_a, team_b, player_alliance && team_a == ai_team, player_alliance && team_b == ai_team,
 			incident_threshold, incident_decay_ticks);
@@ -1687,8 +1687,8 @@ inline s_ai_unit_2758b0 *ai_unit_get(long unit_index)
 
 inline s_character_grenades_2758b0 *actor_get_grenade_properties(long actor_index)
 {
-	s_ai_actor_2758b0 *actor = &((s_ai_actor_2758b0 *)g_4f55f0->data)[actor_index & 0xffff];
 	s_character_grenades_2758b0 *result = NULL;
+	s_ai_actor_2758b0 *actor = &((s_ai_actor_2758b0 *)g_4f55f0->data)[actor_index & 0xffff];
 	if (actor->unit_index != NONE)
 	{
 		short grenade_index = ai_unit_get(actor->unit_index)->current_grenade_index;
@@ -1718,10 +1718,10 @@ inline void unit_add_grenades(long unit_index, short grenade_type, char count)
 	unit->current_grenade_index = (char)grenade_type;
 }
 
-inline short ai_random_range(dword *seed, short lower, short upper)
+inline short ai_random_range(short lower, short upper)
 {
-	*seed = *seed * 0x19660d + 0x3c6ef35f;
-	return lower + (short)(((upper - lower) * (*seed >> 16)) >> 16);
+	g_4e7408->unknown0 = g_4e7408->unknown0 * 0x19660d + 0x3c6ef35f;
+	return lower + (short)(((upper - lower) * (g_4e7408->unknown0 >> 16)) >> 16);
 }
 
 /* gives the actors an ai index names a random number of grenades of their
@@ -1745,7 +1745,7 @@ void function_2758b0(long ai_index)
 			unit->valuef0 = unit->valuee8 > 0.0f ? 1.0f : 0.0f;
 			if (grenades)
 			{
-				short count = ai_random_range(&g_4e7408->unknown0, grenades->minimum_count, grenades->maximum_count + 1);
+				short count = ai_random_range(grenades->minimum_count, grenades->maximum_count + 1);
 				short current_count = unit_get_current_grenade_count(actor->unit_index);
 				if (current_count < count)
 					unit_add_grenades(actor->unit_index, grenades->grenade_type, (char)(count - current_count));

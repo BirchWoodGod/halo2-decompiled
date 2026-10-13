@@ -422,9 +422,10 @@ void function_1de2c0(s_1de2c0 *arg_0, long arg_1)
    s_1ddda2 const *local_19 = &local_12[local_15];
    bool local_20 = local_19->field_a == arg_1;
    volatile long local_26 = local_20;
+   long local_27 = *(bool const volatile *)&arg_0->field_21e;
    real const *local_21 = (real const *)&local_13[local_19->field_0[local_20]].field_0;
    real const *local_24 = (real const *)&local_13[local_19->field_0[!local_20]].field_0;
-   long local_22 = *(short const volatile *)&arg_0->field_21c * 2 + *(bool const volatile *)&arg_0->field_21e;
+   long local_22 = *(short const volatile *)&arg_0->field_21c * 2 + local_27;
    point2f local_23 = { local_21[g_440b94[local_22][0]] - arg_0->field_220.x, local_21[g_440b94[local_22][1]] - arg_0->field_220.y };
    point2f local_25 = { *(real const *)((byte const *)local_24 + local_17) - arg_0->field_220.x,
     *(real const *)((byte const *)local_24 + local_18) - arg_0->field_220.y };
