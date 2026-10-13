@@ -290,19 +290,20 @@ real function_13b390(void const *function, real input, real range)
 			break;
 		}
 		default:
-			return result;
+			goto done;
 		}
 
 		if (0.0f > result)
 		{
-			return 0.0f;
+			result = 0.0f;
 		}
-		if (result > 1.0f)
+		else if (result > 1.0f)
 		{
-			return 1.0f;
+			result = 1.0f;
 		}
 	}
 
+done:
 	return result;
 }
 

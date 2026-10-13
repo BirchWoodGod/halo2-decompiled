@@ -892,13 +892,13 @@ struct s_effect_color_query
 	dword color_b;
 };
 
-long __stdcall function_d2a50(long flags, long object_index, long value, s_effect_color_query *query,
+long __stdcall function_d2a50(long flags, long object_index, bool value, s_effect_color_query *query,
     long unused, point3f const *point);
 long function_e5670(long unit_index);
 
 bool function_14af40(bool value, point3f const *point, vector3f const *vector, long object_index,
     bool a, void *surface, point3f *hit_point);
-long __stdcall function_d1e10(void const *surface, s_effect_color_query *query, long flags, long value);
+long __stdcall function_d1e10(void const *surface, s_effect_color_query *query, long flags, bool value);
 /* the collision a surface query starts from, passed by value */
 struct s_surface_query_source
 {
@@ -915,7 +915,7 @@ PRIVATE vector3f const g_4406f0[5] =
 };
 
 // @retail 0xd2a50
-long __stdcall function_d2a50(long flags, long object_index, long value, s_effect_color_query *query,
+long __stdcall function_d2a50(long flags, long object_index, bool value, s_effect_color_query *query,
     long supplied_direction, point3f const *point)
 {
     long result = 2;
@@ -933,19 +933,21 @@ long __stdcall function_d2a50(long flags, long object_index, long value, s_effec
         if (*(long *)(bsp + 0x1c) != NONE && *(long *)(bsp + 4) == *(long *)((byte *)g_4e0348 + 8))
         {
             vector3f const *direction = directions;
-            for (long volatile i = 0; i < count;)
+            struct { long i; point3f start, hit_point; byte surface[0x38]; } frame;
+            for (frame.i = 0; frame.i < count;)
             {
                 if (result != 2) break;
-                point3f start, hit_point;
-                byte surface[0x38];
+                point3f &start = frame.start;
+                point3f &hit_point = frame.hit_point;
+                byte *surface = frame.surface;
                 start.x = point->x - direction->i * 0.0010000000474974513f;
                 start.y = point->y - direction->j * 0.0010000000474974513f;
                 start.z = point->z - direction->k * 0.0010000000474974513f;
                 if (function_14af40((bool)value, &start, direction, object_index, true, surface, &hit_point))
                     result = function_d1e10(surface, query, flags, value);
-                long next = i + 1;
+                long next = frame.i + 1;
+                frame.i = next;
                 direction++;
-                i = next;
             }
         }
     }
@@ -970,7 +972,7 @@ PRIVATE __forceinline bool surface_status_failed(long status)
 }
 
 // @retail 0xd1850
-long function_d1850(long object_index, long value, s_effect_color_query *query)
+long function_d1850(long object_index, bool value, s_effect_color_query *query)
 {
     bool failed = false;
     if (g_4e0344 && g_4e0344->count > 0 && g_4e0348)
@@ -1499,7 +1501,7 @@ PRIVATE __forceinline void surface_sample_unpack(short const *source, s_sample_p
 }
 
 // @retail 0xd1e10
-long __stdcall function_d1e10(void const *surface, s_effect_color_query *query, long flags, long value)
+long __stdcall function_d1e10(void const *surface, s_effect_color_query *query, long flags, bool value)
 {
     s_structure_lightmap_triangle const *triangle = (s_structure_lightmap_triangle const *)surface;
     volatile long result = 2;

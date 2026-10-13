@@ -1477,7 +1477,7 @@ void function_22d2ee(word *string, long maximum_length)
 	while (*character)
 	{
 		word replacement[k_parse_buffer_length];
-		long replaced_length;
+		volatile long replaced_length;
 		long c = *character;
 		long i;
 

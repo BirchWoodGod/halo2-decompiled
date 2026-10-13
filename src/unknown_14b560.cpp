@@ -1202,7 +1202,7 @@ struct s_object_creation_14f2e0
 	long team_index;
 	byte unknown68[0x74 - 0x68];
 	dword change_color_mask;
-	color3f change_colors[4];
+	color3f colors[4];
 	dword field_a8;
 	byte unknownac[0xc4 - 0xac];
 };
@@ -1318,7 +1318,7 @@ bool __stdcall function_14f2e0(long player_index)
 			if (function_15f330(&player->appearance, player->team_index, colors))
 			{
 				creation.change_color_mask |= 0xf;
-				memcpy(creation.change_colors, colors, sizeof(colors));
+				memcpy(creation.colors, colors, sizeof(colors));
 			}
 			unit_index = function_b7b40(&creation);
 		}

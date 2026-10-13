@@ -113,18 +113,18 @@ void function_8bf70(s_presence_name_cache *cache)
 bool __stdcall function_8c150(void *cache, long allow_stale, unsigned __int64 *user_id,
 	void *name, unsigned __int64 *team_id)
 {
-	unsigned __int64 *const *user_reference = &user_id;
 	s_presence_name_cache_entry *entries = (s_presence_name_cache_entry *)cache;
 	bool found = false;
 	bool result = false;
 	s_presence_name_cache_entry *oldest = 0;
 	*(wchar_t *)name = 0;
-	for (long i = 0; i < 150; i++)
+	long i = 0;
+	do
 	{
 		s_presence_name_cache_entry *entry = &entries[i];
 		if ((!oldest || entry->time < oldest->time) && (entry->state == 3 || entry->state == 0))
 			oldest = entry;
-		if (*user_reference && **user_reference == entry->user.qwUserID)
+		if (user_id && *user_id == entry->user.qwUserID)
 		{
 			found = true;
 			if (entry->state == 3)
@@ -136,7 +136,7 @@ bool __stdcall function_8c150(void *cache, long allow_stale, unsigned __int64 *u
 					if ((long)(presence_cache_time() - time) > duration)
 					{
 						entry->state = 1;
-						return result;
+						break;
 					}
 				}
 				wcsncpy((wchar_t *)name, entry->name, 15);
@@ -146,10 +146,11 @@ bool __stdcall function_8c150(void *cache, long allow_stale, unsigned __int64 *u
 			}
 			break;
 		}
-	}
+		i++;
+	} while (i < 150);
 	if (!allow_stale && !found && oldest)
 	{
-		oldest->user = *(XUID *)*user_reference;
+		oldest->user = *(XUID *)user_id;
 		oldest->state = 1;
 	}
 	return result;
