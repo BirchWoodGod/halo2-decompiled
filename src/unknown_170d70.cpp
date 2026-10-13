@@ -624,9 +624,7 @@ struct s_pool_lists
 
 static inline short list_head(s_pool_lists const *lists, short list)
 {
-	if (lists->valid[list >> 5] & (1 << (list & 31)))
-		return lists->heads[list];
-	return NONE;
+	return (lists->valid[list >> 5] & (1 << (list & 31))) ? lists->heads[list] : NONE;
 }
 
 static inline short list_next(s_pool_lists const *lists, short list, short index)
@@ -774,7 +772,7 @@ PRIVATE __forceinline long list_head_index_1730a0(s_pool_lists const *lists, sho
 }
 
 // @retail 0x1730a0
-void function_1730a0(s_pool *pool, s_pool_lists const *lists, long *cluster_map,
+void function_1730a0(s_pool_lists const *lists, s_pool *pool, long *cluster_map,
 	byte const *cameras, long group, s_view_collection_1733e0 *collection)
 {
 	long count = pool->count;
@@ -790,26 +788,21 @@ void function_1730a0(s_pool *pool, s_pool_lists const *lists, long *cluster_map,
 	}
 }
 
-static inline real real_minimum(real a, real b)
-{
-	return (a > b) ? b : a;
-}
-
-static inline real real_maximum(real a, real b)
-{
-	return (a > b) ? a : b;
-}
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 static inline void rect4_union(s_rect4 *rect, s_rect4 const *other)
 {
-	if (rect->x0 > other->x0)
-		rect->x0 = other->x0;
-	if (!(rect->x1 > other->x1))
-		rect->x1 = other->x1;
-	if (rect->y0 > other->y0)
-		rect->y0 = other->y0;
-	if (!(rect->y1 > other->y1))
-		rect->y1 = other->y1;
+	real value;
+
+	value = MIN(rect->x0, other->x0);
+	rect->x0 = value;
+	value = MAX(rect->x1, other->x1);
+	rect->x1 = value;
+	value = MIN(rect->y0, other->y0);
+	rect->y0 = value;
+	value = MAX(rect->y1, other->y1);
+	rect->y1 = value;
 }
 
 static inline real rect4_area(s_rect4 const *rect)
@@ -820,8 +813,6 @@ static inline real rect4_area(s_rect4 const *rect)
 // @retail 0x172c70
 void function_172c70(s_pool_lists *lists, s_pool *pool)
 {
-	s_pool_lists * const *lists_reference = &lists;
-	lists = *lists_reference;
 	for (long list = 0; list < g_4e0348->list_count; list++)
 	{
 		long index = list_head(lists, (short)list);
@@ -837,10 +828,10 @@ void function_172c70(s_pool_lists *lists, s_pool *pool)
 				s_rect4 merged = other->rect;
 
 				rect4_union(&merged, &entry->rect);
-				if ((rect4_area(&other->rect) + rect4_area(&entry->rect)) * 1.5f > rect4_area(&merged))
+				if (rect4_area(&merged) < (rect4_area(&other->rect) + rect4_area(&entry->rect)) * 1.5f)
 				{
 					entry->unknown28 = next;
-					other->unknown24 = real_minimum(entry->unknown24, other->unknown24);
+					other->unknown24 = MIN(entry->unknown24, other->unknown24);
 					other->rect = merged;
 					break;
 				}
@@ -1295,9 +1286,9 @@ void __stdcall function_173130(long camera_count, byte *cameras, long cluster_in
 	{
 		memset(cluster_map, 0xff, sizeof(cluster_map));
 		byte *geometry = (byte *)g_4e0348;
-		byte *camera = cameras;
-		for (long group = 0; group < camera_count; ++group, camera += 0x1bc)
+		for (long group = 0; group < camera_count; ++group)
 		{
+			byte *camera = cameras + group * 0x1bc;
 			cache.geometry = (s_polygon_cache_173520::s_geometry *)geometry;
 			cache.planes = *(s_polygon_context_173910::s_planes **)(geometry + 0x18);
 			cache.view = camera;
@@ -1317,10 +1308,13 @@ void __stdcall function_173130(long camera_count, byte *cameras, long cluster_in
 			queue.values[0] = index;
 			function_172840(group, &pool, &lists, &queue, &cache);
 			function_172c70((s_pool_lists *)&lists, &pool);
-			function_1730a0(&pool, (s_pool_lists *)&lists, cluster_map, cameras, group, collection);
+			function_1730a0((s_pool_lists *)&lists, &pool, cluster_map, cameras, group, collection);
 		}
 	}
-	sort_4byte(collection->order, collection->cluster_count, &camera_count, function_134950, collection);
+	{
+		long scratch;
+		sort_4byte(collection->order, collection->cluster_count, &scratch, function_134950, collection);
+	}
 }
 
 struct s_segment_collision
