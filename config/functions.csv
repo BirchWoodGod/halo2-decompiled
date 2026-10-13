@@ -661,8 +661,8 @@ va,size,owner,style,evidence,name,object,calls,source,status
 000552a0,134,game,speed,a16 pad,,,00332dd3 00332def,src/network_voice.cpp,matched
 00055330,114,game,speed,a16 pad,,,00332db7 00332dd3,src/network_voice.cpp,matched
 000553b0,264,game,speed,a16 pad,,,00055920 00163ba0 003203e0 00332df4,src/network_voice.cpp,matched
-000554c0,94,game,speed,a16 pad,,,00332e8a,src/network_voice.cpp,near
-00055520,130,game,speed,a16 pad,,,00332e81,src/network_voice.cpp,near
+000554c0,94,game,speed,a16 pad,,,00332e8a,src/network_voice.cpp,matched
+00055520,130,game,speed,a16 pad,,,00332e81,src/network_voice.cpp,matched
 000555b0,49,game,speed,a16 pad,,,,src/network_voice.cpp,matched
 000555f0,41,game,speed,a16 pad,,,00053a20,src/network_voice.cpp,matched
 00055620,8,game,speed,a16 pad,,,,src/network_voice.cpp,matched
