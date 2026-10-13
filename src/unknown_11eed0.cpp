@@ -138,12 +138,12 @@ void function_11f0d0(
 	axis.k = forward->i * target->j - target->i * forward->j;
 	function_30bf0(&axis);
 
-	axis.j = axis.j * max_angle;
-	diff.j = axis.j - position->j;
-	axis.k = axis.k * max_angle;
 	axis.i = axis.i * max_angle;
-	diff.k = axis.k - position->k;
+	axis.j = axis.j * max_angle;
+	axis.k = axis.k * max_angle;
 	diff.i = axis.i - position->i;
+	diff.j = axis.j - position->j;
+	diff.k = axis.k - position->k;
 	dist2 = diff.k * diff.k + diff.j * diff.j + diff.i * diff.i;
 	step = rate * scale;
 
@@ -215,7 +215,6 @@ void function_11f4f0(
 	long *out)
 {
 	long i = 0;
-	long max = (1 << bits) - 1;
 
 	do
 	{
@@ -232,7 +231,7 @@ void function_11f4f0(
 			v = in[i];
 		lo = ranges[i].lo;
 		hi = ranges[i].hi;
-		v = (v - lo) / ((hi - lo) / (real)max);
+		v = (v - lo) / ((hi - lo) / (real)((1 << bits) - 1));
 		__asm
 		{
 			fld v

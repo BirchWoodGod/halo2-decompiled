@@ -3770,11 +3770,11 @@ static __forceinline long nonnegative_15ce70(long value)
 // @retail 0x15ce70
 void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte damage)
 {
+    long award = NONE;
     if (!game_engine_get()) return;
     s_engine_player *victim = engine_player_get(victim_index);
     long damage_type = damage & 0x3f;
     long damage_modifier = damage >> 6;
-    long award = NONE;
     bool special = damage_type == 3 || damage_type == 0x1a || damage_type == 0x18 || damage_type == 0x17 || damage_type == 0x14;
     long elapsed = nonnegative_15ce70(g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time);
     *(long *)((byte *)victim + 0x1b4) = elapsed;
@@ -3894,9 +3894,9 @@ void function_15ce70(long attacker_index, long victim_index, bool betrayal, byte
     if (attacker_index != NONE && attacker_index != victim_index && !betrayal)
     {
         long index = attacker_index & 0xffff;
-        short chain = *(short *)((byte *)&game_engine_get_statborg()->players[index] + 0x14);
-        short streak = *(short *)((byte *)&game_engine_get_statborg()->players[index] + 0x12);
-        short victim_streak = *(short *)((byte *)&game_engine_get_statborg()->players[victim_index & 0xffff] + 0x12);
+        long chain = *(short *)((byte *)&game_engine_get_statborg()->players[index] + 0x14);
+        long streak = *(short *)((byte *)&game_engine_get_statborg()->players[index] + 0x12);
+        long victim_streak = *(short *)((byte *)&game_engine_get_statborg()->players[victim_index & 0xffff] + 0x12);
         if (chain >= 7) function_1970a0(index, 5, 1);
         else if (chain == 6) function_1970a0(index, 4, 1);
         else if (chain == 5) function_1970a0(index, 3, 1);
@@ -4261,10 +4261,6 @@ struct s_player_view_15bb20
     short dead_count;
 };
 
-static __forceinline long long_max_15bb20(long a, long b)
-{
-    return a > b ? a : b;
-}
 
 // @retail 0x15bb20
 void __stdcall function_15bb20(long player_index)
@@ -4340,8 +4336,7 @@ void __stdcall function_15bb20(long player_index)
             !function_162c50(player_index, &player_index))
         {
                 long maximum = real_to_long((real)g_510c54->field_2_3 * 0.25f);
-                long elapsed = (long)g_4e9af0.timers[player->local_index] + 1;
-                g_4e9af0.timers[player->local_index] = (byte)(elapsed > maximum ? maximum : elapsed);
+                g_4e9af0.timers[player->local_index] = (byte)((long)g_4e9af0.timers[player->local_index] + 1 > maximum ? maximum : (long)g_4e9af0.timers[player->local_index] + 1);
                 if (input)
                 {
                     short delta = (short &)input->values[0x36];
@@ -4354,8 +4349,7 @@ void __stdcall function_15bb20(long player_index)
         }
         else
         {
-            long remaining = (long)g_4e9af0.timers[player->local_index] - 1;
-            g_4e9af0.timers[player->local_index] = (byte)long_max_15bb20(remaining, 0);
+            g_4e9af0.timers[player->local_index] = (byte)((long)g_4e9af0.timers[player->local_index] - 1 > 0 ? (long)g_4e9af0.timers[player->local_index] - 1 : 0);
         }
     }
 }

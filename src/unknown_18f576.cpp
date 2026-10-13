@@ -373,8 +373,13 @@ struct s_55c164
 	void *field0;
 	byte unknown04[0x40];
 };
-extern long g_55c160;
-extern s_55c164 g_55c164[16];
+/* one structure in retail (unknown_2157e0.cpp) */
+struct s_55c160
+{
+	long count;
+	s_55c164 entries[16];
+};
+extern s_55c160 g_55c160_table;
 
 // @retail 0x18fb34
 void __stdcall function_18fb34(long index, s_player_profile_settings *settings, long profile_index)
@@ -399,8 +404,8 @@ void __stdcall function_18fb34(long index, s_player_profile_settings *settings, 
 	function_190eb3(index);
 	if (changed && slot->profile_index != NONE)
 	{
-		g_55c160++;
-		g_55c164[g_55c160 - 1].field0 = (void *)slot->profile_index;
+		g_55c160_table.count++;
+		g_55c160_table.entries[g_55c160_table.count - 1].field0 = (void *)slot->profile_index;
 	}
 	function_53810(settings->voice_mask, index);
 	function_54fc0(index, settings->voice_through_tv);

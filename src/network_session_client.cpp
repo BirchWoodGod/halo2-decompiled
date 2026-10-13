@@ -77,7 +77,7 @@ void __stdcall function_06d380(c_session_client *client, const s_session_id *id)
 
 // @retail 0x6e910
 void function_6e910(const s_network_session_player *player, const s_session_machine *machines,
-	long variant_index, const byte *variant, s_session_summary *summary, char default_team, s_session_player *output)
+	const byte *variant, s_session_summary *summary, char default_team, s_session_player *output, long variant_index)
 {
 	output->active = true;
 	output->flag1 = false;
@@ -582,8 +582,8 @@ bool function_06e720(c_class_58d20 *session)
 			for (long i = 0; i < 16; i++)
 			{
 				if ((session->player_mask & (1 << i)) && session->players[i].unknown14 != NONE)
-					function_6e910(&session->players[i], addresses, session->value49c8,
-						session->data4db0, summary, (char)i, &players[i]);
+					function_6e910(&session->players[i], addresses,
+						session->data4db0, summary, (char)i, &players[i], session->value49c8);
 			}
 			session->set_data_4f24(&machines, (s_unknown_3648 *)players);
 			if (SESSION_STATE_IS_LIVE(session->state) && session->value5dd0 != NONE)

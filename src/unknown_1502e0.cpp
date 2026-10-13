@@ -1328,17 +1328,17 @@ void __stdcall function_152f80(void *address, void *option_data)
 {
     byte const *machine_address = (byte const *)address;
     s_player_rebind_option const *options = (s_player_rebind_option const *)option_data;
-    long controllers[16];
-    long users[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
+    long controllers[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
+    long users[16];
     long assigned[16];
-    for (long i = 0; i < 16; i++)
-    {
-        controllers[i] = NONE;
-        assigned[i] = NONE;
-    }
     dword options_used = 0;
     dword users_used = 0;
     dword controllers_used = 0;
+    for (long i = 0; i < 16; i++)
+    {
+        users[i] = NONE;
+        assigned[i] = NONE;
+    }
     s_record_pool_iterator iterator;
     s_tail_player *player;
     iterator.data = g_4e8c24;
@@ -1353,20 +1353,23 @@ void __stdcall function_152f80(void *address, void *option_data)
             {
                 s_player_rebind_option const *entry = &options[option];
                 if (!entry->active || (options_used & (1 << option))) continue;
+                bool match;
                 switch (pass)
                 {
                 case 0:
-                    if (player->local_index == NONE || memcmp(entry->identifier, player->unknown04, 12)) continue;
+                    match = player->local_index != NONE && !memcmp(entry->identifier, player->unknown04, 12);
                     break;
                 case 1:
-                    if (player->local_index == NONE || entry->controller_index != player->controller_index) continue;
+                    match = player->local_index != NONE && entry->controller_index == player->controller_index;
                     break;
                 case 2:
-                    if (player->local_index == NONE) continue;
+                    match = player->local_index != NONE;
                     break;
                 default:
+                    match = true;
                     break;
                 }
+                if (!match) continue;
                 users[index] = entry->local_index;
                 assigned[index] = option;
                 controllers[index] = entry->controller_index;
@@ -1439,37 +1442,8 @@ void __stdcall function_152f80(void *address, void *option_data)
         long index = (short)iterator.datum_index;
         if (player->local_index != NONE && (player->local_index != users[index] || player->controller_index != controllers[index]))
         {
-            s_tail_player *local = tail_player_get(iterator.datum_index);
-            if (local->local_index != NONE)
-            {
-                player_control_set_unit(local->local_index, NONE);
-                long user = local->local_index;
-                byte *state = (byte *)g_4e9bc8 + user * 0x20cc;
-                if (*(long *)(state + 4) != NONE)
-                {
-                    for (long hand = 0; hand < 2; hand++)
-                    {
-                        dword *flags = (dword *)(state + 0xc + hand * 0x1010);
-                        if (*flags & 1) *flags &= ~1;
-                    }
-                    *(dword *)state &= ~1;
-                    *(long *)(state + 4) = NONE;
-                    *(long *)(state + 8) = NONE;
-                    for (long hand = 0; hand < 2; hand++) function_167e86(user, hand);
-                }
-                s_player_census_counts *census = (s_player_census_counts *)g_4e8c20;
-                census->users[local->local_index] = NONE;
-                census->user_count--;
-                local->local_index = NONE;
-            }
-            s_tail_player *local_controller = tail_player_get(iterator.datum_index);
-            if (local_controller->controller_index != NONE)
-            {
-                s_player_census_counts *census = (s_player_census_counts *)g_4e8c20;
-                census->controllers[local_controller->controller_index] = NONE;
-                census->controller_count--;
-                local_controller->controller_index = NONE;
-            }
+            player_set_local_user(iterator.datum_index, NONE);
+            function_14f270(iterator.datum_index, NONE);
             player->machine_user = NONE;
             player->machine_controller = NONE;
         }
@@ -1487,26 +1461,7 @@ void __stdcall function_152f80(void *address, void *option_data)
             player->machine_user = (short)users[index];
             player->machine_controller = controllers[index];
             player_set_local_user(iterator.datum_index, player->machine_user);
-            s_tail_player *local = tail_player_get(iterator.datum_index);
-            long controller = player->machine_controller;
-            if (local->controller_index != controller)
-            {
-                if (controller == NONE)
-                {
-                    s_player_census_counts *census = (s_player_census_counts *)g_4e8c20;
-                    census->controllers[local->controller_index] = NONE;
-                    census->controller_count--;
-                    local->controller_index = NONE;
-                }
-                else
-                {
-                    function_14f270(iterator.datum_index, NONE);
-                    local->controller_index = controller;
-                    s_player_census_counts *census = (s_player_census_counts *)g_4e8c20;
-                    census->controllers[controller] = iterator.datum_index;
-                    census->controller_count++;
-                }
-            }
+            function_14f270(iterator.datum_index, player->machine_controller);
         }
         s_player_slot *slot = &g_54e8e0[player->controller_index];
         if (TEST_FIELD_BIT(slot->flag4)) *(long *)slot->unknown004 = player->local_index;

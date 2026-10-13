@@ -9,12 +9,7 @@
 struct s_sound_scenery_object_view
 {
 	long definition_index;
-	struct
-	{
-		dword : 16;
-		dword shadowless : 1;
-		dword : 15;
-	} object;
+	dword object_flags; /* bit 16: no shadow */
 	byte unknown008[0x12c - 8];
 	dword value_12c;
 	dword value_130;
@@ -49,7 +44,8 @@ struct s_scenario_sound_scenery_view
 bool __stdcall function_207b90(long object_index, long creation_argument1, long creation_argument2)
 {
 	s_sound_scenery_object_view *scenery = SOUND_SCENERY_GET(object_index);
-	scenery->object.shadowless = true;
+	dword *flags = &scenery->object_flags;
+	*flags |= 0x10000;
 	return true;
 }
 
