@@ -952,8 +952,9 @@ long function_178120(long tag_index, s_effect_owner const *owner, bool force)
 				effect->color_a = 0xff808080;
 				effect->color_b = 0xff808080;
 				effect->unknown5e = NONE;
-				effect->unknown74 = 0.0f;
-				effect->unknown78 = 0.0f;
+				real *values = &effect->unknown74;
+				values[0] = 0.0f;
+				values[1] = 0.0f;
 				function_1782a0(effect_index, 0);
 			}
 		}
