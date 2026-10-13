@@ -1,5 +1,6 @@
 // @flags /O2 /arch:SSE /Gr
 #include "counters_storage.h"
+#include "device_setup_storage.h"
 /* UNKNOWN_12B070.CPP: the main loop's timing: the time it started, and the
    lengths of the last 15 vertical blanks reported by the rasterizer */
 
@@ -25,7 +26,6 @@ struct s_vblank_history
 };
 
 s_vblank_history g_4e6400;
-short g_485aca;
 
 // @retail 0x12b2a0
 void __cdecl main_vblank_callback(D3DVBLANKDATA *data)
