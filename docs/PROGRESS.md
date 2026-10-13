@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8240 functions match
+
+```
+matched 8240 of 11318 game functions (1039422 of 2784283 bytes, 37.33%)
+```
+
+3 new matches, none lost:
+- Deep lane 4 round 4: `0x26710`, `0x2d000` and `0x14850`
+- The permuter works in sandboxed lanes again: its scratch folders no longer get an owner-only ACL
+
 ## 2026-10-13: 8237 functions match
 
 ```
