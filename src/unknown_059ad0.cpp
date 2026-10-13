@@ -1125,6 +1125,7 @@ local_0:
     return result;
 }
 
+#pragma inline_depth(0)
 // @retail 0x5afc0
 bool network_session_players_fit(c_class_58d20 *session, const dword *identities, long count, bool ignore_reservations)
 {
@@ -1140,13 +1141,16 @@ bool network_session_players_fit(c_class_58d20 *session, const dword *identities
 	}
 
 	long pending = 0;
-	for (s_network_session_reservation *reservation = session->reservations; reservation < session->reservations + MAXIMUM_PLAYERS_PER_SESSION; reservation++)
+	s_network_session_reservation *reservation = session->reservations;
+	s_network_session_reservation *end = reservation + MAXIMUM_PLAYERS_PER_SESSION;
+	for (; reservation < end; reservation++)
 	{
 		if (reservation->active && !reservation->joined)
 			pending++;
 	}
 	return count <= session->value4994 - session->player_count - pending + reserved;
 }
+#pragma inline_depth()
 
 /* ---- the session parameters: the host sets them, a member asks the host ---- */
 
@@ -3189,7 +3193,7 @@ bool network_session_players_fit(c_class_58d20 *session, const dword *identities
 // @retail 0x62fe0
 long network_session_evaluate_join_request(c_class_58d20 *session, const s_session_join_request *request)
 {
-	long result = 0;
+	long result = 4;
 	if (!session->function_058d20())
 		return 3;
 	if (session->value498c > 1)
@@ -3198,10 +3202,13 @@ long network_session_evaluate_join_request(c_class_58d20 *session, const s_sessi
 	if (state == 7 || state == 6 || state == 8)
 		return 3;
 	if (network_session_find_member(session, &request->identity) != NONE)
-		return result;
-	long player_count = request->player_count;
-	if (network_session_is_full(session, 1, player_count) || !network_session_players_fit(session, request->identities, player_count, request->ignore_reservations))
-		return 4;
+		result = 0;
+	else
+	{
+		long player_count = request->player_count;
+		if (!network_session_is_full(session, 1, player_count) && network_session_players_fit(session, request->identities, player_count, request->ignore_reservations))
+			result = 0;
+	}
 	return result;
 }
 
