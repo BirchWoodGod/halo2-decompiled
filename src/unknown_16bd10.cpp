@@ -500,19 +500,22 @@ void function_16c110(long animation_graph_index, long animation_name, long objec
 	if (animation_graph_index != NONE)
 	{
 		s_animation_state state;
-		c_type_709360 animation_id;
 
 		state.initialize(animation_graph_index, NONE, true);
-		animation_id = function_1dd0b0(graph_tag_get(state.graph_tag_index), animation_name);
+		c_type_709360 animation_id = function_1dd0b0(graph_tag_get(state.graph_tag_index), animation_name);
 		if (animation_id.index != NONE)
 		{
 			transform4x3f matrix;
 			transform4x3f transform;
 
+			/* retail keeps object_index on the stack: reading it through its
+			   address keeps it there */
+			long const *object_index_reference = &object_index;
+
 			state.animation_matrix_get(animation_id, (real)frame * (1.0f / 30.0f), 0, &matrix);
-			if (object_index != NONE)
+			if (*object_index_reference != NONE)
 			{
-				s_camera_object *object = ((s_camera_object_header *)g_4e0300->data)[object_index & 0xffff].object;
+				s_camera_object *object = ((s_camera_object_header *)g_4e0300->data)[*object_index_reference & 0xffff].object;
 				byte *object_definition = (byte *)camera_tag_get(object->definition_index);
 				byte *model = (byte *)camera_tag_get(*(long *)(object_definition + 0x38));
 				byte *render_model = (byte *)camera_tag_get(*(long *)(model + 0x4));

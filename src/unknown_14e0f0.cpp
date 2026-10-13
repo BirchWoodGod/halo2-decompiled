@@ -139,6 +139,24 @@ void function_14ee20(long player_index, long target_index)
     }
 }
 
+/* a point at an offset in a frame, the offset scaled first */
+static inline void transform_offset_point(transform4x3f const *frame, real scale, vector3f const *offset, point3f *point)
+{
+    real x = offset->i;
+    real y = offset->j;
+    real z = offset->k;
+
+    if (scale != 1.0f)
+    {
+        x *= scale;
+        y *= scale;
+        z *= scale;
+    }
+    point->x = frame->up.i * z + frame->left.i * y + frame->forward.i * x + frame->position.x;
+    point->y = frame->up.j * z + frame->left.j * y + frame->forward.j * x + frame->position.y;
+    point->z = frame->up.k * z + frame->left.k * y + frame->forward.k * x + frame->position.z;
+}
+
 // @retail 0x14e200
 bool __stdcall function_14e200(long player_index, long target_index, point3f const *position, bool detach)
 {
@@ -155,9 +173,9 @@ bool __stdcall function_14e200(long player_index, long target_index, point3f con
         long root = function_baf80(unit_index);
         target_index = function_baf80(*target_reference);
         byte *headers = objects->data;
+        real placement_radius = (bool)(((dword)(1 << headers[(root & 0xffff) * 12 + 3]) >> 1) & 1) ? 2.0f : 0.35f;
         long volatile target_snapshot = *target_reference;
         byte *target = *(byte **)(headers + (target_snapshot & 0xffff) * 12 + 8);
-        real placement_radius = ((1 << headers[(root & 0xffff) * 12 + 3]) & 2) ? 2.0f : 0.35f;
         vector3f &direction = location.vector;
         direction = *(vector3f *)(target + 0x88);
         if (!(direction.j * direction.j + direction.i * direction.i > 0.0f))
@@ -176,23 +194,13 @@ bool __stdcall function_14e200(long player_index, long target_index, point3f con
         function_30bf0(&direction);
         transform4x3f frame;
         function_1420f0(&frame, (point3f *)(target + 0x30), &direction, g_4687b0);
-        for (long pass = target_snapshot == NONE ? 1 : 0; pass < 2 && !result; ++pass)
+        long pass = target_snapshot == NONE ? 1 : 0;
+        while (pass < 2)
         {
             long ignore = pass == 0 ? target_snapshot : NONE;
             for (unsigned short offset_index = 0; offset_index < 9 && !result; ++offset_index)
             {
-                real x = g_453918[(short)offset_index].i;
-                real y = g_453918[(short)offset_index].j;
-                real z = g_453918[(short)offset_index].k;
-                if (offset_scale != 1.0f)
-                {
-                    x *= offset_scale;
-                    y *= offset_scale;
-                    z *= offset_scale;
-                }
-                placed.x = frame.up.i * z + frame.left.i * y + frame.forward.i * x + frame.position.x;
-                placed.y = frame.up.j * z + frame.left.j * y + frame.forward.j * x + frame.position.y;
-                placed.z = frame.up.k * z + frame.left.k * y + frame.forward.k * x + frame.position.z;
+                transform_offset_point(&frame, offset_scale, &g_453918[(short)offset_index], &placed);
                 result = function_c5460(root, ignore, &placed, NULL, *(long *)&placement_radius, 1.0f, 0);
                 for (short attempt = 0; attempt < 8 && !result; ++attempt)
                 {
@@ -206,6 +214,9 @@ bool __stdcall function_14e200(long player_index, long target_index, point3f con
                     result = function_c5460(root, ignore, &candidate, NULL, *(long *)&placement_radius, 1.0f, 0);
                 }
             }
+            ++pass;
+            if (result)
+                break;
         }
     }
     else
@@ -239,8 +250,13 @@ bool __stdcall function_14e200(long player_index, long target_index, point3f con
         *(long *)(sensor_globals + 0xbc4) = 0;
         *(long *)(sensor + 0x2ec) = 0;
         *(long *)(sensor + 0x2e8) = 0;
-        for (long i = 0; i < 10; ++i)
+        long i = 0;
+        do
+        {
             *(long *)(sensor + 0x40 + i * 0x44) = 0;
+            i++;
+        }
+        while (i < 10);
     }
     if (target_index != NONE)
     {
