@@ -181,13 +181,13 @@ bool __stdcall function_19bfd0(s_content_item *item)
 	if (function_1368f0(&file))
 	{
 		dword error;
-		if (function_136970(&file, 1, &error))
-		{
-			bool read = function_136ca0(&file, &package, 0x2d3fc, false);
-			function_136bb0(&file);
-			if (read)
-				return function_19be00(item, &package);
-		}
+		result = function_136970(&file, 1, &error);
+		if (!result)
+			return result;
+		result = function_136ca0(&file, &package, 0x2d3fc, false);
+		function_136bb0(&file);
+		if (result)
+			return function_19be00(item, &package);
 	}
 	return result;
 }
