@@ -234,6 +234,18 @@ void function_109390(long object_index)
 	}
 }
 
+/* the attachment state of an object */
+struct s_object_attachment_flags
+{
+	byte unknown00[0xb8];
+	long parent_index;
+	byte unknownbc[4];
+	unsigned short flag0 : 1;
+	unsigned short flag1 : 1;
+	unsigned short flag2 : 1;
+	unsigned short flag3 : 1;
+};
+
 void __stdcall function_b9b90(long object_index, bool disable);
 void function_b7360(long object_index);
 void function_e4c10(long object_index);
@@ -241,8 +253,7 @@ void function_e4c10(long object_index);
 // @retail 0x109400
 void __stdcall function_109400(long object_index)
 {
-    s_record_pool *pool = g_4e0300;
-    s_object *object = ((s_object_header *)pool->data)[object_index & 0xffff].object;
+    s_object *object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
     if (TEST_FIELD_BIT(g_4e3b44[object->tag_index & 0xffff].flags->flag6))
     {
         s_object_list_state *state = g_5107f0;
@@ -253,15 +264,17 @@ void __stdcall function_109400(long object_index)
                 object->flags_c0 &= 0xf7;
                 state->object_indices[i] = state->object_indices[state->object_count - 1];
                 --state->object_count;
-                long index = NONE;
-                while ((index = data_next_absolute_index_inlined(pool, index + 1)) != NONE)
+                s_record_pool_iterator iterator;
+                iterator.data = g_4e0300;
+                iterator.index = NONE;
+                byte *header;
+                while ((header = data_iterator_next_inlined(&iterator)) != 0)
                 {
-                    byte *header = pool->data + pool->size * index;
-                    long attached_index = (*(short *)header << 16) | index;
-                    byte *attached = (byte *)((s_object_header *)g_4e0300->data)[attached_index & 0xffff].object;
+                    long attached_index = iterator.datum_index;
+                    s_object_attachment_flags *attached = (s_object_attachment_flags *)((s_object_header *)g_4e0300->data)[attached_index & 0xffff].object;
                     if ((header[2] & 1) && !(header[2] & 0x10) &&
-                        ((*(word *)(attached + 0xc0) >> 1) & 1 || (*(word *)(attached + 0xc0) >> 2) & 1) &&
-                        *(long *)(attached + 0xb8) == object_index)
+                        (TEST_FIELD_BIT(attached->flag1) || TEST_FIELD_BIT(attached->flag2)) &&
+                        attached->parent_index == object_index)
                     {
                         long type_mask = 1 << header[3];
                         if (type_mask & 0x1c)

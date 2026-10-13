@@ -937,7 +937,7 @@ bool c_network_reliable_stream::get_next_send(long *type, long *sequence, long *
 long c_network_reliable_stream::function_965e0(long *sequence, long *size, long *time)
 {
 	long type = 0;
-	if (!get_next_send(&type, sequence, size, time) && sequence_window_count(&m_message_window))
+	if (!get_next_send(&type, *(long *volatile *)&sequence, *(long *volatile *)&size, *(long *volatile *)&time) && sequence_window_count(&m_message_window))
 	{
 		long newest = m_message_window.newest;
 		for (long next = m_next_sequence + 1; next < newest; next++)
@@ -950,9 +950,9 @@ long c_network_reliable_stream::function_965e0(long *sequence, long *size, long 
 			word flags = message->flags;
 			if ((flags & 1) && !(flags & 2))
 			{
-				*sequence = next;
-				*size = message->size;
-				*time = message->unknown08;
+				**(long *volatile *)&sequence = next;
+				**(long *volatile *)&size = message->size;
+				**(long *volatile *)&time = message->unknown08;
 				message->flags |= 2;
 				type = 4;
 				break;
@@ -1185,7 +1185,7 @@ void __stdcall function_095580(void *header, long message_type, long message_siz
 					message = &self->m_messages[index];
 				memcpy(block, local_0, size);
 				memset(message, 0, sizeof(*message));
-				*(volatile byte *)&message->flags = 4;
+				message->flags = 4;
 				message->size = (byte)size;
 				message->unknown08 = NONE;
 				message->flags = (byte)(4 + (last != false) * 8);
@@ -1212,7 +1212,8 @@ bool __stdcall function_095840(s_network_stream_header *header, long *message_ty
 {
 	c_network_unreliable_stream *self = (c_network_unreliable_stream *)header;
 	bool result = false;
-	if (sequence_window_count(&self->m_fragment_window))
+	if (!sequence_window_count(&self->m_fragment_window))
+		return result;
 	{
 		long first = self->m_fragment_window.oldest + 1;
 		for (long sequence = first; sequence <= self->m_fragment_window.newest; sequence++)
@@ -1330,14 +1331,11 @@ bool c_network_reliable_stream::v4(long arg_0, s_bitstream *arg_1, long arg_2, l
 		}
 		else if (sequence_window_count(&m_acknowledgement_window) <= 9)
 		{
-			struct s_95e40
-			{
-				dword field_0;
-				volatile long field_4;
-			} local_12;
+			dword local_3;
+			volatile long local_4;
 			bool local_5 = false;
-			local_12.field_4 = NONE;
-			local_12.field_0 = 0;
+			local_4 = NONE;
+			local_3 = 0;
 			long local_6 = 0;
 			for (; local_2 > m_acknowledgement_window.oldest; local_2--, local_6++)
 			{
@@ -1347,9 +1345,9 @@ bool c_network_reliable_stream::v4(long arg_0, s_bitstream *arg_1, long arg_2, l
 					local_8 = &m_acknowledgements[local_7];
 				if (!(*local_8 & 1))
 				{
-					local_12.field_0 |= 1 << local_6;
-					if (local_12.field_4 == NONE)
-						local_12.field_4 = local_6;
+					local_3 |= 1 << local_6;
+					if (local_4 == NONE)
+						local_4 = local_6;
 					else
 						local_5 = true;
 				}
@@ -1359,13 +1357,13 @@ bool c_network_reliable_stream::v4(long arg_0, s_bitstream *arg_1, long arg_2, l
 				stream_write_bit(arg_1, true);
 				stream_write_bit(arg_1, false);
 				for (long local_9 = 0; local_9 < 8; local_9++)
-					stream_write_bit(arg_1, (local_12.field_0 & (1 << local_9)) != 0);
+					stream_write_bit(arg_1, (local_3 & (1 << local_9)) != 0);
 			}
 			else
 			{
 				stream_write_bit(arg_1, false);
 				stream_write_bit(arg_1, true);
-				function_95e41(arg_1, &local_12.field_4, 3);
+				function_95e41(arg_1, &local_4, 3);
 			}
 		}
 		else

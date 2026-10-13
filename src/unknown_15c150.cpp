@@ -34,7 +34,7 @@ bool function_158eb0();
 bool function_158f50();
 long function_23f260(long mode, long player_index, long value);
 long function_23f360(long mode, long team);
-void function_196ab0(long index, short axis, short button);
+void function_196ab0(long index, long axis, short button);
 void function_196b00(long index, long value, char button);
 void function_1968b0(long team, long index, long counter, long value);
 void function_15be20();
@@ -127,7 +127,9 @@ void function_15c150()
 		for (long local = transition_local_player_next(NONE); local != NONE;
 			local = transition_local_player_next(local))
 		{
-			long index = g_4e8c20->entries[local];
+			long index = NONE;
+			if (local != NONE)
+				index = g_4e8c20->entries[local];
 			if (index != NONE)
 			{
 				byte *player = g_4e8c24->data + (index & 0xffff) * 0x21c;
@@ -280,18 +282,26 @@ void function_15ca10()
 	}
 }
 
+PRIVATE __forceinline byte *transition_statistics(s_mp_globals *globals)
+{
+	byte *result = NULL;
+	if (g_55e4d0[globals->engine_index])
+		result = (byte *)globals + 0x304;
+	return result;
+}
+
 // @retail 0x15c6f0
 void function_15c6f0()
 {
 	s_mp_globals *globals = g_4e9ae8;
-	if (g_55e4d0[globals->engine_index] && (*(byte *)((byte *)g_4e6948 + 0x184) & 1))
+	if (function_x340af0())
 	{
 		bool preserve = function_158eb0();
 		dword teams = 0;
 		for (long i = 0; i < 16; ++i)
 		{
 			globals = g_4e9ae8;
-			if (i < g_4e8c24->high_water_index)
+			if (i != NONE && i >= 0 && i < g_4e8c24->high_water_index)
 			{
 				byte *player = g_4e8c24->data + i * g_4e8c24->size;
 				short salt = *(short *)player;
@@ -299,23 +309,27 @@ void function_15c6f0()
 				if (salt && team != NONE)
 				{
 					long index = (salt << 16) | i;
-					byte *statistics = g_55e4d0[globals->engine_index] ? (byte *)globals + 0x304 : NULL;
+					byte *statistics = transition_statistics(globals);
 					short score = *(short *)(statistics + (index & 0xffff) * 0x1c + 6);
-					long value = function_23f260(g_4e6948->flag1128 != 0, index, NONE) / 2;
+					bool mode = g_4e6948->flag1128 != 0;
+					long value = function_23f260(mode, index, NONE) / 2;
 					function_196ab0(i, score, (short)value);
-					if (!(player[2] & 2) && team != NONE)
+					if (!(player[2] & 2))
 					{
-						function_1968b0(team, i, 3, 1);
-						if (!preserve && function_158e90(team) == 0)
-							function_1968b0(*(char *)(player + 0xc0), i, 4, 1);
+						long player_team = *(char *)(player + 0xc0);
+						if (player_team != NONE)
+						{
+							function_1968b0(player_team, i, 3, 1);
+							if (!preserve && function_158e90(player_team) == 0)
+								function_1968b0(*(char *)(player + 0xc0), i, 4, 1);
+						}
 					}
-					team = *(char *)(player + 0xc0);
-					if (team != NONE && !((word)teams & (1 << team)))
+					if (*(char *)(player + 0xc0) != NONE && !((word)teams & (1 << *(char *)(player + 0xc0))))
 					{
 						globals = g_4e9ae8;
-						statistics = g_55e4d0[globals->engine_index] ? (byte *)globals + 0x304 : NULL;
-						score = *(short *)(statistics + 0x1c6 + team * 0x12);
-						value = function_23f360(g_4e6948->flag1128 != 0, team) / 2;
+						statistics = transition_statistics(globals);
+						score = *(short *)(statistics + 0x1c6 + *(char *)(player + 0xc0) * 0x12);
+						value = function_23f360(g_4e6948->flag1128 != 0, *(char *)(player + 0xc0)) / 2;
 						function_196b00(*(char *)(player + 0xc0), score, (char)value);
 						teams |= 1 << *(char *)(player + 0xc0);
 					}
@@ -329,14 +343,14 @@ void function_15c6f0()
 		for (long i = 0; i < 16; ++i)
 		{
 			globals = g_4e9ae8;
-			if (i < g_4e8c24->high_water_index)
+			if (i != NONE && i >= 0 && i < g_4e8c24->high_water_index)
 			{
 				byte *player = g_4e8c24->data + i * g_4e8c24->size;
 				short salt = *(short *)player;
 				if (salt && *(char *)(player + 0xc0) != NONE)
 				{
 					long index = (salt << 16) | i;
-					byte *statistics = g_55e4d0[globals->engine_index] ? (byte *)globals + 0x304 : NULL;
+					byte *statistics = transition_statistics(globals);
 					short score = *(short *)(statistics + (index & 0xffff) * 0x1c + 6);
 					long value = function_23f260(g_4e6948->flag1128 != 0, index, NONE) / 2;
 					function_196ab0(i, score, (short)value);

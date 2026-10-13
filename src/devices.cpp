@@ -449,14 +449,13 @@ bool function_107870(long device_index)
 	{
 		s_device_group *power_group = DEVICE_GROUP_GET(device->power_group_index);
 		s_device_group *position_group = DEVICE_GROUP_GET(device->position_group_index);
-		word flags = power_group->flags;
 		bool active = true;
 
-		if ((flags & 1) && (flags & 2))
+		if ((power_group->flags & 1) && (power_group->flags & 2))
 			active = false;
 		if (device->flags & 2)
 			active = false;
-		result = position_group->value == 1.0f && active;
+		result = position_group->value != 1.0f ? false : active;
 	}
 	return result;
 }
@@ -527,8 +526,8 @@ PRIVATE inline bool device_channel_valid(c_animation_channel const *channel)
 	return channel->graph_tag_index != NONE && channel->animation_id.index != NONE;
 }
 
-/* samples a device's two channels; the render model goes unused */
-PRIVATE __forceinline void device_channels_sample(void const *render_model, s_device *device, dword const *node_mask,
+/* samples a device's two channels */
+PRIVATE __forceinline void device_channels_sample(s_device *device, dword const *node_mask,
 	long node_count, real_quaternion_transform *transforms)
 {
 	if (device->animation_state_offset != NONE)
@@ -545,16 +544,16 @@ void __stdcall function_107000(long device_index, dword const *node_mask, long n
 	real_quaternion_transform *transforms)
 {
 	s_device *device = DEVICE_GET(device_index);
-	long model_tag_index = ((s_device_definition *)g_4e3b44[device->definition_index & 0xffff].bytes)->model_tag_index;
+	s_device_definition *definition = (s_device_definition *)g_4e3b44[device->definition_index & 0xffff].bytes;
 
-	if (model_tag_index != NONE)
+	if (definition->model_tag_index != NONE)
 	{
-		long render_model_tag_index = ((s_device_model_definition *)g_4e3b44[model_tag_index & 0xffff].bytes)->render_model_tag_index;
+		s_device_model_definition *model = (s_device_model_definition *)g_4e3b44[definition->model_tag_index & 0xffff].bytes;
 
-		if (render_model_tag_index != NONE)
-			{
-			void const *volatile render_model = g_4e3b44[render_model_tag_index & 0xffff].bytes;
-			device_channels_sample(render_model, device, node_mask, node_count, transforms);
+		if (model->render_model_tag_index != NONE)
+		{
+			void const *volatile render_model = g_4e3b44[model->render_model_tag_index & 0xffff].bytes;
+			device_channels_sample(device, node_mask, node_count, transforms);
 		}
 	}
 }
@@ -680,8 +679,8 @@ bool __stdcall device_export_function(long device_index, long name, real *value,
 		function_value = device->power;
 		break;
 	case 0xf00055e:
-		if (device->position_velocity != 0.0f && definition->position_speed != 0.0f)
-			function_value = (real)fabs(device->position_velocity) / definition->position_speed;
+		if (device->position_velocity != 0.0f)
+			function_value = definition->position_speed != 0.0f ? (real)fabs(device->position_velocity) / definition->position_speed : 0.0f;
 		break;
 	case 0x1200055f:
 		if (device->power_velocity != 0.0f)
@@ -1022,8 +1021,6 @@ bool __stdcall function_107ed0(long device_index, long name, real seconds)
 						transform4x3f adjusted;
 						transform4x3f sampled;
 						transform4x3f start;
-						transform4x3f inverse;
-						transform4x3f relative;
 						function_1420f0(&original, &device->field_xcc658c, &device->forward, &device->up);
 						adjusted = original;
 						if (device->flags & 8)
@@ -1039,6 +1036,8 @@ bool __stdcall function_107ed0(long device_index, long name, real seconds)
 							}
 							else
 							{
+								transform4x3f inverse;
+								transform4x3f relative;
 								function_141590(&start, &inverse);
 								function_142a60(&sampled, &inverse, &relative);
 								function_142a60(&adjusted, &relative, &adjusted);
@@ -1082,17 +1081,19 @@ bool __stdcall function_107ed0(long device_index, long name, real seconds)
 								if (function_bf5d0(device_index))
 								{
 									s_device *object = DEVICE_GET(device_index);
-									real_quaternion_transform *a = (real_quaternion_transform *)((byte *)object + object->orientation_a_offset);
 									real_quaternion_transform *b = (real_quaternion_transform *)((byte *)object + object->orientation_b_offset);
+									real_quaternion_transform *a = (real_quaternion_transform *)((byte *)object + object->orientation_a_offset);
 									real_quaternion_transform orientation;
 									orientation_from_matrix4x3(&original, (rigid_transform_scaled *)&orientation);
-									function_11dbb0(a, &orientation, a);
 									function_11dbb0(b, &orientation, b);
-									function_1420f0(&relative, &device->field_xcc658c, &device->forward, &device->up);
-									function_141590(&relative, &inverse);
-									orientation_from_matrix4x3(&inverse, (rigid_transform_scaled *)&orientation);
 									function_11dbb0(a, &orientation, a);
+									transform4x3f current;
+									transform4x3f current_inverse;
+									function_1420f0(&current, &device->field_xcc658c, &device->forward, &device->up);
+									function_141590(&current, &current_inverse);
+									orientation_from_matrix4x3(&current_inverse, (rigid_transform_scaled *)&orientation);
 									function_11dbb0(b, &orientation, b);
+									function_11dbb0(a, &orientation, a);
 								}
 							}
 						}

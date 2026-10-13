@@ -9,6 +9,7 @@
 #include "object_markers.h"
 #include "unknown_16d180.h"
 #include <math.h>
+#include <xmmintrin.h>
 #include <string.h>
 
 struct s_object_definition_view
@@ -600,7 +601,7 @@ void function_b9a90(long object_index)
 struct s_object_link_owner;
 struct s_object_link_iterator
 {
-    s_object_link_owner *owner;
+    s_object_link_owner const *owner;
     long index;
 };
 short function_b8a80(long object_index, s_object_link_iterator *iterator);
@@ -847,8 +848,6 @@ void __stdcall function_b87b0(volatile long object_index)
 
 
 
-// Disabled: the iterator persists a shared partition address after this function returns.
-#if 0
 struct s_object_link_owner
 {
     long *cluster_first_data_references;
@@ -864,6 +863,8 @@ struct s_object_cluster_link
     long next;
 };
 
+// Disabled: the persistent partition address changes 1697c0 and loses eight matched callers/wrappers in the full check.
+#if 0
 // Retail 0xb8a80
 short function_b8a80(long object_index, s_object_link_iterator *iterator)
 {
@@ -874,7 +875,8 @@ short function_b8a80(long object_index, s_object_link_iterator *iterator)
         object_index = OBJECT_GET(object_index)->parent_index;
     }
     s_object_view *object = OBJECT_GET(root);
-    iterator->owner = (s_object_link_owner *)(TEST_FIELD_BIT(object->flag9) ? &g_4de2e0 : &g_4de2d4);
+    // Later partition reads use a const view of the persistent storage.
+    iterator->owner = (s_object_link_owner const *)(TEST_FIELD_BIT(object->flag9) ? &g_4de2e0 : &g_4de2d4);
     iterator->index = *(long *)((byte *)object + 0x60);
     s_record_pool *pool = iterator->owner->cluster_references;
     if (iterator->index != NONE)
@@ -890,32 +892,39 @@ short function_b8a80(long object_index, s_object_link_iterator *iterator)
 }
 #endif
 
-// Disabled: retail consumes a third collision input missing from all existing callers.
-#if 0
-#include "unknown_0259a0.h"
 
-// Retail 0xbc1d0
+#include "object_queries.h"
+void function_b75a0(long object_index, point3f const *position, vector3f const *forward,
+    vector3f const *up, s_location const *location, bool unknown);
+
+struct s_collision_result_1697c0;
+bool __stdcall function_1697c0(long flags, point3f const *point, vector3f const *vector,
+    long ignore_object_index, long ignore_unit_index, s_collision_result_1697c0 *collision);
+
+// @retail 0xbc1d0
 bool __stdcall function_bc1d0(long object_index, point3f const *point, long ignore_unit_index)
 {
     s_object_view *object = OBJECT_GET(object_index);
     vector3f displacement;
-    s_collision_result_1697c0 collision;
-    collision.unknown24 = NONE;
+    byte collision_storage[0x5c];
+    s_location *collision_location = (s_location *)(collision_storage + 0x1c);
+    *(short *)(collision_storage + 0x24) = NONE;
     displacement.i = *(real *)((byte *)object + 0x64) - point->x;
     displacement.j = *(real *)((byte *)object + 0x68) - point->y;
-    displacement.k = *(real *)((byte *)object + 0x6c) - point->z;
     bool result = false;
-    if (!function_1697c0(0x20800005, point, &displacement, object_index, ignore_unit_index, &collision)
+    displacement.k = *(real *)((byte *)object + 0x6c) - point->z;
+    if (!function_1697c0(0x20800005, point, &displacement, object_index, ignore_unit_index, (s_collision_result_1697c0 *)collision_storage)
         && *(short *)((byte *)object + 0x2c) != NONE)
-        return true;
-    if (collision.unknown24 != NONE)
+        result = true;
+    else if (collision_location->cluster_index != NONE)
     {
-        function_b75a0(object_index, &collision.point, 0, 0, (s_location *)&collision.unknown24, false);
+        function_b75a0(object_index, (point3f *)(collision_storage + 8), 0, 0, collision_location, false);
         result = true;
     }
     return result;
 }
-#endif
+
+
 
 
 
@@ -931,6 +940,7 @@ void function_a7a60(long object_index);
 void function_10ace0(long object_index);
 
 // Disabled: round 18 reactivation with exact bef30 still breaks matched 11a320; retain the complete 14-difference, 190/189-byte draft
+// Disabled: round 35: five new fruitless trials, 14 differences; activation loses matched d6bc0 and 11a320
 #if 0
 // Retail 0xb8540
 void __stdcall function_b8540(long object_index)
@@ -956,18 +966,9 @@ void __stdcall function_b8540(long object_index)
 }
 #endif
 
-// Disabled: protected unit_object_type caller supplies two inputs; retail requires the third stack value.
-#if 0
 
-struct s_hit_a9260
-{
-    long object_index;
-    long value04, value08, value0c;
-    short value10;
-    short unknown12;
-    real amount;
-    byte kind;
-};
+
+#include "unit_hit.h"
 struct s_event_a9260
 {
     long value00, value04, value08, value0c;
@@ -977,39 +978,42 @@ struct s_event_a9260
     byte kind;
     byte unknown19[3];
 };
-extern long g_4cef30;
+long g_4cef30 = 0;
+bool function_a76b0(long object_index, long flag);
 void __stdcall function_b5a70(long player, long type, long count, long objects, long size, void const *data, long timeout);
 
-// Retail 0xa9260
-void __stdcall function_a9260(long unit_index, s_hit_a9260 const *hit, long value)
+// @retail 0xa9260
+void __stdcall function_a9260(long unit_index, s_unit_melee_hit const *hit, long value)
 {
     if (!function_a76b0(unit_index, true)) return;
+    bool missing = false;
     if (hit->object_index == NONE)
     {
-        if (hit->value0c == NONE) return;
+        if (hit->unknown0c == NONE) return;
     }
-    else if (OBJECT_GET(hit->object_index)->field_x10a40f == NONE)
-        return;
+    else missing = OBJECT_GET(hit->object_index)->field_x10a40f == NONE;
+    if (missing) return;
     long objects[2] = { unit_index, hit->object_index };
     s_event_a9260 event;
     memset(&event, 0, sizeof(event));
     event.value00 = value;
-    event.value04 = hit->value04;
-    event.value08 = hit->value08;
-    event.value0c = hit->value0c;
-    event.value10 = hit->value10;
-    event.amount = hit->amount;
-    event.kind = hit->kind;
+    event.value04 = hit->unknown04;
+    event.value08 = hit->unknown08;
+    event.value0c = hit->unknown0c;
+    event.value10 = hit->material_index;
+    event.amount = hit->unknown14;
+    event.kind = hit->unknown18;
     function_b5a70(NONE, 0x17, 2, (long)objects, sizeof(event), &event, g_4cef30);
 }
-#endif
+
 
 
 
 // Disabled: protected 0x142a60 uses implicit registers without binding its formal inputs.
-#if 0
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 
+// Disabled: LTCG removes both input transform initializations because outside-owned 142a60 assembly reads implicit ECX/EDX rather than formal inputs; five new fast source trials remained84 differences,61/359 bytes
+#if 0
 // Retail 0xb98e0
 void __stdcall function_b98e0(long object_index, transform4x3f const *matrix)
 {
@@ -1044,6 +1048,7 @@ void __stdcall function_b98e0(long object_index, transform4x3f const *matrix)
     function_b75a0(object_index, &result.position, &result.forward, &result.up, 0, false);
 }
 #endif
+
 
 
 
@@ -1288,6 +1293,7 @@ bool __stdcall function_b7430(long object_index, point3f const *position, vector
     vector3f const *up, s_location const *location, bool update, bool physics, bool force, bool keep_partition);
 
 // Disabled: two source forms break matched b75a0 and 14e970; retain closest complete body and original stub
+// Disabled: Closest32-difference/364-byte draft changes matched b75a0(68 differences) and14e970(2); five new trials after the bounds improvement all stayed32
 #if 0
 // Retail 0xb7430
 bool __stdcall function_b7430(long object_index, point3f const *position, vector3f const *forward,
@@ -1300,8 +1306,8 @@ bool __stdcall function_b7430(long object_index, point3f const *position, vector
     if (position)
     {
         if (*(long *)(object + 0x14) == NONE &&
-            (position->x < -32768.0f || 32768.0f < position->x || position->y < -32768.0f ||
-                32768.0f < position->y || position->z < -32768.0f || 32768.0f < position->z)) result = false;
+            !(position->x >= -32768.0f && 32768.0f >= position->x && position->y >= -32768.0f &&
+                32768.0f >= position->y && position->z >= -32768.0f && 32768.0f >= position->z)) result = false;
         else
         {
             *(point3f *)(object + 0x64) = *position;
@@ -1317,31 +1323,39 @@ bool __stdcall function_b7430(long object_index, point3f const *position, vector
         long component = *(long *)(object + 0xd4);
         if (component != NONE) function_b58c0(component, 4);
     }
-    if (physics) function_1c4a80(object_index, position == 0, force);
+    if (physics)
+    {
+        bool no_position = position == 0;
+        function_1c4a80(object_index, no_position, force);
+    }
     if (update) function_bd020(object_index);
     if (placed && !keep_partition) function_b8600(object_index, (long)location);
     return result;
 }
 #endif
 
-// Disabled: protected matrix-composition helper 0x142a60 does not bind its formal inputs to retail registers.
-#if 0
-// Retail 0xb92d0
-void function_b92d0(long object_index, transform4x3f const *old_parent, transform4x3f const *new_parent)
+
+int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
+
+__declspec(noinline) void function_1420f0(transform4x3f *out, point3f const *position, vector3f const *forward, vector3f const *up);
+void function_141590(transform4x3f const *in, transform4x3f *out);
+
+// @retail 0xb92d0
+void function_b92d0(long object_index, s_object_marker const *old_parent, transform4x3f const *new_parent)
 {
     byte *object = (byte *)OBJECT_GET(object_index);
     transform4x3f local, inverse;
-    function_1420f0((point3f *)(object + 0x64), (vector3f *)(object + 0x70),
-        (vector3f *)(object + 0x7c), &local);
+    function_1420f0(&local, (point3f *)(object + 0x64), (vector3f *)(object + 0x70),
+        (vector3f *)(object + 0x7c));
     function_141590(&local, &inverse);
-    function_142a60(&inverse, (transform4x3f const *)((byte const *)old_parent + 0x38), &inverse);
+    function_142a60(&inverse, &old_parent->matrix, &inverse);
     function_141590(&inverse, &inverse);
     function_142a60(new_parent, &inverse, &local);
     vector3f forward = local.forward, up = local.up;
     function_b91d0(object_index, &forward, &up);
     function_b7430(object_index, &local.position, &forward, &up, 0, true, true, false, false);
 }
-#endif
+
 
 
 
@@ -1818,7 +1832,7 @@ void __stdcall function_b93b0(volatile long parent_index, volatile long index, v
     }
 }
 
-void function_b92d0(long index, transform4x3f const *old_parent, transform4x3f const *new_parent);
+void function_b92d0(long index, s_object_marker const *old_parent, transform4x3f const *new_parent);
 
 // @retail 0xb8ee0
 void __stdcall function_b8ee0(long parent_index, long parent_marker_name, long index, long child_marker_name)
@@ -1830,7 +1844,7 @@ void __stdcall function_b8ee0(long parent_index, long parent_marker_name, long i
     function_b8d30(parent_index, parent_marker_name, &parent_marker, 1, false);
     function_b8d30(index, child_marker_name, &name_9ae4a2, 1, false);
     if (child_marker_name != NONE && child_marker_name != 0)
-        function_b92d0(index, (transform4x3f const *)&name_9ae4a2, &parent_marker.matrix);
+        function_b92d0(index, &name_9ae4a2, &parent_marker.matrix);
     else
     {
         transform4x3f inverse;

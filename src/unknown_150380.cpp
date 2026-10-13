@@ -32,16 +32,14 @@ byte function_150380(long player_index)
 {
 	s_player_unit_state *player = (s_player_unit_state *)g_4e8c24->data + (player_index & 0xffff);
 	byte result = 0;
-	long unit_index = player->unit_index;
 
-	if (unit_index != NONE)
+	if (player->unit_index != NONE)
 	{
-		s_unit_motion_header *header = (s_unit_motion_header *)g_4e0300->data + (unit_index & 0xffff);
+		s_unit_motion_header *header = (s_unit_motion_header *)g_4e0300->data + (player->unit_index & 0xffff);
 		if ((1 << header->type) & 1)
 		{
 			s_unit_motion_state *unit = header->unit;
-			if (unit->parent_index == NONE && unit->state == 1 && !function_e4050(unit_index))
-				result = 1;
+			result = unit->parent_index == NONE && unit->state == 1 && !function_e4050(player->unit_index);
 		}
 	}
 	return result;

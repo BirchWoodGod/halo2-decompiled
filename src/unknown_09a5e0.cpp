@@ -2052,13 +2052,14 @@ struct s_9d450
 static __forceinline real function_9d452(real const *arg_0)
 {
 	real local_0;
-	if (*(volatile real const *)arg_0 < 0.0f)
+	volatile real local_1 = *arg_0;
+	if (local_1 < 0.0f)
 		local_0 = 0.0f;
 	else
 	{
 		local_0 = 1.0f;
-		if (!(*(volatile real const *)arg_0 > 1.0f))
-			local_0 = *(volatile real const *)arg_0;
+		if (!(local_1 > 1.0f))
+			local_0 = local_1;
 	}
 	return local_0;
 }

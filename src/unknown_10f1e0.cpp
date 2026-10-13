@@ -2413,16 +2413,20 @@ const long g_440918[8] = { NONE, NONE, 0x600008c, 0xc000043, 0xc000043, 0xd00004
 const long g_440938[8] = { NONE, NONE, NONE, 0x6000086, 0x6000086, 0x6000086, 0x6000086, 0x6000086 };
 const long g_46fc30[4] = { 0x600008b, 0x600008c, 0x600008d, 0x600008e };
 
+/* the time a channel has played, in seconds (none when it plays nothing) */
+static inline real channel_elapsed_seconds(c_animation_channel const *channel)
+{
+    real elapsed = 0.0f;
+
+    if (channel->graph_tag_index != NONE && channel->animation_id.index != NONE)
+        elapsed = channel->frame_position * (1.0f / 30.0f);
+    return elapsed;
+}
+
 // @retail 0x10ff40
 bool function_10ff40(long unit_index, long type, short side, short value,
     bool *flag, short *side_out, short *value_out)
 {
-    (void)&unit_index;
-    (void)&side;
-    (void)&value;
-    (void)&flag;
-    (void)&side_out;
-    (void)&value_out;
     s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
     byte *definition = (byte *)TAG_BYTES(unit->definition_index);
     s_animation_state *state = UNIT_ANIMATION_STATE(unit);
@@ -2432,41 +2436,35 @@ bool function_10ff40(long unit_index, long type, short side, short value,
     long mode = g_440938[type];
     long lookup = g_4408f8[type];
     long animation = lookup == NONE ? NONE : g_46fc30[lookup];
-    bool result = false;
+    volatile bool result = false;
     bool force_overlay = false;
-    c_animation_channel *overlay = 0;
+    short action;
+    c_animation_channel *overlay;
     if (set != NONE)
     {
-        bool test_base = type < 3;
-        if (test_base && state->unknown7c == 0x600008c)
-        {
-            real elapsed = 0.0f;
-            if (state->channels[0].graph_tag_index != NONE && state->channels[0].animation_id.index != NONE)
-                elapsed = state->channels[0].frame_position * 0.03333333507180214f;
-            test_base = !(elapsed > *(real *)(definition + 0x110));
-        }
-        if (test_base)
+        overlay = NULL;
+        if (type < 3 &&
+            (state->unknown7c != 0x600008c || !(channel_elapsed_seconds(&state->channels[0]) > *(real *)(definition + 0x110))))
         {
             if (!function_1103a0(unit_index, set, true) || function_c8fc0(unit_index))
                 force_overlay = true;
             else
             {
-                short action;
                 function_e70b0(unit_index, &action);
                 if (action != 0 ||
                     (*((byte *)g_4e0300->data + (unit_index & 0xffff) * 12 + 3) == 0 && function_e4050(unit_index)))
                     force_overlay = true;
             }
         }
-        bool available = true;
         if (animation != NONE)
         {
             byte channel_storage[sizeof(c_animation_channel)];
             c_animation_channel *channel = (c_animation_channel *)channel_storage;
             channel->copy_from(&state->channels[0]);
-            available = state->channel_play_indexed(channel, animation, side, value, 0, 0);
+            if (!state->channel_play_indexed(channel, animation, side, value, 0, 0))
+                force_overlay = true;
         }
-        if (!available || force_overlay)
+        if (force_overlay)
         {
             if (animation == 0x600008c) animation = 0x600008b;
             else if (animation == 0x600008e) animation = 0x600008d;
@@ -2477,18 +2475,20 @@ bool function_10ff40(long unit_index, long type, short side, short value,
     if (set == NONE)
     {
         overlay = &control->channel_dc;
-        if ((bool)((control->flags >> 7) & 1) && overlay->graph_tag_index != NONE &&
+        if (TEST_FIELD_BIT(control->flag7) && overlay->graph_tag_index != NONE &&
             overlay->animation_id.index != NONE &&
-            overlay->frame_position * 0.03333333507180214f <= *(real *)(definition + 0x108))
+            *(real *)(definition + 0x108) >= overlay->frame_position * (1.0f / 30.0f))
             return result;
     }
     if (set != NONE)
     {
         long selected_mode = 0x7000101;
+        long play_flags = 2;
+        if (animation != NONE)
+            play_flags = 14;
         if ((unit->parent_index == NONE || *(short *)((byte *)unit + 0x1fc) == NONE) && mode != NONE)
             selected_mode = mode;
-        result = function_10f430(unit_index, selected_mode, 0x7000101, 0x7000101, set, 0.0f, false,
-            animation == NONE ? 2 : 14);
+        result = function_10f430(unit_index, selected_mode, 0x7000101, 0x7000101, set, 0.0f, false, play_flags);
     }
     if (animation != NONE)
     {
@@ -2496,7 +2496,8 @@ bool function_10ff40(long unit_index, long type, short side, short value,
         if (overlay)
         {
             animated = state->channel_play_indexed(overlay, animation, side, value, side_out, value_out);
-            if (animated) control->flags |= 0x80;
+            if (animated)
+                control->flag7 = true;
         }
         else
             animated = state->play_indexed(animation, side, value, side_out, value_out);

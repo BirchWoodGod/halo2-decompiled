@@ -295,23 +295,29 @@ bool __stdcall function_1aded0(long actor_index, s_slot *slot)
 	{
 		real delay = function_1aded1(entry->unknown14, entry->unknown18);
 		real duration = function_1aded1(entry->unknown1c, entry->unknown20);
-		real ticks = (real)g_510c54->field_2_3 * delay;
-		long rounded;
-		__asm
+		real local_0 = (real)g_510c54->field_2_3;
 		{
-			fld ticks
-			fistp rounded
+			real ticks = local_0 * delay;
+			long rounded;
+			__asm
+			{
+				fld ticks
+				fistp rounded
+			}
+			state->ticks = (short)rounded;
 		}
-		state->ticks = (short)rounded;
-		ticks = (real)g_510c54->field_2_3 * duration;
-		__asm
 		{
-			fld ticks
-			fistp rounded
+			real ticks = local_0 * duration;
+			long rounded;
+			__asm
+			{
+				fld ticks
+				fistp rounded
+			}
+			state->unknown10 = 0;
+			state->unknown12 = false;
+			state->timer = (short)rounded;
 		}
-		state->unknown10 = 0;
-		state->unknown12 = false;
-		state->timer = (short)rounded;
 		return result;
 	}
 	return false;
@@ -340,38 +346,33 @@ short __stdcall function_1ae360(long actor_index, s_slot *slot)
 
 /* ---- slot type 0x31 ---- */
 
+PRIVATE __forceinline bool function_1ae3b1(s_ai_actor_view_344 *view, s_actor_entry_4be0 *entry)
+{
+	bool flag = view->unknown5d4;
+	real value = view->unknown3d8;
+	if (!flag && value > entry->unknown04)
+		return true;
+	if (view->unknown5d4 && entry->unknown08 > value)
+		return false;
+	return flag;
+}
+
 // @retail 0x1ae3b0
 short __stdcall function_1ae3b0(long actor_index, s_slot *slot)
 {
-	short result;
 	s_actor_view *actor = actor_get(actor_index);
 	s_ai_actor_view_344 *view = ACTOR_VIEW_344(actor);
 	s_actor_entry_4be0 *entry = (s_actor_entry_4be0 *)function_1e4be0(actor_index);
 
 	if (entry)
 	{
-		bool flag = view->unknown5d4;
-		real value = view->unknown3d8;
-		if (!flag && value > entry->unknown04)
-			flag = true;
-		else if (view->unknown5d4 && entry->unknown08 > value)
-			flag = false;
+		bool flag = function_1ae3b1(view, entry);
 		view->unknown449 = flag;
 		view->unknown44a = flag;
-		if (flag)
-		{
-			long local_0;
-			long *local_2 = &local_0;
-			*local_2 = function_1e4a50(actor->unknown054);
-			result = g_46fbe4;
-			if (!(*(byte *)local_0 & 1))
-				view->unknown480 = true;
-			goto local_1;
-		}
+		if (flag && !(*(byte *)function_1e4a50(actor->unknown054) & 1))
+			view->unknown480 = true;
 	}
-	result = g_46fbe4;
-local_1:
-	return result;
+	return g_46fbe4;
 }
 
 /* ---- the handlers ---- */
