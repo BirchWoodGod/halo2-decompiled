@@ -2146,16 +2146,16 @@ bool function_19a902(void)
 {
 	long mode = 0;
 	long state = function_19a2ce(NULL);
-	byte result = 0;
+	bool result = false;
 
 	if (g_4d8ba0)
 	{
 		mode = function_0592d0();
 	}
-	if (state == 10 || mode == 3 || mode == 2)
-	{
+	if (state == 10)
 		result = true;
-	}
+	else if (mode == 3 || mode == 2)
+		result = true;
 	return result;
 }
 /* the interface state for each network session state */
