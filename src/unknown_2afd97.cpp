@@ -45,12 +45,14 @@ c_class_2b01eb::c_class_2b01eb(s_bitmap_block *definition) :
 	c_class_1a2c81(8, 0),
 	definition(definition),
 	start_time(g_54d5b8),
-	value78(0),
-	bitmap(0)
+	value78(0)
 {
 	memset(&value7c, 0, 2 * sizeof(real));
+	value7c = 0.0f;
 	value84 = 0.0f;
 	sequence = 0;
+	bitmap = 0;
+	value80 = 0.0f;
 	s_type_7ba8e9 *shown = 0;
 	s_bitmap_group_view *volatile group = 0;
 	s_widget_bounds bounds;
