@@ -2639,7 +2639,7 @@ struct s_bitmap_view;
 struct s_type_7ba8e9;
 D3DTexture *function_12310(s_bitmap_view *bitmap, real priority);
 bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority);
-extern IDirect3DBaseTexture8 *g_51f3c8[2][4];
+#include "texture_stage_storage.h"
 extern dword g_4b82e8, g_4b82f4, g_4b82f8, g_4b8324;
 
 struct s_2a2f0_record
