@@ -125,13 +125,13 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	speed.amount = 0.0f;
 	long object_index = NONE;
 	g_4ba050 = view->player_index;
-	long cluster = g_4ba054[view->player_index];
-	long leaf = g_4ba064[view->player_index];
+	struct location_indices { long cluster, leaf; } location = {
+		g_4ba054[view->player_index], g_4ba064[view->player_index] };
 	bool invalid;
-	if (function_2b720(&view->position, &cluster, &leaf))
+	if (function_2b720(&view->position, &location.cluster, &location.leaf))
 	{
-		g_4ba054[view->player_index] = cluster;
-		g_4ba064[view->player_index] = leaf;
+		g_4ba054[view->player_index] = location.cluster;
+		g_4ba064[view->player_index] = location.leaf;
 		invalid = false;
 	}
 	else invalid = true;
@@ -139,24 +139,9 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	sky.color = *(vector3f const *)&g_4686cc->red;
 	bool found = false;
 	long sky_index;
-	cluster_get_sky(cluster, &sky_index, &found, &sky.color);
-	byte kind = 0;
-	if (cluster != NONE)
-	{
-		short index = (short)sky_index;
-		byte *scenario = (byte *)g_4e0350;
-		if (index >= 0 && index < *(long *)(scenario + 8))
-		{
-			long tag = *(long *)(*(byte **)(scenario + 0xc) + index * 8 + 4);
-			if (tag != NONE)
-			{
-				byte *definition = g_4e3b44[tag & 0xffff].bytes;
-				kind = definition && *(long *)(definition + 4) != NONE;
-			}
-		}
-	}
+	byte kind = cluster_get_sky(location.cluster, &sky_index, &found, &sky.color);
 	byte geometry[0x120];
-	function_12e5e0(geometry, cluster, &view->position, &view->forward, kind, true);
+	function_12e5e0(geometry, location.cluster, &view->position, &view->forward, kind, true);
 	if (found) *(vector3f *)(geometry + 4) = sky.color;
 	if (geometry[0x18])
 	{
@@ -172,8 +157,8 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 		function_154310(object_index, &speed);
 	}
 	if (view->scale > 0.0f)
-		function_2ba10((s_2f970_view const *)&view->position, cluster, view->player_index,
-			view->camera, enabled, leaf, invalid, &sky.color, 0, view->object_index,
+		function_2ba10((s_2f970_view const *)&view->position, location.cluster, view->player_index,
+			view->camera, enabled, location.leaf, invalid, &sky.color, 0, view->object_index,
 			object_index, kind, sky_index, geometry, false, NONE, view->lighting, 0, &speed);
 }
 
