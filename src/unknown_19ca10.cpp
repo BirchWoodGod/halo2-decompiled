@@ -143,7 +143,8 @@ void function_19ce10(s_marker_pair *pair)
 {
 	if (!pair->unknown08)
 	{
-		point3f position = g_4e0350->marker_entries[pair->first].position;
+		s_marker_entry const &entry = g_4e0350->marker_entries[pair->first];
+		point3f position = entry.position;
 		s_marker_player_iterator iterator;
 
 		iterator.data = g_4e8c24;
@@ -230,8 +231,9 @@ void __stdcall function_19cf20(s_marker_pair *pair)
 	if (!pair->unknown08)
 	{
 		real closest_distance = g_45dc20;
-		point3f position = g_4e0350->marker_entries[pair->first].position;
-		real first_angle = *(real *)g_4e0350->marker_entries[pair->first].unknown0c;
+		s_marker_entry const &entry = g_4e0350->marker_entries[pair->first];
+		point3f position = entry.position;
+		real first_angle = *(real *)entry.unknown0c;
 		long closest_player = NONE;
 		s_marker_player_iterator iterator;
 		iterator.data = g_4e8c24;
@@ -244,7 +246,7 @@ void __stdcall function_19cf20(s_marker_pair *pair)
 			function_b9dd0(unit_index, &unit_position);
 			vector3f delta;
 			vector3d_from_points3d(&position, &unit_position, &delta);
-			real distance = delta.k * delta.k + delta.j * delta.j + delta.i * delta.i;
+			real distance = delta.i * delta.i + delta.j * delta.j + delta.k * delta.k;
 			if (((s_marker_object_header *)g_4e0300->data)[unit_index & 0xffff].object->parent_index == NONE &&
 				closest_distance > distance)
 			{
@@ -259,21 +261,16 @@ void __stdcall function_19cf20(s_marker_pair *pair)
 			{
 				if (!function_19cb90(pair, closest_player))
 				{
-					vector3f forward = *(vector3f *)&((s_marker_object_header *)g_4e0300->data)[player->unit_index & 0xffff].object->position;
+					s_marker_object *object = ((s_marker_object_header *)g_4e0300->data)[player->unit_index & 0xffff].object;
+					vector3f forward = *(vector3f *)&object->position;
 					point3f destination;
 					real second_angle;
 					marker_get_position_and_angle(pair->second, &destination, &second_angle);
 					player->flag8 = true;
 					s_event event;
-					event.type = 0;
-					event.subtype = 0x16;
-					event.a = closest_player;
+					game_engine_event_initialize_inline(&event, 0, 0x16);
 					event.cause_player_index = closest_player;
-					event.cause_team = NONE;
-					event.effect_player_index = NONE;
-					event.effect_team = NONE;
-					event.f = 0;
-					event.g = NONE;
+					event.a = closest_player;
 					function_19eb90(&event);
 					real angle = (real)atan2(forward.j, forward.i) + second_angle - first_angle;
 					forward.i = (real)cos(angle);

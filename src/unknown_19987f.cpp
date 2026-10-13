@@ -1485,8 +1485,6 @@ bool function_138800();
 // @retail 0x19b0e1
 long function_19b0e1(long screen_id)
 {
-	long const *screen_id_reference = &screen_id;
-	screen_id = *screen_id_reference;
 	long result = 0;
 
 	if (function_138800() && g_4e6948->state != 3)
@@ -1503,17 +1501,29 @@ long function_19b0e1(long screen_id)
 			result = 1;
 			break;
 		case 0x0e:
+			result = 3;
+			break;
 		case 0x17:
 		case 0x18:
 		case 0x19:
+			result = 3;
+			break;
 		case 0xa8:
 		case 0xa9:
 		case 0xaa:
+			result = 3;
+			break;
 		case 0xac:
 		case 0xad:
+			result = 3;
+			break;
 		case 0xaf:
 		case 0xb0:
+			result = 3;
+			break;
 		case 0xbf:
+			result = 3;
+			break;
 		case 0xdc:
 			result = 3;
 			break;
@@ -1521,6 +1531,8 @@ long function_19b0e1(long screen_id)
 		case 0x11:
 		case 0x3c:
 		case 0xce:
+			result = mode != NONE ? 3 : 0;
+			break;
 		case 0xcf:
 		case 0xd0:
 			result = mode != NONE ? 3 : 0;
@@ -1547,7 +1559,7 @@ void function_1484f4(void);
 long function_147f4f();
 void network_session_manager_leave_session_a(bool close);
 void network_session_manager_leave_session_b(bool close);
-c_class_1473c9 *function_149f1e(word user_flags, long load);
+c_class_1473c9 *function_149f1e(short user_flags, long load);
 c_class_1473c9 *__stdcall function_2521f8(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2519bb(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_24fa4c(s_screen_parameters *parameters);
@@ -1588,7 +1600,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 	}
 	else
 	{
-		switch (state)
+		if (state != 4) switch (state)
 		{
 		case 1:
 			if (menu == 1)
@@ -1604,18 +1616,33 @@ void function_19b1c9(long screen_id, long menu, long state)
 			break;
 		case 3:
 		{
-			bool in_game = menu == 0 || menu == 1 || menu == 2 || menu == 6;
+			bool in_game = false;
+
+			switch (menu)
+			{
+			case 0:
+				in_game = true;
+				break;
+			case 1:
+				in_game = true;
+				break;
+			case 2:
+				in_game = true;
+				break;
+			case 6:
+				in_game = true;
+				break;
+			}
+
 			bool players = player_slot_count_active() > 0;
 
-			if (in_game && players)
+			if (in_game & players)
 			{
-				function_149f1e(0xffff, (long)function_24fa4c);
+				function_149f1e(NONE, (long)function_24fa4c);
 				return;
 			}
 			break;
 		}
-		case 4:
-			break;
 		case 5:
 			return;
 		case 6:
@@ -2135,39 +2162,45 @@ bool function_19a902(void)
 // @retail 0x19a5fd
 long function_19a5fd(long state)
 {
-	volatile long default_value = 0;
-	long entries[16][2] =
+	struct
 	{
-		{ 0, 0x9 },
-		{ 1, 0xb },
-		{ 2, 0xc },
-		{ 3, 0xd },
-		{ 4, 0xe },
-		{ 5, 0xf },
-		{ 6, 0x10 },
-		{ 7, 0x11 },
-		{ 8, 0x12 },
-		{ 9, 0x13 },
-		{ 0xa, 0x14 },
-		{ 0xb, 0x15 },
-		{ 0xc, 0x16 },
-		{ 0xd, 0x17 },
-		{ 0xe, 0x18 },
-		{ 0xf, 0x19 },
+		long entries[16][2];
+		long default_value;
+	} table =
+	{
+		{
+			{ 0, 0x9 },
+			{ 1, 0xb },
+			{ 2, 0xc },
+			{ 3, 0xd },
+			{ 4, 0xe },
+			{ 5, 0xf },
+			{ 6, 0x10 },
+			{ 7, 0x11 },
+			{ 8, 0x12 },
+			{ 9, 0x13 },
+			{ 0xa, 0x14 },
+			{ 0xb, 0x15 },
+			{ 0xc, 0x16 },
+			{ 0xd, 0x17 },
+			{ 0xe, 0x18 },
+			{ 0xf, 0x19 },
+		},
+		0
 	};
 
 
 	long result;
 	for (dword i = 0; i < 16; i++)
 	{
-		if (entries[i][0] == state)
+		if (table.entries[i][0] == state)
 		{
-			result = entries[i][1];
+			result = table.entries[i][1];
 			goto done;
 		}
 	}
 
-	result = default_value;
+	result = table.default_value;
 done:
 	return result;
 }

@@ -750,7 +750,7 @@ void function_ba3d0(long unit_index);
 /* plays a scripted animation (by graph and name) on a unit, optionally
    relative to another object */
 // @retail 0x11b520
-bool function_11b520(long animation_graph_index, long unit_index, long animation_name, bool interpolate,
+bool function_11b520(long unit_index, long animation_graph_index, long animation_name, bool interpolate,
 	long attached_object_index, bool flag)
 {
 	bool result = false;
@@ -798,7 +798,7 @@ bool function_11a9a0(long list_index, long animation_graph_index, long animation
 	while (object_index != NONE)
 	{
 		if (function_badc0(object_index, 3))
-			result = result && function_11b520(animation_graph_index, object_index, animation_name, interpolate, NONE, false);
+			result = result && function_11b520(object_index, animation_graph_index, animation_name, interpolate, NONE, false);
 		object_index = function_x457076(&reference_index);
 	}
 
@@ -811,7 +811,7 @@ bool function_11b4a0(long unit_index, long animation_graph_index, long animation
 {
 	bool result = false;
 
-	if (function_11b520(animation_graph_index, unit_index, animation_name, interpolate, NONE, false))
+	if (function_11b520(unit_index, animation_graph_index, animation_name, interpolate, NONE, false))
 	{
 		long local_0 = *(short const volatile *)&frame;
 		real seconds = (real)local_0 * (1.0f / 30.0f);

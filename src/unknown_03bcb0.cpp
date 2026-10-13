@@ -100,21 +100,25 @@ void function_441b0(s_planar_camera_source const *source, s_planar_camera *state
 {
 	memset(state, 0, sizeof(*state));
 	state->disabled = false;
-	state->matrix.left = source->horizontal;
-	function_30bf0(&state->matrix.left);
-	state->matrix.up.i = 0.0f - source->normal.i;
-	state->matrix.up.j = 0.0f - source->normal.j;
-	state->matrix.up.k = 0.0f - source->normal.k;
-	function_30bf0(&state->matrix.up);
-	matrix_cross(&state->matrix.left, &state->matrix.up, &state->matrix.forward);
+	vector3f *left = &state->matrix.left;
+	*left = source->horizontal;
+	function_30bf0(left);
+	vector3f *up = &state->matrix.up;
+	up->i = 0.0f - source->normal.i;
+	up->j = 0.0f - source->normal.j;
+	up->k = 0.0f - source->normal.k;
+	function_30bf0(up);
+	vector3f *const *vector_reference = &left;
+	matrix_cross(*vector_reference, up, &state->matrix.forward);
 	function_30bf0(&state->matrix.forward);
 	state->matrix.position = source->origin;
 	state->matrix.scale = 1.0f;
 	function_141590(&state->matrix, &state->inverse);
 	state->has_plane = true;
 	state->offset = source->offset;
-	state->plane.n = source->normal;
-	state->plane.d = source->normal.k * source->origin.z + source->normal.j * source->origin.y + source->normal.i * source->origin.x + source->offset;
+	vector3f const &normal = source->normal;
+	state->plane.n = normal;
+	state->plane.d = normal.k * source->origin.z + normal.j * source->origin.y + normal.i * source->origin.x + source->offset;
 	*(bool *)state->unknown84 = true;
 	state->depth = source->depth;
 	box2f const *rectangle = (box2f const *)(view + 0x68);
@@ -291,7 +295,8 @@ bool __stdcall function_4dfa0(long tag, long context, long pass, long stage, lon
 		out->value10 = (dword)material;
 		out->value08 = 0;
 		out->unknown14 = 0;
-		return function_4cbb0(*(long *)(material + 0x100), 0) != 0;
+		bool ready = function_4cbb0(*(long *)(material + 0x100), 0) != 0;
+		return ready;
 	}
 	return false;
 }
@@ -597,7 +602,8 @@ extern real g_485b28[7];
 bool function_1bf50(long tag, long level, real distance, long *out)
 {
     long selected = 0;
-    byte *groups = record_format_groups(tag);
+    long const *tag_pointer = &tag;
+    byte *groups = record_format_groups(*tag_pointer);
     long count = *(long *)groups;
     if (g_4ba019)
         distance *= 2.0f;
@@ -606,7 +612,7 @@ bool function_1bf50(long tag, long level, real distance, long *out)
         real threshold = g_485b28[level] * distance;
         for (selected = 0; selected < count; ++selected)
         {
-            byte *entries = *(byte **)(record_format_groups(tag) + 4);
+            byte *entries = *(byte **)(record_format_groups(*tag_pointer) + 4);
             if (threshold >= *(real *)(entries + selected * 10 + 6))
                 break;
         }
@@ -1246,18 +1252,18 @@ struct s_projection_copy_3bd00
     byte unknown68[0xc0 - 0x68];
 };
 void function_14ac0(void);
-void function_12fa0(real const *projection, byte const *camera, bool scaled, long mode);
+void function_12fa0(byte const *camera, real const *projection, bool scaled, long mode);
 void function_3ede0(void);
 
-// Disabled retail 0x3bd00; retail copies 0x74 camera bytes and 0xc0 projection bytes.
+// Retail 0x3bd00
 bool __stdcall function_3bd00(real height, dword color)
 {
     long target = g_4858b8;
     g_4670bc = true;
     function_16b10((s_render_reset_state *)g_485b48);
-    s_projection_copy_3bd00 saved_projection = g_48568c;
-    s_projection_copy_3bd00 projection = saved_projection;
-    s_camera_copy_3bd00 saved_camera = g_485618;
+    __declspec(align(8)) s_projection_copy_3bd00 saved_projection = *(s_projection_copy_3bd00 const *)g_48568c;
+    __declspec(align(8)) s_projection_copy_3bd00 projection = saved_projection;
+    s_camera_copy_3bd00 saved_camera = *(s_camera_copy_3bd00 const *)&g_485618;
     s_camera_copy_3bd00 camera = saved_camera;
     g_4858b8 = 21;
     function_14bc0(21, 0, false);
@@ -1273,13 +1279,13 @@ bool __stdcall function_3bd00(real height, dword color)
     *(short *)(camera.data + 0x34) = 256;
     *(short *)(camera.data + 0x36) = 512;
     function_141590(&projection.transform, &projection.inverse);
-    function_12fa0((real *)&projection, camera.data, false, 21);
+    function_12fa0(camera.data, (real *)&projection, false, 21);
     function_3ede0();
     function_14bc0((short)target, 0, true);
-    g_485618 = saved_camera;
-    g_48568c = saved_projection;
+    memcpy(&g_485618, &saved_camera, sizeof(saved_camera));
+    memcpy(g_48568c, &saved_projection, sizeof(saved_projection));
     g_4858b8 = target;
-    function_12fa0((real *)&saved_projection, saved_camera.data, false, target);
+    function_12fa0(saved_camera.data, (real *)&saved_projection, false, target);
     return true;
 }
 #endif
@@ -1463,8 +1469,19 @@ void __stdcall function_4d0b0(long tag, long first, long second, long mode,
 
 
 // Disabled: retail passes shared shader state addresses and needs the blocked 14b60/3bd00 interfaces.
-#if 0
-// Retail 0x3c3c0
+bool __stdcall function_3c270(dword value);
+dword function_1cbb0(long mode, dword index, long tag);
+void function_151c0(real const *constants);
+struct s_stream_description;
+void function_1cda0(s_stream_description const *stream);
+void function_1bd50(void *state);
+void function_1cdd0(real const *bounds, byte flags);
+void function_1bbf0(long tag, long first, long second, long third, long fourth, real scale);
+bool __stdcall function_1c8a0(D3DPRIMITIVETYPE type, word const *indices, long count);
+void __stdcall function_14b60(dword flags, dword color, real depth, byte stencil);
+bool __stdcall function_3bd00(real height, dword color);
+
+// @retail 0x3c3c0
 bool __stdcall function_3c3c0(bool render, bool clear)
 {
     byte *structure = (byte *)g_4e0348;
@@ -1472,13 +1489,13 @@ bool __stdcall function_3c3c0(bool render, bool clear)
     byte *state = *(byte **)(structure + 0x218);
     if (*(real *)(state + 0x7c) == 0.0f || !render) return true;
     function_3ca90(state);
-    long tag = *(long *)(state + 4);
-    if (function_3c270(state) && function_12de70(3, state + 0x10) && tag != NONE)
+    long tag;
+    if (function_3c270((dword)state) && function_12de70((s_geometry_block_info *)(state + 0x10), 3) && (tag = *(long *)(state + 4)) != NONE)
     {
         s_tag_instance *instance = g_4e3b44 + (short)tag;
         byte *material_reference;
-        if (instance->group_tag == 0x5052544d || instance->group_tag == 0x70727433)
-            material_reference = (byte *)function_137bd0(tag)->v10();
+        if (*(dword *)instance->unknown00 == 0x5052544d || *(dword *)instance->unknown00 == 0x70727433)
+            material_reference = (byte *)((c_record_reference_view *)function_137bd0(tag))->reference();
         else material_reference = *(byte **)(g_4e3b44[tag & 0xffff].bytes + 0x24);
         byte *material = g_4e3b44[*(long *)material_reference & 0xffff].bytes;
         byte *table = *(byte **)(material + 0x5c);
@@ -1493,8 +1510,8 @@ bool __stdcall function_3c3c0(bool render, bool clear)
         if (clear) function_14b60(0x10, 0xffffff, 0.0f, 0);
         byte *geometry = *(byte **)(state + 0xc);
         function_1cbb0(1, 1, shader_index);
-        function_151c0((s_render_data *)&g_4c1b38);
-        function_1cda0(*(void **)(geometry + 0x3c));
+        function_151c0((real const *)g_4c1b38);
+        function_1cda0(*(s_stream_description const **)(geometry + 0x3c));
         function_1c710(g_51f0f0);
         memset(g_4c1a90, 0, 0x78);
         function_1bd50(g_4c1a90);
@@ -1502,8 +1519,9 @@ bool __stdcall function_3c3c0(bool render, bool clear)
         function_1bbf0(tag, 0, 3, 0, 0, 100000.0f);
         function_12d50(0, false, 0);
         function_3bf00(state);
-        function_1c8a0(8, *(long *)(geometry + 0x24), *(long *)(geometry + 0x20));
+        function_1c8a0((D3DPRIMITIVETYPE)8, *(word const **)(geometry + 0x24), *(long *)(geometry + 0x20));
     }
+    tag = *(long *)(state + 4);
     if (tag != NONE)
     {
         byte *references = *(byte **)(g_4e3b44[tag & 0xffff].bytes + 0x24);
@@ -1515,13 +1533,13 @@ bool __stdcall function_3c3c0(bool render, bool clear)
             for (long j = 0; j < *(long *)(definition + 0x44); ++j)
             {
                 byte *bitmap = *(byte **)(definition + 0x48) + j * 0x74;
-                if (bitmap) function_3bcb0(bitmap);
+                if (bitmap) function_3bcb0((s_bitmap_data *)bitmap);
             }
         }
     }
     return true;
 }
-#endif
+
 
 
 
@@ -1529,7 +1547,10 @@ bool __stdcall function_3c3c0(bool render, bool clear)
 void function_40e30(short group, long tag, real distance, long level, word kind,
     dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context)
 {
-    if (group != NONE && function_1bf50(tag, level, distance, (long *)&distance))
+    long const *level_reference = &level;
+    word const *kind_reference = &kind;
+    (void)*kind_reference;
+    if (group != NONE && function_1bf50(tag, *level_reference, distance, (long *)&distance))
         function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
 }
 

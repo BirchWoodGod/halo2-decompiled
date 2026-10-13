@@ -51,7 +51,7 @@ long function_196a90()
 }
 
 // @retail 0x00196ab0
-void function_196ab0(long index, short axis, short button)
+void function_196ab0(long index, long axis, short button)
 {
 	if (g_510ca0 && !g_510cb1 && index != NONE && input_device(index)->active)
 	{

@@ -359,8 +359,9 @@ void function_16c2f0(short camera_point_index, short ticks, long object_index)
 		camera->active = true;
 		seconds = (real)ticks * (1.0f / 30.0f);
 		long point_type = point->type;
-		*(volatile short *)&camera->point.type = (short)point_type;
-		*(volatile short *)&camera->point.point_index = camera_point_index;
+		s_camera_point_state *state = &camera->point;
+		state->type = (short)point_type;
+		state->point_index = camera_point_index;
 		camera->position = point->position;
 		function_11df60((vector3f const *)point->orientation, &camera->forward, &camera->up);
 		camera->ticks = camera_seconds_to_ticks_round(seconds);
@@ -499,19 +500,22 @@ void function_16c110(long animation_graph_index, long animation_name, long objec
 	if (animation_graph_index != NONE)
 	{
 		s_animation_state state;
-		c_type_709360 animation_id;
 
 		state.initialize(animation_graph_index, NONE, true);
-		animation_id = function_1dd0b0(graph_tag_get(state.graph_tag_index), animation_name);
+		c_type_709360 animation_id = function_1dd0b0(graph_tag_get(state.graph_tag_index), animation_name);
 		if (animation_id.index != NONE)
 		{
 			transform4x3f matrix;
 			transform4x3f transform;
 
+			/* retail keeps object_index on the stack: reading it through its
+			   address keeps it there */
+			long const *object_index_reference = &object_index;
+
 			state.animation_matrix_get(animation_id, (real)frame * (1.0f / 30.0f), 0, &matrix);
-			if (object_index != NONE)
+			if (*object_index_reference != NONE)
 			{
-				s_camera_object *object = ((s_camera_object_header *)g_4e0300->data)[object_index & 0xffff].object;
+				s_camera_object *object = ((s_camera_object_header *)g_4e0300->data)[*object_index_reference & 0xffff].object;
 				byte *object_definition = (byte *)camera_tag_get(object->definition_index);
 				byte *model = (byte *)camera_tag_get(*(long *)(object_definition + 0x38));
 				byte *render_model = (byte *)camera_tag_get(*(long *)(model + 0x4));
@@ -742,6 +746,11 @@ void function_172520(s_observer_command *command);
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
+PRIVATE inline real game_ticks_to_seconds(long ticks)
+{
+	return (real)ticks * g_510c54->rate;
+}
+
 /* the camera director of scripted cameras: fills the observer's command */
 // @retail 0x16c840
 void __stdcall function_16c840(long user_index, long unused, s_observer_command *command)
@@ -779,24 +788,23 @@ void __stdcall function_16c840(long user_index, long unused, s_observer_command 
 				{
 				case 2:
 					{
-						vector3f left;
-						real position_distance;
+						plane3f plane;
 						real length_squared;
 						real t;
 
 						command->object_matrix.forward = *g_4687a8;
 						command->object_matrix.up = *g_4687b0;
 						command->object_matrix.left = *g_4687ac;
-						left = camera->point.left;
-						position_distance = dot3f((vector3f *)&command->object_matrix.position, &left);
-						length_squared = dot3f(&left, &left);
-						if (!(length_squared != 0.0f))
+						plane.n = camera->point.left;
+						plane.d = dot3f((vector3f *)&command->object_matrix.position, &plane.n);
+						length_squared = dot3f(&plane.n, &camera->point.left);
+						if (length_squared != 0.0f)
 						{
-							t = 0.0f;
+							t = 0.0f - plane_distance_to_point(&plane, (point3f *)&camera->point.offset) / length_squared;
 						}
 						else
 						{
-							t = 0.0f - (dot3f(&camera->point.offset, &left) - position_distance) / length_squared;
+							t = 0.0f;
 						}
 						command->object_matrix.position.x = camera->point.left.i * t + camera->point.offset.i;
 						command->object_matrix.position.y = camera->point.left.j * t + camera->point.offset.j;
@@ -813,14 +821,7 @@ void __stdcall function_16c840(long user_index, long unused, s_observer_command 
 					break;
 				}
 			}
-			if (time_scale != 0.0f)
-			{
-				command->timer = (real)camera->ticks * game_time->rate / time_scale;
-			}
-			else
-			{
-				command->timer = 0.0f;
-			}
+			command->timer = time_scale != 0.0f ? game_ticks_to_seconds(camera->ticks) / time_scale : 0.0f;
 			command->forward = camera->forward;
 			command->up = camera->up;
 			if (camera->object_index != NONE)

@@ -150,47 +150,43 @@ void function_1dacb0(s_graph_tag *graph, c_type_709360 animation_id, real *dista
 
 bool function_10fa80(long unit_index, long mode, long set, short *event_ticks, real *distance, short *duration_ticks, real *event_distance);
 
-static __forceinline bool unit_animation_event_timing_lookup(long unit_index, long mode, long set, short *event_ticks, real *distance, short *duration_ticks, real *event_distance)
+// @retail 0x10fa80
+bool function_10fa80(long unit_index, long mode, long set, short *event_ticks, real *distance, short *duration_ticks, real *event_distance)
 {
 	volatile bool result = false;
-	if (unit_index == NONE || ((s_unit_animation_header *)g_4e0300->data)[unit_index & 0xffff].unit->value_b3 == 0)
+	if (unit_index == NONE || ((s_unit_animation_header *)g_4e0300->data)[unit_index & 0xffff].unit->value_b3 <= 0)
 	{
 		s_unit_animation_view *unit = ((s_unit_animation_header *)g_4e0300->data)[unit_index & 0xffff].unit;
 		s_animation_state *state = (s_animation_state *)((byte *)unit + unit->animation_state_offset);
-		c_type_709360 animation_id;
+		c_type_709360 found_id;
 		s_animation_names names;
 		s_animation_names found;
 		s_animation *animation;
-		state->animation_lookup(&names, &found, mode, 0x7000101, 0x7000101, set, 1, &animation_id);
+		state->animation_lookup(&names, &found, mode, 0x7000101, 0x7000101, set, 1, &found_id);
+		c_type_709360 animation_id = found_id;
 		if (animation_id.index != NONE)
 			animation = function_1daea0(GRAPH_GET(state->graph_tag_index), animation_id);
 		else
 		{
-			c_animation_channel channel = *(c_animation_channel *)((byte *)unit + unit->control_offset + 0x9c);
-			if (state->graph_tag_index == NONE)
-				return result;
-			animation_id = GRAPH_GET(state->graph_tag_index)->overlay_get(state->unknown70, state->unknown74, state->unknown78,
-				set, NULL, NULL, NULL);
-			if (animation_id.index == NONE || state->graph_tag_index == NONE)
-				return result;
-			if (!channel.set(state->graph_tag_index, 0x3f, state->variant_get(animation_id), set, NONE, NONE, 1))
-				return result;
-			channel.set_frame_position(0.0f);
-			channel.rate = 1.0f;
-			if (!channel_valid(&channel))
-				return result;
-			animation_id = channel.animation_id;
-			animation = channel.function_1c6440();
+			byte channel_storage[sizeof(c_animation_channel)];
+			c_animation_channel &channel = *(c_animation_channel *)channel_storage;
+			channel.copy_from((c_animation_channel *)((byte *)unit + unit->control_offset + 0x9c));
+			animation = NULL;
+			if (state->overlay_play(&channel, 0x3f, set, 0x7000101, 0x7000101) && channel_valid(&channel))
+			{
+				animation_id = channel.animation_id;
+				animation = channel.function_1c6440();
+			}
 		}
 		if (animation)
 		{
 			long event_frame = function_1dae20(animation);
 			long frames = animation->frame_count;
 			function_1dacb0(GRAPH_GET(state->graph_tag_index), animation_id, distance, event_distance);
-			long ticks;
 			if (event_frame != NONE)
 			{
-				real count = event_frame * (1.0f / 30.0f) * g_510c54->field_2_3;
+				real count = (real)(event_frame * (1.0f / 30.0f)) * g_510c54->field_2_3;
+				long ticks;
 				__asm
 				{
 					fld count
@@ -200,7 +196,8 @@ static __forceinline bool unit_animation_event_timing_lookup(long unit_index, lo
 			}
 			else
 				*event_ticks = NONE;
-			real count = frames * (1.0f / 30.0f) * g_510c54->field_2_3;
+			real count = (real)(frames * (1.0f / 30.0f)) * g_510c54->field_2_3;
+			long ticks;
 			__asm
 			{
 				fld count
@@ -211,10 +208,4 @@ static __forceinline bool unit_animation_event_timing_lookup(long unit_index, lo
 		}
 	}
 	return result;
-}
-
-// @retail 0x10fa80
-bool function_10fa80(long unit_index, long mode, long set, short *event_ticks, real *distance, short *duration_ticks, real *event_distance)
-{
-	return unit_animation_event_timing_lookup(unit_index, mode, set, event_ticks, distance, duration_ticks, event_distance);
 }

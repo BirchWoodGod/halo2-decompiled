@@ -8,60 +8,20 @@
 #include "unknown_0259d0.h"
 
 struct s_frame_view_2c560;
-// @stub 0x132d0
-void __stdcall function_132d0(s_frame_view_2c560 const *)
-{
-}
-
-// @stub 0x13c20
-void function_13c20(void)
-{
-}
 
 
 
-// @stub 0x2bcd0
-void __stdcall function_2bcd0(long, long, bool, long, long, long, float)
-{
-}
 
-// @stub 0x14b60
-void __stdcall function_14b60(short, bool, bool, bool)
-{
-}
 
-// @stub 0x44370
-bool __stdcall function_44370(long)
-{
-    return false;
-}
 
 
 
 struct s_2f970_view;
 struct s_speed_result;
-// @stub 0x2ba10
-void function_2ba10(s_2f970_view const *, long, long, unsigned char const *, bool,
-	long, bool, vector3f const *, long, long, long, unsigned char, long,
-	unsigned char const *, bool, long, unsigned char const *, long, s_speed_result const *)
-{
-}
+
 
 struct s_bit_vector_pool;
-// @stub 0x1320f0
-s_bit_vector_pool *function_1320f0(long, long, bool, long, unsigned char const *,
-	unsigned char const *, float, float, float, long)
-{
-	return 0;
-}
 
-
-
-
-// @stub 0x41cc0
-void __stdcall function_41cc0(void *payload)
-{
-}
 
 
 struct s_visibility_plane_query;
@@ -81,24 +41,8 @@ void __cdecl function_2ddbd0(void *data, s_visibility_sphere_query const *query,
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-// @stub 0x32350
-bool __stdcall function_32350(long index, real alpha) { return false; }
-
 struct transform4x3f;
-// @stub 0xb92d0
-void function_b92d0(long index, transform4x3f const *old_parent, transform4x3f const *new_parent) {}
+
 
 class __declspec(align(16)) c_z_capsule_temp
 {
@@ -111,3 +55,24 @@ public:
 // @stub 0xdc370
 c_z_capsule_temp::~c_z_capsule_temp() {}
 
+
+// @stub 0x14b60
+void __stdcall function_14b60(dword, dword, real, byte) {}
+
+
+struct s_view_camera;
+struct s_view_source;
+
+
+// @stub 0x132d0
+void __stdcall function_132d0(s_frame_view_2c560 const *) {}
+
+// @stub 0x3bd00
+bool __stdcall function_3bd00(real, dword) { return true; }
+
+struct s_depth_parameters_13450;
+// @stub 0x13450
+bool function_13450(s_depth_parameters_13450 const *parameters) { return false; }
+
+// @stub 0x289e0
+bool function_289e0() { return false; }

@@ -348,7 +348,7 @@ void function_1520f0(long player_index);
 long __stdcall function_cdeb0(long unit_index, long state_name, long a, long b);
 bool function_100f00(long weapon_index);
 bool function_1e3370(long actor_index, void *unknown);
-void function_10cec0(long unit_index, long weapon_index, long parent_marker_name, long marker_name);
+void function_10cec0(long weapon_index, long unit_index, long parent_marker_name, long marker_name);
 void function_1c9c80(long object_index, long unknown2d0, word unknown2c8, real unknown2cc, long a, bool b);
 bool unit_has_weapon_definition(long unit_index, long definition_index);
 bool __stdcall function_cd0c0(long unit_index, long weapon_index, short mode);
@@ -466,7 +466,7 @@ extern const long g_467430[5];
 bool function_10f9b0(long unit_index, long state_name, long action_name, long a, transform4x3f *matrix, bool flag);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 void function_15e050(long object_index, short value);
-void __stdcall function_153d10(short team, long definition_index, void *a, void *b, long c, real d, real e, long f);
+void __stdcall function_153d10(long team, long definition_index, void *a, void *b, long c, real d, real e, bool f);
 void __stdcall object_get_damage_owner(long object_index, s_damage_owner *owner);
 void function_107370(long device_index, real value);
 void function_184060(long unknown3c, byte unknown59, s_type_1e6529 *data, long unknown50);
@@ -501,7 +501,7 @@ void function_10b360(long object_index);
 void random_vector_in_cone(vector3f const *forward, vector3f *result, dword *seed, real min_angle, real max_angle);
 void function_10cf80(vector3f const *impulse, long item_index, bool flag);
 point3f *function_b9ef0(long object_index, point3f *result);
-bool __stdcall function_bc1d0(long object_index, point3f *point);
+bool __stdcall function_bc1d0(long object_index, point3f const *point, long ignore_unit_index);
 
 /* the globals of 0x5107e8 (unknown_29f5b0.cpp) */
 struct s_5107e8
@@ -1746,7 +1746,7 @@ void __stdcall function_d0870(long weapon_index, long unit_index, bool secondary
 			marker_name = *(long *)(local_67e06b + 0x284);
 		}
 	}
-	function_10cec0(unit_index, weapon_index, parent_marker_name, marker_name);
+	function_10cec0(weapon_index, unit_index, parent_marker_name, marker_name);
 }
 
 /* drops every weapon the unit holds (mode 1: deletes them) */
@@ -3405,17 +3405,7 @@ void function_d03e0(long unit_index, long definition_index)
 }
 
 /* what a unit's melee hit: an object, or a surface */
-struct s_unit_melee_hit
-{
-	long object_index;
-	long unknown04;
-	long unknown08;
-	long unknown0c;
-	short material_index;
-	byte unknown12[2];
-	real unknown14;
-	bool unknown18;
-};
+#include "unit_hit.h"
 
 /* applies the unit's melee damage to what it hit (a device of type 7 with
    bit 5 at +0x1cc is triggered first), then ends its state +0x2bc */
@@ -3967,7 +3957,7 @@ void function_ce6b0(long unit_index, long name, long object_index, real scale)
 	object->unknown14c = unit_index;
 	function_10cf80(&velocity, object_index, false);
 	point3f point;
-	if (!function_bc1d0(object_index, function_b9ef0(unit_index, &point)))
+	if (!function_bc1d0(object_index, function_b9ef0(unit_index, &point), unit_index))
 	{
 		if (g_4e6948->mode == 4 && UNIT_GET(object_index)->unknown0d4 != NONE)
 		{
@@ -6873,7 +6863,7 @@ long function_10f720(long object_index, bool first);
 bool function_f42f0(long vehicle_index);
 bool function_1143d0(long unit_index);
 bool function_a76b0(long unit_index, long flag);
-void function_a9260(long damage_index, struct s_unit_melee_hit const *hit);
+void __stdcall function_a9260(long unit_index, struct s_unit_melee_hit const *hit, long damage_index);
 extern short g_47d8e0;
 
 /* the unit's control input for a tick: its wandering direction (flag 21)
@@ -7314,7 +7304,7 @@ void __stdcall function_cf3d0(long unit_index, long name, long flags, real scale
 		{
 			if (function_a76b0(unit_index, 0))
 			{
-				function_a9260(damage_index, &hit);
+				function_a9260(unit_index, &hit, damage_index);
 			}
 			else if (g_4e6948->mode != 4)
 			{

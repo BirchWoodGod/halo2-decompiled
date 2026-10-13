@@ -208,7 +208,7 @@ struct s_weapon_rule_header
 };
 
 struct s_effect_owner;
-long function_15a090(short const *types, long type, volatile long count);
+long function_15a090(short const *types, long type, long count);
 void __stdcall function_ccff0(long unit_index);
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
 long __stdcall function_b7b40(void *creation);
@@ -220,22 +220,15 @@ void __stdcall function_b8540(long object_index);
 void __stdcall function_19ef40(long unit_index, long *first_count, long *second_count)
 {
     s_weapon_rule_globals *globals = (s_weapon_rule_globals *)g_4e0350;
-    long i = 0;
-    if (globals->count > 0)
+    for (long i = 0; i < globals->count; i++)
     {
-        s_weapon_rule *rule = globals->rules;
-        do
+        s_weapon_rule *rule = &globals->rules[i];
+        c_engine_peer *engine = g_55e4d0[g_4e9ae8->engine_index];
+        long type = NONE;
+        if (engine)
+            type = engine->p0();
+        if (function_15a090(rule->types, type, 4) != NONE)
         {
-            c_engine_peer *engine = g_55e4d0[g_4e9ae8->engine_index];
-            long type = NONE;
-            if (engine)
-                type = engine->p0();
-            if (function_15a090(rule->types, type, 4) == NONE)
-            {
-                rule++;
-                i++;
-                continue;
-            }
             function_ccff0(unit_index);
             long weapons[2];
             weapons[0] = NONE;
@@ -259,15 +252,14 @@ void __stdcall function_19ef40(long unit_index, long *first_count, long *second_
                     }
                 }
             }
-            byte first_type = *((byte *)g_4e6948 + 0x212);
-            if (first_type == 2)
+            if (*((byte *)g_4e6948 + 0x212) == 2)
             {
                 weapons[1] = function_19eda0(weapons[1], *((char *)g_4e6948 + 0x213), NONE);
                 weapons[0] = function_19eda0(weapons[0], *((char *)g_4e6948 + 0x212), weapons[1]);
             }
             else
             {
-                weapons[0] = function_19eda0(weapons[0], (char)first_type, NONE);
+                weapons[0] = function_19eda0(weapons[0], *((char *)g_4e6948 + 0x212), NONE);
                 weapons[1] = function_19eda0(weapons[1], *((char *)g_4e6948 + 0x213), weapons[0]);
             }
             for (long k = 0; k < 2; k++)
@@ -300,7 +292,6 @@ void __stdcall function_19ef40(long unit_index, long *first_count, long *second_
             }
             break;
         }
-        while (i < globals->count);
     }
 }
 

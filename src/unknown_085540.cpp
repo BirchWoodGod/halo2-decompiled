@@ -1,4 +1,4 @@
-// @flags /O2 /Ob1 /Gr
+// @flags /O2 /Ob1 /arch:SSE /Gr
 /* UNKNOWN_085540.CPP: a simulation world's view onto one remote machine:
    its establishment state machine (states 0..5, each with an id, mirrored by
    the remote end), its replication baseline and its buffered join data
@@ -158,21 +158,23 @@ inline void c_simulation_view::fail(long reason)
 	}
 }
 
-#pragma optimize("a", on)
+static __forceinline void function_8659e(long *arg_0)
+{
+	arg_0[0] = 0;
+	arg_0[1] = 0;
+}
+
 // @retail 0x86590
 inline void c_simulation_view::release_buffer(void)
 {
 	if (buffer)
 	{
-		c_simulation_view *local_0 = this;
-		*(volatile long *)&local_0->unknown9c = 0;
-		*(volatile long *)&local_0->unknowna0 = 0;
-		function_12d520((long)*(byte *volatile *)&local_0->buffer);
+		function_8659e(&unknown9c);
+		function_12d520((long)buffer);
 		buffer = 0;
 		unknown98 = 0;
 	}
 }
-#pragma optimize("", on)
 
 /* the callback a buffer's owner calls when it goes away */
 // @retail 0x86aa0
@@ -272,7 +274,7 @@ static __forceinline bool function_861c3(const c_simulation_view *arg_0)
  bool local_0 = false;
  long local_1 = arg_0->unknown3c;
  if (local_1 != NONE)
-  local_0 = *(volatile bool *)&arg_0->flag75;
+  local_0 = *(const bool *)&arg_0->flag75;
  return local_0;
 }
 #pragma optimize("", on)
@@ -496,14 +498,10 @@ void simulation_view_baseline_send(s_simulation_view_baseline *baseline)
 	baseline->time = view_time_get();
 }
 
-static __forceinline byte function_86bc2(const c_simulation_view *arg_0)
-{
- return *(volatile byte *)&arg_0->flag75;
-}
 // @retail 0x86bc0
 void simulation_view_baseline_update(s_simulation_view_baseline *baseline)
 {
-	if ((baseline->view->type == 3 || baseline->view->type == 4) && (baseline->view->unknown3c != NONE && function_86bc2(baseline->view)) && baseline->active && g_510ca0)
+	if ((baseline->view->type == 3 || baseline->view->type == 4) && function_861c3(baseline->view) && baseline->active && g_510ca0)
 	{
 		if (baseline->time == NONE || !baseline->state.flag0 && g_510cb1 || function_75890(baseline->time) > g_network_configuration.valued00)
 		{
@@ -831,46 +829,16 @@ local_0:
  return result;
 }
 
-#include "physical_memory.h"
-#include <d3d8.h>
+#include "unknown_080e10.h"
 extern s_physical_object *g_4e6464;
 long __stdcall function_12d2f0(long size, long user_data, long update, long release);
 void function_12c600(void);
 double timing_ticks_to_seconds(__int64 ticks);
 void function_6a860(c_class_6a600 *world, long *size);
 
-static inline __int64 view_read_ticks(void)
-{
- volatile __int64 value = 0;
- __asm rdtsc
-}
-
 static __forceinline byte *view_allocate_buffer(long size, long owner, long release)
 {
- __int64 start = view_read_ticks();
- byte *memory = 0;
- if (g_4e6464->page_count > 0)
- {
-  long attempts = 0;
-  while (!(memory = (byte *)function_12d2f0(size, owner, 0, release)))
-  {
-   if (attempts < 30)
-   {
-    attempts++;
-    function_12c600();
-   }
-   else
-   {
-    __int64 elapsed = view_read_ticks() - start;
-    if (elapsed < 0) elapsed = 0;
-    if (timing_ticks_to_seconds(elapsed) >= 0.1f) break;
-    D3DDevice_KickPushBuffer();
-    D3DDevice_IsBusy();
-    SwitchToThread();
-   }
-  }
- }
- return memory;
+ return (byte *)function_80e14(size, owner, 0, release, 30, 0.1f);
 }
 
 // @retail 0x862e0
