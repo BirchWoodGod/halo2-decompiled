@@ -238,6 +238,11 @@ int __fastcall function_142a60(
 	transform4x3f const *b,
 	transform4x3f *result)
 {
+	/* the asm reads *a and *b through ecx and edx without naming them; these
+	   two reads (dropped as dead) tell the optimizer that it does, so callers
+	   keep the code that fills them (0x1424f0's 0x141590 call) */
+	real a_scale = a->scale;
+	real b_scale = b->scale;
 	__asm
 	{
 		mov eax, result
