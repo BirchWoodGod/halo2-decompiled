@@ -1060,7 +1060,12 @@ void function_16e330(long tag_index, long section_index)
 
 							for (bitmap_index = 0; bitmap_index < group->bitmap_count; bitmap_index++)
 							{
-								bitmap_predict_inline(&group->bitmaps[bitmap_index], 0xe);
+								s_bitmap_predict_view *bitmap = &group->bitmaps[bitmap_index];
+
+								if (bitmap)
+								{
+									bitmap_predict_inline(bitmap, 0xe);
+								}
 							}
 						}
 					}
@@ -1551,6 +1556,24 @@ static inline bool local_user_exists(long user_index)
 	return g_4e8c20->entries[user_index] != NONE;
 }
 
+/* the location of a point, as 0x11bed0 computes it */
+static inline void location_from_point_16f280(s_location *location, point3f *point)
+{
+	if (g_4686c4 == NONE)
+	{
+		location->cluster_index = g_4686c4;
+		location->bsp_index = g_4686c4;
+		location->leaf_index = NONE;
+	}
+	else
+	{
+		long leaf_index = function_14a280(g_4e033c, 0, point);
+		location->leaf_index = leaf_index;
+		location->cluster_index = leaf_index != NONE ? ((s_16f280_leaves_view *)g_4e0348)->leaves[leaf_index].cluster_index : NONE;
+		location->bsp_index = g_4686c4;
+	}
+}
+
 /* updates the local players' observers and predicts the cluster each looks from */
 // @retail 0x16f280
 void __stdcall function_16f280(real dt)
@@ -1577,20 +1600,10 @@ void __stdcall function_16f280(real dt)
 			}
 			function_170fd0(user_index);
 			function_16ebf0(user_index);
-			cluster_index = NONE;
-			if (g_4686c4 != NONE)
-			{
-				long leaf_index = function_14a280(g_4e033c, 0, (point3f *)((byte *)observer + 0xb8));
+			s_location location;
 
-				if (leaf_index != NONE)
-				{
-					cluster_index = ((s_16f280_leaves_view *)g_4e0348)->leaves[leaf_index].cluster_index;
-				}
-				else
-				{
-					cluster_index = NONE;
-				}
-			}
+			location_from_point_16f280(&location, (point3f *)((byte *)observer + 0xb8));
+			cluster_index = location.cluster_index;
 			if (!g_510c50 || !((s_16f280_flags *)g_510c50)->active)
 			{
 				if (g_4ea934)

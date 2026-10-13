@@ -245,12 +245,13 @@ long function_10eef0(long object_index, bool alternate, bool no_request)
 	s_object_10db60 *object = OBJECT_GET_10db60(object_index);
 	s_object_state_33e *state = OBJECT_STATE_33E(object);
 	long result = 0x7000101;
+	long stance_name = object->stance_name;
 
-	switch (object->stance_name)
+	switch (stance_name)
 	{
 	case 0x50000cb:
-		result = object->stance_name;
-		return result;
+		result = stance_name;
+		break;
 	case 0x4000089:
 		result = 0x4000089;
 		break;
