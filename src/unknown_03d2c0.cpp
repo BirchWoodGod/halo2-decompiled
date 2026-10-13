@@ -56,7 +56,7 @@ struct s_3dfe0_cache
     s_lighting_record lighting;
     byte unknowna8[0x58];
 };
-long function_d1850(long object_index, long value, s_effect_color_query *query);
+long function_d1850(long object_index, bool value, s_effect_color_query *query);
 void function_d4080(s_effect_color_query const *query, long type, s_lighting_record *record, bool flag);
 struct s_object;
 s_object *function_badc0(long object_index, dword mask);
