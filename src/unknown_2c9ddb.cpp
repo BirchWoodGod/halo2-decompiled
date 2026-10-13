@@ -40,45 +40,71 @@ struct s_variant_item
 	long string_handle;
 };
 
-#if 0
 // Disabled: retail registers a callback and passes shared variant addresses.
-// @retail 0x2ca284 disabled
+#include "unknown_19b510.h"
+#include "unknown_13fd90.h"
+
+bool function_212bc0(long file_index, s_game_variant *variant);
+bool __stdcall function_215f40(long type, byte *buffer);
+long function_212380(long type, long controller_index, byte *buffer);
+void function_1489b5(long type, s_game_variant *variant);
+void function_148aa3(long error, dword controller_flags);
+long saved_game_file_type_from_variant(s_game_variant *variant);
+void function_238c69(long mode, long type, word *name, long maximum_count, long controller);
+bool __stdcall function_19a728(s_game_variant *variant);
+bool __stdcall function_2cb001(long controller_index);
+c_class_1473c9 *__stdcall function_2baae7(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall function_2bb31d(s_screen_parameters *parameters);
+extern long g_55c154;
+
+// Disabled: Closest148-difference complete draft requires shared mutable profile base/name addresses; ordinary brief prohibits retaining these escapes. Five further new plain-confirmed trials plateaued.
+#if 0
+// Retail 0x2ca284
 void c_class_2c9e69::handle_item(s_controller_reference **controller, long *item)
 {
+	struct s_variant_flags { unsigned long pad : 21; unsigned long bit21 : 1; };
 	if (*item == NONE) return;
 	s_variant_item *entry = &((s_variant_item *)data->data)[*item & 0xffff];
 	s_game_variant variant;
 	byte name[0x100];
 	long selected = entry->variant;
-	if (selected != NONE && !(flag_a && ((dword)selected >> 21 & 1)))
+	if (selected != NONE && !(flag_a && TEST_FIELD_BIT(((s_variant_flags const *)&selected)->bit21)))
 	{
 		if (entry->value2 != NONE)
 		{
 			if (function_212bc0(selected, &variant))
 			{
-				if (flag_a || flag_b)
+				s_screen_parameters parameters;
+				long screen_mode;
+				screen_load_proc load;
+				if (flag_a)
 				{
-					s_screen_parameters parameters;
-					if (flag_a)
-					{
-						g_54e49c = selected;
-						g_54e4a0 = variant;
-					}
-					function_149f49(&parameters, 0, 0, 1 << (*controller)->controller_index,
-						flag_a ? 3 : 5, 4, flag_a ? function_2baae7 : function_2bb31d);
-					parameters.load(&parameters);
+					g_54e49c = entry->variant;
+					g_54e4a0 = variant;
+					screen_mode = 3;
+					load = function_2baae7;
+				}
+				else if (flag_b)
+				{
+					screen_mode = 5;
+					load = function_2bb31d;
 				}
 				else
 				{
 					function_19a728(&variant);
-					((c_widget *)this)->function_22eeee(3)->function_22e957();
+					get_screen()->start_animation(3);
+					return;
 				}
+				parameters.field_c = 0;
+				function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index,
+					screen_mode, 4, (long)load);
+				parameters.load(&parameters);
 				return;
 			}
 			flag_c = true;
 		}
 		g_50933c = selected;
-		function_19b5af(1, 0x79, 4, 1 << (*controller)->controller_index, function_2cb001, 0, 0);
+		dialog_choice_show(1, 0x79, 4, 1 << (*controller)->controller_index, function_2cb001, 0, 0);
 		return;
 	}
 	g_55c154 = 0;
@@ -92,15 +118,16 @@ void c_class_2c9e69::handle_item(s_controller_reference **controller, long *item
 		if (selected == NONE)
 		{
 			function_1489b5(game_type, &g_54e4a0);
-			function_13fac0((word *)variant.name, (word *)g_54e4a0.name, 0x20);
+			unicode_string_copy((word *)g_54e4a0.name, (word *)variant.name, 0x20);
 		}
 		else *(byte *)&g_54e4a0 &= ~1;
 		function_238c69(selected == NONE ? 5 : 7,
-			function_216a50(&g_54e4a0), (word *)g_54e4a0.name, 0x20, (*controller)->controller_index);
+			saved_game_file_type_from_variant(&g_54e4a0), (word *)g_54e4a0.name, 0x20, (*controller)->controller_index);
 	}
 	else function_148aa3(g_55c154, user_flags);
 }
 #endif
+
 
 /* the custom game profile screen (vtable 0x45d6f8) */
 class c_custom_game_profile_screen : public c_screen_with_menu
@@ -221,7 +248,7 @@ void c_class_2c9e69::select_last_variant()
 void c_class_2c9e69::v20(c_class_1a2c81 *item, long unused)
 {
 	long datum = ((c_class_14750b *)item)->value70;
-	c_text_widget_45a5e0 *text = (c_text_widget_45a5e0 *)item->find_child(6, 0, false);
+	c_text_widget_45a5e0 *volatile text = (c_text_widget_45a5e0 *)item->find_child(6, 0, false);
 	c_class_1a2c81 *icon = item->find_child(8, 2, false);
 
 	if (datum != NONE)
@@ -230,9 +257,10 @@ void c_class_2c9e69::v20(c_class_1a2c81 *item, long unused)
 
 		if (entry->variant == NONE)
 		{
-			if (text)
+			c_text_widget_45a5e0 *empty_text = text;
+			if (empty_text)
 			{
-				text->function_253b1a(0x120001db);
+				empty_text->function_253b1a(0x120001db);
 			}
 		}
 		else if (text)

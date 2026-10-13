@@ -167,6 +167,7 @@ s_simulation_entity *simulation_entity_try_get(s_simulation_entity_table *table,
    the same as retail's (the null test after the identifier comparison
    included). */
 // Disabled: round 18 reactivation after new event callers still breaks a3a20 and other matched entity callers; EDX input versus retail ECX
+// Disabled: round 35: five new fruitless trials, 15 differences; EDX input versus retail ECX loses eleven matched callers
 #if 0
 // Retail 0xa58d0
 long function_a58d0(long entity_index)
@@ -186,6 +187,7 @@ long function_a58d0(long entity_index)
 	return object_index;
 }
 #endif
+
 
 struct s_z_entity_flags
 {

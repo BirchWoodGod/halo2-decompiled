@@ -6,7 +6,7 @@
 #include <math.h>
 
 // @retail 0x120850
-short function_120850(vector3f const *v)
+inline short function_120850(vector3f const *v)
 {
 	real x = (real)fabs(v->i);
 	real y = (real)fabs(v->j);

@@ -259,8 +259,8 @@ short __stdcall function_1bf480(long actor_index)
 // @retail 0x1bf4e0
 bool __stdcall function_1bf4e0(long actor_index, s_slot *slot)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	bool result = false;
+	s_actor_view *actor = actor_get(actor_index);
 
 	if (function_1bf3f0(actor->unknown3cc, actor_index, actor->unknown3d0))
 	{
@@ -274,7 +274,7 @@ bool __stdcall function_1bf4e0(long actor_index, s_slot *slot)
 		if (type != NONE)
 			function_1fb7e0(type, actor_index, NULL, actor_get(state->unknown10)->unknown018, NONE);
 		function_1f86a0(actor_index);
-		return true;
+		result = true;
 	}
 	return result;
 }

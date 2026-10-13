@@ -243,16 +243,25 @@ long function_188090(long tag_index, long index, long type)
 			if (index < animations->count)
 			{
 				s_seat_animation *animation = &animations->animations[index];
-				long local_0;
 				if (type == 0)
-					local_0 = animation->first_count;
-				else
-					local_0 = animation->second_count;
-				if (local_0 > 0)
 				{
-					result = index;
-					break;
+					if (animation->first_count > 0)
+					{
+						goto local_0;
+					}
 				}
+				else
+				{
+					if (animation->second_count > 0)
+					{
+						goto local_0;
+					}
+				}
+				goto local_1;
+local_0:
+				result = index;
+				break;
+local_1:;
 			}
 
 			long next = NONE;

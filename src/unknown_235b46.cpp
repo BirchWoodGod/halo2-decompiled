@@ -228,7 +228,7 @@ bool main_menu_music_silence_done(s_main_menu_music *music)
 
 /* how far into its silence time the music is (0 to 1) */
 // @retail 0x235ce6
-real main_menu_music_silence_fraction(s_main_menu_music *music)
+real main_menu_music_silence_fraction(s_main_menu_music const *music)
 {
 	real result = 0.0f;
 

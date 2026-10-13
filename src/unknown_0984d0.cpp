@@ -278,6 +278,13 @@ public:
 	virtual void v7(long arg_0, long arg_1, long arg_2, void *arg_3) = 0;
 };
 
+PRIVATE __forceinline bool function_98fb1(c_handle_table_450cd0 *arg_0, long const *arg_1, byte const *arg_2)
+{
+	long local_0 = arg_1[4];
+	long local_1 = arg_1[0];
+	return function_991d0(arg_0, local_1, local_0, arg_2);
+}
+
 // @retail 0x98fb0
 void c_handle_table_450cd0::v6(s_request_450cd0 *a1)
 {
@@ -305,7 +312,7 @@ local_3:
 			{
 				long const *local_12 = *(long const *volatile *)&local_10;
 				byte const *local_13 = *(byte const *volatile *)&local_11;
-				if (!function_991d0(this, local_12[0], local_12[4], local_13))
+				if (!function_98fb1(this, local_12, local_13))
 					local_6 = false;
 				local_11 += 0x10;
 				local_7++;

@@ -1,4 +1,4 @@
-// @flags /O2 /Ob1 /Gr
+// @flags /O2 /Ob1 /arch:SSE /Gr
 /* UNKNOWN_085540.CPP: a simulation world's view onto one remote machine:
    its establishment state machine (states 0..5, each with an id, mirrored by
    the remote end), its replication baseline and its buffered join data
@@ -829,46 +829,16 @@ local_0:
  return result;
 }
 
-#include "physical_memory.h"
-#include <d3d8.h>
+#include "unknown_080e10.h"
 extern s_physical_object *g_4e6464;
 long __stdcall function_12d2f0(long size, long user_data, long update, long release);
 void function_12c600(void);
 double timing_ticks_to_seconds(__int64 ticks);
 void function_6a860(c_class_6a600 *world, long *size);
 
-static inline __int64 view_read_ticks(void)
-{
- volatile __int64 value = 0;
- __asm rdtsc
-}
-
 static __forceinline byte *view_allocate_buffer(long size, long owner, long release)
 {
- __int64 start = view_read_ticks();
- byte *memory = 0;
- if (g_4e6464->page_count > 0)
- {
-  long attempts = 0;
-  while (!(memory = (byte *)function_12d2f0(size, owner, 0, release)))
-  {
-   if (attempts < 30)
-   {
-    attempts++;
-    function_12c600();
-   }
-   else
-   {
-    __int64 elapsed = view_read_ticks() - start;
-    if (elapsed < 0) elapsed = 0;
-    if (timing_ticks_to_seconds(elapsed) >= 0.1f) break;
-    D3DDevice_KickPushBuffer();
-    D3DDevice_IsBusy();
-    SwitchToThread();
-   }
-  }
- }
- return memory;
+ return (byte *)function_80e14(size, owner, 0, release, 30, 0.1f);
 }
 
 // @retail 0x862e0

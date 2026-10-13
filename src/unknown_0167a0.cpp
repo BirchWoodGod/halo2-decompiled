@@ -500,10 +500,15 @@ void function_174d0(byte *context, long group, long stage, long pass, long entry
 			word range = *(word *)(record + 4);
 			if (stage < (range >> 9))
 			{
-				range = (*(word **)(definition + 0x28))[(range & 0x1ff) + stage];
+				// Keep each range address separate from its word load.
+				word *stage_range = *(word **)(definition + 0x28) + (range & 0x1ff) + stage;
+				word *const *stage_range_reference = &stage_range;
+				range = **stage_range_reference;
 				if (pass < (range >> 9))
 				{
-					range = (*(word **)(definition + 0x30))[(range & 0x1ff) + pass];
+					word *pass_range = *(word **)(definition + 0x30) + (range & 0x1ff) + pass;
+					word *const *pass_range_reference = &pass_range;
+					range = **pass_range_reference;
 					if (entry < (range >> 9))
 					{
 						word const *selected = (word *)(*(byte **)(definition + 0x38) + ((range & 0x1ff) + entry) * 10);
