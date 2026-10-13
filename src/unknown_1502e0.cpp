@@ -1328,9 +1328,14 @@ void __stdcall function_152f80(void *address, void *option_data)
 {
     byte const *machine_address = (byte const *)address;
     s_player_rebind_option const *options = (s_player_rebind_option const *)option_data;
-    long controllers[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
+    long controllers[16];
     long users[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
-    long assigned[16] = { NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE };
+    long assigned[16];
+    for (long i = 0; i < 16; i++)
+    {
+        controllers[i] = NONE;
+        assigned[i] = NONE;
+    }
     dword options_used = 0;
     dword users_used = 0;
     dword controllers_used = 0;
@@ -1357,12 +1362,10 @@ void __stdcall function_152f80(void *address, void *option_data)
                     if (player->local_index == NONE || entry->controller_index != player->controller_index) continue;
                     break;
                 case 2:
-                    if (player->local_index != NONE) continue;
-                    break;
-                case 3:
+                    if (player->local_index == NONE) continue;
                     break;
                 default:
-                    __assume(0);
+                    break;
                 }
                 users[index] = entry->local_index;
                 assigned[index] = option;
