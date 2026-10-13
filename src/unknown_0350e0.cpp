@@ -996,9 +996,11 @@ void function_3e4e0(dword *current, dword const *target, real step)
 	color3f a, b;
 	unpack_color3f(*current, &a);
 	unpack_color3f(*target, &b);
-	a.red += color_delta(b.red - a.red, 0.0f - step, step);
-	a.green += color_delta(b.green - a.green, 0.0f - step, step);
-	a.blue += color_delta(b.blue - a.blue, 0.0f - step, step);
+	real red_delta = b.red - a.red;
+	real lower = 0.0f - step;
+	a.red += color_delta(red_delta, lower, step);
+	a.green += color_delta(b.green - a.green, lower, step);
+	a.blue += color_delta(b.blue - a.blue, lower, step);
 	*current = pack_color3f(&a);
 }
 

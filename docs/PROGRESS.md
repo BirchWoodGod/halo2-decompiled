@@ -2,6 +2,37 @@
 
 The newest entry comes first.
 
+## 2026-10-12: 8013 functions match
+
+```
+matched 8013 of 11318 game functions (979136 of 2784283 bytes, 35.17%)
+```
+
+7 new matches, none lost:
+- The second machine's lane M, round 24 (#387, +4): `0x1a60f0`, `0x1ae3b0`, `0x1a71f0` and `0x1a79e0`.
+- Deep lane 2, round 35 (+3), writing this machine's unwritten functions in group 1: `0xa9260`, `0xb92d0` and `0xbc1d0` match on their first drafts, with retail's parameters at every call.
+- Deep lane 3, round 46: no new match; six render functions are closer, two of them by about half.
+
+## 2026-10-12: 8006 functions match
+
+```
+matched 8006 of 11318 game functions (977236 of 2784283 bytes, 35.10%)
+```
+
+9 new matches, none lost:
+- Deep lane 3, round 45 (+4), in the render range: `0x1e930`, `0x460d0`, `0x3e4e0` and `0x445d0`, each from 33 to 37 differences; `0x441b0` is down to 7.
+- The second machine's lane P, round 18 (#386, +4): `0x1392f8`, `0x13e1a0`, `0x13ccf0` and `0x135820`.
+- The second machine's lane J, round 16 (#385, +1): `0x90f70`.
+
+## 2026-10-12: 7997 functions match
+
+```
+matched 7997 of 11318 game functions (975262 of 2784283 bytes, 35.03%)
+```
+
+2 new matches, none lost:
+- Deep lane 1, rounds 38 and 41 (+2): `0x24ad0b` and `0x24bc12` (from 105 differences) match, among this machine's least-worked functions; the second machine's `0x11b520` now takes the unit before the animation graph, with every call updated, including those in this machine's script functions.
+
 ## 2026-10-12: 7995 functions match
 
 ```
