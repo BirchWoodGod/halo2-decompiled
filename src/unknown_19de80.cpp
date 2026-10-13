@@ -292,9 +292,7 @@ void function_19e0f0(word const *string, long size, word *buffer, s_event *event
 
 	{
 		long length = wcslen(source);
-		if (remaining > length)
-			remaining = length;
-		wcsncpy(destination, source, remaining);
+		wcsncpy(destination, source, length <= remaining ? length : remaining);
 		destination[length] = 0;
 	}
 }
