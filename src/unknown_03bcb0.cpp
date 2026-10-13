@@ -108,8 +108,8 @@ void function_441b0(s_planar_camera_source const *source, s_planar_camera *state
 	up->j = 0.0f - source->normal.j;
 	up->k = 0.0f - source->normal.k;
 	function_30bf0(up);
-	vector3f *const *left_reference = &left;
-	matrix_cross(*left_reference, up, &state->matrix.forward);
+	vector3f *const *vector_reference = &left;
+	matrix_cross(*vector_reference, up, &state->matrix.forward);
 	function_30bf0(&state->matrix.forward);
 	state->matrix.position = source->origin;
 	state->matrix.scale = 1.0f;
