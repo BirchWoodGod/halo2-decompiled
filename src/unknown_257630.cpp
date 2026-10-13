@@ -336,11 +336,10 @@ void __stdcall function_257b60(long actor_index, s_slot *slot, s_slot_target_lis
 // @retail 0x257c60
 short __stdcall function_257c60(long actor_index, long joint_index, s_slot *slot, long unknown)
 {
-	s_record_pool *local_0 = g_502424;
-	byte *local_1 = ((s_record_pool volatile *)local_0)->data;
+	s_502424_element *joint = element_502424_get(joint_index);
 	short result = 0;
 
-	if (function_26eae0(joint_index, ((s_502424_element *)(local_1 + (joint_index & 0xffff) * sizeof(s_502424_element)))->target.unknown4, 3, 1.0f))
+	if (function_26eae0(joint_index, joint->target.unknown4, 3, 1.0f))
 	{
 		result = 1;
 	}
