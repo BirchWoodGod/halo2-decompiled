@@ -639,6 +639,3 @@ void function_1d6ad0(s_havok_component *arg_0, s_physics_model_owner *arg_1) {}
 
 // @stub 0x1d56f0
 void function_1d56f0(s_havok_component *arg_0) {}
-
-// @stub 0x1e18f0
-void __fastcall function_1e18f0(long arg_0, long arg_1, long arg_2, long arg_3) {}

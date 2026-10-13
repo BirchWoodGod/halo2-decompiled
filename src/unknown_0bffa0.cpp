@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include "unknown_123b30.h"
+#include "unknown_0b68c0.h"
 #include "crc.h"
 // @flags /O2 /arch:SSE /Gr
 #include "projection_storage.h"
@@ -36,10 +37,6 @@ struct s_5107e8
 
 extern s_5107e8 *g_5107e8;
 real function_17ca10(real x, short curve);
-
-extern void *g_4e0310;
-extern void *g_4e0314;
-extern void *g_4e0318;
 
 __declspec(noinline) void function_c0040();
 
@@ -1029,14 +1026,9 @@ struct s_light_delete_view
     byte unknown5c[0x110 - 0x5c];
 };
 
-struct s_cluster_partition
-{
-    long *cluster_first_data_references;
-    s_record_pool *data_references;
-    s_record_pool *cluster_references;
-};
-
 void function_1cae40(s_cluster_partition *partition, long data_index, long *first_cluster_reference);
+
+void __declspec(noinline) function_c3220(long light_index);
 
 // @retail 0xc3220
 void function_c3220(long light_index)
@@ -1044,13 +1036,7 @@ void function_c3220(long light_index)
     s_light_delete_view *light = &((s_light_delete_view *)g_4e030c->data)[light_index & 0xffff];
     if (light->flags & 2)
     {
-        s_cluster_partition partition =
-        {
-            (long *)g_4e0310,
-            (s_record_pool *)g_4e0314,
-            (s_record_pool *)g_4e0318
-        };
-        function_1cae40(&partition, light_index, &light->first_cluster_reference);
+        function_1cae40(&g_4e0310_partition, light_index, &light->first_cluster_reference);
         light->flags &= ~8;
     }
 }
@@ -1562,11 +1548,11 @@ long __stdcall function_c0230(long tag_index, long object_index, short node_inde
     if (result != NONE)
     {
         byte *light = g_4e030c->data + (result & 0xffff) * 0x110;
-        *(long *)(light + 4) = tag_index;
+        *(long volatile *)(light + 4) = tag_index;
         *(long *)(light + 0x4c) = object_index;
         *(word volatile *)(light + 2) = 0;
         *(short *)(light + 0x54) = node_index;
-        *(long *)(light + 0x50) = name;
+        *(long volatile *)(light + 0x50) = name;
         *(long *)(light + 0x14) = NONE;
         *(long *)(light + 8) = NONE;
         *(short *)(light + 0x56) = value;

@@ -2,6 +2,46 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8217 functions match
+
+```
+matched 8217 of 11318 game functions (1033217 of 2784283 bytes, 37.11%)
+```
+
+56 new matches, none lost:
+- The third machine's batch 5 (#410, +36), over its lanes N, Q, R, S, T and H, with three behaviour fixes (`0x170bb0` passes its state blocks in retail's order, `0x15f120` calls the `vsnprintf` form, and `0x1583d0`'s parameters are named for the values they receive).
+- The second machine's lanes (#407, #408, #409, #411, +14): lane D lower +9 (including lane J's `0x94680` and `0x946c0` and lane F's `0x18fb34` through their callees), lane J +3, lanes B and M +1 each.
+- This machine's deep lanes (+6): lane 1's `0xc3220` (the partition globals at 0x4e0310 are now one struct global) and `0x269e60`, lane 2's `0x251d84` and `0x2b225a`, and lane 3's `0x1ef70` and `0x36880`.
+
+## 2026-10-13: 8161 functions match
+
+```
+matched 8161 of 11318 game functions (1016900 of 2784283 bytes, 36.52%)
+```
+
+5 new matches, none lost:
+- Claude lane 1, round 10 (+5), on Opus 5.5: `0x3ea60` and `0x1c810` match once neighbouring globals that retail treats as one block become one struct global each (the node matrix cache, and the texture stage storage in `include/texture_stage_storage.h`); `0x2c8bf5` makes its call in every switch case, `0x1e4310` inlines a copy of a matched helper, and `0x1c4a0` is a constructor run at startup.
+
+## 2026-10-13: 8156 functions match
+
+```
+matched 8156 of 11318 game functions (1015964 of 2784283 bytes, 36.49%)
+```
+
+3 new matches, none lost:
+- Deep lane 2, round 37 (+1): `0x22dcbc`, from 58 differences; `0x23dba0` is down to 10. Its round 36 gave the second machine's matched `0x1c4a80` its two `bool` parameters, as retail's callers pass them.
+- Deep lane 1, rounds 44 and 45 (+1): `0xb2e30`; `0x2651e0` is 15 differences closer.
+- The second machine's lane P, round 20 (#406, +1): `0x136600`.
+
+## 2026-10-13: 8153 functions match
+
+```
+matched 8153 of 11318 game functions (1015072 of 2784283 bytes, 36.46%)
+```
+
+2 new matches, none lost:
+- Claude lane 1, round 9 (+2), on Opus 5.5: `0xe5790` and `0xe6460`, two small functions on a retail call cycle that were stubs, now written. The lane found that `0xb7430`'s exact draft can go live only together with `0xb8540`, and ruled out compile order as the cause of the callers that reuse a register where retail rebuilds it.
+
 ## 2026-10-13: 8151 functions match
 
 ```

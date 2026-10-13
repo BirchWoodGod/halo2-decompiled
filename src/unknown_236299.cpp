@@ -224,7 +224,8 @@ void function_2360c3(point3f *point, short_rectangle2d const *bounds)
 	real depth = g_54d598.color14.green;
 	real scale;
 
-	if (fabsf(g_54d598.color14.green) < 0.0001f)
+	real magnitude = (real)fabs(g_54d598.color14.green);
+	if (magnitude < 0.0001f)
 	{
 		depth = 1.0f;
 	}
@@ -586,7 +587,7 @@ void function_23661f(s_dialog_definition *definition, long dialog_id)
 
 struct s_1ed70_point { short x, y; };
 void function_1eb00();
-void function_1ed70(color4f const *color, s_1ed70_point const *points, volatile short count);
+void function_1ed70(color4f const *color, s_1ed70_point const *points, short count);
 void function_1ee50();
 
 // @retail 0x235d69

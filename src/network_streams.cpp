@@ -922,12 +922,16 @@ bool c_network_reliable_stream::get_next_send(long *type, long *sequence, long *
 				m_backoff = m_backoff > g_network_configuration.value16e0 ? g_network_configuration.value16e0 : m_backoff;
 			}
 		}
-		if (message->flags & 0xc)
+		word pending_flags = message->flags;
+		if (pending_flags & 0xc)
 		{
-			message->flags |= 0x10;
-			m_next_sequence = next;
-			m_bytes -= message->size;
 			result = true;
+			pending_flags |= 0x10;
+			message->flags = pending_flags;
+			long remaining_bytes = m_bytes;
+			m_next_sequence = next;
+			remaining_bytes -= message->size;
+			m_bytes = remaining_bytes;
 		}
 	}
 	return result;
@@ -937,7 +941,7 @@ bool c_network_reliable_stream::get_next_send(long *type, long *sequence, long *
 long c_network_reliable_stream::function_965e0(long *sequence, long *size, long *time)
 {
 	long type = 0;
-	if (!get_next_send(&type, *(long *volatile *)&sequence, *(long *volatile *)&size, *(long *volatile *)&time) && sequence_window_count(&m_message_window))
+	if (!get_next_send(&type, sequence, size, time) && sequence_window_count(&m_message_window))
 	{
 		long newest = m_message_window.newest;
 		for (long next = m_next_sequence + 1; next < newest; next++)

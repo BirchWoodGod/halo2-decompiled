@@ -55,7 +55,7 @@ long g_4e6978, g_4e697c;
 long g_485a78[2];
 extern byte *g_4858c4;
 extern byte g_485a76;
-extern IDirect3DBaseTexture8 *g_51f3c8[2][4];
+#include "texture_stage_storage.h"
 struct s_type_7ba8e9;
 s_type_7ba8e9 *function_137550(long tag, short bitmap);
 bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority);
@@ -482,11 +482,8 @@ void function_13d50(s_buffer_pair const *values, long mode, long count)
 
 /* the texture stages: [0] the textures set on the device (0x51f3c8), [1] the
    textures wanted (0x51f3d8) */
-IDirect3DBaseTexture8 *g_51f3c8[2][4];
+s_texture_stage_storage g_texture_stage_storage;
 long g_5093d8;
-D3DSurface *g_51f3f4;
-D3DSurface *g_51f3f8;
-byte g_51f3fc;
 
 extern D3DResource *g_509374, *g_509378, *g_50937c, *g_509380;
 D3DTexture *g_509354[2];
@@ -536,7 +533,7 @@ void function_36880(color4f const *color, s_short_rectangle const *rectangle)
 		bool right = i == 1 || i == 2;
 		short y = top ? (*rectangle_reference)->top : (*rectangle_reference)->bottom;
 		short x = right ? (*rectangle_reference)->right : (*rectangle_reference)->left;
-		D3DDevice_SetVertexData2s(0, x, y);
+		D3DDevice_SetVertexData2f(0, (real)x, (real)y);
 	}
 	D3DDevice::End();
 }
@@ -649,8 +646,8 @@ bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority)
     {
         long slot = stage;
         g_51f3c8[1][slot] = function_12310((s_bitmap_view *)bitmap, priority);
-        long height = *(short *)((byte *)bitmap + 6);
         long width = *(short *)((byte *)bitmap + 4);
+        long height = *(short *)((byte *)bitmap + 6);
         g_485af4[slot] = width;
         g_485b04[slot] = height;
     }
@@ -1239,6 +1236,8 @@ struct s_shader_cache
 	long stream_count;
 	bool streams_changed;
 	byte field_2d5[3];
+
+	s_shader_cache();
 };
 
 // @retail 0x1c710
@@ -1269,25 +1268,25 @@ void __stdcall function_1c710(void *memory)
 }
 
 // @retail 0x1c4a0
-void __cdecl function_1c4a0(s_shader_cache *state)
+s_shader_cache::s_shader_cache()
 {
-	state->streams_changed = false;
-	state->descriptors_changed = false;
-	state->stream_count = 0;
+	streams_changed = false;
+	descriptors_changed = false;
+	stream_count = 0;
 	for (long i = 0; i < 8; i++)
 	{
-		state->bindings[i].field_0c = NONE;
-		state->bindings[i].tag = NONE;
-		state->bindings[i].index = NONE;
+		bindings[i].field_0c = NONE;
+		bindings[i].tag = NONE;
+		bindings[i].index = NONE;
 	}
-	state->active = NONE;
+	active = NONE;
 	for (long j = 0; j < 16; j++)
-		state->wanted[j] = NULL;
+		wanted[j] = NULL;
 	for (long k = 0; k < 16; k++)
 	{
-		state->streams[k].field_08 = 0;
-		state->streams[k].field_04 = 0;
-		state->streams[k].field_00 = 0;
+		streams[k].field_08 = 0;
+		streams[k].field_04 = 0;
+		streams[k].field_00 = 0;
 	}
 }
 
@@ -1405,7 +1404,6 @@ void __stdcall function_1c7f0(long index)
 
 #include "physical_memory.h"
 
-byte g_51f3f0;
 s_physical_object *g_487b08;
 
 PRIVATE bool __stdcall shader_block_busy(long index)
@@ -1531,6 +1529,22 @@ s_cache_record *function_1e2d0(void)
 	{
 		result = &g_4b6280.records[g_4b6280.count];
 		result->count = 0;
+		g_4b6280.count++;
+		result->active = 0;
+	}
+	else if (g_4b6280.available)
+		g_4b6280.available = false;
+	return result;
+}
+
+/* 0x1e2d0's work written out where a record builder inlines it */
+static __forceinline s_cache_record *cache_record_new(void)
+{
+	s_cache_record *result = 0;
+	if (g_4b6280.count < 1024)
+	{
+		g_4b6280.records[g_4b6280.count].count = 0;
+		result = &g_4b6280.records[g_4b6280.count];
 		g_4b6280.count++;
 		result->active = 0;
 	}
@@ -2202,13 +2216,15 @@ bool __stdcall function_1e700(word first, word second, void const *context)
 // @retail 0x1e370
 void function_1e370(void)
 {
-	long scratch;
 	function_35aa0();
 	long first = g_4b6280.unknown04;
 	word *indices = (word *)g_4b6280.buffer;
 	for (long i = first; i < g_4b6280.count; ++i)
 		indices[i - first] = (word)i;
-	sort_2byte(indices, g_4b6280.count - first, &scratch, function_1e700, g_4b6280.records);
+	{
+		long scratch;
+		sort_2byte(indices, g_4b6280.count - first, &scratch, function_1e700, g_4b6280.records);
+	}
 	for (long i = 0; i < g_4b6280.count - (long)g_4b6280.unknown04; ++i)
 	{
 		s_1e4e0_record *record = (s_1e4e0_record *)&g_4b6280.records[((word *)g_4b6280.buffer)[i]];
@@ -2219,7 +2235,18 @@ void function_1e370(void)
 	D3DDevice_SetRenderState(D3DRS_STIPPLEENABLE, 0);
 	if (!(fabs(g_4b8494 - 1.0f) < 0.0001f))
 	{
-		D3DDevice_SetStipple(function_1c290(1.0f));
+		real scaled = 1.0f * 16.0f;
+		long index;
+		__asm
+		{
+			fld scaled
+			fistp index
+		}
+		if (index < 0)
+			index = 0;
+		else if (index > 16)
+			index = 16;
+		D3DDevice_SetStipple(g_487288[index]);
 		g_4b8494 = 1.0f;
 	}
 }
@@ -2230,16 +2257,13 @@ bool function_1e4e0(point3f const *position, t_1e4e0_callback callback, void con
 	(void)&callback;
 	(void)&data;
 	bool result = false;
-	if (g_4b6280.count < 1024)
+	s_1e4e0_record *record = (s_1e4e0_record *)cache_record_new();
+	if (record)
 	{
-		g_4b6280.records[g_4b6280.count].count = 0;
-		s_1e4e0_record *record = (s_1e4e0_record *)&g_4b6280.records[g_4b6280.count];
-		record->active = false;
 		vector3f delta;
 		delta.i = position->x - g_485618.position.x;
 		delta.j = position->y - g_485618.position.y;
 		delta.k = position->z - g_485618.position.z;
-		++g_4b6280.count;
 		if (size)
 			memcpy(record->payload, data, size);
 		record->type = 3;
@@ -2252,8 +2276,6 @@ bool function_1e4e0(point3f const *position, t_1e4e0_callback callback, void con
 		record->position = *position;
 		result = true;
 	}
-	else if (g_4b6280.available)
-		g_4b6280.available = false;
 	return result;
 }
 
@@ -3281,9 +3303,8 @@ void function_36580()
     function_0222d0(D3DRS_CULLMODE, 0);
     real x = 1.0f / (short)(g_48564e - g_48564a);
     real y = 1.0f / (short)(g_48564c - g_485648);
-    real extra[24];
+    real extra[24] = { 0.0f };
     real constants[20];
-    memset(extra, 0, sizeof(extra));
     constants[0] = x * 2.0f;
     constants[1] = 0.0f;
     constants[2] = 0.0f;
