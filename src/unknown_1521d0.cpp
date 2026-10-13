@@ -17,20 +17,18 @@ void function_d0e00(long unit_index, real rate);
 void function_1521d0(long player_index)
 {
 	s_timer_player *player = (s_timer_player *)g_4e8c24->data + (player_index & 0xffff);
-	short *timer = player->effect_timers;
-	long effect = 0;
-	do
+	long effect;
+
+	for (effect = 0; effect < 2; effect++)
 	{
-		if (*timer > 0)
+		if (player->effect_timers[effect] > 0)
 		{
-			(*timer)--;
-			if (*timer == 0 && effect == 0)
+			player->effect_timers[effect]--;
+			if (player->effect_timers[effect] == 0 && effect == 0)
 			{
 				s_record_pool *players = g_4e8c24;
 				function_d0e00(((s_timer_player *)players->data)[player_index & 0xffff].unit_index, 1.0f);
 			}
 		}
-		effect++;
-		timer++;
-	} while (effect < 2);
+	}
 }
