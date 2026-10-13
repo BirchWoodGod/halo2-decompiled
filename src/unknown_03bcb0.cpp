@@ -602,7 +602,8 @@ extern real g_485b28[7];
 bool function_1bf50(long tag, long level, real distance, long *out)
 {
     long selected = 0;
-    byte *groups = record_format_groups(tag);
+    long const *tag_pointer = &tag;
+    byte *groups = record_format_groups(*tag_pointer);
     long count = *(long *)groups;
     if (g_4ba019)
         distance *= 2.0f;
@@ -611,7 +612,7 @@ bool function_1bf50(long tag, long level, real distance, long *out)
         real threshold = g_485b28[level] * distance;
         for (selected = 0; selected < count; ++selected)
         {
-            byte *entries = *(byte **)(record_format_groups(tag) + 4);
+            byte *entries = *(byte **)(record_format_groups(*tag_pointer) + 4);
             if (threshold >= *(real *)(entries + selected * 10 + 6))
                 break;
         }
@@ -1546,7 +1547,10 @@ bool __stdcall function_3c3c0(bool render, bool clear)
 void function_40e30(short group, long tag, real distance, long level, word kind,
     dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context)
 {
-    if (group != NONE && function_1bf50(tag, level, distance, (long *)&distance))
+    long const *level_reference = &level;
+    word const *kind_reference = &kind;
+    (void)*kind_reference;
+    if (group != NONE && function_1bf50(tag, *level_reference, distance, (long *)&distance))
         function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
 }
 

@@ -3764,7 +3764,7 @@ void function_1e370();
 long function_155760(long local_player);
 bool function_14ddc0(long local_player);
 long function_14de70(long local_player);
-long function_cbd50(long unit, short weapon_slot);
+long function_cbd50(long unit, short slot);
 void function_2afa0(point2f const *scale);
 bool function_3fdf0(long mode, bool single_pass);
 bool function_404b0(long mode);

@@ -840,11 +840,10 @@ void __stdcall function_1e2570(long actor_index, word type, long object_index, r
 	}
 }
 
-// Activating this body changes the matched forwarding caller 0x1ca260.
 #include "unknown_1fb7e0.h"
-// Disabled: round 35: closest checked draft 48 differences loses matched forwarding caller 1ca260
-#if 0
+// Round 36: the corrected forwarding call keeps 0x1ca260 matched; this body remains 48 differences.
 // Retail 0x1e18f0
+// @retail 0x1e18f0
 void __fastcall function_1e18f0(long actor_index, long old_weapon, long player_index, long new_weapon)
 {
  long const *player_reference = &player_index;
@@ -878,7 +877,6 @@ void __fastcall function_1e18f0(long actor_index, long old_weapon, long player_i
  else if (unit != NONE)
   function_20ba60(0xbe, unit, *(long *)(player + 0x2c), NONE, NONE, 0);
 }
-#endif
 
 
 /* Actor equipment cleanup uses retail SSE arithmetic. */
@@ -1362,9 +1360,10 @@ void function_203f60(long actor_index);
 // @retail 0x1e35f0
 bool function_1e35f0(long actor_index)
 {
-	bool result = true;
+	bool actor_active = actor_get(actor_index)->unknown007;
 	s_actor_view *actor = actor_get(actor_index);
-	if (actor->unknown007 && *(long *)((byte *)actor + 0x1c) == NONE)
+	bool result = true;
+	if (actor_active && *(long *)((byte *)actor + 0x1c) == NONE)
 	{
 		long object_index = actor->unknown018;
 		volatile long other_index = *(long *)((byte *)actor + 0x1c);

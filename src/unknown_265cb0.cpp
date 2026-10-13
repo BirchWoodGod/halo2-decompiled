@@ -1368,13 +1368,12 @@ bool function_2651e0(long object_index, short *volatile output_index)
 		index = 0x7fff;
 		for (short i = 0; i < count; i++)
 		{
-			dword packed = links[i].packed_index;
-			if ((packed & 0xfff8) > 0)
+			s_prop_object_link *link = &links[i];
+			if ((link->packed_index & 0xfff8) > 0)
 			{
-				word candidate = links[i].packed_index;
-				if ((word)(candidate >> 3) < (word)index)
+				if ((word)(link->packed_index >> 3) < (word)index)
 				{
-					index = candidate >> 3;
+					index = link->packed_index >> 3;
 					result = true;
 				}
 				break;

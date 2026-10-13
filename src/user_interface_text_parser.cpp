@@ -914,12 +914,11 @@ void __stdcall parse_animating_thumbstick(long string_handle, word *buffer)
 
 PRIVATE __forceinline long selected_button_22dcbc(s_button_layout const *layout, char index)
 {
-	long result = 7;
 	if (index != NONE)
-		result = layout->buttons[index];
+		return layout->buttons[index];
 	else if (layout->buttons[7] == 7)
-		result = 6;
-	return result;
+		return 6;
+	return 7;
 }
 
 // @retail 0x22dcbc

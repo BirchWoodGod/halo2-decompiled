@@ -242,6 +242,7 @@ long function_132b80(s_bit_vector_pool *data, long mode, s_132b80_frustum const 
 	long cluster, void *filter, point3f const *center, real radius, bool use_plane,
 	real plane_offset, long count, dword flags)
 {
+	long const *local_0 = &cluster;
 	data->location.cluster_index = cluster;
 	data->location.bsp_index = g_4686c4;
 	data->location.leaf_index = NONE;
@@ -342,7 +343,7 @@ dword function_132b10(bool b, bool d, bool c, bool f, bool g, bool e, bool a)
 
 /* a 16 bit real: sign, ten bits of mantissa, then five of exponent */
 // @retail 0x135880
-real function_135880(word value)
+inline real function_135880(word value)
 {
 	union s_135881
 	{
