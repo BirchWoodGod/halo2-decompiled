@@ -334,6 +334,7 @@ void s_havok_component::initialize(long object_index)
 		fld seconds
 		fistp ticks
 	}
+	component->unknown10 = -ticks;
 	component->unknown18 = NONE;
 	component->unknown19 = NONE;
 	component->unknown20 = NONE;
@@ -341,7 +342,6 @@ void s_havok_component::initialize(long object_index)
 	component->unknown1a = false;
 	component->unknown1b = false;
 	component->unknown1c = false;
-	component->unknown10 = -ticks;
 	component->rigid_bodies.data = NULL;
 	component->rigid_bodies.size = 0;
 	component->rigid_bodies.capacity_and_flags = 0x80000000;
