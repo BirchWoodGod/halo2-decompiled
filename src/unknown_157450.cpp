@@ -1996,26 +1996,23 @@ real function_15dec0(long player_index, long other_index)
 
 	if (game_engine_get() && player_index != other_index && player_index != NONE)
 	{
-		s_engine_player *player = engine_player_get(player_index);
-
-		switch (player->value_c1)
+		switch (engine_player_get(player_index)->value_c1)
 		{
 		case 0:
+			result *= 1.0f;
 			break;
 		case 1:
-			result = 0.75f;
+			result *= 0.75f;
 			break;
 		case 2:
-			result = 0.5f;
+			result *= 0.5f;
 			break;
 		case 3:
-			result = 0.25f;
+			result *= 0.25f;
 			break;
 		}
 		if (other_index != NONE)
 		{
-			s_engine_player *other;
-
 			if (function_15ff50(player_index, 2))
 			{
 				result *= 1.5f;
@@ -2024,12 +2021,11 @@ real function_15dec0(long player_index, long other_index)
 			{
 				result *= 0.5f;
 			}
-			other = engine_player_get(other_index);
-			if (other->value194 > 0)
+			if (engine_player_get(other_index)->value194 > 0)
 			{
 				result *= 0.1f;
 			}
-			if (!TEST_FIELD_BIT(engine_options()->flags_bit7) && !function_15e020(player->team, other->team))
+			if (!TEST_FIELD_BIT(engine_options()->flags_bit7) && !function_15e020(engine_player_get(player_index)->team, engine_player_get(other_index)->team))
 			{
 				result = 0.0f;
 			}
@@ -2182,7 +2178,7 @@ bool function_15b7c0(long delta, long player_index)
 			function_15b650(player->team, delta);
 		}
 		else if (!score_teams_enabled() && delta > 0 && g_4e6948->score_to_win &&
-			globals->statborg.players[index].score >= g_4e6948->score_to_win)
+			globals->statborg.players[player_index & 0xffff].score >= g_4e6948->score_to_win)
 		{
 			function_15b3a0(player_index, 0);
 		}
@@ -2848,28 +2844,31 @@ void __stdcall function_a7840(short player_index, dword mask);
 // @retail 0x15dd40
 bool function_15dd40(long player_index)
 {
-	bool result = false;
+	bool result = true;
 	if (game_engine_get())
 	{
-		long index = player_index & 0xffff;
 		s_engine_player *player = engine_player_get(player_index);
 		if (function_158a50(player_index) && function_15b2f0())
 		{
 			if (player->value164 > 0)
 			{
 				long ticks = g_510c54->field_2_3;
-				s_event event;
 				if (player->value164 == ticks * 3 || player->value164 == ticks * 2 || player->value164 == ticks)
-					event.subtype = 20;
+				{
+					s_event event;
+					game_engine_event_initialize_inline(&event, 0, 20);
+					event.cause_player_index = player_index;
+					event.a = player_index;
+					function_19eb90(&event);
+				}
 				else if (player->value164 == 1)
-					event.subtype = 21;
-				else
-					goto update_countdown;
-				game_engine_event_initialize_inline(&event, 0, event.subtype);
-				event.a = player_index;
-				event.cause_player_index = player_index;
-				function_19eb90(&event);
-			update_countdown:
+				{
+					s_event event;
+					game_engine_event_initialize_inline(&event, 0, 21);
+					event.cause_player_index = player_index;
+					event.a = player_index;
+					function_19eb90(&event);
+				}
 				player->value164--;
 				player->value170 = player->value164 / g_510c54->field_2_3;
 				player->value170 = player->value170 < 0 ? 0 : player->value170 > 0x3ff ? 0x3ff : player->value170;
@@ -2879,13 +2878,13 @@ bool function_15dd40(long player_index)
 			if (result)
 			{
 				long elapsed = g_510c54->game_time - ((s_engine_round_clock *)g_4e9ae8)->start_time;
-				if (elapsed >= 0 && elapsed > 3 && index % 32 != elapsed % 32)
+				if (elapsed >= 0 && elapsed > 3 && elapsed % 32 != (player_index & 0xffff) % 32)
 					result = false;
 			}
 		}
+		else
+			result = false;
 	}
-	else
-		result = true;
 	return result;
 }
 
@@ -4350,15 +4349,23 @@ void __stdcall function_19ef40(long unit_index, long *first_count, long *second_
 // @retail 0x15e970
 void function_15e970(long unit_index)
 {
-	long *unit_index_reference = &unit_index;
-    byte *unit = (byte *)engine_object_get((*unit_index_reference));
+    byte *unit = (byte *)engine_object_get(unit_index);
     long first_limit, second_limit;
-    first_limit = second_limit = (function_xaee93d()->flags & 8) ? 1 : 2;
+    if (function_xaee93d()->flags & 8)
+    {
+        first_limit = 1;
+        second_limit = first_limit;
+    }
+    else
+    {
+        first_limit = 2;
+        second_limit = first_limit;
+    }
     long first_count = first_limit;
     long second_count = 0;
-    function_19ef40((*unit_index_reference), &first_count, &second_count);
+    function_19ef40(unit_index, &first_count, &second_count);
     if (!((bool)((*(dword *)((byte *)g_4e6948 + 0x184) >> 11) & 1)))
-        first_count = second_count = 0;
+        second_count = first_count = 0;
     switch (*(char *)((byte *)g_4e6948 + 0x210))
     {
     case 15:
@@ -4375,9 +4382,7 @@ void function_15e970(long unit_index)
     if (second_count > second_limit) second_count = second_limit;
     unit[0x23e] = (byte)first_count;
     unit[0x23f] = (byte)second_count;
-    long simulation_index = engine_object_get((*unit_index_reference))->simulation_index;
-    if (simulation_index != NONE)
-        function_b58c0(simulation_index, 0x400000);
+    engine_object_mark_dirty(unit_index, 0x400000);
 }
 
 #include "font_loading.h"
