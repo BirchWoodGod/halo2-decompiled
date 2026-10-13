@@ -35,14 +35,13 @@ short __stdcall function_1bcc90(long actor_index)
 // @retail 0x1bcd00
 bool __stdcall function_1bcd00(long actor_index, s_slot *slot)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	bool result = true;
+	s_actor_view *actor = actor_get(actor_index);
 
 	if (actor->unknown040)
 	{
 		byte *scratch;
 		s_2605d0_request request;
-		s_reference reference;
 		long other_index;
 		bool unknown;
 
@@ -58,7 +57,7 @@ bool __stdcall function_1bcd00(long actor_index, s_slot *slot)
 		request.unknown05b = true;
 		request.unknown69c = actor->unknown328 <= 2;
 		scratch = ai_scratch_buffer_get();
-		reference = function_2605d0(actor_index, &request, 0, (long)&other_index, scratch, &unknown);
+		s_reference reference = function_2605d0(actor_index, &request, 0, (long)&other_index, scratch, &unknown);
 		if (REFERENCE_EQUAL(reference, g_470fa0))
 		{
 			actor_get(actor_index)->unknown040 = false;
