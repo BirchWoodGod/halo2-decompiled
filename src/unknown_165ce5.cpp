@@ -113,14 +113,24 @@ struct s_first_person_indices
 	real unknown10;
 };
 
+/* the indices are three animation ids (two shorts each) at +4, +8 and +0 */
+struct s_first_person_short_pair
+{
+	short first;
+	short second;
+};
+
+static inline void first_person_short_pair_reset(s_first_person_short_pair *pair)
+{
+	pair->first = NONE;
+	pair->second = NONE;
+}
+
 static inline void first_person_indices_reset(s_first_person_indices *indices)
 {
-	indices->unknown4 = NONE;
-	indices->unknown6 = NONE;
-	indices->unknown8 = NONE;
-	indices->unknowna = NONE;
-	indices->unknown0 = NONE;
-	indices->unknown2 = NONE;
+	first_person_short_pair_reset((s_first_person_short_pair *)&indices->unknown4);
+	first_person_short_pair_reset((s_first_person_short_pair *)&indices->unknown8);
+	first_person_short_pair_reset((s_first_person_short_pair *)&indices->unknown0);
 }
 
 /* the first person weapon (0x1010 bytes) */
@@ -366,18 +376,16 @@ long first_person_character_to_interface(long character)
 }
 
 // @retail 0x168395
-void first_person_nodes_remap(transform4x3f const *base, transform4x3f *out, volatile long out_count,
+void first_person_nodes_remap(transform4x3f const *base, transform4x3f *out, long out_count,
 	transform4x3f const *nodes, long const *node_map, long render_model_index)
 {
 	s_first_person_render_model *model = (s_first_person_render_model *)g_4e3b44[render_model_index & 0xffff].bytes;
-	long capacity = out_count;
-	long count = MIN(model->node_count, capacity);
+	long count = model->node_count;
 	long i;
-	if (count <= 0)
-		return;
-	transform4x3f *destination = out;
+	if (count > out_count)
+		count = out_count;
 
-	for (i = 0; i < count; i++, destination++)
+	for (i = 0; i < count; i++)
 	{
 		long node_index = node_map[i];
 
@@ -385,11 +393,11 @@ void first_person_nodes_remap(transform4x3f const *base, transform4x3f *out, vol
 		{
 			if (base)
 			{
-				function_142a60(base, &nodes[node_index], destination);
+				function_142a60(base, &nodes[node_index], &out[i]);
 			}
 			else
 			{
-				*destination = nodes[node_index];
+				out[i] = nodes[node_index];
 			}
 		}
 	}
@@ -704,16 +712,18 @@ short first_person_weapon_animation_ticks(long weapon_index, long animation_name
 	{
 		long frame_count = *(short const *)((byte const *)animation + 0x14);
 		long event_frame = function_1dadb0(animation, 4);
-		long frame = event_frame;
+		long frame;
 
 		switch (type)
 		{
+		case 1:
+			if (event_frame != NONE && frame_count > event_frame)
+			{
+				frame = event_frame;
+				break;
+			}
 		case 0:
 			frame = frame_count;
-			break;
-		case 1:
-			if (event_frame == NONE || frame_count < event_frame)
-				frame = frame_count;
 			break;
 		case 2:
 			frame = function_1dae20(animation);

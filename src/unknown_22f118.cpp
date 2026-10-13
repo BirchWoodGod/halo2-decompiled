@@ -217,7 +217,7 @@ void c_press_start_screen::v3()
 	definition = function_22f871(this);
 	for (i = 0; i < definition->bitmap_count; i++)
 	{
-		s_tag_reference *bitmap = &definition->bitmaps[i];
+		s_tag_reference volatile *bitmap = &definition->bitmaps[i];
 
 		bitmap_tag_load(bitmap->tag_index);
 	}

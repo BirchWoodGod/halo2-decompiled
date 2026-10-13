@@ -250,32 +250,41 @@ bool c_widget::function_22ef1b()
 // @retail 0x24c024
 bool c_widget::v18(s_event *event)
 {
+	bool handled = false;
 	switch (event->type)
 	{
 	case 1:
 		function_24c1c5(this, -1);
-		return true;
+		handled = true;
+		break;
 	case 3:
 		function_24c1c5(this, 1);
-		return true;
+		handled = true;
+		break;
 	case 5:
-		if (event->param == 0 || event->param == 12)
+		long button = event->param;
+		if (button != 0 && button != 12)
+			return function_22ec73(event);
 		{
 			if (!function_22ef1b())
 			{
 				c_widget *item = function_24bae6(this);
 				if (item)
 				{
-					long key = *(long *)((byte *)item + 4);
-					key = *(long *)((byte *)item + 0x70);
-					function_24c7e4(sub84, &event, &key);
+					long type = *(long *)((byte *)item + 4);
+					long datum = *(long *)((byte *)item + 0x70);
+					volatile long key = type;
+					key = datum;
+					function_24c7e4(sub84, &event, (long *)&key);
 				}
 			}
-			return true;
-		}
+			handled = true;
 		break;
+		}
 	}
-	return function_22ec73(event);
+	if (!handled)
+		handled = function_22ec73(event);
+	return handled;
 }
 
 // @retail 0x22ec90

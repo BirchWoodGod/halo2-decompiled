@@ -1495,9 +1495,7 @@ void function_bffa0()
     byte *allocation = game_state_globals.base_address + game_state_globals.cpu_allocation_size;
     game_state_globals.cpu_allocation_size += size;
     g_4e030c = lights;
-    dword checksum = game_state_globals.allocation_size_checksum;
-    function_163ba0(&checksum, &size, sizeof(size));
-    game_state_globals.allocation_size_checksum = checksum;
+    function_163ba0(&game_state_globals.allocation_size_checksum, &size, sizeof(size));
     g_5107e8 = (s_5107e8 *)allocation;
     g_5107e8->flag8 = true;
     if (lights)

@@ -73,6 +73,13 @@ void __stdcall function_10af80(long object_index, real scale, short ticks)
 	}
 }
 
+PRIVATE __forceinline void scripted_cross_product(vector3f const *a, vector3f const *b, vector3f *result)
+{
+	result->i = a->j * b->k - a->k * b->j;
+	result->j = a->k * b->i - a->i * b->k;
+	result->k = a->i * b->j - a->j * b->i;
+}
+
 PRIVATE __forceinline void scripted_vector_scale(vector3f const *vector, real scale, vector3f *result)
 {
 	result->i = vector->i * scale;
@@ -101,11 +108,11 @@ void function_10b010(long object_index, real forward_speed, real left_speed, rea
 		vector3f left;
 		vector3f velocity;
 
-		left.i = object->forward.k * object->up.j - object->up.k * object->forward.j;
-		left.j = object->up.k * object->forward.i - object->up.i * object->forward.k;
-		left.k = object->up.i * object->forward.j - object->forward.i * object->up.j;
+		scripted_cross_product(&object->up, &object->forward, &left);
 		scripted_vector_scale(&object->forward, forward_speed, &velocity);
-		scripted_vector_add_scaled(&velocity, &left, left_speed, &velocity);
+		velocity.j = velocity.j + left.j * left_speed;
+		velocity.k = velocity.k + left.k * left_speed;
+		velocity.i = velocity.i + left.i * left_speed;
 		scripted_vector_add_scaled(&velocity, &object->up, up_speed, &velocity);
 		function_b7740(object_index, &velocity, NULL, false);
 		function_1c4b00(object_index, &velocity, NULL, true);

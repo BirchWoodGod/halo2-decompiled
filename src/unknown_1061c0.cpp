@@ -180,16 +180,15 @@ bool function_106320(s_entry_pair *pair)
 
 				if (pair->entry_index < tag->count)
 				{
-					dword flags = tag->entries[pair->entry_index].flags;
+					s_entry *entry = &tag->entries[pair->entry_index];
 
-					if ((flags & 2) && positive || (flags & 0x10))
-						return true;
+					if ((entry->flags & 2) && positive || (entry->flags & 0x10))
+						result = true;
 				}
 			}
-			return result;
 		}
 	}
-	return false;
+	return result;
 }
 
 // @retail 0x106400

@@ -59,10 +59,8 @@ bool function_152000(long player_index, short effect, short ticks)
 // @retail 0x1520a0
 void function_1520a0(long player_index, short effect, short ticks)
 {
-	byte *data = *(byte *volatile *)&g_4e8c24->data;
-	s_effect_player *player = (s_effect_player *)(data + (player_index & 0xffff) * sizeof(s_effect_player));
-	short *timer = &player->effect_timers[effect];
-	if (*timer == 0)
+	s_effect_player *player = effect_player_get(player_index);
+	if (player->effect_timers[effect] == 0)
 		function_152240(player_index, effect);
-	*timer = *timer > ticks ? *timer : ticks;
+	player->effect_timers[effect] = player->effect_timers[effect] > ticks ? player->effect_timers[effect] : ticks;
 }

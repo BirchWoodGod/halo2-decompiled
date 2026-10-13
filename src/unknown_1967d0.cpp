@@ -369,7 +369,7 @@ byte function_197d80(s_bitstream *stream, void *results)
 }
 
 // @retail 0x001984e0
-bool function_1984e0(s_input_counter *current, long count, s_input_counter *out, s_input_counter *previous)
+bool function_1984e0(s_input_counter *current, long count, s_input_counter *previous, s_input_counter *out)
 {
 	bool changed = false;
 	long i;
@@ -466,11 +466,11 @@ void __stdcall function_198540(s_input_record const *previous, s_input_record co
 
 	for (i = 0; i < 16; i++)
 	{
-		update->groups[i].flag0 = function_1984e0((s_input_counter *)current->groups[i], 45, update->groups[i].first, (s_input_counter *)previous->groups[i]);
-		update->groups[i].flag1 = function_1984e0((s_input_counter *)&current->groups[i][45], 32, update->groups[i].second, (s_input_counter *)&previous->groups[i][45]);
+		update->groups[i].flag0 = function_1984e0((s_input_counter *)current->groups[i], 45, (s_input_counter *)previous->groups[i], update->groups[i].first);
+		update->groups[i].flag1 = function_1984e0((s_input_counter *)&current->groups[i][45], 32, (s_input_counter *)&previous->groups[i][45], update->groups[i].second);
 		for (j = 0; j < 45; j++)
 		{
-			update->groups[i].entries[j].flag = function_1984e0((s_input_counter *)&current->groups[i][78 + j * 8], 7, update->groups[i].entries[j].counters, (s_input_counter *)&previous->groups[i][78 + j * 8]);
+			update->groups[i].entries[j].flag = function_1984e0((s_input_counter *)&current->groups[i][78 + j * 8], 7, (s_input_counter *)&previous->groups[i][78 + j * 8], update->groups[i].entries[j].counters);
 		}
 	}
 
@@ -478,13 +478,13 @@ void __stdcall function_198540(s_input_record const *previous, s_input_record co
 	{
 		for (j = 0; j < 16; j++)
 		{
-			update->pairs[i][j].flag = function_1984e0((s_input_counter *)current->pairs[i][j], 2, update->pairs[i][j].counters, (s_input_counter *)previous->pairs[i][j]);
+			update->pairs[i][j].flag = function_1984e0((s_input_counter *)current->pairs[i][j], 2, (s_input_counter *)previous->pairs[i][j], update->pairs[i][j].counters);
 		}
 	}
 
 	for (i = 0; i < 16; i++)
 	{
-		update->counters[i].flag = function_1984e0((s_input_counter *)current->counters[i], 45, update->counters[i].counters, (s_input_counter *)previous->counters[i]);
+		update->counters[i].flag = function_1984e0((s_input_counter *)current->counters[i], 45, (s_input_counter *)previous->counters[i], update->counters[i].counters);
 	}
 
 	for (i = 0; i < 16; i++)
@@ -668,7 +668,11 @@ void function_1990b0(long *device_count, long *devices, long *entry_count, long 
 			if (input_device(i)->active)
 				devices[(*device_count)++] = i;
 		}
-		sort_4byte(devices, *device_count, &entries, function_199010, 0);
+		{
+			long temporary;
+
+			sort_4byte(devices, *device_count, &temporary, function_199010, 0);
+		}
 
 		*entry_count = 0;
 		for (i = 0; i < 16; i++)
@@ -676,7 +680,11 @@ void function_1990b0(long *device_count, long *devices, long *entry_count, long 
 			if (g_511a74[i].active)
 				entries[(*entry_count)++] = i;
 		}
-		sort_4byte(entries, *entry_count, &entries, function_199060, 0);
+		{
+			long temporary;
+
+			sort_4byte(entries, *entry_count, &temporary, function_199060, 0);
+		}
 	}
 	else
 	{

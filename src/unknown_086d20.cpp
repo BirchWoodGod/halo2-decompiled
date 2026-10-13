@@ -167,7 +167,7 @@ struct s_simulation_machine_list
 
 /* writes the machines of a game */
 // @retail 0x87c00
-void simulation_write_machines(s_simulation_machine_list const *machines, s_bitstream *stream)
+void simulation_write_machines(s_bitstream *stream, s_simulation_machine_list const *machines)
 {
 	stream_write_checked(stream, machines->mask, 16);
 	for (long i = 0; i < 16; i++)

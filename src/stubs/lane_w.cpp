@@ -21,12 +21,6 @@ struct s_speed_result;
 
 
 struct s_bit_vector_pool;
-// @stub 0x1320f0
-s_bit_vector_pool *function_1320f0(long, long, bool, long, unsigned char const *,
-	unsigned char const *, float, void *, float, long)
-{
-	return 0;
-}
 
 
 
@@ -48,8 +42,7 @@ void __cdecl function_2ddbd0(void *data, s_visibility_sphere_query const *query,
 
 
 struct transform4x3f;
-// @stub 0xb92d0
-void function_b92d0(long index, transform4x3f const *old_parent, transform4x3f const *new_parent) {}
+
 
 class __declspec(align(16)) c_z_capsule_temp
 {

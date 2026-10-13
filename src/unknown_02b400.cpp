@@ -110,9 +110,10 @@ bool function_2f970(s_2f970_view const *view, real *out)
         real y = (*(real const volatile *)&out[3] - out[2]) * (1.0f / 480.0f) * view->offset_y;
         out[0] += x;
         real right = out[1] + x;
+        real const &right_result = right;
         out[2] -= y;
         out[3] -= y;
-        out[1] = right;
+        out[1] = right_result;
     }
     return true;
 }

@@ -146,16 +146,18 @@ int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, t
    needs an /Ob1 file */
 long function_10a8b0(s_scenery_location *location, long value);
 
+short function_10a0b0(long scenery_index);
+
 // @retail 0x10a820
 void function_10a820(long scenery_index)
 {
 	s_scenery *scenery = SCENERY_GET(scenery_index);
-	long model_index = TAG_DATA(s_scenery_definition, scenery->definition_index)->model_index;
+	s_scenery_definition *definition = TAG_DATA(s_scenery_definition, scenery->definition_index);
 	long result = NONE;
 
-	if (model_index != NONE && TAG_DATA(s_scenery_definition, scenery->definition_index)->value_c0 != 2)
+	if (definition->model_index != NONE && function_10a0b0(scenery_index) != 2)
 	{
-		long collision_model_index = TAG_DATA(s_model_definition_view, model_index)->collision_model_index;
+		long collision_model_index = TAG_DATA(s_model_definition_view, definition->model_index)->collision_model_index;
 		if (collision_model_index != NONE)
 			result = function_10a8b0(&scenery->location, TAG_DATA(s_collision_model_view, collision_model_index)->value_08);
 	}
@@ -206,30 +208,36 @@ short function_10a0b0(long scenery_index)
 
 void function_b8b70(long object_index);
 
+/* sets or clears one bit of a flags word */
+static inline void flags_set_bit(dword *flags, long bit, bool value)
+{
+	if (value)
+		*flags |= 1 << bit;
+	else
+		*flags &= ~(1 << bit);
+}
+
 // @retail 0x10a0f0
 void __stdcall function_10a0f0(long scenery_index, s_scenery_placement *placement)
 {
 	s_scenery *scenery = SCENERY_GET(scenery_index);
-	(void)&placement;
 	scenery->value_130 = NONE;
-	scenery->flag22 = false;
-	scenery->flag23 = false;
+	flags_set_bit(&scenery->object_flags, 22, false);
+	flags_set_bit(&scenery->object_flags, 23, false);
 	scenery->value_132 = function_10a040(scenery->definition_index, placement);
 	switch (scenery->value_132)
 	{
-	case 0:
-	case 3:
-		scenery->flag23 = true;
-		break;
 	case 1:
 		if (g_4686c4 >= 0 && g_4686c4 < placement->entry_count)
 		{
 			s_scenery_bsp_entry *entry = &placement->entries[g_4686c4];
 			scenery->value_130 = entry->value;
 			if (entry->value != NONE)
-				scenery->flag22 = true;
+				flags_set_bit(&scenery->object_flags, 22, true);
 		}
-		scenery->flag23 = true;
+	case 0:
+	case 3:
+		flags_set_bit(&scenery->object_flags, 23, true);
 		break;
 	default:
 		break;
@@ -260,7 +268,7 @@ long function_10a460(long object_index)
 		{
 			s_scenery *scenery = SCENERY_GET(object_index);
 
-			if (scenery->animation_state_offset != NONE)
+			if (SCENERY_GET(object_index)->animation_state_offset != NONE)
 			{
 				s_scenery_animation_state *state = (s_scenery_animation_state *)((byte *)scenery + scenery->animation_state_offset);
 				c_animation_channel *channel = &state->channels[0];
@@ -280,8 +288,7 @@ long function_10a460(long object_index)
 						fld remaining
 						fistp frames
 					}
-					result = (short)frames - 2;
-					result = result > 0 ? result : 0;
+					result = ((short)frames - 2 > 0) ? (short)frames - 2 : 0;
 				}
 			}
 		}
@@ -306,7 +313,8 @@ struct s_scenery_type_definition
 	void (__stdcall *handler20)(long);
 	void *unknown24[2];
 	bool (__stdcall *handler2c)(long, void *, bool *);
-	void *unknown30[3];
+	void (__stdcall *handler30)(long, s_scenery_placement *);
+	void *unknown34[2];
 	void (__stdcall *handler3c)(long);
 	bool (__stdcall *handler40)(long);
 	void *unknown44[11];
@@ -325,6 +333,7 @@ s_scenery_type_definition g_467ff0 =
 	function_10a030,
 	{ 0 },
 	function_10a1b0,
+	function_10a0f0,
 	{ 0 },
 	function_10a240,
 	function_10a2f0,
@@ -338,16 +347,15 @@ bool function_10a660(long volatile object_index, long animation_name, short fram
 // @retail 0x10a3f0
 void function_10a3f0(long scenery_index)
 {
-	long const &index = scenery_index;
-	s_scenery *scenery = SCENERY_GET(index);
+	s_scenery *scenery = SCENERY_GET(scenery_index);
 
 	scenery->flags &= ~1;
-	if (SCENERY_GET(index)->animation_state_offset != NONE)
+	if (SCENERY_GET(scenery_index)->animation_state_offset != NONE)
 	{
 		long graph_tag_index = ((s_scenery_animation_state *)((byte *)scenery + scenery->animation_state_offset))->graph_tag_index;
 
 		if (graph_tag_index != NONE &&
-			function_10a660(index, 0x400000c, 0, NONE, false, true, graph_tag_index))
+			function_10a660(scenery_index, 0x400000c, 0, NONE, false, true, graph_tag_index))
 		{
 			scenery->flags |= 1;
 		}
@@ -397,9 +405,7 @@ bool __stdcall function_10a1b0(long scenery_index, void *placement, bool *result
 void __stdcall function_10a250(long scenery_index)
 {
     s_scenery *scenery = SCENERY_GET(scenery_index);
-    s_184251 state;
-    state.field_0 = false;
-    function_2e90a0(state);
+    function_2e90a0(s_184251(false));
     if (!(scenery->flags & 2))
     {
         s_scenery *current = SCENERY_GET(scenery_index);
@@ -500,8 +506,7 @@ bool function_10a520(long object_index)
 	s_scenery_definition *definition = TAG_DATA(s_scenery_definition, header->scenery->definition_index);
 	bool result = false;
 	byte info[0x54];
-	if (header->cluster_index == NONE)
-		return result;
+	if (header->cluster_index != NONE)
 	{
 		if (function_20a9a0((s_type_1a7926 *)info, object_index))
 			return true;
@@ -526,14 +531,15 @@ bool function_10a520(long object_index)
 								if (index != NONE && graph_region->parts[index].value == 1)
 									count++;
 							}
-							result = region->count == count;
-							if (!result)
-								return result;
+							if (region->count != count)
+								return false;
+							result = true;
 						}
 					}
 				}
 			}
 		}
+		return result;
 	}
 	return result;
 }

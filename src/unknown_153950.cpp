@@ -23,6 +23,15 @@ real function_17ca10(real x, short curve);
 real function_30bf0(vector3f *v);
 vector3f *random_unit_vector(vector3f *result, dword *seed);
 
+static __forceinline bool local_player_present(long index)
+{
+	bool result = false;
+
+	if (index != NONE)
+		result = g_4e8c20->entries[index] != NONE;
+	return result;
+}
+
 // @retail 0x153950
 void function_153950(void)
 {
@@ -52,7 +61,7 @@ void function_153950(void)
 	{
 		s_speed_slot *slot = speed->slots + index;
 
-		if (index != NONE && g_4e8c20->entries[index] != NONE)
+		if (local_player_present(index))
 		{
 			real quarter_second = (real)g_510c54->field_2_3 * 0.25f;
 			long rounded;
@@ -400,11 +409,10 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 		function_30bf0(&v);
 
 		s_unknown_185ab0_entry *view = g_4ed284->entries + index;
-		real yaw = view->yaw;
-		real pitch = view->pitch;
+		s_view_angles angles = view->angles;
 
-		w.i = (real)(cos(yaw) * cos(pitch));
-		w.j = (real)(sin(yaw) * cos(pitch));
+		w.i = (real)(cos(angles.yaw) * cos(angles.pitch));
+		w.j = (real)(sin(angles.yaw) * cos(angles.pitch));
 		w.k = 0.0f;
 		function_30bf0(&w);
 
@@ -435,7 +443,7 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 
 			s_random_globals *random = g_4e7408;
 			real scale = function_259d0(&random->seed, __FILE__, __LINE__, slot->bounds.lower, slot->bounds.upper);
-			real rotation = function_x82e52f(&random->seed, __FILE__, __LINE__) * 6.2831855f;
+			real rotation = function_259d0(&random->seed, __FILE__, __LINE__, 0.0f, 6.2831855f);
 			vector3f *up = g_4687b0;
 			vector3f *e = &slot->forward;
 			vector3f *u = &slot->vector;
@@ -451,13 +459,14 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 			real s = (real)sin(rotation);
 			real c = (real)cos(rotation);
 			real t = (u->k * e->k + u->j * e->j + e->i * u->i) * (1.0f - c);
-			real x = u->i;
-			real y = u->j;
-			real z = u->k;
+			vector3f axis_cross;
+			axis_cross.i = u->j * e->k - u->k * e->j;
+			axis_cross.j = u->k * e->i - u->i * e->k;
+			axis_cross.k = u->i * e->j - u->j * e->i;
 
-			u->i = e->i * t + x * c - (y * e->k - z * e->j) * s;
-			u->j = e->j * t + y * c - (z * e->i - x * e->k) * s;
-			u->k = e->k * t + z * c - (x * e->j - y * e->i) * s;
+			u->i = e->i * t + u->i * c - axis_cross.i * s;
+			u->j = e->j * t + u->j * c - axis_cross.j * s;
+			u->k = e->k * t + u->k * c - axis_cross.k * s;
 			u->i = u->i * scale;
 			u->j = u->j * scale;
 			u->k = u->k * scale;
@@ -518,16 +527,16 @@ struct s_camera_effect_tag_153d10
 };
 
 // @retail 0x153d10
-void __stdcall function_153d10(short user_index, long tag_index, void *owner, void *direction, long unused, real scale, real priority, long directional)
+void __stdcall function_153d10(long user_index, long tag_index, void *owner, void *direction, long unused, real scale, real priority, bool directional)
 {
     long local_index = user_index;
     if (local_index == NONE)
         return;
     s_camera_effect_tag_153d10 *definition = (s_camera_effect_tag_153d10 *)g_4e3b44[tag_index & 0xffff].bytes;
     s_speed_slot *slot = &g_510c5c->slots[local_index];
-    long player_index = g_4e8c20->entries[local_index];
-    if (player_index != NONE)
+    if (local_player_present(local_index))
     {
+        long player_index = g_4e8c20->entries[local_index];
         long unit_index = *(long *)(g_4e8c24->data + (player_index & 0xffff) * 0x21c + 0x2c);
         if (unit_index != NONE)
         {
@@ -536,7 +545,7 @@ void __stdcall function_153d10(short user_index, long tag_index, void *owner, vo
             for (long i = 0; i < definition->count; i++)
             {
                 s_camera_effect_153d10 *effect = &definition->effects[i];
-                if (effect->type != (active ? 1 : 0))
+                if ((active && effect->type != 1) || (!active && effect->type != 0))
                 {
                     if (effect->request.duration > 0.05f && effect->request.amount > 0.05f)
                     {
@@ -601,10 +610,16 @@ void __stdcall function_153d10(short user_index, long tag_index, void *owner, vo
             slot->decay[2] = 0xff;
             return;
         }
-        long unit_index = NONE;
-        long player = g_4e8c20->entries[local_index];
-        if (player != NONE)
+        long unit_index;
+        if (local_player_present(local_index))
+        {
+            long player = g_4e8c20->entries[local_index];
             unit_index = *(long *)(g_4e8c24->data + (player & 0xffff) * 0x21c + 0x2c);
+        }
+        else
+        {
+            unit_index = NONE;
+        }
         if (function_badc0(unit_index, 3) && function_badc0(((long *)owner)[1], (dword)NONE))
         {
             s_player_state *state = function_16f3a0(local_index);
@@ -616,10 +631,12 @@ void __stdcall function_153d10(short user_index, long tag_index, void *owner, vo
                 vector3f *forward = (vector3f *)((byte *)state + 0x20);
                 vector3f *up = (vector3f *)((byte *)state + 0x2c);
                 vector3f delta = { target.x - origin.x, target.y - origin.y, target.z - origin.z };
+                vector3f cross;
                 vector3f relative;
-                relative.i = (forward->k * up->i - up->k * forward->i) * delta.j
-                    + (forward->i * up->j - forward->j * up->i) * delta.k
-                    + (forward->j * up->k - forward->k * up->j) * delta.i;
+                cross.i = forward->j * up->k - forward->k * up->j;
+                cross.j = forward->k * up->i - up->k * forward->i;
+                cross.k = forward->i * up->j - forward->j * up->i;
+                relative.i = cross.k * delta.k + cross.j * delta.j + cross.i * delta.i;
                 relative.j = forward->k * delta.k + forward->j * delta.j + forward->i * delta.i;
                 relative.k = up->k * delta.k + up->j * delta.j + up->i * delta.i;
                 *(real *)((byte *)slot + 0x8c) = relative.i;
@@ -659,8 +676,8 @@ void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
     s_game_speed *speed = g_510c5c;
     if (speed->flags & 1)
     {
-        real amount = *(real *)&speed->value20;
         transform4x3f transform = *g_4687d0;
+        real amount = *(real *)&speed->value20;
         if (speed->timer24 > 0)
         {
             if (speed->flags & 2)
@@ -692,24 +709,24 @@ void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
                 amount = function_17ca10(1.0f - (slot->bounds.duration - (real)slot->timer80) / slot->bounds.duration,
                     *(short *)&slot->bounds.unknown04[0]) * slot->priority9c;
             real angle = amount * slot->bounds.unknown04[1];
+            real sine = (real)sin(angle), cosine = (real)cos(angle);
             vector3f axis;
             axis.i = g_4687b0->j * slot->forward.k - g_4687b0->k * slot->forward.j;
             axis.j = slot->forward.i * g_4687b0->k - slot->forward.k * g_4687b0->i;
             axis.k = g_4687b0->i * slot->forward.j - slot->forward.i * g_4687b0->j;
-            real sine = (real)sin(angle), cosine = (real)cos(angle);
             real x = axis.i, y = axis.j, z = axis.k;
             transform4x3f transform;
             transform.scale = 1.0f;
             transform.forward.i = x * x + (1.0f - x * x) * cosine;
-            transform.left.j = y * y + (1.0f - y * y) * cosine;
-            transform.up.k = z * z + (1.0f - z * z) * cosine;
             real xy = (1.0f - cosine) * y * x;
-            real xz = (1.0f - cosine) * z * x;
-            real yz = (1.0f - cosine) * z * y;
             transform.left.i = xy - z * sine;
             transform.forward.j = xy + z * sine;
+            transform.left.j = y * y + (1.0f - y * y) * cosine;
+            real xz = (1.0f - cosine) * z * x;
             transform.up.i = xz + y * sine;
             transform.forward.k = xz - y * sine;
+            transform.up.k = z * z + (1.0f - z * z) * cosine;
+            real yz = (1.0f - cosine) * z * y;
             transform.up.j = yz - x * sine;
             transform.left.k = yz + x * sine;
             real distance = slot->bounds.unknown04[2] * amount;

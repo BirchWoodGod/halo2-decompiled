@@ -1970,7 +1970,7 @@ real function_2760a0(long actor_index, long script_index, long name, long sound_
 	return seconds;
 }
 
-bool function_291ea0(long arg_80f1d4, long script_index, long actor_index, real *duration);
+bool function_291ea0(long arg_80f1d4, long actor_index, long script_index, real *duration);
 
 /* the ticks a vocalization of the first actor an ai index names lasts */
 // @retail 0x276160
@@ -1984,7 +1984,7 @@ short function_276160(long ai_index, long arg_80f1d4)
 		if (ai_actor_iterator_next(&iterator))
 		{
 			real seconds;
-			function_291ea0(arg_80f1d4, NONE, iterator.actor_index, &seconds);
+			function_291ea0(arg_80f1d4, iterator.actor_index, NONE, &seconds);
 			if (seconds > g_45dbd8)
 				duration = seconds;
 		}
@@ -2082,7 +2082,7 @@ short function_2761d0(long ai_index, long arg_80f1d4)
 			real best_rating = 0.0f;
 			real seconds = 0.0f;
 
-			function_291ea0(arg_80f1d4, NONE, actor_index, &seconds);
+			function_291ea0(arg_80f1d4, actor_index, NONE, &seconds);
 			if (seconds > g_45dbd8)
 				duration = seconds;
 
@@ -2248,8 +2248,10 @@ bool function_276380(long ai_index)
 	long actor_index = function_272b70(ai_index);
 	if (actor_index != NONE)
 	{
-		s_unit_request request = { 0 };
-		result = function_276381(actor_datum_get(actor_index)->unit_index, &request);
+		long unit_index = actor_datum_get(actor_index)->unit_index;
+		s_unit_request request;
+		memset(&request, 0, sizeof(request));
+		result = function_276381(unit_index, &request);
 	}
 	return result;
 }
@@ -2604,7 +2606,7 @@ struct s_scenario_point
 {
 	byte unknown00[0x20];
 	s_type_c3b527 position;
-	byte unknown2e[0x3c - 0x2e];
+	byte unknown2e[0x3c - 0x30];
 };
 
 struct s_scenario_point_set
@@ -2686,7 +2688,7 @@ void __stdcall function_2772b0(long animation_graph_index, long animation_name, 
 		s_actor_datum *actor = actor_datum_get(g_50240c);
 		real duration = 0.0f;
 
-		if (function_11b520(animation_graph_index, actor->unit_index, animation_name, interpolate, NONE, false))
+		if (function_11b520(actor->unit_index, animation_graph_index, animation_name, interpolate, NONE, false))
 		{
 			real ticks_real = (real)g_510c54->field_2_3 * (function_11b6b0(actor->unit_index) * scale);
 			long ticks;
@@ -2724,6 +2726,18 @@ struct s_actor_2773d0
 	bool flying;
 };
 
+struct s_2773d1
+{
+	volatile long field_0;
+	vector3f field_4;
+	union
+	{
+		point3f field_0;
+		vector3f field_1;
+	} field_10;
+	point3f field_1c;
+};
+
 bool function_25ab50(long reference);
 void function_118e80(long object_index, vector3f *forward);
 vector3f *function_11d090(vector3f const *v, vector3f *out);
@@ -2749,39 +2763,36 @@ void function_2773d0(long facing_point_reference, long point_reference)
 	if (g_50240c != NONE && function_25ab50(point_reference))
 	{
 		s_actor_2773d0 *actor = (s_actor_2773d0 *)actor_datum_get(g_50240c);
-		long unit_index = actor->unit_index;
-		point3f position;
-		point3f facing_position;
-		vector3f forward;
-		vector3f up;
+		s_2773d1 local_0;
+		local_0.field_0 = actor->unit_index;
 
-		function_210850(scenario_point_get(point_reference), &position);
-		function_118e80(unit_index, &forward);
+		function_210850(scenario_point_get(point_reference), &local_0.field_1c);
+		function_118e80(local_0.field_0, &local_0.field_4);
 		if (function_25ab50(facing_point_reference))
 		{
-			function_210850(scenario_point_get(facing_point_reference), &facing_position);
-			vector3d_from_points3d(&position, &facing_position, &forward);
+			function_210850(scenario_point_get(facing_point_reference), &local_0.field_10.field_0);
+			vector3d_from_points3d(&local_0.field_1c, &local_0.field_10.field_0, &local_0.field_4);
 			if (actor->flying)
 			{
-				if (function_30bf0(&forward) == 0.0f)
-					function_118e80(unit_index, &forward);
-				function_11d090(&forward, &up);
+				if (function_30bf0(&local_0.field_4) == g_45dbd8)
+					function_118e80(local_0.field_0, &local_0.field_4);
+				function_11d090(&local_0.field_4, &local_0.field_10.field_1);
 			}
 			else
 			{
-				forward.k = 0.0f;
-				if (normalize2d((point2f *)&forward) == 0.0f)
+				local_0.field_4.k = 0.0f;
+				if (normalize2d((point2f *)&local_0.field_4) == 0.0f)
 				{
-					function_118e80(unit_index, &forward);
-					forward.k = 0.0f;
-					if (normalize2d((point2f *)&forward) == 0.0f)
-						forward = *g_4687a8;
+					function_118e80(local_0.field_0, &local_0.field_4);
+					local_0.field_4.k = 0.0f;
+					if (normalize2d((point2f *)&local_0.field_4) == g_45dbd8)
+						local_0.field_4 = *g_4687a8;
 				}
-				up = *g_4687b0;
+				local_0.field_10.field_1 = *g_4687b0;
 			}
 
-			long object_index = function_baf80(unit_index);
-			function_b75a0(object_index, &position, &forward, &up, NULL, false);
+			long object_index = function_baf80(local_0.field_0);
+			function_b75a0(object_index, &local_0.field_1c, &local_0.field_4, &local_0.field_10.field_1, NULL, false);
 			function_b73b0(object_index);
 			function_1f4280(g_50240c);
 		}

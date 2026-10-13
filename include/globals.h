@@ -1101,11 +1101,25 @@ struct s_185ab0_flags
 	dword : 7;
 };
 
+/* a view's facing angles */
+struct s_view_angles
+{
+	real yaw;
+	real pitch;
+};
+
 struct s_unknown_185ab0_entry
 {
 	byte unknown00[0x10];
-	real yaw;
-	real pitch;
+	union
+	{
+		struct
+		{
+			real yaw;
+			real pitch;
+		};
+		s_view_angles angles;
+	};
 	byte unknown18[0x2e - 0x18];
 	short index;
 	byte unknown30[0x89 - 0x30];

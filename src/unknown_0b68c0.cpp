@@ -462,34 +462,51 @@ struct s_remove_object_header
 
 
 
-// Disabled: retail initializes shared partition aggregates through their persistent addresses.
-#if 0
 void function_d4830();
 void function_1088e0();
 void function_bffa0();
-void *function_123dd0(long size, char const *name);
-void *game_state_malloc_aligned(long size, long alignment);
-struct s_cluster_partition;
+struct s_loop_allocator;
+s_loop_allocator *game_state_loop_allocator_new(long size, char const *name);
+void *function_123d40(char const *name, char const *type, long size);
+struct s_cluster_partition
+{
+    long *cluster_first_data_references;
+    s_record_pool *data_references;
+    s_record_pool *cluster_references;
+};
 void function_1cabc0(s_cluster_partition *partition, char const *name, long payload_size);
 
-// Retail 0xb67c0
+s_record_pool *data_new(char const *name, long maximum_count, long size, long alignment_bits, c_data_allocator *allocator);
+
+// @retail 0xb67c0
 void function_b67c0()
 {
     function_d4830();
     function_1088e0();
     function_bffa0();
-    g_4e0300 = record_pool_new_dynamic("object", 0x800, 12, 0, g_510c2c);
-    g_4de2ec = (s_data_header_40 *)function_123dd0(0x100000, "objects");
-    byte *state = (byte *)game_state_malloc_aligned(0x84, 4);
+    g_4e0300 = data_new("object", 0x800, 12, 0, g_510c2c);
+    g_4de2ec = (s_data_header_40 *)game_state_loop_allocator_new(0x100000, "objects");
+    byte *state = (byte *)function_123d40(NULL, NULL, 0x84);
     g_4de2f0 = false;
     memset(state, 0, 0x84);
-    memset(g_4de2f8, 0, 0x2008);
+    g_object_masks_storage.field_0 = false;
+    memset(g_object_masks_storage.unknown_1, 0, sizeof(g_object_masks_storage.unknown_1));
+    g_object_masks_storage.field_4 = 0;
+    memset(g_4de300, 0, sizeof(g_4de300));
     g_4de2f4 = (s_object_list *)state;
-    g_4de2d0 = (long *)game_state_malloc_aligned(0xa00, 4);
-    function_1cabc0((s_cluster_partition *)&g_4de2e0, "collideable object", 0x14);
-    function_1cabc0((s_cluster_partition *)&g_4de2d4, "noncollideable object", 0x14);
+    g_4de2d0 = (long *)function_123d40(NULL, NULL, 0xa00);
+    s_cluster_partition colliding, noncolliding;
+    function_1cabc0(&colliding, "collideable object", 0x14);
+    g_4de2e0 = colliding.cluster_first_data_references;
+    g_4de2e4 = colliding.data_references;
+    g_4de2e8 = colliding.cluster_references;
+    function_1cabc0(&noncolliding, "noncollideable object", 0x14);
+    g_4de2d4 = noncolliding.cluster_first_data_references;
+    g_4de2d8 = noncolliding.data_references;
+    g_4de2dc = noncolliding.cluster_references;
 }
-#endif
+
+
 
 
 s_partition_noncolliding_storage g_partition_noncolliding_storage;

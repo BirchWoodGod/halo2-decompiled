@@ -247,17 +247,13 @@ static inline __int64 pending_read_ticks(void)
  __asm rdtsc
 }
 
+#include "unknown_080e10.h"
+
 struct s_pending_message_storage : s_pending_message_header
 {
  long capacity;
 };
 
-static __forceinline __int64 function_80e13(void)
-{
- volatile long local_0 = 0;
- volatile long local_1 = 0;
- __asm rdtsc
-}
 // @retail 0x80e10
 bool function_80e10(s_pending_message_storage *request, void **output, long *size)
 {
@@ -266,33 +262,7 @@ bool function_80e10(s_pending_message_storage *request, void **output, long *siz
  bool result = false;
  if ((dword)capacity >= 16 && !request->data)
  {
-  __int64 start = function_80e13();
-  void *allocation = 0;
-  if (capacity > 0 && g_4e6464->page_count > 0)
-  {
-   long attempts = 0;
-   for (;;)
-   {
-    allocation = (void *)function_12d2f0(*(volatile long *)local_0, (long)request, 0, (long)function_812d0);
-    if (allocation) break;
-    if (attempts < 90)
-    {
-     attempts++;
-     function_12c600();
-    }
-    else
-    {
-     __int64 elapsed = function_80e13() - start;
-     if (elapsed < 0)
-      elapsed = 0;
-     if (!(timing_ticks_to_seconds(elapsed) < 1.0f))
-      break;
-     D3DDevice_KickPushBuffer();
-     D3DDevice_IsBusy();
-     SwitchToThread();
-    }
-   }
-  }
+  void *allocation = (void *)function_80e14(capacity, (long)request, 0, (long)function_812d0, 90, 1.0f);
   request->data = allocation;
   if (allocation)
   {

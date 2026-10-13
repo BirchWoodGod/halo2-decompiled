@@ -155,7 +155,8 @@ short __stdcall function_1c04f0(long actor_index, s_slot *slot, bool active)
 		s_prop_node_view *node = prop_node_get(actor->prop_index);
 		s_prop_state_position *prop = (s_prop_state_position *)prop_node_state(node);
 
-		if (function_110ab0(actor->unknown018))
+		long local_4 = actor->unknown018;
+		if (function_110ab0(local_4))
 		{
 			result = g_46fbe8;
 		}
@@ -169,7 +170,7 @@ short __stdcall function_1c04f0(long actor_index, s_slot *slot, bool active)
 			result = g_46fbe8;
 			if (local_0)
 			{
-				long local_1 = g_510c54->game_time;
+				int local_1 = g_510c54->game_time;
                 long local_2 = game_seconds_to_ticks_round(4.0f);
                 if (local_1 - local_3->unknown14 > local_2)
 				{

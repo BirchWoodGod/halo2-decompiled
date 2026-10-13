@@ -30,6 +30,10 @@ long __stdcall function_b7b40(void *creation)
 	return 0;
 }
 
+
+
+
+
 // @stub 0xa58d0
 long function_a58d0(long a)
 {

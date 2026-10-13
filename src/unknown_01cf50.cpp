@@ -645,12 +645,14 @@ s_type_7ba8e9 *function_137550(long group_index, short bitmap_index);
 // @retail 0x14390
 bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority)
 {
-    long slot = stage;
     if (bitmap)
     {
+        long slot = stage;
         g_51f3c8[1][slot] = function_12310((s_bitmap_view *)bitmap, priority);
-        g_485af4[slot] = *(short *)((byte *)bitmap + 4);
-        g_485b04[slot] = *(short *)((byte *)bitmap + 6);
+        long height = *(short *)((byte *)bitmap + 6);
+        long width = *(short *)((byte *)bitmap + 4);
+        g_485af4[slot] = width;
+        g_485b04[slot] = height;
     }
     return true;
 }
@@ -658,6 +660,8 @@ bool function_14390(short stage, s_type_7ba8e9 *bitmap, real priority)
 // @retail 0x14480
 bool function_14480(long tag, short stage, short index)
 {
+    // Keep the stage in its stack slot across the bitmap lookup.
+    short const *stage_reference = &stage;
     bool result = false;
     if (tag != NONE)
     {
@@ -669,7 +673,7 @@ bool function_14480(long tag, short stage, short index)
             if (bitmap)
             {
                 if (function_12360((s_bitmap_view *)bitmap, 0.0f))
-                    function_14390(stage, bitmap, 0.0f);
+                    function_14390(*stage_reference, bitmap, 0.0f);
                 else result = true;
             }
         }
@@ -680,6 +684,7 @@ bool function_14480(long tag, short stage, short index)
 // @retail 0x144f0
 void function_144f0(long tag, short stage, long fallback, short fallback_index, short index, real priority)
 {
+    long const *fallback_reference = &fallback;
     s_type_7ba8e9 *bitmap;
     if (tag != NONE)
     {
@@ -688,11 +693,11 @@ void function_144f0(long tag, short stage, long fallback, short fallback_index, 
         if (count > 0)
         {
             bitmap = function_137550(tag, (short)(index % count));
-            if ((long)*(short *)((byte *)bitmap + 0xa) == (long)fallback)
+            if ((long)*(short *)((byte *)bitmap + 0xa) == *fallback_reference)
                 goto selected;
         }
     }
-    tag = *(long *)(g_485a80 + fallback * 8 + 0x64);
+    tag = *(long *)(g_485a80 + *fallback_reference * 8 + 0x64);
     if (tag == NONE) return;
     bitmap = function_137550(tag, fallback_index);
     if (!bitmap) return;
@@ -2774,17 +2779,19 @@ bool function_1c8c0(byte const *definition, dword mask,
 bool function_1caa0(long tag, byte const *selection, word const *kind, byte const *definition,
     s_1c8c0_stream const *third, s_1c8c0_stream const *second, s_1c8c0_stream const *first)
 {
-    signed char index;
-    switch (*kind)
+    long mode = *(word const volatile *)(selection + 0x14);
+    long offset;
+    word const *const &kind_reference = kind;
+    switch (*kind_reference)
     {
-    case 1: index = (signed char)selection[0x10]; break;
-    case 2: index = (signed char)selection[0x10]; break;
-    case 3: index = (signed char)selection[0x10]; break;
-    case 4: index = (signed char)selection[0x11]; break;
-    case 5: index = (signed char)selection[0x11]; break;
-    default: index = (signed char)selection[0x10]; break;
+    case 1: offset = 0x10; break;
+    case 2: offset = 0x10; break;
+    case 3: offset = 0x10; break;
+    case 4: offset = 0x11; break;
+    case 5: offset = 0x11; break;
+    default: offset = 0x10; break;
     }
-    long mode = *(word const *)(selection + 0x14);
+    long index = (signed char)selection[offset];
     long shader = function_1cb20(mode, index, tag);
     function_1c590((s_shader_cache *)g_51f0f0, tag, shader);
     dword mask = function_1cb70(tag, shader);
@@ -2806,11 +2813,11 @@ dword g_484ce8[53];
 // @retail 0x12490
 bool function_12490()
 {
-    bool result = true;
+    volatile bool result = true;
     D3DPRESENT_PARAMETERS parameters;
     memset(&parameters, 0, sizeof(parameters));
     g_509350 = 1;
-    parameters.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+    dword flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
     parameters.Windowed = false;
     parameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
     parameters.EnableAutoDepthStencil = true;
@@ -2821,18 +2828,21 @@ bool function_12490()
     parameters.BackBufferHeight = 480;
     parameters.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
     if (g_485ac2)
-        parameters.Flags |= D3DPRESENTFLAG_WIDESCREEN;
+        flags |= D3DPRESENTFLAG_WIDESCREEN;
     if (g_485ac6)
-        parameters.Flags |= D3DPRESENTFLAG_PROGRESSIVE;
+        flags |= D3DPRESENTFLAG_PROGRESSIVE;
+    parameters.Flags = flags;
     D3DDevice *device = NULL;
     Direct3D_CreateDevice(0, D3DDEVTYPE_HAL, NULL, D3DCREATE_HARDWARE_VERTEXPROCESSING, &parameters, &device);
     g_5093b0 = device;
     if (!g_5093b0)
     {
         g_5093b0 = NULL;
-        return false;
+        result = false;
+        goto done;
     }
     memcpy(g_484ce8, g_47ffd8, sizeof(g_484ce8));
+done:
     return result;
 }
 
@@ -3089,10 +3099,10 @@ void __stdcall function_1e930(long opaque)
         function_0222d0(D3DRS_ALPHATESTENABLE, 0);
         function_0222d0(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
         function_0222d0(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-        *(volatile long *)&opaque = D3DRS_BLENDOP;
-        function_0222d0((D3DRENDERSTATETYPE)*(volatile long *)&opaque, D3DBLENDOP_ADD);
-        *(volatile long *)&opaque = D3DRS_ZWRITEENABLE;
-        function_0222d0((D3DRENDERSTATETYPE)*(volatile long *)&opaque, 0);
+        opaque = D3DRS_BLENDOP;
+        function_0222d0(*(D3DRENDERSTATETYPE const *)&opaque, D3DBLENDOP_ADD);
+        opaque = D3DRS_ZWRITEENABLE;
+        function_0222d0(*(D3DRENDERSTATETYPE const *)&opaque, 0);
         g_484f68.PSFinalCombinerInputsEFG = 0x1400;
     }
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x14), 0);
@@ -3334,7 +3344,7 @@ bool function_12420()
         D3DDevice_Swap(0);
         if (g_5093b0)
         {
-            D3DDevice_Release();
+            ((D3DDevice *)g_5093b0)->Release();
             g_5093b0 = NULL;
         }
     }
@@ -3463,6 +3473,7 @@ void __stdcall function_4d640(short index, long mode, bool setup)
 // @retail 0x4d720
 void function_4d720(short index, long mode)
 {
+    short const *material_index = &index;
     s_44940_entry *entry = &g_4ba138[index];
     if (entry->unknown10[10] != 0xff && !(fabs(g_4b8494 - 1.0f) < 0.0001f))
     {
@@ -3471,8 +3482,14 @@ void function_4d720(short index, long mode)
     }
     if (entry->unknown00 & 0x800)
         function_12d50(NULL, false, NULL);
-    if ((mode == 1 || mode == 3) && ((entry->unknown00 & 0x4000) || g_485a75 || g_485a76))
-        function_15370(1);
+    switch (mode)
+    {
+    case 1:
+    case 3:
+        if (g_485a75 || g_485a76 || (g_4ba138[*material_index].unknown00 & 0x4000))
+            function_15370(1);
+        break;
+    }
 }
 
 
@@ -4171,9 +4188,13 @@ void function_4fe20(void)
     {
         function_47930(2, 0, 6);
         g_4b82ec = 0;
-        D3DDevice_SetRenderState(D3DRS_ALPHATESTENABLE, 0);
-        D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
+        /* alpha test off and stage 0's colour sign cleared, written out: the
+           barrier keeps the stage's two dirty-flag updates apart */
+        D3DDevice_SetRenderState_Simple(D3DSIMPLERENDERSTATEENCODE[D3DRS_ALPHATESTENABLE], 0);
+        D3D__DirtyFlags |= D3DDIRTYFLAG_TEXTURE_STATE_0;
         _ReadWriteBarrier();
+        D3D__RenderState[D3DRS_ALPHATESTENABLE] = 0;
+        D3D__TextureState[0][D3DTSS_COLORSIGN] = 0;
         D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
         g_4b82e8 = 1;
         D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
@@ -7635,7 +7656,6 @@ void function_12190()
     }
     memset(&g_4e6420, 0, 0x34);
     MmFreeContiguousMemory((void *)0x80061000);
-    __debugbreak();
     __assume(0);
 }
 
@@ -7692,7 +7712,12 @@ bool function_1eff0()
 extern long g_4e28f4[11];
 struct s_font_character_header;
 long font_cache_find_character(long font_index, long character);
-s_font_character_header *font_cache_get_character_header(long font_index, long character, dword flags);
+struct s_font_cache_flags
+{
+    dword wait : 1;
+    dword create : 1;
+};
+s_font_character_header *font_cache_get_character_header(long font_index, long character, s_font_cache_flags flags);
 void __stdcall function_1f5c0(long character);
 
 // @retail 0x1f490
@@ -7703,7 +7728,8 @@ void __stdcall function_1f490(long unused, long font, long character, long color
     long index = font_cache_find_character(g_4e28f4[font], character);
     if (index == NONE)
     {
-        font_cache_get_character_header(font, character, 3);
+        s_font_cache_flags flags = { true, true };
+        font_cache_get_character_header(font, character, flags);
         index = font_cache_find_character(g_4e28f4[font], character);
         if (index == NONE) return;
     }
