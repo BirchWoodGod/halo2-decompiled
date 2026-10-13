@@ -1745,7 +1745,7 @@ void function_1786f0(s_effect_marker_source const *source, s_effect_object_marke
 	{
 		s_effect_marker const *marker = &source->markers[marker_index];
 
-		if (matrix->scale != 0.0f)
+		if (0.0f != matrix->scale)
 		{
 			vector3f offset;
 
@@ -1770,9 +1770,7 @@ void function_1786f0(s_effect_marker_source const *source, s_effect_object_marke
 			up.j = 0.0f;
 			up.k = 0.0f;
 		}
-		position.x = up.i;
-		position.y = up.j;
-		position.z = up.k;
+		position = *(point3f const *)&up;
 		forward.i = matrix->forward.k * marker->forward.k + matrix->forward.j * marker->forward.j + matrix->forward.i * marker->forward.i;
 		forward.j = matrix->left.k * marker->forward.k + matrix->left.j * marker->forward.j + matrix->left.i * marker->forward.i;
 		forward.k = matrix->up.k * marker->forward.k + matrix->up.j * marker->forward.j + matrix->up.i * marker->forward.i;
@@ -1801,10 +1799,12 @@ void function_1786f0(s_effect_marker_source const *source, s_effect_object_marke
 	out->matrix.left.j = up.k * forward.i - forward.k * up.i;
 	out->matrix.left.k = forward.j * up.i - up.j * forward.i;
 	out->matrix.up = up;
-	out->matrix.position.x = 0.0f;
-	out->matrix.position.y = 0.0f;
-	out->matrix.position.z = 0.0f;
-	out->matrix.position = position;
+	point3f *out_position = &out->matrix.position;
+
+	out_position->x = 0.0f;
+	out_position->y = 0.0f;
+	out_position->z = 0.0f;
+	*out_position = position;
 }
 
 // @retail 0x178bc0

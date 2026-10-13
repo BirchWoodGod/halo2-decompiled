@@ -4815,6 +4815,7 @@ void function_159ac0(void)
     }
 }
 
+__declspec(noinline) void function_15cba0(long mode);
 
 // @retail 0x15cba0
 void function_15cba0(long mode)
@@ -5169,21 +5170,33 @@ long entity_table_new_entity(c_entry_table *table, long handler_index);
 long function_b57d0(long handler_index, long object_index);
 void function_15cba0(long mode);
 
+static inline long local_user_next_158530(long index)
+{
+	long result = NONE;
+	long start = index == NONE ? 0 : index + 1;
+
+	for (long i = start; i < 4; i++)
+	{
+		if (g_4e8c20->entries[i] != NONE)
+		{
+			result = i;
+			break;
+		}
+	}
+	return result;
+}
+
 // @retail 0x158530
 void function_158530(void)
 {
     if (game_engine_get())
     {
         if (g_4e6948->mode != 4) function_157ae0();
-        s_index_table *users = g_4e8c20;
         s_game_engine_globals *globals = function_xaee93d();
-        for (long user = 0; user < 4; ++user)
+        for (long user = local_user_next_158530(NONE); user != NONE; user = local_user_next_158530(user))
         {
-            if (*(long *)((byte *)users + 0xc + user * 4) != NONE)
-            {
-                globals->timers[user] = 1.0f;
-                globals->timer_flags |= (byte)(1 << user);
-            }
+            globals->timers[user] = 1.0f;
+            globals->timer_flags |= (byte)(1 << user);
         }
         globals->value6c = 1;
         globals->value_c04 = 1;
@@ -5197,8 +5210,9 @@ void function_158530(void)
                 long handle = function_b57d0(current, NONE);
                 if (handle != NONE)
                 {
+                    c_entry_table *entry_table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
                     function_xaee93d()->index24 = handle;
-                    ((c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098)->function_08a400(handle);
+                    entry_table->function_08a400(handle);
                 }
             }
         }
@@ -5209,23 +5223,25 @@ void function_158530(void)
             long handle = entity_table_new_entity(table, 7);
             if (handle != NONE)
             {
-                *(long *)&table->entries[handle & 0x3ff].state = NONE;
+                table->entries[handle & 0x3ff].unknown08 = NONE;
+                c_entry_table *entry_table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
                 function_xaee93d()->index28 = handle;
-                ((c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098)->function_08a400(handle);
+                entry_table->function_08a400(handle);
             }
         }
-        for (short i = 0; i < 16; ++i)
+        for (long i = 0; i < 16; ++i)
         {
-            mode = ((c_class_6a600 *)g_4cf77c)->state;
+            c_class_6a600 *state_object = (c_class_6a600 *)g_4cf77c;
+            mode = state_object->state;
             if ((mode == 4 || mode == 5) && mode != 3 && mode != 5)
             {
-                c_entry_table *table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
+                c_entry_table *table = (c_entry_table *)&state_object->distribution->field_2098;
                 long handle = entity_table_new_entity(table, 6);
                 if (handle != NONE)
                 {
-                    table->entries[handle & 0x3ff].state = (void *)NONE;
-                    function_xaee93d()->slots[i] = handle;
-                    table = (c_entry_table *)&((c_class_6a600 *)g_4cf77c)->distribution->field_2098;
+                    table->entries[handle & 0x3ff].unknown08 = NONE;
+                    table = (c_entry_table *)&state_object->distribution->field_2098;
+                    function_xaee93d()->slots[(short)i] = handle;
                     s_entry *entry = &table->entries[handle & 0x3ff];
                     c_entry_handler *handler = table->handlers->handlers[entry->handler_index];
                     handler->v18(entry, entry->data_size, entry->data);

@@ -1146,82 +1146,80 @@ void function_bba20(long);
 long function_184000(long, long);
 void __stdcall function_b8540(long);
 
+static __forceinline void item_release_impulse_10b4d0(long object_index)
+{
+	real scale = g_510c54->rate * g_51e9c4->unknown0;
+	vector3f velocity = {g_4687bc->i*scale, g_4687bc->j*scale, g_4687bc->k*scale};
+	function_10cf80(&velocity, object_index, false);
+}
+
 // @retail 0x10b4d0
 bool __stdcall function_10b4d0(long object_index)
 {
-    struct { 
-        s_item * item;
-        byte * definition;
-    } locals;
-    locals.item = ITEM_GET(object_index);
-    locals.definition = g_4e3b44[locals.item->definition_index & 0xffff].bytes;
+    s_item *item;
+    byte *definition;
+    item = ITEM_GET(object_index);
+    definition = g_4e3b44[item->definition_index & 0xffff].bytes;
     bool result = false;
-    long parent = locals.item->parent_index;
-    if ((bool)((locals.item->object_flags >> 8) & 1))
+    long parent;
+    if ((bool)((item->object_flags >> 8) & 1))
     {
-        if (locals.item->flags_c1 & 1)
+        if (item->flags_c1 & 1)
         {
-            if (!(bool)((*(dword *)(locals.definition + 0xbc) >> 2) & 1))
+            if (!(bool)((*(dword *)(definition + 0xbc) >> 2) & 1))
             {
-                bool impulse = false;
-                if (TEST_FIELD_BIT(locals.item->flag5) && locals.item->bsp_index == g_4686c4)
+                if (TEST_FIELD_BIT(item->flag5) && item->bsp_index == g_4686c4)
                 {
-                    if (locals.item->value_136 & 8)
+                    if (item->value_136 & 8)
                     {
-                        if (!function_184000(locals.item->surface_index, locals.item->value_137))
+                        if (!(byte)function_184000(item->value_137, item->surface_index))
                         {
-                            locals.item->flag5 = false;
-                            impulse = true;
+                            item->flags_12c &= 0xdf;
+                            item_release_impulse_10b4d0(object_index);
                         }
                         result = true;
                     }
                 }
-                else if (TEST_FIELD_BIT(locals.item->flag6))
+                else if (TEST_FIELD_BIT(item->flag6))
                 {
-                    long other = *(long *)((byte *)locals.item + 0x13c);
+                    long other = *(long *)((byte *)item + 0x13c);
                     if (function_badc0(other, ~0UL))
                     {
                         point3f point;
-                        transform4x3f_apply_point(function_b8bd0(other, *((byte *)locals.item + 0x13b)),
-                            (point3f *)((byte *)locals.item + 0x140), &point);
-                        function_10d710(&locals.item->spin_axis, object_index, &point, NULL);
+                        transform4x3f_apply_point(function_b8bd0(other, *((byte *)item + 0x13b)),
+                            (point3f *)((byte *)item + 0x140), &point);
+                        function_10d710(&item->spin_axis, object_index, &point, NULL);
                     }
                     else
                     {
-                        locals.item->flag6 = false;
-                        impulse = true;
+                        item->flags_12c &= 0xbf;
+                        item_release_impulse_10b4d0(object_index);
                     }
                     result = true;
                 }
-                if (impulse)
-                {
-                    real scale = g_510c54->rate * g_51e9c4->unknown0;
-                    vector3f velocity = {g_4687bc->i*scale, g_4687bc->j*scale, g_4687bc->k*scale};
-                    function_10cf80(&velocity, object_index, false);
-                }
             }
-            if (TEST_FIELD_BIT(locals.item->flag4))
+            if (TEST_FIELD_BIT(item->flag4))
             {
-                locals.item->angular_velocity.i *= 0.9f;
-                locals.item->angular_velocity.j *= 0.9f;
-                locals.item->angular_velocity.k *= 0.9f;
+                item->angular_velocity.i *= 0.9f;
+                item->angular_velocity.j *= 0.9f;
+                item->angular_velocity.k *= 0.9f;
                 function_10d5f0(object_index);
                 result = true;
             }
         }
-        if (!(locals.item->flags_c1 & 1))
+        if (!(item->flags_c1 & 1))
         {
             function_bba20(object_index);
             result = true;
         }
-        if (locals.item->value_12e > 0)
+        if (item->value_12e > 0)
         {
-            --locals.item->value_12e;
-            if (g_4e6948->mode != 4 && locals.item->value_12e == 0)
+            --item->value_12e;
+            if (g_4e6948->mode != 4 && item->value_12e == 0)
             {
                 s_damage_owner owner;
                 function_bc190(object_index, &owner);
-                long damage_index = *(long *)(locals.definition + 0x110);
+                long damage_index = *(long *)(definition + 0x110);
                 if (damage_index != NONE)
                 {
                     point3f position;
@@ -1237,15 +1235,19 @@ bool __stdcall function_10b4d0(long object_index)
                     data.position = position;
                     function_d6c80(&data, NONE);
                 }
-                function_176780(object_index, (s_effect_owner const *)&owner, 0.0f, *(long *)(locals.definition + 0x128), 0.0f, NULL, NULL);
+                function_176780(object_index, (s_effect_owner const *)&owner, 0.0f, *(long *)(definition + 0x128), 0.0f, NULL, NULL);
                 function_b8540(object_index);
             }
             result = true;
         }
-        parent = locals.item->location_c8;
+        parent = item->location_c8;
     }
-    if (parent != NONE && *(long *)(locals.definition + 0x104) > 0)
-        function_16eb20((s_16eb20_block *)(locals.definition + 0x104));
+    else
+    {
+        parent = item->parent_index;
+    }
+    if (parent != NONE && *(long *)(definition + 0x104) > 0)
+        function_16eb20((s_16eb20_block *)(definition + 0x104));
     function_10b850(object_index);
     return result;
 }
