@@ -8,6 +8,7 @@
 // @flags /O2 /arch:SSE /Gr
 #include "function_context_storage.h"
 #include "shader_storage.h"
+#include "unknown_0259d0.h"
 
 struct s_render_entry_156b60
 {
@@ -64,7 +65,7 @@ void function_40e30(short group, long tag, real distance, long level, word kind,
 void __stdcall function_157020(byte *definition, point3f const *position, vector3f const *forward,
 	real value, long row, long column, long element, long entry);
 
-PRIVATE long const *material_reference_156b60(long tag)
+static __forceinline long const *material_reference_156b60(long tag)
 {
 	dword group = *(dword *)((byte *)g_4e3b44 + (short)tag * 16);
 	if (group == 'PRTM' || group == 'prt3')
@@ -136,13 +137,14 @@ void __stdcall function_156e10(long const *entry)
 PRIVATE real render_curve_156b60(s_tag_data const *curve, real input)
 {
 	real value = function_13b390(curve, input, 0.0f);
-	if (!(curve->address[1] & 0xf0))
+	byte *data = curve->address;
+	if (!(data[1] & 0xf0))
 	{
-		real lower = *(real *)(curve->address + 4);
-		real upper = *(real *)(curve->address + 8);
+		real lower = *(real *)(data + 4);
+		real upper = *(real *)(data + 8);
 		if (value < 0.0f) value = 0.0f;
 		else if (value > 1.0f) value = 1.0f;
-		value = (upper - lower) * value + lower;
+		return (upper - lower) * value + lower;
 	}
 	return value;
 }
@@ -187,7 +189,7 @@ void __stdcall function_157020(byte *definition, point3f const *position, vector
 	real matrix[12] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f};
 	g_4b8348 = 0;
 	D3DDevice_SetRenderState(D3DRS_STIPPLEENABLE, 0);
-	D3DDevice_SetVertexShaderConstant(0xae, matrix, 3);
+	D3DDevice_SetVertexShaderConstant(0x4e, matrix, 3);
 	g_4e9268 = entry;
 	function_1bd50(&g_4e9268);
 	function_1bbf0(*(long *)((*definition_reference) + 4), row, column, element, 0, 10000.0f);
@@ -208,10 +210,9 @@ void __stdcall function_157020(byte *definition, point3f const *position, vector
 void function_156b60(s_effect_beam *beam, real progress, transform4x3f const *matrix)
 {
 	byte *definition = (byte *)beam;
-	volatile long  tag = *(long *)(definition + 4);
-	if (tag == NONE || g_4e92e0 >= 64)
+	if (*(long *)(definition + 4) == NONE || g_4e92e0 >= 64)
 		return;
-	long model = *material_reference_156b60(tag);
+	long model = *material_reference_156b60(*(long *)(definition + 4));
 	byte *local_0f244f = *(byte **)((byte *)g_4e3b44 + (model & 0xffff) * 16 + 8);
 	byte *tables = *(byte **)(local_0f244f + 0x5c);
 	dword flags = *(dword *)(*(byte **)(tables + 4) + 2);
@@ -234,18 +235,18 @@ void function_156b60(s_effect_beam *beam, real progress, transform4x3f const *ma
 		if (record)
 		{
 			*(long *)(record + 0x24) = g_4e92e0;
-			real x = entry->position.x - g_485618.position.x;
-			real y = entry->position.y - g_485618.position.y;
-			real z = entry->position.z - g_485618.position.z;
+			vector3f delta;
+
+			vector3d_from_points3d(&g_485618.position, &entry->position, &delta);
 			*(long *)record = 3;
-			*(long *)(record + 8) = tag;
+			*(long *)(record + 8) = *(long *)(definition + 4);
 			*(void (__stdcall **)(long const *))(record + 0x20) = function_156e10;
-			*(real *)(record + 4) = 0.0f - (z * g_485618.forward.k + y * g_485618.forward.j + x * g_485618.forward.i);
+			*(real *)(record + 4) = 0.0f - dot3f(&delta, &g_485618.forward);
 			*(point3f *)(record + 0x64) = entry->position;
 		}
 	}
 	if (flags & 0xffff7fff)
-		function_40e30(0, tag, 10000.0f, NONE, 5, 0xffffffff, 0,
+		function_40e30(0, *(long *)(definition + 4), 10000.0f, NONE, 5, 0xffffffff, 0,
 			(t_record_fill)function_156ed0, (dword)function_156fe0, (void *)g_4e92e0);
 	++g_4e92e0;
 }
