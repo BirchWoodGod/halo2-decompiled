@@ -367,26 +367,16 @@ void function_1a6f70(long owner_index)
 	}
 }
 
-/* a slot and the one after it, seen from the owner base (the slots start at +0x90) */
-struct s_slot_pair_view
-{
-	byte unknown00[0x94];
-	short unknown94;
-	byte unknown96[0x3a];
-	s_slot next;
-};
-
 // @retail 0x1a7030
 short function_1a7030(long owner_index, short slot_index, long argument, short *out)
 {
 	s_actor_view *owner = actor_get(owner_index);
-	s_actor_view *const *local_0 = &owner;
-	s_slot_pair_view *slot = (s_slot_pair_view *)((byte *)*local_0 + slot_index * sizeof(s_slot));
-	s_slot *next = &slot->next;
+	s_slot *slot = &owner->slots[slot_index];
+	s_slot *next = &owner->slots[slot_index + 1];
 	short result = g_46fbe4;
 	short selected = NONE;
 
-	if (next->state == 0 && ACTION_ID_VALID(next->type) && slot->unknown94 != NONE && ACTION_HANDLER_ENABLED(next->type))
+	if (next->state == 0 && ACTION_ID_VALID(next->type) && slot->unknown4 != NONE && ACTION_HANDLER_ENABLED(next->type))
 	{
 		s_slot_handler *handler = g_46eeb8[next->type];
 		short code;
@@ -413,13 +403,13 @@ short function_1a7030(long owner_index, short slot_index, long argument, short *
 				}
 				else
 				{
-					slot->unknown94 = NONE;
+					slot->unknown4 = NONE;
 					result = g_46fbe4;
 				}
 			}
 			else
 			{
-				slot->unknown94 = NONE;
+				slot->unknown4 = NONE;
 				if (code == g_46fbec)
 					result = code;
 				else
@@ -429,7 +419,7 @@ short function_1a7030(long owner_index, short slot_index, long argument, short *
 	}
 	else
 	{
-		slot->unknown94 = NONE;
+		slot->unknown4 = NONE;
 	}
 
 	*out = selected;

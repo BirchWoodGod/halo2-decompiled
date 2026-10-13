@@ -387,7 +387,7 @@ def fast_caveats(ours, symbol, full, identity):
         return notes
     for s in [symbol, *direct]:
         twin = full.counterpart(s)
-        if (twin is None or ':' in s.object
+        if (twin is None or reduced.library_object(s.object)
                 or not all(map(full.unchanged, [s, *(direct if s is symbol else ours.callees(s)[0])]))
                 or same_code(ours, s, full, twin)):
             continue

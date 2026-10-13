@@ -43,6 +43,30 @@ vector3f *random_unit_vector(vector3f *result, dword *seed)
 	return result;
 }
 
+PRIVATE inline real normalize_146320(vector3f *v)
+{
+	real magnitude = (real)sqrt(v->k * v->k + v->j * v->j + v->i * v->i);
+	if (!(fabs(magnitude) < 0.0001f))
+	{
+		real scale = 1.0f / magnitude;
+		v->i *= scale;
+		v->j *= scale;
+		v->k *= scale;
+		return magnitude;
+	}
+	return 0.0f;
+}
+
+PRIVATE inline void rotate_vector_146320(vector3f *v, vector3f const *axis, real sine, real cosine)
+{
+	real projection = (v->k * axis->k + v->j * axis->j + v->i * axis->i) * (1.f - cosine);
+	real cross_j = v->k * axis->i - v->i * axis->k;
+	real cross_k = v->i * axis->j - v->j * axis->i;
+	v->i = v->i * cosine + projection * axis->i - (v->j * axis->k - v->k * axis->j) * sine;
+	v->j = v->j * cosine + projection * axis->j - cross_j * sine;
+	v->k = v->k * cosine + projection * axis->k - cross_k * sine;
+}
+
 // @retail 0x146320
 void random_vector_in_cone(vector3f const *forward, vector3f *result, dword *seed, real min_angle, real max_angle)
 {
@@ -51,36 +75,20 @@ void random_vector_in_cone(vector3f const *forward, vector3f *result, dword *see
 
 	*result = *forward;
 
-	*seed = 1664525 * *seed + 1013904223;
-	random_vector = g_4417f0[(short)(((*seed >> 16) * 0x402) >> 16)];
+	random_unit_vector(&random_vector, seed);
 
 	axis.i = random_vector.k * forward->j - random_vector.j * forward->k;
 	axis.j = random_vector.i * forward->k - random_vector.k * forward->i;
 	axis.k = random_vector.j * forward->i - random_vector.i * forward->j;
 
-	real magnitude = (real)sqrt(axis.k * axis.k + axis.j * axis.j + axis.i * axis.i);
-	if (fabs(magnitude) >= 0.0001f)
 	{
-		real scale = 1.0f / magnitude;
-		axis.i *= scale;
-		axis.j *= scale;
-		axis.k *= scale;
-
-		if (magnitude > 0.0001f)
+		if (normalize_146320(&axis) > 0.0f)
 		{
 			real angle = function_259d0(seed, __FILE__, __LINE__, min_angle, max_angle);
 			real s = (real)sin(angle);
 			real c = (real)cos(angle);
 
-			real dot = result->k * axis.k + result->j * axis.j + result->i * axis.i;
-			real x = result->i;
-			real t = dot * (1.0f - c);
-			real y = result->j;
-			real z = result->k;
-
-			result->i = x * c + axis.i * t - (y * axis.k - z * axis.j) * s;
-			result->j = y * c + axis.j * t - (z * axis.i - x * axis.k) * s;
-			result->k = z * c + axis.k * t - (x * axis.j - y * axis.i) * s;
+			rotate_vector_146320(result, &axis, s, c);
 		}
 	}
 }

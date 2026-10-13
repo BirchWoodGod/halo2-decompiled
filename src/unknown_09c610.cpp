@@ -32,7 +32,6 @@ bool c_damage_section_response_event_definition::v11(long arg_0, long const *arg
     bool local_0 = false;
     volatile bool local_12 = local_0;
     arg_1 = (long const *)function_a58d0(arg_1[0]);
-    long const *local_2 = (long const *)arg_3;
     if ((long)arg_1 != NONE)
     {
         byte *local_3 = (byte *)((s_object_header *)g_4e0300->data)[(long)arg_1 & 0xffff].object;
@@ -41,6 +40,7 @@ bool c_damage_section_response_event_definition::v11(long arg_0, long const *arg
         if (local_5 != NONE)
         {
             byte *local_6 = local_3 + *(short *)(local_3 + 0x122);
+            long const *local_2 = (long const *)arg_3;
             long local_7 = local_2[0];
             if (local_7 >= 0 && local_7 < (long)((dword)(*(short *)(local_3 + 0x120)) / 8))
             {
