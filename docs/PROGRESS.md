@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8151 functions match
+
+```
+matched 8151 of 11318 game functions (1014887 of 2784283 bytes, 36.45%)
+```
+
+2 new matches, none lost:
+- Deep lane 3, round 48 (+2), in the render range: `0x3e320` and `0x3e420`; `0x40e30` has retail's standard convention again, which its callers in the third machine's range need.
+- Deep lane 4, round 1: six of this machine's largest unwritten functions are written (`0x423c0`, `0x31170`, `0x41cc0`, `0xbd090`, `0x2bcd0` and `0x32350`, up to 1,896 bytes each), with ten more drafted.
+
 ## 2026-10-13: 8149 functions match
 
 ```
