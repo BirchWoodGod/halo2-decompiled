@@ -204,12 +204,11 @@ int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, t
 // @retail 0x112dc0
 void __stdcall function_112dc0(long unit_index, transform4x3f *matrix)
 {
-	s_unit_animation_object_header *headers = (s_unit_animation_object_header *)g_4e0300->data;
-	s_unit_animation_object *unit = headers[unit_index & 0xffff].object;
-	long parent_index = UNIT_ANIMATION_CONTROL(unit)->unknown28;
-	if (parent_index != NONE && function_badc0(parent_index, (dword)NONE))
+	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
+	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
+	if (control->unknown28 != NONE && function_badc0(control->unknown28, (dword)NONE))
 	{
-		s_unit_animation_object *parent = headers[parent_index & 0xffff].object;
+		s_unit_animation_object *parent = UNIT_ANIMATION_OBJECT(control->unknown28);
 		transform4x3f *nodes = (transform4x3f *)((byte *)parent + parent->node_matrices_offset);
 		function_142a60(nodes, matrix, matrix);
 	}
@@ -242,7 +241,7 @@ PRIVATE __forceinline real function_112e21(real arg_0)
 }
 
 // @retail 0x112e20
-void function_112e20(transform4x3f *matrix, transform4x3f const *orientation, point3f const *target)
+void function_112e20(transform4x3f *matrix, point3f const *target, transform4x3f const *orientation)
 {
 	static real yaw_limit = angle_radians_112e20(30.0f);
 	static real pitch_limit = angle_radians_112e20(15.0f);
@@ -1021,7 +1020,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 		if (graph)
 		{
 			if (function_1dd0b0(graph, animation_name).index == NONE)
-				return false;
+				goto done_1101e0;
 
 			s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 			s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
@@ -1032,7 +1031,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 			if (state->graph_tag_index != animation_graph_index &&
 				!state->initialize(animation_graph_index, definition->model_tag_index, true))
 			{
-				return false;
+				goto done_1101e0;
 			}
 
 			c_type_709360 animation_id = function_1dd0b0(GRAPH_GET(state->graph_tag_index), animation_name);
@@ -1058,6 +1057,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 			function_114330(unit_index);
 		}
 	}
+done_1101e0:
 	return result;
 }
 
@@ -1134,7 +1134,7 @@ bool function_111490(long unit_index)
 			}
 		}
 		if (!function_111590(unit_index, 2))
-			return false;
+			result = false;
 	}
 	return result;
 }
@@ -1143,7 +1143,7 @@ bool function_111490(long unit_index)
 // @retail 0x1112f0
 bool function_1112f0(long unit_index)
 {
-	char result = true;
+	bool result = true;
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
 	s_animation_state *state = UNIT_ANIMATION_STATE(unit);
@@ -1173,7 +1173,7 @@ bool function_1112f0(long unit_index)
 		}
 	}
 	if (!function_111590(unit_index, 3))
-		return false;
+		result = false;
 	return result;
 }
 
@@ -1983,10 +1983,10 @@ void function_1132f0(long arg_0, dword const *arg_1, long arg_2, transform4x3f *
             {
                 char local_4 = local_0->index1f6;
                 if (local_4 >= 0 && local_4 < arg_2 && (!arg_1 || function_0bfe60(arg_1, local_4)))
-                    function_112e20(&arg_3[local_4], &local_3.matrix, local_1);
+                    function_112e20(&arg_3[local_4], local_1, &local_3.matrix);
                 char local_5 = local_0->index1f7;
                 if (local_5 >= 0 && local_5 < arg_2 && (!arg_1 || function_0bfe60(arg_1, local_5)))
-                    function_112e20(&arg_3[local_5], &local_3.matrix, local_1);
+                    function_112e20(&arg_3[local_5], local_1, &local_3.matrix);
             }
         }
     }

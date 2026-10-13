@@ -48,17 +48,24 @@ struct s_11c120_bsp
 	byte *entries;
 };
 
+struct s_entry_11bf30
+{
+	byte unknown00[0x24];
+	long tag_index;
+	byte unknown28[0x64 - 0x28];
+};
+
 // @retail 0x11bf30
 bool function_11bf30(s_location const *location)
 {
 	s_11c120_bsp *bsp = (s_11c120_bsp *)g_4e0348;
-	short index = bsp->clusters[location->cluster_index].entry_index;
+	s_11c120_cluster *cluster = &bsp->clusters[location->cluster_index];
 	bool result = false;
-	if (index != NONE && index < bsp->entry_count)
+	if (cluster->entry_index != NONE && cluster->entry_index < bsp->entry_count)
 	{
-		long tag_index = *(long *)(bsp->entries + index * 0x64 + 0x24);
-		if (tag_index != NONE)
-			result = (*g_4e3b44[tag_index & 0xffff].bytes & 1) != 0;
+		s_entry_11bf30 *entry = (s_entry_11bf30 *)bsp->entries + cluster->entry_index;
+		if (entry->tag_index != NONE)
+			result = (*g_4e3b44[entry->tag_index & 0xffff].bytes & 1) != 0;
 	}
 	return result;
 }
