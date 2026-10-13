@@ -643,7 +643,7 @@ real function_3eb70(void)
 }
 
 // @retail 0x350e0
-void function_350e0(real *out, real const *a, real const *b, real x)
+void function_350e0(real const *a, real const *b, real *out, real x)
 {
 	real scale;
 	real v;
@@ -1510,7 +1510,7 @@ bool __stdcall function_34100(long mode, real const *rectangle, real const *coor
     switch (mode)
     {
     case 0:
-        function_350e0(out, rectangle, coordinates, parameters[0]);
+        function_350e0(rectangle, coordinates, out, parameters[0]);
         out[0] *= parameters[24];
         out[1] *= parameters[24];
         return true;

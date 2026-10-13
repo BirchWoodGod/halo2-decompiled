@@ -99,6 +99,9 @@ static __forceinline void gateway_stream_begin(s_bitstream *stream)
 	}
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x7b140
 bool __stdcall function_07b140(void *object, long destination, long type, long size, void *message)
 {
@@ -124,18 +127,24 @@ bool __stdcall function_07b140(void *object, long destination, long type, long s
 			stream->bit_position = 0;
 			stream->checkpoint_count = 0;
 			stream->error = false;
+			_ReadWriteBarrier();
 			stream->data = (byte *)gateway + 0x15;
+			_ReadWriteBarrier();
 			gateway_stream_begin(stream);
 			gateway->outgoing_packet_address = *address;
 			gateway->outgoing_packet_pending = true;
 			started = true;
 		}
 		stream->checkpoints[stream->checkpoint_count++] = stream->bit_position;
+		_ReadWriteBarrier();
 		stream_write_bit(stream, true);
 		c_type_659ceb *collection = gateway->field_c_7;
 		network_message_write_header(stream, type, size);
 		collection->m_types[type].encode(stream, size, message);
-		if (stream->bit_position + 1 <= (stream->size_in_bytes << 3))
+		long local_0 = stream->bit_position;
+		_ReadWriteBarrier();
+		long local_1 = stream->size_in_bytes << 3;
+		if (++local_0 <= local_1)
 		{
 			stream->checkpoint_count--;
 			result = true;
@@ -151,6 +160,7 @@ bool __stdcall function_07b140(void *object, long destination, long type, long s
 	}
 	return result;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x7afd0
 bool s_network_message_gateway::read_packet(const s_type_99af70 *address, s_bitstream *stream)
