@@ -920,17 +920,15 @@ long function_178120(long tag_index, s_effect_owner const *owner, bool force)
 
 		if ((force || !TEST_FIELD_BIT(definition->flag2)) && definition->event_count > 0)
 		{
-			s_record_pool *effects = g_4ea93c;
-
-			effect_index = record_pool_allocate(effects);
+			effect_index = record_pool_allocate(g_4ea93c);
 			if (effect_index == NONE)
 			{
 				if (TEST_FIELD_BIT(definition->flag2) && function_178060())
-					effect_index = record_pool_allocate(effects);
+					effect_index = record_pool_allocate(g_4ea93c);
 			}
 			if (effect_index != NONE)
 			{
-				s_effect_datum *effect = DATUM(effects, s_effect_datum, effect_index);
+				s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 
 				effect->tag_index = tag_index;
 				if (owner)
@@ -1926,12 +1924,30 @@ s_particle_system_datum *function_178eb0(long definition_index, long effect_inde
 	return 0;
 }
 
-PRIVATE __forceinline bool effect_event_placement_allowed(s_effect_particle_system_definition const *definition, s_effect_datum *effect, long mode)
+/* the particle system an effect keeps for one of its event's particle system definitions */
+PRIVATE inline s_particle_system_datum *effect_event_slot_particle_system(s_effect_datum *effect, s_effect_particle_system_definition const *definition)
+{
+	s_particle_system_datum *particle_system = 0;
+
+	for (dword j = 0; j < 16; j++)
+	{
+		s_effect_event_slot *slot = &effect->event_slots[j];
+
+		if ((s_effect_particle_system_definition const *)slot->unknown0 == definition)
+		{
+			particle_system = DATUM(g_510c74, s_particle_system_datum, slot->unknown4);
+			break;
+		}
+	}
+	return particle_system;
+}
+
+PRIVATE __forceinline bool effect_event_placement_allowed(s_effect_particle_system_definition const *definition, s_effect_datum *effect, long const *mode)
 {
 	bool result = effect_placement_allowed_17b270(effect, definition->unknown10) != 0;
 	if (*(short *)&g_4e8c20->unknown00[8] == 1)
 	{
-		if (result && (definition->location_mode != 2 || mode == 0) && (definition->location_mode != 1 || mode == 1))
+		if (result && (definition->location_mode != 2 || *mode == 0) && (definition->location_mode != 1 || *mode == 1))
 			return true;
 		return false;
 	}
@@ -1943,7 +1959,7 @@ void function_179020(long effect_index, real scale, real unknown)
 {
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 	s_effect_event *event = &TAG_GET(s_effect_definition, effect->tag_index)->events[effect->event_index];
-	volatile long mode = 0;
+	long mode = 0;
 
 	if (effect->unknown58 != NONE && !function_155760(effect->unknown58))
 		mode = 1;
@@ -1952,18 +1968,10 @@ void function_179020(long effect_index, real scale, real unknown)
 		s_effect_particle_system_definition *definition = &event->particle_systems[i];
 		bool field_b4 = definition->unknown0c != 0;
 
-		if (effect_event_placement_allowed(definition, effect, mode))
+		if (effect_event_placement_allowed(definition, effect, &mode))
 		{
-			s_particle_system_datum *particle_system = 0;
+			s_particle_system_datum *particle_system = effect_event_slot_particle_system(effect, definition);
 
-			for (dword j = 0; j < 16; j++)
-			{
-				if ((s_effect_particle_system_definition *)effect->event_slots[j].unknown0 == definition)
-				{
-					particle_system = DATUM(g_510c74, s_particle_system_datum, effect->event_slots[j].unknown4);
-					break;
-				}
-			}
 			if (particle_system || (particle_system = function_178eb0(i, effect_index)) != 0)
 			{
 				if (definition->location_index != NONE)
@@ -2175,7 +2183,6 @@ bool __stdcall function_1794e0(long effect_index)
 // @retail 0x179730
 bool function_179730(long effect_index)
 {
-	bool result = false;
 	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 	s_effect_definition *definition = TAG_GET(s_effect_definition, effect->tag_index);
 	bool hidden = true;
@@ -2202,8 +2209,7 @@ bool function_179730(long effect_index)
 			effect->flag3 = false;
 		}
 	}
-	result = effect == 0;
-	return result;
+	return effect == 0;
 }
 
 // @retail 0x179810
@@ -2318,15 +2324,15 @@ void function_177d10(s_effect_datum *effect, dword *seed, vector3f const *forwar
 		real s = (real)sin(angle);
 		real c = (real)cos(angle);
 		vector3f axis = g_4417f0[random_index(seed, 0x402)];
-		real dot = direction->i * axis.i + direction->k * axis.k + direction->j * axis.j;
-		real t = dot * (1.0f - c);
-		real x = direction->i;
-		real y = direction->j;
-		real z = direction->k;
+		real t = (direction->i * axis.i + direction->j * axis.j + direction->k * axis.k) * (1.0f - c);
+		vector3f cross;
 
-		direction->i = x * c + axis.i * t - (y * axis.k - z * axis.j) * s;
-		direction->j = y * c + axis.j * t - (z * axis.i - x * axis.k) * s;
-		direction->k = z * c + axis.k * t - (x * axis.j - y * axis.i) * s;
+		cross.j = direction->k * axis.i - direction->i * axis.k;
+		cross.i = direction->j * axis.k - direction->k * axis.j;
+		cross.k = direction->i * axis.j - direction->j * axis.i;
+		direction->i = direction->i * c + axis.i * t - cross.i * s;
+		direction->j = direction->j * c + axis.j * t - cross.j * s;
+		direction->k = direction->k * c + axis.k * t - cross.k * s;
 	}
 	velocity->i = direction->i * speed;
 	velocity->j = direction->j * speed;
@@ -2967,8 +2973,8 @@ void function_17b1d0(long object_index)
 // @retail 0x17b2d0
 bool function_17b2d0(long effect_index, point3f *point, vector3f *forward, real *scale)
 {
-	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 	bool result = false;
+	s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, effect_index);
 
 	if (effect)
 	{
@@ -2976,27 +2982,27 @@ bool function_17b2d0(long effect_index, point3f *point, vector3f *forward, real 
 		long location_index = effect->location_indices[definition->looping_sound_location];
 		s_effect_location_datum *location = effect_location_next(effect, &location_index, 3);
 
-		if (!location)
-			return false;
-
-		transform4x3f node_matrix;
-		transform4x3f world_matrix;
-		transform4x3f *matrix;
-
-		if (location->node_index != NONE)
+		if (location)
 		{
-			function_17aec0(effect, &node_matrix, location->node_index);
-			function_142a60(&node_matrix, &location->matrix, &world_matrix);
-			matrix = &world_matrix;
+			transform4x3f node_matrix;
+			transform4x3f world_matrix;
+			transform4x3f *matrix;
+
+			if (location->node_index != NONE)
+			{
+				function_17aec0(effect, &node_matrix, location->node_index);
+				function_142a60(&node_matrix, &location->matrix, &world_matrix);
+				matrix = &world_matrix;
+			}
+			else
+			{
+				matrix = &location->matrix;
+			}
+			*point = matrix->position;
+			*forward = matrix->forward;
+			*scale = effect->scale_a;
+			result = true;
 		}
-		else
-		{
-			matrix = &location->matrix;
-		}
-		*point = matrix->position;
-		*forward = matrix->forward;
-		*scale = effect->scale_a;
-		return true;
 	}
 	return result;
 }
@@ -3116,9 +3122,9 @@ void function_17b5d0(s_effect_datum *effect, long object_index, s_effect_paramet
 
 		query.unknown00 = 0.0f;
 		query.unknown04 = 0.0f;
-		query.unknown08 = -1.0f;
 		query.color_a = 0xff404040;
 		query.color_b = 0xff404040;
+		query.unknown08 = -1.0f;
 		if (!parameters || !parameters->source || function_d2bb0(parameters->source, &query))
 		{
 			s_effect_location_datum *location = effect_location_next(effect, &location_index, 3);
