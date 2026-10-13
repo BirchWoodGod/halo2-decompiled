@@ -387,7 +387,8 @@ static __forceinline void unicode_string_to_characters(long maximum_count, word 
 		if (c == '|')
 		{
 			bool found = false;
-			character = unicode_escape_character_lookup(*next, &found);
+			word local_1 = *next;
+			character = unicode_escape_character_lookup(local_1, &found);
 			if (found)
 			{
 				next++;
@@ -654,11 +655,11 @@ void function_13f700(box2f const *bounds, box2f const *clip, short first,
 void __stdcall function_13f0e0(text_glyph_callback callback, short_rectangle2d const *bounds,
 	short *arg_c5cac5, short_rectangle2d const *clip, short line_gap, real scale, dword const *text)
 {
-	point2f position = { (real)bounds->left, (real)bounds->top };
-	long tab = 0;
 	long line = 0;
+	long tab = 0;
 	long maximum_lines = 0;
 	long wrapped_line = 0;
+	point2f position = { (real)bounds->left, (real)bounds->top };
 	s_text_iterator iterator;
 	if (function_13f470(&iterator, g_4e73a0.font, (short)g_4e73a0.justification, text,
 		(short)g_4e73a0.style, &g_4e73a0.color, &g_4e73a0.shadow, &g_4e73a0.field_24))

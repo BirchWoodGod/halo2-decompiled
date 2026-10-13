@@ -1530,7 +1530,7 @@ void function_14c630(dword valid_mask, s_machine_address const *addresses)
 #include <wchar.h>
 void function_158090(long player_index, short old_team);
 void function_1582d0(long player_index, short old_team);
-void function_1583d0(long player_index, short old_value, short new_value);
+void function_1583d0(short old_value, short new_value, long player_index);
 
 void __stdcall function_14be90(long player_index, dword const *configuration);
 
@@ -1548,7 +1548,7 @@ static __forceinline void player_configuration_apply(long player_index, dword co
     if (previous.team_index != *(char *)((byte *)player + 0xc0))
         function_1582d0(player_index, *(char *)((byte *)player + 0xc0));
     if (previous.unknown7d != *(char *)((byte *)player + 0xc1))
-        function_1583d0(player_index, *(char *)((byte *)player + 0xc1), previous.unknown7d);
+        function_1583d0(*(char *)((byte *)player + 0xc1), previous.unknown7d, player_index);
     if (player->unit_index != NONE)
         function_14bfc0(player_index, player->unit_index);
 }

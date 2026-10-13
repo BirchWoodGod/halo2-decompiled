@@ -923,27 +923,16 @@ void function_190a3d(long controller, short *direction, dword time, long value)
 	}
 	else
 	{
-		long current_x_magnitude = controller_direction_magnitude(x);
-		long previous_x_magnitude = controller_direction_magnitude(g_55e758.last_direction[controller][0]);
-		if (current_x_magnitude < 0x7332 || previous_x_magnitude < 0x7332)
-		{
-			if (controller_direction_magnitude(direction[1]) < 0x7332 || controller_direction_magnitude(g_55e758.last_direction[controller][1]) < 0x7332)
-			{
-				goto send;
-			}
-		}
-		if (time - g_55e758.last_time[controller] < 250)
-		{
-			goto done;
-		}
-send:
+		if ((controller_direction_magnitude(x) >= 0x7332 && controller_direction_magnitude(g_55e758.last_direction[controller][0]) < 0x7332) ||
+			(controller_direction_magnitude(direction[1]) >= 0x7332 && controller_direction_magnitude(g_55e758.last_direction[controller][1]) < 0x7332) ||
+			time - g_55e758.last_time[controller] >= 250)
 		{
 			s_controller_event event;
 
 			event.amount = NONE;
 			event.controller = controller;
 			event.value = value;
-			if (current_x_magnitude >= 0x7332)
+			if (controller_direction_magnitude(x) >= 0x7332)
 			{
 				event.type = controller_direction_sign(x) > 0 ? 4 : 2;
 			}

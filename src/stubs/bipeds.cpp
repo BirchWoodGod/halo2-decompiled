@@ -29,9 +29,6 @@ bool function_e63b0(vector3f const *aim, bool flag) { return 0; }
 
 
 
-// @stub 0xe5790
-void function_e5790(long arg_159e6d) { }
-
 // @stub 0x1e55d0
 void __stdcall function_1e55d0(s_biped_physics_move *move, void *physics, s_biped_physics_output *output) { }
 

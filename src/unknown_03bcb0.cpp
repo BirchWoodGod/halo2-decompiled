@@ -602,7 +602,8 @@ extern real g_485b28[7];
 bool function_1bf50(long tag, long level, real distance, long *out)
 {
     long selected = 0;
-    byte *groups = record_format_groups(tag);
+    long const *tag_pointer = &tag;
+    byte *groups = record_format_groups(*tag_pointer);
     long count = *(long *)groups;
     if (g_4ba019)
         distance *= 2.0f;
@@ -611,7 +612,7 @@ bool function_1bf50(long tag, long level, real distance, long *out)
         real threshold = g_485b28[level] * distance;
         for (selected = 0; selected < count; ++selected)
         {
-            byte *entries = *(byte **)(record_format_groups(tag) + 4);
+            byte *entries = *(byte **)(record_format_groups(*tag_pointer) + 4);
             if (threshold >= *(real *)(entries + selected * 10 + 6))
                 break;
         }
@@ -1251,10 +1252,10 @@ struct s_projection_copy_3bd00
     byte unknown68[0xc0 - 0x68];
 };
 void function_14ac0(void);
-void function_12fa0(real const *projection, byte const *camera, bool scaled, long mode);
+void function_12fa0(byte const *camera, real const *projection, bool scaled, long mode);
 void function_3ede0(void);
 
-// Disabled retail 0x3bd00; activation must preserve the matched clear helpers.
+// Retail 0x3bd00
 bool __stdcall function_3bd00(real height, dword color)
 {
     long target = g_4858b8;
@@ -1278,13 +1279,13 @@ bool __stdcall function_3bd00(real height, dword color)
     *(short *)(camera.data + 0x34) = 256;
     *(short *)(camera.data + 0x36) = 512;
     function_141590(&projection.transform, &projection.inverse);
-    function_12fa0((real *)&projection, camera.data, false, 21);
+    function_12fa0(camera.data, (real *)&projection, false, 21);
     function_3ede0();
     function_14bc0((short)target, 0, true);
     memcpy(&g_485618, &saved_camera, sizeof(saved_camera));
     memcpy(g_48568c, &saved_projection, sizeof(saved_projection));
     g_4858b8 = target;
-    function_12fa0((real *)&saved_projection, saved_camera.data, false, target);
+    function_12fa0(saved_camera.data, (real *)&saved_projection, false, target);
     return true;
 }
 #endif
@@ -1546,7 +1547,10 @@ bool __stdcall function_3c3c0(bool render, bool clear)
 void function_40e30(short group, long tag, real distance, long level, word kind,
     dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context)
 {
-    if (group != NONE && function_1bf50(tag, level, distance, (long *)&distance))
+    long const *level_reference = &level;
+    word const *kind_reference = &kind;
+    (void)*kind_reference;
+    if (group != NONE && function_1bf50(tag, *level_reference, distance, (long *)&distance))
         function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
 }
 

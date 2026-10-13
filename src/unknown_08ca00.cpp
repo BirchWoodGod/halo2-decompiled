@@ -1,4 +1,4 @@
-// @flags /O2 /Gr
+// @flags /O2 /arch:SSE /Gr
 /* UNKNOWN_08CA00.CPP: the message of the day, kept in
    n:\message_of_the_day.dat (lane D) */
 
@@ -163,8 +163,7 @@ bool __stdcall function_8ca70(long mode, s_name_buffer *output)
 }
 
 
-#include "physical_memory.h"
-#include <d3d8.h>
+#include "unknown_080e10.h"
 extern s_physical_object *g_4e6464;
 long __stdcall function_12d2f0(long size, long user_data, long update, long release);
 void function_12c600(void);
@@ -179,53 +178,56 @@ static inline __int64 message_read_ticks(void)
  __asm rdtsc
 }
 
-static __forceinline __int64 function_8c792(void)
+struct s_4672bc
 {
- volatile long local_0 = 0;
- volatile long local_1 = 0;
- __asm rdtsc
+ long unknown00;
+ const wchar_t *filename;
+ long version;
+ struct
+ {
+  long unknown00;
+  bool (__stdcall *handler)(const byte *request);
+ } handlers[2];
+};
+
+/* folded with 0xa45d0 in retail */
+static bool __stdcall function_a45d0(const byte *request)
+{
+ return true;
 }
+
+bool __stdcall function_8c790(const byte *request);
+
+/* the message of the day's handlers, laid out like g_46729c (src/unknown_08c5b0.cpp) */
+s_4672bc g_4672bc =
+{
+ 0, L"message_of_the_day.dat", 1,
+ { {0, function_a45d0}, {0, function_8c790} }
+};
+
 // @retail 0x8c790
-bool function_8c790(const byte *request)
+bool __stdcall function_8c790(const byte *request)
 {
  volatile bool result = false;
- if (*(short *)(request + 8) && (request[4] & 2) && *(short *)(request + 0xe) == 1)
+ if (*(short *)(request + 8) && (request[4] & 2))
  {
-  byte *source = 0;
-  if (*(byte **)(request + 0x24) && *(dword *)(request + 0x28) > 16)
-   source = *(byte **)(request + 0x24) + 16;
-  dword size = *(dword *)(request + 0x28) - 16;
-  if (source && size && function_199560(source, size) == 0x25224)
+  short kind = *(short *)(request + 0xe);
+  if (kind == 1)
   {
-   __int64 start = function_8c792();
-   byte *allocation = 0;
-   if (g_4e6464->page_count > 0)
+   byte *source = 0;
+   if (*(byte **)(request + 0x24) && *(dword *)(request + 0x28) > 16)
+    source = *(byte **)(request + 0x24) + 16;
+   dword size = *(dword *)(request + 0x28) - 16;
+   if (source && size > 0 && function_199560(source, size) == 0x25224)
    {
-    long attempts = 0;
-    while (!(allocation = (byte *)function_12d2f0(0x25224, 0, 0, 0)))
+    byte *allocation = (byte *)function_80e14(0x25224, 0, 0, 0, 90, 1.0f);
+    if (allocation)
     {
-     if (attempts < 90)
-     {
-      attempts++;
-      function_12c600();
-     }
-     else
-     {
-      __int64 elapsed = function_8c792() - start;
-      if (elapsed < 0) elapsed = 0;
-      if (timing_ticks_to_seconds(elapsed) >= 1.0f) break;
-      D3DDevice_KickPushBuffer();
-      D3DDevice_IsBusy();
-      SwitchToThread();
-     }
+     long decompressed = 0;
+     if (function_199740(source, size, allocation, &decompressed) && function_8c900(allocation))
+      result = true;
+     function_12d520((long)allocation);
     }
-   }
-   if (allocation)
-   {
-    long decompressed = 0;
-    if (function_199740(source, size, allocation, &decompressed) && function_8c900(allocation))
-     result = true;
-    function_12d520((long)allocation);
    }
   }
  }

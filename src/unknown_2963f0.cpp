@@ -81,7 +81,7 @@ s_graph_weapon_type *graph_weapon_type_iterate(s_graph_weapon_type_iterator *ite
 {
 	s_graph_weapon_type *result = NULL;
 
-	do
+	while (!result)
 	{
 		if (iterator->step >= 8)
 		{
@@ -168,7 +168,6 @@ s_graph_weapon_type *graph_weapon_type_iterate(s_graph_weapon_type_iterator *ite
 			iterator->class_entry = NULL;
 		}
 	}
-	while (!result);
 	return result;
 }
 

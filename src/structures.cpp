@@ -157,21 +157,29 @@ bool structure_get_lightmap_triangle(s_structure_collision_result const *collisi
 bool __stdcall function_14a8e0(s_structure_collision_result const *collision,
     long model_index, s_structure_lightmap_triangle *triangle);
 
-// @retail 0x14b120
-bool function_14b120(void *source, void *surface)
+/* the collision a surface query starts from, passed by value */
+struct s_surface_query_source
 {
-    void *const *source_reference = &source;
+    void *collision;
+};
+
+/* whether the current structure bsp is loaded and its collision usable */
+static __forceinline bool structure_bsp_collision_available()
+{
+    return g_4e0344 && g_4e0344->count > 0 && g_4e0348 &&
+        *(long const *)((byte const *)g_4e0344->bsp + 0x1c) != NONE &&
+        *(long const *)((byte const *)g_4e0344->bsp + 4) == *(long const *)((byte const *)g_4e0348 + 8);
+}
+
+// @retail 0x14b120
+bool function_14b120(s_surface_query_source source, void *surface)
+{
     bool result = false;
-    bool *const result_reference = &result;
     byte local_collision[0x5c];
     *(short *)(local_collision + 0x24) = NONE;
-    if (!g_4e0344 || g_4e0344->count <= 0 || !g_4e0348)
+    if (!structure_bsp_collision_available())
         return false;
-    byte const *bsp = (byte const *)g_4e0344->bsp;
-    if (*(long const *)(bsp + 0x1c) == NONE ||
-        *(long const *)(bsp + 4) != *(long const *)((byte const *)g_4e0348 + 8))
-        return false;
-    s_structure_collision_result const *collision = (s_structure_collision_result const *)*source_reference;
+    s_structure_collision_result const *collision = (s_structure_collision_result const *)source.collision;
     s_structure_lightmap_triangle *triangle = (s_structure_lightmap_triangle *)surface;
     triangle->cluster_index = NONE;
     triangle->instance_index = NONE;
@@ -187,21 +195,21 @@ bool function_14b120(void *source, void *surface)
         else if (function_bf9a0(object_index, (long *)((byte *)triangle + 0xc),
             (long *)((byte *)triangle + 0x10)))
         {
-            *result_reference = function_14a8e0((s_structure_collision_result const *)*source_reference,
+            result = function_14a8e0((s_structure_collision_result const *)source.collision,
                 *(long *)((byte *)triangle + 0xc), triangle);
-            return *result_reference;
+            return result;
         }
         if (!excluded)
         {
             found = function_1697c0(0x4800005, &collision->point, g_4687bc, NONE, NONE,
                 (s_collision_result_1697c0 *)local_collision);
-            source = local_collision;
-            collision = (s_structure_collision_result const *)*source_reference;
+            source.collision = local_collision;
+            collision = (s_structure_collision_result const *)source.collision;
         }
     }
     if (!excluded && found)
-        *result_reference = structure_get_lightmap_triangle(collision, triangle);
-    return *result_reference;
+        result = structure_get_lightmap_triangle(collision, triangle);
+    return result;
 }
 
 struct s_16e1b0_list;

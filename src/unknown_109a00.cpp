@@ -78,6 +78,13 @@ PRIVATE inline void carrier_point_velocity(point3f const *center, vector3f const
 	result->k = linear->k + result->k;
 }
 
+PRIVATE inline void carrier_add_vectors(vector3f const *a, vector3f const *b, vector3f *result)
+{
+	result->i = a->i + b->i;
+	result->j = a->j + b->j;
+	result->k = a->k + b->k;
+}
+
 bool function_109a00(long object_index, vector3f *delta, bool rotate, vector3f *velocity);
 
 static __forceinline bool carried_object_motion_apply(long object_index, vector3f *delta, bool rotate, vector3f *velocity)
@@ -111,14 +118,15 @@ static __forceinline bool carried_object_motion_apply(long object_index, vector3
 							function_142a60(&motion->transform, &matrix, &moved);
 							carrier_point_velocity(&motion->previous_center, &motion->previous_velocity,
 								&motion->previous_angular_velocity, &matrix.position, &previous_velocity);
-							object->velocity.i -= previous_velocity.i;
-							object->velocity.j -= previous_velocity.j;
-							object->velocity.k -= previous_velocity.k;
-							function_142640(&motion->transform, &object->velocity, &object->velocity);
+							vector3f *object_velocity = &object->velocity;
+							object_velocity->i -= previous_velocity.i;
+							object_velocity->j -= previous_velocity.j;
+							object_velocity->k -= previous_velocity.k;
+							function_142640(&motion->transform, object_velocity, object_velocity);
 							carrier_point_velocity(&motion->center, &motion->velocity,
 								&motion->angular_velocity, &moved.position, delta);
 							function_b75a0(object_index, &moved.position, &moved.forward, &moved.up, NULL, false);
-							*velocity = object->velocity;
+							*velocity = *object_velocity;
 						}
 						else
 						{
@@ -126,14 +134,15 @@ static __forceinline bool carried_object_motion_apply(long object_index, vector3
 							vector3f change;
 							transform4x3f_apply_point(&motion->transform, &matrix.position, &moved);
 							real ticks = (real)g_510c54->field_2_3;
-							change.i = ticks * (matrix.position.x - moved.x);
-							change.j = ticks * (matrix.position.y - moved.y);
-							change.k = ticks * (matrix.position.z - moved.z);
+							change.i = matrix.position.x - moved.x;
+							change.j = matrix.position.y - moved.y;
+							change.k = matrix.position.z - moved.z;
+							change.i *= ticks;
+							change.j *= ticks;
+							change.k *= ticks;
 							function_b75a0(object_index, &moved, NULL, NULL, NULL, false);
 							*velocity = object->velocity;
-							object->velocity.i += change.i;
-							object->velocity.j += change.j;
-							object->velocity.k += change.k;
+							carrier_add_vectors(&object->velocity, &change, &object->velocity);
 							delta->i = change.i * -1.0f;
 							delta->j = change.j * -1.0f;
 							delta->k = change.k * -1.0f;
@@ -251,6 +260,16 @@ void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_compon
 real function_30bf0(vector3f *vector);
 void function_141590(transform4x3f const *in, transform4x3f *out);
 
+PRIVATE inline short carrier_component_default_body(s_carrier_component const *component)
+{
+	short body_index;
+	if (component->default_body >= 0 && component->default_body < component->count)
+		body_index = component->default_body;
+	else
+		body_index = NONE;
+	return body_index;
+}
+
 // @retail 0x109660
 void function_109660(long object_index, long entry_index)
 {
@@ -265,7 +284,7 @@ void function_109660(long object_index, long entry_index)
 		if (physics_index != NONE)
 		{
 			s_carrier_physics_definition *definition = (s_carrier_physics_definition *)g_4e3b44[physics_index & 0xffff].bytes;
-			long body_index = component->default_body >= 0 && component->default_body < component->count ? component->default_body : NONE;
+			long body_index = carrier_component_default_body(component);
 			volatile bool found = false;
 			for (long i = 0; i < component->count && !found; i++)
 			{
@@ -292,9 +311,15 @@ void function_109660(long object_index, long entry_index)
 				}
 				havok_component_rigid_body_matrix_get(body_index, (s_havok_component *)component, &entry->current_transform);
 				s_carrier_body *body = component->bodies[body_index].body;
-				entry->velocity = body->inactive ? *g_4687a4 : body->motion->velocity;
+				if (!body->inactive)
+					entry->velocity = body->motion->velocity;
+				else
+					entry->velocity = *g_4687a4;
 				body = component->bodies[body_index].body;
-				entry->angular_velocity = body->inactive ? *g_4687a4 : body->motion->angular_velocity;
+				if (!body->inactive)
+					entry->angular_velocity = body->motion->angular_velocity;
+				else
+					entry->angular_velocity = *g_4687a4;
 				entry->center = component->bodies[body_index].body->motion->center;
 				entry->active = true;
 				if (entry->valid)
@@ -303,10 +328,10 @@ void function_109660(long object_index, long entry_index)
 					function_141590(&entry->previous_transform, &inverse);
 					function_142a60(&entry->current_transform, &inverse, &entry->transform);
 					vector3f *forward = &entry->transform.forward;
-					vector3f *left = &entry->transform.left;
-					vector3f *up = &entry->transform.up;
 					function_30bf0(forward);
+					vector3f *left = &entry->transform.left;
 					function_30bf0(left);
+					vector3f *up = &entry->transform.up;
 					function_30bf0(up);
 					real dot = up->k * forward->k + up->j * forward->j + forward->i * up->i;
 					up->i -= forward->i * dot;
