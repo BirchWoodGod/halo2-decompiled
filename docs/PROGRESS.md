@@ -2,6 +2,26 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8324 functions match
+
+```
+matched 8324 of 11318 game functions (1062385 of 2784283 bytes, 38.16%)
+```
+
+8 new matches, none lost:
+- Claude lane 1 round 14 (Opus): `0xbdc40`, `0x1e9df0` (with machine 3's `0x1968b0` taking the index first), `0x2b186e`, `0x265290`, `0x2bc000`, `0x1e67a0`, `0x1e2a00` and `0x2c88d5`
+- Closer: `0x1e13f0` 59 to 29, `0x44720` 140 to 34 under SSE, `0x3d2c0` 53 to 30, `0x26d3f0` 22 to 9 and more (deep lanes 2 and 3)
+
+## 2026-10-13: 8324 functions match
+
+```
+matched 8324 of 11318 game functions (1062385 of 2784283 bytes, 38.16%)
+```
+
+47 new matches, none lost:
+- Machine 3 batch 7 (#421): 37 functions, among them machine 1's blocked near misses `0x24b1fb`, `0x24b652`, `0x2ca0d9`, `0x2caf0f`, `0x2a3b20`, `0x2a3ca0` and `0xbdb60`, unblocked by matching their callees
+- Machine 3 Codex lanes: Y round 19 (#417) +2, AC round 29 (#418) +5, B round 24 (#419) +2, D lower round 24 (#420) +1
+
 ## 2026-10-13: 8277 functions match
 
 ```
