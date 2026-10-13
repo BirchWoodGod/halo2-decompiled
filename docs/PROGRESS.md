@@ -2,6 +2,26 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8156 functions match
+
+```
+matched 8156 of 11318 game functions (1015964 of 2784283 bytes, 36.49%)
+```
+
+3 new matches, none lost:
+- Deep lane 2, round 37 (+1): `0x22dcbc`, from 58 differences; `0x23dba0` is down to 10. Its round 36 gave the second machine's matched `0x1c4a80` its two `bool` parameters, as retail's callers pass them.
+- Deep lane 1, rounds 44 and 45 (+1): `0xb2e30`; `0x2651e0` is 15 differences closer.
+- The second machine's lane P, round 20 (#406, +1): `0x136600`.
+
+## 2026-10-13: 8153 functions match
+
+```
+matched 8153 of 11318 game functions (1015072 of 2784283 bytes, 36.46%)
+```
+
+2 new matches, none lost:
+- Claude lane 1, round 9 (+2), on Opus 5.5: `0xe5790` and `0xe6460`, two small functions on a retail call cycle that were stubs, now written. The lane found that `0xb7430`'s exact draft can go live only together with `0xb8540`, and ruled out compile order as the cause of the callers that reuse a register where retail rebuilds it.
+
 ## 2026-10-13: 8151 functions match
 
 ```
