@@ -170,20 +170,30 @@ bool __stdcall function_1b82d0(long actor_index, s_slot *slot, long index)
 {
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_12 *state = (s_slot_12 *)slot;
-
-	if (actor->prop_index != state->unknown1c)
-		return false;
-
+	union
+	{
+		long prop_index;
+		bool temporary;
+	} local_0;
+	local_0.prop_index = state->unknown1c;
 	bool result = true;
 
-	if (actor->unknown040)
+	if (actor->prop_index != local_0.prop_index)
+		return false;
+
+	local_0.temporary = actor->unknown040;
+	if (local_0.temporary)
 	{
-		result = function_1f4810(actor_index, actor->prop_index, state->unknown0c ? 0.3f : 3.5f, 0);
-		if (!result)
+		if (state->unknown0c)
+			local_0.temporary = function_1f4810(actor_index, actor->prop_index, 0.3f, 0);
+		else
+			local_0.temporary = function_1f4810(actor_index, actor->prop_index, 3.5f, 0);
+		if (!local_0.temporary)
 		{
 			function_265c30(actor->prop_index, actor_index, true);
-			actor_get(actor_index)->unknown040 = result;
+			actor_get(actor_index)->unknown040 = local_0.temporary;
 		}
+		result = local_0.temporary;
 	}
 	return result;
 }
