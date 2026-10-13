@@ -1771,9 +1771,13 @@ void function_1786f0(s_effect_marker_source const *source, s_effect_object_marke
 			up.k = 0.0f;
 		}
 		position = *(point3f const *)&up;
-		forward.i = matrix->forward.k * marker->forward.k + matrix->forward.j * marker->forward.j + matrix->forward.i * marker->forward.i;
-		forward.j = matrix->left.k * marker->forward.k + matrix->left.j * marker->forward.j + matrix->left.i * marker->forward.i;
-		forward.k = matrix->up.k * marker->forward.k + matrix->up.j * marker->forward.j + matrix->up.i * marker->forward.i;
+		real i = marker->forward.i;
+		real j = marker->forward.j;
+		real k = marker->forward.k;
+
+		forward.i = matrix->forward.k * k + matrix->forward.j * j + matrix->forward.i * i;
+		forward.j = matrix->left.k * k + matrix->left.j * j + matrix->left.i * i;
+		forward.k = matrix->up.k * k + matrix->up.j * j + matrix->up.i * i;
 	}
 	else
 	{

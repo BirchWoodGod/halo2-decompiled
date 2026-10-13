@@ -168,32 +168,26 @@ short __stdcall function_1b81c0(long actor_index, s_slot *slot, bool active)
 // @retail 0x1b82d0
 bool __stdcall function_1b82d0(long actor_index, s_slot *slot, long index)
 {
-	s_actor_view *actor = actor_get(actor_index);
-	s_slot_12 *state = (s_slot_12 *)slot;
-	union
-	{
-		long prop_index;
-		bool temporary;
-	} local_0;
-	local_0.prop_index = state->unknown1c;
 	bool result = true;
+	long local_0 = ((s_slot_12 *)slot)->unknown1c;
+	s_actor_view *actor = actor_get(actor_index);
 
-	if (actor->prop_index != local_0.prop_index)
+	if (actor->prop_index != local_0)
 		return false;
 
-	local_0.temporary = actor->unknown040;
-	if (local_0.temporary)
+	bool local_1 = actor->unknown040;
+	if (local_1)
 	{
-		if (state->unknown0c)
-			local_0.temporary = function_1f4810(actor_index, actor->prop_index, 0.3f, 0);
+		if (((s_slot_12 *)slot)->unknown0c)
+			local_1 = function_1f4810(actor_index, actor->prop_index, 0.3f, 0);
 		else
-			local_0.temporary = function_1f4810(actor_index, actor->prop_index, 3.5f, 0);
-		if (!local_0.temporary)
+			local_1 = function_1f4810(actor_index, actor->prop_index, 3.5f, 0);
+		if (!local_1)
 		{
 			function_265c30(actor->prop_index, actor_index, true);
-			actor_get(actor_index)->unknown040 = local_0.temporary;
+			actor_get(actor_index)->unknown040 = local_1;
 		}
-		result = local_0.temporary;
+		result = local_1;
 	}
 	return result;
 }

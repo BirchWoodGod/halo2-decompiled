@@ -1512,28 +1512,26 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
     long const *owner_reference = &owner_index;
     bool *const *failed_reference = &failed;
     long result = NONE;
-    short kind = state->kind;
-    if (kind != 0)
+    if (state->kind != 0)
     {
         s_tag_iterator iterator;
-        iterator.datum_index = 0;
         iterator.next_index = 0;
         iterator.group_tag = 0x77656170;
         long tag;
         while ((tag = function_122c70(&iterator)) != NONE)
         {
             byte *definition = g_4e3b44[tag & 0xffff].bytes;
-            bool found = false;
             if (*(long *)(definition + 0x2d0) > 0)
             {
                 byte *seat = *(byte **)(definition + 0x2d4);
                 long ammunition = *(long *)(seat + 0x90);
                 if (ammunition != NONE)
-                    found = kind == (short)g_4e3b44[ammunition & 0xffff].bytes[0x128];
-                else if (*(long *)(seat + 0x98) != NONE)
-                    found = kind == (short)seat[0x88];
+                {
+                    if (state->kind == (short)g_4e3b44[ammunition & 0xffff].bytes[0x128]) break;
+                }
+                else if (*(long *)(seat + 0x98) != NONE && state->kind == (short)seat[0x88]) break;
             }
-            if (found || kind == (short)definition[0x1fc]) break;
+            if (state->kind == (short)definition[0x1fc]) break;
         }
         if (tag != NONE)
         {
@@ -1553,7 +1551,7 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
             }
             else **failed_reference = true;
         }
-        else if (kind != 0) **failed_reference = true;
+        else if (state->kind != 0) **failed_reference = true;
     }
     return result;
 }
@@ -1621,11 +1619,15 @@ bool function_152bf0(byte const *loadout, long unit_index)
     {
         byte *unit = (byte *)tail_object_get(unit_index);
         function_ccff0(unit_index);
-        bool failed = false;
-        long primary = function_152a50((s_loadout_state_152a50 *)(loadout + 2), unit_index, &failed);
-        long special = function_152a50((s_loadout_state_152a50 *)(loadout + 0x12), unit_index, &failed);
-        long secondary = function_152a50((s_loadout_state_152a50 *)(loadout + 0xa), unit_index, &failed);
-        bool result = !failed;
+        long primary, special, secondary;
+        bool result;
+        {
+            bool failed = false;
+            primary = function_152a50((s_loadout_state_152a50 *)(loadout + 2), unit_index, &failed);
+            special = function_152a50((s_loadout_state_152a50 *)(loadout + 0x12), unit_index, &failed);
+            secondary = function_152a50((s_loadout_state_152a50 *)(loadout + 0xa), unit_index, &failed);
+            result = !failed;
+        }
         for (long i = 0; i < 2; ++i)
         {
             unit[0x23e + i] = 0;

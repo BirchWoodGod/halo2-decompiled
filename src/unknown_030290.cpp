@@ -171,7 +171,7 @@ void function_30290(point3f const *p, s_view const *view, s_camera const *camera
 }
 
 // @retail 0x30710
-bool function_30710(vector3f const *v, short_rectangle2d const *rect, point2f *out, s_camera const *camera, s_view const *view)
+bool function_30710(s_camera const *camera, short_rectangle2d const *rect, vector3f const *v, point2f *out, s_view const *view)
 {
 	bool result = false;
 	if (!rect)
@@ -421,7 +421,9 @@ real function_31b40(vector3f *vector, vector3f const *axis)
 	vector3f cross;
 	cross.i = *(real const volatile *)&vector->j * axis->k - *(real const volatile *)&axis->j * vector->k;
 	cross.j = *(real const volatile *)&axis->i * vector->k - *(real const volatile *)&vector->i * axis->k;
+	real cross_j = cross.j;
 	cross.k = *(real const volatile *)&axis->j * vector->i - *(real const volatile *)&vector->j * axis->i;
+	cross.j = cross_j;
 	normalize_cross_vector(&cross);
 	vector3f const volatile &normalized = cross;
 	vector3f result;

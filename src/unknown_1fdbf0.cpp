@@ -351,10 +351,10 @@ bool function_1fddd0(long actor_index, point3f const *origin, vector3f *directio
         if (dot < 0.8660253882408142f)
         {
             vector3f axis;
+            bool valid = true;
             axis.i = direction->k * forward.j - direction->j * forward.k;
             axis.j = direction->i * forward.k - direction->k * forward.i;
             axis.k = direction->j * forward.i - direction->i * forward.j;
-            bool valid = true;
             if (function_30bf0(&axis) == 0.0f)
             {
                 function_11d000(&forward, &axis);
@@ -364,15 +364,13 @@ bool function_1fddd0(long actor_index, point3f const *origin, vector3f *directio
             *direction = forward;
             if (valid)
             {
-                real amount = (direction->k * axis.k + direction->j * axis.j + direction->i * axis.i) * 0.1339746117591858f;
-                vector3f rotated;
-                rotated.i = amount * axis.i + direction->i * 0.8660253882408142f -
-                    (direction->j * axis.k - direction->k * axis.j) * 0.5f;
-                rotated.j = axis.j * amount + direction->j * 0.8660253882408142f -
-                    (direction->k * axis.i - direction->i * axis.k) * 0.5f;
-                rotated.k = axis.k * amount + direction->k * 0.8660253882408142f -
-                    (direction->i * axis.j - direction->j * axis.i) * 0.5f;
-                *direction = rotated;
+                real local_0 = (direction->k * axis.k + direction->j * axis.j + direction->i * axis.i) * 0.1339746117591858f;
+                real local_1 = direction->j * axis.k - direction->k * axis.j;
+                real local_2 = direction->k * axis.i - direction->i * axis.k;
+                real local_3 = direction->i * axis.j - direction->j * axis.i;
+                direction->i = direction->i * 0.8660253882408142f + local_0 * axis.i - local_1 * 0.5f;
+                direction->j = local_0 * axis.j + direction->j * 0.8660253882408142f - local_2 * 0.5f;
+                direction->k = local_0 * axis.k + direction->k * 0.8660253882408142f - local_3 * 0.5f;
             }
         }
         *arg_c9241c = *(real *)(actor + 0x7bc);
@@ -406,9 +404,11 @@ void function_1fe410(point3f *point, real distance)
     start.y = g_4687b0->j * 1.5f + point->y;
     start.z = g_4687b0->k * 1.5f + point->z;
     real angle = slot_random() * 6.2831854820251465f - 3.1415927410125732f;
+    volatile real cosine = (real)cos(angle);
+    volatile real sine = (real)sin(angle);
     point3f destination;
-    destination.x = (real)cos(angle) * distance + start.x;
-    destination.y = (real)sin(angle) * distance + start.y;
+    destination.x = cosine * distance + start.x;
+    destination.y = sine * distance + start.y;
     destination.z = 0.0f * distance + start.z;
     vector3f direction;
     direction.i = start.x - point->x;

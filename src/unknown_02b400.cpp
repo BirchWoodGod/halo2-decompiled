@@ -95,10 +95,10 @@ bool function_2f970(s_2f970_view const *view, real *out)
     {
         real width = out[1] - out[0];
         real height = *(real const volatile *)&out[3] - out[2];
-        real x = (view->center_x + 1.0f) * 0.5f * width + out[0];
-        real y = (view->center_y + 1.0f) * 0.5f * height + out[2];
         real half_width = *(real const volatile *)&view->crop_scale * width * 0.5f;
         real half_height = *(real const volatile *)&view->crop_scale * height * 0.5f;
+        real x = (view->center_x + 1.0f) * 0.5f * width + out[0];
+        real y = (view->center_y + 1.0f) * 0.5f * height + out[2];
         out[0] = x - half_width;
         out[2] = y - half_height;
         out[3] = half_height + y;
@@ -106,8 +106,8 @@ bool function_2f970(s_2f970_view const *view, real *out)
     }
     else if (view->offset)
     {
-        real x = (out[1] - out[0]) * (1.0f / 640.0f) * view->offset_x;
-        real y = (*(real const volatile *)&out[3] - out[2]) * (1.0f / 480.0f) * view->offset_y;
+        real x = (real)((out[1] - out[0]) * (1.0f / 640.0f)) * view->offset_x;
+        real y = (real)((*(real const volatile *)&out[3] - out[2]) * (1.0f / 480.0f)) * view->offset_y;
         out[0] += x;
         real right = out[1] + x;
         real const &right_result = right;
@@ -229,10 +229,9 @@ long function_48e70(real value)
 	long shift = 150 - exponent;
 	long mantissa = ((bits & 0x7fffff) | 0x800000) >> shift;
 	long sign = bits >> 31;
-	long small = (exponent - 127) >> 31;
-	long result = ((mantissa ^ sign) - sign) & ~small;
+	long result = ((mantissa ^ sign) - sign) & ~((exponent - 127) >> 31);
 	long increment;
-	if (!sign && bits && (small || (((1 << shift) - 1) & bits & 0x7fffff)))
+	if (!sign && bits && (((exponent - 127) >> 31) || (((1 << shift) - 1) & bits & 0x7fffff)))
 		increment = 1;
 	else
 		increment = 0;

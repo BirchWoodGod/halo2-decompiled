@@ -316,41 +316,45 @@ void c_class_2c9e69::fill_and_keep_focus()
 // @retail 0x2cac1a
 screen_load_proc c_custom_game_profile_screen::get_load_proc()
 {
- if (game_type == 1) {
-  if (flag_a) return function_2ca4cd;
-  if (flag_b) return function_2ca580;
-  return function_2ca525;
- }
- else if (game_type == 2) {
-  if (flag_a) return function_2ca5d8;
-  if (flag_b) return function_2ca68b;
-  return function_2ca630;
- }
- else if (game_type <= 4) {
-  if (flag_a) return function_2ca6e3;
-  if (flag_b) return function_2ca796;
-  return function_2ca73b;
- }
- else if (game_type == 5) {
-  if (flag_a) return function_2ca7ee;
-  if (flag_b) return function_2ca8a1;
-  return function_2ca846;
- }
- else if (game_type <= 7) {
-  if (flag_a) return function_2ca8f9;
-  if (flag_b) return function_2ca9ac;
-  return function_2ca951;
- }
- else if (game_type == 8) {
-  if (flag_a) return function_2caa04;
-  if (flag_b) return function_2caab7;
-  return function_2caa5c;
- }
- else {
-  if (flag_a) return function_2cab0f;
-  if (flag_b) return function_2cabc2;
-  return function_2cab67;
- }
+    if (game_type != 1) {
+        if (game_type != 2) {
+            if (game_type > 4) {
+                if (game_type != 5) {
+                    if (game_type > 7) {
+                        if (game_type != 8) {
+                            if (flag_a) return function_2cab0f;
+                            if (flag_b) return function_2cabc2;
+                            return function_2cab67;
+                        } else {
+                            if (flag_a) return function_2caa04;
+                            if (flag_b) return function_2caab7;
+                            return function_2caa5c;
+                        }
+                    } else {
+                        if (flag_a) return function_2ca8f9;
+                        if (flag_b) return function_2ca9ac;
+                        return function_2ca951;
+                    }
+                } else {
+                    if (flag_a) return function_2ca7ee;
+                    if (flag_b) return function_2ca8a1;
+                    return function_2ca846;
+                }
+            } else {
+                if (flag_a) return function_2ca6e3;
+                if (flag_b) return function_2ca796;
+                return function_2ca73b;
+            }
+        } else {
+            if (flag_a) return function_2ca5d8;
+            if (flag_b) return function_2ca68b;
+            return function_2ca630;
+        }
+    } else {
+        if (flag_a) return function_2ca4cd;
+        if (flag_b) return function_2ca580;
+        return function_2ca525;
+    }
 }
 
 /* the create functions: the screen for one game type */

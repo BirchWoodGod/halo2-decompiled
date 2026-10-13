@@ -295,7 +295,7 @@ bool __stdcall function_4dfa0(long tag, long context, long pass, long stage, lon
 		out->value10 = (dword)material;
 		out->value08 = 0;
 		out->unknown14 = 0;
-		bool ready = function_4cbb0(*(long *)(material + 0x100), 0) != 0;
+		bool ready = function_4cbb0(*(long *)((byte *)out->value10 + 0x100), 0) != 0;
 		return ready;
 	}
 	return false;
@@ -1550,7 +1550,8 @@ void function_40e30(short group, long tag, real distance, long level, word kind,
     long const *level_reference = &level;
     word const *kind_reference = &kind;
     (void)*kind_reference;
-    if (group != NONE && function_1bf50(tag, *level_reference, distance, (long *)&distance))
+    bool (*select)(long, long, real, long *) = function_1bf50;
+    if (group != NONE && select(tag, *level_reference, distance, (long *)&distance))
         function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
 }
 

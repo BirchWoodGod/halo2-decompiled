@@ -1014,4 +1014,3 @@ void __stdcall function_c6f80(long unit_index, long ticks, long flags);
 void function_101a10(long weapon_index, real fraction);
 void function_1018b0(long weapon_index, short const *rounds);
 
-

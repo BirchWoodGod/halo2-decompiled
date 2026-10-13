@@ -20,7 +20,7 @@ extern D3DPIXELSHADERDEF g_484f68;
 extern dword g_4b8448, g_4b8308, g_4b82e8, g_4b82f4, g_4b82f8;
 extern dword g_4b8324, g_4b82ec, g_4b82e0, g_4b8450;
 byte g_51ec9a;
-extern D3DBaseTexture *g_51f3c8[2][4];
+#include "texture_stage_storage.h"
 extern long g_485af4[4], g_485b04[4];
 D3DTexture *function_12310(s_bitmap_view *arg_0, real arg_1);
 void function_1cf50(void);
