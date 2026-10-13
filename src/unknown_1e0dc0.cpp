@@ -33,7 +33,7 @@ long function_1e0dc0(short team, long unit_index, short request_value, short squ
 	real *limits = (real *)function_1e4a10(*(long *)(unit + 0x3d8));
 	if (limits)
 	{
-		long difficulty = g_4e6948->state == 1 ? g_4e6948->difficulty : 1;
+		short difficulty = g_4e6948->state == 1 ? g_4e6948->difficulty : (short)1;
 		real body, shield;
 		switch (difficulty)
 		{
@@ -47,15 +47,15 @@ long function_1e0dc0(short team, long unit_index, short request_value, short squ
 			}
 			break;
 		case 2:
-			if (limits[3] > 0.0f || limits[4] > 0.0f)
-			{
-				body = (limits[1] + limits[3]) * 0.5f;
-				shield = (limits[4] + limits[2]) * 0.5f;
-			}
-			else
+			if (limits[3] <= 0.0f && limits[4] <= 0.0f)
 			{
 				body = limits[1];
 				shield = limits[2];
+			}
+			else
+			{
+				body = (limits[1] + limits[3]) * 0.5f;
+				shield = (limits[4] + limits[2]) * 0.5f;
 			}
 			break;
 		default:
@@ -72,13 +72,12 @@ long function_1e0dc0(short team, long unit_index, short request_value, short squ
 			function_d5c90(*unit_reference, &body, &shield);
 	}
 	long definition_index;
-	short unit_team = *(short *)(unit + 0x138);
 	if (*(long *)(unit + 0x3d8) != NONE &&
-		(unit_team == team || function_1df5d0(unit_team, team)))
+		(*(short *)(unit + 0x138) == team || function_1df5d0(*(short *)(unit + 0x138), team)))
 		definition_index = *(long *)(unit + 0x3d8);
 	else
 		definition_index = *(long *)(g_4e3b44[*(long *)unit & 0xffff].bytes + 0x304);
-	long result = NONE;
+	long result;
 	if (definition_index != NONE)
 	{
 		result = function_1e0160(*squad_reference, definition_index, *unit_reference, false);
@@ -94,5 +93,7 @@ long function_1e0dc0(short team, long unit_index, short request_value, short squ
 				function_114b60(0x15, NONE, actor_get(result)->unknown018, 0xd, NULL);
 		}
 	}
+	else
+		result = NONE;
 	return result;
 }
