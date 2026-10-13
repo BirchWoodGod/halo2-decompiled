@@ -791,13 +791,15 @@ void __stdcall function_16c840(long user_index, long unused, s_observer_command 
 						plane3f plane;
 						real length_squared;
 						real t;
+						vector3f const *direction;
 
 						command->object_matrix.forward = *g_4687a8;
 						command->object_matrix.up = *g_4687b0;
 						command->object_matrix.left = *g_4687ac;
-						plane.n = camera->point.left;
+						direction = &camera->point.left;
+						plane.n = *direction;
 						plane.d = dot3f((vector3f *)&command->object_matrix.position, &plane.n);
-						length_squared = dot3f(&plane.n, &camera->point.left);
+						length_squared = (plane.n.k * direction->k + plane.n.j * direction->j) + plane.n.i * direction->i;
 						if (length_squared != 0.0f)
 						{
 							t = 0.0f - plane_distance_to_point(&plane, (point3f *)&camera->point.offset) / length_squared;
@@ -806,9 +808,9 @@ void __stdcall function_16c840(long user_index, long unused, s_observer_command 
 						{
 							t = 0.0f;
 						}
-						command->object_matrix.position.x = camera->point.left.i * t + camera->point.offset.i;
-						command->object_matrix.position.y = camera->point.left.j * t + camera->point.offset.j;
-						command->object_matrix.position.z = camera->point.left.k * t + camera->point.offset.k;
+						command->object_matrix.position.x = direction->i * t + camera->point.offset.i;
+						command->object_matrix.position.y = direction->j * t + camera->point.offset.j;
+						command->object_matrix.position.z = direction->k * t + camera->point.offset.k;
 						command->flags |= 0x40;
 					}
 					break;
@@ -860,12 +862,15 @@ void __stdcall function_16c840(long user_index, long unused, s_observer_command 
 		{
 			real t = camera_velocity_profile_evaluate(&camera->pan.profile, g_510c54->game_time - camera->pan.start_time);
 			quaternionf rotation;
-			matrix3x3 matrix;
 			real length_squared;
 
 			command->timer = 0.0f;
 			t = PIN(t, 0.0f, 1.0f);
-			function_141f60(function_142d10(&camera->up, &camera->forward, &matrix), &rotation);
+			{
+				matrix3x3 matrix;
+
+				function_141f60(function_142d10(&camera->up, &camera->forward, &matrix), &rotation);
+			}
 			function_11da10(&rotation, &camera->pan.rotation, &rotation, t);
 			length_squared = rotation.i * rotation.i + rotation.j * rotation.j + rotation.k * rotation.k + rotation.w * rotation.w;
 			if (length_squared > 0.0f)
@@ -884,14 +889,16 @@ void __stdcall function_16c840(long user_index, long unused, s_observer_command 
 				rotation.k = 0.0f;
 				rotation.w = 1.0f;
 			}
-			function_141e10(&matrix, &rotation);
-			command->forward = matrix.forward;
-			command->up = matrix.up;
-			t = PIN(t, 0.0f, 1.0f);
+			transform4x3f transform;
+
+			function_141e10(&transform.rotation, &rotation);
+			command->forward = transform.forward;
+			command->up = transform.up;
+			real fraction = PIN(t, 0.0f, 1.0f);
 			camera = camera_scripting_state;
-			command->position.x = camera->position.x * (1.0f - t) + camera->pan.position.x * t;
-			command->position.y = camera->position.y * (1.0f - t) + camera->pan.position.y * t;
-			command->position.z = camera->position.z * (1.0f - t) + camera->pan.position.z * t;
+			command->position.x = camera->position.x * (1.0f - fraction) + camera->pan.position.x * fraction;
+			command->position.y = camera->position.y * (1.0f - fraction) + camera->pan.position.y * fraction;
+			command->position.z = camera->position.z * (1.0f - fraction) + camera->pan.position.z * fraction;
 			command->flags |= 1;
 		}
 		break;

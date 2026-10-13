@@ -41,7 +41,7 @@ long g_55c278;
 dword g_55c27c;
 
 void function_215880(void *ref);
-bool function_216800(void *a, long b);
+bool function_216800(long b, void *a);
 
 bool function_1249f0(long memory_unit, char *drive_letter);
 void function_2172a0(long handle);
@@ -141,7 +141,7 @@ void function_215810(void)
 		{
 			s_55c164 *entry = &g_55c164[i];
 			long file_index = (long)entry->field0;
-			function_216800(entry->unknown04, file_index);
+			function_216800(file_index, entry->unknown04);
 		}
 		g_55c14f = 1;
 	}
@@ -158,7 +158,7 @@ void function_215810(void)
 }
 
 // @retail 0x216800
-bool function_216800(void *location, long file_index)
+bool function_216800(long file_index, void *location)
 {
 	bool result = false;
 	void *files = g_51ea14;

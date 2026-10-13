@@ -818,7 +818,12 @@ bool __stdcall function_14df40(long *unit_index)
 		{
 			if (unit_object->unknownaa == 0)
 			{
-				if (function_e4050(unit) || (unit_object->unknown348 & 1))
+				if (function_e4050(unit))
+				{
+					*unit_index = player->unit_index;
+					return true;
+				}
+				else if ((unit_object->unknown348 & 1))
 				{
 					*unit_index = player->unit_index;
 					return true;
@@ -1120,6 +1125,265 @@ void __stdcall function_14f270(long player_index, long controller_index)
 			((s_players_globals *)g_4e8c20)->unknown0a++;
 		}
 	}
+}
+
+struct s_location;
+struct s_effect_owner;
+struct s_tail_traits;
+struct s_marker_position_angle;
+void marker_record_get_position_and_angle(s_marker_position_angle const *, point3f *, real *);
+void function_b75a0(long, point3f const *, vector3f const *, vector3f const *, s_location const *, bool);
+void function_b9c60(long, bool);
+void function_b7290(long);
+bool function_b9d20(long);
+void __stdcall function_bef30(long, long, long, long, bool);
+void function_b8b70(long);
+void __stdcall function_b8540(long);
+void function_b7930(void *, long, long, s_effect_owner const *);
+long __stdcall function_b7b40(void *);
+void __stdcall function_a7870(long);
+void function_a7a30(long, dword);
+void function_15e970(long);
+s_tail_traits *function_1529a0(long);
+bool function_152bf0(byte const *, long);
+void function_cce00(long, short, bool, bool);
+void motion_sensor_reset(long);
+void function_153b80(long);
+void function_152340(void);
+void function_14cad0(long player_index, long unit_index);
+long function_14ef00(long player_index, long tag_index, bool deterministic, bool preserve_counter);
+bool function_15f330(s_player_appearance const *appearance, short team_index, color3f *colors);
+void __stdcall function_16f4b0(void *player);
+
+/* the fields of a player (0x21c bytes) that giving it a unit uses */
+struct s_player_spawn_view_14f2e0
+{
+	short salt;
+	word flag0 : 1;
+	word flag1 : 1;
+	word flag2 : 1;
+	word flag3 : 1;
+	word flag4 : 1;
+	word flag5 : 1;
+	word flag6 : 1;
+	word flag7 : 1;
+	word flag8 : 1;
+	word flag9 : 1;
+	word flag10 : 1;
+	word unknown11 : 5;
+	byte unknown04[0x28 - 0x4];
+	short user_index;
+	byte unknown2a[0x34 - 0x2a];
+	long kept_unit_index;
+	byte unknown38[0x84 - 0x38];
+	s_player_appearance appearance;
+	byte unknown8c[0xc0 - 0x8c];
+	char team_index;
+	byte unknownc1[0x17c - 0xc1];
+	short field_17c;
+	short field_17e;
+	byte unknown180[0x194 - 0x180];
+	long field_194;
+	long field_198;
+};
+
+/* the creation data of a new object (0xc4 bytes; 0xb7930 fills in the defaults) */
+struct s_object_creation_14f2e0
+{
+	byte unknown00[0xc];
+	long field_0c;
+	byte unknown10[0x1c - 0x10];
+	point3f position;
+	vector3f forward;
+	vector3f up;
+	byte unknown40[0x5c - 0x40];
+	long player_index;
+	byte unknown60[0x64 - 0x60];
+	long team_index;
+	byte unknown68[0x74 - 0x68];
+	dword change_color_mask;
+	color3f colors[4];
+	dword field_a8;
+	byte unknownac[0xc4 - 0xac];
+};
+
+/* the scenario's starting profiles and starting locations */
+struct s_scenario_spawn_view_14f2e0
+{
+	byte unknown000[0x12];
+	byte flags12;
+	byte unknown013[0xf8 - 0x13];
+	long starting_profile_count;
+	void *starting_profiles;
+	long starting_location_count;
+	s_scenario_starting_profile_view *starting_locations;
+};
+
+static inline s_players_globals *players_globals_14f2e0()
+{
+	return (s_players_globals *)g_4e8c20;
+}
+
+/* gives a player its unit (the unit kept for it, the unit waiting to be
+   reused, or a new unit at a starting location) and resets its spawn state */
+// @retail 0x14f2e0
+bool __stdcall function_14f2e0(long player_index)
+{
+	s_player_spawn_view_14f2e0 *player = (s_player_spawn_view_14f2e0 *)player_get(player_index);
+	bool result = false;
+	long unit_index;
+
+	if (g_4e6948->state == 1)
+	{
+		unit_index = player->kept_unit_index;
+		player->kept_unit_index = NONE;
+		if (unit_index != NONE)
+		{
+			if (TEST_FIELD_BIT(((s_unit_flags_view *)object_get_unchecked(unit_index))->unknown10a_bit2))
+			{
+				function_b8540(unit_index);
+			}
+			else
+			{
+				function_b7290(unit_index);
+				byte *unit = object_get_unchecked(unit_index);
+				if (unit[4] & 1)
+				{
+					*(dword *)(unit + 4) &= ~1;
+					if (function_b9d20(unit_index))
+					{
+						function_bef30(unit_index, 0, 1, 0, false);
+					}
+					function_b8b70(unit_index);
+				}
+				function_14cad0(player_index, unit_index);
+				result = true;
+			}
+		}
+	}
+
+	if (!result && g_4e6948->mode != 4)
+	{
+		long tag_index = NONE;
+		long third_person = NONE;
+
+		player_get_representation(player_index, &tag_index, &third_person);
+		short location_index = (short)function_14ef00(player_index, tag_index, true, false);
+		if (location_index == NONE || tag_index == NONE)
+		{
+			goto done;
+		}
+
+		s_players_globals *globals = players_globals_14f2e0();
+		bool reused = false;
+
+		if (globals->unknownac != NONE && function_badc0(globals->unknownac, 3))
+		{
+			s_scenario_spawn_view_14f2e0 *scenario = (s_scenario_spawn_view_14f2e0 *)g_4e0350;
+			s_marker_position_angle const *location = (s_marker_position_angle const *)&scenario->starting_locations[location_index];
+			point3f position;
+			real facing;
+			vector3f forward;
+
+			marker_record_get_position_and_angle(location, &position, &facing);
+			forward.i = (real)cos(facing);
+			forward.j = (real)sin(facing);
+			forward.k = 0.0f;
+			function_b75a0(globals->unknownac, &position, &forward, g_4687b0, NULL, false);
+			globals = players_globals_14f2e0();
+			function_b9c60(globals->unknownac, false);
+			function_b7290(globals->unknownac);
+			unit_index = players_globals_14f2e0()->unknownac;
+			players_globals_14f2e0()->unknownac = NONE;
+			reused = true;
+		}
+		else
+		{
+			s_scenario_spawn_view_14f2e0 *scenario = (s_scenario_spawn_view_14f2e0 *)g_4e0350;
+			s_marker_position_angle const *location = (s_marker_position_angle const *)&scenario->starting_locations[location_index];
+			s_object_creation_14f2e0 creation;
+			real facing;
+			color3f colors[4];
+
+			function_b7930(&creation, tag_index, NONE, NULL);
+			creation.field_0c = third_person;
+			marker_record_get_position_and_angle(location, &creation.position, &facing);
+			creation.forward.i = (real)cos(facing);
+			creation.forward.j = (real)sin(facing);
+			creation.forward.k = 0.0f;
+			creation.up = *g_4687b0;
+			creation.player_index = player_index;
+			creation.team_index = player->team_index;
+			creation.field_a8 = *(dword *)((byte *)player + 0x89);
+			if (function_15f330(&player->appearance, player->team_index, colors))
+			{
+				creation.change_color_mask |= 0xf;
+				memcpy(creation.colors, colors, sizeof(colors));
+			}
+			unit_index = function_b7b40(&creation);
+		}
+
+		if (unit_index == NONE)
+		{
+			goto done;
+		}
+		function_14cad0(player_index, unit_index);
+		function_a7870(unit_index);
+		function_a7a30(unit_index, 0x400);
+		if (g_4e6948->state == 2)
+		{
+			function_15e970(unit_index);
+		}
+		else if (!reused)
+		{
+			s_scenario_spawn_view_14f2e0 *scenario = (s_scenario_spawn_view_14f2e0 *)g_4e0350;
+			bool initial = !TEST_FIELD_BIT(player->flag3);
+			long profile_index = initial ? 1 : 0;
+			bool loaded = false;
+
+			if (profile_index > scenario->starting_profile_count - 1)
+			{
+				profile_index = scenario->starting_profile_count - 1;
+			}
+			if (!initial && (scenario->flags12 & 0x20))
+			{
+				s_tail_traits *loadout = function_1529a0(player_index);
+				if (loadout)
+				{
+					loaded = function_152bf0((byte const *)loadout, unit_index);
+				}
+			}
+			if (!loaded && profile_index >= 0 && profile_index < scenario->starting_profile_count)
+			{
+				function_cce00(unit_index, (short)profile_index, true, initial);
+			}
+		}
+	}
+
+	player->field_198 = 0;
+	player->flag9 = false;
+	player->flag10 = false;
+	player->field_17c = 0;
+	player->field_17e = 0;
+	if (player->user_index != NONE)
+	{
+		motion_sensor_reset(player->user_index);
+	}
+	player->field_194 = g_510c54->field_2_3;
+	if (player->user_index != NONE)
+	{
+		function_153b80(player->user_index);
+	}
+	if (player->user_index != NONE)
+	{
+		function_16f4b0(&g_4e9bd4[player->user_index]);
+	}
+	function_152340();
+	player->flag3 = false;
+	result = true;
+
+done:
+	return result;
 }
 
 /* sets the local machine: the players lose their local users and controllers,
@@ -2381,11 +2645,12 @@ void function_14d8b0(void)
         long &ticks = *(long *)(player + 0x16c);
         if ((player[2] & 4) && (unit = *(long *)(player + 0x2c)) != NONE)
         {
+            real rate = g_510c54->rate;
             ++ticks;
-            real time = g_510c54->rate * (real)ticks;
+            real time = rate * (real)ticks;
             if (time >= 3.0f)
             {
-                if (!(bool)((object_get_unchecked(unit)[0x10a] >> 5) & 1))
+                if (!TEST_FIELD_BIT(((s_unit_flags_14d8b0 *)(object_get_unchecked(unit) + 0x10a))->bit5))
                 {
                     if (g_4e6948->mode != 4)
                     {
@@ -2493,7 +2758,7 @@ void game_engine_boot_player(long);
 // @retail 0x14d3a0
 void __stdcall function_14d3a0(byte const *input)
 {
-    byte const *const volatile *input_reference = &input;
+    byte const *const *input_reference = &input;
     players_update_connections();
     long pending[16];
     long count = 0;
@@ -2566,10 +2831,10 @@ void __stdcall function_14d3a0(byte const *input)
         if (unit != NONE && (*(dword *)(object + 0x134) & 1))
         {
             byte *game = (byte *)g_510c50;
-            if ((action->flags & 0x100) && game[6])
+            if (action->flags & 0x100)
             {
-                bool reset = true;
-                if (game[0x22]) reset = !function_163b60();
+                byte reset = game[6];
+                if (reset && game[0x22]) reset = !function_163b60();
                 if (reset)
                 {
                     main_globals.switch_structure_bsp = false;

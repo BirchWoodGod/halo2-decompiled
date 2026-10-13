@@ -251,7 +251,7 @@ struct s_source_245400
 
 struct s_line_list;
 void function_244ca0(real height, real radius, s_line_list *list, long a, long b, long c,
-	byte d, byte e, short f, point3f const *position);
+	byte d, byte e, point3f const *position, short f);
 
 PRIVATE inline point3f *function_245400_transform(transform4x3f const *matrix,
 	point3f const *point, point3f *out)
@@ -284,7 +284,7 @@ void function_245400(long index, s_source_245400 const *source,
 	if (matrix)
 		point = function_245400_transform(matrix, point, &transformed);
 	function_244ca0(height, radius, list, field_00, field_04, material_index,
-		material->field_04, material->field_05, material->field_06, point);
+		material->field_04, material->field_05, point, material->field_06);
 }
 PRIVATE __forceinline void function_245545(long arg_0, s_source_245400 const *arg_1,
 	transform4x3f const *const &arg_2, real arg_3, real arg_4,

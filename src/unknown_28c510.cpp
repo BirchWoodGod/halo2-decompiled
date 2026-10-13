@@ -354,9 +354,8 @@ void function_28c9e0()
 PRIVATE __forceinline void function_28cb72(vector3f const *arg_0, real arg_1, vector3f *arg_2)
 {
     vector3f local_0;
-    *(dword *)&local_0.i = *(volatile dword *)&arg_0->i;
-    *(dword *)&local_0.j = *(volatile dword *)&arg_0->j;
-    *(dword *)&local_0.k = *(volatile dword *)&arg_0->k;
+    struct words { dword i, j, k; };
+    *(words *)&local_0 = *(words const *)arg_0;
     arg_2->i = (local_0.i - arg_2->i) * arg_1 + arg_2->i;
     arg_2->j = (local_0.j - arg_2->j) * arg_1 + arg_2->j;
     arg_2->k = (local_0.k - arg_2->k) * arg_1 + arg_2->k;
@@ -406,6 +405,7 @@ void function_28cb70()
 		real reciprocal;
 		real weight;
 
+		++vector;
 		__asm
 		{
 			rcpss xmm0, difference
@@ -413,7 +413,7 @@ void function_28cb70()
 		}
 
 		weight = reciprocal * x;
-		function_28cb72(++vector, weight, destination);
+		function_28cb72(vector, weight, destination);
 	}
 }
 

@@ -364,7 +364,7 @@ void function_16de20(short index, s_16e150_bits const *table, dword *output)
 		for (;;)
 		{
 			s_word_bit_iterator iterator;
-			iterator.count = (short)word_count;
+			iterator.count = (short)((table->count + 31) >> 5);
 			iterator.index = 0;
 			iterator.remaining = *output;
 			iterator.words = output;
@@ -1180,7 +1180,7 @@ struct s_16e2c0_definition
 	s_16e2c0_entry *entries;
 };
 
-void function_246c60(void *block, long unknown);
+void function_246c60(long unknown, void *block);
 
 // @retail 0x16e2c0
 void function_16e2c0(long tag_index)
@@ -1194,7 +1194,7 @@ void function_16e2c0(long tag_index)
 
 		if (entry->count > 0)
 		{
-			function_246c60(entry->unknown70, entry->unknownb4);
+			function_246c60(entry->unknownb4, entry->unknown70);
 		}
 	}
 }

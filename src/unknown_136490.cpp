@@ -327,8 +327,8 @@ dword function_135ca0(void const *pixels, short format, long index)
 	case 6:
 		{
 			dword value = ((word const *)pixels)[index];
-			dword result = 0xffffffe0 | (value >> 11);
-			result = (result << 3) | ((value >> 13) & 7);
+			long result = 0xffffffe0 | (value >> 11);
+			result = (result << 3) | (value >> 13);
 			result = (result << 6) | ((value >> 5) & 0x3f);
 			result = (result << 2) | ((value >> 9) & 3);
 			result = (result << 5) | (value & 0x1f);
@@ -336,21 +336,21 @@ dword function_135ca0(void const *pixels, short format, long index)
 		}
 	case 8:
 		{
-			dword value = ((word const *)pixels)[index];
-			dword high = ((value & 0x7c00) << 3) | (value & 0x3e0);
-			high = (high << 2) | (value & 0x7000);
-			high = (high << 1) | (value & 0x1f);
-			high = (high << 2) | (value & 0x380);
-			return (high << 1) | ((value >> 2) & 7) | (-(value >> 15) << 24);
+			word value = ((word const *)pixels)[index];
+			dword result = (value >> 10) & 0x1f;
+			result = (result << 3) | ((value >> 12) & 7);
+			result = (result << 5) | ((value >> 5) & 0x1f);
+			result = (result << 3) | ((value >> 7) & 7);
+			result = (result << 5) | (value & 0x1f);
+			return (result << 3) | ((value >> 2) & 7) | ((value >> 15) * 0xff000000);
 		}
 	case 9:
 		{
 			dword value = ((word const *)pixels)[index];
-			dword alpha = value >> 12;
 			dword red = (value >> 8) & 0xf;
 			dword green = (value >> 4) & 0xf;
 			dword blue = value & 0xf;
-			dword result = (alpha << 4) | alpha;
+			long result = ((value >> 12) << 4) | (value >> 12);
 			result = (result << 4) | red;
 			result = (result << 4) | red;
 			result = (result << 4) | green;

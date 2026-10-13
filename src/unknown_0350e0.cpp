@@ -622,6 +622,8 @@ void function_3ea60(void)
 	}
 }
 
+__declspec(noinline) real function_3eb70(void);
+
 // @retail 0x3eb70
 real function_3eb70(void)
 {

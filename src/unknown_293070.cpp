@@ -322,7 +322,7 @@ bool function_295490(long flock_index, point3f const *point, real radius)
 
 		if (function_11c380(definition->trigger_volume_index, &matrix))
 		{
-			s_flock_trigger_volume *volume = &scenario->trigger_volumes[definition->trigger_volume_index];
+			real const *extents = scenario->trigger_volumes[definition->trigger_volume_index].extents;
 			vector3f vector;
 
 			vector3d_from_points3d(&matrix.position, point, &vector);
@@ -330,7 +330,7 @@ bool function_295490(long flock_index, point3f const *point, real radius)
 			for (short i = 0; i < 3; i++)
 			{
 				real distance = dot3f(&vector, &(&matrix.forward)[i]);
-				if (-radius > distance || distance > volume->extents[i] + radius)
+				if (-radius > distance || distance > extents[i] + radius)
 				{
 					result = false;
 					break;
