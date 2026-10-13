@@ -194,7 +194,7 @@ bool function_133790(s_bit_vector_pool *arg_1, short arg_2, bool arg_3, long *ar
 // @retail 0x133ab0
 void function_133ab0(s_bit_vector_pool *arg_1, s_133f70 *arg_2, bool arg_3, bool arg_4, bool arg_5)
 {
-    (void)&arg_2;
+    s_133f70 *const *local_0 = &arg_2;
     if (arg_2->field_166 > 0)
     {
         bool local_1 = false;
