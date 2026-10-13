@@ -330,6 +330,13 @@ static __forceinline void function_9dfc2(s_bitstream *arg_0, dword arg_1, long a
     function_195720(arg_0, arg_1, arg_2);
 }
 
+static __forceinline void function_9dfc4(s_bitstream *arg_0, bool arg_1)
+{
+    if ((arg_0->size_in_bytes << 3) - arg_0->bit_position >= 1 && arg_1)
+        arg_0->data[arg_0->bit_position / 8] |= (byte)(1 << (arg_0->bit_position % 8));
+    arg_0->bit_position++;
+}
+
 #pragma inline_depth(1)
 // @retail 0x9dfc0
 bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4, long arg_5, long arg_6, long arg_7)
@@ -409,7 +416,7 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
             flags_writer_end(&local_1);
             if (flags_writer_begin(&local_1, 23, "active-camo-exists"))
             {
-                stream_write_bit(local_2, local_3->field_ec[2] != 0);
+                function_9dfc4(local_2, local_3->field_ec[2] != 0);
                 function_9dfc1(local_2, local_3->field_f0, 62.0f, 6);
                 function_9dfc1(local_2, local_3->field_f4, 62.0f, 6);
             }

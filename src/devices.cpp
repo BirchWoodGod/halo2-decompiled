@@ -1021,8 +1021,6 @@ bool __stdcall function_107ed0(long device_index, long name, real seconds)
 						transform4x3f adjusted;
 						transform4x3f sampled;
 						transform4x3f start;
-						transform4x3f inverse;
-						transform4x3f relative;
 						function_1420f0(&original, &device->field_xcc658c, &device->forward, &device->up);
 						adjusted = original;
 						if (device->flags & 8)
@@ -1038,6 +1036,8 @@ bool __stdcall function_107ed0(long device_index, long name, real seconds)
 							}
 							else
 							{
+								transform4x3f inverse;
+								transform4x3f relative;
 								function_141590(&start, &inverse);
 								function_142a60(&sampled, &inverse, &relative);
 								function_142a60(&adjusted, &relative, &adjusted);
@@ -1081,17 +1081,19 @@ bool __stdcall function_107ed0(long device_index, long name, real seconds)
 								if (function_bf5d0(device_index))
 								{
 									s_device *object = DEVICE_GET(device_index);
-									real_quaternion_transform *a = (real_quaternion_transform *)((byte *)object + object->orientation_a_offset);
 									real_quaternion_transform *b = (real_quaternion_transform *)((byte *)object + object->orientation_b_offset);
+									real_quaternion_transform *a = (real_quaternion_transform *)((byte *)object + object->orientation_a_offset);
 									real_quaternion_transform orientation;
 									orientation_from_matrix4x3(&original, (rigid_transform_scaled *)&orientation);
-									function_11dbb0(a, &orientation, a);
 									function_11dbb0(b, &orientation, b);
-									function_1420f0(&relative, &device->field_xcc658c, &device->forward, &device->up);
-									function_141590(&relative, &inverse);
-									orientation_from_matrix4x3(&inverse, (rigid_transform_scaled *)&orientation);
 									function_11dbb0(a, &orientation, a);
+									transform4x3f current;
+									transform4x3f current_inverse;
+									function_1420f0(&current, &device->field_xcc658c, &device->forward, &device->up);
+									function_141590(&current, &current_inverse);
+									orientation_from_matrix4x3(&current_inverse, (rigid_transform_scaled *)&orientation);
 									function_11dbb0(b, &orientation, b);
+									function_11dbb0(a, &orientation, a);
 								}
 							}
 						}

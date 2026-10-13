@@ -42,9 +42,14 @@ void __stdcall function_1bcc10(long actor_index, s_slot *slot);
 short __stdcall function_1bc2a0(long actor_index, s_slot *slot)
 {
 	s_actor_view *actor = actor_get(actor_index);
-	if (actor->unknown858 == NONE && actor->unknown26c != NONE && !actor->unknown269)
+	if (actor->unknown858 != NONE)
+		goto done;
+
 	{
 		long vehicle_index = actor->unknown26c;
+		if (vehicle_index == NONE || actor->unknown269)
+			goto done;
+
 		s_slot_object_view *vehicle = object_get(vehicle_index);
 		if (*(long *)((byte *)vehicle + 0x248) == NONE && vehicle->actor_index == NONE)
 		{
@@ -52,11 +57,12 @@ short __stdcall function_1bc2a0(long actor_index, s_slot *slot)
 			{
 				vector3f direction;
 				point3f const *end = (point3f *)actor->unknown388;
-				direction.i = end->x - actor->unknown370.x;
-				direction.j = end->y - actor->unknown370.y;
-				direction.k = end->z - actor->unknown370.z;
+				point3f const *local_0 = &actor->unknown370;
+				direction.i = end->x - local_0->x;
+				direction.j = end->y - local_0->y;
+				direction.k = end->z - local_0->z;
 				real radius = actor->unknown36c;
-				if (radius * radius > function_11e000(&actor->position, &actor->unknown370, &direction))
+				if (function_11e000(&actor->position, local_0, &direction) < radius * radius)
 					goto trigger;
 			}
 			if (vehicle->unknownec < 0.1f)
@@ -69,9 +75,10 @@ short __stdcall function_1bc2a0(long actor_index, s_slot *slot)
 				goto trigger;
 		}
 	}
-	return g_46fbe4;
+	goto done;
 trigger:
 	function_e68c0(0x1d, actor->unknown018);
+done:
 	return g_46fbe4;
 }
 
@@ -187,8 +194,8 @@ long function_1bc5d0(long actor_index, long ignore_index)
 // @retail 0x1bc6d0
 short __stdcall function_1bc6d0(long actor_index)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	long result = 0;
+	s_actor_view *actor = actor_get(actor_index);
 
 	if (actor->unknown07c == NONE)
 		return 0;
@@ -197,37 +204,41 @@ short __stdcall function_1bc6d0(long actor_index)
 	{
 		s_object_seat seats[0x40];
 		struct s_1bc6d1 { union { short field_0; long field_c; }; long field_4; long field_8; } local_1;
-		local_1.field_c = 0;
-		local_1.field_4 = 0;
 		local_1.field_8 = 0;
+		local_1.field_4 = 0;
+		local_1.field_c = 0;
 
 		function_c8a40(actor->unknown26c, seats, &local_1.field_0, 0x40);
 		s_object_seat *seat = seats;
-		long local_0 = (word)local_1.field_0;
-		if (local_1.field_0 > 0)
-		do
+		short count = local_1.field_0;
+		if (count > 0)
 		{
-
-			if (!TEST_FIELD_BIT(seat->definition->flags.bit11))
+			local_1.field_c = (word)count;
+			do
 			{
-				bool wanted = TEST_FIELD_BIT(seat->definition->flags.bit3);
 
-				if (function_c8f60(seat->object_index, seat->seat_index) != NONE)
+				s_unit_seat_definition *local_0 = seat->definition;
+				if (!TEST_FIELD_BIT(local_0->flags.bit11))
 				{
-					if (wanted)
-						local_1.field_8++;
+					bool wanted = TEST_FIELD_BIT(local_0->flags.bit3);
+
+					if (function_c8f60(seat->object_index, seat->seat_index) != NONE)
+					{
+						if (wanted)
+							local_1.field_8++;
+					}
+					else if (!function_1b8d80(actor_index, seat->object_index, seat->seat_index, false) && wanted)
+					{
+						local_1.field_4++;
+					}
 				}
-				else if (!function_1b8d80(actor_index, seat->object_index, seat->seat_index, false) && wanted)
-				{
-					local_1.field_4++;
-				}
+				seat++;
+				local_1.field_c--;
 			}
-			seat++;
-			local_0--;
+			while (local_1.field_c != 0);
+			if ((short)local_1.field_8 == 0 && (short)local_1.field_4 > 0)
+				result = 3;
 		}
-		while (local_0 != 0);
-		if ((short)local_1.field_8 == 0 && (short)local_1.field_4 > 0)
-			result = 3;
 	}
 	return (short)result;
 }

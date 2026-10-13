@@ -199,8 +199,9 @@ void __stdcall function_1821d0(long component_index, real scale,
 	s_query_batch_result *results, long count)
 {
 	s_query_component *component = &((s_query_component *)g_51e9b8->data)[component_index & 0xffff];
+	dword local_0 = component->flags.has_shape;
 	c_query_shape *shape = NULL;
-	if (TEST_FIELD_BIT(component->flags.has_shape))
+	if (TEST_FIELD_BIT(local_0))
 		shape = component->shape;
 	for (long i = 0; i < count; i++)
 	{

@@ -70,11 +70,11 @@ __forceinline s_game_variant *variant_defaults_initialize(s_game_variant *varian
 	name[0] = 0;
 	if (g_4e034c && g_4e034c->index != NONE)
 	{
-		s_multiplayer_globals *globals = (s_multiplayer_globals *)g_4e3b44[g_4e034c->index & 0xffff].bytes;
+		s_multiplayer_globals_element *elements = ((s_multiplayer_globals *)g_4e3b44[g_4e034c->index & 0xffff].bytes)->elements;
 
-		if (globals->elements->string_list_tag_index != NONE)
+		if (elements->string_list_tag_index != NONE)
 		{
-			function_1a0180(globals->elements->string_list_tag_index, string_handle, name);
+			function_1a0180(elements->string_list_tag_index, string_handle, name);
 		}
 	}
 	wcsncpy(result.name, name, 0x1f);
@@ -240,9 +240,9 @@ bool function_19d650(s_game_variant *variant)
 	s_game_variant original = *variant;
 
 	variant->flags &= 1;
-	variant->flags48 &= 0x7fff;
 	variant->name[0x1f] = 0;
-	pin_value(&variant->unknown4c, 0, 6);
+	variant->flags48 &= 0x7fff;
+	variant->unknown4c = PIN(variant->unknown4c, 0, 6);
 	pin_value(&variant->unknown50, 0, 0x7fff);
 	pin_value(&variant->unknown54, 0, 0x7fff);
 	pin_value(&variant->unknown58, 0, 2);
@@ -256,7 +256,7 @@ bool function_19d650(s_game_variant *variant)
 	pin_value(&variant->unknowna8, 0, 2);
 	pin_value(&variant->unknownac, 0, 0x7fff);
 	variant->unknownb0 = 0;
-	pin_value(&variant->unknownb4, 0, 8);
+	variant->unknownb4 = PIN(variant->unknownb4, 0, 8);
 	pin_value(&variant->unknowncc, 0, 3);
 	pin_value(&variant->unknowncd, 0, 7);
 	pin_value(&variant->unknownce, 0, 7);

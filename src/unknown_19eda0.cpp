@@ -208,7 +208,7 @@ struct s_weapon_rule_header
 };
 
 struct s_effect_owner;
-long function_15a090(short const *types, long type, volatile long count);
+long function_15a090(short const *types, long type, long count);
 void __stdcall function_ccff0(long unit_index);
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
 long __stdcall function_b7b40(void *creation);
