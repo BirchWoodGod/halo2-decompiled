@@ -126,7 +126,7 @@ bool __stdcall function_18c250(long object_index, long tag_index, s_sound_marker
 // @retail 0x18c3b0
 bool __stdcall function_18c3b0(long object_index, long tag_index, s_sound_marker const *marker, s_type_99c531 *location)
 {
-	bool result = false;
+	byte result = 0;
 	s_sound_object_view *object = (s_sound_object_view *)function_badc0(object_index, NONE);
 
 	if (object && !object_or_parent_hidden(object_index))
@@ -186,7 +186,7 @@ bool __stdcall function_18c3b0(long object_index, long tag_index, s_sound_marker
 			}
 		}
 	}
-	return result;
+	return result != 0;
 }
 
 struct s_sound_unit_view

@@ -87,7 +87,9 @@ bool function_18f000(s_18e700 const *arg_0)
             ((s_18e701 *)g_4cf77c)->field_2f = true;
         function_158530();
         function_138f10();
-        if (g_4e6948->mode != 4 && (g_4e6948->state == 1 || g_4e6948->state == 2))
+        long local_2 = g_4e6948->mode;
+        long local_3 = g_4e6948->state;
+        if (local_2 != 4 && (local_3 == 1 || local_3 == 2))
             function_200d80();
         local_0 = true;
     }
