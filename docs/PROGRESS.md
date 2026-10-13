@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8156 functions match
+
+```
+matched 8156 of 11318 game functions (1015964 of 2784283 bytes, 36.49%)
+```
+
+3 new matches, none lost:
+- Deep lane 2, round 37 (+1): `0x22dcbc`, from 58 differences; `0x23dba0` is down to 10. Its round 36 gave the second machine's matched `0x1c4a80` its two `bool` parameters, as retail's callers pass them.
+- Deep lane 1, rounds 44 and 45 (+1): `0xb2e30`; `0x2651e0` is 15 differences closer.
+- The second machine's lane P, round 20 (#406, +1): `0x136600`.
+
 ## 2026-10-13: 8153 functions match
 
 ```
