@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8243 functions match
+
+```
+matched 8243 of 11318 game functions (1039693 of 2784283 bytes, 37.34%)
+```
+
+3 new matches, none lost:
+- Claude lane 1 round 12 (Opus): `0x14390` (the texture stage dimension arrays as one struct), `0x23dba0` and `0x1eb110`
+- Closer: `0x23675a` 82 to 35, `0x3d000` 105 to 25, `0x2b790` 127 to 69 and thirteen more (deep lanes 1 and 3)
+
 ## 2026-10-13: 8240 functions match
 
 ```

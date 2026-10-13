@@ -137,7 +137,7 @@ void __stdcall function_46230(short target, real const *bounds)
 // @retail 0x32ac0
 bool function_32ac0(void)
 {
-    bool volatile result = false;
+    byte result = 0;
     if (function_14480(*(long *)(g_485a80 + 0x34), 0, 0))
         return result;
     g_4670bc = true;
@@ -2937,18 +2937,15 @@ struct short_rect_pair
     struct { short v0, v1, v2, v3; } a, b;
 };
 extern short_rect_pair g_485a8a;
-extern short g_485aca;
 
-word g_485ac8;
-long g_485acc, g_485ad0;
+s_runtime_device_configuration g_runtime_device_configuration;
 long g_467008, g_46700c;
 bool g_5093bc;
 
 // @retail 0x128c0
 bool function_128c0(s_128c0_settings const *settings)
 {
-    g_485ac8 = *(word const *)settings;
-    g_485aca = settings->interval;
+    g_runtime_device_configuration.packed = *(dword const *)settings;
     g_485acc = settings->quality;
     g_485ad0 = settings->extra;
     volatile bool result = true;
