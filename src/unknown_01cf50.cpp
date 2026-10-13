@@ -6925,42 +6925,46 @@ void function_1f2b0()
         {
             if ((dword)g_4b62b0[i].character_index != 0xffffffffu)
             {
-                if (i != NONE)
+                long index = i;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
             if ((dword)g_4b62b0[i + 1].character_index != 0xffffffffu)
             {
-                if (i + 1 != NONE)
+                long index = i + 1;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i + 1].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i + 1].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
             if ((dword)g_4b62b0[i + 2].character_index != 0xffffffffu)
             {
-                if (i + 2 != NONE)
+                long index = i + 2;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i + 2].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i + 2].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
             if ((dword)g_4b62b0[i + 3].character_index != 0xffffffffu)
             {
-                if (i + 3 != NONE)
+                long index = i + 3;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i + 3].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i + 3].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
         }
