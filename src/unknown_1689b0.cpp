@@ -424,8 +424,18 @@ void function_168b40(s_168b40_result *result, s_168b40_surface const *surface, t
 	result->unknown04 = surface->unknown00;
 	if (matrix)
 	{
-		transform4x3f_apply_normal(matrix, &surface->plane->n, &result->plane.n);
-		result->plane.d = matrix->scale * surface->plane->d + dot3f(&result->plane.n, (vector3f const *)&matrix->position);
+		plane3f const *plane = surface->plane;
+
+		real x = plane->i;
+		real y = plane->j;
+		real z = plane->k;
+		result->plane.i = matrix->up.i * z + matrix->left.i * y + matrix->forward.i * x;
+		result->plane.j = matrix->up.j * z + matrix->left.j * y + matrix->forward.j * x;
+		result->plane.k = matrix->up.k * z + matrix->left.k * y + matrix->forward.k * x;
+		real distance = matrix->position.z * result->plane.k + plane->d * matrix->scale;
+		distance += matrix->position.y * result->plane.j;
+		distance += result->plane.i * matrix->position.x;
+		result->plane.d = distance;
 		if (surface->flags & 0x8000)
 		{
 			result->plane.i = 0.0f - result->plane.i;
@@ -434,16 +444,18 @@ void function_168b40(s_168b40_result *result, s_168b40_surface const *surface, t
 			result->plane.d = 0.0f - result->plane.d;
 		}
 	}
-	else if (!(surface->flags & 0x8000))
+	else if (surface->flags & 0x8000)
 	{
-		result->plane = *surface->plane;
+		plane3f const *plane = surface->plane;
+
+		result->plane.i = 0.0f - plane->i;
+		result->plane.j = 0.0f - plane->j;
+		result->plane.k = 0.0f - plane->k;
+		result->plane.d = 0.0f - plane->d;
 	}
 	else
 	{
-		result->plane.i = 0.0f - surface->plane->i;
-		result->plane.j = 0.0f - surface->plane->j;
-		result->plane.k = 0.0f - surface->plane->k;
-		result->plane.d = 0.0f - surface->plane->d;
+		result->plane = *surface->plane;
 	}
 	result->unknown4c = surface->unknown08;
 	result->unknown50 = surface->unknown0c;
