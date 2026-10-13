@@ -259,12 +259,12 @@ void function_155920(long local_index, bool force)
 				state->value12 = 0;
 				state->value13 = 0;
 				state->value16 = 0;
-				state->value14 = 0;
-				state->value24 = 0.0f;
-				state->value20 = 0.0f;
 				state->value18 = NONE;
 				state->value1c = NONE;
+				state->value24 = 0.0f;
+				state->value20 = 0.0f;
 				state->value28 = 1.0f;
+				state->value14 = 0;
 				function_155dd0(local_index, function_23cbb0, !force);
 			}
 		}
@@ -297,35 +297,7 @@ void __stdcall function_155a30(byte value)
 		}
 		else
 		{
-			long unit_index;
-			short mode;
-			if (local_player_exists(index))
-				unit_index = ((s_camera_player *)g_4e8c24->data)[g_4e8c20->entries[index] & 0xffff].unit_index;
-			else
-				unit_index = NONE;
-			if (function_155810(unit_index, &mode) == 1)
-			{
-				s_camera_state_23cbb0 *state = (s_camera_state_23cbb0 *)&entry->value10;
-				state->value10 = 0;
-				state->value11 = 0;
-				state->value12 = 0;
-				state->value13 = 0;
-				state->value16 = 0;
-				state->value18 = NONE;
-				state->value1c = NONE;
-				state->value24 = 0.0f;
-				state->value20 = 0.0f;
-				state->value28 = 1.0f;
-				state->value14 = 0;
-				function_155dd0(index, function_23cbb0, false);
-			}
-			else
-			{
-				entry->value10 = 0.0f;
-				entry->value14 = 0.0f;
-				function_155dd0(index, function_23c110, false);
-			}
-			entry->word58 = mode;
+			function_155920(index, true);
 		}
 		((byte *)g_510c6c)[0] = *value_reference;
 		((byte *)g_510c6c)[1] = 1;
