@@ -10,6 +10,7 @@
 #include <string.h>
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+#define FLOOR(n, floor) ((n) < (floor) ? (floor) : (n))
 
 /* the multiplayer globals' fields read here that globals.h does not name */
 struct s_mp_globals_view
@@ -467,53 +468,56 @@ static inline bool voice_player_hears(long listener_index, long talker_index)
 // @retail 0x162de0
 void function_162de0(void)
 {
-	dword users = 0;
+	struct { dword talking; dword users; s_game_engine_player_iterator iterator; } state;
 	long user_index;
+
+	state.users = 0;
 
 	for (user_index = local_user_next(NONE); user_index != NONE; user_index = local_user_next(user_index))
 	{
-		long player_index = g_4e8c20->entries[user_index];
-
-		if (user_index != NONE && player_index != NONE)
+		if (user_index != NONE)
 		{
-			s_game_engine_player_iterator iterator;
-			dword talking;
-			long other_index;
+			long player_index = g_4e8c20->entries[user_index];
 
-			iterator.index = NONE;
-			iterator.datum_index = NONE;
-			talking = 0;
-			iterator.data = g_4e8c24;
-			while (function_19f240((long *)&iterator))
+			if (player_index != NONE)
 			{
-				long talker = iterator.datum_index;
+				long other_index;
 
-				if (talker != player_index && *(short *)(iterator.datum + 0x28) == NONE)
+				state.iterator.index = NONE;
+				state.iterator.datum_index = NONE;
+				state.talking = 0;
+				state.iterator.data = g_4e8c24;
+				while (function_19f240((long *)&state.iterator))
 				{
-					long talker_index = talker & 0xffff;
-					long listener_index = player_index & 0xffff;
+					long talker = state.iterator.datum_index;
 
-					if (g_4c99b8 && g_476fcc && function_53750(talker_index) &&
-						voice_player_hears(listener_index, talker_index))
+					if (talker != player_index && *(short *)(state.iterator.datum + 0x28) == NONE)
 					{
-						g_4e9b38[user_index][talker_index]++;
-						talking |= 1 << talker_index;
+						long talker_index = talker & 0xffff;
+						long listener_index = player_index & 0xffff;
+
+						if (g_4c99b8 && g_476fcc && function_53750(talker_index) &&
+							voice_player_hears(listener_index, talker_index))
+						{
+							g_4e9b38[user_index][talker_index]++;
+							state.talking |= 1 << talker_index;
+						}
 					}
 				}
-			}
-			for (other_index = 0; other_index < 16; other_index++)
-			{
-				if (!(talking & (1 << other_index)))
+				for (other_index = 0; other_index < 16; other_index++)
 				{
-					g_4e9b38[user_index][other_index] = 0;
+					if (!((word)state.talking & (1 << other_index)))
+					{
+						g_4e9b38[user_index][other_index] = 0;
+					}
 				}
+				state.users |= 1 << user_index;
 			}
-			users |= 1 << user_index;
 		}
 	}
 	for (user_index = 0; user_index < 4; user_index++)
 	{
-		if (!(users & (1 << user_index)))
+		if (!((word)state.users & (1 << user_index)))
 		{
 			memset(g_4e9b38[user_index], 0, sizeof(g_4e9b38[user_index]));
 		}
@@ -540,16 +544,12 @@ bool g_55e754;
 // @retail 0x162470
 long function_162470(bool flag)
 {
-	volatile long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
-	s_mp_globals *globals = g_4e9ae8;
-	long elapsed = g_510c54->game_time - ((s_mp_globals_time_view *)globals)->start_time;
-	long time_left;
+	long time_limit = ((s_game_options_time_view *)g_4e6948)->time_limit;
+	long elapsed = FLOOR(g_510c54->game_time - ((s_mp_globals_time_view *)g_4e9ae8)->start_time, 0);
+	long time_left = FLOOR(g_510c54->field_2_3 * time_limit - elapsed, 0);
 	long result;
 
-	elapsed = elapsed < 0 ? 0 : elapsed;
-	time_left = g_510c54->field_2_3 * time_limit - elapsed;
-	time_left = time_left < 0 ? 0 : time_left;
-	result = g_55e4d0[globals->engine_index]->p25(time_left, flag, true);
+	result = g_55e4d0[g_4e9ae8->engine_index]->p25(time_left, flag, true);
 	if (flag)
 	{
 		if (result != time_left)

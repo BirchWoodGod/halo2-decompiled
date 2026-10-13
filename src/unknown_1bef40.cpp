@@ -8,6 +8,8 @@
 #include "unknown_20fe20.h"
 #include "unknown_1e1f20.h"
 
+extern "C" void _ReadWriteBarrier(void);
+
 /* slot types 0xa and 0xb */
 
 struct s_slot_0a
@@ -51,20 +53,23 @@ void function_1f86a0(long index);
 short function_2684f0(s_actor_view *actor);
 long function_1469f0(real seconds);
 
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1bf0f0
 short __stdcall function_1bf0f0(long actor_index, s_slot *slot, bool active)
 {
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_0a *state = (s_slot_0a *)slot;
 	short result = g_46fbe8;
-	s_reference reference = state->reference;
-	if (REFERENCE_EQUAL(reference, g_470fa0))
+	_ReadWriteBarrier();
+	if (REFERENCE_EQUAL(state->reference, g_470fa0))
 	{
 		function_1f86a0(actor_index);
 	}
 	else if (actor->unknown504 == 2)
 	{
-		byte *unit = (byte *)object_get(actor->unknown018);
+		long local_1 = (actor->unknown018 & 0xffff) * 3;
+		_ReadWriteBarrier();
+		byte *unit = *(byte **)(g_4e0300->data + local_1 * 4 + 8);
 		if (*(short *)(unit + *(short *)(unit + 0x346) + 0x36) == 5)
 		{
 			if (state->unknown12 > 0)
@@ -94,6 +99,7 @@ short __stdcall function_1bf0f0(long actor_index, s_slot *slot, bool active)
 	}
 	return result;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x1bef40
 short __stdcall function_1bef40(long actor_index)

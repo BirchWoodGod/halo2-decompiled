@@ -25,8 +25,8 @@ void __stdcall function_1a9760(long arg_0, s_slot *arg_1)
     local_3.i = (local_0->position.x + local_0->unknown258.i * 0.5f) - local_0->unknown370.x;
     local_3.j = (local_0->position.y + local_0->unknown258.j * 0.5f) - local_0->unknown370.y;
     local_3.k = (local_0->position.z + local_0->unknown258.k * 0.5f) - local_0->unknown370.z;
-    real local_4 = (real)sqrt(local_2.j * local_2.j + (local_2.i * local_2.i + local_2.k * local_2.k));
-    if (!(fabs(local_4) < 0.0001f))
+    real local_4 = (real)sqrt((double)(local_2.j * local_2.j + (local_2.i * local_2.i + local_2.k * local_2.k)));
+    if (!((real)fabs((double)local_4) < 0.0001f))
     {
         real local_8 = 1.0f / local_4;
         local_2.i = local_8 * local_2.i;

@@ -190,13 +190,14 @@ void function_153bd0(long index, real scale)
 		values.value[2] = scale * 0.01;
 		values.value[0] = 1.0f;
 		values.value[5] = 1.0f;
-		request.shake = *(s_speed_shake const *)g_4686cc;
-		request.duration = 1.0f;
-		g_502120->entries[index].value80 = scale;
-		g_502120->entries[index].value84 = scale;
 		request.type = 1;
 		request.priority = 2;
+		request.duration = 1.0f;
 		request.amount = scale;
+		request.shake = *(s_speed_shake const *)g_4686cc;
+		s_speed_table_entry *entry = &g_502120->entries[index];
+		entry->value80 = scale;
+		entry->value84 = scale;
 		function_154d70(&request, slot, scale);
 		function_155240(&values, slot, scale);
 	}
@@ -526,6 +527,13 @@ struct s_camera_effect_tag_153d10
     long sound_index;
 };
 
+struct s_player_axes_153d10
+{
+	byte unknown00[0x20];
+	vector3f forward;
+	vector3f up;
+};
+
 // @retail 0x153d10
 void __stdcall function_153d10(long user_index, long tag_index, void *owner, void *direction, long unused, real scale, real priority, bool directional)
 {
@@ -550,15 +558,16 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                     if (effect->request.duration > 0.05f && effect->request.amount > 0.05f)
                     {
                         s_speed_request request = effect->request;
-                        request.shake.scale = 1.0f;
                         if (active)
                         {
+                            request.shake.scale = 1.0f;
                             request.shake.vector.i = 0.0f;
                             request.shake.vector.j = 0.6f;
                             request.shake.vector.k = 0.8f;
                         }
                         else
                         {
+                            request.shake.scale = 1.0f;
                             request.shake.vector.i = 1.0f;
                             request.shake.vector.j = 0.0f;
                             request.shake.vector.k = 0.0f;
@@ -628,14 +637,15 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                 point3f origin, target;
                 function_caf60(unit_index, &origin);
                 function_b9dd0(((long *)owner)[1], &target);
-                vector3f *forward = (vector3f *)((byte *)state + 0x20);
-                vector3f *up = (vector3f *)((byte *)state + 0x2c);
+                s_player_axes_153d10 *axes = (s_player_axes_153d10 *)state;
+                vector3f const *forward = &axes->forward;
+                vector3f const *up = &axes->up;
                 vector3f delta = { target.x - origin.x, target.y - origin.y, target.z - origin.z };
                 vector3f cross;
                 vector3f relative;
-                cross.i = forward->j * up->k - forward->k * up->j;
-                cross.j = forward->k * up->i - up->k * forward->i;
-                cross.k = forward->i * up->j - forward->j * up->i;
+                cross.i = axes->forward.j * axes->up.k - axes->forward.k * axes->up.j;
+                cross.j = axes->forward.k * axes->up.i - axes->up.k * axes->forward.i;
+                cross.k = axes->forward.i * axes->up.j - axes->forward.j * axes->up.i;
                 relative.i = cross.k * delta.k + cross.j * delta.j + cross.i * delta.i;
                 relative.j = forward->k * delta.k + forward->j * delta.j + forward->i * delta.i;
                 relative.k = up->k * delta.k + up->j * delta.j + up->i * delta.i;

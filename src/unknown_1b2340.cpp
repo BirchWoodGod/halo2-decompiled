@@ -51,13 +51,15 @@ struct s_prop_view_state
 	short state;
 };
 
-static inline short actor_prop_state(s_actor_view *actor)
+static __forceinline short actor_prop_state(s_actor_view *actor)
 {
 	short state = 0;
 
 	if (actor->prop_index != NONE)
 	{
+		#pragma inline_depth(0)
 		s_prop_view_state *view = (s_prop_view_state *)function_25d700(actor->prop_index);
+		#pragma inline_depth()
 
 		if (view)
 			state = view->state;

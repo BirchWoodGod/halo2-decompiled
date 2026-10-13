@@ -131,12 +131,11 @@ bool function_161e10(long team);
 // @retail 0x15d920
 bool function_15d920(long player_index)
 {
-	dword flags = ((s_respawn_options *)g_4e6948)->flags;
 	s_record_pool *players = g_4e8c24;
 	long index = player_index & 0xffff;
-	s_respawn_player *player = (s_respawn_player *)players->data + index;
-	volatile bool result = false;
-	if ((bool)((flags >> 14) & 1) && function_x340af0() && player->unit_index == NONE)
+	s_respawn_player *player = (s_respawn_player *)(players->data + (player_index & 0xffff) * sizeof(s_respawn_player));
+	bool result = false;
+	if ((bool)((((s_respawn_options *)g_4e6948)->flags >> 14) & 1) && function_x340af0() && player->unit_index == NONE)
 	{
 		result = true;
 		char counts[8];
@@ -152,35 +151,33 @@ bool function_15d920(long player_index)
 				!function_15db30(iterator.datum_index) && !function_15d770(iterator.datum_index)))
 				counts[other->team]++;
 		}
-		volatile long minimum = 16;
+		long minimum = 16;
 		for (long team = 0; team < 8; team++)
 		{
-			if (function_161e10(team) && counts[team] < minimum)
+			if (function_161e10(team) && minimum > counts[team])
 				minimum = counts[team];
 		}
-		if (minimum < 2)
+		if (minimum <= 2)
 			minimum = 2;
-		if (counts[player->team] > minimum)
+		if (minimum < counts[player->team])
 		{
 			long living_count = 0;
 			long waiting_count = 0;
-			iterator.data = players;
+			iterator.data = g_4e8c24;
 			iterator.index = NONE;
 			iterator.datum_index = NONE;
 			while (function_19f240((long *)&iterator))
 			{
 				s_respawn_player *other = iterator.player;
-				if (other->team == player->team && other != player)
+				if (player->team == other->team && other != player)
 				{
-					long unit_index = other->unit_index;
-					if (unit_index != NONE || !function_15db30(iterator.datum_index))
-					{
-						if (unit_index != NONE)
-							living_count++;
-						else if (other->respawn_time < player->respawn_time ||
-							other->respawn_time == player->respawn_time && index >= (iterator.datum_index & 0xffff))
-							waiting_count++;
-					}
+					if (other->unit_index == NONE && function_15db30(iterator.datum_index))
+						continue;
+					if (other->unit_index != NONE)
+						living_count++;
+					else if (other->respawn_time <= player->respawn_time &&
+						(other->respawn_time != player->respawn_time || index >= (iterator.datum_index & 0xffff)))
+						waiting_count++;
 				}
 			}
 			long needed = minimum - living_count;
