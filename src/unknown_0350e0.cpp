@@ -232,6 +232,11 @@ extern real g_4670fc, g_467100, g_509428;
 void function_398d0(real seconds)
 {
 	real const *time_reference = &seconds;
+	/* referenced first in the order the path without a record loads them */
+	(void)g_509424;
+	(void)g_4670fc;
+	(void)g_509428;
+	(void)g_467100;
 	s_fade_record *record = g_50942c;
 	if (record && record->marker == 0xdeadbeef)
 	{
