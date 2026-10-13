@@ -29,6 +29,8 @@ bool __stdcall function_1bd230(long actor_index, s_slot *slot);
 short __stdcall function_1bd350(long actor_index, short level, bool active);
 void __stdcall function_1f4280(long actor_index);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1bcee0
 bool __stdcall function_1bcee0(long actor_index, s_slot *slot)
 {
@@ -39,9 +41,19 @@ bool __stdcall function_1bcee0(long actor_index, s_slot *slot)
 	request.type = 0x2c;
 	function_e6900(unit_index, &request);
 	((s_slot_6c *)slot)->unknown0c = 0;
-	actor_reset_state(actor_index);
+	s_actor_view *actor = actor_get(actor_index);
+	actor->unknown50c = false;
+	actor->unknown5ac = NONE;
+	actor->unknown5b0 = NONE;
+	actor->unknown5b4 = 0;
+	actor->unknown5b6 = 0;
+	_ReadWriteBarrier();
+	actor->unknown4ac = 0;
+	actor->unknown504 = 0;
 	return true;
 }
+
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x1bcf90
 short __stdcall function_1bcf90(long actor_index, s_slot *slot, bool active)

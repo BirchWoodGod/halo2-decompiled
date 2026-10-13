@@ -403,7 +403,9 @@ void function_1fe410(point3f *point, real distance)
     start.x = g_4687b0->i * 1.5f + point->x;
     start.y = g_4687b0->j * 1.5f + point->y;
     start.z = g_4687b0->k * 1.5f + point->z;
-    real angle = slot_random() * 6.2831854820251465f - 3.1415927410125732f;
+    real angle = (real)random_next(&g_4e7408->unknown0) * 1.5259022e-05f;
+    angle *= 6.2831854820251465f;
+    angle -= 3.1415927410125732f;
     volatile real cosine = (real)cos(angle);
     volatile real sine = (real)sin(angle);
     point3f destination;
