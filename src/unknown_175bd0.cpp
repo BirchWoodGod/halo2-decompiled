@@ -564,45 +564,76 @@ void effects_delete_all(void)
 	function_x496c75();
 }
 
+/* a file-local copy of the shared object getter (0xbadc0): retail's effect location update calls the getter out of line, where the optimizer expands the shared one inline; the linker folds this copy into the shared function */
+struct s_object_header_175d70
+{
+	short identifier;
+	byte flags;
+	byte type;
+	byte unknown04[4];
+	s_object *object;
+};
+
+PRIVATE __declspec(noinline) s_object *object_get_175d70(long object_index, dword type_mask)
+{
+	s_object_header_175d70 *header = 0;
+
+	if (object_index != NONE)
+	{
+		long index = object_index & 0xffff;
+		if (index < g_4e0300->high_water_index)
+		{
+			s_object_header_175d70 *h = (s_object_header_175d70 *)(g_4e0300->data + g_4e0300->size * index);
+			if (h->identifier && h->identifier == (object_index >> 16))
+				header = h;
+		}
+	}
+
+	s_object *result = 0;
+	if (header && (type_mask & (1 << header->type)))
+		result = header->object;
+	return result;
+}
+
 // @retail 0x175d70
 void function_175d70(void)
 {
-	s_record_pool *array = g_4ea93c;
-	long datum = data_datum_index(array, function_16bc00(array, 0));
+	long datum = data_datum_index(g_4ea93c, function_16bc00(g_4ea93c, 0));
 	while (datum != NONE)
 	{
-		s_effect_datum *effect = DATUM(array, s_effect_datum, datum);
-        if (effect->object_index != NONE)
-        {
-            s_effect_object *object = (s_effect_object *)function_badc0(effect->object_index, (dword)NONE);
-            if (!object)
-            {
-                effect->object_index = NONE;
-                effect->location.leaf_index = NONE;
-                effect->location.cluster_index = NONE;
-                effect->location.bsp_index = g_4686c4;
-                function_1774f0(datum);
-                goto next;
-            }
-            effect->location = object->location;
-        }
-        else if (!function_1789f0(effect))
-        {
-            function_1774f0(datum);
-            goto next;
-        }
-        {
-            long index = effect->first_particle_system_index;
-            while (index != NONE)
-            {
-                s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, index);
-                index = system->next_index;
-                system->set_location(&effect->location);
-            }
-        }
+		long index = datum & 0xffff;
+		s_effect_datum *effect = (s_effect_datum *)g_4ea93c->data + index;
+		if (effect->object_index != NONE)
+		{
+			s_effect_object *object = (s_effect_object *)object_get_175d70(effect->object_index, (dword)NONE);
+			if (!object)
+			{
+				effect->object_index = NONE;
+				effect->location.leaf_index = NONE;
+				effect->location.cluster_index = NONE;
+				effect->location.bsp_index = g_4686c4;
+				function_1774f0(datum);
+				goto next;
+			}
+			effect->location = object->location;
+		}
+		else if (!function_1789f0(effect))
+		{
+			function_1774f0(datum);
+			goto next;
+		}
+		{
+			long system_index = effect->first_particle_system_index;
+			while (system_index != NONE)
+			{
+				s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, system_index);
+				long next_index = system->next_index;
+				system->set_location(&effect->location);
+				system_index = next_index;
+			}
+		}
 next:
-		array = g_4ea93c;
-		datum = data_datum_index(array, data_find_index(array, datum == NONE ? 0 : (datum & 0xffff) + 1));
+		datum = data_datum_index(g_4ea93c, data_find_index(g_4ea93c, datum == NONE ? 0 : index + 1));
 	}
 	particle_systems_update_locations();
 }
@@ -3175,41 +3206,55 @@ struct s_effect_preview_screen_176cb0
 s_effect_preview_screen_176cb0 *g_54d760;
 void __stdcall function_174420(long system_index, bool view_pass, bool camera_relative, bool force_visible);
 
+PRIVATE __forceinline long data_datum_index_176cb0(s_record_pool *array, long index)
+{
+	long datum = NONE;
+	if (index != NONE)
+		datum = (((short *)(array->data + array->size * index))[0] << 16) | index;
+	return datum;
+}
+
 // @retail 0x176cb0
 void function_176cb0(void)
 {
-    if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 3 && g_54d760)
-    {
-        s_effect_preview_screen_176cb0 *screen = g_54d760->child;
-        if (screen)
-            while (screen->child) screen = screen->child;
-        else if (!g_54d760->parent) screen = g_54d760;
-        if (screen && (screen->screen_id == 6 || screen->screen_id == 9))
-        {
-            s_record_pool *effects = g_4ea93c;
-            long index = data_datum_index(effects, function_16bc00(effects, 0));
-            while (index != NONE)
-            {
-                s_effect_datum *effect = DATUM(effects, s_effect_datum, index);
-                long particle_index = effect->first_particle_system_index;
-                if (TEST_FIELD_BIT(effect->flag0) && !TEST_FIELD_BIT(effect->flag2) &&
-                    !TEST_FIELD_BIT(effect->flag3) && !TEST_FIELD_BIT(effect->flag6))
-                {
-                    function_179880(effect, index);
-                    function_179e80(effect);
-                    effects = g_4ea93c;
-                }
-                while (particle_index != NONE)
-                {
-                    s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, particle_index);
-                    function_174420(particle_index, false, false, true);
-                    particle_index = system->next_index;
-                }
-                effects = g_4ea93c;
-                index = data_datum_index(effects, function_16bc00(effects, index == NONE ? 0 : (index & 0xffff) + 1));
-            }
-        }
-    }
+	if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 3 && g_54d760)
+	{
+		s_effect_preview_screen_176cb0 *screen = g_54d760->child;
+		for (;;)
+		{
+			if (!screen)
+			{
+				if (!g_54d760->parent)
+					screen = g_54d760;
+				break;
+			}
+			if (!screen->child)
+				break;
+			screen = screen->child;
+		}
+		if (screen && (screen->screen_id == 6 || screen->screen_id == 9))
+		{
+			long index = data_datum_index_176cb0(g_4ea93c, function_16bc00(g_4ea93c, 0));
+			while (index != NONE)
+			{
+				s_effect_datum *effect = DATUM(g_4ea93c, s_effect_datum, index);
+				/* the second DATUM lookup is deliberate: it makes the compiler address the effect once, as retail does */
+				long particle_index = DATUM(g_4ea93c, s_effect_datum, index)->first_particle_system_index;
+				if (TEST_FIELD_BIT(effect->flag0) && !TEST_FIELD_BIT(effect->flag2) && !TEST_FIELD_BIT(effect->flag3) && !TEST_FIELD_BIT(effect->flag6))
+				{
+					function_179880(effect, index);
+					function_179e80(effect);
+				}
+				while (particle_index != NONE)
+				{
+					s_particle_system_datum *system = DATUM(g_510c74, s_particle_system_datum, particle_index);
+					function_174420(particle_index, false, false, true);
+					particle_index = system->next_index;
+				}
+				index = data_datum_index_176cb0(g_4ea93c, function_16bc00(g_4ea93c, index == NONE ? 0 : (index & 0xffff) + 1));
+			}
+		}
+	}
 }
 
 
