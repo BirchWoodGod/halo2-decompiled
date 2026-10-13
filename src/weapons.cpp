@@ -2428,12 +2428,12 @@ void function_100520(long weapon_index, s_weapon_status *status)
 					if (model_index != NONE)
 					{
 						s_weapon_target_model *model = (s_weapon_target_model *)g_4e3b44[model_index & 0xffff].bytes;
-						long entry = (char)weapon->entry_177;
+						char entry = weapon->entry_177;
 						if (entry >= 0 && entry < model->marker_count)
 						{
 							s_object_marker marker;
 							if (function_b8d30(index, model->markers[entry].name, &marker, 1, false) == 1)
-								status->target_position = marker.node_matrix.position;
+								status->target_position = marker.matrix.position;
 						}
 					}
 				}
@@ -2456,9 +2456,12 @@ void function_100520(long weapon_index, s_weapon_status *status)
 	}
 	weapon = WEAPON_GET(weapon_index);
 	definition = WEAPON_DEFINITION(weapon);
-	if (definition->trigger_count > 0 && weapon->triggers[0].state == 2 && definition->triggers[0].behavior == 2 &&
-		*(short *)((byte *)&definition->triggers[0] + 0x18) == 1)
-		status->charging = true;
+	if (definition->trigger_count > 0)
+	{
+		s_weapon_trigger_definition *trigger = definition->triggers;
+		if (weapon->triggers[0].state == 2 && trigger->behavior == 2 && *(short *)((byte *)trigger + 0x18) == 1)
+			status->charging = true;
+	}
 }
 
 extern bool g_4f55dc[16];
