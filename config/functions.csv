@@ -1785,7 +1785,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 000918c0,212,game,speed,a16 pad,,,,src/team_balancing.cpp,matched
 000919a0,92,game,speed,a16 pad,,,,src/team_balancing.cpp,matched
 00091a00,46,game,speed,a16 pad,,,00091620,src/team_balancing.cpp,todo
-00091a30,244,game,speed,a16 pad ebp,,,00091690 00091760 000917c0 000919a0,src/team_balancing.cpp,todo
+00091a30,244,game,speed,a16 pad ebp,,,00091690 00091760 000917c0 000919a0,src/team_balancing.cpp,matched
 00091b30,81,game,speed,a16 pad,,,00091620,src/team_balancing.cpp,todo
 00091b90,54,game,speed,a16 pad,,,00091dd0,src/team_balancing.cpp,matched
 00091bd0,512,game,speed,a16 pad ebp,,,00091690 000916e0 00091800 00091860 000918c0 00320560,src/team_balancing.cpp,todo
@@ -1892,7 +1892,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00096810,65,game,speed,a16 pad,,,,src/network_streams.cpp,matched
 00096860,174,game,speed,a16 pad,,,,src/network_streams.cpp,matched
 00096910,483,game,speed,a16 pad,,,00096d80 003314b0,src/network_streams.cpp,todo
-00096b00,332,game,speed,a16 pad,,,003314b0,src/network_streams.cpp,todo
+00096b00,332,game,speed,a16 pad,,,003314b0,src/network_streams.cpp,matched
 00096c50,129,game,speed,a16 pad,,,,src/network_streams.cpp,matched
 00096ce0,155,game,speed,a16 pad,,,00075890 000966d0 001a4840,src/network_streams.cpp,todo
 00096d80,268,game,speed,a16 pad,,,,src/network_streams.cpp,matched
@@ -2018,7 +2018,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0009bee0,13,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
 0009bef0,54,game,speed,a16 pad,,,0011c9c0,src/unknown_09a5e0.cpp,matched
 0009bf30,1049,game,speed,a16 pad,,,000aa8e0 000b66f0 00194bc0 00195720,src/unknown_09a5e0.cpp,matched
-0009c350,696,game,speed,a16 pad,,,001957d0 001959c0 0024f6b0,src/unknown_09a5e0.cpp,todo
+0009c350,696,game,speed,a16 pad,,,001957d0 001959c0 0024f6b0,src/unknown_09a5e0.cpp,matched
 0009c610,429,game,speed,a16 pad,,,000a58d0 000b9dd0 000d6a70 000d9640 000e4a20 00122c10,src/unknown_09c610.cpp,todo
 0009c7c0,6,game,speed,a16 pad,,,,src/unknown_08b110.cpp,matched
 0009c7d0,6,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
