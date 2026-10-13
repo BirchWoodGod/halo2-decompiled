@@ -818,7 +818,12 @@ bool __stdcall function_14df40(long *unit_index)
 		{
 			if (unit_object->unknownaa == 0)
 			{
-				if (function_e4050(unit) || (unit_object->unknown348 & 1))
+				if (function_e4050(unit))
+				{
+					*unit_index = player->unit_index;
+					return true;
+				}
+				else if ((unit_object->unknown348 & 1))
 				{
 					*unit_index = player->unit_index;
 					return true;

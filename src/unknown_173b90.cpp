@@ -1073,7 +1073,7 @@ void __stdcall function_174220(bool view_pass)
     {
         s_particle_system_datum *system = DATUM(systems, s_particle_system_datum, index);
         s_effect_particle_system_definition *definition = system->function_1751d0();
-        long cluster = system->location.cluster_index;
+        short cluster = system->location.cluster_index;
         if (cluster != NONE &&
             ((*(word *)((byte *)definition + 0x16) & (1 << 9)) ||
              (g_547f88.flags[cluster >> 5] & (1 << (cluster & 31))) || function_3eb20(cluster)) &&
