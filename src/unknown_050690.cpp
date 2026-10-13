@@ -1,4 +1,4 @@
-// @flags /O2 /Gr
+// @flags /O2 /arch:SSE /Gr
 /* UNKNOWN_050690.CPP: random seeds drawn from the game's random generator
    (lane D) */
 
@@ -50,6 +50,12 @@ struct s_random_draw_definition
 s_random_draw g_4c9828;
 bool g_50944d;
 
+static __forceinline void random_draw_advance(real *value, real elapsed)
+{
+	elapsed += *value;
+	*value = elapsed;
+}
+
 // @retail 0x507e0
 void __stdcall function_507e0(s_random_draw *draw, const s_random_draw_definition *definition, real elapsed)
 {
@@ -79,7 +85,7 @@ void __stdcall function_507e0(s_random_draw *draw, const s_random_draw_definitio
 		}
 		if (definition->period != 0.f)
 			draw->reals[0] += elapsed / definition->period;
-		draw->reals[1] += elapsed;
+		random_draw_advance(&draw->reals[1], elapsed);
 	}
 }
 

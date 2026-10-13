@@ -369,35 +369,37 @@ PRIVATE inline void transform_plane_163db0(transform4x3f const *matrix, s_plane 
 	plane->d = matrix->position.y * plane->normal.j + plane->d * matrix->scale + matrix->position.z * plane->normal.k + matrix->position.x * plane->normal.i;
 }
 
-PRIVATE inline double plane_error_163db0(s_plane const *plane, point3f const *point)
+PRIVATE inline real plane_error_163db0(s_plane const *plane, point3f const *point)
 {
-	return fabs(plane->normal.k * point->z + plane->normal.j * point->y + plane->normal.i * point->x - plane->d);
+	return (real)fabs(plane->normal.k * point->z + plane->normal.j * point->y + plane->normal.i * point->x - plane->d);
 }
 
 // @retail 0x163db0
 bool function_163db0(s_camera_163db0 const *camera, box2f const *rectangle, long identifier, s_frustum_1648d0 *result)
 {
 	bool valid = false;
+	char const *error = 0;
 	if (rectangle->x1 > rectangle->x0 && rectangle->y1 > rectangle->y0)
 	{
 		result->rectangle = *rectangle;
 		result->identifier = identifier;
-		real x0 = result->rectangle.x0 * camera->depth;
-		real x1 = result->rectangle.x1 * camera->depth;
-		real y0 = result->rectangle.y0 * camera->depth;
-		real y1 = result->rectangle.y1 * camera->depth;
+		real depth = camera->depth;
+		real x0 = result->rectangle.x0 * depth;
+		real x1 = result->rectangle.x1 * depth;
+		real y0 = result->rectangle.y0 * depth;
+		real y1 = result->rectangle.y1 * depth;
+		result->points[1].z = 0.0f - camera->depth;
 		result->points[1].x = x0;
 		result->points[1].y = y0;
-		result->points[1].z = 0.0f - camera->depth;
+		result->points[3].z = 0.0f - camera->depth;
 		result->points[3].x = x1;
 		result->points[3].y = y0;
-		result->points[3].z = 0.0f - camera->depth;
+		result->points[0].z = 0.0f - camera->depth;
 		result->points[0].x = x0;
 		result->points[0].y = y1;
-		result->points[0].z = 0.0f - camera->depth;
+		result->points[2].z = 0.0f - camera->depth;
 		result->points[2].x = x1;
 		result->points[2].y = y1;
-		result->points[2].z = 0.0f - camera->depth;
 		function_1429d0(&camera->matrix, 4, result->points, result->points);
 		result->points[4] = camera->matrix.position;
 		result->bounds = *g_4687e0;
@@ -446,20 +448,12 @@ bool function_163db0(s_camera_163db0 const *camera, box2f const *rectangle, long
 		result->planes[5].normal.k = -1.0f;
 		result->planes[5].d = camera->depth;
 		transform_plane_163db0(&camera->matrix, &result->planes[5]);
+		for (long i = 0; i < 4; i++)
 		{
-			long i = 0;
-			if (i < 4)
-			{
-				do
-				{
-					result->directions[i].i = result->points[i].x - result->points[4].x;
-					result->directions[i].j = result->points[i].y - result->points[4].y;
-					result->directions[i].k = result->points[i].z - result->points[4].z;
-					++i;
-				} while (i < 4);
-			}
+			result->directions[i].i = result->points[i].x - result->points[4].x;
+			result->directions[i].j = result->points[i].y - result->points[4].y;
+			result->directions[i].k = result->points[i].z - result->points[4].z;
 		}
-		char const *error = 0;
 		if (!(plane_error_163db0(&result->planes[0], &result->points[1]) < 0.01f &&
 			plane_error_163db0(&result->planes[2], &result->points[1]) < 0.01f &&
 			plane_error_163db0(&result->planes[5], &result->points[1]) < 0.01f))
@@ -620,9 +614,7 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 	real near_distance = 1.52588e-5f > view->margin + margin ? 1.52588e-5f : view->margin + margin;
 
 	planes[0].normal = *(vector3f *)&view->point54;
-	planes[0].d = view->vector_e4.j * planes[0].normal.j;
-	planes[0].d += view->vector_e4.k * planes[0].normal.k;
-	planes[0].d += view->vector_e4.i * planes[0].normal.i;
+	planes[0].d = view->vector_e4.i * planes[0].normal.i + view->vector_e4.k * planes[0].normal.k + view->vector_e4.j * planes[0].normal.j;
 	planes[0].normal.i = -planes[0].normal.i;
 	planes[0].normal.j = -planes[0].normal.j;
 	planes[0].normal.k = -planes[0].normal.k;
@@ -634,9 +626,7 @@ bool function_1652e0(s_view *view, real margin, const point3f *points, long poin
 	negated.j = -view->point54.y;
 	negated.k = -view->point54.z;
 	planes[1].normal = negated;
-	planes[1].d = view->vector_b4.j * planes[1].normal.j;
-	planes[1].d += view->vector_b4.k * planes[1].normal.k;
-	planes[1].d += view->vector_b4.i * planes[1].normal.i;
+	planes[1].d = view->vector_b4.i * planes[1].normal.i + view->vector_b4.k * planes[1].normal.k + view->vector_b4.j * planes[1].normal.j;
 	planes[1].normal.i = -planes[1].normal.i;
 	planes[1].normal.j = -planes[1].normal.j;
 	planes[1].normal.k = -planes[1].normal.k;

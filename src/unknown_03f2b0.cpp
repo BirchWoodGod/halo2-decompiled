@@ -383,7 +383,8 @@ long function_2d000(long object_index, long tag, long instance)
 					byte *mappings = *(byte **)(definition + 0x64);
 					long section = *(word *)(mappings + instance * 12 + 2);
 					byte *sections = *(byte **)(definition + 0x44);
-					if (function_12de70((s_geometry_block_info *)(sections + section * 0x38 + 0xc), 3))
+					byte *section_record = sections + section * 0x38;
+					if (function_12de70((s_geometry_block_info *)(section_record + 0xc), 3))
 						result = 1;
 				}
 			}
@@ -393,7 +394,8 @@ long function_2d000(long object_index, long tag, long instance)
 			byte *mappings = *(byte **)(definition + 0x54);
 			long section = *(word *)(mappings + instance * 12 + 2);
 			byte *sections = *(byte **)(definition + 0x44);
-			if (function_12de70((s_geometry_block_info *)(sections + section * 0x38 + 0xc), 3))
+			byte *section_record = sections + section * 0x38;
+			if (function_12de70((s_geometry_block_info *)(section_record + 0xc), 3))
 			{
 				byte *instances = *(byte **)((byte *)g_4e0348 + 0x144);
 				result = *(short *)(instances + instance * 0x58 + 0x56) != 0;
@@ -836,40 +838,6 @@ bool function_45ce0(short index, byte *out, short part, short transform_index);
 void function_41040(short index, long part_index, long group, byte weight,
     s_render_part_context const *context, long material_override, bool force,
     dword and_mask, dword or_mask);
-
-// @retail 0x44c90
-void __stdcall function_44c90(long group, dword selection_mask, long level,
-    dword and_mask, dword or_mask, dword fallback_and_mask, dword fallback_or_mask, bool force)
-{
-    long end = (word)(group ? g_4c0b78.current : g_4c0b78.previous);
-    long begin = group ? (word)g_4c0b78.previous : 0;
-    for (long index = begin; index < end; ++index)
-    {
-        s_44940_entry *entry = &g_4ba138[(short)index];
-        if (!((entry->unknown00 & selection_mask) & 0x1fffff) ||
-            ((entry->flags >> 4) & 0x1f) != level || !(entry->unknown00 & 1) || !entry->unknown10[0xa]) continue;
-        byte weight = g_4c0b78.weights[index];
-        byte material_index = g_4c0b78.material_indices[(short)index];
-        long material = material_index == 0xff ? NONE : g_4c0b78.materials[material_index];
-        byte *geometry = visible_entry_geometry(entry);
-        if (!geometry) continue;
-        if ((*(byte **)(entry->unknown10))[0x76] == 0xff)
-        {
-            and_mask = fallback_and_mask;
-            or_mask = fallback_or_mask;
-        }
-        for (long part = 0; part < *(long *)geometry; ++part)
-        {
-            byte context[0x2c];
-            if (function_45ce0((short)index, context, (short)part, (short)(entry->flags & 0xf)))
-            {
-                long selected = force || (entry->unknown00 & 0x8000) ? material : NONE;
-                function_41040((short)index, part, group, weight, (s_render_part_context *)context,
-                    selected, level != 31, and_mask, or_mask);
-            }
-        }
-    }
-}
 
 // @retail 0x458d0
 void function_458d0(short index, bool ranges, s_geometry_visibility_list const *first, s_geometry_visibility_list const *second)
@@ -1341,116 +1309,6 @@ struct s_42760_entry
 extern s_42760_entry g_4c152c[32];
 extern long g_4c19ac;
 
-// @retail 0x2cbf0
-short function_2cbf0(long geometry, byte category, long instance, dword flags,
-    long tag, dword key, long material, byte *object, short mask, byte mode,
-    void *context, long object_index, real intensity, long group, long group_type,
-    bool outside, bool whole, bool first_component, real first_opacity,
-    real second_opacity, real depth, byte level, point3f const *position, real radius)
-{
-    volatile long index = g_4c0b78.current++;
-    if (index >= 850 || geometry == NONE)
-    {
-        --g_4c0b78.current;
-        return NONE;
-    }
-    s_44940_entry *entry = &g_4ba138[(short)index];
-    entry->tag = tag;
-    entry->unknown08 = key;
-    entry->unknown00 = (entry->unknown00 & 0xe0000000) | (flags & 0x1fffff) | ((dword)category << 21);
-    entry->flags = (entry->flags & 0xe0000000) |
-        (((((instance & 0x7ff) << 9) | (geometry & 0x1ff)) << 5) | (group & 0x1f)) << 4 |
-        (material & 0xf);
-    *(byte **)entry->unknown10 = object;
-    *(void **)(entry->unknown10 + 12) = context;
-    entry->unknown10[10] = mode;
-    entry->unknown10[11] = (entry->unknown10[11] & 0xf0) | (level & 15);
-    long group_index = (entry->flags >> 4) & 31;
-    if (group_index != 31)
-    {
-        if ((dword)g_4c19ac <= (dword)(group_index + 1))
-            g_4c19ac = group_index + 1;
-        g_4c152c[group_index].type = group_type;
-    }
-    group_index = (entry->flags >> 4) & 31;
-    if (group_index != 31 && object_index != NONE)
-    {
-        s_42760_entry *group_entry = &g_4c152c[group_index];
-        group_entry->depth = depth;
-        group_entry->position = *position;
-        group_entry->type = group_type;
-        box2f *bounds = (box2f *)group_entry->unknown10;
-        if (outside || g_509410)
-        {
-            bounds->x0 = bounds->y0 = -3.4028234663852886e+38f;
-            bounds->x1 = bounds->y1 = 3.4028234663852886e+38f;
-        }
-        else if (whole || g_509411)
-        {
-            bounds->x0 = bounds->y0 = 3.4028234663852886e+38f;
-            bounds->x1 = bounds->y1 = -3.4028234663852886e+38f;
-        }
-        else
-        {
-            s_view view;
-            view.position = g_4b9da0;
-            view.bounds.top = g_4b9dd0;
-            view.bounds.left = g_4b9dd2;
-            view.bounds.bottom = g_4b9dd4;
-            view.bounds.right = g_4b9dd6;
-            s_camera camera = g_4b9e14;
-            function_30290(position, &view, &camera, radius, bounds);
-        }
-    }
-    *(short *)(entry->unknown10 + 8) = mask;
-    g_4c0b78.unknown0c[850 + index] = 0xff;
-    if (object_index != NONE && g_4c0b78.count < 192)
-    {
-        g_4c0b78.unknown0c[850 + index] = (byte)g_4c0b78.count;
-        ((long *)(g_4c0b78.unknown0c + 1700))[g_4c0b78.count] = object_index;
-        ++g_4c0b78.count;
-    }
-    real scaled = intensity * 0.25f;
-    long value;
-    if (function_016ae0(scaled) < 0) value = 0;
-    else if (function_016ae0(scaled) > 255) value = 255;
-    else value = function_016ae0(scaled);
-    g_4c0b78.unknown0c[index] = (byte)value;
-    if (object && object_index != NONE)
-    {
-        real opacity = (first_component ? first_opacity : second_opacity) * 256.0f;
-        long amount = (long)opacity;
-        if (amount < 0) amount = 0;
-        else if (amount > 255) amount = 255;
-        object[first_component ? 0x76 : 0x77] = (byte)amount;
-    }
-    byte *section = (byte *)function_44940((short)index, (bool)((flags >> 12) & 1));
-    entry->flags = (entry->flags & 0x1fffffff) | ((dword)*(word *)(section + 0x14) << 29);
-    long object_tag = object ? *(long *)object : NONE;
-    long kind = function_2d000(object_tag, entry->tag, (entry->flags >> 18) & 0x7ff);
-    entry->unknown00 = (entry->unknown00 & 0x1fffffff) | ((dword)kind << 29);
-    bool local_99c7da = (bool)((entry->unknown00 >> 12) & 1);
-    if (!function_449e0((short)index, entry->tag == NONE, local_99c7da))
-    {
-        --g_4c0b78.current;
-        return NONE;
-    }
-    s_2cb30_state *state = g_4c0b78.state;
-    if (!state->active)
-        ++g_4c0b78.previous;
-    if (entry->unknown00 & 0x40)
-    {
-        section = (byte *)function_44940((short)index, local_99c7da);
-        *(void **)(entry->unknown10 + 4) = NULL;
-        word bits = *(word *)(section + 0x24);
-        if (bits > 0)
-            *(void **)(entry->unknown10 + 4) = function_1332b0(bits, (s_bit_vector_pool *)state);
-        if (!*(void **)(entry->unknown10 + 4))
-            entry->unknown00 = (entry->unknown00 & ~0x40) | 1;
-    }
-    return (short)index;
-}
-
 
 struct s_frustum_set_view;
 bool function_165010(s_frustum_set_view const *set, long section_index, point3f const *center, real radius, bool *contained);
@@ -1612,142 +1470,6 @@ struct s_visibility_sphere_query
 };
 void __cdecl function_2ddbd0(void *data, s_visibility_sphere_query const *query,
     s_visibility_query_list *second, s_visibility_query_list *first);
-
-// @retail 0x45560
-void function_45560(short entry_index, point3f const *center, real radius)
-{
-    (void)&center; (void)&radius;
-    s_44940_entry *entry = &g_4ba138[entry_index];
-    byte *geometry = visible_entry_geometry(entry);
-    point3f query_center = *center;
-    if (geometry)
-    {
-        if (*(long *)(geometry + 0x30) > 0)
-        {
-            s_visibility_query_storage<512> first, second;
-            first.list.indices = first.indices;
-            first.list.count = 0;
-            first.list.capacity = (long)0x80000200;
-            second.list.indices = second.indices;
-            second.list.count = 0;
-            second.list.capacity = (long)0x80000200;
-            __declspec(align(16)) s_visibility_sphere_query query;
-            query.center = *center;
-            query.radius = radius;
-            function_2ddbd0(*(void **)(geometry + 0x2c), &query, &first.list, &second.list);
-            function_458d0(entry_index, true, (s_geometry_visibility_list *)&second.list,
-                (s_geometry_visibility_list *)&first.list);
-            release_visibility_list(&first.list);
-            release_visibility_list(&second.list);
-        }
-        else
-        {
-            dword *visible = *(dword **)(entry->unknown10 + 4);
-            long cached_node = NONE;
-            transform4x3f transform;
-            for (long i = 0; i < *(long *)(geometry + 8); ++i)
-            {
-                dword bit = 1 << (i & 31);
-                if (!(visible[i >> 5] & bit))
-                {
-                    word bound_index = *(word *)(*(byte **)(geometry + 0xc) + i * 8 + 4);
-                    if (bound_index == 0xffff)
-                    {
-                        entry->unknown00 |= 1;
-                        visible[i >> 5] |= bit;
-                    }
-                    else
-                    {
-                        byte *bound = *(byte **)(geometry + 0x14) + bound_index * 20;
-                        point3f position = *(point3f *)bound;
-                        if (entry->tag != NONE)
-                        {
-                            long object_index = **(long **)entry->unknown10;
-                            if (object_index != NONE)
-                            {
-                                long node = bound[0x10];
-                                if (node != NONE && node != cached_node)
-                                {
-                                    long count = 0;
-                                    transform4x3f *nodes = function_b8c00(object_index, &count);
-                                    if (count)
-                                    {
-                                        byte *tag = g_4e3b44[entry->tag & 0xffff].bytes;
-                                        function_142a60(&nodes[node], (transform4x3f *)(*(byte **)(tag + 0x4c) + node * 0x60 + 0x28), &transform);
-                                        function_142700(&transform, center, &query_center);
-                                        cached_node = node;
-                                    }
-                                }
-                            }
-                        }
-                        real dx = query_center.x - position.x;
-                        real dy = query_center.y - position.y;
-                        real dz = query_center.z - position.z;
-                        real combined_radius = *(real *)(bound + 0xc) + radius;
-                        if (combined_radius * combined_radius >= dz * dz + dy * dy + dx * dx)
-                        {
-                            entry->unknown00 |= 1;
-                            visible[i >> 5] |= bit;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// @retail 0x44720
-void function_44720(void)
-{
-    s_2cb30_state *state = g_4c0b78.state;
-    volatile word end = (word)(state->active ? g_4c0b78.current : g_4c0b78.previous);
-    word index = (word)(state->active ? g_4c0b78.previous : 0);
-    while (index < end)
-    {
-        s_44940_entry *entry = &g_4ba138[(short)index];
-        if (!(entry->unknown00 & 1) && (entry->unknown00 & 0x40))
-        {
-            if (*(long *)((byte *)state + 0x2a7c) == 1)
-            {
-                point3f center = *(point3f *)((byte *)state + 0x2a68);
-                transform4x3f const *transform = *(transform4x3f **)(entry->unknown10 + 0xc);
-                if (transform)
-                {
-                    if (transform->scale == 0.0f)
-                        center.x = center.y = center.z = 0.0f;
-                    else
-                    {
-                        point3f local;
-                        local.x = center.x - transform->position.x;
-                        local.y = center.y - transform->position.y;
-                        local.z = center.z - transform->position.z;
-                        if (transform->scale != 1.0f)
-                        {
-                            real inverse = 1.0f / transform->scale;
-                            local.x *= inverse; local.y *= inverse; local.z *= inverse;
-                        }
-                        center.x = transform->forward.k * local.z + transform->forward.j * local.y + transform->forward.i * local.x;
-                        center.y = transform->left.k * local.z + transform->left.j * local.y + transform->left.i * local.x;
-                        center.z = transform->up.k * local.z + transform->up.j * local.y + transform->up.i * local.x;
-                    }
-                }
-                function_45560((short)index, &center, *(real *)((byte *)state + 0x2a74));
-            }
-            else if (entry->unknown00 & 8)
-            {
-                long section = *(short *)(entry->unknown10 + 8);
-                dword const *words = (dword const *)((byte *)g_4c0b78.state + (section + 0xa6) * 16);
-                s_word_bit_iterator iterator = { 4, 0, words[0], words };
-                long visible;
-                while (function_44690(&iterator, &visible))
-                    function_44e90((short)index, (short)visible);
-            }
-            else
-                function_44e90((short)index, *(short *)(entry->unknown10 + 8));
-        }
-        ++index;
-    }
-}
 
 signed char *function_3d430(long object_index);
 __declspec(noinline) void function_4c640(long object_index, signed char value);

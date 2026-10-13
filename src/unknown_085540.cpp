@@ -691,6 +691,14 @@ static __forceinline void view_add_child(c_vtable_450cf4 *aggregate, long index,
  *((long *)child + 1) = index;
 }
 
+struct s_85650
+{
+ void *field_00;
+ void *field_04;
+ dword field_08;
+ s_sender *field_0c[15];
+};
+
 // @retail 0x85650
 void function_85650(c_simulation_view *view, s_network_observer *observer, const XNADDR *address, long channel_index)
 {
@@ -726,10 +734,11 @@ void function_85650(c_simulation_view *view, s_network_observer *observer, const
   sender->pending = 0;
   sender->unknown1c = 0;
   sender->unknown24 = 0;
-  sender->owner = (s_owner_450d1c *)((byte *)distribution + 0x2048);
+  s_85650 *owner = (s_85650 *)((byte *)distribution + 0x2048);
+  sender->owner = (s_owner_450d1c *)owner;
   view_add_child(&((c_replication_view_storage *)view->data)->aggregate, 0, sender);
-  distribution->sender_mask |= 1 << view->world_index;
-  distribution->senders[view->world_index] = (s_sender *)&((c_replication_view_storage *)view->data)->sender;
+  owner->field_08 |= 1 << view->world_index;
+  owner->field_0c[view->world_index] = (s_sender *)&((c_replication_view_storage *)view->data)->sender;
   function_97f60(&distribution->handles, view->world_index, &((c_replication_view_storage *)view->data)->handles);
   view_add_child(&((c_replication_view_storage *)view->data)->aggregate, 1,
    (c_interface_450c94 *)&((c_replication_view_storage *)view->data)->handles);
