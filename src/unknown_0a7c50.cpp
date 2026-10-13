@@ -648,7 +648,7 @@ struct s_attachment_event_data
 };
 
 // @retail 0xa83e0
-void function_a83e0(long index, long parent, point3f const *point, long node, vector3f const *reference)
+void function_a83e0(long index, long parent, point3f const *point, short node, vector3f const *reference)
 {
     long mode = g_4e6948->mode;
     if (mode >= 4 && mode <= 5 && event_mode_sends(mode))
