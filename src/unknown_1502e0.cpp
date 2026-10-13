@@ -1599,6 +1599,8 @@ byte function_150380(long player_index);
 void __stdcall function_e64e0(vector3f const *move, vector3f const *forward, bool flag,
     vector3f *output, long mode);
 
+struct s_xy_150400 { real i; real j; };
+
 // @retail 0x150400
 void function_150400(long player_index, vector3f const *forward, vector3f const *movement,
     vector3f *new_forward, vector3f *new_movement)
@@ -1608,31 +1610,36 @@ void function_150400(long player_index, vector3f const *forward, vector3f const 
     vector3f *const *new_movement_reference = &new_movement;
     s_tail_player *player = tail_player_get(player_index);
     vector3f facing = *(*local_41f0cc_2);
-    real x = movement->i, y = movement->j;
+    s_xy_150400 xy = *(s_xy_150400 const *)movement;
     if (function_150380(player_index))
     {
         byte *unit = (byte *)tail_object_get(player->unit_index);
         s_horizontal_axes axes;
         function_1502e0(*local_41f0cc_2, (vector3f const *)(unit + 0x70), &axes);
+        real move_i = movement->i;
+        real move_j = movement->j;
+        real scaled_i = axes.forward.i * move_i;
+        real scaled_j = axes.forward.j * move_i;
+        real scaled_k = axes.forward.k * move_i;
         vector3f world;
-        world.i = axes.forward.i * movement->i + axes.left.i * movement->j;
-        world.j = axes.forward.j * movement->i + axes.left.j * movement->j;
-        world.k = axes.forward.k * movement->i + axes.left.k * movement->j;
+        world.i = axes.left.i * move_j + scaled_i;
+        world.j = axes.left.j * move_j + scaled_j;
+        world.k = axes.left.k * move_j + scaled_k;
         function_e64e0(&world, *local_41f0cc_2, false, &facing, 0);
         function_1502e0(&facing, (vector3f const *)(unit + 0x70), &axes);
-        x = axes.forward.j * world.j + axes.forward.k * world.k + axes.forward.i * world.i;
-        y = axes.left.k * world.k + axes.left.j * world.j + axes.left.i * world.i;
-        real square = y * y + x * x;
+        xy.i = axes.forward.j * world.j + axes.forward.k * world.k + axes.forward.i * world.i;
+        xy.j = axes.left.k * world.k + axes.left.j * world.j + axes.left.i * world.i;
+        real square = xy.j * xy.j + xy.i * xy.i;
         if (square > 1.0f)
         {
             real inverse = 1.0f / (real)sqrt(square);
-            x *= inverse;
-            y *= inverse;
+            xy.i *= inverse;
+            xy.j *= inverse;
         }
     }
     **new_forward_reference = facing;
-    (*new_movement_reference)->j = y;
-    (*new_movement_reference)->i = x;
+    (*new_movement_reference)->j = xy.j;
+    (*new_movement_reference)->i = xy.i;
     (*new_movement_reference)->k = 0.0f;
 }
 
