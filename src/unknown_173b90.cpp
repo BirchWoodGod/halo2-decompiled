@@ -592,11 +592,11 @@ void __stdcall function_175430(s_particle_system_datum *system, point3f const *p
 	}
 	if (system->location_index != NONE)
 	{
-		s_particle_location_datum *location = DATUM(locations, s_particle_location_datum, system->location_index);
 		s_particle_value_cache cache;
-		cache.field_48 = system;
 		cache.field_4c = 0;
 		cache.field_50 = 0;
+		s_particle_location_datum *location = DATUM(locations, s_particle_location_datum, system->location_index);
+		cache.field_48 = system;
 		cache.mask = 0;
 		if (location != cache.field_4c)
 		{

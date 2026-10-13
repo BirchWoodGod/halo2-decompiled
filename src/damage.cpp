@@ -412,7 +412,7 @@ real function_30bf0(vector3f *v);
 void function_baff0(long object_index, point3f const *origin, point3f *arg_149545, vector3f *normal);
 bool function_d6f90(long object_index, point3f const *point, s_type_1e6529 const *data);
 long unit_get_player_index(long unit_index);
-void __stdcall function_153d10(short team, long definition_index, void *a, void *b, long c, real d, real e, long f);
+void __stdcall function_153d10(long team, long definition_index, void *a, void *b, long c, real d, real e, bool f);
 bool function_d74b0(byte const *owner);
 
 void __stdcall function_184250(s_type_1e6529 const *data);
@@ -1854,7 +1854,7 @@ void function_176870(s_effect_owner const *owner, long object_index, long marker
 void function_176ad0(long marker_count, s_effect_marker *markers, s_effect_owner const *owner,
 	vector3f const *velocity, long tag_index, long unknown30, real scale_a, real scale_b, point3f const *origin,
 	vector3f const *direction, long mode);
-s_effect_marker *function_176330(s_effect_marker *markers, point3f const *point);
+void function_176330(point3f const *point, s_effect_marker *markers);
 
 /* starts a destroyed permutation's effect: attached to the object, or at
    the marker with the object's velocity */
@@ -1875,7 +1875,7 @@ void function_d9d60(bool at_marker, long marker_name, long object_index, long ef
 			marker_name = 0x400054f;
 		function_b8d30(object_index, marker_name, &marker, 1, false);
 		function_ba1d0(object_index, &velocity, NULL);
-		function_176330(markers, &marker.matrix.position);
+		function_176330(&marker.matrix.position, markers);
 		markers[2].position = marker.matrix.position;
 		markers[2].forward = marker.matrix.forward;
 		markers[2].name = marker_name;

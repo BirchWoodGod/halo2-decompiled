@@ -15,7 +15,6 @@ void function_aab40(long index, point3f const *position, vector3f const *forward
 
 // Keep this draft disabled: its matrix-query caller changes 0xba160's
 // nested 0x1420f0 convention and loses the existing 0xba160 match.
-#if 0
 point3f *function_b9dd0(long index, point3f *result);
 bool function_1c5210(transform4x3f const *matrix, void *shape, long excluded_component, long filter);
 
@@ -56,6 +55,8 @@ public:
 
 extern real g_47f05c;
 
+// Disabled: Five new fast source trials remained184 differences/728 bytes; activation loses matched ba160(6) and new b92d0(49) through the nested1420f0 convention
+#if 0
 // Retail 0xa9f70
 long __stdcall function_a9f70(long object_index, long mode, point3f const *position)
 {
@@ -137,10 +138,9 @@ collision:
 }
 #endif
 
+
 // The selection result must be supplied by the caller in addition to mode.
-// Keep this candidate disabled until the caller's interface supplies it.
-#if 0
-// Retail 0xaa260
+// @retail 0xaa260
 void function_aa260(long selection, vector3f const *linear, long object_index, long mode,
 	point3f const *position, vector3f const *forward, vector3f const *up, vector3f const *angular)
 {
@@ -168,8 +168,8 @@ void function_aa260(long selection, vector3f const *linear, long object_index, l
 					difference.i = linear->i - desired_linear.i;
 					difference.j = linear->j - desired_linear.j;
 					difference.k = linear->k - desired_linear.k;
-					if (mode == 2 && difference.k * difference.k + difference.i * difference.i +
-						difference.j * difference.j <= 0.06f)
+					if (mode == 2 && !(difference.k * difference.k + difference.i * difference.i +
+						difference.j * difference.j > 0.06f))
 						change_linear = false;
 					else desired_linear = *linear;
 				}
@@ -179,8 +179,8 @@ void function_aa260(long selection, vector3f const *linear, long object_index, l
 					difference.i = angular->i - desired_angular.i;
 					difference.j = angular->j - desired_angular.j;
 					difference.k = angular->k - desired_angular.k;
-					if (mode == 2 && difference.k * difference.k + difference.j * difference.j +
-						difference.i * difference.i <= 0.01f)
+					if (mode == 2 && !(difference.k * difference.k + difference.j * difference.j +
+						difference.i * difference.i > 0.01f))
 						change_angular = false;
 					else desired_angular = *angular;
 				}
@@ -197,7 +197,7 @@ void function_aa260(long selection, vector3f const *linear, long object_index, l
 		break;
 	}
 }
-#endif
+
 
 
 bool function_a76b0(long object_index, long flag);

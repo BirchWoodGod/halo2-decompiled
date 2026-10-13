@@ -297,10 +297,9 @@ short __stdcall function_1ac3f0(long actor_index)
 }
 
 #pragma optimize("g", off)
-PRIVATE __forceinline real function_1ac431(real arg_0, short arg_1)
+PRIVATE __forceinline real function_1ac433(real arg_0, real arg_1)
 {
-    real local_0 = (real)arg_1;
-    return local_0 * arg_0;
+    return arg_0 + (arg_1 - arg_0) * slot_random();
 }
 #pragma optimize("", on)
 
@@ -313,9 +312,7 @@ bool __stdcall function_1ac430(long actor_index, s_slot *slot)
 	if (!state->unknown0c)
 	{
 		real delay = random_range(character->lower, character->upper);
-		real scale = random_range(1.0f, 3.0f);
-		real seconds;
-		long ticks;
+		real scale = function_1ac433(1.0f, 3.0f);
 
 		state->unknown0d = true;
 		state->unknown12 = false;
@@ -325,13 +322,16 @@ bool __stdcall function_1ac430(long actor_index, s_slot *slot)
 		state->unknown0c = true;
 		state->unknown22 = 0;
 		state->unknown3b = false;
-		seconds = function_1ac431(scale, g_510c54->field_2_3);
-		__asm
 		{
-			fld seconds
-			fistp ticks
+			real seconds = (real)g_510c54->field_2_3 * scale;
+			long ticks;
+			__asm
+			{
+				fld seconds
+				fistp ticks
+			}
+			state->unknown20 = (short)ticks;
 		}
-		state->unknown20 = (short)ticks;
 		state->unknown13 = false;
 		function_1f86a0(actor_index);
 		if (g_45dbd8 > delay)
@@ -340,7 +340,8 @@ bool __stdcall function_1ac430(long actor_index, s_slot *slot)
 		}
 		else
 		{
-			seconds = g_510c54->field_2_3 * delay;
+			real seconds = g_510c54->field_2_3 * delay;
+			long ticks;
 			__asm
 			{
 				fld seconds

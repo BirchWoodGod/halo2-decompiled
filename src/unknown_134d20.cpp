@@ -440,6 +440,22 @@ void function_135790(void)
 	}
 }
 
+static __forceinline real function_135821(s_interpolator_state const *arg_1)
+{
+	real result = 0.0f;
+	if (arg_1)
+		result = arg_1->value;
+	return result;
+}
+
+static __forceinline real function_135822(real arg_1)
+{
+	real result = 0.0f;
+	if (arg_1 < 0.5f)
+		result = 1.0f;
+	return result;
+}
+
 // @retail 0x135820
 void function_135820(void)
 {
@@ -451,10 +467,8 @@ void function_135820(void)
 		{
 			long index;
 			s_interpolator_state *state = interpolator_get(name, &index);
-			real target = 0.0f;
-			real value = state ? state->value : target;
-			if (value < 0.5f)
-				target = 1.0f;
+			real value = function_135821(state);
+			real target = function_135822(value);
 			interpolator_start(name, target, 2.0f);
 		}
 	}

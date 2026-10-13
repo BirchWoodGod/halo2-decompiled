@@ -595,7 +595,7 @@ bool __stdcall function_169510(long object_index, bool a, dword flags, dword tes
 {
 	(void)&object_index; (void)&a; (void)&flags; (void)&test_flags; (void)&point;
 	(void)&vector; (void)&ignore_object_index; (void)&ignore_unit_index; (void)&result;
-	volatile bool found = false;
+	bool found = false;
 	s_lookup lookup;
 	s_lookup_ray_result hit;
 	short material;
@@ -603,11 +603,12 @@ bool __stdcall function_169510(long object_index, bool a, dword flags, dword tes
 	{
 		s_collision_object_header *header = &((s_collision_object_header *)g_4e0300->data)[object_index & 0xffff];
 		s_collision_object *object = header->object;
-		s_collision_object *volatile saved_object = object;
+		s_collision_object *saved_object = object;
 		if (a || (collision_object_test(object_index, header, object, flags, ignore_object_index, ignore_unit_index) &&
 			function_11e5e0(point, vector, (point3f const *)((byte *)object + 0x40), *(real *)((byte *)object + 0x4c))))
 		{
-			if (lookup.initialize(object_index) && function_1eff40(&lookup, test_flags, point, vector, &hit) && result->t > hit.hit.t)
+			s_lookup *lookup_pointer = &lookup;
+			if (lookup_pointer->initialize(object_index) && function_1eff40(lookup_pointer, test_flags, point, vector, &hit) && result->t > hit.hit.t)
 			{
 				result->type = 4;
 				function_d8ae0(lookup.handle, hit.hit.surface_index, &material);

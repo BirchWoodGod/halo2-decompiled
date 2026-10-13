@@ -307,6 +307,9 @@ long cache_copy_queued_priority(char const *map_name)
 	return result;
 }
 
+/* retail calls this out of line from its one caller, 0x163680 */
+__declspec(noinline) long cache_copy_priority(char const *map_name);
+
 // @retail 0x213ef0
 long cache_copy_priority(char const *map_name)
 {

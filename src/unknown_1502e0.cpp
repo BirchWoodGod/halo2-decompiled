@@ -113,18 +113,35 @@ long __stdcall function_e5bc0(long unit_index, long object_index, long previous_
 bool function_1df560(short team_a, short team_b);
 bool function_151320(s_target_candidate *candidate, s_target_candidate *best, long player_index);
 
+/* the object fields 0x1515e0 reads */
+struct s_1515e0_object
+{
+	byte unknown00[0x10a];
+	word unknown10a_0 : 1;
+	word unknown10a_1 : 1;
+	word unknown10a_2 : 1;
+	word unknown10a_3 : 1;
+	word unknown10a_4 : 1;
+	word unknown10a_5 : 1;
+	word unknown10a_6 : 1;
+	word unknown10a_7 : 1;
+	word unknown10b_0 : 8;
+	byte unknown10c[0x138 - 0x10c];
+	short team;
+};
+
 // @retail 0x1515e0
 void function_1515e0(long object_index, long player_index, s_target_candidate *best)
 {
 	long const *player_reference = &player_index;
 	s_target_candidate *const *best_reference = &best;
+	s_1515e0_object *object = (s_1515e0_object *)tail_object_get(object_index);
 	byte *player = (byte *)tail_player_get(*player_reference);
-	byte *object = (byte *)tail_object_get(object_index);
 	long unit_index = *(long *)(player + 0x2c);
 	byte type = ((s_tail_object_header *)g_4e0300->data)[unit_index & 0xffff].type;
-	if (((1 << type) & 1) && !(bool)((object[0x10a] >> 2) & 1))
+	if (((1 << type) & 1) && !TEST_FIELD_BIT(object->unknown10a_2))
 	{
-		if (function_1df560(*(short *)(object + 0x138), (short)*(char *)(player + 0xc0)))
+		if (function_1df560(object->team, (short)*(char *)(player + 0xc0)))
 			*(long *)((byte *)*best_reference + 8) = function_e5bc0(unit_index, object_index, *(long *)((byte *)*best_reference + 8));
 		else if (function_e5470(*player_reference, object_index))
 		{
@@ -197,35 +214,36 @@ bool function_151320(s_target_candidate *candidate, s_target_candidate *best, lo
 {
 	bool result = false;
 	long const *player_reference = &player_index;
+	point3f player_position;
+	point3f best_position;
+	point3f candidate_position;
+	vector3f to_candidate;
+	vector3f to_best;
+	real candidate_distance;
+	real best_distance;
 
-	if (candidate->priority <= best->priority)
+	if (candidate->priority > best->priority)
+		goto copy;
+	if (candidate->priority == best->priority)
 	{
-		point3f player_position;
-		point3f best_position;
-		point3f candidate_position;
-		vector3f to_candidate;
-		vector3f to_best;
-
-		if (candidate->priority != best->priority)
-		{
-			goto done;
-		}
 		function_b9dd0(tail_player_get(*player_reference)->unit_index, &player_position);
 		function_b9dd0(best->object_index, &best_position);
 		function_b9dd0(candidate->object_index, &candidate_position);
 		vector3d_from_points3d(&player_position, &candidate_position, &to_candidate);
 		vector3d_from_points3d(&player_position, &best_position, &to_best);
-		real candidate_distance = to_candidate.j * to_candidate.j + to_candidate.i * to_candidate.i + to_candidate.k * to_candidate.k;
-		real best_distance = length_sq3f(&to_best);
-		if (!(candidate_distance < best_distance))
+		candidate_distance = to_candidate.j * to_candidate.j + to_candidate.i * to_candidate.i + to_candidate.k * to_candidate.k;
+		best_distance = length_sq3f(&to_best);
+		if (candidate_distance < best_distance)
+		{
+copy:
+			result = true;
+			*best = *candidate;
+		}
+		else
 		{
 			result = false;
-			goto done;
 		}
 	}
-	*best = *candidate;
-	result = true;
-done:
 	return result;
 }
 
@@ -620,6 +638,13 @@ struct s_player_pickup_definition
 
 bool __stdcall function_cd7b0(long unit_index, long weapon_index, bool *modes);
 
+/* two of the four answers of 0xcd7b0 */
+struct s_pickup_hands
+{
+	bool primary;
+	bool secondary;
+};
+
 // @retail 0x151780
 void function_151780(long object_index, long player_index, s_target_candidate *best)
 {
@@ -636,21 +661,19 @@ void function_151780(long object_index, long player_index, s_target_candidate *b
 		vector3f delta;
 		vector3d_from_points3d(&unit->position, &object->position, &delta);
 		real distance = delta.j * delta.j + delta.i * delta.i + delta.k * delta.k;
-		bool modes[4];
-		if (distance < radius * radius && function_cd7b0(player->unit_index, object_index, modes))
+		s_pickup_hands hands[2];
+		if (distance < radius * radius && function_cd7b0(player->unit_index, object_index, &hands[0].primary))
 		{
-			bool first = modes[0];
-			bool second = modes[1];
-			bool third = modes[2];
-			bool fourth = modes[3];
+			s_pickup_hands first = hands[0];
+			s_pickup_hands second = hands[1];
 			long flags = 0;
-			if (first)
+			if (first.primary)
 				flags = 1;
-			else if (third)
+			else if (second.primary)
 				flags = 2;
-			if (second)
+			if (first.secondary)
 				flags |= 4;
-			else if (fourth)
+			else if (second.secondary)
 				flags |= 8;
 			s_target_candidate candidate;
 			memset(&candidate, 0, sizeof(candidate));
@@ -694,11 +717,13 @@ void function_152df0(long player_index)
 {
 	long const *player_reference = &player_index;
 	s_tail_player *player = tail_player_get(*player_reference);
-	if (player->unit_index != NONE)
+	long unit_index = player->unit_index;
+	if (unit_index != NONE)
 	{
-		s_player_removed_unit *unit = (s_player_removed_unit *)tail_object_get(player->unit_index);
-		unit->flags |= 0x400;
-		function_b7360(player->unit_index);
+		s_player_removed_unit *unit = (s_player_removed_unit *)tail_object_get(unit_index);
+		word *flags = &unit->flags;
+		*flags |= 0x400;
+		function_b7360(unit_index);
 	}
 	if (g_4e6948->mode == 4)
 	{
@@ -1818,11 +1843,11 @@ void __stdcall function_150e30(long player_index, long object_index)
 // @retail 0x1508e0
 void __stdcall function_1508e0(long player_index)
 {
-    long unit_index = tail_player_get(player_index)->unit_index;
+    s_tail_player *player = tail_player_get(player_index);
     long objects[16];
-    if (unit_index != NONE)
+    if (player->unit_index != NONE)
     {
-        byte *unit = (byte *)tail_object_get(unit_index);
+        byte *unit = (byte *)tail_object_get(player->unit_index);
         if (*(long *)(unit + 0x14) == NONE)
         {
             long count = function_bb050(0, 0x89c, unit + 0x28, (point3f *)(unit + 0x30),

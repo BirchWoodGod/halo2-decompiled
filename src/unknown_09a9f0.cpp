@@ -543,7 +543,7 @@ long c_device_type::v27(long a, long b, long c, long d)
   long index = *(long *)(object + 0x13c);
   if (index != NONE)
   {
-   byte *entry = g_4e0328.groups->data + (index & 0xffff) * 12;
+   byte *entry = g_4e0328.groups->data + (word)index * 12;
    if (*(real *)(d + 0x94) != *(real *)(entry + 4))
    {
     *(real *)(d + 0x94) = *(real *)(entry + 4);

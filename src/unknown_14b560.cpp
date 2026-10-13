@@ -252,10 +252,11 @@ void player_configuration_verify(s_type_b07538 *configuration)
 	if (g_4e6948->state == 1)
 	{
 		long representation_index = 0;
-		s_scenario_starting_profile_view *profile = scenario->starting_profiles;
 
-		for (long i = 0; i < scenario->starting_profile_count; i++, profile++)
+		for (long i = 0; i < scenario->starting_profile_count; i++)
 		{
+			s_scenario_starting_profile_view *profile = &scenario->starting_profiles[i];
+
 			if (profile->representation_index != NONE)
 			{
 				representation_index = profile->representation_index;
@@ -595,9 +596,9 @@ void players_update_connections(void)
 
 			bool connected = simulation_machine_is_ready(&player->machine_address);
 
-			if (TEST_FIELD_BIT(player->flags.connected) != connected)
+			if (TEST_FLAG(player->flags_word, 0) != connected)
 			{
-				player->flags.connected = connected;
+				SET_FLAG(player->flags_word, 0, connected);
 				if (connected)
 				{
 					c_engine_peer *engine = g_55e4d0[g_4e9ae8->engine_index];
@@ -756,16 +757,40 @@ struct s_tag_instance_view
 long function_baf40(long object_index);
 bool function_e4050(long object_index);
 
+/* data_datum_iterator_next (0x6b380), which retail inlines here */
+static inline bool player_datum_iterator_next_inlined(s_data_datum_iterator *iterator)
+{
+	s_record_pool *data = iterator->data;
+	long index = data_next_absolute_index_inlined(data, iterator->index + 1);
+	byte *datum;
+
+	if (index != NONE)
+	{
+		datum = data->data + data->size * index;
+		iterator->index = index;
+		iterator->datum_index = (*(short *)datum << 16) | index;
+	}
+	else
+	{
+		iterator->index = data->maximum_count;
+		iterator->datum_index = NONE;
+		datum = 0;
+	}
+	iterator->datum = datum;
+	return datum != 0;
+}
+
 // @retail 0x14df40
 bool __stdcall function_14df40(long *unit_index)
 {
-	s_record_pool_iterator iterator;
-	s_player *player;
+	s_data_datum_iterator iterator;
 
 	iterator.data = g_4e8c24;
 	iterator.index = NONE;
-	while ((player = (s_player *)data_iterator_next_inlined(&iterator)) != NULL)
+	iterator.datum_index = NONE;
+	while (player_datum_iterator_next_inlined(&iterator))
 	{
+		s_player *player = (s_player *)iterator.datum;
 		long unit = player->unit_index;
 
 		if (unit == NONE)
@@ -1103,7 +1128,7 @@ void players_set_local_machine(s_machine_address const *machine_address)
 	bool valid = machine_address != NULL;
 	long machine_index = NONE;
 
-	if (valid)
+	if (machine_address != NULL)
 	{
 		s_players_globals *globals = (s_players_globals *)g_4e8c20;
 
@@ -1176,10 +1201,10 @@ void player_action_update_latches(long player_index, s_player_action *action)
 
 	action->buttons = buttons & ~player->latched_buttons;
 	player->latched_buttons = buttons & 0x16100074;
-	primary_was_down = TEST_FLAG(player->latched_flags, 0);
 	primary_down = TEST_FLAG(action->flags, 0);
-	secondary_was_down = TEST_FLAG(player->latched_flags, 4);
 	secondary_down = TEST_FLAG(action->flags, 4);
+	primary_was_down = TEST_FLAG(player->latched_flags, 0);
+	secondary_was_down = TEST_FLAG(player->latched_flags, 4);
 
 	SET_FLAG(action->flags, 2, primary_down && !primary_was_down);
 	SET_FLAG(action->flags, 3, !primary_down && primary_was_down);
@@ -1219,8 +1244,7 @@ struct s_unit_player_assignment
 // @retail 0x14cad0
 void function_14cad0(long player_index, long unit_index)
 {
-	long volatile const *player_reference = &player_index;
-	s_player *player = player_get(*player_reference);
+	s_player *player = player_get(player_index);
 	s_unit_player_assignment *unit;
 	if (player->unit_index != unit_index)
 	{
@@ -1233,7 +1257,7 @@ void function_14cad0(long player_index, long unit_index)
 				function_1682bf(NONE, player->user_index, NONE);
 			}
 			unit->player_index = NONE;
-			unit->previous_player_index = *player_reference;
+			unit->previous_player_index = player_index;
 			long target = ((s_unit_player_assignment *)object_get_unchecked(player->unit_index))->field_d4;
 			if (target != NONE)
 			{
@@ -1253,7 +1277,7 @@ void function_14cad0(long player_index, long unit_index)
 		if (unit_index != NONE)
 		{
 			unit = (s_unit_player_assignment *)object_get_unchecked(unit_index);
-			unit->player_index = *player_reference;
+			unit->player_index = player_index;
 			unit->previous_player_index = NONE;
 			long target = ((s_unit_player_assignment *)object_get_unchecked(unit_index))->field_d4;
 			if (target != NONE)
@@ -1283,7 +1307,7 @@ void function_14cad0(long player_index, long unit_index)
 			}
 			if (g_55e4d0[g_4e9ae8->engine_index])
 			{
-				unit->field_f0 = function_1588b0(*player_reference, 2);
+				unit->field_f0 = function_1588b0(player_index, 2);
 			}
 		}
 		function_152340();
@@ -1553,11 +1577,12 @@ bool function_23bb70(long tag_index, point3f const *position);
 // @retail 0x14ef00
 long function_14ef00(long player_index, long tag_index, bool deterministic, bool preserve_counter)
 {
+    s_game_options_view *options = g_4e6948;
     s_player *player = player_get(player_index);
-    s_scenario_starting_profiles_view *scenario = (s_scenario_starting_profiles_view *)g_4e0350;
     short result = NONE;
     real best = -1000.0f;
-    dword seed = ((1 << (player_index & 0xffff)) ^ g_4e6948->id_b ^ g_4e6948->id_a) + player->unknown218;
+    dword seed = ((1 << (player_index & 0xffff)) ^ options->id_b ^ options->id_a) + player->unknown218;
+    s_scenario_starting_profiles_view *scenario = (s_scenario_starting_profiles_view *)g_4e0350;
     s_spawn_influence_list influences;
     function_23bc40(player_index, &influences);
     for (short index = 0; index < scenario->starting_profile_count; ++index)
@@ -1627,10 +1652,10 @@ void __stdcall function_14c090(long index, bool reuse, s_player_creation_record 
     (void)&reuse;
     (void)&record;
     byte *player = (byte *)player_get(index);
-    s_players_globals *globals = (s_players_globals *)g_4e8c20;
     long machine_index = NONE;
     if (!record->field_2_2)
     {
+        s_players_globals *globals = (s_players_globals *)g_4e8c20;
         for (long i = 0; i < 16; ++i)
         {
             if ((globals->machine_valid_mask & (1 << i)) &&
@@ -1647,11 +1672,12 @@ void __stdcall function_14c090(long index, bool reuse, s_player_creation_record 
     while (data_iterator_next_inlined(&iterator)) {}
     *(word *)(player + 2) = 0;
     *(long *)(player + 0x10) = NONE;
-    *(word *)(player + 2) = reuse ? 8 : 0;
+    if (reuse) *(word *)(player + 2) = 8; else *(word *)(player + 2) = 0;
     memcpy(player + 4, record->key, sizeof(record->key));
     *(short *)(player + 0x1a) = (short)machine_index;
     memcpy(player + 0x14, &record->machine, sizeof(record->machine));
     *(short *)(player + 0x1c) = record->controller_index;
+    *(long *)(player + 0x20) = record->value04;
     player[0x3e] = 0;
     *(short *)(player + 0x17e) = 0;
     *(short *)(player + 0x17c) = 0;
@@ -1659,7 +1685,6 @@ void __stdcall function_14c090(long index, bool reuse, s_player_creation_record 
     *(long *)(player + 0x18c) = 0;
     player[0x1a7] = 0;
     *(long *)(player + 0x190) = 0;
-    *(long *)(player + 0x20) = record->value04;
     *(short *)(player + 0x28) = NONE;
     *(long *)(player + 0x24) = NONE;
     *(long *)(player + 0x2c) = NONE;
@@ -1673,7 +1698,7 @@ void __stdcall function_14c090(long index, bool reuse, s_player_creation_record 
     *(short *)(player + 0x1a4) = NONE;
     *(long *)(player + 0x1a0) = NONE;
     *(long *)(player + 0x1b0) = NONE;
-    player[0x1a8] = 0xff;
+    *(char *)(player + 0x1a8) = NONE;
     short *mark = (short *)(player + 0x1d8);
     long count = 8;
     do
@@ -2136,6 +2161,29 @@ bool function_14e970(long, point3f const *, long);
 struct s_unknown_13bf00;
 extern s_unknown_13bf00 *g_510c50;
 
+/* data_datum_iterator_next (0x6b380), which retail inlines here */
+static inline bool player_datum_iterator_next(s_data_datum_iterator *iterator)
+{
+    s_record_pool *data = iterator->data;
+    long index = function_16bc00(data, iterator->index + 1);
+    byte *datum;
+
+    if (index != NONE)
+    {
+        datum = data->data + data->size * index;
+        iterator->index = index;
+        iterator->datum_index = (*(short *)datum << 16) | index;
+    }
+    else
+    {
+        iterator->index = data->maximum_count;
+        iterator->datum_index = NONE;
+        datum = 0;
+    }
+    iterator->datum = datum;
+    return datum != 0;
+}
+
 // @retail 0x14cdd0
 void function_14cdd0(void)
 {
@@ -2160,10 +2208,13 @@ void function_14cdd0(void)
     s_record_pool *players = g_4e8c24;
     long last_unit = NONE;
     point3f last_position;
-    long absolute = NONE;
-    while ((absolute = function_16bc00(players, absolute+1)) != NONE)
+    s_data_datum_iterator iterator;
+    iterator.data = players;
+    iterator.index = NONE;
+    iterator.datum_index = NONE;
+    while (player_datum_iterator_next(&iterator))
     {
-        s_player *player = (s_player *)(players->data + absolute*players->size);
+        s_player *player = (s_player *)iterator.datum;
         long unit = player->unit_index;
         if (unit == NONE) continue;
         long root = unit;
@@ -2178,17 +2229,16 @@ void function_14cdd0(void)
             byte *vehicle = (byte *)function_badc0(root, 2);
             if (vehicle) busy = vehicle[0x34c] > 0;
         }
-        if (busy) ((s_players_globals *)g_4e8c20)->unknown9c = 6;
-        else
+        if (!busy)
         {
             last_unit = player->unit_index;
             last_position = *(point3f *)(object_get_unchecked(last_unit) + 0x30);
         }
+        else ((s_players_globals *)g_4e8c20)->unknown9c = 6;
     }
     if (last_unit != NONE)
     {
         bool failed = false;
-        s_data_datum_iterator iterator;
         iterator.data = players;
         iterator.index = NONE;
         iterator.datum_index = NONE;

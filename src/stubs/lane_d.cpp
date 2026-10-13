@@ -42,16 +42,9 @@ void function_195a40(void)
 
 union point3f;
 union vector3f;
-// @stub 0xa9f70
-void __stdcall function_a9f70(long object_index, long mode, const point3f *position)
-{
-}
 
-// @stub 0xaa260
-void __fastcall function_aa260(const vector3f *linear, long object_index, long mode,
- const point3f *position, const vector3f *forward, const vector3f *up, const vector3f *angular)
-{
-}
+
+
 
 struct s_simulation_player_update;
 
@@ -78,4 +71,10 @@ void __stdcall function_82240(s_simulation_definition_registry *registry,
 bool function_7fb50(void)
 {
  return false;
+}
+
+// @stub 0xa9f70
+long __stdcall function_a9f70(long object_index, long mode, const point3f *position)
+{
+ return 0;
 }

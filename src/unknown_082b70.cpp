@@ -270,17 +270,19 @@ bool motion_sensor_object_moving(long object_index);
 // @retail 0x823d0
 void function_823d0(s_weapon_activity_result *output, const byte *input, long object_index)
 {
+ /* retail keeps object_index on the stack (ret 8) */
+ long const *object_index_reference = &object_index;
  byte *result = (byte *)output;
  memset(output, 0, 0x34);
  *(long *)(result + 0) = *(const long *)(input + 4);
  *(long *)(result + 4) = *(const long *)(input + 8);
  *(long *)(result + 8) = *(const long *)(input + 0xc);
  *(long *)(result + 0xc) = *(const long *)(input + 0x10);
- if (*(const dword *)input & 1) result[0x10] |= 1; else result[0x10] &= ~1;
- if (*(const dword *)input & 2) result[0x10] |= 2; else result[0x10] &= ~2;
- if (*(const dword *)input & 0x800) result[0x10] |= 4; else result[0x10] &= ~4;
- if (*(const dword *)input & 0x4000) result[0x10] |= 8; else result[0x10] &= ~8;
- if (object_index != NONE)
+ if (*(const dword *)input & 1) *(word *)(result + 0x10) |= 1; else result[0x10] &= ~1;
+ if (*(const dword *)input & 2) *(word *)(result + 0x10) |= 2; else result[0x10] &= ~2;
+ if (*(const dword *)input & 0x800) *(word *)(result + 0x10) |= 4; else result[0x10] &= ~4;
+ if (*(const dword *)input & 0x4000) *(word *)(result + 0x10) |= 8; else result[0x10] &= ~8;
+ if (*object_index_reference != NONE)
  {
   byte *object = (byte *)object_get_082b70(object_index);
   *(long *)(result + 0x12) = *(long *)(object + 0x210);
@@ -362,8 +364,8 @@ void function_82740(const s_weapon_activity_result *input, s_unit_state_c6ef0 *s
 }
 
 
-void __stdcall function_a9f70(long object_index, long mode, const point3f *position);
-void __fastcall function_aa260(const vector3f *linear, long object_index, long mode,
+long __stdcall function_a9f70(long object_index, long mode, const point3f *position);
+void function_aa260(long selection, const vector3f *linear, long object_index, long mode,
  const point3f *position, const vector3f *forward, const vector3f *up, const vector3f *angular);
 
 // @retail 0x82980
@@ -383,8 +385,8 @@ void function_82980(long player_index, s_player_object_motion *motion)
     const vector3f *angular = &motion->angular;
     const vector3f *linear = &motion->linear;
     const point3f *position = &motion->position;
-    function_a9f70(object_index, 2, position);
-    function_aa260(linear, object_index, 2, position, *(const vector3f *volatile *)&local_0[1], *(const vector3f *volatile *)&local_0[0], angular);
+    long selection = function_a9f70(object_index, 2, position);
+    function_aa260(selection, linear, object_index, 2, position, *(const vector3f *volatile *)&local_0[1], *(const vector3f *volatile *)&local_0[0], angular);
    }
   }
  }
