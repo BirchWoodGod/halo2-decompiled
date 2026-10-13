@@ -372,17 +372,17 @@ struct s_friend_presence_status
 // @retail 0x8d230
 bool function_8d230(const XONLINE_FRIEND *friend_, s_friend_presence_status *status)
 {
-	memset(status, 0, sizeof(*status));
 	bool result = false;
+	memset(status, 0, sizeof(*status));
 	if ((online_friend_state_get_flags(friend_->dwFriendState, friend_->dwTitleID) & 1) &&
 		online_logon_connected() && XOnlineTitleIdIsSameTitle(friend_->dwTitleID) &&
 		friend_->StateDataSize >= 4)
 	{
 		const byte *data = friend_->StateData;
 		long signature = 0xfcf1;
-		if (*(const word *)data == *(word *)&signature)
+		if (!memcmp(data, &signature, sizeof(word)))
 		{
-			byte time = data[2];
+			byte time = friend_->StateData[2];
 			result = true;
 			if (time <= 59)
 				status->time0c = (word)time + 1;
@@ -400,7 +400,7 @@ bool function_8d230(const XONLINE_FRIEND *friend_, s_friend_presence_status *sta
 				status->time0e = ((word)time - 192) * 10;
 			else
 				status->time0e = 600;
-			byte flags = data[3];
+			byte flags = friend_->StateData[3];
 			if (flags & 1)
 				status->state = (flags & 2) ? 6 : 5;
 			else if (flags & 4)

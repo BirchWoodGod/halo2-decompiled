@@ -110,9 +110,10 @@ bool function_2f970(s_2f970_view const *view, real *out)
         real y = (*(real const volatile *)&out[3] - out[2]) * (1.0f / 480.0f) * view->offset_y;
         out[0] += x;
         real right = out[1] + x;
+        real const &right_result = right;
         out[2] -= y;
         out[3] -= y;
-        out[1] = right;
+        out[1] = right_result;
     }
     return true;
 }
@@ -1024,7 +1025,7 @@ struct s_render_reset_state;
 struct s_shader_cache;
 void function_16b10(s_render_reset_state *);
 void function_1c590(s_shader_cache *, long, long);
-void function_12fa0(real const *, byte const *, bool, long);
+void function_12fa0(byte const *, real const *, bool, long);
 bool function_39780(bool);
 void function_1cf80();
 bool function_143c0(long, short, short, real);
@@ -1038,7 +1039,7 @@ bool __stdcall function_391f0(byte *state)
     g_4670bc = 1;
     function_16b10((s_render_reset_state *)g_485b48);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0xb4), 0);
-    function_12fa0(g_48568c, (byte *)&g_485618, false, g_4858b8);
+    function_12fa0((byte *)&g_485618, g_48568c, false, g_4858b8);
     bool result = function_39780(lines);
     if (!lines)
     {
@@ -1114,7 +1115,7 @@ struct s_render_reset_state;
 struct s_shader_cache;
 void function_16b10(s_render_reset_state *);
 void function_1c590(s_shader_cache *, long, long);
-void function_12fa0(real const *, byte const *, bool, long);
+void function_12fa0(byte const *, real const *, bool, long);
 bool function_39780(bool);
 void function_1cf80();
 bool function_143c0(long, short, short, real);
@@ -1130,7 +1131,7 @@ bool __stdcall function_391f0(void *state_address)
     g_4670bc = 1;
     function_16b10((s_render_reset_state *)g_485b48);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0xb4), 0);
-    function_12fa0(g_48568c, (byte *)&g_485618, false, g_4858b8);
+    function_12fa0((byte *)&g_485618, g_48568c, false, g_4858b8);
     bool result = function_39780(lines);
     if (!lines)
     {

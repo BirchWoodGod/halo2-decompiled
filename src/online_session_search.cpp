@@ -833,7 +833,8 @@ void function_90f70(s_session_search *arg_0)
 		long local_0 = arg_0->result_count;
 		long local_2 = SEARCH_LONG(arg_0, 0xc) + local_0;
 		SEARCH_LONG(arg_0, 0xc) = local_2;
-		if (SEARCH_LONG(arg_0, 0xc) < g_network_configuration.value1b8)
+		if (SEARCH_LONG(arg_0, 0xc) >= g_network_configuration.value1b8)
+			goto local_3;
 		{
 			if (arg_0->unknown1c != NONE)
 			{
@@ -848,14 +849,17 @@ void function_90f70(s_session_search *arg_0)
 					local_1 = true;
 				}
 			}
-			if (local_0 == MAXIMUM_SEARCH_RESULTS || local_1)
-			{
-				function_90b30(arg_0);
-				return;
-			}
+			if (local_0 == MAXIMUM_SEARCH_RESULTS)
+				goto local_4;
+			if (!local_1)
+				goto local_3;
 		}
-		arg_0->state = 0;
+local_4:
+		function_90b30(arg_0);
 	}
+	return;
+local_3:
+	arg_0->state = 0;
 }
 
 

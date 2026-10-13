@@ -242,6 +242,7 @@ long function_132b80(s_bit_vector_pool *data, long mode, s_132b80_frustum const 
 	long cluster, void *filter, point3f const *center, real radius, bool use_plane,
 	real plane_offset, long count, dword flags)
 {
+	long const *local_0 = &cluster;
 	data->location.cluster_index = cluster;
 	data->location.bsp_index = g_4686c4;
 	data->location.leaf_index = NONE;
@@ -342,7 +343,7 @@ dword function_132b10(bool b, bool d, bool c, bool f, bool g, bool e, bool a)
 
 /* a 16 bit real: sign, ten bits of mantissa, then five of exponent */
 // @retail 0x135880
-real function_135880(word value)
+inline real function_135880(word value)
 {
 	union s_135881
 	{
@@ -767,45 +768,50 @@ void function_133390(s_bit_vector_pool const *arg_1)
 void __stdcall function_133520(s_bit_vector_pool *arg_1)
 {
 	s_visibility_bsp *local_1 = (s_visibility_bsp *)g_4e0348;
-	for (long local_2 = 0; local_2 < (*(c_entry_list *volatile const *)&arg_1->lists[3])->count; local_2++)
+	long local_2 = 0;
+	if (local_2 < arg_1->lists[3]->count)
 	{
-		c_entry_list *local_3 = arg_1->lists[3];
-		long local_4 = (short)local_3->longs_a[(short)local_2];
-		s_visible_instance *local_5 = &local_1->instances[(short)local_4];
-		dword local_6 = function_1332f0(arg_1, local_3->shorts_b[(short)local_2]);
-		point3f const *local_12 = &local_5->center;
-		real local_7 = local_12->y * g_4b9e2c + local_12->z * g_4b9e38 + local_12->x * g_4b9e20 + g_4b9e44;
-		if (!(local_7 >= 0.0f))
-			local_7 = 0.0f - local_7;
-		if (!(local_7 > 0.1f))
-			local_7 = 0.1f;
-		short local_8 = (*(c_entry_list *volatile const *)&arg_1->lists[3])->shorts_d[(short)local_2];
-		real local_9 = (local_5->radius / local_7) * g_4b9ed0 * 2.0f;
-		if (local_5->radius < 0.13f)
-			local_9 *= 1.75f;
-		real local_10 = (local_9 - 25.0f) * (1.0f / 7.0f);
-		if (0.0f > local_10)
-			local_10 = 0.0f;
-		else
+		do
 		{
-			real local_13 = local_10;
-			local_10 = 1.0f;
-			if (!(local_13 > 1.0f))
-				local_10 = local_13;
-		}
-		byte local_11 = (byte)(long)(local_10 * 255.0f);
-		if (!(arg_1->lists[3]->shorts_b[(short)local_2] & 0x800))
-			local_6 |= 0x40;
-		else
-			local_6 |= 1;
-		if (local_11 > 0)
-		{
-			function_2cbf0(0, 0, local_4, local_6 | 0x1008, NONE, 0xffffffff,
-				0, NULL, local_8, local_11, local_5, NONE, local_9, NONE, NONE,
-				false, false, false, 0.0f, 0.0f, 0.0f, 0, local_12, local_5->radius);
-		}
-		else
-			arg_1->lists[3]->shorts_b[(short)local_2] |= 1;
+			c_entry_list *local_3 = arg_1->lists[3];
+			long local_4 = (short)local_3->longs_a[(short)local_2];
+			s_visible_instance *local_5 = &local_1->instances[(short)local_4];
+			dword local_6 = function_1332f0(arg_1, local_3->shorts_b[(short)local_2]);
+			point3f const *local_12 = &local_5->center;
+			real local_7 = local_12->z * g_4b9e38 + local_12->y * g_4b9e2c + local_12->x * g_4b9e20 + g_4b9e44;
+			if (!(local_7 >= 0.0f))
+				local_7 = 0.0f - local_7;
+			if (!(local_7 > 0.1f))
+				local_7 = 0.1f;
+			real local_9 = (local_5->radius / local_7) * g_4b9ed0 * 2.0f;
+			short local_8 = (*(s_bit_vector_pool *volatile *)&arg_1)->lists[3]->shorts_d[(short)local_2];
+			if (local_5->radius < 0.13f)
+				local_9 *= 1.75f;
+			real local_10 = (local_9 - 25.0f) * (1.0f / 7.0f);
+			if (0.0f > local_10)
+				local_10 = 0.0f;
+			else
+			{
+				real local_13 = local_10;
+				local_10 = 1.0f;
+				if (!(local_13 > 1.0f))
+					local_10 = local_13;
+			}
+			byte local_11 = (byte)(long)(local_10 * 255.0f);
+			if (!(arg_1->lists[3]->shorts_b[(short)local_2] & 0x800))
+				local_6 |= 0x40;
+			else
+				local_6 |= 1;
+			if (local_11 > 0)
+			{
+				function_2cbf0(0, 0, local_4, local_6 | 0x1008, NONE, 0xffffffff,
+					0, NULL, local_8, local_11, local_5, NONE, local_9, NONE, NONE,
+					false, false, false, 0.0f, 0.0f, 0.0f, 0, local_12, local_5->radius);
+			}
+			else
+				arg_1->lists[3]->shorts_b[(short)local_2] |= 1;
+			local_2++;
+		} while (local_2 < (*(s_bit_vector_pool *volatile *)&arg_1)->lists[3]->count);
 	}
 }
 
@@ -1101,6 +1107,61 @@ void function_132900(s_bit_vector_pool *arg_1, s_sort_context const *arg_2, s_so
 			local_2++;
 		}
 	}
+}
+
+struct s_2cb30_state;
+struct s_2cb30_globals
+{
+	long current;
+	long previous;
+	s_2cb30_state *state;
+	byte unknown0c[0x9b0 - 0xc];
+};
+
+extern s_2cb30_globals g_4c0b78;
+extern bool g_4e7c18;
+bool g_4e0304;
+struct s_view_collection_1733e0;
+void __stdcall function_173130(long camera_count, byte *cameras, long cluster_index, s_view_collection_1733e0 *collection);
+void function_1733e0(s_view_collection_1733e0 *collection, long cluster_index, byte const *camera);
+
+// @retail 0x1320f0
+s_bit_vector_pool *function_1320f0(long mode, long count, bool use_plane, long flags, byte const *frusta,
+	byte const *center, real radius, void *filter, real plane_offset, long cluster)
+{
+	s_bit_vector_pool *data = &g_547f88;
+	if (mode)
+		data = &g_54aa68;
+	long type = function_132b80(data, mode, (s_132b80_frustum const *)frusta, cluster, filter,
+		(point3f const *)center, radius, use_plane, plane_offset, count, flags);
+	g_4c0b78.state = (s_2cb30_state *)data;
+	function_1348e0(data);
+	switch (type)
+	{
+	case 0:
+		function_173130(count, (byte *)frusta, data->location.cluster_index, (s_view_collection_1733e0 *)data->context);
+		if (data->filter)
+			function_132900(data, (s_sort_context const *)data->context, *(s_sort_context const **)data->filter);
+		break;
+	case 1:
+		function_132d60((s_132d60 *)data);
+		break;
+	case 2:
+		function_1733e0((s_view_collection_1733e0 *)data->context, cluster, frusta);
+		break;
+	}
+	g_4e7c1c++;
+	g_4e7c18 = true;
+	function_134390(data);
+	g_4e7c18 = false;
+	g_4de2fc++;
+	g_4de2f8 = true;
+	g_4e0308++;
+	g_4e0304 = true;
+	function_132220(data);
+	g_4de2f8 = false;
+	g_4e0304 = false;
+	return data;
 }
 
 s_visibility_pool_storage g_visibility_pool_storage;

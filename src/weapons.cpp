@@ -1610,7 +1610,8 @@ bool function_1058b0(long weapon_index, long state, bool force)
 	function_b7360(weapon_index);
 	if (force || weapon_state_replaceable(weapon->state, state))
 	{
-		if (WEAPON_GET(weapon_index)->animation_state_offset != NONE)
+		s_weapon *current = WEAPON_GET(weapon_index);
+		if (current->animation_state_offset != NONE)
 		{
 			s_animation_state *animation = (s_animation_state *)((byte *)weapon + weapon->animation_state_offset);
 			long set;
@@ -2797,6 +2798,17 @@ s_weapon_type_definition_view g_467cd0 =
 
 bool function_1023d0(long weapon_index, long barrel_index);
 
+struct s_weapon_flags_view_1023d0
+{
+    word flag0 : 1;
+    word flag1 : 1;
+    word flag2 : 1;
+    word flag3 : 1;
+    word flag4 : 1;
+    word flag5 : 1;
+    word : 10;
+};
+
 static __forceinline bool weapon_barrel_ammunition_check(long weapon_index, long barrel_index)
 {
     s_weapon *weapon = WEAPON_GET(weapon_index);
@@ -2813,7 +2825,7 @@ static __forceinline bool weapon_barrel_ammunition_check(long weapon_index, long
             if (function_1008f0(magazine_index, weapon_index, false) > 0 &&
                 magazine->rounds_loaded < magazine_definition->rounds_loaded_maximum)
             {
-                if (!(bool)((((byte)weapon->value_16e) >> 5) & 1) && weapon->parent_index != NONE)
+                if (!TEST_FIELD_BIT(((s_weapon_flags_view_1023d0 const *)&weapon->value_16e)->flag5) && weapon->parent_index != NONE)
                     function_fdc70(weapon_index, barrel_definition->magazine_index);
                 return true;
             }

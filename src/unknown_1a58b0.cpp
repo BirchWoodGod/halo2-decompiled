@@ -88,44 +88,6 @@ s_flag_bits g_557c74;
 #define ACTION_HANDLER_ENABLED(id) \
 	(g_46eeb8[id]->unknown8 != g_46f348 && (g_46eeb8[id]->mask & g_4ee4ec) == g_4ee4ec && (g_557c40[(id) >> 5] & (1 << ((id) & 0x1f))))
 
-/* link a node in after an element */
-#define ACTION_NODE_INSERT(element, node) \
-	do \
-	{ \
-		(node)->next = (element)->next; \
-		(element)->next = (node); \
-		(node)->order = 0; \
-	} \
-	while (0)
-
-/* link a node into the list of an element, after the nodes of a lower order */
-#define ACTION_NODE_INSERT_SORTED(element, node, order_value) \
-	do \
-	{ \
-		s_action_node *previous = (element); \
-		\
-		if (!previous->next) \
-		{ \
-			(node)->next = 0; \
-			previous->next = (node); \
-		} \
-		else \
-		{ \
-			do \
-			{ \
-				if (!previous->next || previous->next->order >= (order_value)) \
-				{ \
-					(node)->next = previous->next; \
-					previous->next = (node); \
-					break; \
-				} \
-				previous = previous->next; \
-			} \
-			while (previous); \
-		} \
-		(node)->order = (order_value); \
-	} \
-	while (0)
 /* ---- functions ---- */
 
 // @retail 0x1a58b0
@@ -405,28 +367,18 @@ void function_1a6f70(long owner_index)
 	}
 }
 
-/* a slot and the one after it, seen from the owner base (the slots start at +0x90) */
-struct s_slot_pair_view
-{
-	byte unknown00[0x94];
-	short unknown94;
-	byte unknown96[0x3a];
-	s_slot next;
-};
-
 // @retail 0x1a7030
 short function_1a7030(long owner_index, short slot_index, long argument, short *out)
 {
 	s_actor_view *owner = actor_get(owner_index);
-	s_slot_pair_view *slot = (s_slot_pair_view *)((byte *)owner + slot_index * sizeof(s_slot));
-	s_slot *next = &slot->next;
+	s_slot *slot = &owner->slots[slot_index];
+	s_slot *next = &owner->slots[slot_index + 1];
 	short result = g_46fbe4;
 	short selected = NONE;
-	short type = next->type;
 
-	if (next->state == 0 && ACTION_ID_VALID(type) && slot->unknown94 != NONE && ACTION_HANDLER_ENABLED(type))
+	if (next->state == 0 && ACTION_ID_VALID(next->type) && slot->unknown4 != NONE && ACTION_HANDLER_ENABLED(next->type))
 	{
-		s_slot_handler *handler = g_46eeb8[type];
+		s_slot_handler *handler = g_46eeb8[next->type];
 		short code;
 
 		if (handler->evaluate_argument)
@@ -451,13 +403,13 @@ short function_1a7030(long owner_index, short slot_index, long argument, short *
 				}
 				else
 				{
-					slot->unknown94 = NONE;
+					slot->unknown4 = NONE;
 					result = g_46fbe4;
 				}
 			}
 			else
 			{
-				slot->unknown94 = NONE;
+				slot->unknown4 = NONE;
 				if (code == g_46fbec)
 					result = code;
 				else
@@ -467,62 +419,97 @@ short function_1a7030(long owner_index, short slot_index, long argument, short *
 	}
 	else
 	{
-		slot->unknown94 = NONE;
+		slot->unknown4 = NONE;
 	}
 
 	*out = selected;
 	return result;
 }
+
+/* link a node in after an element */
+PRIVATE __forceinline void function_1a71f1(s_action_node *arg_0, s_action_node *arg_1)
+{
+	arg_1->next = arg_0->next;
+	arg_0->next = arg_1;
+	arg_1->order = 0;
+}
+
+/* link a node into the list of an element, after the nodes of a lower order */
+PRIVATE __forceinline void function_1a71f2(s_action_node *arg_0, s_action_node *arg_1, short arg_2)
+{
+	if (arg_0->next)
+	{
+		do
+		{
+			if (!arg_0->next || arg_0->next->order >= arg_2)
+			{
+				arg_1->next = arg_0->next;
+				arg_0->next = arg_1;
+				break;
+			}
+			arg_0 = arg_0->next;
+		}
+		while (arg_0);
+	}
+	else
+	{
+		arg_1->next = 0;
+		arg_0->next = arg_1;
+	}
+	arg_1->order = arg_2;
+}
+
 // @retail 0x1a71f0
 bool function_1a71f0(short count, short id, s_action_node **list)
 {
-	if (!(g_4f0a4c[id >> 5] & (1 << (id & 0x1f))))
-		return false;
+	bool result = false;
 
-	short i;
-
-	for (i = 0; i < count; i++)
-		list[i]->next = 0;
-
-	long row;
-
-	for (row = 0; row < g_4f09c8[id]; row++)
+	if (g_4f0a4c[id >> 5] & (1 << (id & 0x1f)))
 	{
-		s_candidate_entry *entry = &g_4ee4f0[row].entries[id];
-		s_action_node *node = &entry->node;
+		result = true;
+		short i;
 
-		if (entry->kind == 0)
-		{
-			ACTION_NODE_INSERT(list[0], node);
-		}
-		else if (entry->kind == 4)
-		{
-			ACTION_NODE_INSERT_SORTED(list[count - 1], node, 2);
-		}
-		else
-		{
-			short j = 0;
+		for (i = 0; i < count; i++)
+			list[i]->next = 0;
 
-			while (j < count)
+		long row;
+
+		for (row = 0; row < g_4f09c8[id]; row++)
+		{
+			s_candidate_entry *entry = &g_4ee4f0[row].entries[id];
+			s_action_node *node = &entry->node;
+
+			if (entry->kind == 0)
 			{
-				if (list[j]->key == entry->key)
-					break;
-				j++;
+				function_1a71f1(list[0], node);
 			}
-			if (j < count)
+			else if (entry->kind == 4)
 			{
-				s_action_node *element = list[j];
+				function_1a71f2(list[count - 1], node, 2);
+			}
+			else
+			{
+				short j;
 
-				if (entry->kind == 1)
-					ACTION_NODE_INSERT(element, node);
-				else if (entry->kind == 2)
-					ACTION_NODE_INSERT_SORTED(element, node, 1);
-				else if (entry->kind == 3)
-					ACTION_NODE_INSERT_SORTED(element, node, 2);
+				for (j = 0; j < count; j++)
+				{
+					s_action_node *element = list[j];
+
+					if (element->key == entry->key)
+					{
+						if (entry->kind == 1)
+							function_1a71f1(element, &entry->node);
+						else if (entry->kind == 2)
+							function_1a71f2(element, &entry->node, 1);
+						else if (entry->kind == 3)
+							function_1a71f2(element, &entry->node, 2);
+						break;
+					}
+				}
 			}
 		}
 	}
-	return true;
+	return result;
 }
 
 /* where each handler's nodes start in g_4f0a60 and how many there are, by
@@ -644,13 +631,11 @@ void function_1a6d80(void)
 s_action_node **function_1a73c0(long owner_index, short id, bool *valid, short *count)
 {
 	s_actor_view *owner = actor_get(owner_index);
-	short local_1 = *(short volatile *)&id;
-	short local_2 = g_46eeb8[local_1]->index;
-	s_action_table_entry *entry = &g_4f2cc0[local_1][owner->unknown004];
-	s_action_node **nodes = &g_4f0a60[entry->index];
-	short node_count = entry->count;
+	long local_2 = g_46eeb8[id]->index;
+	s_action_node **nodes = &g_4f0a60[g_4f2cc0[id][owner->unknown004].index];
+	short node_count = g_4f2cc0[id][owner->unknown004].count;
 
-	*valid = function_1a71f0(node_count, local_2, nodes);
+	*valid = function_1a71f0(node_count, (short)local_2, nodes);
 	*count = node_count;
 	return nodes;
 }
@@ -1552,40 +1537,43 @@ bool function_1a60f0(s_sort_candidate_view *candidate, s_sort_weight_view const 
 		if (!(function_50650(cosine) <= candidate->maximum_facing_angle))
 			result = false;
 	}
-	if (result && scale != 0.0f)
+	if (result)
 	{
-		if (weights->flags & 8)
+		if (scale != 0.0f)
 		{
-			if (!(candidate->flags & 1) || candidate->distance >
+			if (weights->flags & 8)
+			{
+				if (!(candidate->flags & 1) || candidate->distance >
+					(candidate->maximum_distance == 0.0f ? weights->maximum_distance : candidate->maximum_distance))
+					result = false;
+			}
+			if ((candidate->flags & 2) && candidate->distance >
 				(candidate->maximum_distance == 0.0f ? weights->maximum_distance : candidate->maximum_distance))
-				result = false;
-		}
-		if ((candidate->flags & 2) && candidate->distance >
-			(candidate->maximum_distance == 0.0f ? weights->maximum_distance : candidate->maximum_distance))
-			candidate->flags &= ~2;
-		if (result)
-		{
-			if (!candidate->alternate)
+				candidate->flags &= ~2;
+			if (result)
 			{
-				candidate->score = function_1a4870(candidate->angle, weights->distance, candidate->distance, weights->angle);
-				candidate->secondary_score = function_1a4870(candidate->angle, weights->secondary_distance, candidate->distance, weights->secondary_angle);
-				candidate->scaled_score = scale * function_1a4870(candidate->angle, weights->scaled_distance, candidate->distance, weights->scaled_angle);
-				if (candidate->score == 0.0f && candidate->secondary_score == 0.0f && candidate->scaled_score == 0.0f)
-					result = false;
-			}
-			else
-			{
-				real score = function_1a4870(candidate->angle, weights->distance, candidate->distance, weights->angle);
-				candidate->score = 0.0f;
-				candidate->secondary_score = 0.0f;
-				candidate->scaled_score = 0.0f;
-				if (score < 1.0f)
-					result = false;
+				if (!candidate->alternate)
+				{
+					candidate->score = function_1a4870(candidate->angle, weights->distance, candidate->distance, weights->angle);
+					candidate->secondary_score = function_1a4870(candidate->angle, weights->secondary_distance, candidate->distance, weights->secondary_angle);
+					candidate->scaled_score = scale * function_1a4870(candidate->angle, weights->scaled_distance, candidate->distance, weights->scaled_angle);
+					if (candidate->score == 0.0f && candidate->secondary_score == 0.0f && candidate->scaled_score == 0.0f)
+						result = false;
+				}
+				else
+				{
+					real score = function_1a4870(candidate->angle, weights->distance, candidate->distance, weights->angle);
+					candidate->score = 0.0f;
+					candidate->secondary_score = 0.0f;
+					candidate->scaled_score = 0.0f;
+					if (score < 1.0f)
+						result = false;
+				}
 			}
 		}
+		else
+			result = false;
 	}
-	else
-		result = false;
 	return result;
 }
 

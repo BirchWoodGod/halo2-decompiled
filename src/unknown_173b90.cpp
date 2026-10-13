@@ -467,36 +467,38 @@ void function_246d80(s_particle_property const *property, real const *values, co
 real function_3eb70(void);
 typedef void (__stdcall *particle_callback_175610)(s_particle_175610 *, s_particle_value_cache *, point3f const *, vector3f const *, real, color4f const *, void *);
 
-PRIVATE inline void particle_rotate_175610(matrix3x3 const *matrix, vector3f const *input, vector3f *output)
+/* `input` rotated by `matrix`, each row's first two products grouped as retail adds them */
+PRIVATE inline void particle_rotate_grouped_175610(matrix3x3 const *matrix, vector3f const *input, vector3f *output)
 {
 	vector3f value = *input;
-	output->i = matrix->left.i * value.j + matrix->forward.i * value.i + matrix->up.i * value.k;
-	output->j = matrix->forward.j * value.i + matrix->up.j * value.k + matrix->left.j * value.j;
-	output->k = matrix->forward.k * value.i + matrix->up.k * value.k + matrix->left.k * value.j;
+	output->i = (matrix->left.i * value.j + matrix->forward.i * value.i) + matrix->up.i * value.k;
+	output->j = (matrix->forward.j * value.i + matrix->up.j * value.k) + matrix->left.j * value.j;
+	output->k = (matrix->forward.k * value.i + matrix->up.k * value.k) + matrix->left.k * value.j;
 }
 
 // @retail 0x175610
 void function_175610(s_particle_value_cache *cache, s_particle_system_datum *system, s_particle_location_datum *location, particle_callback_175610 callback, void *context)
 {
 	s_particle_system_datum * *system_reference = &system;
-	s_particle_value_cache * *cache_reference = &cache;
 	s_effect_particle_system_definition *definition = (*system_reference)->function_1751d0();
-	if ((*system_reference) != (*cache_reference)->field_48)
+	if ((*system_reference) != cache->field_48)
 	{
-		(*cache_reference)->field_48 = (*system_reference);
-		(*cache_reference)->mask &= 0xfffff98f;
+		cache->field_48 = (*system_reference);
+		cache->mask &= 0xfffff98f;
 	}
-	if (location != (*cache_reference)->field_4c)
+	if (location != cache->field_4c)
 	{
-		(*cache_reference)->field_4c = location;
-		(*cache_reference)->mask &= 0xfffecf7f;
+		cache->field_4c = location;
+		cache->mask &= 0xfffecf7f;
 	}
 	long emitter_index = *(long *)((byte *)location + 4);
-	s_emitter_definition_175610 *emitter_definition = *(s_emitter_definition_175610 **)((byte *)definition + 0x34);
+	long emitter_definition_index = 0;
 	while (emitter_index != NONE)
 	{
 		s_particle_emitter_175610 *emitter = DATUM(g_51ec88, s_particle_emitter_175610, emitter_index);
 		long particle_index = emitter->first_particle_index;
+		s_emitter_definition_175610 *emitter_definition =
+			&(*(s_emitter_definition_175610 **)((byte *)definition + 0x34))[emitter_definition_index];
 		if (particle_index != NONE)
 		{
 			real multiplier = 1.0f;
@@ -508,50 +510,51 @@ void function_175610(s_particle_value_cache *cache, s_particle_system_datum *sys
 			matrix3x3 const *rotation_result;
 			point3f const *origin_result;
 			color4f color;
+			dword emitter_mask = emitter_definition->mask;
 			if (definition->unknown0c)
 				function_248450(&rotation, (s_particle_frame const *)emitter, &origin, &rotation_result, &origin_result, *((byte *)location + 2) != 0);
-			dword mask = emitter_definition->mask & 0x107f0;
-			function_173ba0(~(*cache_reference)->mask & mask, (*cache_reference)->field_48, (*cache_reference)->field_4c, (*cache_reference)->field_50, (*cache_reference)->values);
-			(*cache_reference)->mask |= mask;
+			dword mask = emitter_mask & 0x107f0;
+			function_173ba0(~cache->mask & mask, cache->field_48, cache->field_4c, cache->field_50, cache->values);
+			cache->mask |= mask;
 			if (emitter_definition->flags & 1)
-				color.alpha = function_246cd0(&emitter_definition->alpha, (*cache_reference)->values);
+				color.alpha = function_246cd0(&emitter_definition->alpha, cache->values);
 			if (emitter_definition->flags & 2)
-				function_246d80(&emitter_definition->color, (*cache_reference)->values, (color3f *)&color.red);
+				function_246d80(&emitter_definition->color, cache->values, (color3f *)&color.red);
 			if ((bool)((emitter_definition->flags >> 2) & 1))
-				scale = function_246cd0(&emitter_definition->scale, (*cache_reference)->values) * multiplier;
-			mask = emitter_definition->mask & 0xf80f;
+				scale = function_246cd0(&emitter_definition->scale, cache->values) * multiplier;
+			mask = emitter_mask & 0xf80f;
 			while (particle_index != NONE)
 			{
 				s_particle_175610 *particle = DATUM(g_51ec84, s_particle_175610, particle_index);
 				point3f position = particle->position;
 				vector3f velocity = particle->velocity;
-				if (particle != (*cache_reference)->field_50)
+				if (particle != cache->field_50)
 				{
-					(*cache_reference)->field_50 = particle;
-					(*cache_reference)->mask &= 0xffff07f0;
+					cache->field_50 = particle;
+					cache->mask &= 0xffff07f0;
 				}
-				function_173ba0(~(*cache_reference)->mask & mask, (*cache_reference)->field_48, (*cache_reference)->field_4c, (*cache_reference)->field_50, (*cache_reference)->values);
-				(*cache_reference)->mask |= mask;
+				function_173ba0(~cache->mask & mask, cache->field_48, cache->field_4c, cache->field_50, cache->values);
+				cache->mask |= mask;
 				particle_index = particle->next_index;
 				if (!(emitter_definition->flags & 1))
-					color.alpha = function_246cd0(&emitter_definition->alpha, (*cache_reference)->values);
+					color.alpha = function_246cd0(&emitter_definition->alpha, cache->values);
 				if (!(emitter_definition->flags & 2))
-					function_246d80(&emitter_definition->color, (*cache_reference)->values, (color3f *)&color.red);
+					function_246d80(&emitter_definition->color, cache->values, (color3f *)&color.red);
 				if (!(bool)((emitter_definition->flags >> 2) & 1))
-					scale = function_246cd0(&emitter_definition->scale, (*cache_reference)->values) * multiplier;
+					scale = function_246cd0(&emitter_definition->scale, cache->values) * multiplier;
 				if (definition->unknown0c)
 				{
-					particle_rotate_175610(rotation_result, (vector3f const *)&position, (vector3f *)&position);
+					particle_rotate_grouped_175610(rotation_result, (vector3f const *)&position, (vector3f *)&position);
 					position.x = origin_result->x + position.x;
 					position.y = origin_result->y + position.y;
 					position.z = origin_result->z + position.z;
-					particle_rotate_175610(rotation_result, &velocity, &velocity);
+					particle_rotate_grouped_175610(rotation_result, &velocity, &velocity);
 				}
-				callback(particle, (*cache_reference), &position, &velocity, scale, &color, context);
+				callback(particle, cache, &position, &velocity, scale, &color, context);
 			}
 		}
 		emitter_index = emitter->next_index;
-		++emitter_definition;
+		emitter_definition_index++;
 	}
 }
 
@@ -951,6 +954,29 @@ struct s_sort_record;
 typedef bool (__stdcall *t_record_fill)(long, void *, long, long, long, void *, s_sort_record *);
 void function_40e30(short, long, real, long, word, dword, dword, t_record_fill, dword, void *);
 
+/* the particle system definition's flags byte at 0x16, as 0x174420 tests it */
+struct s_definition_flags_174420
+{
+    byte : 5;
+    byte flag5 : 1;
+    byte : 2;
+};
+
+/* `in` rotated into the frame `m` (in may be out) */
+static inline void matrix_transform_174420(matrix3x3 const *m, vector3f const *in, vector3f *out)
+{
+    vector3f copy;
+
+    if (in == out)
+    {
+        copy = *in;
+        in = &copy;
+    }
+    out->i = (in->j * m->left.i + in->k * m->up.i) + in->i * m->forward.i;
+    out->j = (in->i * m->forward.j + in->j * m->left.j) + in->k * m->up.j;
+    out->k = (in->i * m->forward.k + in->j * m->left.k) + in->k * m->up.k;
+}
+
 // @retail 0x174420
 void __stdcall function_174420(long system_index, bool view_pass, bool camera_relative, bool force_visible)
 {
@@ -968,17 +994,17 @@ void __stdcall function_174420(long system_index, bool view_pass, bool camera_re
         dword render_flags = *(dword *)(*(byte **)(table + 4) + 2);
         s_effect_particle_system_definition *definition = system->function_1751d0();
         word flags = *(word *)((byte *)definition + 0x16);
-        if (!(flags & (1 << 5)))
+        if (!TEST_FIELD_BIT(((s_definition_flags_174420 const *)((byte *)definition + 0x16))->flag5))
         {
             real bias = *(short *)definition->unknown14 * 0.05f;
-            vector3f forward, left, up;
+            matrix3x3 camera;
             if (camera_relative)
             {
-                forward = g_4b9dac;
-                up = g_4b9db8;
-                left.i = forward.k * up.j - up.k * forward.j;
-                left.j = up.k * forward.i - forward.k * up.i;
-                left.k = forward.j * up.i - up.j * forward.i;
+                camera.forward = g_4b9dac;
+                camera.up = g_4b9db8;
+                camera.left.i = g_4b9dac.k * g_4b9db8.j - g_4b9db8.k * g_4b9dac.j;
+                camera.left.j = g_4b9db8.k * g_4b9dac.i - g_4b9dac.k * g_4b9db8.i;
+                camera.left.k = g_4b9dac.j * g_4b9db8.i - g_4b9db8.j * g_4b9dac.i;
             }
             s_particle_render_request_173c90 request;
             request.system = system;
@@ -992,15 +1018,16 @@ void __stdcall function_174420(long system_index, bool view_pass, bool camera_re
                     point3f position;
                     if (camera_relative)
                     {
-                        position.x = left.i * location->position.y + up.i * location->position.z + forward.i * location->position.x + g_4b9da0.x;
-                        position.y = forward.j * location->position.x + left.j * location->position.y + up.j * location->position.z + g_4b9da0.y;
-                        position.z = forward.k * location->position.x + left.k * location->position.y + up.k * location->position.z + g_4b9da0.z;
+                        matrix_transform_174420(&camera, (vector3f const *)&location->position, (vector3f *)&position);
+                        position.x = g_4b9da0.x + position.x;
+                        position.y = g_4b9da0.y + position.y;
+                        position.z = g_4b9da0.z + position.z;
                         *(dword *)((byte *)location + 0x30) = g_4ba034;
                     }
                     else
                     {
                         long cluster = system->location.cluster_index;
-                        bool visible = function_3eb20(cluster) || system->flag10;
+                        bool visible = function_3eb20(cluster) || (bool)(((dword)*(word const *)((byte const *)system + 0xc) >> 10) & 1);
                         bool in_pool = (g_547f88.flags[cluster >> 5] & (1 << (cluster & 31))) != 0;
                         if (!force_visible && !(flags & (1 << 9)) && !in_pool && !visible) draw = false;
                         else

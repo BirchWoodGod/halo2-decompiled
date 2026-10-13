@@ -550,6 +550,15 @@ short function_17c040(long contrail_index, real dt)
 	return count;
 }
 
+static inline real contrail_scale_if_17c0e0(word flags, word mask, real scale, real value)
+{
+	real result = value;
+
+	if (flags & mask)
+		result = scale * value;
+	return result;
+}
+
 // @retail 0x17c0e0
 void function_17c0e0(long contrail_index, short count, bool force)
 {
@@ -566,15 +575,10 @@ void function_17c0e0(long contrail_index, short count, bool force)
 
 		if (marker_count > 0)
 		{
-			real speed = function_17bef0(definition->flags, definition->velocity_lower, contrail->scale, definition->velocity_upper, 1);
-			real cone_angle = definition->cone_angle;
-			real inherited_velocity;
-
-			if (definition->flags & 8)
-				cone_angle = contrail->scale * cone_angle;
-			inherited_velocity = definition->inherited_velocity;
-			if (definition->flags & 0x10)
-				inherited_velocity = contrail->scale * inherited_velocity;
+			word flags = definition->flags;
+			real speed = function_17bef0(flags, definition->velocity_lower, contrail->scale, definition->velocity_upper, 1);
+			real cone_angle = contrail_scale_if_17c0e0(definition->flags, 8, contrail->scale, definition->cone_angle);
+			real inherited_velocity = contrail_scale_if_17c0e0(definition->flags, 0x10, contrail->scale, definition->inherited_velocity);
 
 			for (short i = 0; i < marker_count; i++)
 			{
@@ -590,8 +594,8 @@ void function_17c0e0(long contrail_index, short count, bool force)
 				}
 				else
 				{
-					point_count = 1;
 					previous = 0;
+					point_count = 1;
 				}
 				if (previous && !memcmp(&marker->matrix.position, &previous->position, sizeof(point3f)) && !force)
 					continue;

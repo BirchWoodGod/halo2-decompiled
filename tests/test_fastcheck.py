@@ -229,6 +229,13 @@ def test_caveats_compare_unchanged_code_with_the_last_full_build(tmp_path):
     assert len(check.fast_caveats(ours, target, full_build(full, 2000, tmp_path), Identity())) == 2
 
 
+def test_d3d_members_linked_as_objects_count_as_library_code():
+    """The map names a library object 'library:object.obj', but a D3D member the
+    build links as an object by its file name alone."""
+    assert reduced.library_object('libcmt:memcpy.obj') and reduced.library_object('pusher.obj')
+    assert not reduced.library_object('b.obj')
+
+
 NAMED_MAP = '''  Address         Publics by Value              Rva+Base     Lib:Object
 
  0001:00000000       ?helper@@YI_NPAUs_x@@@Z    00401000 f   b.obj

@@ -1392,7 +1392,7 @@ bool __stdcall function_2b000(void *context)
 }
 
 // @retail 0x296c0
-bool __stdcall function_296c0(void *context)
+bool __stdcall function_296c0(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1])
         return false;
@@ -1474,7 +1474,7 @@ bool __stdcall function_276d0(void *context)
 }
 
 // @retail 0x29080
-bool __stdcall function_29080(void *context)
+bool __stdcall function_29080(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1])
         return false;
@@ -1623,7 +1623,7 @@ bool __stdcall function_251b0(void *context)
 
 
 // @retail 0x29370
-bool __stdcall function_29370(void *context)
+bool __stdcall function_29370(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1]) return false;
     g_509400 = g_485ae0;
@@ -2207,7 +2207,7 @@ __declspec(noinline) void function_245c0(s_245c0_state *state, real *histogram, 
 void function_245c0(s_245c0_state *state, real *histogram, short mode)
 {
     state->curve.histogram = histogram;
-    if (mode > 0 && mode <= 3)
+    if ((word)(mode - 1) < 3)
     {
         if (!(state->frame_count & 7))
         {

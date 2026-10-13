@@ -15,7 +15,6 @@ void function_aab40(long index, point3f const *position, vector3f const *forward
 
 // Keep this draft disabled: its matrix-query caller changes 0xba160's
 // nested 0x1420f0 convention and loses the existing 0xba160 match.
-#if 0
 point3f *function_b9dd0(long index, point3f *result);
 bool function_1c5210(transform4x3f const *matrix, void *shape, long excluded_component, long filter);
 
@@ -56,6 +55,9 @@ public:
 
 extern real g_47f05c;
 
+// Disabled: the best round-36 draft has 179 differences/736 bytes, but activation
+// loses matched ba160 and b92d0 through the nested 1420f0 convention.
+#if 0
 // Retail 0xa9f70
 long __stdcall function_a9f70(long object_index, long mode, point3f const *position)
 {
@@ -125,7 +127,9 @@ collision:
 				{
 					c_z_capsule_temp capsule((byte *)shape + 0x10, (byte *)shape + 0x20, radius);
 					transform4x3f matrix_storage;
-					transform4x3f *matrix = function_ba160(object_index, &matrix_storage);
+					typedef transform4x3f *(__fastcall *matrix_query_proc)(long, transform4x3f *);
+					matrix_query_proc volatile matrix_query = function_ba160;
+					transform4x3f *matrix = matrix_query(object_index, &matrix_storage);
 					matrix->position = *position;
 					hit = function_1c5210(matrix, &capsule, *(long *)(object + 0xb4), 9);
 				}
@@ -137,10 +141,9 @@ collision:
 }
 #endif
 
+
 // The selection result must be supplied by the caller in addition to mode.
-// Keep this candidate disabled until the caller's interface supplies it.
-#if 0
-// Retail 0xaa260
+// @retail 0xaa260
 void function_aa260(long selection, vector3f const *linear, long object_index, long mode,
 	point3f const *position, vector3f const *forward, vector3f const *up, vector3f const *angular)
 {
@@ -168,8 +171,8 @@ void function_aa260(long selection, vector3f const *linear, long object_index, l
 					difference.i = linear->i - desired_linear.i;
 					difference.j = linear->j - desired_linear.j;
 					difference.k = linear->k - desired_linear.k;
-					if (mode == 2 && difference.k * difference.k + difference.i * difference.i +
-						difference.j * difference.j <= 0.06f)
+					if (mode == 2 && !(difference.k * difference.k + difference.i * difference.i +
+						difference.j * difference.j > 0.06f))
 						change_linear = false;
 					else desired_linear = *linear;
 				}
@@ -179,8 +182,8 @@ void function_aa260(long selection, vector3f const *linear, long object_index, l
 					difference.i = angular->i - desired_angular.i;
 					difference.j = angular->j - desired_angular.j;
 					difference.k = angular->k - desired_angular.k;
-					if (mode == 2 && difference.k * difference.k + difference.j * difference.j +
-						difference.i * difference.i <= 0.01f)
+					if (mode == 2 && !(difference.k * difference.k + difference.j * difference.j +
+						difference.i * difference.i > 0.01f))
 						change_angular = false;
 					else desired_angular = *angular;
 				}
@@ -197,7 +200,7 @@ void function_aa260(long selection, vector3f const *linear, long object_index, l
 		break;
 	}
 }
-#endif
+
 
 
 bool function_a76b0(long object_index, long flag);
@@ -222,7 +225,8 @@ void function_aab40(long object_index, point3f const *position, vector3f const *
         vector3f delta;
         vector3d_from_points3d((point3f *)(object + 0x64), position, &delta);
         bool type_zero = header[3] == 0;
-        bool moved = delta.k * delta.k + delta.i * delta.i + delta.j * delta.j > 1.0f;
+        bool moved = (real)(delta.j * delta.j) + (real)(delta.k * delta.k) +
+            (real)(delta.i * delta.i) > 1.0f;
         bool parent = *(long *)(object + 0x14) != NONE;
         bool flag = function_a76b0(object_index, false);
         update = !moved && !parent && !flag && type_zero;
@@ -283,4 +287,3 @@ c_reference_a9f20::~c_reference_a9f20()
     }
 }
 #endif
-
