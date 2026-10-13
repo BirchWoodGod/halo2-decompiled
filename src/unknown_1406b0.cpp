@@ -158,25 +158,51 @@ static __forceinline void async_wait(bool volatile *done)
 	}
 }
 
-static inline byte *data_iterator_next_called(s_record_pool_iterator *iterator)
+/* the data iterator that remembers its current datum (0x6b380), which retail
+   inlines here: with the next-index scan inlined too (0x1406b0), and calling
+   it (0x140b80) */
+static inline bool data_datum_iterator_next_inlined(s_data_datum_iterator *iterator)
 {
 	s_record_pool *data = iterator->data;
-	long index = function_16bc00(data, iterator->index + 1);
-	byte *result;
+	long index = data_next_absolute_index_inlined(data, iterator->index + 1);
+	byte *datum;
 
 	if (index != NONE)
 	{
-		result = data->data + data->size * index;
+		datum = data->data + data->size * index;
 		iterator->index = index;
-		iterator->datum_index = (*(short *)result << 16) | index;
+		iterator->datum_index = (*(short *)datum << 16) | index;
 	}
 	else
 	{
 		iterator->index = data->maximum_count;
 		iterator->datum_index = NONE;
-		result = 0;
+		datum = 0;
 	}
-	return result;
+	iterator->datum = datum;
+	return datum != 0;
+}
+
+static inline bool data_datum_iterator_next_called(s_data_datum_iterator *iterator)
+{
+	s_record_pool *data = iterator->data;
+	long index = function_16bc00(data, iterator->index + 1);
+	byte *datum;
+
+	if (index != NONE)
+	{
+		datum = data->data + data->size * index;
+		iterator->index = index;
+		iterator->datum_index = (*(short *)datum << 16) | index;
+	}
+	else
+	{
+		iterator->index = data->maximum_count;
+		iterator->datum_index = NONE;
+		datum = 0;
+	}
+	iterator->datum = datum;
+	return datum != 0;
 }
 
 /* function_16b790, which retail inlines here */
@@ -222,11 +248,10 @@ PRIVATE bool font_cache_character_allocate_pixels(long datum_index, bool wait);
 PRIVATE byte *font_cache_pixels_get_buffer(long pixels_index);
 PRIVATE long font_cache_read(long font_index, void *buffer, long size, dword offset, long priority, dword *bytes_read, bool volatile *done);
 
-// @retail 0x1406b0
-void font_cache_update(void)
+/* a new frame of the pixel memory: the clock advances and the per-type
+   limits are lifted */
+static inline void font_pixels_memory_new_frame(s_physical_object *physical)
 {
-	s_physical_object *physical = g_54d580;
-
 	if (physical->time == 0x7fffffff)
 	{
 		physical_memory_reset_time(physical);
@@ -236,28 +261,30 @@ void font_cache_update(void)
 		physical->time++;
 	}
 
-	long *limits = (long *)((byte *)physical + 0x44);
-	limits[0] = 0x7fffffff;
-	limits[1] = 0x7fffffff;
-	limits[2] = 0x7fffffff;
-	limits[3] = 0x7fffffff;
-	limits[4] = 0x7fffffff;
-	limits[5] = 0x7fffffff;
-	limits[6] = 0x7fffffff;
-	limits[7] = 0x7fffffff;
+	for (short i = 0; i < 8; i++)
+	{
+		physical->limits[i] = 0x7fffffff;
+	}
+}
+
+// @retail 0x1406b0
+void font_cache_update(void)
+{
+	font_pixels_memory_new_frame(g_54d580);
 
 	g_54d588++;
 
-	s_record_pool_iterator iterator;
+	s_data_datum_iterator iterator;
 	iterator.data = g_54d578;
 	iterator.index = NONE;
 
-	s_font_prediction *prediction;
-	while ((prediction = (s_font_prediction *)data_iterator_next_inlined(&iterator)) != NULL)
+	while (data_datum_iterator_next_inlined(&iterator))
 	{
+		s_font_prediction *prediction = (s_font_prediction *)iterator.datum;
 		long datum_index = iterator.datum_index;
+		long character = prediction->character;
 		s_font_cache_flags flags = { false, true };
-		long character_index = font_cache_get_character(prediction->font_index, prediction->character, flags);
+		long character_index = font_cache_get_character(prediction->font_index, character, flags);
 
 		if (character_index != NONE && font_cache_character_load_pixels(character_index, flags))
 		{
@@ -424,64 +451,60 @@ PRIVATE long font_cache_new_character(long font_index, long character)
 {
 	long datum_index = font_cache_find_character(font_index, character);
 
-	if (datum_index != NONE)
-	{
-		return datum_index;
-	}
-
-	datum_index = record_pool_allocate(g_54d574);
 	if (datum_index == NONE)
 	{
-		long oldest_index = NONE;
-		long oldest_age = 0;
-		s_record_pool_iterator iterator;
-
-		iterator.data = g_54d574;
-		iterator.index = NONE;
-		while (data_iterator_next_called(&iterator))
+		datum_index = record_pool_allocate(g_54d574);
+		if (datum_index == NONE)
 		{
-			s_font_character *candidate = FONT_CHARACTER(iterator.datum_index);
+			long oldest_age = 0;
+			s_data_datum_iterator iterator;
 
-			if (!font_cache_character_in_use(iterator.datum_index))
+			iterator.data = g_54d574;
+			iterator.index = NONE;
+			while (data_datum_iterator_next_called(&iterator))
 			{
-				long age = g_54d588 - candidate->last_used_frame;
+				s_font_character *candidate = (s_font_character *)iterator.datum;
 
-				if (age > oldest_age)
+				if (!font_cache_character_in_use(iterator.datum_index))
 				{
-					oldest_age = age;
-					oldest_index = iterator.datum_index;
+					long age = g_54d588 - candidate->last_used_frame;
+
+					if (age > oldest_age)
+					{
+						oldest_age = age;
+						datum_index = iterator.datum_index;
+					}
 				}
+			}
+
+			if (datum_index != NONE)
+			{
+				font_cache_delete_character(datum_index);
+				datum_index = datum_new_at_index_with_salt(g_54d574, datum_index);
 			}
 		}
 
-		if (oldest_index == NONE)
+		if (datum_index != NONE)
 		{
-			return NONE;
-		}
+			s_font_character *local_d3550b = FONT_CHARACTER(datum_index);
 
-		font_cache_delete_character(oldest_index);
-		datum_index = datum_new_at_index_with_salt(g_54d574, oldest_index);
-		if (datum_index == NONE)
-		{
-			return NONE;
+			memset(&local_d3550b->unknown02, 0, sizeof(s_font_character) - 2);
+			local_d3550b->key.character = character;
+			local_d3550b->header_offset_ready = false;
+			local_d3550b->header_ready = false;
+			local_d3550b->state = _font_character_state_none;
+			local_d3550b->task = NONE;
+			local_d3550b->header_offset = NONE;
+			local_d3550b->pixels_index = NONE;
+			local_d3550b->key.font_index = font_index;
+			// Read the frame counter and the table through const pointers at these later uses.
+			local_d3550b->last_used_frame = *(long const *)&g_54d588;
+			local_d3550b->render_index = NONE;
+
+			function_13e270(*(hash_table *const *)&g_54d570, &local_d3550b->key, &datum_index);
 		}
 	}
 
-	s_font_character *local_d3550b = FONT_CHARACTER(datum_index);
-
-	memset(&local_d3550b->unknown02, 0, sizeof(s_font_character) - 2);
-	local_d3550b->key.character = character;
-	local_d3550b->header_offset_ready = false;
-	local_d3550b->header_ready = false;
-	local_d3550b->state = _font_character_state_none;
-	local_d3550b->task = NONE;
-	local_d3550b->header_offset = NONE;
-	local_d3550b->pixels_index = NONE;
-	local_d3550b->key.font_index = font_index;
-	local_d3550b->last_used_frame = g_54d588;
-	local_d3550b->render_index = NONE;
-
-	function_13e270(g_54d570, &local_d3550b->key, &datum_index);
 	return datum_index;
 }
 
@@ -705,7 +728,7 @@ PRIVATE void __stdcall font_cache_pixels_delete(long pixels_index)
 {
 	s_font_character *character = FONT_CHARACTER(FONT_PIXELS(pixels_index)->character_index);
 
-	while (!FONT_PIXELS(pixels_index)->ready)
+	while (font_cache_pixels_locked(pixels_index))
 	{
 		async_globals.tasks_added = function_120bf0();
 	}
