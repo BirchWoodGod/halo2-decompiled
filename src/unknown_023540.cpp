@@ -125,13 +125,13 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	speed.amount = 0.0f;
 	long object_index = NONE;
 	g_4ba050 = view->player_index;
-	long cluster = g_4ba054[view->player_index];
-	long leaf = g_4ba064[view->player_index];
+	struct location_indices { long cluster, leaf; } location = {
+		g_4ba054[view->player_index], g_4ba064[view->player_index] };
 	bool invalid;
-	if (function_2b720(&view->position, &cluster, &leaf))
+	if (function_2b720(&view->position, &location.cluster, &location.leaf))
 	{
-		g_4ba054[view->player_index] = cluster;
-		g_4ba064[view->player_index] = leaf;
+		g_4ba054[view->player_index] = location.cluster;
+		g_4ba064[view->player_index] = location.leaf;
 		invalid = false;
 	}
 	else invalid = true;
@@ -139,24 +139,9 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	sky.color = *(vector3f const *)&g_4686cc->red;
 	bool found = false;
 	long sky_index;
-	cluster_get_sky(cluster, &sky_index, &found, &sky.color);
-	byte kind = 0;
-	if (cluster != NONE)
-	{
-		short index = (short)sky_index;
-		byte *scenario = (byte *)g_4e0350;
-		if (index >= 0 && index < *(long *)(scenario + 8))
-		{
-			long tag = *(long *)(*(byte **)(scenario + 0xc) + index * 8 + 4);
-			if (tag != NONE)
-			{
-				byte *definition = g_4e3b44[tag & 0xffff].bytes;
-				kind = definition && *(long *)(definition + 4) != NONE;
-			}
-		}
-	}
+	byte kind = cluster_get_sky(location.cluster, &sky_index, &found, &sky.color);
 	byte geometry[0x120];
-	function_12e5e0(geometry, cluster, &view->position, &view->forward, kind, true);
+	function_12e5e0(geometry, location.cluster, &view->position, &view->forward, kind, true);
 	if (found) *(vector3f *)(geometry + 4) = sky.color;
 	if (geometry[0x18])
 	{
@@ -172,8 +157,8 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 		function_154310(object_index, &speed);
 	}
 	if (view->scale > 0.0f)
-		function_2ba10((s_2f970_view const *)&view->position, cluster, view->player_index,
-			view->camera, enabled, leaf, invalid, &sky.color, 0, view->object_index,
+		function_2ba10((s_2f970_view const *)&view->position, location.cluster, view->player_index,
+			view->camera, enabled, location.leaf, invalid, &sky.color, 0, view->object_index,
 			object_index, kind, sky_index, geometry, false, NONE, view->lighting, 0, &speed);
 }
 
@@ -687,7 +672,7 @@ extern real g_485ae0;
 
 real g_4b9c74[5][14];
 real g_4b9d90, g_4b9d94;
-void function_350e0(real *out, real const *a, real const *b, real x);
+void function_350e0(real const *a, real const *b, real *out, real x);
 
 // @retail 0x26710
 bool __stdcall function_26710(long mode, real const *bounds, real const *t, real *out, long unused)
@@ -702,8 +687,8 @@ bool __stdcall function_26710(long mode, real const *bounds, real const *t, real
 	switch (mode)
 	{
 	case 0:
-		function_350e0(out, bounds, t, g_509400);
-		return true;
+		function_350e0(bounds, t, out, g_509400);
+		break;
 	case 2:
 		{
 			real span = g_48577c - g_485778;
@@ -712,7 +697,7 @@ bool __stdcall function_26710(long mode, real const *bounds, real const *t, real
 			out[1] = 0.0f;
 			out[2] = 0.0f - g_485778 * scale;
 			out[3] = 0.0f;
-			return true;
+			break;
 		}
 	case 3:
 		{
@@ -722,16 +707,17 @@ bool __stdcall function_26710(long mode, real const *bounds, real const *t, real
 			out[1] = 0.0f;
 			out[2] = 0.0f - g_485790 * scale;
 			out[3] = 0.0f;
-			return true;
+			break;
 		}
 	case 1: case 4:
 		out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
 		out[1] = (bounds[3] - bounds[2]) * t[1] + bounds[2];
 		out[2] = 0.0f;
 		out[3] = 1.0f;
-		return true;
+		break;
 	default: return false;
 	}
+	return true;
 }
 
 extern "C" void _ReadWriteBarrier(void);
@@ -1213,7 +1199,7 @@ bool __stdcall function_27520(long mode, real const *bounds, real const *t, real
     switch (mode)
     {
     case 0:
-        function_350e0(out, bounds, t, g_509400);
+        function_350e0(bounds, t, out, g_509400);
         return true;
     case 1:
         out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
@@ -1245,7 +1231,8 @@ scaled:
         out[2] = 0.0f;
         out[3] = 1.0f;
         out[0] *= g_4b9d90;
-        out[1] *= g_4b9d90;
+        // Read the scale again after the first output store.
+        out[1] *= *(real const *)&g_4b9d90;
         return true;
     default:
         return false;
@@ -1262,7 +1249,7 @@ bool __stdcall function_298f0(long mode, real const *bounds, real const *t, real
     switch (mode)
     {
     case 0:
-        function_350e0(out, bounds, t, g_509400);
+        function_350e0(bounds, t, out, g_509400);
         return true;
     case 2:
         if (g_4b99b0[0x41] && g_4b99b0[1])
@@ -2048,7 +2035,7 @@ void function_24ee0(s_24ee0_state const *state, short mode)
     }
 }
 
-extern long g_485af4[4], g_485b04[4];
+#include "texture_stage_dimensions.h"
 extern dword g_4b8308, g_4b8438, g_4b8450, g_4b82ec, g_4b8448, g_4b843c;
 extern dword g_4b82e0, g_4b82fc;
 bool function_01dd60(long index, long *width, long *height);

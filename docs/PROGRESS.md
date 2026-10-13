@@ -2,6 +2,37 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8243 functions match
+
+```
+matched 8243 of 11318 game functions (1039693 of 2784283 bytes, 37.34%)
+```
+
+3 new matches, none lost:
+- Claude lane 1 round 12 (Opus): `0x14390` (the texture stage dimension arrays as one struct), `0x23dba0` and `0x1eb110`
+- Closer: `0x23675a` 82 to 35, `0x3d000` 105 to 25, `0x2b790` 127 to 69 and thirteen more (deep lanes 1 and 3)
+
+## 2026-10-13: 8240 functions match
+
+```
+matched 8240 of 11318 game functions (1039422 of 2784283 bytes, 37.33%)
+```
+
+3 new matches, none lost:
+- Deep lane 4 round 4: `0x26710`, `0x2d000` and `0x14850`
+- The permuter works in sandboxed lanes again: its scratch folders no longer get an owner-only ACL
+
+## 2026-10-13: 8237 functions match
+
+```
+matched 8237 of 11318 game functions (1038460 of 2784283 bytes, 37.30%)
+```
+
+6 new matches, none lost:
+- Deep lane 2 round 40: `0xaa7c0` and `0x1efdc0` (from 86 differences; it now has its own SSE file)
+- Machine 2, lane Y rounds 17 and 18 (#412): `0x72b50`
+- Machine 2, lane D lower round 23 (#413): `0x507e0`, `0x64cf0` and `0x94350`
+
 ## 2026-10-13: 8231 functions match
 
 ```

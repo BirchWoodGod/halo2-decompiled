@@ -641,7 +641,7 @@ real function_3eb70(void)
 }
 
 // @retail 0x350e0
-void function_350e0(real *out, real const *a, real const *b, real x)
+void function_350e0(real const *a, real const *b, real *out, real x)
 {
 	real scale;
 	real v;
@@ -1197,13 +1197,14 @@ void function_020b40(long value, long index);
 // @retail 0x2dba0
 bool function_2dba0(long tag, vector3f const *direction, long c, long d, long e, point3f const *position, color3f const *color, real alpha, real amount, real scale, bool alternate)
 {
+    bool const volatile *alternate_input = &alternate;
     bool result_value = 0;
     bool volatile result = false;
     if (g_4b9ed4 != NONE && tag != NONE && alpha > 0.0f)
     {
         byte *definition = g_4e3b44[tag & 0xffff].bytes;
         if ((amount > 0.0f || !(definition[0x2a] & 1)) &&
-            !(definition[0x28] & (alternate ? 8 : 4)))
+            !(definition[0x28] & (*alternate_input ? 8 : 4)))
         {
             vector3f delta;
             delta.i = position->x - g_4b9da0.x;
@@ -1216,7 +1217,7 @@ bool function_2dba0(long tag, vector3f const *direction, long c, long d, long e,
             {
                 s_slot_key key;
                 memset(&key, 0, sizeof(key));
-                key.a = alternate;
+                key.a = *alternate_input;
                 key.b = g_4b9ed4;
                 key.c = c;
                 key.d = d;
@@ -1326,8 +1327,8 @@ bool __stdcall function_3ebd0(vector3f const *offset, transform4x3f const *matri
             definition = g_4e3b44[index & 0xffff].bytes;
         real heading = *(real *)(definition + 0x80);
         vector3f forward;
-        forward.i = (real)(cos(heading) * cos(0.0));
-        forward.j = (real)(sin(heading) * cos(0.0));
+        forward.i = (real)(cos(heading));
+        forward.j = (real)(sin(heading));
         forward.k = (real)sin(0.0);
         vector3f left;
         left.i = forward.k * g_4687b0->j - forward.j * g_4687b0->k;
@@ -1343,16 +1344,17 @@ bool __stdcall function_3ebd0(vector3f const *offset, transform4x3f const *matri
         transform.position.z = *(real *)(definition + 0x18) * g_4b9da0.z;
         /* The existing assembly callee reads its first matrix through ECX.
            Keep these local stores visible across that assembly boundary. */
-        transform4x3f applied;
         for (long component = 0; component < 13; ++component)
-            ((volatile real *)&applied)[component] = ((real const *)&transform)[component];
-        for (long i = 0; i < count; ++i)
+            ((volatile real *)&transform)[component] = ((real const *)&transform)[component];
+        transform4x3f const *source = matrices;
+        transform4x3f *destination = out;
+        for (long i = 0; i < count; ++i, ++source, ++destination)
         {
-            out[i] = matrices[i];
-            out[i].position.x += offset->i;
-            out[i].position.y += offset->j;
-            out[i].position.z += offset->k;
-            function_142a60(&applied, &out[i], &out[i]);
+            *destination = *source;
+            destination->position.x += offset->i;
+            destination->position.y += offset->j;
+            destination->position.z += offset->k;
+            function_142a60(&transform, destination, destination);
         }
         result = true;
     }
@@ -1508,7 +1510,7 @@ bool __stdcall function_34100(long mode, real const *rectangle, real const *coor
     switch (mode)
     {
     case 0:
-        function_350e0(out, rectangle, coordinates, parameters[0]);
+        function_350e0(rectangle, coordinates, out, parameters[0]);
         out[0] *= parameters[24];
         out[1] *= parameters[24];
         return true;

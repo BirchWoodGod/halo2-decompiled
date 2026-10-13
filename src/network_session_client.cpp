@@ -668,7 +668,7 @@ struct s_session_join_request;
 long network_session_evaluate_join_request(c_class_58d20 *session, const s_session_join_request *request);
 bool function_630f0(c_class_58d20 *session, const s_session_join_request *request, long address, long reason);
 
-// @retail 0x6dc60
+// @retail 0x6dc60 standard
 void __stdcall function_06dc60(c_session_client *client, long reason)
 {
  s_session_request *request = client->requests;

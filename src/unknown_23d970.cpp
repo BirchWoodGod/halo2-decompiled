@@ -15,7 +15,7 @@
 #include "object_iterator.h"
 #include "effects.h"
 
-long function_1366d0(short width, short height, short depth, short format, short alignment, long mipmap_count);
+__declspec(noinline) long function_1366d0(short width, short height, short depth, short format, short alignment, long mipmap_count);
 
 PRIVATE const dword g_4507c8[24] =
 {
@@ -29,8 +29,8 @@ typedef void *(__stdcall *texture_allocate_proc)(long size, long alignment);
 D3DTexture *function_23e340(short width, short height, short format,
 	texture_allocate_proc allocate, long *size, void **data, D3DTexture *header)
 {
-	D3DTexture *result = 0;
 	long bytes = function_1366d0(width, height, 1, format, 0x40, 0);
+	D3DTexture *result = 0;
 	bytes += -bytes & 0x7f;
 	void *buffer = allocate(bytes, 0x80);
 	if (header && buffer)
@@ -317,6 +317,15 @@ PRIVATE __forceinline bool observer_next_index_23dba0(s_record_pool *players, lo
 	return false;
 }
 
+PRIVATE __forceinline s_player *observer_next_player_23dba0(s_record_pool *players, long *index, long *datum)
+{
+	if (!observer_next_index_23dba0(players, index) || *index == NONE)
+		return NULL;
+	s_player *player = (s_player *)(g_4e8c24->data + players->size * *index);
+	*datum = (player->identifier << 16) | *index;
+	return player;
+}
+
 // @retail 0x23dba0
 bool function_23dba0(long player_index)
 {
@@ -325,15 +334,10 @@ bool function_23dba0(long player_index)
 	long index = NONE;
 	bool result = false;
 
-	for (;;)
+	long datum;
+	s_player *player;
+	while ((player = observer_next_player_23dba0(players, &index, &datum)) != NULL)
 	{
-		if (!observer_next_index_23dba0(players, &index))
-			break;
-		if (index == NONE)
-			break;
-		s_record_pool *current_players = g_4e8c24;
-		s_player *player = (s_player *)(current_players->data + players->size * index);
-		long datum = (player->identifier << 16) | index;
 		if (datum != player_index && player->team == team)
 		{
 			result = true;
