@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8223 functions match
+
+```
+matched 8223 of 11318 game functions (1034419 of 2784283 bytes, 37.15%)
+```
+
+6 new matches, none lost:
+- Deep lane 2, round 39 (+4): `0x2cac1a`, `0xfdc70` and `0xb77d0`, each from 51 to 59 differences, and the second machine's `0x118b10` through them, its body unchanged.
+- Deep lane 3, round 50 (+1): `0x1ed70`, one of Direct3D's callers in the render range.
+- Deep lane 4, rounds 2 and 3 (+1): `0x143c0` from 68 differences; Direct3D's large callers and other render functions are much closer.
+
 ## 2026-10-13: 8217 functions match
 
 ```
