@@ -166,15 +166,18 @@ void function_1936e0(long type, s_built_variant *variant, dword field_8, long de
 	{
 		long string_list_index = strings->string_list_index;
 
-		for (i = 0; i < 9; i++)
+		char *name = variant->names[0];
+		char *description = variant->descriptions[0];
+
+		for (i = 0; i < 9; i++, name += sizeof(variant->names[0]))
 		{
 			variant_string_get(string_list_index, name_string, text);
-			utf16_string_to_utf8_string(text, variant->names[i], sizeof(variant->names[i]));
+			utf16_string_to_utf8_string(text, name, sizeof(variant->names[0]));
 		}
-		for (i = 0; i < 9; i++)
+		for (i = 0; i < 9; i++, description += sizeof(variant->descriptions[0]))
 		{
 			variant_string_get(string_list_index, description_string, text);
-			utf16_string_to_utf8_string(text, variant->descriptions[i], sizeof(variant->descriptions[i]));
+			utf16_string_to_utf8_string(text, description, sizeof(variant->descriptions[0]));
 		}
 	}
 	for (i = 0; i <= 5; i++)

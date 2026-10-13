@@ -93,6 +93,8 @@ matrix3x3 *function_142eb0(
 	return out;
 }
 
+__declspec(noinline) vector3f *function_143070(matrix3x3 const *m, vector3f const *v, vector3f *out);
+
 // @retail 0x143070
 vector3f *function_143070(
 	matrix3x3 const *m,
