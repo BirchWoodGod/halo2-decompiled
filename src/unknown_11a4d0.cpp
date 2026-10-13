@@ -758,8 +758,8 @@ bool function_11b520(long unit_index, long animation_graph_index, long animation
 	if (unit_index != NONE && animation_graph_index != NONE)
 	{
 		s_unit_11a4d0 *unit = unit_get_11a4d0(unit_index);
-		if (function_1101e0(animation_graph_index, unit_index, animation_name, flag,
-			((s_object_globals_11a4d0 *)g_4de2f4)->flag80))
+		bool global_flag = ((s_object_globals_11a4d0 *)g_4de2f4)->flag80;
+		if (function_1101e0(animation_graph_index, unit_index, animation_name, flag, global_flag))
 		{
 			s_unit_flags_11a4d0 *flags = (s_unit_flags_11a4d0 *)unit_get_11a4d0(unit_index);
 			s_unit_scripted_animation_11a4d0 *animation =
@@ -780,7 +780,7 @@ bool function_11b520(long unit_index, long animation_graph_index, long animation
 				object_reset_default_placement(unit_index, (s_object_default_placement_view *)unit, true);
 			function_b9b90(unit_index, true);
 			function_bd020(unit_index);
-			result = true;
+			return true;
 		}
 	}
 

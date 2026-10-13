@@ -204,12 +204,11 @@ int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, t
 // @retail 0x112dc0
 void __stdcall function_112dc0(long unit_index, transform4x3f *matrix)
 {
-	s_unit_animation_object_header *headers = (s_unit_animation_object_header *)g_4e0300->data;
-	s_unit_animation_object *unit = headers[unit_index & 0xffff].object;
-	long parent_index = UNIT_ANIMATION_CONTROL(unit)->unknown28;
-	if (parent_index != NONE && function_badc0(parent_index, (dword)NONE))
+	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
+	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
+	if (control->unknown28 != NONE && function_badc0(control->unknown28, (dword)NONE))
 	{
-		s_unit_animation_object *parent = headers[parent_index & 0xffff].object;
+		s_unit_animation_object *parent = UNIT_ANIMATION_OBJECT(control->unknown28);
 		transform4x3f *nodes = (transform4x3f *)((byte *)parent + parent->node_matrices_offset);
 		function_142a60(nodes, matrix, matrix);
 	}
@@ -1021,7 +1020,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 		if (graph)
 		{
 			if (function_1dd0b0(graph, animation_name).index == NONE)
-				return false;
+				goto done_1101e0;
 
 			s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 			s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
@@ -1032,7 +1031,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 			if (state->graph_tag_index != animation_graph_index &&
 				!state->initialize(animation_graph_index, definition->model_tag_index, true))
 			{
-				return false;
+				goto done_1101e0;
 			}
 
 			c_type_709360 animation_id = function_1dd0b0(GRAPH_GET(state->graph_tag_index), animation_name);
@@ -1058,6 +1057,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 			function_114330(unit_index);
 		}
 	}
+done_1101e0:
 	return result;
 }
 
