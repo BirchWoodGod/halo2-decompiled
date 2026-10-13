@@ -497,9 +497,9 @@ void texture_cache_bitmap_unload(s_bitmap_data *bitmap)
 			s_record_pool_iterator iterator;
 			s_texture_cache_request *request;
 
-			iterator.data = g_4e6458;
-			iterator.index = NONE;
 			iterator.datum_index = NONE;
+			iterator.index = NONE;
+			iterator.data = g_4e6458;
 			while ((request = (s_texture_cache_request *)data_iterator_next_calling(&iterator)) != NULL)
 			{
 				if (request->bitmap == bitmap)

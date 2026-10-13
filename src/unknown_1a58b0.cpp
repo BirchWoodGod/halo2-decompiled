@@ -31,7 +31,9 @@ struct s_player_view
 {
 	byte unknown00[0x2c];
 	long unit_index;
-	byte unknown30[0x21c - 0x30];
+	byte unknown30[0xc0 - 0x30];
+	char field_c0;
+	byte unknownc1[0x21c - 0xc1];
 };
 
 struct s_unit_view
@@ -777,6 +779,145 @@ void function_1a7b30(s_flag_bits *result, long owner_index)
 	}
 }
 
+short function_1a8080(short type, short slot, s_slot_owner_entry *entry);
+bool function_1a80e0(long index, short type, s_slot *data, short slot);
+void function_25aba0(long actor_index);
+
+
+
+// @retail 0x1a7cc0
+void __stdcall function_1a7cc0(long actor_index)
+{
+	s_actor_view *owner = actor_get(actor_index);
+	short level = 0;
+	long i;
+
+	g_46f348++;
+	function_1a7b30((s_flag_bits *)g_557c40, actor_index);
+	g_4ee4ec = function_1a7ad0(actor_index);
+	memset(g_4f0a4c, 0, sizeof(g_4f0a4c));
+	i = 0;
+	do
+	{
+		s_slot_entry *entry = &((s_slot_owner_entry *)owner)->entries[i];
+
+		if (entry->type != NONE)
+		{
+			if (!(g_4f0a4c[entry->field4 >> 5] & (1 << (entry->field4 & 0x1f))))
+			{
+				g_4f0a4c[entry->field4 >> 5] |= 1 << (entry->field4 & 0x1f);
+				g_4f09c8[entry->field4] = 0;
+			}
+			s_candidate_entry *candidate = &g_4ee4f0[g_4f09c8[entry->field4]].entries[entry->field4];
+			candidate->kind = entry->field2;
+			candidate->key = entry->field6;
+			candidate->node.key = entry->type;
+			candidate->node.field_2 = true;
+			candidate->node.unknown4 = NONE;
+			candidate->node.unknown8 = 0.0f;
+			candidate->node.next = NULL;
+			g_4f09c8[entry->field4]++;
+		}
+		i++;
+	}
+	while (i < 3);
+	if (owner->unknown222)
+		g_46eeb8[0x38]->unknown8 = g_46f348;
+
+	while (level >= 0)
+	{
+		s_slot *slot = &owner->slots[level];
+		short type = slot->type;
+
+		if (!ACTION_ID_VALID(type))
+		{
+			type = owner->unknown007 ? 0x72 : 1;
+			if (!function_1a80e0(actor_index, type, NULL, 0))
+			{
+				level--;
+				continue;
+			}
+		}
+
+		s_slot_handler *handler = g_46eeb8[type];
+		s_slot *current = level < 4 ? slot : NULL;
+
+		if (!ACTION_HANDLER_ENABLED(type))
+		{
+			level--;
+			continue;
+		}
+		if (current->state == 1)
+		{
+			handler->unknown8 = g_46f348;
+			level--;
+			continue;
+		}
+		if (handler->kind == 2)
+		{
+			t_slot_start check = (t_slot_start)((s_slot_handler_2 *)handler)->update40;
+
+			if (!check || check(actor_index, current))
+			{
+				function_25aba0(actor_index);
+				function_1a6f70(actor_index);
+				return;
+			}
+			handler->unknown8 = g_46f348;
+			current->state = 2;
+			level--;
+			continue;
+		}
+
+		s_slot data;
+		memset(&data, 0, sizeof(data));
+		short choice = ((short (__stdcall *)(long, short, s_slot *))((s_slot_handler_1 *)handler)->choose)(actor_index, level, &data);
+
+		if (choice == g_46fbe4)
+		{
+			handler->unknown8 = g_46f348;
+			level--;
+			continue;
+		}
+
+		short next_type;
+		s_slot_handler *next_handler;
+
+		if (choice == g_46fbe8)
+		{
+			next_type = owner->slots[level + 1].type;
+			next_handler = g_46eeb8[next_type];
+		}
+		else
+		{
+			next_type = choice;
+			next_handler = g_46eeb8[choice];
+		}
+		if (next_handler->unknown8 == g_46f348 || (next_handler->mask & g_4ee4ec) != g_4ee4ec ||
+			!(g_557c40[next_type >> 5] & (1 << (next_type & 0x1f))))
+		{
+			handler->unknown8 = g_46f348;
+			level--;
+			continue;
+		}
+		if (choice == g_46fbe8)
+		{
+			level++;
+			continue;
+		}
+
+		short local_0 = function_1a8080(choice, level, (s_slot_owner_entry *)owner);
+
+		if (local_0 != NONE && function_1a80e0(actor_index, choice, &data, local_0))
+		{
+			level = local_0;
+			continue;
+		}
+		next_handler->unknown8 = g_46f348;
+		(local_0 < 4 ? &owner->slots[local_0] : NULL)->state = 2;
+	}
+}
+
 /* the slot of an actor at a level */
 static inline s_slot *actor_slot_get(long actor_index, short level)
 {
@@ -1052,6 +1193,9 @@ struct s_object_marker_target
 	long marker_index;
 	byte unknown08[0x10];
 	byte flags;
+	byte unknown19[3];
+	real field_1c;
+	real field_20;
 };
 
 struct s_target_marker
@@ -1460,7 +1604,9 @@ bool function_1a5e40(long object_index, long marker_index, s_target_marker const
 	point3f const *origin, vector3f const *direction, s_sort_candidate_view *candidate)
 {
 	s_candidate_object_view *object = (s_candidate_object_view *)OBJECT_HEADER(object_index)->object;
-	bool result = false;
+	/* the direction stays in its stack slot, as in retail */
+	vector3f const *const *local_0 = &direction;
+	volatile bool result = false;
 	candidate->object_index = object_index;
 	candidate->marker_index = marker_index;
 	candidate->maximum_distance = 0.0f;
@@ -1511,11 +1657,10 @@ bool function_1a5e40(long object_index, long marker_index, s_target_marker const
 	candidate->direction = candidate->offset;
 	candidate->distance = function_30bf0(&candidate->direction);
 	candidate->alternate = alternate;
-	real cosine = dot3f(&candidate->direction, direction);
+	real cosine = dot3f(&candidate->direction, *local_0);
 	cosine = -1.0f > cosine ? -1.0f : cosine > 1.0f ? 1.0f : cosine;
 	candidate->angle = function_50650(cosine);
-	result = true;
-	return result;
+	return true;
 }
 
 // @retail 0x1a60f0
@@ -1833,4 +1978,182 @@ bool __stdcall function_1a5370(s_sort_weight_view const *arg_0, point3f const *a
 		}
 	}
 	return local_0;
+}
+
+// @retail 0x1a6a80
+bool function_1a6a80(s_object_marker_target const *target, point3f const *origin, vector3f const *direction,
+	long excluded_index, short team, s_sort_candidate_view *candidate)
+{
+	bool result = false;
+
+	if (target->field_1c > 0.0f || target->field_20 > 0.0f)
+	{
+		long object_index;
+		long marker_index;
+		s_target_marker *definition;
+		transform4x3f first;
+		transform4x3f second;
+		bool has_second;
+
+		if (function_1a6bf0(target, &object_index, &marker_index, &definition, &first, &second, &has_second))
+		{
+			bool has_hostile = false;
+
+			if (function_1a5910(object_index, excluded_index, team, &has_hostile) && function_1a58b0(object_index))
+			{
+				if (function_1a5e40(object_index, marker_index,
+					marker_index != NONE ? definition : NULL,
+					marker_index != NONE ? &first : NULL,
+					marker_index != NONE && has_second ? &second : NULL,
+					has_hostile, origin, direction, candidate))
+				{
+					if (!has_hostile)
+					{
+						candidate->score = target->field_1c;
+						candidate->secondary_score = target->field_20;
+					}
+					else
+					{
+						candidate->score = 0.0f;
+						candidate->secondary_score = 0.0f;
+					}
+					candidate->scaled_score = 0.0f;
+					if (function_1a67f0(origin, &candidate->point, candidate->object_index, excluded_index))
+						result = true;
+				}
+			}
+		}
+	}
+	return result;
+}
+
+struct s_186ab2
+{
+	long field_0;
+	long field_4;
+	long field_8;
+	byte field_c[0xc];
+	short field_18;
+	byte field_1a[2];
+	real field_1c;
+	real field_20;
+};
+
+struct s_223241
+{
+	byte field_0[0x358];
+};
+
+extern s_223241 g_4e9c8c[4];
+
+struct s_1a4900
+{
+	byte field_0[0x13c];
+	long field_13c;
+};
+
+long function_155760(long index);
+long function_cb6d0(long unit_index);
+bool function_cb810(long unit_index, vector3f *vector);
+long function_baf40(long object_index);
+
+// @retail 0x1a4900
+void __stdcall function_1a4900(long arg_0, s_186ab2 *arg_1, vector3f *arg_2)
+{
+	short local_0 = (short)function_155760(arg_0);
+
+	memset(arg_2, 0, sizeof(*arg_2));
+	arg_1->field_1c = 0.0f;
+	arg_1->field_20 = 0.0f;
+	arg_1->field_0 = NONE;
+	arg_1->field_4 = NONE;
+	arg_1->field_8 = NONE;
+	arg_1->field_18 = 0;
+	if (local_0 == 0 || local_0 == 1)
+	{
+		long local_19 = NONE;
+
+		if (arg_0 != NONE)
+			local_19 = g_4e8c20->entries[arg_0];
+
+		s_player_view *local_1 = &((s_player_view *)g_4e8c24->data)[local_19 & 0xffff];
+		long local_2 = function_cb6d0(local_1->unit_index);
+		short local_20 = NONE;
+
+		if (arg_0 != NONE)
+			local_20 = g_4ed284->entries[arg_0].index;
+
+		s_sort_weight_view local_3;
+
+		if (function_1a50a0(local_2, local_20, &local_3))
+		{
+			point3f const *local_4 = NULL;
+
+			if (arg_0 != NONE && g_4686c4 != NONE)
+				local_4 = (point3f const *)&g_4e9c8c[arg_0];
+
+			long local_5 = function_baf40(local_2);
+			long local_21 = NONE;
+
+			if (arg_0 != NONE)
+				local_21 = g_4e8c20->entries[arg_0];
+
+			s_player_view *local_6 = &((s_player_view *)g_4e8c24->data)[local_21 & 0xffff];
+			s_view_angles const *local_7 = &g_4ed284->entries[arg_0].angles;
+			real local_8 = (real)cos(local_7->pitch);
+			vector3f local_9;
+
+			local_9.i = (real)cos(local_7->yaw) * local_8;
+			local_9.j = (real)sin(local_7->yaw) * local_8;
+			local_9.k = (real)sin(local_7->pitch);
+			if (local_6->unit_index != NONE)
+				function_cb810(local_6->unit_index, &local_9);
+
+			s_sort_candidate_view local_10;
+
+			if (function_1a5370(&local_3, local_4, &local_9, local_5, local_1->field_c0, &local_10))
+			{
+				arg_1->field_1c = local_10.score;
+				arg_1->field_20 = local_10.secondary_score;
+				arg_2->k = (local_3.flags & 2) ? 1.0f : local_10.scaled_score;
+
+				vector3f local_11;
+				vector3f local_12;
+
+				function_1a68a0(local_1->unit_index, &local_11);
+				function_1a68a0(local_10.object_index, &local_12);
+
+				real local_13 = local_12.k - local_11.k;
+				real local_14 = local_12.i - local_11.i;
+				real local_15 = local_12.j - local_11.j;
+				real local_16 = local_10.offset.i * local_10.offset.i + local_10.offset.j * local_10.offset.j;
+
+				if (local_16 > 0.0001f)
+				{
+					real local_17 = (real)sqrt(local_16);
+
+					arg_2->i = (local_10.offset.i * local_15 - local_10.offset.j * local_14) / local_16;
+					arg_2->j = (local_13 * local_17 - (local_10.offset.j * local_15 + local_10.offset.i * local_14) / local_17 * local_10.offset.k) /
+						(local_10.offset.k * local_10.offset.k + local_16);
+				}
+				else
+				{
+					arg_2->i = 0.0f;
+					arg_2->j = 0.0f;
+				}
+				if (arg_1->field_1c > 0.0f || arg_1->field_20 > 0.0f || local_10.alternate)
+				{
+					arg_1->field_0 = local_10.object_index;
+					arg_1->field_4 = local_10.marker_index;
+				}
+				if (arg_1->field_0 != NONE)
+				{
+					s_object_header *local_18 = OBJECT_HEADER(arg_1->field_0);
+
+					if ((1 << local_18->type) & 3)
+						arg_1->field_8 = ((s_1a4900 *)local_18->object)->field_13c;
+				}
+			}
+		}
+	}
 }

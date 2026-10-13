@@ -157,8 +157,7 @@ struct s_squad_activity_flags
 // @retail 0x200930
 void function_200930(void)
 {
-	for (long i = 0; i < 5; i++)
-		g_557c74.d[i] = NONE;
+	memset(&g_557c74, 0xff, sizeof(g_557c74));
 	g_51e9d8 = data_new_inlined("squad", 335, sizeof(s_squad_datum), 0, g_510c2c);
 	g_51e9dc = data_new_inlined("squad group", 100, sizeof(s_squad_group_datum), 0, g_510c2c);
 }
