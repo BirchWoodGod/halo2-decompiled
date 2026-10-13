@@ -197,35 +197,36 @@ bool function_151320(s_target_candidate *candidate, s_target_candidate *best, lo
 {
 	bool result = false;
 	long const *player_reference = &player_index;
+	point3f player_position;
+	point3f best_position;
+	point3f candidate_position;
+	vector3f to_candidate;
+	vector3f to_best;
+	real candidate_distance;
+	real best_distance;
 
-	if (candidate->priority <= best->priority)
+	if (candidate->priority > best->priority)
+		goto copy;
+	if (candidate->priority == best->priority)
 	{
-		point3f player_position;
-		point3f best_position;
-		point3f candidate_position;
-		vector3f to_candidate;
-		vector3f to_best;
-
-		if (candidate->priority != best->priority)
-		{
-			goto done;
-		}
 		function_b9dd0(tail_player_get(*player_reference)->unit_index, &player_position);
 		function_b9dd0(best->object_index, &best_position);
 		function_b9dd0(candidate->object_index, &candidate_position);
 		vector3d_from_points3d(&player_position, &candidate_position, &to_candidate);
 		vector3d_from_points3d(&player_position, &best_position, &to_best);
-		real candidate_distance = to_candidate.j * to_candidate.j + to_candidate.i * to_candidate.i + to_candidate.k * to_candidate.k;
-		real best_distance = length_sq3f(&to_best);
-		if (!(candidate_distance < best_distance))
+		candidate_distance = to_candidate.j * to_candidate.j + to_candidate.i * to_candidate.i + to_candidate.k * to_candidate.k;
+		best_distance = length_sq3f(&to_best);
+		if (candidate_distance < best_distance)
+		{
+copy:
+			result = true;
+			*best = *candidate;
+		}
+		else
 		{
 			result = false;
-			goto done;
 		}
 	}
-	*best = *candidate;
-	result = true;
-done:
 	return result;
 }
 
@@ -1818,11 +1819,11 @@ void __stdcall function_150e30(long player_index, long object_index)
 // @retail 0x1508e0
 void __stdcall function_1508e0(long player_index)
 {
-    long unit_index = tail_player_get(player_index)->unit_index;
+    s_tail_player *player = tail_player_get(player_index);
     long objects[16];
-    if (unit_index != NONE)
+    if (player->unit_index != NONE)
     {
-        byte *unit = (byte *)tail_object_get(unit_index);
+        byte *unit = (byte *)tail_object_get(player->unit_index);
         if (*(long *)(unit + 0x14) == NONE)
         {
             long count = function_bb050(0, 0x89c, unit + 0x28, (point3f *)(unit + 0x30),

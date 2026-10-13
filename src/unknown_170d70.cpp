@@ -154,21 +154,21 @@ __declspec(noinline) void function_170bb0(real const *first, real const *second,
 // @retail 0x170bb0
 void function_170bb0(real const *first, real const *second, real *out)
 {
-	real const * *first_reference = &first;
 	long count = 10;
+	long rotation_count = 1;
+
 	do
 	{
-		*out++ = *(*first_reference)++ - *second++;
+		*out++ = *first++ - *second++;
 	} while (--count);
-	count = 1;
 	do
 	{
-		function_170c00((vector3f const *)(*first_reference), (vector3f const *)((*first_reference) + 3),
+		function_170c00((vector3f const *)first, (vector3f const *)(first + 3),
 			(vector3f const *)second, (vector3f const *)(second + 3), (vector3f *)out);
-		(*first_reference) += 6;
+		first += 6;
 		second += 6;
 		out += 3;
-	} while (--count);
+	} while (--rotation_count);
 }
 
 // @retail 0x170d70

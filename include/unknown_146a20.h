@@ -24,12 +24,19 @@ struct hkMemoryBase
 class hkMemory : public hkMemoryBase
 {
 public:
+	/* three zeros, then NONE; as loops, the stores stay in a block of
+	   their own ahead of the derived constructors' (0x146b80) */
 	hkMemory()
 	{
-		m_unknown08 = 0;
-		m_unknown0c = 0;
-		m_unknown10 = 0;
-		m_unknown14 = NONE;
+		long i;
+		for (i = 0; i < 3; i++)
+		{
+			m_unknown08[i] = 0;
+		}
+		for (; i < 4; i++)
+		{
+			m_unknown08[i] = NONE;
+		}
 	}
 
 	virtual void *allocate(long size, long memory_class) = 0;
@@ -45,10 +52,7 @@ public:
 	virtual void method9(void) {}
 	virtual void method10(void) {}
 
-	long m_unknown08;
-	long m_unknown0c;
-	long m_unknown10;
-	long m_unknown14;
+	long m_unknown08[4];
 };
 
 /* Havok's pool memory (vtable 0x457620; constructor 0x22c3e0) */
