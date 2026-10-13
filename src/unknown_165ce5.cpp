@@ -1704,15 +1704,16 @@ long function_100b40(long magazine_index, long weapon_index, bool weapon_only);
 void function_1416c0(point3f const *position, transform4x3f *out);
 real function_1d9370(s_1d9240 const *p);
 
-static __forceinline void first_person_orientations_from_model(s_16760c_render_model const *render_model, long const *node_map,
+
+static __forceinline void first_person_orientations_from_model_16760c(s_16760c_render_model const *render_model, long const *node_map,
 	s_16760c_orientation *orientations)
 {
 	short node_index;
 
 	for (node_index = 0; node_index < render_model->node_count; node_index++)
 	{
-		short graph_node_index = (short)node_map[node_index];
 		s_16760c_render_model_node const *node = &render_model->nodes[node_index];
+		short graph_node_index = (short)node_map[node_index];
 
 		if (graph_node_index != NONE)
 		{
@@ -1776,8 +1777,8 @@ void __stdcall function_16760c(long user_index, long field_x11c898)
 		{
 			((s_16760c_orientation *)orientations)[node_index] = *(s_16760c_orientation *)g_4687d8;
 		}
-		first_person_orientations_from_model(arg_2f82bc, weapon->weapon_node_map, (s_16760c_orientation *)orientations);
-		first_person_orientations_from_model(arms_model, weapon->arms_node_map, (s_16760c_orientation *)orientations);
+		first_person_orientations_from_model_16760c(arg_2f82bc, weapon->weapon_node_map, (s_16760c_orientation *)orientations);
+		first_person_orientations_from_model_16760c(arms_model, weapon->arms_node_map, (s_16760c_orientation *)orientations);
 
 		if (function_0b6780((s_index_triple *)state))
 		{

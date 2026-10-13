@@ -225,25 +225,46 @@ static inline bool texture_cache_lock_exists(s_texture_cache_lock *lock)
 	return false;
 }
 
+static inline bool texture_cache_lock_exists_12c400(s_texture_cache_lock *lock)
+{
+	s_texture_cache_lock *other = g_4e645c;
+
+	if (g_4e645c)
+	{
+		do
+		{
+			if (other == lock)
+			{
+				return true;
+			}
+			other = other->next;
+		} while (other);
+	}
+	return false;
+}
+
 // @retail 0x12c400
 void texture_cache_update_locks(void)
 {
 	s_texture_cache_lock *lock = g_4e645c;
 
-	while (lock)
+	if (g_4e645c)
 	{
-		if (lock->update)
+		do
 		{
-			lock->update(lock->address, lock->user_data);
-		}
-		if (!texture_cache_lock_exists(lock))
-		{
-			lock = g_4e645c;
-		}
-		else
-		{
-			lock = lock->next;
-		}
+			if (lock->update)
+			{
+				lock->update(lock->address, lock->user_data);
+			}
+			if (!texture_cache_lock_exists_12c400(lock))
+			{
+				lock = g_4e645c;
+			}
+			else
+			{
+				lock = lock->next;
+			}
+		} while (lock);
 	}
 }
 
@@ -1118,14 +1139,13 @@ void function_12c450(void)
 	if (g_4e6458->valid && async_globals.tasks_added <= 25)
 	{
 		long local_0 = 0;
-		s_record_pool_iterator local_1;
-		local_1.data = g_4e6458;
-		local_1.index = NONE;
-		local_1.datum_index = NONE;
-		s_texture_cache_request *local_2;
-		while ((local_2 = (s_texture_cache_request *)data_iterator_next_calling(&local_1)) != NULL && local_0 < 5)
+		struct { s_texture_cache_request *request; s_record_pool_iterator iterator; } local_1;
+		local_1.iterator.data = g_4e6458;
+		local_1.iterator.index = NONE;
+		local_1.iterator.datum_index = NONE;
+		while ((local_1.request = (s_texture_cache_request *)data_iterator_next_calling(&local_1.iterator)) != NULL && local_0 < 5)
 		{
-			s_bitmap_data *local_3 = local_2->bitmap;
+			s_bitmap_data *local_3 = local_1.request->bitmap;
 			if (local_3->unknown70 <= g_4e6488 || !local_3->texture)
 			{
 				_mm_prefetch((char const *)&local_3->flags, _MM_HINT_T0);
@@ -1136,8 +1156,8 @@ void function_12c450(void)
 				if (!texture_cache_bitmap_get_texture(local_3, 2, 0.0f))
 					function_12ce00(local_3, 2, 0.0f);
 			}
-			local_2->bitmap->flags &= ~0x400;
-			record_pool_release(g_4e6458, local_1.datum_index);
+			local_1.request->bitmap->flags &= ~0x400;
+			record_pool_release(g_4e6458, local_1.iterator.datum_index);
 			local_0++;
 		}
 	}

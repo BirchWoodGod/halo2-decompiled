@@ -2182,6 +2182,13 @@ struct s_impact;
 extern s_record_pool *g_51ebfc;
 void impact_release(long impact_index, s_impact *impact);
 
+/* moves the last element into the removed one's place */
+static inline void array_remove_at_1d06c0(s_havok_array48 *array, long index)
+{
+    array->size--;
+    array->data[index] = array->data[array->size];
+}
+
 // @retail 0x1d06c0
 void __stdcall function_1d06c0(s_havok_component *component, long contact_index)
 {
@@ -2198,7 +2205,7 @@ void __stdcall function_1d06c0(s_havok_component *component, long contact_index)
         impact_release(impact_index, (s_impact *)(g_51ebfc->data + (impact_index & 0xffff) * 0xa0));
         contact->impact_index = NONE;
     }
-    component->unknown88.data[removed_index] = component->unknown88.data[--component->unknown88.size];
+    array_remove_at_1d06c0(&component->unknown88, removed_index);
     if (update_surface)
         function_1d87b0(&component->rigid_bodies.data[contact_index], contact_index, component);
 }

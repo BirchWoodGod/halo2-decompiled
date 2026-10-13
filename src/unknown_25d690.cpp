@@ -704,12 +704,12 @@ PRIVATE __forceinline s_type_76cf92 *function_25da41(long arg_0)
 bool function_25da40(s_prop_datum *datum)
 {
 	s_type_76cf92 *prop = function_25da41(datum->prop_index);
-	long *local_2 = &datum->tracking_index;
-	long local_1 = *(volatile long *)local_2;
-	bool local_0 = true;
+	long local_1 = datum->tracking_index;
+	bool local_0;
 
 	if (local_1 != NONE)
 	{
+		local_0 = true;
 		if (prop->actor_index != NONE)
 		{
 			s_actor_view *actor = actor_get(prop->actor_index);

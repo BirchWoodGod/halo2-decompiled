@@ -648,10 +648,11 @@ void __stdcall function_83370(void *watcher_, dword flags)
  if (!(flags & 4))
  {
   s_watcher_machines *source = (s_watcher_machines *)g_4e8c20;
-  const dword *machines = source->machines;
   dword mask = source->count;
+  const dword *machines = source->machines;
+  c_class_6a600 *world = watcher->world;
   s_machine_address addresses[16];
-  s_machine_address local = watcher->world->local_address;
+  s_machine_address local = world->local_address;
   long index = NONE;
   memcpy(addresses, machines, sizeof(addresses));
   for (long i = 0; i < 16; i++)
