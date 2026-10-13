@@ -2406,7 +2406,7 @@ bool network_session_handle_peer_ready(c_class_58d20 *session, long remote_index
 		{
 			*(dword *)&session->flag7430 |= 1 << member_index;
 			session->member_states[member_index].flag3 = result;
-			return true;
+			result = true;
 		}
 	}
 	return result;
