@@ -17,7 +17,17 @@ extern byte g_4e6388;
 extern byte g_4e6389;
 
 /* the tick count, carried past its wrap to 64 bits */
-__int64 g_4e6390;
+union u_tick_count
+{
+	__int64 value;
+	struct
+	{
+		dword low;
+		dword high;
+	} parts;
+};
+
+u_tick_count g_4e6390;
 /* the lengths of the last vertical blanks, a ring of 15 */
 struct s_vblank_history
 {
@@ -42,7 +52,8 @@ void __cdecl main_vblank_callback(D3DVBLANKDATA *data)
 // @retail 0x12b070
 void function_12b070(void)
 {
-	g_4e6390 = GetTickCount();
+	g_4e6390.parts.low = GetTickCount();
+	g_4e6390.parts.high = 0;
 	g_4e6398.low = 0;
 	g_4e6398.high = 0;
 	D3DDevice_SetVerticalBlankCallback(main_vblank_callback);
@@ -154,8 +165,8 @@ real function_12b0e0(void)
 		next = target + g_4e63b8;
 	}
 	now = GetTickCount();
-	ticks = (g_4e6390 & 0xffffffff00000000) | now;
-	if (ticks < g_4e6390)
+	ticks = (g_4e6390.value & 0xffffffff00000000) | now;
+	if (ticks < g_4e6390.value)
 		ticks += 0x100000000;
 	if (VBLANK_COUNT > next)
 		next = VBLANK_COUNT;
@@ -165,7 +176,7 @@ real function_12b0e0(void)
 	elapsed = (real)(next - LAST_FRAME_VBLANK_COUNT) / rate;
 	local_0 = 0.0f > elapsed ? 0.0f : (elapsed > 10.0f ? 10.0f : elapsed);
 	LAST_FRAME_VBLANK_COUNT = next;
-	g_4e6390 = ticks;
+	g_4e6390.value = ticks;
 	g_4e638c = game_time;
 	g_4e63a0 = VBLANK_COUNT;
 	return local_0;

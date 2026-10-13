@@ -549,23 +549,22 @@ void function_2bafa4(c_class_1a2c81 *widget, s_widget_bounds *bounds);
 // @retail 0x24c102
 void function_24c102(c_class_1474e8 *list, c_class_1a2c81 *item)
 {
-	struct { c_class_1a2c81 *next; c_class_1a2c81 *previous; } neighbours;
-	neighbours.previous = item->previous;
-	neighbours.next = item->next;
+	c_class_1a2c81 *previous = item->previous;
+	c_class_1a2c81 *next = item->next;
 
 	list->remove_child(item);
 	function_24c0c4((c_widget *)list);
-	if (list->is_in_window())
+	if (item->is_in_window())
 	{
-		if (neighbours.next)
+		if (next)
 		{
-			list->v7(neighbours.next);
-			function_24c610(neighbours.next, (c_widget *)list);
+			list->v7(next);
+			function_24c610(next, (c_widget *)list);
 		}
-		else if (neighbours.previous)
+		else if (previous)
 		{
-			list->v7(neighbours.previous);
-			function_24c610(neighbours.previous, (c_widget *)list);
+			list->v7(previous);
+			function_24c610(previous, (c_widget *)list);
 		}
 		else
 		{

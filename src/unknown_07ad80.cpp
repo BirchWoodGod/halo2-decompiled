@@ -24,8 +24,6 @@ void function_07ad80(long count, byte *buffer)
 	for (long i = 0; i < count; i++)
 	{
 		seed = seed * 0x19660d + 0x3c6ef35f;
-		word r = (word)(seed >> 16);
-		dword scaled = r * 256u;
-		buffer[i] = (byte)(scaled >> 16);
+		buffer[i] = (byte)(seed >> 24);
 	}
 }

@@ -1352,10 +1352,10 @@ bool __stdcall function_25fc30(
 	{
 		if (!context->unknown11)
 		{
+			long time = g_510c54->game_time;
 			short x = 0;
 			long start = NONE;
 			s_game_time_globals *globals = g_510c54;
-			long time = globals->game_time;
 			bool flag = true;
 
 			if (position->type == 0 && position->unknown18 < 6.f)
@@ -1383,12 +1383,12 @@ bool __stdcall function_25fc30(
 
 			if (position->unknown4c)
 			{
-				real a = 0.f;
 				real local_1 = 10.f;
-				real scaled = globals->field_2_3 * local_1;
+				real a = 0.f;
 
 				if (start != NONE)
 				{
+					real scaled = globals->field_2_3 * local_1;
 					long rounded;
 
 					__asm
@@ -1397,20 +1397,14 @@ bool __stdcall function_25fc30(
 						fistp rounded
 					}
 
-					if (start + rounded >= time)
-					{
-						if (start < time)
-						{
-							a = (time - start) * globals->rate;
-						}
-					}
-					else
-					{
-						a = local_1;
-					}
+					if (start + rounded < time)
+						goto use_full;
+					if (start < time)
+						a = (time - start) * globals->rate;
 				}
 				else
 				{
+use_full:
 					a = local_1;
 				}
 				position->score += a;

@@ -316,8 +316,10 @@ bool voice_xhv_set_remote_talker(c_voice_xhv *xhv, long id, bool registered)
 }
 
 // @retail 0x554c0
-void voice_xhv_play_voice_mail(c_voice_xhv *xhv, DWORD port, const long *data, long size, bool force)
+void voice_xhv_play_voice_mail(DWORD port, c_voice_xhv *controller, const long *data, long size, bool force)
 {
+	c_voice_xhv *const *controller_reference = &controller;
+	c_voice_xhv *xhv = *controller_reference;
 	if (xhv->initialized && xhv->port_modes[port] == 3 && size > 16 && data[0] == 'FFIR' && data[2] == 'EVAW' && data[3] == ' tmf')
 	{
 		if (force || xhv->communicator_present[port])
@@ -329,7 +331,7 @@ void voice_xhv_play_voice_mail(c_voice_xhv *xhv, DWORD port, const long *data, l
 }
 
 // @retail 0x55520
-void voice_xhv_record_voice_mail(c_voice_xhv *xhv, DWORD port, DWORD maximum_time, BYTE *buffer, DWORD buffer_size, DWORD *size, DWORD *duration)
+void voice_xhv_record_voice_mail(DWORD port, c_voice_xhv *xhv, DWORD maximum_time, BYTE *buffer, DWORD buffer_size, DWORD *size, DWORD *duration)
 {
 	*size = 0;
 	*duration = 0;
@@ -915,7 +917,7 @@ void voice_play_voice_mail(long port, const long *data, long size)
 		if (state == 1 || !voice_port_can_talk(port))
 			force = true;
 		if (state != 3 && data && size > 0)
-			voice_xhv_play_voice_mail(&g_476fc8, port, data, size, force);
+			voice_xhv_play_voice_mail(port, &g_476fc8, data, size, force);
 	}
 }
 
@@ -923,7 +925,7 @@ void voice_play_voice_mail(long port, const long *data, long size)
 void voice_record_voice_mail(long port, DWORD maximum_time, DWORD buffer_size, BYTE *buffer, DWORD *size, DWORD *duration)
 {
 	if (voice_available())
-		voice_xhv_record_voice_mail(&g_476fc8, port, maximum_time, buffer, buffer_size, size, duration);
+		voice_xhv_record_voice_mail(port, &g_476fc8, maximum_time, buffer, buffer_size, size, duration);
 }
 
 /* ---- the players of the voice session ---- */
