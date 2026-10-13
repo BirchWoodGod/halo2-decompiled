@@ -164,7 +164,7 @@ PRIVATE __forceinline long function_29e051(s_reference arg_0)
 bool function_29e050(byte *arg_0, long arg_1, s_type_d4fbfa *arg_2,
     s_reference arg_3, long *arg_4)
 {
-    bool local_4 = true;
+    bool local_4 = false;
     point3f local_0;
     s_29e050 *local_3 = (s_29e050 *)arg_2;
     if (local_3->field_c == NONE || !function_2104b0(local_3->field_c, &local_3->field_0, &local_0))
@@ -173,6 +173,6 @@ bool function_29e050(byte *arg_0, long arg_1, s_type_d4fbfa *arg_2,
     if (local_1 && arg_4 && function_29e051(arg_3) != function_29e051(g_470fa0) &&
         !(arg_3.unknown2 & 0x8000))
         local_1 = !function_29df30((point3f *)arg_0, arg_1, arg_3, (s_29de21 *)arg_4);
-    if (local_1) local_4 = false;
+    if (!local_1) local_4 = true;
     return local_4;
 }

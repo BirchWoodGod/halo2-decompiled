@@ -244,8 +244,14 @@ __forceinline void function_28f998(point3f const *arg_0, point3f const *arg_1, p
 __forceinline void function_28f9e1(point3f *arg_0, real const &arg_1)
 {
 	arg_0->x *= arg_1;
-	((point3f volatile *)arg_0)->y = ((point3f volatile *)arg_0)->y * arg_1;
-	arg_0->z = ((point3f volatile *)arg_0)->z * arg_1;
+	arg_0->y *= arg_1;
+	arg_0->z *= arg_1;
+}
+
+PRIVATE __forceinline void copy_point_28f8d0(point3f const *source, point3f *destination)
+{
+	struct words { dword x, y, z; };
+	*(words *)destination = *(words const *)source;
 }
 
 // @retail 0x28f8d0
@@ -255,7 +261,7 @@ void function_28f8d0(long arg_0)
 	if (local_0->field_4 != NONE)
 	{
 		byte *local_1 = (byte *)actor_get(local_0->field_4);
-		local_0->field_8 = *g_468788;
+		copy_point_28f8d0(g_468788, &local_0->field_8);
 		local_0->field_14 = 0;
 		long local_2 = local_0->field_18;
 		while (local_2 != NONE)
