@@ -1,5 +1,7 @@
 // @flags /O2 /arch:SSE /Gr
 #include "object_masks_storage.h"
+#include "instance_marks_storage.h"
+#include "cluster_marks_storage.h"
 #include "partition_colliding_storage.h"
 #include "projection_storage.h"
 /* UNKNOWN_1689B0.CPP: collision queries (0x1689b0..0x16b569): the flag
@@ -705,11 +707,6 @@ void function_11bed0(s_location *location, point3f const *point);
 extern short g_4686c4;
 extern short g_47d8e0;
 extern byte *g_4ed280;
-extern long g_4e7414;
-extern bool g_4e7411;
-extern long g_4e7418[0x200];
-long g_4e7c1c;
-bool g_4e7c18;
 extern s_bsp3d *g_4e033c;
 
 static inline long collision_leaf_cluster(long leaf_index)
@@ -1385,7 +1382,6 @@ void __stdcall function_16a280(long object_index, dword flags, point3f const *po
     while (object_index != NONE);
 }
 
-extern long g_4e7c20[1024];
 struct s_shapes;
 struct s_shape_counts
 {

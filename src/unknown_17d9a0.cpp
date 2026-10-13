@@ -2,6 +2,7 @@
 /* UNKNOWN_17D9A0.CPP: decal placement and rendering (0x17d9a0 onwards) */
 
 #include "unknown_11c920.h"
+#include "cluster_marks_storage.h"
 #include "segment_sphere.h"
 #include "unknown_0259d0.h"
 #include <float.h>
@@ -11,8 +12,6 @@
 #include <string.h>
 #include <math.h>
 
-extern long g_4e7414;
-extern bool g_4e7411;
 short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, short maximum_count, short *clusters);
 
 struct s_decal_cluster_17e490

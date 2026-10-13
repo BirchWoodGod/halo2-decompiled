@@ -4,6 +4,7 @@
    clusters it touches ("cluster %s" and "%s cluster" data arrays) */
 
 #include "unknown_11c920.h"
+#include "cluster_marks_storage.h"
 #include "data_array.h"
 #include "unknown_0259d0.h"
 #include <string.h>
@@ -80,8 +81,6 @@ struct s_partition_location
 	short cluster_index;
 };
 
-extern long g_4e7414;
-extern bool g_4e7411;
 short structure_clusters_from_bit_vector(dword const *bits, short *count, short maximum_count, short *clusters);
 short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, short maximum_count, short *clusters);
 

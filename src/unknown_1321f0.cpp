@@ -1,5 +1,7 @@
 // @flags /O2 /arch:SSE /Gr
 #include "object_masks_storage.h"
+#include "instance_marks_storage.h"
+#include "cluster_marks_storage.h"
 #include "light_visibility_storage.h"
 #include "partition_colliding_storage.h"
 #include "partition_noncolliding_storage.h"
@@ -62,8 +64,9 @@ struct s_132d60
 	real radius;
 };
 
-extern long g_4e7414;
-extern bool g_4e7411;
+s_cluster_marks_storage g_cluster_marks_storage;
+s_instance_marks_storage g_instance_marks_storage;
+
 short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, short maximum_count, short *clusters);
 void sort_4byte(long *elements, unsigned long count, void *unused, bool (__stdcall *compare)(long, long, const void *), const void *context);
 
@@ -82,15 +85,15 @@ void function_132d60(s_132d60 *data)
 			g_4e7411 = true;
 			count = function_14a5b0(data->cluster_index, &data->point, radius, 0x200, clusters);
 			g_4e7411 = false;
-			if (count > 0x200)
-			{
-				count = 0x200;
-			}
 		}
 		else
 		{
 			count = 1;
 			clusters[0] = data->cluster_index;
+		}
+		if (count > 0x200)
+		{
+			count = 0x200;
 		}
 	}
 
@@ -187,7 +190,7 @@ void function_132a30(s_bit_vector_pool *data, long index, long section_index, bo
 	}
 }
 
-PRIVATE __forceinline double function_132e61(point3f const *arg_1, point3f const *arg_2)
+PRIVATE __forceinline real function_132e61(point3f const *arg_1, point3f const *arg_2)
 {
 	double local_1 = (double)arg_1->x - arg_2->x;
 	double local_2 = (double)arg_1->y - arg_2->y;
@@ -207,17 +210,19 @@ bool function_132e60(s_bit_vector_pool *data, point3f const *center, real radius
 	{
 		if (!visible)
 			result = function_165010((s_frustum_set_view *)data->context, section, center, radius, contained);
+		else
+			result = true;
 		if (result && !*contained && data->mode == 0 && radius <= 2.5f)
 			*contained = true;
 	}
 	else if (data->query_type == 1)
 	{
+		real sum = radius + data->radius;
 		vector3f delta;
 		vector3d_from_points3d(&data->center, center, &delta);
-		real sum = radius + data->radius;
-		if (!(sum * sum >= delta.k * delta.k + delta.i * delta.i + delta.j * delta.j))
-			return false;
-		*contained = function_132e61(&data->center, center) + radius <= data->radius;
+		result = delta.j * delta.j + delta.i * delta.i + delta.k * delta.k <= sum * sum;
+		if (result)
+			*contained = function_132e61(&data->center, center) + radius <= data->radius;
 	}
 	if (result && list && (data->flags2a60 & 1))
 	{
@@ -689,8 +694,6 @@ void function_133050(s_bit_vector_pool *data, long object_index, short section, 
 	}
 }
 
-extern long g_4e7c1c;
-long g_4e7c20[1024];
 bool function_16e210(long cluster_index, long value);
 
 struct s_visible_cluster
@@ -1103,7 +1106,6 @@ struct s_2cb30_globals
 };
 
 extern s_2cb30_globals g_4c0b78;
-extern bool g_4e7c18;
 bool g_4e0304;
 struct s_view_collection_1733e0;
 void __stdcall function_173130(long camera_count, byte *cameras, long cluster_index, s_view_collection_1733e0 *collection);

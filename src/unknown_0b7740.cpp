@@ -1,4 +1,5 @@
 #include "unknown_11c920.h"
+#include "cluster_marks_storage.h"
 #include "globals.h"
 #include "unknown_0259d0.h"
 #include "effects.h"
@@ -592,8 +593,6 @@ void function_bdc40(point3f const *position, vector3f const *forward, vector3f c
         function_142a60(&translation, &rotation, out);
 }
 
-extern long g_4e7414;
-extern bool g_4e7411;
 short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, short maximum_count, short *clusters);
 
 static inline bool cluster_sphere_accept_ab(long object, s_object_cluster_reference const *record, dword type_mask, point3f const *position, real radius)

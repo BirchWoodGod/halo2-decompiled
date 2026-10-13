@@ -3,6 +3,7 @@
    bits, rounded down) */
 
 #include "unknown_11c920.h"
+#include "cluster_marks_storage.h"
 #include "unknown_0259d0.h"
 #include "globals.h"
 #include <math.h>
@@ -38,8 +39,6 @@ struct s_cluster_reference
 	long next;
 };
 
-long g_4e7414;
-bool g_4e7411;
 
 short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, short maximum_count, short *clusters);
 long __stdcall function_17d100(long cluster_index, long datum_index);
