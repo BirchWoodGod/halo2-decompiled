@@ -4139,24 +4139,3 @@ bool __stdcall function_2c55c4(long unused)
 }
 
 void function_2b10a3(dword const *appearance, c_class_2b0b5e *widget, long type);
-// @retail 0x2cb350
-void c_screen_45d398::v3()
-{
-	if (!ANIMATION_FLAG(animation, 1))
-	{
-		short color = (short)list.get_focused_datum();
-		long index = this->index;
-		long previous_color = (char)g_54e5d0.settings.colors[index];
-		long valid_color = color < -1 ? -1 : (color > 17 ? 17 : color);
-		if (valid_color == color)
-			previous_color = color;
-		g_54e5d0.settings.colors[index] = (byte)previous_color;
-	}
-	c_class_2b0b5e *model = (c_class_2b0b5e *)find_child(7, 0, false);
-	if (model)
-		function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 0);
-	model = (c_class_2b0b5e *)find_child(7, 1, false);
-	if (model)
-		function_2b10a3((dword const *)g_54e5d0.settings.colors, model, 1);
-	c_class_1a2c81::v3();
-}

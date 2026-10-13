@@ -120,61 +120,7 @@ real __stdcall function_be8b0(long object_index, long name);
 struct s_object_list;
 extern s_object_list *g_4de2f4;
 long function_baf80(long object_index);
-
-// @retail 0x3ddd0
-long __stdcall function_3ddd0(long object_index)
-{
-    (void)&object_index;
-    byte *object = ((s_3dd10_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-    long volatile result = *(long *)(object + 0xcc);
-    bool initialize = false;
-    if (result == NONE || *(long *)(g_509434->data + (result & 0xffff) * 0x100 + 4) != object_index)
-    {
-        result = record_pool_allocate(g_509434);
-        if (result == NONE)
-        {
-            real oldest = -3.402823466e+38f;
-            long absolute = function_16bc00(g_509434, 0);
-            long index = data_datum_index(g_509434, absolute);
-            while (index != NONE)
-            {
-                byte *record = g_509434->data + (index & 0xffff) * 0x100;
-                real age = (real)((long)g_4ba034 - *(long *)(record + 0xc));
-                if (age < 0.0f) age = 1000.0f;
-                if (age > oldest)
-                {
-                    oldest = age;
-                    result = index;
-                }
-                absolute = function_16bc00(g_509434, (index & 0xffff) + 1);
-                index = data_datum_index(g_509434, absolute);
-            }
-        }
-        if (result == NONE) return result;
-        initialize = true;
-    }
-    byte *record = g_509434->data + (result & 0xffff) * 0x100;
-    if (initialize)
-    {
-        *(long *)(record + 4) = object_index;
-        *(long *)(record + 8) = NONE;
-        *(long *)(record + 0xc) = NONE;
-        record[2] = 0;
-        record[3] = 0;
-        function_2c3b0((s_interface_function_context *)(record + 0x44));
-        *(long *)(record + 0x44) = object_index;
-        *(long *)(record + 0x48) = (long)function_be8b0;
-        *(long *)(record + 0xbc) = NONE;
-        byte *copy_object = ((s_3dd10_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-        byte *data = copy_object + *(short *)(copy_object + 0x11a);
-        long bytes = *(short *)(copy_object + 0x118) / 10;
-        for (long i = 0; i < 4; ++i)
-            memcpy(record + 0xc0 + i * 16, data, bytes);
-        *(long *)(object + 0xcc) = result;
-        function_3dd10(object_index, true);
-    }
-    return result;
-}
+long __stdcall function_3ddd0(long object_index);
 
 // @retail 0x3d430
 signed char *function_3d430(long object_index)
@@ -373,45 +319,6 @@ void function_3dfe0(long cache_index, long object_index, real priority)
 
 s_lighting_record g_55ee60;
 
-// @retail 0x3db00
-s_lighting_record *function_3db00(long object_index, real priority)
-{
-    (void)&priority;
-    byte *object = ((s_3dd10_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-    if (object[7] & 1) return (s_lighting_record *)((byte *)g_4de2f4 + 0x1c);
-    short cluster = *(short *)(object + 0xd0);
-    if (cluster != NONE)
-        return (s_lighting_record *)(*(byte **)((byte *)g_4e0348 + 0x230) + cluster * 0x5c + 8);
-    long parent_index = function_baf80(object_index);
-    long cache_index = function_3ddd0(parent_index);
-    if (cache_index != NONE)
-    {
-        s_3dfe0_cache *cache = (s_3dfe0_cache *)(g_509434->data + (cache_index & 0xffff) * 0x100);
-        if (parent_index == object_index) function_3dfe0(cache_index, object_index, priority);
-        else
-        {
-            long child_cache_index = function_3ddd0(object_index);
-            if (child_cache_index != NONE)
-            {
-                s_3dfe0_cache *child = (s_3dfe0_cache *)(g_509434->data + (child_cache_index & 0xffff) * 0x100);
-                child->lighting = cache->lighting;
-                child->target = cache->current;
-                child->current = cache->current;
-            }
-        }
-        return &cache->lighting;
-    }
-    byte *parent = ((s_3dd10_object_header *)g_4e0300->data)[parent_index & 0xffff].object;
-    byte *definition = g_4e3b44[*(long *)parent & 0xffff].bytes;
-    bool special = (bool)(((*(dword *)(parent + 4)) >> 13) & 1) || (bool)((definition[2] >> 1) & 1);
-    s_effect_color_query query;
-    function_d1850(parent_index, 1, &query);
-    s_lighting_record lighting;
-    function_d4080(&query, *(short *)definition, &lighting, special);
-    g_55ee60 = lighting;
-    return &g_55ee60;
-}
-
 
 // Disabled: camera fallback passes shared cache storage to an outside-owner producer.
 #if 0
@@ -458,29 +365,3 @@ extern s_unknown_78 *g_510c6c;
 long function_155760(long player_index);
 long __stdcall first_person_weapons_get_models(long user_index, long unit_index, long maximum, s_first_person_model *models);
 long g_4b72c0;
-
-// @retail 0x3d2c0
-void function_3d2c0()
-{
-    g_4c1bd0 = NONE;
-    g_4c1bd4 = 0;
-    long object_index = NONE;
-    byte *camera = (byte *)g_510c6c;
-    if (camera[0] && *(short *)(camera + 2) == 4)
-    {
-        long target = *(long *)(camera + 0x3c);
-        if (function_badc0(target, 3)) object_index = target;
-    }
-    g_4c1bd0 = object_index;
-    if (object_index == NONE)
-    {
-        g_4c1bd0 = g_4b72c0;
-        if (g_4c1bd0 == NONE && g_4b9ed8 != NONE && !function_155760(g_4b9ed8))
-        {
-            long player = g_4e8c20->entries[g_4b9ed8];
-            long unit = player != NONE ? *(long *)(g_4e8c24->data + (player & 0xffff) * 0x21c + 0x2c) : NONE;
-            g_4c1bd0 = unit;
-            g_4c1bd4 = first_person_weapons_get_models(g_4b9ed8, unit, 4, (s_first_person_model *)g_4c1bd8);
-        }
-    }
-}
