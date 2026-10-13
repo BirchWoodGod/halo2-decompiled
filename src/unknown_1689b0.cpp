@@ -1387,6 +1387,7 @@ struct s_shape_counts
 };
 
 #include <xmmintrin.h>
+#include <string.h>
 
 PRIVATE __forceinline long shape_cluster_next(long *next)
 {
@@ -1407,9 +1408,7 @@ bool __stdcall function_16a440(dword flags, point3f const *position, real extent
     real radius, long ignore_object, long ignore_parent, s_shapes *shapes)
 {
     s_shape_counts *counts = (s_shape_counts *)shapes;
-    counts->count[0] = 0;
-    counts->count[1] = 0;
-    counts->count[2] = 0;
+    memset(counts, 0, sizeof(*counts));
     bool test_world = (flags & 1) != 0;
     if (test_world || (flags & 0xc))
     {
