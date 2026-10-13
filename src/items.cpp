@@ -936,6 +936,19 @@ static __forceinline void item_spin_vector(vector3f *vector, s_item const *item)
     vector->k = original.k*item->spin_cosine + projection*item->spin_axis.k - cross.k*item->spin_sine;
 }
 
+struct s_item_flags_view_10b850
+{
+    byte unknown000[0x12c];
+    byte flag0 : 1;
+    byte flag1 : 1;
+    byte flag2 : 1;
+    byte flag3 : 1;
+    byte flag4 : 1;
+    byte flag5 : 1;
+    byte flag6 : 1;
+    byte flag7 : 1;
+};
+
 // @retail 0x10b850
 void __stdcall function_10b850(long object_index)
 {
@@ -998,7 +1011,7 @@ void __stdcall function_10b850(long object_index)
                 function_b9b90(object_index, true);
                 if (collision.type == 1 || collision.type == 3)
                 {
-                    item->flag5 = true; item->flag6 = false;
+                    ((s_item_flags_view_10b850 *)item)->flag5 = true; ((s_item_flags_view_10b850 *)item)->flag6 = false;
                     item->bsp_index = g_4686c4;
                     item->surface_index = collision.surface_index;
                     item->material_index = collision.material_index;
@@ -1010,7 +1023,7 @@ void __stdcall function_10b850(long object_index)
                     long other = *(long *)(hit + 0x40);
                     short node = *(byte *)(hit + 0x46);
                     transform4x3f *matrix = function_b8bd0(other, node);
-                    item->flag5 = false; item->flag6 = true;
+                    ((s_item_flags_view_10b850 *)item)->flag5 = false; ((s_item_flags_view_10b850 *)item)->flag6 = true;
                     *(long *)((byte *)item + 0x13c) = other;
                     *((byte *)item + 0x13b) = (byte)node;
                     function_142700(matrix, &point, (point3f *)((byte *)item + 0x140));

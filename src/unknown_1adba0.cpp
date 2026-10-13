@@ -204,11 +204,12 @@ short __stdcall function_1adce0(long actor_index, s_slot *slot, bool active)
 }
 
 // @retail 0x1add50
-void __stdcall function_1add50(long actor_index, s_slot *slot)
+long __stdcall function_1add50(long actor_index, s_slot *slot)
 {
 	s_slot_47 *state = (s_slot_47 *)slot;
 	s_slot_entry_iterator iterator;
 	s_slot_memory_entry *entry;
+	long joint_index;
 
 	iterator.actor_index = actor_index;
 	iterator.reference.unknown2 = 0x47;
@@ -217,17 +218,19 @@ void __stdcall function_1add50(long actor_index, s_slot *slot)
 	{
 		if (function_26ecc0(actor_index, iterator.reference.unknown0, (s_joint_behavior_state *)slot))
 		{
-			if (entry->unknown4 != NONE)
-				return;
+			joint_index = entry->unknown4;
+			if (joint_index != NONE)
+				return joint_index;
 			break;
 		}
 	}
-	long joint_index = function_26e940(actor_index);
+	joint_index = function_26e940(actor_index);
 	if (joint_index != NONE)
 	{
 		state->joined = true;
 		state->joint_index = joint_index;
 	}
+	return joint_index;
 }
 
 // @retail 0x1addd0
@@ -397,7 +400,7 @@ s_slot_handler_2x g_47dd00 =
 		},
 		(t_slot_proc)joint_update, joint_activate, joint_deactivate
 	},
-	function_1add50, 0, 0, 0, 0, (t_slot_proc4)function_1addd0,
+	(t_slot_proc)function_1add50, 0, 0, 0, 0, (t_slot_proc4)function_1addd0,
 	2, 10, 1.0f, 0
 };
 

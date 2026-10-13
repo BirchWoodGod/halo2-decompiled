@@ -401,14 +401,16 @@ void c_game_engine_player_entity_definition::v21(s_entity_slot *entity)
 	}
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x9aeb0
 bool c_game_engine_player_entity_definition::v22(s_entity_slot *entity, long b, short *slot, long d, long e, long f)
 {
-	s_mp_globals *local_0 = g_4e9ae8;
 	short index = *slot;
-	c_engine_peer *manager = g_55e4d0[local_0->engine_index];
+	_ReadWriteBarrier();
+	s_mp_globals *local_0 = g_4e9ae8;
 
-	if (manager)
+	if (g_55e4d0[local_0->engine_index])
 	{
 		if (local_0->slots[index] != NONE)
 			local_0->slots[index] = NONE;
@@ -416,6 +418,7 @@ bool c_game_engine_player_entity_definition::v22(s_entity_slot *entity, long b, 
 	local_0->slots[index] = entity->id;
 	return true;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x9b180
 bool c_game_engine_player_entity_definition::v23(s_entity_slot *entity, long b, long c, long d)
@@ -1080,6 +1083,8 @@ bool c_unit_melee_initiate_event_definition::v11(long a, long const *entities, l
 	return false;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x9fbf0
 bool c_vehicle_flip_event_definition::v11(long a, long const *entities, long c, void const *data)
 {
@@ -1094,23 +1099,29 @@ bool c_vehicle_flip_event_definition::v11(long a, long const *entities, long c, 
 			if (!((1 << headers[unit_index & 0xffff].type) & 3))
 			{
 			}
-			else if (TEST_FIELD_BIT(((s_object_view *)OBJECT(unit_index))->flag2))
-			{
-			}
-			else if (TEST_FIELD_BIT(((s_object_view *)OBJECT(vehicle_index))->flag2))
-			{
-			}
 			else
 			{
-				s_unit_flip_request request;
-				request.type = 0x21;
-				request.unit_index = unit_index;
-				result = function_e6900(vehicle_index, (s_unit_request *)&request);
+				_ReadWriteBarrier();
+				s_typed_object_header *current_headers = (s_typed_object_header *)g_4e0300->data;
+				if (TEST_FIELD_BIT(((s_object_view *)current_headers[unit_index & 0xffff].object)->flag2))
+				{
+				}
+				else if (TEST_FIELD_BIT(((s_object_view *)current_headers[vehicle_index & 0xffff].object)->flag2))
+				{
+				}
+				else
+				{
+					s_unit_flip_request request;
+					request.type = 0x21;
+					request.unit_index = unit_index;
+					result = function_e6900(vehicle_index, (s_unit_request *)&request);
+				}
 			}
 		}
 	}
 	return result;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x9f550
 long c_unit_melee_damage_event_definition::v0()
@@ -1936,6 +1947,18 @@ void c_damage_aftermath_event_definition::v9(long a, void const *data, s_bitstre
 	stream_write_checked(stream, event->unknown34, 8);
 }
 
+static __forceinline real function_9c351(long arg_0, long arg_1, real arg_2, real arg_3)
+{
+	real local_0;
+	if (arg_0 == 0)
+		local_0 = arg_2;
+	else if (arg_0 >= arg_1)
+		local_0 = arg_3;
+	else
+		local_0 = (arg_2 * (arg_1 - arg_0) + arg_3 * arg_0) / arg_1;
+	return local_0;
+}
+
 // @retail 0x9c350
 bool c_damage_aftermath_event_definition::v10(long a, void *data, s_bitstream *stream)
 {
@@ -1951,8 +1974,8 @@ bool c_damage_aftermath_event_definition::v10(long a, void *data, s_bitstream *s
 	}
 	else
 		event->direction = *g_4687a4;
-	event->unknown18 = event_dequantize_real(function_1959c0(stream, 5), 31, 0.0f, 2.0f);
-	event->unknown1c = event_dequantize_real(function_1959c0(stream, 5), 31, 0.0f, 2.0f);
+	event->unknown18 = function_9c351(function_1959c0(stream, 5), 31, 0.0f, 2.0f);
+	event->unknown1c = function_9c351(function_1959c0(stream, 5), 31, 0.0f, 2.0f);
 	event->flags = 0;
 	SET_FLAG(event->flags, 1, function_1957d0(stream));
 	SET_FLAG(event->flags, 2, function_1957d0(stream));

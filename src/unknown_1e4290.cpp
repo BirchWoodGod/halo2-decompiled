@@ -123,16 +123,21 @@ void function_1e4500(long actor_index, short mode)
 	}
 }
 
+/* a request with no arguments, written out where it is used */
+static __forceinline bool unit_request_simple(long type, long unit_index)
+{
+	s_unit_request request;
+	memset(&request, 0, sizeof(request));
+	request.type = type;
+	return function_e6900(unit_index, &request);
+}
+
 // @retail 0x1e4310
 bool function_1e4310(long actor_index)
 {
 	s_actor_view *actor = actor_get(actor_index);
-	s_unit_request request;
-	memset(&request, 0, sizeof(request));
-	long unit_index = actor->unknown018;
 	bool result = false;
-	request.type = 0x16;
-	if (function_e6900(unit_index, &request))
+	if (unit_request_simple(0x16, actor->unknown018))
 	{
 		*(long *)((byte *)actor + 0x7c8) = g_510c54->game_time;
 		result = true;
