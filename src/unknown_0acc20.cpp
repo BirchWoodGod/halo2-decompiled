@@ -410,9 +410,10 @@ bool __stdcall time_synchronize_decode(s_bitstream *stream, long unknown, s_time
 {
 	function_195820(stream, message->session_id, 0x40);
 	message->type = (word)function_1959c0(stream, 1);
+	bool result;
 	if (!stream_overflowed(stream) && message->type < 2)
 	{
-		volatile bool result = true;
+		result = true;
 		switch (message->type)
 		{
 		case 0:
@@ -430,9 +431,10 @@ bool __stdcall time_synchronize_decode(s_bitstream *stream, long unknown, s_time
 		default:
 			__assume(0);
 		}
-		return result;
 	}
-	return false;
+	else
+		result = false;
+	return result;
 }
 
 // @retail 0xada90
