@@ -1508,7 +1508,7 @@ void function_f87f0(long projectile_index, point3f *aim_point)
 }
 
 void function_b9fc0(long object_index, vector3f *forward, vector3f *up);
-bool __stdcall function_bc1d0(long object_index, point3f *point);
+bool __stdcall function_bc1d0(long object_index, point3f const *point, long ignore_unit_index);
 struct s_damage_owner;
 void function_bc190(long object_index, s_damage_owner *owner);
 void __stdcall function_a84e0(long projectile_index, short *material_index, vector3f const *vector, dword flags);
@@ -1640,7 +1640,7 @@ void __stdcall function_fc330(long projectile_index, bool detach_contrail, real 
 			function_b9a90(attached_parent);
 			position = *(point3f *)((byte *)projectile + 0x64);
 			function_b75a0(projectile_index, &center, NULL, NULL, NULL, false);
-			function_bc1d0(*(long *)((byte *)projectile + 0x14), &position);
+			function_bc1d0(projectile_index, &position, *(long *)((byte *)projectile + 0x14));
 			attached = true;
 		}
 	}

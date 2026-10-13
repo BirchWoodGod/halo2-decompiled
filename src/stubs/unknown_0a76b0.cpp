@@ -1,5 +1,4 @@
-// @stub 0xfff40
-void __stdcall function_fff40(long weapon_index, bool silent, bool immediate) { }
+
 // stubs for game functions not decompiled yet, called by unknown_0a76b0.cpp
 #include "unknown_11c920.h"
 #include "unknown_0259d0.h"
@@ -20,8 +19,7 @@ class c_animation_channel;
 // @stub 0x1ff360
 void function_1ff360(long actor_index, point3f const *target, vector3f *velocity) { }
 
-// @stub 0xbc1d0
-bool __stdcall function_bc1d0(long object_index, point3f *point) { return 0; }
+
 
 
 
@@ -53,3 +51,5 @@ void __stdcall function_e56f0(long unit_index, point3f const *point) { }
 
 // @stub 0xe5750
 void function_e5750(long unit_index) { }
+
+
