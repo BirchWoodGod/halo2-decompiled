@@ -208,15 +208,22 @@ short function_10a0b0(long scenery_index)
 
 void function_b8b70(long object_index);
 
+/* sets or clears one bit of a flags word */
+static inline void flags_set_bit(dword *flags, long bit, bool value)
+{
+	if (value)
+		*flags |= 1 << bit;
+	else
+		*flags &= ~(1 << bit);
+}
+
 // @retail 0x10a0f0
 void __stdcall function_10a0f0(long scenery_index, s_scenery_placement *placement)
 {
 	s_scenery *scenery = SCENERY_GET(scenery_index);
-	/* a second lookup of the same scenery; retail keeps the two flag stores apart */
-	s_scenery *object = SCENERY_GET(scenery_index);
-	object->value_130 = NONE;
-	scenery->flag22 = false;
-	object->flag23 = false;
+	scenery->value_130 = NONE;
+	flags_set_bit(&scenery->object_flags, 22, false);
+	flags_set_bit(&scenery->object_flags, 23, false);
 	scenery->value_132 = function_10a040(scenery->definition_index, placement);
 	switch (scenery->value_132)
 	{
@@ -226,11 +233,11 @@ void __stdcall function_10a0f0(long scenery_index, s_scenery_placement *placemen
 			s_scenery_bsp_entry *entry = &placement->entries[g_4686c4];
 			scenery->value_130 = entry->value;
 			if (entry->value != NONE)
-				scenery->flag22 = true;
+				flags_set_bit(&scenery->object_flags, 22, true);
 		}
 	case 0:
 	case 3:
-		scenery->flag23 = true;
+		flags_set_bit(&scenery->object_flags, 23, true);
 		break;
 	default:
 		break;
