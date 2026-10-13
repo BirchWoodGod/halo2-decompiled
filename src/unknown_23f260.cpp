@@ -326,6 +326,18 @@ PRIVATE inline long score_next_player(s_record_pool *data, long index)
 	return NONE;
 }
 
+/* the next used player entry after the cursor, with its datum index */
+PRIVATE __forceinline byte *score_next_entry(s_record_pool *data, long *cursor, long *datum)
+{
+	long i = score_next_player(data, *cursor + 1);
+	if (i == NONE)
+		return NULL;
+	byte *entry = data->data + data->size * i;
+	*cursor = i;
+	*datum = (*(short *)entry << 16) | i;
+	return entry;
+}
+
 // @retail 0x23f260
 long function_23f260(long mode, long player, long excluded_team)
 {
@@ -334,16 +346,11 @@ long function_23f260(long mode, long player, long excluded_team)
 	const byte *criteria = score_criteria(mode);
 	s_record_pool *data = g_4e8c24;
 	long cursor = NONE;
-	for (;;)
+	long other;
+	byte *entry;
+	while ((entry = score_next_entry(data, &cursor, &other)) != NULL)
 	{
-		long i = score_next_player(data, cursor + 1);
-		if (i == NONE)
-			break;
-		long other = data_datum_index(data, i);
-		byte *entry = data->data + data->size * i;
-		bool same_player = player == other;
-		cursor = i;
-		if (!same_player && ((s_score_player_view *)entry)->team != (short)excluded_team)
+		if (player != other && ((s_score_player_view *)entry)->team != (short)excluded_team)
 		{
 			long order = function_23fb60(criteria, player, other, false);
 			if (order > 0)
