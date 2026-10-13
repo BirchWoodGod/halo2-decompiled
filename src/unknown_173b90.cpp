@@ -977,6 +977,13 @@ static inline void matrix_transform_174420(matrix3x3 const *m, vector3f const *i
     out->k = (in->i * m->forward.k + in->j * m->left.k) + in->k * m->up.k;
 }
 
+static inline void cross_product3d_174420(vector3f const *a, vector3f const *b, vector3f *result)
+{
+    result->i = a->j * b->k - a->k * b->j;
+    result->j = a->k * b->i - a->i * b->k;
+    result->k = a->i * b->j - a->j * b->i;
+}
+
 // @retail 0x174420
 void __stdcall function_174420(long system_index, bool view_pass, bool camera_relative, bool force_visible)
 {
@@ -993,7 +1000,6 @@ void __stdcall function_174420(long system_index, bool view_pass, bool camera_re
         byte *table = *(byte **)(shader + 0x5c);
         dword render_flags = *(dword *)(*(byte **)(table + 4) + 2);
         s_effect_particle_system_definition *definition = system->function_1751d0();
-        word flags = *(word *)((byte *)definition + 0x16);
         if (!TEST_FIELD_BIT(((s_definition_flags_174420 const *)((byte *)definition + 0x16))->flag5))
         {
             real bias = *(short *)definition->unknown14 * 0.05f;
@@ -1002,9 +1008,7 @@ void __stdcall function_174420(long system_index, bool view_pass, bool camera_re
             {
                 camera.forward = g_4b9dac;
                 camera.up = g_4b9db8;
-                camera.left.i = g_4b9dac.k * g_4b9db8.j - g_4b9db8.k * g_4b9dac.j;
-                camera.left.j = g_4b9db8.k * g_4b9dac.i - g_4b9dac.k * g_4b9db8.i;
-                camera.left.k = g_4b9dac.j * g_4b9db8.i - g_4b9db8.j * g_4b9dac.i;
+                cross_product3d_174420(&g_4b9db8, &g_4b9dac, &camera.left);
             }
             s_particle_render_request_173c90 request;
             request.system = system;
@@ -1012,7 +1016,8 @@ void __stdcall function_174420(long system_index, bool view_pass, bool camera_re
             {
                 s_particle_location_datum *location = DATUM(g_51ec8c, s_particle_location_datum, index);
                 request.location = location;
-                if (view_pass == (((byte *)location)[2] != 0))
+                bool in_view = ((byte *)location)[2] != 0;
+                if (view_pass == in_view)
                 {
                     bool draw = true;
                     point3f position;
@@ -1029,25 +1034,28 @@ void __stdcall function_174420(long system_index, bool view_pass, bool camera_re
                         long cluster = system->location.cluster_index;
                         bool visible = function_3eb20(cluster) || (bool)(((dword)*(word const *)((byte const *)system + 0xc) >> 10) & 1);
                         bool in_pool = (g_547f88.flags[cluster >> 5] & (1 << (cluster & 31))) != 0;
-                        if (!force_visible && !(flags & (1 << 9)) && !in_pool && !visible) draw = false;
+                        if (!force_visible && !(bool)(((dword)*(word const *)((byte const *)definition + 0x16) >> 9) & 1) && !in_pool && !visible) draw = false;
                         else
                         {
                             if (!visible && !force_visible)
                             {
-                                if (flags & (1 << 9))
-                                    draw = function_181800((s_sphere_frustum const *)((byte *)g_547f88.context + 0x94),
-                                        (point3f const *)((byte *)location + 0x20), *(real *)((byte *)location + 0x2c)) != 0;
-                                else
+                                if (!(bool)(((dword)*(word const *)((byte const *)definition + 0x16) >> 9) & 1))
                                 {
                                     bool contained = false;
                                     draw = function_165010((s_frustum_set_view const *)g_547f88.context,
                                         ((signed char *)g_547f88.indices)[cluster],
                                         (point3f const *)((byte *)location + 0x20), *(real *)((byte *)location + 0x2c), &contained);
                                 }
+                                else
+                                    draw = function_181800((s_sphere_frustum const *)((byte *)g_547f88.context + 0x94),
+                                        (point3f const *)((byte *)location + 0x20), *(real *)((byte *)location + 0x2c)) != 0;
                             }
                             if (draw)
                             {
-                                system->flag10 = visible;
+                                if (visible)
+                                    system->flag10 = true;
+                                else
+                                    system->flag10 = false;
                                 vector3f delta = {location->position.x - g_4b9da0.x,
                                     location->position.y - g_4b9da0.y, location->position.z - g_4b9da0.z};
                                 if (!visible)
