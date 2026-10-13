@@ -105,8 +105,10 @@ bool __stdcall function_18c250(long object_index, long tag_index, s_sound_marker
 	if (object_index == NONE || result)
 	{
 		s_sound_tag *sound = (s_sound_tag *)((s_tag_instance_view *)g_4e3b44)[tag_index & 0xffff].data;
-		s_sound_class_view *sound_class = &((s_sound_globals_view *)g_51ebd4)->classes[sound->class_index];
-		s_sound_class_spatialization *class_spatialization = sound_class_get_spatialization(sound_class);
+		register long local_0 = sound->class_index;
+		s_sound_class_view *local_1 = ((s_sound_globals_view *)g_51ebd4)->classes;
+		s_sound_class_spatialization *class_spatialization = sound_class_get_spatialization(
+			&local_1[local_0]);
 
 		if (class_spatialization && (class_spatialization->flags & 1))
 		{

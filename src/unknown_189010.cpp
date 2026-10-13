@@ -476,9 +476,10 @@ long function_1890c0(s_sound_label_play const *play, long object_index, short va
 {
 	s_sound_source_description description;
 	s_sound_request request;
-	char audible = 1;
+	char audible;
 
 	description.flags = 0;
+	audible = 1;
 	function_18d4f0(object_index, &audible, NULL);
 	function_1892a0(&description, position, direction, value, play->tag_index, object_index);
 	request.location.audible = audible;
