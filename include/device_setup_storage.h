@@ -27,4 +27,20 @@ typedef char assert_device_setup_offset_0[(offsetof(s_device_setup_storage, fiel
 
 typedef char assert_device_setup_size[(sizeof(s_device_setup_storage) == 0xc) ? 1 : -1];
 
+struct s_runtime_device_configuration
+{
+    union
+    {
+        dword packed;
+        struct { word flags; short interval; };
+    };
+    long quality, extra;
+};
+extern s_runtime_device_configuration g_runtime_device_configuration;
+#define g_485ac8 (g_runtime_device_configuration.flags)
+#define g_485aca (g_runtime_device_configuration.interval)
+#define g_485acc (g_runtime_device_configuration.quality)
+#define g_485ad0 (g_runtime_device_configuration.extra)
+typedef char assert_runtime_device_configuration_size[(sizeof(s_runtime_device_configuration) == 12) ? 1 : -1];
+
 #endif

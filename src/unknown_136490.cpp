@@ -152,6 +152,8 @@ long function_136600(short width, short height, short mipmap_index, short depth,
 	return row_size * mipmap_depth * mipmap_height;
 }
 
+__declspec(noinline) long function_1366d0(short width, short height, short depth, short format, short alignment, long mipmap_count);
+
 // @retail 0x1366d0
 long function_1366d0(short width, short height, short depth, short format, short alignment, long mipmap_count)
 {
