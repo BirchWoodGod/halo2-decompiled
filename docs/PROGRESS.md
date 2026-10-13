@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8231 functions match
+
+```
+matched 8231 of 11318 game functions (1037186 of 2784283 bytes, 37.25%)
+```
+
+8 new matches, none lost:
+- Claude lane 1, round 11 (+8), on Opus 5.5: `0x2360c3`, `0x2c1e70`, `0x2be880`, `0xa1520`, `0xb2790`, `0x48e70`, `0x235b9c` and `0x2b1a1c`, all functions earlier rounds had left; `0xa1520`'s node index is a `short` along its call chain, as retail's callers pass it.
+
 ## 2026-10-13: 8223 functions match
 
 ```
