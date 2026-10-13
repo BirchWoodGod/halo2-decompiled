@@ -1291,12 +1291,8 @@ void function_1d0080(hkRigidBody *body, s_havok_component *component, byte const
 		function_2d91d0(array, sizeof(s_havok_component_rigid_body));
 	new (&array->data[array->size++]) c_component_body_state((hkEntity *)body, values, count, enabled);
 	havok_component_rigid_body_state_update(body_index, component);
-	hkPropertyValue component_property;
-	component_property.m_data = object->havok_component_index;
-	havok_entity_component_index_set((hkEntity *)body, component_property);
-	hkPropertyValue body_property;
-	body_property.m_data = body_index;
-	havok_entity_property_2002_set((hkEntity *)body, body_property);
+	havok_entity_component_index_set((hkEntity *)body, *(hkPropertyValue const *)&object->havok_component_index);
+	havok_entity_property_2002_set((hkEntity *)body, *(hkPropertyValue const *)&body_index);
 	if (body->m_motion->getType() != 7 && body->m_motion->getType() != 6)
 		component->unknown04 |= 0x8000;
 }
