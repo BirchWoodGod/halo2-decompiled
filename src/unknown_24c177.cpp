@@ -724,12 +724,13 @@ bool function_24c63e(c_widget *widget)
 bool function_24c676(c_widget *widget)
 {
 	c_class_1474e8 *list = (c_class_1474e8 *)widget;
-	c_class_1a2c81 *last = list->child;
-	s_record_pool *data = list->data;
 	bool result = false;
 
-	if (last && data)
+	if (list->child && list->data)
 	{
+		s_record_pool *data = list->data;
+		c_class_1a2c81 *last = list->child;
+
 		while (last->next)
 		{
 			last = last->next;

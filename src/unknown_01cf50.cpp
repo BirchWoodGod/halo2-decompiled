@@ -7616,7 +7616,6 @@ void function_12190()
     }
     memset(&g_4e6420, 0, 0x34);
     MmFreeContiguousMemory((void *)0x80061000);
-    __debugbreak();
     __assume(0);
 }
 
