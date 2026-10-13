@@ -47,7 +47,7 @@ bool __stdcall network_session_handle_boot_machine(c_class_58d20 *session, long 
 void network_session_handle_join_abort_reply(c_class_58d20 *session, const s_type_99af70 *address);
 bool network_session_member_leave(c_class_58d20 *session, long member_index);
 bool network_session_handle_parameters_request(const s_network_message_parameters_request *message, c_class_58d20 *session, long remote_index);
-bool network_session_handle_host_handoff(c_class_58d20 *session, const s_network_message_handoff *message);
+bool __stdcall network_session_handle_host_handoff(c_class_58d20 *session, const s_network_message_handoff *message);
 bool network_session_handle_player_properties(c_class_58d20 *session, long remote_index, const s_network_message_player_properties *message);
 
 /* the link's send (src/stubs/session.cpp) */

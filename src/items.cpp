@@ -570,8 +570,6 @@ void function_10cf80(vector3f const *impulse, long item_index, bool trigger_effe
 	}
 
 	vector3f spin;
-	vector3f velocity;
-	vector3f angular_velocity;
 	s_object_marker marker;
 
 	if (TEST_FIELD_BIT(item->flag5))
@@ -654,13 +652,17 @@ void function_10cf80(vector3f const *impulse, long item_index, bool trigger_effe
 		spin.j *= random_speed;
 		spin.k *= random_speed;
 	}
-	velocity.i = item->linear_velocity.i + impulse->i;
-	velocity.j = item->linear_velocity.j + impulse->j;
-	velocity.k = item->linear_velocity.k + impulse->k;
-	angular_velocity.i = spin.i + item->angular_velocity.i;
-	angular_velocity.j = item->angular_velocity.j + spin.j;
-	angular_velocity.k = item->angular_velocity.k + spin.k;
-	function_b77d0(item_index, &velocity, &angular_velocity);
+	{
+		vector3f velocity;
+		vector3f angular_velocity;
+		velocity.i = item->linear_velocity.i + impulse->i;
+		velocity.j = item->linear_velocity.j + impulse->j;
+		velocity.k = item->linear_velocity.k + impulse->k;
+		angular_velocity.i = spin.i + item->angular_velocity.i;
+		angular_velocity.j = item->angular_velocity.j + spin.j;
+		angular_velocity.k = item->angular_velocity.k + spin.k;
+		function_b77d0(item_index, &velocity, &angular_velocity);
+	}
 	function_10d5f0(item_index);
 }
 

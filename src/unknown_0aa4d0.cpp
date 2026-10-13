@@ -285,7 +285,7 @@ real function_aa7c0(s_relevance_observers const *observers, point3f const *posit
    real inverse = 1.0f / distance;
    direction.i = inverse * direction.i;
    direction.j = inverse * direction.j;
-   direction.k = direction.k * inverse;
+   direction.k = *(real volatile *)&direction.k * inverse;
   }
   else
    distance = 0.0f;

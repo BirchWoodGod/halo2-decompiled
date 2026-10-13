@@ -2645,11 +2645,12 @@ void function_14d8b0(void)
         long &ticks = *(long *)(player + 0x16c);
         if ((player[2] & 4) && (unit = *(long *)(player + 0x2c)) != NONE)
         {
+            real rate = g_510c54->rate;
             ++ticks;
-            real time = g_510c54->rate * (real)ticks;
+            real time = rate * (real)ticks;
             if (time >= 3.0f)
             {
-                if (!(bool)((object_get_unchecked(unit)[0x10a] >> 5) & 1))
+                if (!TEST_FIELD_BIT(((s_unit_flags_14d8b0 *)(object_get_unchecked(unit) + 0x10a))->bit5))
                 {
                     if (g_4e6948->mode != 4)
                     {

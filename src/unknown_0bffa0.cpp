@@ -1239,10 +1239,11 @@ long __stdcall function_c0520(long tag_index, long placement_index, bool force,
             vector3f *forward = (vector3f *)(light + 0xac);
             *forward = matrix.up;
             *(vector3f *)(light + 0xb8) = matrix.left;
+            point3f const *source_point = (point3f const *)(source + 8);
             vector3f direction;
-            direction.i = *(real const *)(source + 0x4c) - *(real const *)(source + 8);
-            direction.j = *(real const *)(source + 0x50) - ((point3f const *)(source + 8))->y;
-            direction.k = *(real const *)(source + 0x54) - ((point3f const *)(source + 8))->z;
+            direction.i = *(real const *)(source + 0x4c) - source_point->x;
+            direction.j = *(real const *)(source + 0x50) - source_point->y;
+            direction.k = *(real const *)(source + 0x54) - source_point->z;
             real length = function_30bf0(&direction);
             if (!(length != 0.0f))
                 direction = matrix.up;

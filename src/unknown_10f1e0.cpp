@@ -1134,7 +1134,7 @@ bool function_111490(long unit_index)
 			}
 		}
 		if (!function_111590(unit_index, 2))
-			return false;
+			result = false;
 	}
 	return result;
 }
@@ -1143,7 +1143,7 @@ bool function_111490(long unit_index)
 // @retail 0x1112f0
 bool function_1112f0(long unit_index)
 {
-	char result = true;
+	bool result = true;
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
 	s_animation_state *state = UNIT_ANIMATION_STATE(unit);
@@ -1173,7 +1173,7 @@ bool function_1112f0(long unit_index)
 		}
 	}
 	if (!function_111590(unit_index, 3))
-		return false;
+		result = false;
 	return result;
 }
 
