@@ -93,6 +93,7 @@ long function_26d3f0(long object_index, short type)
 			record->forward = forward;
 			record->valid = true;
 			record->time = g_510c54->game_time;
+			return result;
 		}
 		return result;
 	}

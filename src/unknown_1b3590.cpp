@@ -607,9 +607,9 @@ bool __stdcall function_1b3fd0(long actor_index, s_slot *slot)
 						best_index = current_index;
 						best_distance = distance;
 					}
+					}
 				}
 			}
-		}
 		if (best_index != NONE)
 		{
 			s_actor_view *member = actor_get(best_index);
