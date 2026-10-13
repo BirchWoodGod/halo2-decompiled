@@ -125,10 +125,7 @@ void function_b2ea0(void)
 {
 	if (g_4d8eb4.active)
 	{
-		long last_query = (dword)g_4d8eb4.unknown01[3] |
-			((dword)g_4d8eb4.unknown01[4] << 8) |
-			((dword)g_4d8eb4.unknown01[5] << 16) |
-			((dword)g_4d8eb4.unknown01[6] << 24);
+		long last_query = *(long const *)&g_4d8eb4.unknown01[3];
 		if ((long)(search_time() - last_query) > 1500)
 		{
 			s_network_message_session_query query;
@@ -136,24 +133,26 @@ void function_b2ea0(void)
 			query.identifier = 2;
 			query.session_id = g_4d8eb4.session_id;
 			s_type_99af70 address;
+			address.address_length = 4;
 			address.ipv4_address = 0xffffffff;
 			address.port = 1001;
-			address.address_length = 4;
 			function_07b140(g_4d8eb0, (long)&address, 2, sizeof(query), &query);
 			long now = search_time();
-			g_4d8eb4.unknown01[3] = (byte)now;
-			g_4d8eb4.unknown01[4] = (byte)(now >> 8);
-			g_4d8eb4.unknown01[5] = (byte)(now >> 16);
-			g_4d8eb4.unknown01[6] = (byte)(now >> 24);
+			*(long *)&g_4d8eb4.unknown01[3] = now;
 		}
 		for (long i = 0; i < g_4d8ec4; i++)
 		{
 			byte *entry = (byte *)g_4d8ec8 + i * 0x784;
-			if (entry[0] && (long)(search_time() - *(long *)(entry + 4)) > 2000)
-			{
-				memset(entry, 0, 0x784);
-				g_4d8eb4.unknown01[0] = 1;
-			}
+			if (entry[0])
+            {
+                long previous_time = *(long *)(entry + 4);
+                long current_time = search_time();
+                if ((long)(current_time - previous_time) > 2000)
+                {
+                    memset(entry, 0, 0x784);
+                    g_4d8eb4.unknown01[0] = 1;
+                }
+            }
 		}
 	}
 }

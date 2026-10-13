@@ -141,7 +141,8 @@ void matrix4x3_rotation_between_vectors(
 	vector3f const *arg_5f338b,
 	vector3f const *arg_bc44c6)
 {
-	struct { real cosine_half, sine_half; quaternionf rotation; } state;
+	quaternionf rotation;
+	struct { real cosine_half, sine_half; } state;
 	real dot = arg_5f338b->i * arg_bc44c6->i + arg_5f338b->j * arg_bc44c6->j + arg_5f338b->k * arg_bc44c6->k;
 	real cosine = dot;
 
@@ -160,29 +161,29 @@ void matrix4x3_rotation_between_vectors(
 
 	if (sine != 0.f)
 	{
-		state.rotation.i = arg_5f338b->j * arg_bc44c6->k - arg_5f338b->k * arg_bc44c6->j;
-		state.rotation.j = arg_5f338b->k * arg_bc44c6->i - arg_5f338b->i * arg_bc44c6->k;
-		state.rotation.k = arg_5f338b->i * arg_bc44c6->j - arg_5f338b->j * arg_bc44c6->i;
+		rotation.i = arg_5f338b->j * arg_bc44c6->k - arg_5f338b->k * arg_bc44c6->j;
+		rotation.j = arg_5f338b->k * arg_bc44c6->i - arg_5f338b->i * arg_bc44c6->k;
+		rotation.k = arg_5f338b->i * arg_bc44c6->j - arg_5f338b->j * arg_bc44c6->i;
 		real scale = state.sine_half / sine;
-		state.rotation.i *= scale;
-		state.rotation.j *= scale;
-		state.rotation.k *= scale;
-		state.rotation.w = state.cosine_half;
+		rotation.i *= scale;
+		rotation.j *= scale;
+		rotation.k *= scale;
+		rotation.w = state.cosine_half;
 	}
 	else if (cosine < 0.f)
 	{
-		function_11d000(arg_5f338b, (vector3f *)&state.rotation);
-		state.rotation.w = 0.f;
+		function_11d000(arg_5f338b, (vector3f *)&rotation);
+		rotation.w = 0.f;
 	}
 	else
 	{
-		state.rotation = *g_4687cc;
+		rotation = *g_4687cc;
 	}
 
 	*matrix = *g_4687d0;
-	quaternion_transform_vector(&state.rotation, &matrix->forward, &matrix->forward);
-	quaternion_transform_vector(&state.rotation, &matrix->up, &matrix->up);
-	quaternion_transform_vector(&state.rotation, &matrix->left, &matrix->left);
+	quaternion_transform_vector(&rotation, &matrix->forward, &matrix->forward);
+	quaternion_transform_vector(&rotation, &matrix->up, &matrix->up);
+	quaternion_transform_vector(&rotation, &matrix->left, &matrix->left);
 	if (!function_143120(&matrix->forward, &matrix->left, &matrix->up))
 	{
 		function_30bf0(&matrix->up);

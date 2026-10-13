@@ -678,6 +678,20 @@ void function_141ce0(real a, real b, real c, transform4x3f *out);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 real function_17c900(short curve, real input);
 
+/* a random real in [0, 1] from the seed; the cast keeps its 1/65535 scale
+   apart from the caller's constants, as retail has it */
+static inline real random_real_1546f0(dword *seed)
+{
+	return (real)(_random(seed, 0, 0) * (1.f / 65535.f));
+}
+
+static inline void point_set_1546f0(point3f *point, real x, real y, real z)
+{
+	point->x = x;
+	point->y = y;
+	point->z = z;
+}
+
 // @retail 0x1546f0
 void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
 {
@@ -699,12 +713,13 @@ void __stdcall function_1546f0(long local_index, transform4x3f *matrix)
         s_random_globals *random = g_4e7408;
         g_502120->value228 = amount;
         function_141ce0(
-            (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->angles[0] * amount,
-            (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->angles[1] * amount,
-            (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->angles[2] * amount, &transform);
-        transform.position.x = (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->point.x * amount;
-        transform.position.y = (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->point.y * amount;
-        transform.position.z = (function_x82e52f(&random->seed, 0, 0) * 2.0f - 1.0f) * speed->point.z * amount;
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->angles[0] * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->angles[1] * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->angles[2] * amount, &transform);
+        point_set_1546f0(&transform.position,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->point.y * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->point.x * amount,
+            (random_real_1546f0(&random->seed) * 2.0f - 1.0f) * speed->point.z * amount);
         function_142a60(matrix, &transform, matrix);
     }
     else

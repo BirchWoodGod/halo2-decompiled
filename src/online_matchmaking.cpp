@@ -238,10 +238,9 @@ bool online_task_get_finished(long task_index, bool *succeeded)
 	s_type_9df9da *task = online_task_try_get(task_index);
 	bool success = false;
 
+	bool result;
 	if (task && online_logon_connected())
 	{
-		bool result;
-
 		if (task->flag_bits.finished)
 		{
 			success = !task->flag_bits.failed;
@@ -251,11 +250,13 @@ bool online_task_get_finished(long task_index, bool *succeeded)
 		{
 			result = false;
 		}
-		*succeeded = success;
-		return result;
+	}
+	else
+	{
+		result = true;
 	}
 	*succeeded = success;
-	return true;
+	return result;
 }
 
 HRESULT online_task_continue(s_type_9df9da *task);

@@ -192,7 +192,8 @@ bool s_iterator::advance()
   sub_index = sub;
 		s = &table->groups[g].subs[sub_index];
 
-		if (s && item + 1 < s->count)
+		long sub_count = s ? s->count : 0;
+		if (s && item + 1 < sub_count)
 		{
 			item_index = item + 1;
 			next = false;
@@ -459,39 +460,7 @@ void function_1eece0(s_surface_key_array *array, void *volatile owner)
 struct s_bsp3d;
 long function_14a280(s_bsp3d *bsp, long index, point3f *point);
 
-// @retail 0x1efdc0
-bool function_1efdc0(s_lookup *lookup, const point3f *point)
-{
- s_lookup *const *lookup_reference = &lookup;
- s_iterator iterator;
- function_1efbd0((dword)(*lookup_reference)->tag_b, (s_mix_output *)&iterator,
-  (s_mix_source *)(*lookup_reference)->tag_a, (signed char *)(*lookup_reference)->pointer_a);
- while (iterator.advance())
- {
-  const transform4x3f *matrix = (const transform4x3f *)(*lookup_reference)->pointer_b + iterator.first;
-  point3f local;
-  if (matrix->scale != 0.0f)
-  {
-   real x = point->x - matrix->position.x;
-   real y = point->y - matrix->position.y;
-   real z = point->z - matrix->position.z;
-   if (matrix->scale != 1.0f)
-   {
-    real inverse = 1.0f / matrix->scale;
-    x *= inverse;
-    y *= inverse;
-    z *= inverse;
-   }
-   local.x = matrix->forward.k * z + matrix->forward.j * y + matrix->forward.i * x;
-   local.y = matrix->left.k * z + matrix->left.j * y + matrix->left.i * x;
-   local.z = matrix->up.k * z + matrix->up.j * y + matrix->up.i * x;
-  }
-  else local.x = local.y = local.z = 0.0f;
-  if (function_14a280((s_bsp3d *)iterator.current, 0, &local) == NONE)
-   return true;
- }
- return false;
-}
+bool function_1efdc0(s_lookup *lookup, const point3f *point);
 
 struct s_type_1a7926
 {
@@ -770,68 +739,3 @@ struct s_lookup_ray_result
 
 void function_141590(const transform4x3f *matrix, transform4x3f *inverse);
 bool __stdcall function_1de6d0(s_1de6d0 *query, long root, real start, real end);
-
-// @retail 0x1eff40
-bool function_1eff40(s_lookup *lookup, long flags, const point3f *point,
- const vector3f *direction, s_lookup_ray_result *result)
-{
- (void)&lookup; (void)&flags; (void)&point; (void)&direction; (void)&result;
- s_lookup_ray_result *const *result_reference = &result;
- bool found = false;
- s_iterator iterator;
- (*result_reference)->hit.field_0 = 1.0f;
- function_1efbd0((dword)lookup->tag_b, (s_mix_output *)&iterator,
-  (s_mix_source *)lookup->tag_a, (signed char *)lookup->pointer_a);
- while (iterator.advance())
- {
-  dword position = iterator.position;
-  long node = iterator.first;
-  transform4x3f inverse;
-  function_141590((const transform4x3f *)lookup->pointer_b + node, &inverse);
-  point3f local_point;
-  real x = point->x, y = point->y, z = point->z;
-  if (inverse.scale != 1.0f)
-  {
-   x = inverse.scale * x;
-   y = inverse.scale * y;
-   z = inverse.scale * z;
-  }
-  local_point.x = inverse.up.i * z + inverse.left.i * y + inverse.forward.i * x + inverse.position.x;
-  local_point.y = inverse.up.j * z + inverse.left.j * y + inverse.forward.j * x + inverse.position.y;
-  local_point.z = inverse.up.k * z + inverse.left.k * y + inverse.forward.k * x + inverse.position.z;
-  vector3f local_direction;
-  x = direction->i; y = direction->j; z = direction->k;
-  if (inverse.scale != 1.0f)
-  {
-   x *= inverse.scale;
-   y *= inverse.scale;
-   z *= inverse.scale;
-  }
-  local_direction.i = inverse.up.i * z + inverse.left.i * y + inverse.forward.i * x;
-  local_direction.j = inverse.up.j * z + inverse.left.j * y + inverse.forward.j * x;
-  local_direction.k = inverse.up.k * z + inverse.left.k * y + inverse.forward.k * x;
-  s_1de6d0 query;
-  query.field_0 = flags;
-  query.field_4 = (s_1de6d2 const *)iterator.current;
-  query.field_8 = 0;
-  query.field_c = NULL;
-  query.field_10 = &local_point;
-  query.field_14 = &local_direction;
-  query.field_18 = &(*result_reference)->hit;
-  query.field_1c = NONE;
-  query.field_20 = 0;
-  query.field_24 = NONE;
-  real fraction = (*result_reference)->hit.field_0;
-  (*result_reference)->hit.field_0 = fraction < 0.0f ? 0.0f : fraction;
-  (*result_reference)->hit.field_18 = 0;
-  real bounded = fraction < 0.0f ? 0.0f : fraction > 1.0f ? 1.0f : fraction;
-  if (function_1de6d0(&query, 0, 0.0f, bounded))
-  {
-   (*result_reference)->position = position;
-   (*result_reference)->node = (short)node;
-   (*result_reference)->item = iterator.group;
-   found = true;
-  }
- }
- return found;
-}
