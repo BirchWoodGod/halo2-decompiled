@@ -232,6 +232,11 @@ extern real g_4670fc, g_467100, g_509428;
 void function_398d0(real seconds)
 {
 	real const *time_reference = &seconds;
+	/* referenced first in the order the path without a record loads them */
+	(void)g_509424;
+	(void)g_4670fc;
+	(void)g_509428;
+	(void)g_467100;
 	s_fade_record *record = g_50942c;
 	if (record && record->marker == 0xdeadbeef)
 	{
@@ -991,9 +996,11 @@ void function_3e4e0(dword *current, dword const *target, real step)
 	color3f a, b;
 	unpack_color3f(*current, &a);
 	unpack_color3f(*target, &b);
-	a.red += color_delta(b.red - a.red, 0.0f - step, step);
-	a.green += color_delta(b.green - a.green, 0.0f - step, step);
-	a.blue += color_delta(b.blue - a.blue, 0.0f - step, step);
+	real red_delta = b.red - a.red;
+	real lower = 0.0f - step;
+	a.red += color_delta(red_delta, lower, step);
+	a.green += color_delta(b.green - a.green, lower, step);
+	a.blue += color_delta(b.blue - a.blue, lower, step);
 	*current = pack_color3f(&a);
 }
 

@@ -425,7 +425,7 @@ void function_17bc40(real dt)
 			{
 				if (definition->flags02 & 0x20)
 					rate = contrail->scale * rate;
-				for (;;)
+				do
 				{
 					real step = 1.0f / rate - contrail->frame_time;
 
@@ -436,9 +436,7 @@ void function_17bc40(real dt)
 					}
 					function_17bf80(contrail);
 					remaining -= step;
-					if (!(remaining > 0.0f))
-						break;
-				}
+				} while (remaining > 0.0f);
 			}
 			else
 			{
@@ -562,8 +560,9 @@ void function_17c0e0(long contrail_index, short count, bool force)
 	{
 		s_object_marker markers[4];
 		long *object = ((s_contrail_object_header *)g_4e0300->data)[contrail->object_index & 0xffff].object;
-		s_contrail_object_marker *attachment = &((s_contrail_object_definition *)g_4e3b44[*object & 0xffff].bytes)->markers[contrail->marker_index];
-		short marker_count = function_b8d30(contrail->object_index, attachment->marker_name, markers, 4, false);
+		short marker_count = function_b8d30(contrail->object_index,
+			((s_contrail_object_definition *)g_4e3b44[*object & 0xffff].bytes)->markers[contrail->marker_index].marker_name,
+			markers, 4, false);
 
 		if (marker_count > 0)
 		{
@@ -645,6 +644,24 @@ void function_17c0e0(long contrail_index, short count, bool force)
 	}
 }
 
+PRIVATE __forceinline void contrail_points_trim(s_contrail_datum *contrail, long i, long const *point_list, short count)
+{
+	while (count > 1)
+	{
+		count--;
+
+		long last_index = point_list[count];
+		s_contrail_point_datum *last = CONTRAIL_POINT(last_index);
+		s_contrail_point_datum *previous = CONTRAIL_POINT(point_list[count - 1]);
+
+		if (!(last->flags & 4) || !(previous->flags & 4) || last->next_index != NONE)
+			break;
+		previous->next_index = NONE;
+		contrail->field_x92e145[i]--;
+		record_pool_release(g_4ea940, last_index);
+	}
+}
+
 // @retail 0x17c540
 void __stdcall function_17c540(long contrail_index, real dt)
 {
@@ -714,20 +731,7 @@ void __stdcall function_17c540(long contrail_index, real dt)
 			point_list[count++] = point_index;
 			point_index = point->next_index;
 		}
-		while (count > 1)
-		{
-			count--;
-
-			long last_index = point_list[count];
-			s_contrail_point_datum *last = CONTRAIL_POINT(last_index);
-			s_contrail_point_datum *previous = CONTRAIL_POINT(point_list[count - 1]);
-
-			if (!(last->flags & 4) || !(previous->flags & 4) || last->next_index != NONE)
-				break;
-			previous->next_index = NONE;
-			contrail->field_x92e145[i]--;
-			record_pool_release(g_4ea940, last_index);
-		}
+		contrail_points_trim(contrail, i, point_list, count);
 		if (contrail->field_x92e145[i] == 1 && (CONTRAIL_POINT(contrail->point_indices[i])->flags & 4))
 		{
 			record_pool_release(g_4ea940, contrail->point_indices[i]);

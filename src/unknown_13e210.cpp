@@ -57,11 +57,11 @@ hash_table *function_13e1a0(const char *name, long data_size, long bucket_count,
 	if (table)
 	{
 		strncpy((char *)table->unknown00, name, sizeof(table->unknown00));
-		table->hash_proc = hash_proc;
-		table->compare_proc = compare_proc;
 		table->unknown00[0x1f] = 0;
 		table->bucket_count = bucket_count;
 		table->maximum_count = maximum_count;
+		table->hash_proc = hash_proc;
+		table->compare_proc = compare_proc;
 		table->allocator = allocator;
 		table->data_size = data_size;
 		hash_table_initialize(table);
