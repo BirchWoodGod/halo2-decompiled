@@ -177,12 +177,43 @@ def test_standard_marker_gives_the_outside_callers_address_escape():
 
 @pytest.mark.parametrize('text', [
     '// @retail 0x1000 standard\nc_list::~c_list()\n{\n}\n',
-    '// @retail 0x1000 standard\nc_list::c_list()\n{\n}\n',
     '// @stub 0x1000 standard\nvoid __stdcall hk(long a)\n{\n}\n',
 ])
 def test_standard_marker_is_only_for_decompiled_functions_and_methods(text):
     with pytest.raises(SystemExit, match='"standard" marks'):
         scan(text, 'src/x.cpp')
+
+
+STANDARD_CONSTRUCTOR = ('#include <string.h>\n#include "lists.h"\n  # include "more.h"\n'
+                        '// @retail 0x2000 standard\nc_list::c_list(word flags, s_item const &item, bool alternate) :\n'
+                        '\tc_base(flags)\n{\n}\n'
+                        '// @retail 0x2010\nc_other::c_other(long a)\n{\n}\n'
+                        '// @retail 0x2020 standard\nvoid __stdcall plain(long a)\n{\n}\n')
+
+
+def test_standard_marker_on_a_constructor_gets_a_caller_built_without_ltcg():
+    marked = scan(STANDARD_CONSTRUCTOR, 'src/l.cpp')
+    assert [(m.retail, m.kind, m.standard) for m in marked] == [
+        (0x2000, 'constructor', True), (0x2010, 'constructor', False), (0x2020, 'function', True)]
+    assert build.standard_constructors(marked) == [marked[0]]
+    text = build.standard_source(STANDARD_CONSTRUCTOR, marked, 'l', {'s_item'})
+    lines = text.splitlines()
+    # the source's includes, not its code: the constructor's body stays in the LTCG object
+    assert lines[1:5] == ['#include <string.h>', '#include "lists.h"', '# include "more.h"', '#include <new>']
+    assert 'c_base(flags)' not in text and 'c_other' not in text and 'plain' not in text
+    assert ('void standard_l_0(void) { ::new ((void *)standin_l_standard_arguments) c_list('
+            '*(word volatile *)(standin_l_standard_arguments + 0), '
+            '**(s_item const * volatile *)(standin_l_standard_arguments + 16), '
+            '*(bool volatile *)(standin_l_standard_arguments + 32)); }') in lines
+    assert build.standard_object('l') == 'standard_l.obj'
+
+
+def test_standard_marker_on_a_constructor_leaves_its_ltcg_object_alone():
+    marked = scan(STANDARD_CONSTRUCTOR, 'src/l.cpp')
+    plain = scan(STANDARD_CONSTRUCTOR.replace('0x2000 standard', '0x2000'), 'src/l.cpp')
+    assert build.standard_constructors(plain) == []
+    assert (build.tu_source('/abs/src/l.cpp', marked, 'l', {'s_item'}, set(), set())
+            == build.tu_source('/abs/src/l.cpp', plain, 'l', {'s_item'}, set(), set()))
 
 
 def test_standard_must_be_the_whole_trailing_word():
@@ -338,7 +369,8 @@ def test_source_objects_name_objects_as_the_build_does(tmp_path):
     (tmp_path / 'src' / 'stubs').mkdir(parents=True)
     (tmp_path / 'src' / 'crc.cpp').write_text(SOURCE)
     (tmp_path / 'src' / 'stubs' / 'havok.cpp').write_text(STUBS)
-    assert build.source_objects(str(tmp_path)) == {'crc.obj': 'src/crc.cpp', 'stubs_havok.obj': 'src/stubs/havok.cpp'}
+    assert build.source_objects(str(tmp_path)) == {'crc.obj': 'src/crc.cpp', 'standard_crc.obj': 'src/crc.cpp',
+                                                   'stubs_havok.obj': 'src/stubs/havok.cpp'}
 
 
 def test_entry_source_leaves_fltused_to_libcmt():
