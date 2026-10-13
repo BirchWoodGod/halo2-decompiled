@@ -1285,8 +1285,8 @@ void function_19ae0f(long change, long pending, long error)
 	{
 		word user_flags = function_1901fc();
 		long mode = g_47ff90;
-		bool volatile show_game_menu = false;
 		bool show_lobby = false;
+		bool volatile show_game_menu = false;
 		bool show_main_menu = false;
 		s_screen_parameters parameters;
 		screen_load_proc load;
@@ -1386,9 +1386,6 @@ void function_19ae0f(long change, long pending, long error)
 		case 4:
 		{
 			long dialog_id;
-			bool choice = false;
-			dialog_choice_callback first_chosen = function_23690b;
-			dialog_choice_callback second_chosen = 0;
 
 			if (!function_0682c0() && !function_138840())
 			{
@@ -1399,6 +1396,9 @@ void function_19ae0f(long change, long pending, long error)
 				function_18f1c0(0);
 				return;
 			}
+			bool choice = false;
+			dialog_choice_callback first_chosen = function_23690b;
+			dialog_choice_callback second_chosen = 0;
 			if (g_4ee4c4.session_booted)
 			{
 				dialog_id = 0xb9;

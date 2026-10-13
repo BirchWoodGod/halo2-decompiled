@@ -19,7 +19,7 @@ struct s_location_record_table
 };
 
 extern void *g_51ea14;
-bool function_216800(void *location, long file_index);
+bool function_216800(long file_index, void *location);
 
 // @retail 0x215b40
 c_location_record::c_location_record()
@@ -39,7 +39,7 @@ bool function_216060(long file_index, word const *name)
 	} location;
 	location.path[0] = 0;
 	location.name[0] = 0;
-	if (function_216800(&location, file_index) && name && name[0])
+	if (function_216800(file_index, &location) && name && name[0])
 	{
 		if (wcsncmp(location.name, name, 0x80))
 			result = true;
@@ -169,7 +169,7 @@ word *function_215b50(long file_index, word *name)
 		} location;
 		location.path[0] = 0;
 		location.name[0] = 0;
-		if (function_216800(&location, file_index))
+		if (function_216800(file_index, &location))
 		{
 			return copy_location_name(result, location.name);
 		}
@@ -524,7 +524,7 @@ bool function_2160b0(long file_index, char *path)
                 function_125d60();
             }
         }
-        if (function_216800(&location, file_index))
+        if (function_216800(file_index, &location))
         {
             strncpy(path, location.path, 0x100);
             path[0xff] = 0;
@@ -566,7 +566,7 @@ void __stdcall function_215e60(long file_index)
         s_saved_game_file_location location;
         location.name[0] = 0;
         location.display_name[0] = 0;
-        if (function_216800(&location, file_index))
+        if (function_216800(file_index, &location))
         {
             if (!((bool)(((dword)file_index >> 21) & 1)))
             {

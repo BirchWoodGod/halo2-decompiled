@@ -2,6 +2,38 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8324 functions match
+
+```
+matched 8324 of 11318 game functions (1062385 of 2784283 bytes, 38.16%)
+```
+
+47 new matches, none lost:
+- Machine 3 batch 7 (#421): 37 functions, among them machine 1's blocked near misses `0x24b1fb`, `0x24b652`, `0x2ca0d9`, `0x2caf0f`, `0x2a3b20`, `0x2a3ca0` and `0xbdb60`, unblocked by matching their callees
+- Machine 3 Codex lanes: Y round 19 (#417) +2, AC round 29 (#418) +5, B round 24 (#419) +2, D lower round 24 (#420) +1
+
+## 2026-10-13: 8277 functions match
+
+```
+matched 8277 of 11318 game functions (1052439 of 2784283 bytes, 37.80%)
+```
+
+25 new matches, none lost:
+- Machine 3 batch 6 (#415): 17 functions, among them `0x102540`, `0x152a50`, `0x162de0` and `0x19e0f0`
+- Machine 2, lane D upper round 21 (#414): `0x8e580`, `0x83370`, `0x8d230`, `0x8ff20`, `0x8c150`
+- Machine 2, lane P round 21 (#416): `0x135ca0`, `0x135880` and `0x133720`
+
+## 2026-10-13: 8252 functions match
+
+```
+matched 8252 of 11318 game functions (1041868 of 2784283 bytes, 37.42%)
+```
+
+9 new matches, none lost:
+- Claude lane 1 round 13 (Opus): `0x1f2b0`, `0xb4050` (in its own SSE file: retail's code uses `cmov`), `0x148d0d`, `0x231ae9` and `0x23f260`
+- Deep lane 2 round 41: `0x2c8159`, `0xb2ea0` and `0xd2a50`, from 92 to 98 differences
+- Deep lane 3 round 52: `0x1f490`
+
 ## 2026-10-13: 8243 functions match
 
 ```

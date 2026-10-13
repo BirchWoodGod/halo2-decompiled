@@ -191,7 +191,7 @@ void function_236299(long sound)
 }
 
 struct s_type_7ba8e9;
-s_type_7ba8e9 *function_137610(long group_index, short frame_index, short sequence_index);
+s_type_7ba8e9 *function_137610(long group_index, short sequence_index, short frame_index);
 
 /* the user interface globals' cursor bitmap */
 struct s_user_interface_globals_cursor
@@ -209,7 +209,7 @@ s_type_7ba8e9 *function_236235(short frame_index, short sequence_index)
 
 	if (globals && globals->cursor_bitmap_index != NONE)
 	{
-		result = function_137610(globals->cursor_bitmap_index, frame_index, sequence_index);
+		result = function_137610(globals->cursor_bitmap_index, sequence_index, frame_index);
 	}
 	return result;
 }

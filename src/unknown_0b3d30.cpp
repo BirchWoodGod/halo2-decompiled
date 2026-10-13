@@ -67,27 +67,8 @@ void function_b4020(void)
 	g_510580 = false;
 }
 
-// @retail 0xb4050
-void function_b4050(void)
-{
-	long iteration = g_547620 + 1;
-	long count = 0;
-	if (g_510580) count = g_5107d8;
-	g_547620 = iteration;
-	// Read the shared iteration through its const pointer at the later use.
-	if (*(long const *)&g_547620 >= 3 * count)
-	{
-		online_result_registration_clear();
-		long task_index = g_510584;
-		if (task_index != NONE)
-		{
-			function_6b640(task_index);
-			g_510584 = NONE;
-		}
-		g_510580 = false;
-		g_54761c = 0;
-	}
-}
+/* built with SSE in its own file, unknown_0b4050.cpp */
+void function_b4050(void);
 
 
 // @retail 0xb45f0

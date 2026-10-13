@@ -2474,11 +2474,11 @@ PRIVATE __forceinline real maximum_25ca0(real first, real second)
 // @retail 0x25ca0
 void function_25ca0(bool enabled)
 {
-    volatile real divisor = maximum_25ca0(0.0001f, g_4b9fa4);
-    real value = g_4b9ff8;
-    value *= 1.0f / divisor;
-    value = 0.0f - value;
     real constants[4];
+    *(volatile real *)&constants[3] = maximum_25ca0(0.0001f, g_4b9fa4);
+    real value = g_4b9ff8;
+    value *= 1.0f / *(volatile real *)&constants[3];
+    value = 0.0f - value;
     constants[0] = value < 0.0f ? 0.0f : value > 1.0f ? 1.0f : value;
     constants[1] = 0.0f;
     constants[2] = g_4b9f18;
@@ -6922,42 +6922,46 @@ void function_1f2b0()
         {
             if ((dword)g_4b62b0[i].character_index != 0xffffffffu)
             {
-                if (i != NONE)
+                long index = i;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
             if ((dword)g_4b62b0[i + 1].character_index != 0xffffffffu)
             {
-                if (i + 1 != NONE)
+                long index = i + 1;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i + 1].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i + 1].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
             if ((dword)g_4b62b0[i + 2].character_index != 0xffffffffu)
             {
-                if (i + 2 != NONE)
+                long index = i + 2;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i + 2].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i + 2].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
             if ((dword)g_4b62b0[i + 3].character_index != 0xffffffffu)
             {
-                if (i + 3 != NONE)
+                long index = i + 3;
+                if (index != NONE)
                 {
-                    long character = g_4b62b0[i + 3].character_index;
+                    long character = g_4b62b0[index].character_index;
                     if (character != NONE)
                         *(long *)(g_54d574->data + (character & 0xffff) * 0x38 + 0x34) = NONE;
-                    g_4b62b0[i + 3].character_index = NONE;
+                    g_4b62b0[index].character_index = NONE;
                 }
             }
         }
@@ -7794,7 +7798,8 @@ void __stdcall function_1f490(long unused, long font, long character, long color
     {
         positions[0] = x + (draw_shadow ? scale : 0.0f);
         positions[1] = y + (draw_shadow ? scale : 0.0f);
-        function_1f3a0((short const *)rectangle, positions[0], positions[1], (long)width, (long)height,
+        real const *position_values = (real const *)positions;
+        function_1f3a0((short const *)rectangle, position_values[0], position_values[1], (long)width, (long)height,
             (short)(long)u, (short)(long)v, scale, draw_shadow ? shadow : color,
             (t_1f3a0_callback)callback, (void *)context);
         if (!draw_shadow) break;

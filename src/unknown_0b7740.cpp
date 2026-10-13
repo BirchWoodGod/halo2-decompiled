@@ -778,7 +778,7 @@ void function_bfa40(long object_index, long node_mask)
 long bit_vector_highest_set_bit(dword const *bits, long bit_count);
 void function_109050(long object_index, long a, long b, long c);
 struct s_1d9240;
-void function_1d9470(s_1d9240 const *p, s_blend_orientation const *targets, long count, dword const *mask,
+void function_1d9470(s_1d9240 const *p, long count, dword const *mask, s_blend_orientation const *targets,
     s_blend_orientation *orientations);
 
 // @retail 0xbdb60
@@ -806,8 +806,8 @@ void function_bdb60(long object_index, s_16760c_render_model *render_model, s_an
         {
             byte *object = (byte *)((s_object_transform_header *)g_4e0300->data)[object_index & 0xffff].object;
             s_blend_orientation *targets = (s_blend_orientation *)(object + *(short *)(object + 0x10e));
-            function_1d9470((s_1d9240 const *)&state->unknown64, targets, (short)node_count,
-                (dword const *)node_mask, (s_blend_orientation *)orientations);
+            function_1d9470((s_1d9240 const *)&state->unknown64, (short)node_count, (dword const *)node_mask, targets,
+                (s_blend_orientation *)orientations);
         }
     }
 }

@@ -466,11 +466,13 @@ struct s_match_rating_collection
 };
 
 #pragma optimize("g", off)
-static __forceinline long function_74721(const s_match_rating_entry *arg_0, long *arg_1)
+static __forceinline long function_74721(const s_match_rating_entry *arg_0, long *arg_1, long *arg_2)
 {
 	long local_0 = arg_0->skill;
+	long local_2 = arg_0->value;
 	long local_1 = arg_0->rank;
 	*arg_1 = local_0;
+	*arg_2 = local_2;
 	return local_1;
 }
 #pragma optimize("g", on)
@@ -489,8 +491,7 @@ long __stdcall function_74720(const s_match_rating_collection *collection, long 
 	} local_0;
 	long count = 0;
 	long total = 0;
-	local_0.field_8 = current->value;
-	local_0.field_4 = function_74721(current, &local_0.field_0);
+	local_0.field_4 = function_74721(current, &local_0.field_0, &local_0.field_8);
 	for (long i = 0; i < 16; i++)
 	{
 		const s_match_rating_entry *entry = &collection->entries[i];
@@ -1341,20 +1342,22 @@ void __stdcall function_741f0(s_match_player_rating_collection *collection, s_qu
     long players[3] = { variant->field_8, variant->field_8 + 32, variant->field_8 + 64 };
     if (variant->type != 5)
     {
-        for (long i = 0; i < 16; i++)
+        const byte *local_0 = (const byte *)collection + 0x41e;
+        const byte *local_1 = (const byte *)collection + 0xf44;
+        for (long i = 0; i < 16; i++, local_0 += sizeof(s_match_player_rating_entry), local_1 += 0x36a)
         {
-            const s_match_player_rating_entry *player = &collection->players[i];
+            const s_match_player_rating_entry *player = (const s_match_player_rating_entry *)(local_0 - 0x9a);
+            if (!player->active || player->team == NONE || (player->flags & 3)) continue;
             long skill = player->unknown9a;
             long value = player->value;
-            if (player->active && player->team != NONE && !(player->flags & 3) &&
-                *(const dword *)((const byte *)player + 0xa) != 0xbad00000 &&
+            if (*(const dword *)((const byte *)player + 0xa) != 0xbad00000 &&
                 player->key == key && skill != NONE && value != NONE)
             {
                 long change = function_74800(collection, i);
                 value += change;
                 long level = function_74970(value, skill);
                 long lower = value >= 0 ? function_74970(value, 0) : 0;
-                const byte *stats = (const byte *)collection + 0xf44 + i * 0x36a;
+                const byte *stats = local_1;
                 long third = *(const word *)(stats + 8) & 0x7fff;
                 long first = *(const word *)stats & 0x7fff;
                 long second = *(const word *)(stats + 6) & 0x7fff;
@@ -1374,7 +1377,9 @@ void __stdcall function_741f0(s_match_player_rating_collection *collection, s_qu
                     }
                 }
                 s_rating_summary summary;
-                memset(&summary, 0, sizeof(summary));
+                summary.values[0] = 0;
+                summary.values[1] = 0;
+                memset((byte *)&summary + 8, 0, sizeof(summary) - 8);
                 summary.values[2] = function_199290((byte *)collection);
                 summary.values[3] = function_199250((s_address_table *)collection, g_4cf7cc);
                 summary.values[0] = *(long *)((byte *)collection + 0x130);
@@ -1388,9 +1393,14 @@ void __stdcall function_741f0(s_match_player_rating_collection *collection, s_qu
                 word character;
                 do
                 {
-                    character = *source++;
-                    *destination++ = remaining == 1 ? 0 : (character <= 127 ? (char)character : '?');
-                } while (character && --remaining > 0);
+                    character = *source;
+                    if (remaining == 1) *destination = 0;
+                    else if (character <= 127) *destination = (char)character;
+                    else *destination = '?';
+                    source++;
+                    destination++;
+                    remaining--;
+                } while (character && remaining > 0);
                 summary.values[5] = *(const short *)((const byte *)player + 0xa2);
                 summary.values[6] = player->rank;
                 summary.values[7] = value;
@@ -1408,9 +1418,11 @@ void __stdcall function_741f0(s_match_player_rating_collection *collection, s_qu
     }
     else
     {
-        for (long i = 0; i < variant->width; i++)
+        const byte *local_2 = (const byte *)collection + 0xdc8;
+        const byte *local_3 = (const byte *)collection + 0x49e4;
+        for (long i = 0; i < variant->width; i++, local_2 += sizeof(s_match_rating_entry), local_3 += 0x5a)
         {
-            const s_match_rating_entry *team = &collection->teams[i];
+            const s_match_rating_entry *team = (const s_match_rating_entry *)(local_2 - 4);
             const s_query_identity *identity = (const s_query_identity *)team->unknown0c;
             if (team->active && memcmp(identity, g_440070, 12) != 0 &&
                 team->skill != NONE && team->value != NONE)
@@ -1419,7 +1431,7 @@ void __stdcall function_741f0(s_match_player_rating_collection *collection, s_qu
                 long value = team->value + change;
                 long level = function_74970(value, team->skill);
                 long lower = value >= 0 ? function_74970(value, 0) : 0;
-                const byte *stats = (const byte *)collection + 0x49e4 + i * 0x5a;
+                const byte *stats = local_3;
                 function_73e00(lower, batch, identity, change,
                     *(const word *)stats & 0x7fff, *(const word *)(stats + 6) & 0x7fff,
                     *(const word *)(stats + 8) & 0x7fff, level, 3, players);
