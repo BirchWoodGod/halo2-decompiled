@@ -2,6 +2,28 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8223 functions match
+
+```
+matched 8223 of 11318 game functions (1034419 of 2784283 bytes, 37.15%)
+```
+
+6 new matches, none lost:
+- Deep lane 2, round 39 (+4): `0x2cac1a`, `0xfdc70` and `0xb77d0`, each from 51 to 59 differences, and the second machine's `0x118b10` through them, its body unchanged.
+- Deep lane 3, round 50 (+1): `0x1ed70`, one of Direct3D's callers in the render range.
+- Deep lane 4, rounds 2 and 3 (+1): `0x143c0` from 68 differences; Direct3D's large callers and other render functions are much closer.
+
+## 2026-10-13: 8217 functions match
+
+```
+matched 8217 of 11318 game functions (1033217 of 2784283 bytes, 37.11%)
+```
+
+56 new matches, none lost:
+- The third machine's batch 5 (#410, +36), over its lanes N, Q, R, S, T and H, with three behaviour fixes (`0x170bb0` passes its state blocks in retail's order, `0x15f120` calls the `vsnprintf` form, and `0x1583d0`'s parameters are named for the values they receive).
+- The second machine's lanes (#407, #408, #409, #411, +14): lane D lower +9 (including lane J's `0x94680` and `0x946c0` and lane F's `0x18fb34` through their callees), lane J +3, lanes B and M +1 each.
+- This machine's deep lanes (+6): lane 1's `0xc3220` (the partition globals at 0x4e0310 are now one struct global) and `0x269e60`, lane 2's `0x251d84` and `0x2b225a`, and lane 3's `0x1ef70` and `0x36880`.
+
 ## 2026-10-13: 8161 functions match
 
 ```

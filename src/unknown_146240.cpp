@@ -43,28 +43,14 @@ vector3f *random_unit_vector(vector3f *result, dword *seed)
 	return result;
 }
 
-PRIVATE inline real normalize_146320(vector3f *v)
+PRIVATE inline void rotate_scalars_146320(vector3f *v, real axis_i, real axis_j, real axis_k, real sine, real cosine)
 {
-	real magnitude = (real)sqrt(v->k * v->k + v->j * v->j + v->i * v->i);
-	if (!(fabs(magnitude) < 0.0001f))
-	{
-		real scale = 1.0f / magnitude;
-		v->i *= scale;
-		v->j *= scale;
-		v->k *= scale;
-		return magnitude;
-	}
-	return 0.0f;
-}
-
-PRIVATE inline void rotate_vector_146320(vector3f *v, vector3f const *axis, real sine, real cosine)
-{
-	real projection = (v->k * axis->k + v->j * axis->j + v->i * axis->i) * (1.f - cosine);
-	real cross_j = v->k * axis->i - v->i * axis->k;
-	real cross_k = v->i * axis->j - v->j * axis->i;
-	v->i = v->i * cosine + projection * axis->i - (v->j * axis->k - v->k * axis->j) * sine;
-	v->j = v->j * cosine + projection * axis->j - cross_j * sine;
-	v->k = v->k * cosine + projection * axis->k - cross_k * sine;
+	real projection = (v->k * axis_k + v->j * axis_j + v->i * axis_i) * (1.f - cosine);
+	real cross_j = v->k * axis_i - v->i * axis_k;
+	real cross_k = v->i * axis_j - v->j * axis_i;
+	v->i = v->i * cosine + projection * axis_i - (v->j * axis_k - v->k * axis_j) * sine;
+	v->j = v->j * cosine + projection * axis_j - cross_j * sine;
+	v->k = v->k * cosine + projection * axis_k - cross_k * sine;
 }
 
 // @retail 0x146320
@@ -80,15 +66,21 @@ void random_vector_in_cone(vector3f const *forward, vector3f *result, dword *see
 	axis.i = random_vector.k * forward->j - random_vector.j * forward->k;
 	axis.j = random_vector.i * forward->k - random_vector.k * forward->i;
 	axis.k = random_vector.j * forward->i - random_vector.i * forward->j;
+	real magnitude = (real)sqrt(axis.k * axis.k + axis.j * axis.j + axis.i * axis.i);
 
+	if (!(fabs(magnitude) < 0.0001f))
 	{
-		if (normalize_146320(&axis) > 0.0f)
+		real scale = 1.0f / magnitude;
+		real axis_i = axis.i * scale;
+		real axis_j = axis.j * scale;
+		real axis_k = axis.k * scale;
+		if (magnitude > 0.0f)
 		{
 			real angle = function_259d0(seed, __FILE__, __LINE__, min_angle, max_angle);
 			real s = (real)sin(angle);
 			real c = (real)cos(angle);
 
-			rotate_vector_146320(result, &axis, s, c);
+			rotate_scalars_146320(result, axis_i, axis_j, axis_k, s, c);
 		}
 	}
 }

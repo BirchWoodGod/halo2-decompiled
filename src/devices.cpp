@@ -666,7 +666,8 @@ bool __stdcall device_export_function(long device_index, long name, real *value,
 			if (machine_flags & 0xd)
 				function_value = 1.0f;
 			group_flags = group->flags;
-			if ((group_flags & 1) && (group_flags & 2))
+			bool second = (group_flags & 2) != 0;
+			if ((group_flags & 1) && second)
 				function_value = 1.0f;
 			if (device->power == 1.0f || (machine_flags & 0x10))
 			{
@@ -680,7 +681,11 @@ bool __stdcall device_export_function(long device_index, long name, real *value,
 		break;
 	case 0xf00055e:
 		if (device->position_velocity != 0.0f)
-			function_value = definition->position_speed != 0.0f ? (real)fabs(device->position_velocity) / definition->position_speed : 0.0f;
+		{
+			function_value = 0.0f;
+			if (definition->position_speed != 0.0f)
+				function_value = (real)fabs(device->position_velocity) / definition->position_speed;
+		}
 		break;
 	case 0x1200055f:
 		if (device->power_velocity != 0.0f)
@@ -880,8 +885,8 @@ void device_motion_start(s_device_motion *motion, real target, real duration, re
 		if (!(0.000001f > distance))
 		{
 			real cruise_time = remaining - ramp_down_time;
-			real half_ramp_up_time = ramp_up_time * 0.5f;
 			real half_ramp_down_time = ramp_down_time * 0.5f;
+			real half_ramp_up_time = ramp_up_time * 0.5f;
 			real denominator = cruise_time + half_ramp_down_time + half_ramp_up_time;
 			real velocity;
 

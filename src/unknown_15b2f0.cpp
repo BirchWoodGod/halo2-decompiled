@@ -16,6 +16,10 @@ struct s_engine_state_globals
 	long engine_index;
 };
 
+/* retail calls this out of line everywhere except 0x15ba20, which inlines
+   its own copy */
+__declspec(noinline) bool function_15b2f0();
+
 /* true while the engine runs the game (always on a client) */
 // @retail 0x15b2f0
 bool function_15b2f0()

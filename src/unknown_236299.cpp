@@ -592,7 +592,7 @@ void function_23661f(s_dialog_definition *definition, long dialog_id)
 
 struct s_1ed70_point { short x, y; };
 void function_1eb00();
-void function_1ed70(color4f const *color, s_1ed70_point const *points, volatile short count);
+void function_1ed70(color4f const *color, s_1ed70_point const *points, short count);
 void function_1ee50();
 
 // @retail 0x235d69

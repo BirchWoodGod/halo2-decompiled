@@ -143,8 +143,8 @@ void function_2b9750(s_particle_2b96 const *other, s_particle_2b96 const *partic
     if (fabs(scale) < 0.0001f)
         return;
     vector3f delta;
-    delta.k = other->position.z - particle->position.z;
     delta.i = other->position.x - particle->position.x;
+    delta.k = other->position.z - particle->position.z;
     delta.j = other->position.y - particle->position.y;
     real initial_squared = particle_separation_squared_values(delta.k, delta.j, delta.i);
     real bounded_radius = radius > 0.1f ? radius : 0.1f;
