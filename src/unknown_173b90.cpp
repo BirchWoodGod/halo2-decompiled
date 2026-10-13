@@ -312,7 +312,7 @@ void __stdcall function_174990(real dt)
 void particle_system_link(s_particle_system_datum *particle_system, long *last_index, long *first_index)
 {
 	s_record_pool *data = g_510c74;
-	long particle_system_index = (particle_system->salt << 16) | (particle_system - (s_particle_system_datum *)data->data);
+	long particle_system_index = ((dword)particle_system->salt << 16) | (particle_system - (s_particle_system_datum *)data->data);
 
 	particle_system->next_index = NONE;
 	if (*first_index == NONE)
@@ -322,7 +322,7 @@ void particle_system_link(s_particle_system_datum *particle_system, long *last_i
 		s_particle_system_datum *last = DATUM(data, s_particle_system_datum, *last_index);
 
 		last->next_index = particle_system_index;
-		particle_system->previous_index = (last->salt << 16) | (last - (s_particle_system_datum *)data->data);
+		particle_system->previous_index = ((dword)last->salt << 16) | (last - (s_particle_system_datum *)data->data);
 		*last_index = particle_system_index;
 	}
 	else
@@ -426,6 +426,8 @@ struct s_particle_value_cache
 	void *field_48;
 	void *field_4c;
 	void const *field_50;
+
+	void function_173c10(dword mask);
 };
 
 struct s_particle_emitter_175610
@@ -554,10 +556,10 @@ void function_175610(s_particle_value_cache *cache, s_particle_system_datum *sys
 }
 
 // @retail 0x173c10
-void function_173c10(s_particle_value_cache *cache, dword mask)
+void s_particle_value_cache::function_173c10(dword mask)
 {
-	function_173ba0(~cache->mask & mask, cache->field_48, cache->field_4c, cache->field_50, cache->values);
-	cache->mask |= mask;
+	function_173ba0(~this->mask & mask, field_48, field_4c, field_50, values);
+	this->mask |= mask;
 }
 
 struct s_248cc0;
@@ -603,7 +605,7 @@ void __stdcall function_175430(s_particle_system_datum *system, point3f const *p
 			cache.field_4c = location;
 			cache.mask = 0;
 		}
-		function_173c10(&cache, 0x1ffff);
+		cache.function_173c10(0x1ffff);
 		function_248cc0((s_248cc0 *)location, (s_247fd0 *)&cache, system, position, velocity);
 	}
 }

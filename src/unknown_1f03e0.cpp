@@ -250,9 +250,10 @@ struct s_shape_ground
 // @retail 0x1f2e60
 bool function_1f2e60(bool moving, s_shape_ground const *ground, vector3f const *velocity, bool stepping, point3f const *base, real height)
 {
-	real top = base->z + height;
+	point3f const *const *base_reference = &base;
+	real top = (*base_reference)->z + height;
 
-	if (top - 0.001f > base->z)
+	if (top - 0.001f > (*base_reference)->z)
 	{
 		point3f point = ground->point;
 		point3f center;
@@ -266,9 +267,9 @@ bool function_1f2e60(bool moving, s_shape_ground const *ground, vector3f const *
 			point.y = velocity->j * g_510c54->rate + point.y;
 			point.z = velocity->k * g_510c54->rate + point.z;
 		}
-		center.x = base->x;
-		center.y = base->y;
-		center.z = height + base->z;
+		center.x = (*base_reference)->x;
+		center.y = (*base_reference)->y;
+		center.z = height + (*base_reference)->z;
 		vector3d_from_points3d(&center, &point, &v);
 		distance = (real)sqrt(v.k * v.k + v.j * v.j + v.i * v.i) - height;
 		lower = moving ? -0.25f : -0.1f;
