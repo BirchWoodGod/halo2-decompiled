@@ -701,12 +701,7 @@ long saved_film_size_in_blocks()
 long minimal_storage_size_in_blocks()
 {
 	long profile = saved_game_file_type_size_in_blocks(1);
-	long variant = saved_game_file_type_size_in_blocks(0);
-	long film = saved_film_size_in_blocks();
-	long total = profile;
-	total += variant;
-	total += film;
-	return total + 1;
+	return saved_game_file_type_size_in_blocks(0) + profile + saved_film_size_in_blocks() + 1;
 }
 
 void function_236299(long sound);
