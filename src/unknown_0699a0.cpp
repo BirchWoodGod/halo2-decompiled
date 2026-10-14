@@ -320,13 +320,15 @@ void function_823d0(s_weapon_activity_result *output, const byte *input, long ob
 // @retail 0x69b50
 void function_69b50(c_class_6a600 *world, dword mask, const byte *input)
 {
- for (long i = 0; i < 16; i++, input += 0x7c)
+ long i = 0;
+ const byte *cursor = input;
+ s_simulation_world_actor *actor = world->actors;
+ for (; i < 16; i++, cursor += 0x7c, actor++)
  {
-  s_simulation_world_actor *actor = &world->actors[i];
   if (actor->actor_index != NONE && (mask & (1 << i)))
   {
-   __declspec(align(8)) s_weapon_activity_result action;
-   function_824d0(input, &action, actor->unknown04);
+   s_weapon_activity_result action;
+   function_824d0(cursor, &action, actor->unknown04);
    long index = actor->actor_index + 16;
    s_view_iterator iterator = { 0x10, 0 };
    c_simulation_view *view;

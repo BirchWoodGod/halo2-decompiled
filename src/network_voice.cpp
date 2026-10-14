@@ -2208,7 +2208,7 @@ long function_57d60(long mode, long player, long other)
 			{ result = 0; goto done; }
 		switch (voice_get_port_state(controller))
 		{
-		case 1: if (result != 3) result = 2; break;
+		case 1: if (result == 3) { __assume(result == 3); } else result = 2; break;
 		case 2: { result = 1; goto done; }
 		case 3: { result = 0; goto done; }
 		}
