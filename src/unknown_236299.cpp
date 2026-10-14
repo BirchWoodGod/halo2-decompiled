@@ -79,7 +79,8 @@ struct s_bitmap_group_view
 struct D3DTexture;
 D3DTexture *function_12360(s_bitmap_view *bitmap, real priority);
 long function_11cae0(void);
-byte __stdcall function_219070(long set_index);
+struct s_sound_definition;
+short function_219070(long set_index, s_sound_definition const *definition);
 /* unknown_189010.cpp */
 struct s_sound_label_play;
 long function_189760(s_sound_label_play const *play);
@@ -172,7 +173,7 @@ void function_236299(long sound)
 						byte set[2];
 						s_sound_play play;
 						set[0] = (byte)i;
-						set[1] = function_219070(i);
+						set[1] = (byte)function_219070(i, (s_sound_definition const *)tag);
 						play.object_index = NONE;
 						play.tag_index = tag_index;
 						play.scale = 1.f;
