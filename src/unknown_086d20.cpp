@@ -11,7 +11,7 @@
 
 /* src/unknown_11eed0.cpp */
 void function_11f4f0(long bits, real const *in, real_bounds const *ranges, long *out);
-void function_11f580(long bits, real *out, real const *ranges, long const *in);
+void function_11f580(real const *ranges, long bits, real *out, long const *in);
 
 /* src/unknown_195720.cpp */
 void function_195720(s_bitstream *stream, dword value, long count);
@@ -86,7 +86,7 @@ void simulation_write_position(long bits, s_bitstream *stream, real const *posit
 	if (keep_inside)
 	{
 		real dequantized[3];
-		function_11f580(bits, dequantized, (real const *)ranges, quantized);
+		function_11f580((real const *)ranges, bits, dequantized, quantized);
 		if (world_leaf(dequantized) == NONE && world_leaf(position) != NONE)
 		{
 			for (long step = 0; step < sizeof(g_47fe88) / sizeof(g_47fe88[0]); step++)
@@ -94,7 +94,7 @@ void simulation_write_position(long bits, s_bitstream *stream, real const *posit
 				long candidate[3];
 				if (quantized_step(candidate, quantized, g_47fe88[step], bits))
 				{
-					function_11f580(bits, dequantized, (real const *)ranges, candidate);
+					function_11f580((real const *)ranges, bits, dequantized, candidate);
 					if (world_leaf(dequantized) != NONE)
 					{
 						quantized[0] = candidate[0];
@@ -118,7 +118,7 @@ void simulation_read_position(s_bitstream *stream, real *position, long bits)
 	long quantized[3];
 	for (long i = 0; i < 3; i++)
 		quantized[i] = function_1959c0(stream, bits);
-	function_11f580(bits, position, (real const *)world->bounds, quantized);
+	function_11f580((real const *)world->bounds, bits, position, quantized);
 }
 
 /* whether two world positions quantize to within one quantum of each other */
@@ -146,16 +146,14 @@ void simulation_write_relative_position(s_bitstream *stream, long bits, real con
 }
 
 /* reads a position relative to something */
-#pragma optimize("s", on)
 // @retail 0x86f50
-void simulation_read_relative_position(long bits, real *position, s_bitstream *stream)
+void simulation_read_relative_position(s_bitstream *stream, long bits, real *position)
 {
 	long quantized[3];
 	for (long i = 0; i < 3; i++)
 		quantized[i] = function_1959c0(stream, bits);
-	function_11f580(bits, position, (real const *)g_440214, quantized);
+	function_11f580((real const *)g_440214, bits, position, quantized);
 }
-#pragma optimize("", on)
 
 
 /* the machines of a game: a mask and their addresses */
