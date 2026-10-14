@@ -2198,7 +2198,9 @@ void function_226f80(void)
 								data.shape.index = NONE;
 								if (impact_matches_data(impact, &data, true))
 								{
+#pragma inline_depth(0)
 									impact_release(other_index, other);
+#pragma inline_depth()
 									impact->reference_count++;
 									constraint->impact_index = impact_index;
 									merged = true;

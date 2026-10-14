@@ -168,9 +168,9 @@ void __stdcall function_2c8a0(byte const *source)
     s_frame_view_2c560 frame;
     memset(&frame, 0, sizeof(frame));
     byte projection[0xc0];
-    store_current_view(source + 0xc);
+    memcpy(&g_camera_storage, source + 0xc, sizeof(g_camera_storage));
     function_2fd90((s_2f800_view const *)(source + 0xc), 0, projection);
-    store_current_projection(projection);
+    memcpy(&g_projection_storage, projection, sizeof(g_projection_storage));
     memcpy(frame.view, source + 0x80, sizeof(frame.view));
     function_2fd90((s_2f800_view const *)frame.view, 0, frame.projection);
     frame.position = *g_468718;
