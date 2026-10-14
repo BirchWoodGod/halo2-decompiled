@@ -635,9 +635,49 @@ public:
 // @stub 0x30b080
 void c_30b080::function_30b080(__m128 const *arg_0) { }
 
-struct s_physics_model_owner;
-// @stub 0x1d77d0
-void __stdcall function_1d77d0(s_havok_component *arg_0, s_physics_model_owner *arg_1) {}
+/* the two snapshots and the six constraints 0x1d77d0 builds */
+struct c_component_joint_snapshot_3
+{
+    __m128 data[4];
+    c_component_joint_snapshot_3();
+};
+
+struct c_component_joint_snapshot_5
+{
+    __m128 data[10];
+    c_component_joint_snapshot_5();
+};
+
+class c_component_joint_0 { public: c_component_joint_0(c_component_joint_snapshot_0 const *info); };
+class c_component_joint_1 { public: c_component_joint_1(c_component_joint_snapshot_1 const *info); };
+class c_component_joint_2 { public: c_component_joint_2(c_component_joint_snapshot_2 const *info); };
+class c_component_joint_3 { public: c_component_joint_3(c_component_joint_snapshot_3 const *info); };
+class c_component_joint_4 { public: c_component_joint_4(c_component_joint_snapshot_4 const *info); };
+class c_component_joint_5 { public: c_component_joint_5(c_component_joint_snapshot_5 const *info); };
+
+// @stub 0x314860
+c_component_joint_snapshot_3::c_component_joint_snapshot_3() {}
+
+// @stub 0x314bb0
+c_component_joint_snapshot_5::c_component_joint_snapshot_5() {}
+
+// @stub 0x313de0
+c_component_joint_0::c_component_joint_0(c_component_joint_snapshot_0 const *info) {}
+
+// @stub 0x313550
+c_component_joint_1::c_component_joint_1(c_component_joint_snapshot_1 const *info) {}
+
+// @stub 0x312d50
+c_component_joint_2::c_component_joint_2(c_component_joint_snapshot_2 const *info) {}
+
+// @stub 0x314b00
+c_component_joint_3::c_component_joint_3(c_component_joint_snapshot_3 const *info) {}
+
+// @stub 0x314270
+c_component_joint_4::c_component_joint_4(c_component_joint_snapshot_4 const *info) {}
+
+// @stub 0x314ef0
+c_component_joint_5::c_component_joint_5(c_component_joint_snapshot_5 const *info) {}
 
 
 
