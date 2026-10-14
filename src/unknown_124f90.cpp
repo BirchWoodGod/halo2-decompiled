@@ -1880,7 +1880,7 @@ void sound_system_update_time(void)
 	sound_system->field_14_2 = now;
 	sound_system->time += elapsed;
 	sound_system->ambience_fade += (real)elapsed * 0.001f;
-	sound_system->elapsed_time = (real)elapsed * 0.001f;
+	sound_system->elapsed_time = (real)elapsed / 1000.0f;
 	sound_system->previous_ambience_fade += (real)elapsed * 0.001f;
 	if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 1)
 	{

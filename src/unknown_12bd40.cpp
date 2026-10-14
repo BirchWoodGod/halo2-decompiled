@@ -58,11 +58,23 @@ struct s_12bbd0
 	long field_4[8];
 };
 
+struct s_loop_allocator;
+extern s_loop_allocator *g_51e998;
+bool loop_allocate(s_loop_allocator *loop, void **pointer, long size, char const *file, long line);
+void function_147ebe(void);
+
 #pragma inline_depth(0)
 // @retail 0x12bbd0
 void function_12bbd0(void)
 {
-	s_12bbd0 *local_0 = (s_12bbd0 *)function_1a47fd(sizeof(s_12bbd0));
+	void *pointer;
+	if (!loop_allocate(g_51e998, &pointer, sizeof(s_12bbd0), 0, 0))
+	{
+		function_147ebe();
+		if (!loop_allocate(g_51e998, &pointer, sizeof(s_12bbd0), 0, 0))
+			pointer = 0;
+	}
+	s_12bbd0 *local_0 = (s_12bbd0 *)pointer;
 	if (local_0)
 	{
 		local_0->field_0 = g_54d5b8;
