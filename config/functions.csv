@@ -8690,7 +8690,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00240f90,72,game,speed,a16 pad,,,0019f3c0,src/unknown_2420a0.cpp,matched
 00240fe0,12,game,speed,a16 pad,,,00243a20,src/unknown_2420a0.cpp,matched
 00240ff0,438,game,speed,a16 pad,,,000a7810 001967d0 001970a0 0019eb90 0019ebb0 0019ebe0,src/unknown_2420a0.cpp,todo
-002411b0,364,game,speed,a16 pad,,,000a7810 0019eb90 0019ebb0 0019ebe0,src/unknown_2420a0.cpp,matched
+002411b0,364,game,speed,a16 pad,,,000a7810 0019eb90 0019ebb0 0019ebe0,src/unknown_2420a0.cpp,near
 00241320,154,game,speed,a16 pad,,,,src/unknown_2420a0.cpp,matched
 002413c0,34,game,speed,a16 pad,,,00161eb0,src/unknown_2420a0.cpp,matched
 002413f0,284,game,speed,a16 pad,,,0015e410,src/unknown_2420a0.cpp,matched
