@@ -51,11 +51,11 @@ void __stdcall function_e4d90(long arg_159e6d, long type, real scale, long marke
    first one through a volatile pool pointer reproduces everything but the
    operand order of those two loads; no plain form found yet. */
 // @retail 0xe5040
-void __stdcall function_e5040(long biped_index, s_animation_frame_event const *event)
+void __stdcall function_e5040(long arg_159e6d_4, s_animation_frame_event const *event)
 {
-	if (FOOTSTEP_BIPED_GET(biped_index)->animation_state_offset != NONE)
+	if (FOOTSTEP_BIPED_GET(arg_159e6d_4)->animation_state_offset != NONE)
 	{
-		s_footstep_biped *biped = FOOTSTEP_BIPED_GET(biped_index);
+		s_footstep_biped *biped = FOOTSTEP_BIPED_GET(arg_159e6d_4);
 		vector3f const *velocity = &biped->linear_velocity;
 		s_animation_state *state = (s_animation_state *)((byte *)biped + biped->animation_state_offset);
 		bool slow = velocity->i * velocity->i + velocity->j * velocity->j + velocity->k * velocity->k <= 2.25f;
@@ -85,16 +85,16 @@ void __stdcall function_e5040(long biped_index, s_animation_frame_event const *e
 		switch (event->type)
 		{
 		case 2:
-			function_e4d90(biped_index, kind, scale, 0);
+			function_e4d90(arg_159e6d_4, kind, scale, 0);
 			break;
 		case 3:
-			function_e4d90(biped_index, kind, scale, 1);
+			function_e4d90(arg_159e6d_4, kind, scale, 1);
 			break;
 		case 9:
-			function_e4d90(biped_index, 3, scale, 2);
+			function_e4d90(arg_159e6d_4, 3, scale, 2);
 			break;
 		case 10:
-			function_e4d90(biped_index, 7, scale, 2);
+			function_e4d90(arg_159e6d_4, 7, scale, 2);
 			break;
 		}
 	}

@@ -52,9 +52,9 @@ void havok_component_rigid_body_point_impulse_apply(long rigid_body_index, s_hav
    leaving (+0x278, entering 0). Only a vehicle that is itself attached to
    another object is pushed */
 // @retail 0xe5300
-void function_e5300(long biped_index, long entering)
+void function_e5300(long arg_159e6d_4, long entering)
 {
-	s_e5300_object *biped = E5300_OBJECT_GET(biped_index);
+	s_e5300_object *biped = E5300_OBJECT_GET(arg_159e6d_4);
 
 	if (biped->parent_index != NONE)
 	{
@@ -62,23 +62,23 @@ void function_e5300(long biped_index, long entering)
 
 		if ((1 << vehicle_header->type) & 2)
 		{
-			byte *biped_definition = g_4e3b44[biped->definition_index & 0xffff].bytes;
+			byte *local_0d520e = g_4e3b44[biped->definition_index & 0xffff].bytes;
 			s_e5300_object *vehicle = (s_e5300_object *)vehicle_header->object;
 
 			if (vehicle->parent_index != NONE)
 			{
-				byte *vehicle_definition = g_4e3b44[vehicle->definition_index & 0xffff].bytes;
+				byte *local_a2a045_2 = g_4e3b44[vehicle->definition_index & 0xffff].bytes;
 				point3f position;
 				real factor;
 
-				function_b9dd0(biped_index, &position);
+				function_b9dd0(arg_159e6d_4, &position);
 				switch (entering)
 				{
 				case 0:
-					factor = *(real *)(vehicle_definition + 0x278);
+					factor = *(real *)(local_a2a045_2 + 0x278);
 					break;
 				case 1:
-					factor = *(real *)(vehicle_definition + 0x274);
+					factor = *(real *)(local_a2a045_2 + 0x274);
 					break;
 				default:
 					__assume(0);
@@ -91,7 +91,7 @@ void function_e5300(long biped_index, long entering)
 					if (rigid_body_index != NONE)
 					{
 						real mass = havok_component_rigid_body_mass_get(rigid_body_index, component);
-						real weight = *(real *)(biped_definition + 0x274) / mass;
+						real weight = *(real *)(local_0d520e + 0x274) / mass;
 						real scale = weight * g_510c54->rate * g_51e9c4->unknown0 * factor;
 						vector3f velocity;
 
