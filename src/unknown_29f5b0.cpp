@@ -6953,7 +6953,7 @@ void __stdcall function_2a7d70(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44d14c = { _hs_type_void, 1, function_2a7d70, NULL, 1, { _hs_type_short_integer } };
 
-void function_2773d0(long facing_point_reference, long point_reference);
+void function_2773d0(long point_reference, long facing_point_reference);
 
 /* 419: void (point_reference, point_reference) */
 // @retail 0x2a7df0
@@ -6963,7 +6963,7 @@ void __stdcall function_2a7df0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_2773d0(arguments[1], arguments[0]);
+		function_2773d0(arguments[0], arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }

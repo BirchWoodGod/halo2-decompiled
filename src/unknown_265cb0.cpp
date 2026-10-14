@@ -1350,7 +1350,15 @@ struct s_prop_object_links_view
 struct s_prop_object_link
 {
 	byte unknown00[4];
-	word packed_index;
+	union
+	{
+		word packed_index;
+		struct
+		{
+			word unknown04_0 : 3;
+			word link_index : 13;
+		};
+	};
 	byte unknown06[2];
 };
 
@@ -1371,7 +1379,7 @@ bool function_2651e0(long object_index, short *volatile output_index)
 			s_prop_object_link *link = &links[i];
 			if ((link->packed_index & 0xfff8) > 0)
 			{
-				if ((word)(link->packed_index >> 3) < (word)index)
+				if (link->link_index < (word)index)
 				{
 					index = link->packed_index >> 3;
 					result = true;

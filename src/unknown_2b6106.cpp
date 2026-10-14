@@ -379,7 +379,6 @@ bool function_2b6db1(s_time_left *time, c_widget *screen, word *result_string)
 {
 	bool result = false;
 	word format[0x100];
-	long string_handle;
 	long minutes;
 	long seconds;
 
@@ -388,22 +387,18 @@ bool function_2b6db1(s_time_left *time, c_widget *screen, word *result_string)
 	{
 		seconds = time->game_seconds % 60;
 		minutes = time->game_seconds / 60;
-		string_handle = 0x13000264;
+		screen->function_230134(0x13000264, format);
+		function_1630e0(result_string, format, minutes, seconds);
+		result = true;
 	}
 	else if (time->session_seconds > 0)
 	{
 		seconds = time->session_seconds % 60;
 		minutes = time->session_seconds / 60;
-		string_handle = 0x15000265;
+		screen->function_230134(0x15000265, format);
+		function_1630e0(result_string, format, minutes, seconds);
+		result = true;
 	}
-	else
-	{
-		goto done;
-	}
-	screen->function_230134(string_handle, format);
-	function_1630e0(result_string, format, minutes, seconds);
-	result = true;
-done:
 	return result;
 }
 
