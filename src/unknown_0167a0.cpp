@@ -87,12 +87,13 @@ void __stdcall function_16b90(byte *state, long tag, long first, long second,
     byte *pass_definition = g_4e3b44[*(long *)(pass + 4) & 0xffff].bytes;
     byte *records = *(byte **)(pass_definition + 0x20);
     byte *record = *(byte **)(records + 4) + fourth * 0x132;
-    bool changed = record != *(byte **)(state + 0x24) || records != *(byte **)(state + 0x20);
+    long changed = record != *(byte **)(state + 0x24) || records != *(byte **)(state + 0x20);
     long previous = *(long *)state;
     bool different_tag = tag != previous;
     *(long *)(state + 4) = previous;
     *(long *)state = tag;
-    real inverse = scale > 0.0f ? 1.0f / scale : 100000.0f;
+    real inverse = 100000.0f;
+    if (scale > 0.0f) inverse = 1.0f / scale;
     *(real *)(state + 0x28) = inverse;
     *(real *)(state + 0x2c) = (real)(log((double)inverse) * 0.6931471824645996f);
     *(dword *)(state + 0x58) = 0;
@@ -1133,8 +1134,10 @@ void function_19ca0(byte *state, word const *range)
             function_1b2c0(state, entry[3], entry[2] & 7, 0, (entry[2] >> 3) & 7, values);
             if (*(word const *)entry & 0x800)
                 for (long j = 0; j < 4; ++j) values[j] = (values[j] + 1.0f) * 0.5f;
-            for (long k = 0; k < 4; ++k)
-                values[k] = values[k] < 0.0f ? 0.0f : values[k] > 1.0f ? 1.0f : values[k];
+            values[0] = values[0] < 0.0f ? 0.0f : values[0] > 1.0f ? 1.0f : values[0];
+            values[1] = values[1] < 0.0f ? 0.0f : values[1] > 1.0f ? 1.0f : values[1];
+            values[2] = values[2] < 0.0f ? 0.0f : values[2] > 1.0f ? 1.0f : values[2];
+            values[3] = values[3] < 0.0f ? 0.0f : values[3] > 1.0f ? 1.0f : values[3];
             color4f color;
             color.red = values[0]; color.green = values[1]; color.blue = values[2]; color.alpha = values[3];
             dword value = pack_color4f(&color);
@@ -1155,8 +1158,10 @@ void function_19ca0(byte *state, word const *range)
             function_1b2c0(state, entry[3], entry[2] & 7, 0, (entry[2] >> 3) & 7, values);
             if (*(word const *)entry & 0x800)
                 for (long j = 0; j < 4; ++j) values[j] = (values[j] + 1.0f) * 0.5f;
-            for (long k = 0; k < 4; ++k)
-                values[k] = values[k] < 0.0f ? 0.0f : values[k] > 1.0f ? 1.0f : values[k];
+            values[0] = values[0] < 0.0f ? 0.0f : values[0] > 1.0f ? 1.0f : values[0];
+            values[1] = values[1] < 0.0f ? 0.0f : values[1] > 1.0f ? 1.0f : values[1];
+            values[2] = values[2] < 0.0f ? 0.0f : values[2] > 1.0f ? 1.0f : values[2];
+            values[3] = values[3] < 0.0f ? 0.0f : values[3] > 1.0f ? 1.0f : values[3];
             color4f color;
             color.red = values[0]; color.green = values[1]; color.blue = values[2]; color.alpha = values[3];
             dword value = pack_color4f(&color);

@@ -882,6 +882,8 @@ void function_190728(long index)
 	}
 }
 
+inline bool function_1907bf(byte frames_down, word msec_down);
+
 // @retail 0x1907bf
 bool function_1907bf(byte frames_down, word msec_down)
 {

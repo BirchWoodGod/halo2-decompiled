@@ -1578,10 +1578,14 @@ void __stdcall function_253b65(c_class_1a2c81 *widget, long string_handle)
         c_class_1473c9 *screen = widget->get_screen();
         if (screen)
         {
-            word buffer[0x100];
+            struct s_buffer_253b65 {
+                word data[0x100];
+                __forceinline void load(c_widget *screen, long handle) { screen->function_230134(handle, data); }
+            } local;
+            word *buffer = local.data;
             buffer[0] = 0;
-            ((c_widget *)screen)->function_230134(string_handle, buffer);
-            if (function_13ee20(buffer, widget->function_22f52e()->value04))
+            local.load((c_widget *)screen, string_handle);
+            if (function_13ee20(local.data, widget->function_22f52e()->value04))
                 widget->function_22f52e()->set_text(buffer);
         }
     }

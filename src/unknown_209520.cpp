@@ -244,14 +244,12 @@ void __stdcall function_2084c0(short function_index, long thread_index, bool ini
 	s_hs_expression *expression = hs_expression_get(hs_thread_get(thread_index)->frame->expression_index);
 	s_hs_expression *name = hs_expression_get(expression->value);
 	s_hs_expression *argument = hs_expression_get(*(long *)((byte *)name + 8));
-	short type = argument->type;
 	short types[2];
-	types[1] = type;
-	types[0] = type;
+	types[0] = types[1] = argument->type;
 	long *arguments = function_209d50(thread_index, 2, types, initialize);
 	if (arguments)
 	{
-		bool equal = memcmp(&arguments[1], &arguments[0], g_445710[type]) == 0;
+		bool equal = memcmp(arguments, arguments + 1, g_445710[types[0]]) == 0;
 		if (function_index == 14)
 			equal = !equal;
 		result.b = equal;

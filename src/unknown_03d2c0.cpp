@@ -74,27 +74,22 @@ extern long g_4b72c0;
 
 long __stdcall function_3ddd0(long object_index);
 
+bool function_14ddc0(long local_player_index);
+long function_16c2b0(void);
+
 // @retail 0x3d2c0
 void function_3d2c0()
 {
     g_4c1bd0 = NONE;
     g_4c1bd4 = 0;
-    long object_index = NONE;
-    byte *camera = (byte *)g_510c6c;
-    if (camera[0] && *(short *)(camera + 2) == 4)
-    {
-        long target = *(long *)(camera + 0x3c);
-        if (function_badc0(target, 3)) object_index = target;
-    }
-    g_4c1bd0 = object_index;
+    g_4c1bd0 = function_16c2b0();
     // Keep the later published-object read separate from the local selection.
     if (*(long const *)&g_4c1bd0 == NONE)
     {
         g_4c1bd0 = g_4b72c0;
         if (g_4c1bd0 == NONE && g_4b9ed8 != NONE && !function_155760(g_4b9ed8))
         {
-            long player = g_4e8c20->entries[g_4b9ed8];
-            long unit = player != NONE ? *(long *)(g_4e8c24->data + (player & 0xffff) * 0x21c + 0x2c) : NONE;
+            long unit = function_14ddc0(g_4b9ed8) ? *(long *)(g_4e8c24->data + (g_4e8c20->entries[g_4b9ed8] & 0xffff) * 0x21c + 0x2c) : NONE;
             g_4c1bd0 = unit;
             g_4c1bd4 = first_person_weapons_get_models(g_4b9ed8, unit, 4, (s_first_person_model *)g_4c1bd8);
         }

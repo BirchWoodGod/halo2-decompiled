@@ -21,17 +21,18 @@ void function_3dfe0(long cache_index, long object_index, real priority)
 {
     (void)&cache_index; (void)&object_index;
     s_3dfe0_cache *cache = (s_3dfe0_cache *)(g_509434->data + (cache_index & 0xffff) * 0x100);
+    s_effect_color_query *current = &cache->current;
     long elapsed = g_4ba034 - cache->sample_time;
     if (!elapsed) return;
-    byte *object = ((s_3dd10_object_header *)g_4e0300->data)[object_index & 0xffff].object;
     long update_elapsed = g_4ba034 - cache->update_time;
+    byte *object = ((s_3dd10_object_header *)g_4e0300->data)[object_index & 0xffff].object;
     bool volatile force = !cache->initialized || !cache->valid;
     bool &update = *(bool *)&cache_index;
     update = false;
     if (elapsed < 0) elapsed = 1;
     if (force) update = true;
     else if (object[0xc1] & 1) return;
-    bool sample = true;
+    long sample = 1;
     if (cache->sample_time != (dword)NONE)
     {
         if (priority > 400.0f) sample = elapsed > 3;
@@ -75,14 +76,14 @@ void function_3dfe0(long cache_index, long object_index, real priority)
             (distance3d(&cache->position, (point3f *)(object + 0x30)) > 0.05000000074505806f && blend > 0.0f) ||
             function_badc0(object_index, 0x80))
         {
-            function_3e5a0((vector3f *)&cache->current, (vector3f const *)&cache->target, blend * 0.009999999776482582f);
-            function_3e4e0(&cache->current.color_b, &cache->target.color_b, blend * 0.5f);
-            function_3e4e0(&cache->current.color_a, &cache->target.color_a, blend * 0.5f);
+            function_3e5a0((vector3f *)&(*current), (vector3f const *)&cache->target, blend * 0.009999999776482582f);
+            function_3e4e0(&(*current).color_b, &cache->target.color_b, blend * 0.5f);
+            function_3e4e0(&(*current).color_a, &cache->target.color_a, blend * 0.5f);
         }
     }
-    else cache->current = cache->target;
+    else (*current) = cache->target;
     long type = NONE;
-    bool special = false;
+    long special = false;
     if (cache->parent != NONE)
     {
         byte *parent = ((s_3dd10_object_header *)g_4e0300->data)[cache->parent & 0xffff].object;
@@ -90,6 +91,6 @@ void function_3dfe0(long cache_index, long object_index, real priority)
         type = *(short *)definition;
         special = (bool)(((*(dword *)(parent + 4)) >> 13) & 1) || (bool)((definition[2] >> 1) & 1);
     }
-    function_d4080(&cache->current, type, &cache->lighting, special);
+    function_d4080(&(*current), type, &cache->lighting, special);
     cache->initialized = true;
 }
