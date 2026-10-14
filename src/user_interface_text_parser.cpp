@@ -396,8 +396,8 @@ void __stdcall parse_player_profile_name(long string_handle, word *buffer)
 	switch (string_handle)
 	{
 	default:
-		parse_copy(buffer, (wchar_t *)g_54e5d0.settings.name);
-		return;
+		player = NONE;
+		break;
 	case 0xe40f:
 		player = 0;
 		break;
@@ -410,6 +410,11 @@ void __stdcall parse_player_profile_name(long string_handle, word *buffer)
 	case 0xe412:
 		player = 3;
 		break;
+	}
+	if (player == NONE)
+	{
+		parse_copy(buffer, (wchar_t *)g_54e5d0.settings.name);
+		return;
 	}
 	player_slot_get_profile(player, &profile, &string_handle);
 	parse_copy(buffer, (wchar_t *)&profile.data[2]);

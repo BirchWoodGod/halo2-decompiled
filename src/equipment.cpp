@@ -62,7 +62,7 @@ void __stdcall function_f8090(long equipment_index, s_scenario_equipment_view *p
 	s_equipment_object_view *equipment = EQUIPMENT_GET(equipment_index);
 
 	function_b9b90(equipment_index, TEST_FIELD_BIT(placement->flags.created_at_rest));
-	equipment->object_flags.cannot_be_garbage = true;
+	((volatile s_equipment_object_view *)equipment)->object_flags.cannot_be_garbage = true;
 	equipment->object_flags.shadowless = true;
 	equipment->item_flags.does_not_accelerate = !TEST_FIELD_BIT(placement->flags.does_accelerate);
 
