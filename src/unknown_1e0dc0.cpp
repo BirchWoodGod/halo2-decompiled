@@ -90,7 +90,7 @@ long function_1e0dc0(short team, long unit_index, short request_value, short squ
 			request.type = 0x31;
 			*(short *)(request.arguments + 2) = *request_reference;
 			if (function_e6900(*unit_reference, &request))
-				function_114b60(0x15, NONE, actor_get(result)->unknown018, 0xd, NULL);
+				function_114b60(NONE, 0x15, actor_get(result)->unknown018, 0xd, NULL);
 		}
 	}
 	else

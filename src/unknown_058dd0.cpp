@@ -1520,8 +1520,9 @@ void function_72950(c_class_58d20 *session)
 	{
 		time_t now = time(NULL);
 		seed = rand();
-		seed ^= GetTickCount();
-		seed ^= (long)now;
+		long &value = seed;
+		value ^= GetTickCount();
+		value ^= (long)now;
 		session->set_value_4da8(seed);
 		session->clear_value_49c4();
 	}

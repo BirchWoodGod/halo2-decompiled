@@ -81,8 +81,6 @@ void __stdcall function_23aad0(long previous_address, long current_address, long
 	(void)&current_address;
 	(void)&count;
 	s_structure_23aa *structure = (s_structure_23aa *)g_4e0348;
-	dword const *previous = (dword const *)previous_address;
-	dword const *current = (dword const *)current_address;
 	if (structure->valuef4)
 	{
 		for (long i = 0; (short)i < count; i++)
@@ -90,14 +88,14 @@ void __stdcall function_23aad0(long previous_address, long current_address, long
 			s_cluster_23aa *cluster = &structure->clusters[(short)i];
 			if (cluster->value7c != NONE && cluster->count7e > 0)
 			{
-				long slot = (short)i >> 5;
+				long offset = ((short)i >> 5) * sizeof(dword);
 				dword mask = 1UL << ((short)i & 0x1f);
-				dword was_active = previous[slot] & mask;
-				if (was_active && !(current[slot] & mask))
+				dword was_active = *(dword const *)(previous_address + offset) & mask;
+				if (was_active && !(*(dword const *)(current_address + offset) & mask))
 				{
 					function_17d710((short)i);
 				}
-				else if (!was_active && (current[slot] & mask))
+				else if (!was_active && (*(dword const *)(current_address + offset) & mask))
 				{
 					for (long j = 0; j < cluster->count7e; j++)
 					{
