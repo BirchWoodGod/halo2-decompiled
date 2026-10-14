@@ -103,7 +103,6 @@ void function_4baf0(long arg_1, real arg_2, byte *arg_3, byte *arg_4);
 void function_4b5d0(long, long, real, byte *, byte *, bool, real, bool);
 typedef void (*t_function_4b5d0_133790)(long arg_1, long arg_2, bool arg_3, real arg_4, real arg_5,
     s_133f70 *arg_6, point3f const *arg_7, bool arg_8);
-void function_133ab0(s_bit_vector_pool *arg_1, s_133f70 *arg_2, bool arg_3, bool arg_4, bool arg_5);
 bool function_133790(s_bit_vector_pool *arg_1, short arg_2, bool arg_3, long *arg_4, long arg_5, bool arg_6);
 
 PRIVATE __forceinline real function_133791(point3f const *arg_1, point3f const *arg_2)
@@ -190,7 +189,7 @@ bool function_133790(s_bit_vector_pool *arg_1, short arg_2, bool arg_3, long *ar
     {
         if (!(local_5.field_170 & 2) || arg_1->mode == 0)
         {
-            function_133ab0(arg_1, &local_5, arg_6, false, local_1);
+            arg_1->function_133ab0(&local_5, arg_6, false, local_1);
             return local_5.field_16c;
         }
     }
@@ -199,7 +198,7 @@ bool function_133790(s_bit_vector_pool *arg_1, short arg_2, bool arg_3, long *ar
 }
 
 // @retail 0x133ab0
-void function_133ab0(s_bit_vector_pool *arg_1, s_133f70 *arg_2, bool arg_3, bool arg_4, bool arg_5)
+void s_bit_vector_pool::function_133ab0(s_133f70 *arg_2, bool arg_3, bool arg_4, bool arg_5)
 {
     s_133f70 *const *local_0 = &arg_2;
     if (arg_2->field_166 > 0)
@@ -207,11 +206,11 @@ void function_133ab0(s_bit_vector_pool *arg_1, s_133f70 *arg_2, bool arg_3, bool
         bool local_1 = false;
         if (!arg_4)
         {
-            if ((signed char)arg_2->field_170 < 0)
+            if (arg_2->field_170 & 0x80)
             {
-                arg_2->field_1e0 = (arg_2->field_194.z - arg_1->center.z) * g_4b9dac.k
-                    + (arg_2->field_194.y - arg_1->center.y) * g_4b9dac.j
-                    + (arg_2->field_194.x - arg_1->center.x) * g_4b9dac.i;
+                arg_2->field_1e0 = (arg_2->field_194.z - this->center.z) * g_4b9dac.k
+                    + (arg_2->field_194.y - this->center.y) * g_4b9dac.j
+                    + (arg_2->field_194.x - this->center.x) * g_4b9dac.i;
                 if (!arg_2->field_1cc)
                 {
                     arg_2->field_1cc = true;
@@ -222,15 +221,15 @@ void function_133ab0(s_bit_vector_pool *arg_1, s_133f70 *arg_2, bool arg_3, bool
                 s_133f70 local_2 = *arg_2;
                 local_2.field_1ac = arg_2->field_1b0;
                 local_2.field_1b0 = 0;
-                local_2.field_1d0 = *(long *)((byte *)arg_2 + 0x180);
-                local_2.field_1dc = *(real *)((byte *)arg_2 + 0x190);
-                function_133ab0(arg_1, &local_2, true, true, arg_5);
+                local_2.field_1d0 = *(long *)((byte *)&local_2 + 0x180);
+                local_2.field_1dc = *(real *)((byte *)&local_2 + 0x190);
+                function_133ab0(&local_2, true, true, arg_5);
             }
             if (arg_2->field_170 & 2)
             {
-                real local_3 = (arg_2->field_194.z - arg_1->center.z) * g_4b9dac.k
-                    + (arg_2->field_194.y - arg_1->center.y) * g_4b9dac.j
-                    + (arg_2->field_194.x - arg_1->center.x) * g_4b9dac.i;
+                real local_3 = (arg_2->field_194.z - this->center.z) * g_4b9dac.k
+                    + (arg_2->field_194.y - this->center.y) * g_4b9dac.j
+                    + (arg_2->field_194.x - this->center.x) * g_4b9dac.i;
                 local_1 = true;
                 if (!arg_2->field_1cc)
                 {
@@ -242,31 +241,35 @@ void function_133ab0(s_bit_vector_pool *arg_1, s_133f70 *arg_2, bool arg_3, bool
                 s_133f70 local_4 = *arg_2;
                 local_4.field_1ac = arg_2->field_1b0;
                 local_4.field_1b0 = 0;
-                local_4.field_1d0 = *(long *)((byte *)arg_2 + 0x178);
+                local_4.field_1d0 = *(long *)((byte *)&local_4 + 0x178);
                 local_4.field_1d4 = true;
-                local_4.field_1d8 = *(real *)((byte *)arg_2 + 0x188);
+                local_4.field_1d8 = *(real *)((byte *)&local_4 + 0x188);
                 local_4.field_1e0 = local_3;
-                function_133ab0(arg_1, &local_4, true, true, arg_5);
+                function_133ab0(&local_4, true, true, arg_5);
             }
-            if (arg_2->field_170 & 1)
+            dword entry_flags = arg_2->field_170;
+            if (entry_flags & 1)
             {
                 s_133f70 local_5 = *arg_2;
-                arg_2->field_170 &= ~1;
-                local_1 = (bool)((arg_2->field_170 >> 1) & 1);
+                entry_flags &= ~1;
+                arg_2->field_170 = entry_flags;
+                local_1 = (bool)((entry_flags >> 1) & 1);
                 local_5.field_1ac |= 0x8000;
-                local_5.field_1d0 = *(long *)((byte *)arg_2 + 0x174);
-                local_5.field_1dc = *(real *)((byte *)arg_2 + 0x184);
-                function_133ab0(arg_1, &local_5, false, true, arg_5);
+                local_5.field_1d0 = *(long *)((byte *)&local_5 + 0x174);
+                local_5.field_1dc = *(real *)((byte *)&local_5 + 0x184);
+                function_133ab0(&local_5, false, true, arg_5);
             }
-            if (arg_2->field_170 & 0x20)
+            dword entry_flags_2 = arg_2->field_170;
+            if (entry_flags_2 & 0x20)
             {
                 s_133f70 local_6 = *arg_2;
-                arg_2->field_170 &= ~0x20;
-                local_1 = (bool)((arg_2->field_170 >> 1) & 1);
+                entry_flags_2 &= ~0x20;
+                arg_2->field_170 = entry_flags_2;
+                local_1 = (bool)((entry_flags_2 >> 1) & 1);
                 local_6.field_1ac |= 0x8000;
-                local_6.field_1d0 = *(long *)((byte *)arg_2 + 0x17c);
-                local_6.field_1dc = *(real *)((byte *)arg_2 + 0x18c);
-                function_133ab0(arg_1, &local_6, false, true, arg_5);
+                local_6.field_1d0 = *(long *)((byte *)&local_6 + 0x17c);
+                local_6.field_1dc = *(real *)((byte *)&local_6 + 0x18c);
+                function_133ab0(&local_6, false, true, arg_5);
             }
         }
         if (arg_4 || !local_1)
@@ -294,9 +297,9 @@ void function_133ab0(s_bit_vector_pool *arg_1, s_133f70 *arg_2, bool arg_3, bool
             }
             local_8.field_1be = NONE;
             local_8.field_1b0 = (local_8.field_1b0 & ~0x40) | 1;
-            ((t_function_4b5d0_133790)function_4b5d0)(local_7, arg_1->mode, arg_5, *(real *)local_8.field_1b8,
+            ((t_function_4b5d0_133790)function_4b5d0)(local_7, this->mode, arg_5, *(real *)local_8.field_1b8,
                 local_8.field_1b4, &local_8, &local_8.field_194, (bool)local_8.field_1a4[4]);
-            function_133ab0(arg_1, &local_8, true, arg_4, arg_5);
+            function_133ab0(&local_8, true, arg_4, arg_5);
             local_7 = ((s_133792 *)g_4e0300->data)[local_7 & 0xffff].field_8->field_c;
         }
     }

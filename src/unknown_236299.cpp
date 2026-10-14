@@ -282,23 +282,22 @@ void function_2363d4(short_rectangle2d const *bounds, short *x, short *y)
 	short left = bounds->left;
 	short top = bounds->top;
 	short right = bounds->right;
-	struct { short width, height; } dimensions;
-	dimensions.width = right - left;
-	dimensions.height = bottom - top;
+	short width = right - left;
+	short height = bottom - top;
 
-	if (dimensions.width == 320)
+	if (width == 320)
 	{
 		if (top == 0)
 		{
 			if (left == 0)
 			{
 				*x = 20;
-				goto negative_y;
+				*y = -16;
 			}
 			else
 			{
 				*x = -20;
-				goto negative_y;
+				*y = -16;
 			}
 		}
 		else
@@ -306,40 +305,33 @@ void function_2363d4(short_rectangle2d const *bounds, short *x, short *y)
 			if (left == 0)
 			{
 				*x = 20;
-				goto positive_y;
+				*y = 16;
 			}
 			else
 			{
 				*x = -20;
-				goto positive_y;
+				*y = 16;
 			}
+		}
+	}
+	else if (height == 240)
+	{
+		if (top == 0)
+		{
+			*x = 0;
+			*y = -16;
+		}
+		else
+		{
+			*x = 0;
+			*y = 16;
 		}
 	}
 	else
 	{
 		*x = 0;
-		if (dimensions.height == 240)
-		{
-			if (top == 0)
-			{
-				goto negative_y;
-			}
-			else
-			{
-				goto positive_y;
-			}
-		}
-		else
-		{
-			*y = 0;
-		}
+		*y = 0;
 	}
-	return;
-negative_y:
-	*y = -16;
-	return;
-positive_y:
-	*y = 16;
 }
 
 /* a machine address */
