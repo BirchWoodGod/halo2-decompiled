@@ -2690,7 +2690,9 @@ void __stdcall function_2772b0(long animation_graph_index, long animation_name, 
 
 		if (function_11b520(actor->unit_index, animation_graph_index, animation_name, interpolate, NONE, false))
 		{
-			real ticks_real = (real)g_510c54->field_2_3 * (function_11b6b0(actor->unit_index) * scale);
+			real animation_ticks = function_11b6b0(actor->unit_index);
+			real scaled_ticks = animation_ticks * scale;
+			real ticks_real = (real)g_510c54->field_2_3 * scaled_ticks;
 			long ticks;
 			__asm
 			{
