@@ -366,9 +366,8 @@ real *function_143600(real const *rotation, unsigned long order, real const *coe
 // @retail 0x22850
 void function_22850(void)
 {
-    for (long i = 0; i < 24; ++i)
+    for (s_table_entry *entry = g_4b89b0; entry != g_4b89b0 + 24; ++entry)
     {
-        s_table_entry *entry = &g_4b89b0[i];
         entry->key = NONE;
         *(short *)&entry->unknown4 = NONE;
         entry->data_handle = NONE;

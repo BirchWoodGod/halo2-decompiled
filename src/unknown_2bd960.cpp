@@ -1772,9 +1772,9 @@ void c_game_engine_45c948::v14(long local_player)
 				long other = iterator.index;
 				if (other != player_index)
 				{
+					short own_team = player->team;
 					short other_team = ((s_player_2be *)iterator.player)->team;
 					c_engine_peer *engine = g_55e4d0[g_4e9ae8->engine_index];
-					short own_team = player->team;
 					bool friendly = false;
 					if (engine)
 						friendly = engine->p27(other_team, own_team);
