@@ -1478,7 +1478,14 @@ void __stdcall function_25b440(long arg_0, long arg_1)
 long function_1fa7f0(void);
 long __stdcall function_26d0e0(point3f const *arg_0, s_type_c3b527 *arg_1, long arg_2);
 
-#pragma optimize("s", on)
+/* out = vector * scale */
+PRIVATE inline void vector_scale_25b6b0(vector3f const *vector, real scale, vector3f *out)
+{
+	out->i = vector->i * scale;
+	out->j = vector->j * scale;
+	out->k = vector->k * scale;
+}
+
 // @retail 0x25b6b0
 void function_25b6b0(long arg_0, long arg_1)
 {
@@ -1486,8 +1493,8 @@ void function_25b6b0(long arg_0, long arg_1)
 	s_prop_datum *local_1 = prop_ref_get(arg_1);
 	long local_2 = local_1->object_index;
 	s_slot_object_view *local_3 = object_get(local_2);
-	if (local_3->type == 5 && local_1->unknown27 > 0 && local_0->unknown018 != NONE)
-		function_20ba60(6, local_0->unknown018, local_2, NONE, NONE, NULL);
+	if (local_3->type == 5 && local_1->unknown27 > 0 && actor_get(arg_0)->unknown018 != NONE)
+		function_20ba60(6, actor_get(arg_0)->unknown018, local_2, NONE, NONE, NULL);
 	if (local_3->type == 5)
 	{
 		long local_4 = *(long *)((byte *)local_3 + 0xc8);
@@ -1511,17 +1518,14 @@ void function_25b6b0(long arg_0, long arg_1)
 							*(point3f *)((byte *)local_8 + 0x30) = local_9;
 							local_8->position = local_9;
 							s_slot_object_view *local_10 = object_get(function_baf80(local_2));
-							*(long *)((byte *)local_8 + 0x28) = *(long *)((byte *)local_10 + 0x28);
-							*(long *)((byte *)local_8 + 0x2c) = *(long *)((byte *)local_10 + 0x2c);
+							*(s_location *)((byte *)local_8 + 0x28) = *(s_location const *)((byte *)local_10 + 0x28);
 							s_type_c3b527 local_11;
 							local_8->unknown44 = function_26d0e0(&local_9, &local_11, function_1fa7f0());
 							*(s_type_c3b527 *)&local_8->unknown48 = local_11;
 						}
 						if (local_7 && local_3->parent_index == NONE)
 						{
-							local_7->unknown94.i = local_3->velocity.i * -1.f;
-							local_7->unknown94.j = local_3->velocity.j * -1.f;
-							local_7->unknown94.k = local_3->velocity.k * -1.f;
+							vector_scale_25b6b0(&local_3->velocity, -1.f, &local_7->unknown94);
 							local_7->unknown94.k = 0.f;
 							function_30bf0(&local_7->unknown94);
 						}
@@ -1531,7 +1535,6 @@ void function_25b6b0(long arg_0, long arg_1)
 		}
 	}
 }
-#pragma optimize("", on)
 
 bool function_2675b0(long arg_0);
 bool function_267680(long arg_0);

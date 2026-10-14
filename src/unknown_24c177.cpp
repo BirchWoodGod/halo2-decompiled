@@ -364,18 +364,14 @@ void function_24c1c5(c_widget *widget, char direction)
 						datum = data_last_index(list->data);
 						if (datum != NONE)
 						{
-							while (focused)
+							do
 							{
+								if (!focused) break;
 								c_class_1a2c81 *previous = focused->previous;
-
 								((c_class_14750b *)focused)->value70 = datum;
 								focused = previous;
 								datum = function_16bcc0(list->data, datum);
-								if (datum == NONE)
-								{
-									break;
-								}
-							}
+							} while (datum != NONE);
 						}
 						moved = true;
 					}

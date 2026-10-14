@@ -1533,48 +1533,39 @@ long map_location_progress_get(char const *map_name);
 real __stdcall function_122dd0(byte *map_name, long mode, long type);
 bool __stdcall function_163890(char const *map_name, long mode);
 
+static __forceinline bool function_65341(c_class_58d20 **out)
+{
+ bool result = false;
+ long state = g_527330.initialized ? g_527330.state : 0;
+ switch (state)
+ {
+ case 1: case 2: case 3: case 4:
+  if (g_527330.initialized)
+  {
+   c_class_58d20 *current = (c_class_58d20 *)g_527330.session_a;
+   if (current->state) { *out = current; result = true; }
+  }
+  break;
+ case 6: case 7: case 8: case 9:
+  if (g_527330.initialized)
+  {
+   c_class_58d20 *current = (c_class_58d20 *)g_527330.session_b;
+   if (current->state) { *out = current; result = true; }
+  }
+  break;
+ default: break;
+ }
+ return result;
+}
+
 // @retail 0x65340
 void function_065340(void)
 {
+	c_class_58d20 *session = 0;
+	bool found = function_65341(&session);
 	long status = 0;
 	real progress = 0.0f;
 	long variant_index = NONE;
-	c_class_58d20 *session = 0;
-	bool found = false;
-	long state = g_527330.initialized ? g_527330.state : 0;
-	switch (state)
-	{
-	case 1:
-	case 2:
-	case 3:
-	case 4:
-		if (g_527330.initialized)
-		{
-			c_class_58d20 *current = (c_class_58d20 *)g_527330.session_a;
-			if (current->state)
-			{
-				session = current;
-				found = true;
-			}
-		}
-		break;
-	case 6:
-	case 7:
-	case 8:
-	case 9:
-		if (g_527330.initialized)
-		{
-			c_class_58d20 *current = (c_class_58d20 *)g_527330.session_b;
-			if (current->state)
-			{
-				session = current;
-				found = true;
-			}
-		}
-		break;
-	default:
-		break;
-	}
 	if (found && session && SESSION_STATE_IS_LIVE(session->state))
 	{
 		long first_id;

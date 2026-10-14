@@ -107,14 +107,23 @@ struct s_audio_object_state
 	byte unused1 : 5;
 };
 
+/* the object flag word at +0x10a as 0x20f960 reads it */
+struct s_audio_object_state_20f960
+{
+	byte unknown000[0x10a];
+	word unused0 : 2;
+	word blocked : 1;
+	word unused1 : 13;
+};
+
 // @retail 0x20f960
 long function_20f960(long index, s_audio_priority_table *table, bool *expired)
 {
 	(void)&expired;
 	volatile bool result = false;
 	byte *record = g_4f9398->data + (index & 0xffff) * 0x54;
-	s_audio_priority_definition *definition = &table->entries[*(short *)(record + 2)];
 	long time = g_510c54->game_time;
+	s_audio_priority_definition *definition = &table->entries[*(short *)(record + 2)];
 	if (expired)
 		*expired = false;
 	if (!*((byte *)g_4f55d0 + 0x20) || *(short *)((byte *)g_4f55d0 + 0x22) > 0)
@@ -133,7 +142,7 @@ long function_20f960(long index, s_audio_priority_table *table, bool *expired)
 	{
 		byte *object = *(byte **)(g_4e0300->data + (*(long *)(record + 4) & 0xffff) * 12 + 8);
 		result = true;
-		if (TEST_FIELD_BIT(((s_audio_object_state *)object)->blocked))
+		if (TEST_FIELD_BIT(((s_audio_object_state_20f960 *)object)->blocked))
 			goto rejected;
 		long actor_index = *(long *)(object + 0x12c);
 		if (actor_index == NONE)
@@ -155,7 +164,7 @@ long function_20f960(long index, s_audio_priority_table *table, bool *expired)
 			case 196:
 			case 198:
 				{
-					s_audio_object_state *target = (s_audio_object_state *)function_badc0(*(long *)(record + 0x28), NONE);
+					s_audio_object_state_20f960 *target = (s_audio_object_state_20f960 *)function_badc0(*(long *)(record + 0x28), NONE);
 					if (!target || TEST_FIELD_BIT(target->blocked))
 						goto rejected;
 				}
@@ -168,7 +177,12 @@ rejected:
 	result = false;
 report_expiration:
 	if (expired)
-		*expired = *(long *)(g_4f9398->data + (index & 0xffff) * 0x54 + 0x2c) != 0;
+	{
+		bool value = false;
+		if (*(long *)(g_4f9398->data + (index & 0xffff) * 0x54 + 0x2c))
+			value = true;
+		*expired = value;
+	}
 done:
 	return result;
 }
@@ -1146,10 +1160,10 @@ void function_211cc0(void)
 
 			do
 			{
-				vector3f *p3 = &g_4f93bc[b * 8 + ((k + 2) & 7)][0];
-				vector3f *p2 = &g_4f93bc[b * 8 + ((k + 1) & 7)][0];
+				vector3f *p3 = &g_4f93bc[b * 8 + (word)((k + 2) & 7)][0];
+				vector3f *p2 = &g_4f93bc[b * 8 + (word)((k + 1) & 7)][0];
 				vector3f *p1 = &g_4f93bc[b * 8 + k][0];
-				vector3f *p0 = &g_4f93bc[b * 8 + ((k - 1) & 7)][0];
+				vector3f *p0 = &g_4f93bc[b * 8 + (word)((k - 1) & 7)][0];
 				long i;
 
 				for (i = 0; i < 3; i++)
