@@ -132,7 +132,7 @@ typedef void (__stdcall *t_aux_view_callback)(void *context);
 // @retail 0x2ca00
 void function_2ca00(point3f const *position, t_aux_view_callback callback, void *context)
 {
-    (void)&callback; (void)&context;
+    t_aux_view_callback const *callback_reference = &callback;
     s_frame_parameters_12a50 parameters = {};
     ++g_4ba034;
     parameters.mode = 2;
@@ -146,10 +146,11 @@ void function_2ca00(point3f const *position, t_aux_view_callback callback, void 
     memcpy(frame.view + 0x30, &g_485a8a, sizeof(g_485a8a));
     function_2fd90((s_2f800_view const *)frame.view, 0, frame.projection);
     s_frame_view_2c560 *saved = &g_4850d0[++g_46701c];
-    store_current_view(frame.view);
+    g_camera_storage = *(s_camera_storage const *)frame.view;
     *saved = frame;
     function_132d0(saved);
-    if (callback) callback(context);
+    t_aux_view_callback const handler = *callback_reference;
+    if (handler) handler(context);
     function_13c20();
     function_13cd0();
 }
