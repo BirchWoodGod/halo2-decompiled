@@ -1174,21 +1174,9 @@ void __stdcall function_095580(void *header, long message_type, long message_siz
 	{
 		if (sequence_window_count(&self->m_message_window) < self->m_message_window.capacity)
 		{
-			bool last;
-			long fragment_bits;
-			long size;
-			if (bits <= 256)
-			{
-				last = true;
-				fragment_bits = bits;
-				size = (bits + 7) / 8;
-			}
-			else
-			{
-				last = false;
-				fragment_bits = 256;
-				size = 32;
-			}
+			bool last = bits <= 256;
+			long fragment_bits = last ? bits : 256;
+			long size = (fragment_bits + 7) / 8;
 			s_allocator_globals *globals = g_4d87f8;
 			void *block = globals->allocator->allocate(size, 0, 0);
 			if (!block)

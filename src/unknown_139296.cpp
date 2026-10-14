@@ -1097,12 +1097,12 @@ bool function_13a3c6(long arg_1, long arg_2, byte const *arg_3, long arg_4)
 void function_13a532(long arg_1, long arg_2, byte const *arg_3, long arg_4)
 {
 	s_13a532 const *local_2 = (s_13a532 const *)g_4e3b44[arg_1 & 0xffff].bytes;
-    word local_3 = 0;
-    word local_4 = 0;
+    word local_6 = 0;
     union s_13a533 { dword field_0; word field_1; };
     s_13a533 local_5;
     local_5.field_0 = 0;
-    word local_6 = 0;
+    word local_4 = 0;
+    word local_3 = 0;
     function_13a050(arg_3, arg_2, arg_4, (s_13ad48_item const **)&arg_4, &local_3, &local_4, &local_5.field_1, &local_6);
     if (local_2->field_20 > 0)
     {

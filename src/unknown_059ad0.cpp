@@ -2486,7 +2486,8 @@ bool network_session_handle_peer_establish(c_class_58d20 *session, long remote_i
 	if (session->function_058d20() && member_index != NONE && member_index != session->current_member)
 	{
 		session->member_states[member_index].flag3 = result;
-		return true;
+		result = true;
+		goto done;
 	}
 	if (!session->function_058d20())
 	{
@@ -2503,6 +2504,7 @@ bool network_session_handle_peer_establish(c_class_58d20 *session, long remote_i
 		}
 		network_observer_send_message(observer, owner, channel_index, false, _network_message_type_host_decline, sizeof(message), &message);
 	}
+done:
 	return result;
 }
 
