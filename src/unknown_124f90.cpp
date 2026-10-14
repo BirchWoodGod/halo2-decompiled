@@ -2193,39 +2193,40 @@ real g_547f14;
 // @retail 0x126c30
 bool function_126c30(s_sound_play_state *state, long tag_index, long *listener_index, long *reason)
 {
-	long const *local_947334 = &tag_index;
 	s_type_99c531 *location = &state->location;
 	bool result = false;
 	long failure = 5;
 
 	if (sound_system_available())
 	{
-		s_sound_definition *definition = sound_definition_get(*local_947334);
+		s_sound_definition *definition = sound_definition_get(tag_index);
 
 		if ((definition->format == 1 && definition->type != 2) || (definition->type == 2 && g_47f0e4))
 		{
-			real random = function_x82e52f(&g_4e7408->seed, __FILE__, __LINE__);
-			s_sound_playback_parameters *playback = &SOUND_GLOBALS_DEFINITIONS->playback_parameters[definition->playback_index];
-			real lower = playback->skip_fraction_lower;
-			real local_cc7843 = lower + (playback->skip_fraction_upper - lower) * location->scale;
-
 			failure = 1;
+			real random = function_x82e52f(&g_4e7408->seed, __FILE__, __LINE__);
+			real const *skip_fraction = &SOUND_GLOBALS_DEFINITIONS->playback_parameters[definition->playback_index].skip_fraction_lower;
+			real lower = skip_fraction[0];
+			real local_cc7843 = lower + (skip_fraction[1] - lower) * location->scale;
+
 			if (random > local_cc7843 * function_xaa8231(definition->class_index)->skip_fraction_scale)
 			{
 				failure = 4;
-				if (function_126bd0(*local_947334))
+				if (function_126bd0(tag_index))
 				{
-					real distance = sound_get_maximum_distance((s_sound const *)location, *local_947334);
+					real distance = sound_get_maximum_distance((s_sound const *)location, tag_index);
 
 					*listener_index = function_127d00(location, distance, &distance);
 					if (*listener_index != NONE)
 					{
-						real distance_gain = sound_get_distance_gain(*local_947334, (s_sound const *)location, distance);
+						real distance_gain = sound_get_distance_gain(tag_index, (s_sound const *)location, distance);
 						long gain = function_1251e0(definition, location->unknown08, location->scale);
 						long distance_decibels = function_2197f0(distance_gain);
-						long decibels = decibels_add(function_xaa8231(definition->class_index)->gain_base, decibels_add(gain, distance_decibels));
+						real decibels = *(real *)&function_xaa8231(definition->class_index)->gain_base + (*(real *)&gain + *(real *)&distance_decibels);
 
-						if (SOUND_FLAG(location->flags, 11) || SOUND_FLAG(location->flags, 8) || *(real *)&decibels > -64.0f)
+						bool forced = SOUND_FLAG(location->flags, 11) || SOUND_FLAG(location->flags, 8);
+
+						if (forced || decibels > -64.0f)
 						{
 							failure = 0;
 							result = true;
@@ -3280,7 +3281,7 @@ void function_1293f0(void)
 			continue;
 		s_type_12a1b0_spatial local_8;
 		function_129aa0((short)local_2, &local_5, (s_looping_channel_spatialization *)&local_8);
-		local_5 = decibels_add(local_1, local_5);
+		*(real *)&local_5 = *(real *)&local_1 + *(real *)&local_5;
 		if ((1 << SOUND_PLAYBACK_GET(local_3->sound_index)->state) & 0x1e)
 			function_21c400((short)local_2, *(real *)&local_5, (s_looping_channel_spatialization *)&local_8);
 		else
