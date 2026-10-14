@@ -48,7 +48,7 @@ bool function_212bc0(long file_index, s_game_variant *variant);
 bool __stdcall function_215f40(long type, byte *buffer);
 long function_212380(long type, long controller_index, byte *buffer);
 void function_1489b5(long type, s_game_variant *variant);
-void function_148aa3(long error, dword controller_flags);
+void function_148aa3(long error, word controller_flags);
 long saved_game_file_type_from_variant(s_game_variant *variant);
 void function_238c69(long mode, long type, word *name, long maximum_count, long controller);
 bool __stdcall function_19a728(s_game_variant *variant);

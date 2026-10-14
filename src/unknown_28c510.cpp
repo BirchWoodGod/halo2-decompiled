@@ -405,7 +405,6 @@ void function_28cb70()
 		real reciprocal;
 		real weight;
 
-		++vector;
 		__asm
 		{
 			rcpss xmm0, difference
@@ -413,7 +412,7 @@ void function_28cb70()
 		}
 
 		weight = reciprocal * x;
-		function_28cb72(vector, weight, destination);
+		function_28cb72(vector + 1, weight, destination);
 	}
 }
 

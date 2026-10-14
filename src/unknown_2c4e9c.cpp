@@ -3478,7 +3478,7 @@ long __stdcall function_120e70(byte *buffer);
 bool __stdcall function_215f40(long arg_9db745, byte *buffer);
 long function_212380(long arg_9db745, long controller_index, byte *buffer);
 bool function_212bc0(long file_index, s_game_variant *variant);
-void function_148aa3(long error, dword controller_flags);
+void function_148aa3(long error, word controller_flags);
 void function_238c21(long controller, long type, word *name, long maximum_count);
 c_class_1473c9 *__stdcall function_2ca4cd(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2ca525(s_screen_parameters *parameters);
@@ -3631,7 +3631,7 @@ void c_game_engine_variant_category_list::handle_item(s_controller_reference **c
 
 		if (create)
 		{
-			short arg_9db745;
+			long arg_9db745;
 			byte buffer[0x100];
 			s_game_variant variant;
 			long file_index;

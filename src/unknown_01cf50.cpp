@@ -2029,7 +2029,7 @@ void function_18e80(s_shader_constant_state *state)
 }
 
 extern s_record_pool *g_509434;
-extern long g_4c1bd0;
+#include "target_cache_storage.h"
 
 // @retail 0x3d270
 void function_3d270(void)
