@@ -256,7 +256,7 @@ bool game_state_core_read(char const *name, void *buffer, dword size)
 	game_state_core_get_file(name, &reference);
 	if (function_136970(&reference, 1, &error))
 	{
-		result = function_136ca0(&reference, buffer, size, false);
+		result = function_136ca0(&reference, size, buffer, false);
 		function_136bb0(&reference);
 	}
 	return result;

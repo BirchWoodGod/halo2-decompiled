@@ -76,8 +76,6 @@ void __stdcall function_1b47b0(long actor_index, s_slot *slot) { }
 
 
 
-// @stub 0x1b99d0
-short __stdcall function_1b99d0(long actor_index, s_slot *slot) { return 0; }
 
 
 
@@ -88,8 +86,6 @@ short __stdcall function_1bc850(long actor_index, s_slot *slot, bool active) { r
 
 
 
-// @stub 0x1bdad0
-void __stdcall function_1bdad0(long actor_index, s_slot *slot, long index) { }
 
 
 
@@ -102,8 +98,6 @@ struct s_1fbac0_event;
 void __stdcall function_1fbac0(long unknown, long unit_index, bool unknown2, long unknown3, s_1fbac0_event *event) { }
 
 
-// @stub 0x1f8a70
-bool __stdcall function_1f8a70(long actor_index, long unknown) { return 0; }
 
 
 

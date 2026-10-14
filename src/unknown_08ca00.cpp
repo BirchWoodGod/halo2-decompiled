@@ -134,7 +134,7 @@ bool __stdcall function_8ca70(long mode, s_name_buffer *output)
 					s_name_list list;
 					name_list_clear(&list);
 					function_8ca71(&file, 0x200, true);
-					if (function_136ca0(&file, &list, sizeof(list), true))
+					if (function_136ca0(&file, sizeof(list), &list, true))
 					{
 					long local_1 = list.count;
 					if (local_1 <= 32)
@@ -149,7 +149,7 @@ bool __stdcall function_8ca70(long mode, s_name_buffer *output)
 				else
 				{
 					wchar_t message[256] = { 0 };
-					if (function_136ca0(&file, message, sizeof(message), true))
+					if (function_136ca0(&file, sizeof(message), message, true))
 					{
 						function_08cc20(output, message);
 						result = true;
