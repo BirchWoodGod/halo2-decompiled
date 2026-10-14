@@ -33,10 +33,9 @@ long function_11ea30(point3f const *a, vector3f const *u, point3f const *b, vect
 PRIVATE __forceinline void function_1c9291(point3f const *arg_0, vector3f const *arg_1,
  real arg_2, real arg_3, point3f *arg_4)
 {
- real local_0 = arg_2 * arg_2 * arg_3 * 0.5f;
  arg_4->x = arg_1->i * arg_2 + arg_0->x;
  arg_4->y = arg_1->j * arg_2 + arg_0->y;
- arg_4->z = arg_1->k * arg_2 + arg_0->z + local_0;
+ arg_4->z = arg_2 * arg_2 * arg_3 * 0.5f + (arg_2 * arg_1->k + arg_0->z);
 }
 
 // @retail 0x1c9290
@@ -76,7 +75,9 @@ bool function_1c9290(long arg_0, point3f const *arg_1, vector3f const *arg_2,
   local_4.k += local_8 * arg_4;
   local_3 = local_9;
   local_6 = local_5;
-  local_5 = local_5 + 0.2f < arg_3 ? local_5 + 0.2f : arg_3;
+  local_5 += 0.2f;
+  if (local_5 > arg_3)
+   local_5 = arg_3;
  } while (arg_3 > local_6);
  return local_7;
 }

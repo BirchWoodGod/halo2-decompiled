@@ -208,8 +208,8 @@ s_seat_animation_entry *function_187fe0(long type, s_seat_animation const *anima
 	s_seat_animation_entry *result;
 	bool first = type == 0;
 	result = NULL;
-	s_seat_animation const *const *animation_reference = &animation;
-	register s_seat_animation const *local_1 = *animation_reference;
+	s_seat_animation const *const *animation_holder = &animation;
+	register s_seat_animation const *local_1 = *animation_holder;
 	short const *element_reference = &element_index;
 	short local_0 = *element_reference;
 	long count = first ? local_1->first_count : local_1->second_count;

@@ -644,6 +644,19 @@ struct s_sound_driver_voice_parameters
 	real obstruction_rate;
 };
 
+/* the voice's flag byte as 0x220e00 writes it */
+struct s_voice_flags_220e00
+{
+	byte bit0 : 1;
+	byte unknown_1 : 7;
+};
+
+/* a change limited to plus or minus a rate (0x220e00) */
+static __forceinline real pin_rate_220e00(real delta, real rate)
+{
+	return PIN(delta, -rate, rate);
+}
+
 // @retail 0x220e00
 void sound_driver_voice_update(
 	long voice_index,
@@ -661,7 +674,8 @@ void sound_driver_voice_update(
 		!(fabs(parameters->position.y - voice->position.y) < 0.05f) ||
 		!(fabs(parameters->position.z - voice->position.z) < 0.05f))
 	{
-		IDirectSoundBuffer_SetPosition(voice->buffer, parameters->position.x, parameters->position.y, parameters->position.z, DS3D_DEFERRED);
+		/* DirectSound's y axis is up */
+		IDirectSoundBuffer_SetPosition(voice->buffer, parameters->position.x, parameters->position.z, parameters->position.y, DS3D_DEFERRED);
 		voice->position = parameters->position;
 	}
 	if (!force && fabs(occlusion - voice->unknown2c) < 0.001f &&
@@ -672,7 +686,9 @@ void sound_driver_voice_update(
 	}
 	if (!force && (voice->flags & 1) == flag && !(0.0f >= parameters->obstruction_rate))
 	{
-		voice->unknown30 += PIN(obstruction - voice->unknown30, -parameters->obstruction_rate, parameters->obstruction_rate);
+		real rate = parameters->obstruction_rate;
+		real *value = &voice->unknown30;
+		*value += PIN(obstruction - *value, -rate, rate);
 	}
 	else
 	{
@@ -680,13 +696,13 @@ void sound_driver_voice_update(
 	}
 	if (!force && (voice->flags & 1) == flag && !(0.0f >= parameters->occlusion_rate))
 	{
-		voice->unknown2c += PIN(occlusion - voice->unknown2c, -parameters->occlusion_rate, parameters->occlusion_rate);
+		voice->unknown2c += pin_rate_220e00(occlusion - voice->unknown2c, parameters->occlusion_rate);
 	}
 	else
 	{
 		voice->unknown2c = occlusion;
 	}
-	voice->flags ^= (voice->flags ^ flag) & 1;
+	((s_voice_flags_220e00 *)&voice->flags)->bit0 = flag;
 	sound_driver_voice_environment_set(voice_index, parameters->decibels);
 local_0:
 	voice->flags |= 2;

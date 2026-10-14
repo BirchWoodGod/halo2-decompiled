@@ -127,7 +127,8 @@ void function_1a07b0(s_player_profile *profile, long type)
 	profile->unknown118 = 10;
 	profile->unknown119 = 0;
 	profile->unknown11a = 0;
-	profile->unknown11b = 10;
+	byte *local_2 = &profile->unknown11b;
+	*local_2 = 10;
 	profile->unknown11d = 0;
 	profile->unknown11e = 0;
 	dword *local_0 = (dword *)((byte *)profile + 4);
@@ -170,7 +171,8 @@ bool function_1a0850(long file_index, s_player_profile *profile)
 
 	if (result)
 		*profile = file_profile;
-	profile->name[31] = 0;
+	wchar_t *name = profile->name;
+	name[31] = 0;
 	if (profile->unknown11f[0x151 - 0x11f] >= 3)
 		profile->unknown11f[0x151 - 0x11f] = 0;
 	if (!function_153750((s_player_appearance *)&profile->unknown118))
@@ -180,7 +182,7 @@ bool function_1a0850(long file_index, s_player_profile *profile)
 
 /* a player profile: the guest's (no file), or the one saved in the file */
 // @retail 0x1a0540
-bool function_1a0540(s_player_profile_settings *settings, long file_index)
+bool function_1a0540(long file_index, s_player_profile_settings *settings)
 {
 	s_player_profile *profile = (s_player_profile *)settings;
 
@@ -223,7 +225,10 @@ bool function_1a0560(wchar_t const *name, s_player_profile_settings *settings, l
 			{
 				result = true;
 				if (settings)
-					result = function_1a0540(settings, indices[index]);
+				{
+					bool loaded = function_1a0540(indices[index], settings);
+					result = loaded;
+				}
 				if (result && file_index)
 					*file_index = indices[index];
 				break;

@@ -351,20 +351,21 @@ void function_1e6120(s_biped_physics_output *output, void *physics, real rate,
 	state->field_a8 = *mode_reference;
 	state->direction = state->default_direction;
 	state->enabled = true;
-	real blend = 0.0f;
-	if (!(state->flags & 4))
-		blend = *crouch_reference;
+	real blend = (state->flags & 4) ? 0.0f : *crouch_reference;
 	if ((bool)((state->definition->flags >> 2) & 1) && !*airborne_reference)
 	{
 		s_physics_movement_settings *settings = ((s_physics_movement_globals *)g_4e034c)->settings;
 		vector3f control = state->control;
-		real squared = length_sq3f(&control);
+		real squared = control.k * control.k;
+		squared += control.j * control.j;
+		squared += control.i * control.i;
 		if (squared > 1.0f)
 		{
 			real scale = 1.0f / (real)sqrt(squared);
 			control.i = (real)(control.i * scale);
 			control.j = (real)(control.j * scale);
 		}
+		state->velocity.k = 0.0f;
 		real remaining = 1.0f - blend;
 		real first, second;
 		if (!(control.i > 0.0f)) {
@@ -376,7 +377,6 @@ void function_1e6120(s_biped_physics_output *output, void *physics, real rate,
 		}
 		state->velocity.i = first * remaining + second * blend;
 		state->velocity.j = settings->sideways * remaining + settings->crouched_sideways * blend;
-		state->velocity.k = 0.0f;
 		state->speed = settings->speed * remaining + settings->crouched_speed * blend;
 		state->field_148 = settings->field_4c;
 		if (*limited_reference)

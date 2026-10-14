@@ -12,6 +12,18 @@ public:
 
 
 
+PRIVATE inline s_actor_datum *squad_actor_next_1c84a0(s_squad_actor_iterator *iterator)
+{
+ s_actor_datum *actor = NULL;
+ if (g_4f55d0->active && iterator->next_actor_index != NONE)
+ {
+  actor = actor_datum_get(iterator->next_actor_index);
+  iterator->actor_index = iterator->next_actor_index;
+  iterator->next_actor_index = actor->next_actor_index;
+ }
+ return actor;
+}
+
 // @retail 0x1c84a0
 void function_1c84a0(long arg_0, bool arg_1)
 {
@@ -21,14 +33,8 @@ void function_1c84a0(long arg_0, bool arg_1)
   {
    s_squad_actor_iterator local_0;
    function_204d30(&local_0, arg_0);
-   long local_1 = local_0.next_actor_index;
-   while (g_4f55d0->active && local_1 != NONE)
-   {
-    byte *local_2 = g_4f55f0->data + (local_1 & 0xffff) * 0x888;
-    long local_3 = local_1;
-    local_1 = *(long *)(local_2 + 0x20);
-    ((c_1e2990 *)local_3)->function_1e2990(arg_1);
-   }
+   while (squad_actor_next_1c84a0(&local_0) != NULL)
+    ((c_1e2990 *)local_0.actor_index)->function_1e2990(arg_1);
   }
   else
   {

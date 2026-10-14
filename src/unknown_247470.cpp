@@ -93,6 +93,8 @@ void c_247470::function_247470(real arg_0, s_particle_system_datum *arg_1, s_obj
 		}
 		while (field_c + 0.0001f >= 1.f)
 		{
+			long local_7; /* unreferenced; retail's frame keeps its slot at -0x48 */
+
 			field_c -= 1.f;
 			function_247950(arg_1, (s_particle_spawn_definition const *)arg_2, arg_5, local_5, arg_0, local_1, (s_247950 *)this, arg_3);
 			local_5 += local_6;

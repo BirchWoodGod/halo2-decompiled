@@ -139,8 +139,7 @@ public:
 
 PRIVATE __forceinline long contact_metadata_pin(long value, long lower, long upper)
 {
-	long result = value < lower ? lower : value;
-	return result > upper ? upper : result;
+	return value < lower ? lower : value > upper ? upper : value;
 }
 
 PRIVATE __forceinline bool contact_shape_has_material(s_contact_body_view const *body)
@@ -150,7 +149,7 @@ PRIVATE __forceinline bool contact_shape_has_material(s_contact_body_view const 
 	long metadata = body->shape->metadata;
 	if (!metadata)
 		return false;
-	if (contact_metadata_pin(metadata, 1, 16) == metadata)
+	if (contact_metadata_pin(body->shape->metadata, 1, 16) == metadata)
 		return false;
 	return *(byte *)(metadata + 0x1e) != 0xff;
 }
@@ -687,9 +686,10 @@ void __stdcall function_1c35f0(long object_index)
 	if (((1 << header->type) & 0x1883) && !(header->flags & 0x10))
 	{
 		long root_index = function_baf80(object_index);
+		s_physics_object_header *root = physics_object_header_get(root_index);
 
-		header->object->bit12 = false;
-		if (physics_object_header_get(root_index)->cluster_index != NONE)
+		function_0bfe40(&header->object->flags, 0xc, false);
+		if (root->cluster_index != NONE)
 		{
 			s_physics_object *object = header->object;
 
@@ -704,8 +704,10 @@ void __stdcall function_1c35f0(long object_index)
 				{
 					function_1d1540((s_havok_component *)component);
 				}
+#pragma inline_depth(0)
 				function_0bfe40(&header->object->flags, 0xc,
 					TEST_FIELD_BIT(component->bit14) || TEST_FIELD_BIT(component->bit20));
+#pragma inline_depth()
 			}
 			havok_object_count(object_index);
 		}
@@ -1351,7 +1353,7 @@ hkBool c_contact_rule_filter::accepts(void const *query, s_contact_body_view con
   if (shape->type() != 0x18 && function_182180((hkShape *)shape))
   {
    long metadata = shape->metadata;
-   if (metadata && contact_metadata_pin(metadata, 1, 16) != metadata)
+   if (metadata && contact_metadata_pin(shape->metadata, 1, 16) != metadata)
    {
     byte flag = *(byte *)(metadata + 0x1f) & 1;
     volatile byte saved_flag = flag;

@@ -763,19 +763,25 @@ bool sound_voice_promotion_enabled(short voice_index)
 	return result;
 }
 
+static inline bool bit_test_12af10(dword const *bits, long index)
+{
+	return (bits[index >> 5] & (1 << (index & 31))) != 0;
+}
+
 // @retail 0x12af10
 short sound_channel_allocate(void)
 {
-	s_sound_system_channels_view *sound_system = (s_sound_system_channels_view *)g_4e6380;
-	short channel_count = sound_system->channel_count;
+	short channel_count = ((s_sound_system_channels_view *)g_4e6380)->channel_count;
 	short result = NONE;
 
 	for (short i = 0; i < channel_count; i++)
 	{
-		if ((sound_system->available_bits[i >> 5] & (1 << (i & 31))) && !(sound_system->used_bits[i >> 5] & (1 << (i & 31))))
+		if (bit_test_12af10(((s_sound_system_channels_view *)g_4e6380)->available_bits, i) &&
+			!bit_test_12af10(((s_sound_system_channels_view *)g_4e6380)->used_bits, i))
 		{
-			sound_system->used_bits[i >> 5] |= 1 << (i & 31);
-			return i;
+			((s_sound_system_channels_view *)g_4e6380)->used_bits[i >> 5] |= 1 << (i & 31);
+			result = i;
+			break;
 		}
 	}
 	return result;
@@ -1432,7 +1438,7 @@ static inline short sound_definition_priority(s_sound_definition const *definiti
    a higher priority, or the same sound plays it louder, or this one is
    farther than a distance */
 // @retail 0x128b90
-bool function_128b90(long sound_index, long other_index, real distance)
+bool function_128b90(long other_index, long sound_index, real distance)
 {
 	s_sound_playback *sound = SOUND_PLAYBACK_GET(sound_index);
 	s_sound_playback *other = SOUND_PLAYBACK_GET(other_index);
@@ -1464,10 +1470,10 @@ short sound_voice_find(long sound_index, long *reason)
 {
 	s_sound_playback *sound = SOUND_PLAYBACK_GET(sound_index);
 	s_sound_definition *definition = sound_definition_get(sound->definition_index);
-	real distance = sound_source_get_listener_distance((s_sound_location_source const *)&sound->location, sound->listener_index);
 	short result = NONE;
 	long result_sound_index = NONE;
 	real result_distance;
+	real distance = sound_source_get_listener_distance((s_sound_location_source const *)&sound->location, sound->listener_index);
 
 	*reason = 0;
 	for (short i = 0; i < SOUND_SYSTEM->voice_count; i++)
@@ -1478,8 +1484,8 @@ short sound_voice_find(long sound_index, long *reason)
 		{
 			if (voice->sound_index == NONE)
 				return i;
-			if (function_128b90(voice->sound_index, sound_index, distance) &&
-				(result == NONE || function_128b90(voice->sound_index, result_sound_index, result_distance)))
+			if (function_128b90(sound_index, voice->sound_index, distance) &&
+				(result == NONE || function_128b90(result_sound_index, voice->sound_index, result_distance)))
 			{
 				s_sound_playback *other = SOUND_PLAYBACK_GET(voice->sound_index);
 

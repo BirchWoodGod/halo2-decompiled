@@ -74,27 +74,46 @@ short __stdcall function_256070(long actor_index)
 	return result;
 }
 
+/* walks the actors of the group at 0x502420 (0x256150) */
+struct s_member_iterator_256150
+{
+	long next_index;
+	long index;
+};
+
+static inline s_actor_view *member_iterator_next_256150(s_member_iterator_256150 *iterator)
+{
+	s_actor_view *member = 0;
+
+	if (iterator->next_index != NONE)
+	{
+		member = actor_get(iterator->next_index);
+		iterator->index = iterator->next_index;
+		iterator->next_index = member->next_index;
+	}
+	return member;
+}
+
 // @retail 0x256150
 bool __stdcall function_256150(long actor_index, s_slot *slot)
 {
-	bool local_0 = false;
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_70_state *state = (s_slot_70_state *)slot;
+	bool local_0 = false;
 
 	if (actor->unknown07c != NONE)
 	{
 	state->timer = 0;
 
-	long member_index = element_502420_get(actor->unknown07c)->first_actor_index;
-	while (member_index != NONE)
+	s_member_iterator_256150 iterator;
+	s_actor_view *member;
+	iterator.next_index = element_502420_get(actor->unknown07c)->first_actor_index;
+	iterator.index = NONE;
+	while ((member = member_iterator_next_256150(&iterator)) != 0)
 	{
-		s_actor_view *member = actor_get(member_index);
-		long current_index = member_index;
-		member_index = member->next_index;
-
 		if (member != actor)
 		{
-			short slot_index = function_1a6fe0(current_index, 0x70);
+			short slot_index = function_1a6fe0(iterator.index, 0x70);
 
 			if (slot_index >= 0 && slot_index <= member->current)
 			{

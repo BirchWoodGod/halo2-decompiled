@@ -133,9 +133,8 @@ struct s_player_view
 	byte unknown028[0x21c - 0x28];
 };
 
-/* the session's last map and the strings the procedures keep */
-extern long g_54e7c0;
-extern long g_54e7c4;
+/* the strings the procedures keep (the session's last map, g_54e7c0 and
+   g_54e7c4, is in unknown_234c64.h) */
 wchar_t g_55c2e4[k_parse_buffer_length];
 wchar_t g_55c4e4[k_parse_buffer_length];
 wchar_t g_55c6e4[k_parse_buffer_length];
@@ -396,8 +395,8 @@ void __stdcall parse_player_profile_name(long string_handle, word *buffer)
 	switch (string_handle)
 	{
 	default:
-		parse_copy(buffer, (wchar_t *)g_54e5d0.settings.name);
-		return;
+		player = NONE;
+		break;
 	case 0xe40f:
 		player = 0;
 		break;
@@ -410,6 +409,11 @@ void __stdcall parse_player_profile_name(long string_handle, word *buffer)
 	case 0xe412:
 		player = 3;
 		break;
+	}
+	if (player == NONE)
+	{
+		parse_copy(buffer, (wchar_t *)g_54e5d0.settings.name);
+		return;
 	}
 	player_slot_get_profile(player, &profile, &string_handle);
 	parse_copy(buffer, (wchar_t *)&profile.data[2]);
@@ -1275,12 +1279,13 @@ void __stdcall parse_live_ui_driver_clan_level(long string_handle, word *buffer)
 void __stdcall parse_hour(long string_handle, word *buffer)
 {
 	short hour = g_54e7ce.wHour;
+	short shown = hour;
 
 	if (string_handle == 0xe43e && (word)hour > 12)
 	{
-		hour -= 12;
+		shown = hour - 12;
 	}
-	function_1630e0(buffer, (const word *)L"%d", (word)hour);
+	function_1630e0(buffer, (const word *)L"%d", (word)shown);
 }
 
 // @retail 0x22e179

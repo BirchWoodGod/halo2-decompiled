@@ -290,14 +290,28 @@ bool c_unit_type::v15(long arg_0, long arg_1, long arg_2, long arg_3, s_bitstrea
             ++local_6;
         } while (local_6 < 2);
     }
-    if (stream_read_bit(arg_4))
+    long capacity = arg_4->size_in_bytes;
+    capacity <<= 3;
+    long position = arg_4->bit_position;
+    bool present = false;
+    if (position <= capacity)
+        present = (arg_4->data[position / 8] & (1 << (position % 8))) != 0;
+    arg_4->bit_position = position + 1;
+    if (present)
     {
-        local_2->field_ec[2] = stream_read_bit(arg_4);
+        long next_position = arg_4->bit_position;
+        bool bit = false;
+        if (next_position <= capacity)
+            bit = (arg_4->data[next_position / 8] & (1 << (next_position % 8))) != 0;
+        arg_4->bit_position = next_position + 1;
+        local_2->field_ec[2] = bit;
         local_2->field_f0 = function_9e522(function_1959c0(arg_4, 6), 62, 0.0f, 1.0f);
         local_2->field_f4 = function_9e522(function_1959c0(arg_4, 6), 62, 0.0f, 1.0f);
         *local_1 |= 0x800000;
     }
-    return local_0 && arg_4->bit_position <= arg_4->size_in_bytes * 8;
+    if (local_0 && arg_4->bit_position <= arg_4->size_in_bytes * 8)
+        return true;
+    return false;
 }
 
 static __forceinline void function_9dfc1(s_bitstream *arg_0, real arg_1, real arg_2, long arg_3)
@@ -365,8 +379,10 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
             if (flags_writer_begin(&local_1, 11, "parent-vehicle-exists"))
             {
                 long local_4 = local_3->field_94;
-                if (local_4 != NONE && arg_5 && !function_99640((c_handle_table_450cd0 *)(*(byte **)(*(byte **)(*(byte **)arg_5 + 4) + 8) + 0x30), local_4))
-                    goto local_8;
+                bool eligible = true;
+                if (local_4 != NONE && arg_5)
+                    eligible = function_99640((c_handle_table_450cd0 *)(*(byte **)(*(byte **)(*(byte **)arg_5 + 4) + 8) + 0x30), local_4);
+                if (eligible)
                 {
                     function_194830(local_2, local_4 != NONE);
                     if (local_3->field_94 != NONE)
@@ -375,10 +391,8 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
                         function_1947e0(local_2, local_3->field_98, 5);
                     }
                 }
-                goto local_9;
-            local_8:
-                local_1.discarded |= 1 << local_1.index;
-            local_9:;
+                else
+                    local_1.discarded = (1 << local_1.index) | local_1.discarded;
             }
             flags_writer_end(&local_1);
             if (flags_writer_begin(&local_1, 12, "desired-aiming-vector-exists"))
@@ -497,18 +511,20 @@ void c_unit_type::v31(long arg_0, long arg_1, long arg_2, long arg_3)
         *(long *)(local_11 + 0x214) = local_12;
         *(short *)(local_11 + 0x210) = (short)local_12;
     }
+    short *record = &local_2->field_ac[0].field_4;
     long local_13 = 0;
     do
     {
         dword local_14 = local_1 & (1 << (local_13 + 14));
         if (local_14)
         {
-            long local_15 = local_2->field_ac[local_13].field_0;
+            long local_15 = *(long *)(record - 2);
             if (local_15 == NONE || function_122c10(0x77656170, local_15))
-                function_d09c0(arg_0, local_13, local_15, local_2->field_ac[local_13].field_4, (dword const *)&local_2->field_a8);
+                function_d09c0(arg_0, local_13, local_15, record[0], (dword const *)&local_2->field_a8);
         }
         if (local_14 || (local_1 & (1 << (local_13 + 18))))
-            function_d0b70(arg_0, local_2->field_ac[local_13].field_6, local_2->field_ac[local_13].field_8, local_2->field_ac[local_13].field_c, local_13);
+            function_d0b70(arg_0, record[1], record[2], *(real *)(record + 4), local_13);
+        record += 8;
         ++local_13;
     } while ((dword)local_13 < 4);
     if (local_1 & 0x400000)

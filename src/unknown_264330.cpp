@@ -696,7 +696,7 @@ void __stdcall function_263210(long actor_index)
 long function_baf40(long object_index);
 short __stdcall function_1c8df0(long object_index, point3f const *target, short target_cell, short source_cell,
 	void const *source, long mode, bool narrow, bool attached, bool alternate, long *hit_object);
-long function_25c9d0(long actor_index, long prop_ref_index, bool player, long sight,
+short function_25c9d0(long actor_index, long prop_ref_index, bool player, long sight,
 	void *point, byte *sample, long reported);
 long function_25cb60(long actor_index, long object_index, short type, void *sample,
 	void *point, long location, long sight);

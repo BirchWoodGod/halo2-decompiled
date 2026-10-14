@@ -370,6 +370,7 @@ long function_1eb020(long tag_index, long body_index, short *material_index)
  byte *definition = g_4e3b44[tag_index & 0xffff].bytes;
  byte *body = *(byte **)(definition + 0x3c) + body_index * 0x90;
  c_material_shape *shape = *(c_material_shape **)(body + 0x38);
+ byte *volatile definition_home = definition;
  long result = 0;
  if (shape->kind() == 0x13) shape = shape->child;
  long kind = shape->kind();
@@ -379,7 +380,7 @@ long function_1eb020(long tag_index, long body_index, short *material_index)
   shape = shape->get_child(shape->first_key(buffer));
   if (shape->kind() == 0x11) shape = shape->child;
   if (shape->kind() == 0x15) shape = shape->child;
-  definition = *(byte *volatile *)&definition;
+  definition = definition_home;
  }
  else
  {

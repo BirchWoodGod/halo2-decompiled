@@ -718,8 +718,8 @@ void __stdcall function_21d630(long effect_index, long mode)
 				bool alternate;
 				if ((entry_flags & 0x20) && effect->type == 2)
 				{
-					state = g_44a20c[loop_snapshot.state];
 					alternate = loop_snapshot.alternate;
+					state = g_44a20c[loop_snapshot.state];
 				}
 				else
 				{

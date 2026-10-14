@@ -109,6 +109,13 @@ void function_1e2a00(long actor_index, bool flag, bool keep)
 	}
 }
 
+/* the object of an object index, data first */
+static __forceinline s_object_1e1de0 *object_get_1e32e0(long object_index)
+{
+	s_object_header_1e1de0 *headers = (s_object_header_1e1de0 *)g_4e0300->data;
+	return headers[object_index & 0xffff].object;
+}
+
 // @retail 0x1e32e0
 bool function_1e32e0(long actor_index, bool flag)
 {
@@ -120,11 +127,11 @@ bool function_1e32e0(long actor_index, bool flag)
 	{
 		if (flag)
 		{
-			s_object_1e1de0 *unit = object_get_1e1de0(unit_index);
+			s_object_1e1de0 *unit = object_get_1e32e0(unit_index);
 			unit->flags134 |= 8;
 			unit->value2b8 = 0.25f;
-			if (object_get_1e1de0(unit_index)->index0d4 != NONE)
-				function_b58c0(object_get_1e1de0(unit_index)->index0d4, 0x800000);
+			if (object_get_1e32e0(unit_index)->index0d4 != NONE)
+				function_b58c0(object_get_1e32e0(unit_index)->index0d4, 0x800000);
 		}
 		else
 		{
