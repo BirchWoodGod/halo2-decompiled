@@ -1145,10 +1145,10 @@ void function_211cc0(void)
 
 			do
 			{
-				vector3f *p3 = &g_4f93bc[b * 8 + ((k + 2) & 7)][0];
-				vector3f *p2 = &g_4f93bc[b * 8 + ((k + 1) & 7)][0];
+				vector3f *p3 = &g_4f93bc[b * 8 + (word)((k + 2) & 7)][0];
+				vector3f *p2 = &g_4f93bc[b * 8 + (word)((k + 1) & 7)][0];
 				vector3f *p1 = &g_4f93bc[b * 8 + k][0];
-				vector3f *p0 = &g_4f93bc[b * 8 + ((k - 1) & 7)][0];
+				vector3f *p0 = &g_4f93bc[b * 8 + (word)((k - 1) & 7)][0];
 				long i;
 
 				for (i = 0; i < 3; i++)

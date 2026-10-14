@@ -594,8 +594,6 @@ bool saved_game_storage_has_free_blocks(long blocks);
 long function_215c00(long type, wchar_t const *display_name)
 {
     long result = NONE;
-    long const *type_reference = &type;
-    (void)&display_name;
     function_120d50(&g_55c14c, true);
     if (g_51ea14)
     {
@@ -605,7 +603,7 @@ long function_215c00(long type, wchar_t const *display_name)
             long index = g_55c280;
             wchar_t name[128];
             name[0] = 0;
-            if (function_216da0(name, (*type_reference), display_name, index))
+            if (function_216da0(name, type, display_name, index))
             {
                 char directory[256] = "";
                 char root[8];
@@ -623,11 +621,11 @@ long function_215c00(long type, wchar_t const *display_name)
                     path[0] = 0;
                     wcsncpy(location.display_name, display_name, 16);
                     location.display_name[16] = 0;
-                    location.type = (*type_reference);
+                    location.type = type;
                     location.language = (char)index;
                     strncpy(location.name, directory, sizeof(location.name));
                     location.name[sizeof(location.name) - 1] = 0;
-                    function_216d70(path, location.name, (*type_reference));
+                    function_216d70(path, location.name, type);
                     struct
                     {
                         dword signature;
@@ -638,22 +636,22 @@ long function_215c00(long type, wchar_t const *display_name)
                     } file;
                     if (function_136710((s_type_acf665 *)&file, false, path) &&
                         function_1367d0((s_type_acf665 *)&file) &&
-                        function_216f80((*type_reference), (s_saved_game_file_location *)directory) &&
+                        function_216f80(type, (s_saved_game_file_location *)directory) &&
                         function_216990(0, (c_location_record const *)&location, &index))
                     {
                         long generation = *(long *)((byte *)g_51ea14 + 0x4befc);
-                        result = (((generation & 0x1ff) << 14 | (index & 0x1fff)) << 8) | ((*type_reference) & 15);
+                        result = (((generation & 0x1ff) << 14 | (index & 0x1fff)) << 8) | (type & 15);
                     }
                     else
                     {
                         wchar_t remove_name[128];
                         remove_name[0] = 0;
-                        function_216da0(remove_name, (*type_reference), display_name, location.language);
+                        function_216da0(remove_name, type, display_name, location.language);
                         XDeleteSaveGame(root, remove_name);
                     }
                 }
                 if (result == NONE)
-                    g_55c154 = saved_game_storage_has_free_blocks(saved_game_file_type_size_in_blocks((*type_reference))) ? 4 : 2;
+                    g_55c154 = saved_game_storage_has_free_blocks(saved_game_file_type_size_in_blocks(type)) ? 4 : 2;
                 else
                     g_55c154 = 0;
             }

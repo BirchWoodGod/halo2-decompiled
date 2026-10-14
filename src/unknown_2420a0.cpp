@@ -1159,8 +1159,8 @@ void c_game_engine_markers::v23(long object_index, long unit_index)
 				{
 					s_event event;
 
-					game_engine_event_initialize(&event, ctf_options()->engine_type == 9 ? 10 : 3, 1);
-					game_engine_event_set_cause_player(&event, player_index);
+					game_engine_event_set_cause_player(
+						game_engine_event_initialize(&event, ctf_options()->engine_type == 9 ? 10 : 3, 1), player_index);
 					event.effect_team = (short)((short)slot == 8 ? NONE : (short)slot);
 					function_19eb90(&event);
 				}
