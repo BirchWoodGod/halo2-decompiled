@@ -106,7 +106,7 @@ struct s_network_message_session_query
 
 /* not decompiled yet (src/stubs/lane_j.cpp) */
 void __stdcall function_0b2fc0(const s_network_message_session_query *message);
-void __stdcall function_063080(c_class_58d20 *session, const s_network_message_session_query *message, const s_type_99af70 *address);
+bool __stdcall function_063080(c_class_58d20 *session, const s_network_message_session_query *message, const s_type_99af70 *address);
 bool __stdcall network_session_handle_time_synchronize(const s_session_id *message, c_class_58d20 *session, const s_type_99af70 *address);
 void __stdcall function_0785d0(void *unknown10, const s_type_99af70 *address, const void *message);
 class c_class_938e0;

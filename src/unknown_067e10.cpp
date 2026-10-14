@@ -722,11 +722,12 @@ struct s_key_450d14;
 // @retail 0x6a3b0
 s_match_450d14 *__stdcall function_6a3b0(void *table, s_key_450d14 *key, long index)
 {
+	s_match_450d14 *result = 0;
 	c_class_6a600 *world = (c_class_6a600 *)table;
 	s_machine_address machines[16];
 	s_machine_table *machine_table = (s_machine_table *)g_4e8c20;
-	memcpy(machines, machine_table->machines, sizeof(machines));
 	dword machine_mask = machine_table->machine_mask;
+	memcpy(machines, machine_table->machines, sizeof(machines));
 
 	long machine_index = NONE;
 	for (long i = 0; i < 16; i++)
@@ -745,11 +746,11 @@ s_match_450d14 *__stdcall function_6a3b0(void *table, s_key_450d14 *key, long in
 			{
 				s_player_datum *datum = (s_player_datum *)g_4e8c24->data + (world->players[j].unknown04 & 0xffff);
 				if (datum->machine_index == machine_index && datum->controller_index == index)
-					return (s_match_450d14 *)&world->players[j];
+					{ result = (s_match_450d14 *)&world->players[j]; break; }
 			}
 		}
 	}
-	return 0;
+	return result;
 }
 
 // @retail 0x6a7f0
