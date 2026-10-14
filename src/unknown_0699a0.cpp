@@ -315,7 +315,7 @@ void function_824d0(const byte *input, s_weapon_activity_result *output, long ob
 void function_823d0(s_weapon_activity_result *output, const byte *input, long object_index);
 
 // @retail 0x69b50
-void function_69b50(const byte *input, c_class_6a600 *world, dword mask)
+void function_69b50(c_class_6a600 *world, dword mask, const byte *input)
 {
  for (long i = 0; i < 16; i++, input += 0x7c)
  {
