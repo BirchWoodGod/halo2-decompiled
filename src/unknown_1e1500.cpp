@@ -49,10 +49,20 @@ bool function_1e1500(long actor_index)
   point.z = *(real *)((byte *)actor + 0x240) + g_4687b0->k * 0.1f;
   function_11bed0((s_location *)((byte *)actor + 0x250), &point);
   long prop_index = actor_get(*index_reference)->first_prop_index;
-  while (prop_index != NONE)
+  struct prop_step
   {
-   s_prop_node_view *prop = (s_prop_node_view *)(g_502418->data + (prop_index & 0xffff) * 0x3c);
-   prop_index = prop->next_index;
+   static __forceinline s_prop_node_view *next(long *cursor)
+   {
+    long index = *cursor;
+    if (index == NONE) return NULL;
+    s_prop_node_view *node = (s_prop_node_view *)(g_502418->data + (index & 0xffff) * 0x3c);
+    *cursor = node->next_index;
+    return node;
+   }
+  };
+  s_prop_node_view *prop;
+  while ((prop = prop_step::next(&prop_index)) != NULL)
+  {
    byte *block = (byte *)function_25d690((s_prop_datum *)prop);
    byte *view = NULL;
    if (prop->view_index != NONE)

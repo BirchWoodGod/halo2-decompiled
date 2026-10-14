@@ -108,15 +108,13 @@ struct s_218b81
 // @retail 0x218b80
 real sound_permutation_duration(s_sound_definition const *definition, s_sound_pitch_range const *arg_58ecd0, long sample_count)
 {
-	s_sound_pitch_range const *const *local_0 = &arg_58ecd0;
 	s_sound_globals_permutations_view *globals = SOUND_GLOBALS_PERMUTATIONS;
 	s_218b80 const *local_1 = (s_218b80 const *)&globals->classes[definition->class_index];
 	s_218b81 const *local_2 = (s_218b81 const *)&globals->playback_parameters[definition->playback_index];
-	long natural_pitch = SOUND_GLOBALS_DEFINITIONS->pitch_bounds[(*local_0)->bounds_index].unknown00;
-	short local_3 = local_1->field_1a;
-	short local_4 = local_2->field_a;
-	long pitch = (short)(local_1->field_18 <= local_3 ? local_1->field_18 : local_3) +
-		(short)(local_2->field_8 > local_4 ? local_4 : local_2->field_8);
+	long natural_pitch = SOUND_GLOBALS_DEFINITIONS->pitch_bounds[arg_58ecd0->bounds_index].unknown00;
+	short local_3 = local_1->field_18;
+	long pitch = (short)(local_3 > local_1->field_1a ? local_1->field_1a : local_3) +
+		(short)(local_2->field_8 > local_2->field_a ? local_2->field_a : local_2->field_8);
 	real rate = sound_pitch_to_rate(natural_pitch);
 	return rate * g_44a06c[(char)definition->format] * g_44a060[(char)definition->type] * sample_count * 1000.0f /
 		(g_44a054[(char)definition->unknown03] * sound_pitch_to_rate(pitch));

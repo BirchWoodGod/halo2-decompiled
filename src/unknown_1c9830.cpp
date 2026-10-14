@@ -214,8 +214,11 @@ void function_1df6c0(short team_a, short team_b, bool team_b_provokes, bool team
 }
 
 // @retail 0x1df770
-bool function_1df770(short team_a, short volatile team_b)
+bool function_1df770(short volatile team_a, short volatile team_b)
 {
+	short first_team = team_a;
+	short const *second_reference = (short const *)&team_b;
+	short second_team = *second_reference;
 	bool result = false;
 
 	if (g_4e6948->state == _game_mode_campaign)
@@ -224,14 +227,15 @@ bool function_1df770(short team_a, short volatile team_b)
 
 		for (short i = 0; i < g_4f55ec->allegiance_count; i++, allegiance++)
 		{
-			if (allegiance->team_a == team_a && allegiance->team_b == team_b ||
-				allegiance->team_b == team_a && allegiance->team_a == team_b)
+			if (allegiance->team_a == first_team && allegiance->team_b == second_team ||
+				allegiance->team_b == first_team && allegiance->team_a == second_team)
 			{
 				function_1df9c0(allegiance, true, true);
 				g_4f55ec->allegiance_count--;
 				if (g_4f55ec->allegiance_count > i)
 					g_4f55ec->allegiances[i] = g_4f55ec->allegiances[g_4f55ec->allegiance_count];
-				return true;
+				result = true;
+				break;
 			}
 		}
 	}

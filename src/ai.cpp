@@ -806,23 +806,22 @@ point3f *function_b9ef0(long object_index, point3f *position);
 // @retail 0x1caa40
 void function_1caa40(long object_index, point3f *position)
 {
-	s_ai_position_object *object = (s_ai_position_object *)((s_ai_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-	long type_mask = 1 << object->type;
+	struct { s_object_marker marker; s_ai_position_object *object; } work;
+	work.object = (s_ai_position_object *)((s_ai_object_header *)g_4e0300->data)[object_index & 0xffff].object;
+	long type_mask = 1 << work.object->type;
 
 	if ((type_mask & 3) || (type_mask & 0x1000))
 	{
-		s_object_marker marker;
-
-		function_b8d30(object_index, 0x40000bd, &marker, 1, false);
-		*position = marker.matrix.position;
+		function_b8d30(object_index, 0x40000bd, &work.marker, 1, false);
+		*position = work.marker.matrix.position;
 	}
-	else if (object->parent_index == NONE && object->havok_component_index != NONE)
+	else if (work.object->parent_index == NONE && work.object->havok_component_index != NONE)
 	{
 		function_b9ef0(object_index, position);
 	}
 	else
 	{
-		*position = object->center;
+		*position = work.object->center;
 	}
 }
 
