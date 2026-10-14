@@ -16,7 +16,7 @@ struct s_audio_queue;
 extern s_audio_queue *g_4f939c;
 long __declspec(noinline) function_20f040(short arg_0);
 void sound_choose_permutation(long arg_0, s_sound_permutation_reference *arg_1, bool *arg_2);
-void function_20b450(long arg_0, real arg_1);
+bool function_20b450(long arg_0, real arg_1);
 short function_20afb0(long arg_0, dword *arg_1);
 bool function_20b050(long arg_0, dword arg_1);
 short function_1145f0(long arg_0, s_sound_permutation_reference const *arg_1, short arg_2);

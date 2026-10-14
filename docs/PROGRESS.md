@@ -2,6 +2,38 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8532 functions match
+
+```
+matched 8532 of 11318 game functions (1109206 of 2784283 bytes, 39.84%)
+```
+
+5 new matches, none lost:
+- Machine 3 batch 14 (#451): `0x12ac20`, `0x12d5a0`, `0x1c59a0`, `0x257870` and `0x259ec0`; `0x19ebb0` now returns the event it fills; and a render-state fix in `0x2548f0` (it sets the depth-test function, not the alpha-test one), found by machine 1's key lane 2
+
+## 2026-10-14: 8527 functions match
+
+```
+matched 8527 of 11318 game functions (1106806 of 2784283 bytes, 39.75%)
+```
+
+10 new matches, none lost:
+- Machine 1 key lane 1 round 5: `0x137d00`, `0x137ca0` and `0x137e40` (new functions), and `0x12b6f0` once `0x2ca00` takes its callback on the stack
+- Machine 1 key lane 2 round 5: `0x137da0`, `0x137d40` and `0x137c20` (new functions)
+- Machine 3 Codex deep lane 4 rounds 11 and 12 (#448, #450), Codex lane B rounds 26 and 27 (#449): `0x30d10`, `0x4dfa0` and `0x1bc4f0`
+
+## 2026-10-14: 8517 functions match
+
+```
+matched 8517 of 11318 game functions (1105550 of 2784283 bytes, 39.71%)
+```
+
+9 new matches, none lost:
+- Machine 1 Opus lane round 20: `0x138110` and `0x10a660`
+- Machine 1 key lane 2 round 4: `0x20b450`, `0x217370` (with one struct global for the saved-game file lock) and `0xa58d0`
+- Machine 3 Codex lane J round 24 (#446): `0x90880` and `0x951c0`
+- Machine 3 Codex lane D lower round 27 (#447): `0x62fe0` and `0x6dc60`
+
 ## 2026-10-14: 8508 functions match
 
 ```

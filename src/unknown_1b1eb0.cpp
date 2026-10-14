@@ -82,6 +82,9 @@ void __stdcall function_1b21f0(long actor_index, s_slot *slot)
 			actor->unknown41c = 2;
 			actor->unknown420 = 2;
 		}
+		actor->unknown484 = true;
+		actor->unknown4a1 = true;
+		return;
 	}
 	actor->unknown484 = true;
 	actor->unknown4a1 = true;
