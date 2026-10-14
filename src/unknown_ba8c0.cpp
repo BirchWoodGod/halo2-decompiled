@@ -27,26 +27,23 @@ bool function_ba8c0(s_object_function_ab const *function, long object_index, rea
             return true;
     }
     function_108d90(object_index, function->input_name, &value, &enabled);
-    if (enabled || implicit_enable || periodic)
+    if ((enabled || implicit_enable) && !periodic)
     {
-        if (!periodic)
+        if (function->flags & 1)
+            value = 1.0f - value;
+        value = function_13bb90(&function->curve, value, 1.0f);
+        if (implicit_enable)
+            enabled = value > 0.0f;
+    }
+    else if (periodic)
+    {
+        real time = g_510c54->game_time * g_510c54->rate;
+        if (function->flags & 8)
         {
-            if (function->flags & 1)
-                value = 1.0f - value;
-            value = function_13bb90(&function->curve, value, 1.0f);
-            if (implicit_enable)
-                enabled = value > 0.0f;
+            dword random = ((dword)object_index * 0x19660d + 0x3c6ef35f) >> 16;
+            time += random * 0.000015259021893143654f;
         }
-        else
-        {
-            real time = g_510c54->game_time * g_510c54->rate;
-            if (function->flags & 8)
-            {
-                dword random = ((dword)object_index * 0x19660d + 0x3c6ef35f) >> 16;
-                time += random * 0.000015259021893143654f;
-            }
-            value *= function_13bb90(&function->curve, time, 1.0f);
-        }
+        value *= function_13bb90(&function->curve, time, 1.0f);
     }
     if (function->scale_name)
     {
@@ -65,15 +62,9 @@ bool function_ba8c0(s_object_function_ab const *function, long object_index, rea
         bool gate = false;
         function_108d90(object_index, function->enable_name, &ignored, &gate);
         if (!gate)
-        {
-            *out = 0.0f;
-            return false;
-        }
+            enabled = false;
     }
-    if (enabled)
-        *out = value < 0.0f ? 0.0f : value > 1.0f ? 1.0f : value;
-    else
-        *out = 0.0f;
+    *out = !enabled ? 0.0f : value < 0.0f ? 0.0f : value > 1.0f ? 1.0f : value;
     return enabled;
 }
 #pragma inline_depth()
