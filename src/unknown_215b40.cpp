@@ -267,14 +267,14 @@ void __stdcall function_215900(long controller, long type, word *capacity, long 
 				{
 					if (index >= table->count)
 						break;
-					struct
+					struct s_entry_215900
 					{
 						char path[0x14];
 						word name[0x12];
 						long type;
 						byte unknown3c[4];
 					} entry;
-					memcpy(&entry, &table->entries[index], sizeof(entry));
+					entry = *(s_entry_215900 const *)&table->entries[index];
 					long old_index = index++;
 					if (entry.type == type)
 					{

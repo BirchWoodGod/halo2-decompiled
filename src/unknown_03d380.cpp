@@ -342,7 +342,7 @@ void __stdcall function_1264c0(dword flags)
 			{
 				long type = *((char *)g_4e3b44[element->object_index & 0xffff].flags + 2);
 
-				if (type == 0x20 || type == 0x26)
+				if ((short)type == 0x20 || (short)type == 0x26)
 				{
 					remove = false;
 					if (type == 0x26)
@@ -355,13 +355,13 @@ void __stdcall function_1264c0(dword flags)
 				}
 			}
 
-			if (remove)
+			if (!remove)
+				element->unknown8c = NONE;
+			else
 			{
 				function_127320(datum, 10);
 				array = g_4e637c;
 			}
-			else
-				element->unknown8c = NONE;
 
 			datum = data_datum_index(array, function_16bc00(array, datum == NONE ? 0 : index + 1));
 		}
