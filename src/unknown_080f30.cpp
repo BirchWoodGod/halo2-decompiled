@@ -99,14 +99,14 @@ bool pending_message_request_get_progress(s_pending_message_header *header, real
 
 /* queues a request to receive a message */
 // @retail 0x80f70
-bool pending_message_request_receive(s_pending_message_header *header, long value10, s_pending_message_values values, short value06)
+bool pending_message_request_receive(s_pending_message_header *header, long value10, s_pending_message_values values, long value06)
 {
 	bool result = false;
 	if (header->state == 0)
 	{
 		header->unknown10 = value10;
 		header->values = values;
-		header->unknown06 = value06;
+		header->unknown06 = (word)value06;
 		if (header->kind != 0 && (header->flags & 2) && !(header->flags & 8))
 		{
 			result = true;
@@ -128,14 +128,14 @@ bool pending_message_request_receive(s_pending_message_header *header, long valu
 
 /* queues a request to send a message */
 // @retail 0x80ff0
-bool pending_message_request_send(s_pending_message_header *header, long value10, s_pending_message_values values, short value06)
+bool pending_message_request_send(s_pending_message_header *header, long value10, s_pending_message_values values, long value06)
 {
 	bool result = false;
 	if (header->state == 0)
 	{
 		header->unknown10 = value10;
 		header->values = values;
-		header->unknown06 = value06;
+		header->unknown06 = (word)value06;
 		header->pending_index = pending_message_add(header->size, header, header->data);
 		if (header->pending_index != NONE)
 		{
@@ -204,26 +204,28 @@ retry:
 	if (!(header->unknown06 & 2))
 	{
 		definition = (s_pending_definition *)header->unknown00;
+		bool handled = false;
 		if (definition && definition->retry)
 		{
-			bool handled = definition->retry(header);
+			handled = definition->retry(header);
 			function_81051(&header->flags, 2, handled);
 			function_81051(&header->flags, 8, handled);
-			if (handled)
-				return;
 		}
-		if (*(short *)&header->unknown0c == 1)
+		if (!handled)
 		{
-			g_55e700++;
-			pending_message_request_receive(header, header->unknown10, header->values, header->unknown06);
+			if (*(short *)&header->unknown0c == 1)
+			{
+				g_55e700++;
+				pending_message_request_receive(header, header->unknown10, header->values, header->unknown06);
+			}
+			else if (*(short *)&header->unknown0c == 2)
+			{
+				g_55e700++;
+				pending_message_request_send(header, header->unknown10, header->values, header->unknown06);
+			}
+			else
+				g_55e700++;
 		}
-		else if (*(short *)&header->unknown0c == 2)
-		{
-			g_55e700++;
-			pending_message_request_send(header, header->unknown10, header->values, header->unknown06);
-		}
-		else
-			g_55e700++;
 	}
 }
 

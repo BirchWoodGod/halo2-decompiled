@@ -157,20 +157,22 @@ void function_2ca00(point3f const *position, t_aux_view_callback callback, void 
     function_13cd0();
 }
 
-// @retail 0x2c8a0
+// @retail 0x2c8a0 standard
 void __stdcall function_2c8a0(byte const *source)
 {
-    s_frame_parameters_12a50 parameters = {};
+    s_frame_parameters_12a50 parameters;
+    parameters.identifier = 0;
+    parameters.time = 0.0;
+    parameters.unknown10 = 0;
+    parameters.unknown14 = 0;
     parameters.mode = 1;
     g_4ba030 = 1;
     ++g_4ba034;
     function_12a50(&parameters);
     s_frame_view_2c560 frame;
     memset(&frame, 0, sizeof(frame));
-    byte projection[0xc0];
-    store_current_view(source + 0xc);
-    function_2fd90((s_2f800_view const *)(source + 0xc), 0, projection);
-    store_current_projection(projection);
+    memcpy(&g_camera_storage, source + 0xc, sizeof(g_camera_storage));
+    function_2fd90((s_2f800_view const *)(source + 0xc), 0, (byte *)&g_projection_storage);
     memcpy(frame.view, source + 0x80, sizeof(frame.view));
     function_2fd90((s_2f800_view const *)frame.view, 0, frame.projection);
     frame.position = *g_468718;
@@ -212,9 +214,11 @@ void function_2c560(point3f const *position, vector3f const *forward,
     *(vector3f *)(frame.view + 0x18) = *forward;
     *(real *)(frame.view + 0x28) = angle;
     *(real *)(frame.view + 0x2c) = 1.0f;
-    short_rectangle2d bounds = { top, left, bottom, right };
-    memcpy(frame.view + 0x30, &bounds, sizeof(bounds));
-    memcpy(frame.view + 0x38, &bounds, sizeof(bounds));
+    *(short *)(frame.view + 0x30) = top;
+    *(short *)(frame.view + 0x32) = left;
+    *(short *)(frame.view + 0x34) = bottom;
+    *(short *)(frame.view + 0x36) = right;
+    memcpy(frame.view + 0x38, frame.view + 0x30, sizeof(short_rectangle2d));
     *(dword *)(frame.view + 0x40) = g_467014;
     *(dword *)(frame.view + 0x44) = g_467018;
     frame.view[0x58] = false; frame.view[0x68] = false;
@@ -229,10 +233,8 @@ void function_2c560(point3f const *position, vector3f const *forward,
     g_4b9ef0 = *(long *)frame.records;
     memcpy(g_4b9ef4, frame.records + 4, sizeof(g_4b9ef4));
     g_4ba010 = true;
-    store_current_view(frame.view);
-    byte projection[0xc0];
-    function_2fd90((s_2f800_view const *)frame.view, (box2f const *)clip, projection);
-    store_current_projection(projection);
+    memcpy(&g_camera_storage, frame.view, sizeof(g_camera_storage));
+    function_2fd90((s_2f800_view const *)frame.view, (box2f const *)clip, (byte *)&g_projection_storage);
     function_3d2c0(); function_3ea60(); function_c15a0();
     s_frame_view_2c560 *saved = &g_4850d0[++g_46701c];
     *saved = frame;

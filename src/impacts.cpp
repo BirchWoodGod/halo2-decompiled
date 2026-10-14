@@ -1544,7 +1544,7 @@ void function_2294a0(
 		impulse = true;
 		if (impact_type_is_continuous(previous_type))
 		{
-			real level = previous_type == 3 ? impact->unknown48 : impact->unknown4c;
+			real level = impact->unknown1d == 3 ? impact->unknown48 : impact->unknown4c;
 
 			if (previous_type != 2 || !(level < 0.5f || impact->unknown18 > 0.25f))
 			{
@@ -1555,19 +1555,19 @@ void function_2294a0(
 	if (impulse)
 	{
 		s_sound_position sound_position;
+
+		scale = PIN(impact->unknown18, 0.0f, 1.0f);
 		long sound_a = NONE;
 		long effect_a = NONE;
 		long sound_b = NONE;
 		long effect_b = NONE;
 		long sound_c = NONE;
 		long effect_c = NONE;
-
-		scale = PIN(impact->unknown18, 0.0f, 1.0f);
 		sound_position.position = impact->position;
 		sound_position.compressed_forward = vector3d_compress(&impact->unknown50);
 		sound_position.velocity = *g_4687a4;
 		sound_position.location = object->location;
-		*(volatile short *)&local_3.field_0=*(short const *)&impact->material_b;
+		local_3.field_0 = *(short const *)&impact->material_b;
 		impact_material_effects_get(impact, &impact->position, impact->material_a, *(c_type_47f957 const *)&local_3.field_0, 0,
 			&sound_a, &effect_a, &sound_b, &effect_b, &sound_c, &effect_c);
 		if (sound_a != NONE)
@@ -1669,7 +1669,7 @@ void function_2294a0(
 					long effect_b = NONE;
 
 					scale = impact_level_get(impact, impact->type);
-					*(volatile short *)&local_3.field_0=*(short const *)&impact->material_b;
+					local_3.field_0 = *(short const *)&impact->material_b;
 					impact_material_effects_get(impact, &impact->position, impact->material_a, *(c_type_47f957 const *)&local_3.field_0, impact->type,
 						&looping_sound_a, &effect_a, &looping_sound_b, &effect_b, NULL, NULL);
 					if (start_looping_sounds)
@@ -2138,18 +2138,30 @@ void function_226ce0(void)
 	} while (count <= 0x20);
 }
 
+/* an iteration over the impacts: the current impact, then the record-pool iterator */
+struct s_impact_iterator_226f80
+{
+	s_impact *impact;
+	s_record_pool_iterator iterator;
+};
+
+static inline bool impact_iterator_next_226f80(s_impact_iterator_226f80 *iterator)
+{
+	iterator->impact = (s_impact *)data_iterator_next_inlined(&iterator->iterator);
+	return iterator->impact != NULL;
+}
+
 // @retail 0x226f80
 void function_226f80(void)
 {
-	s_record_pool_iterator iterator;
-	s_impact *local_0;
+	s_impact_iterator_226f80 iterator;
 
-	iterator.data = g_51ebfc;
-	iterator.index = NONE;
-	while ((local_0 = (s_impact *)data_iterator_next_inlined(&iterator)) != NULL)
+	iterator.iterator.data = g_51ebfc;
+	iterator.iterator.index = NONE;
+	while (impact_iterator_next_226f80(&iterator))
 	{
-		s_impact *impact = local_0;
-		long impact_index = iterator.datum_index;
+		s_impact *impact = iterator.impact;
+		long impact_index = iterator.iterator.datum_index;
 		s_havok_component *component = havok_component_get(impact->component_a);
 		bool has_sounds = impact_has_sounds_or_effects(impact);
 		bool merged = false;
@@ -2169,7 +2181,7 @@ void function_226f80(void)
 					vector3f delta;
 
 					vector3d_from_points3d(&impact->position, &other->position, &delta);
-					if (length_sq3f(&delta) < 4.0f &&
+					if (delta.i * delta.i + delta.j * delta.j + delta.k * delta.k < 4.0f &&
 						(has_sounds && !other_has_sounds || has_sounds == other_has_sounds))
 					{
 						bool other_merged = false;
@@ -2183,22 +2195,14 @@ void function_226f80(void)
 							{
 								s_impact_data data;
 
-								data.unknown00 = false;
-								data.component_a = other->component_a;
-								data.unknown08 = constraint->rigid_body_index_a;
-								data.material_a = other->material_a;
-								data.component_b = other->component_b;
-								data.unknown14 = constraint->rigid_body_index_b;
-								data.material_b = other->material_b;
-								data.position = constraint->position;
-								data.normal = constraint->normal;
-								data.type = NONE;
-								data.unknown38 = false;
-								data.shape.type = NONE;
-								data.shape.index = NONE;
+								impact_data_set(&data, false, other->component_a, constraint->rigid_body_index_a, other->material_a,
+									other->component_b, constraint->rigid_body_index_b, other->material_b,
+									&constraint->position, &constraint->normal, NONE, NULL);
 								if (impact_matches_data(impact, &data, true))
 								{
+#pragma inline_depth(0)
 									impact_release(other_index, other);
+#pragma inline_depth()
 									impact->reference_count++;
 									constraint->impact_index = impact_index;
 									merged = true;

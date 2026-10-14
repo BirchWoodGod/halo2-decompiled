@@ -72,6 +72,8 @@ long g_4ba134;
 // @retail 0x30290
 void function_30290(point3f const *p, s_view const *view, s_camera const *camera, real radius, box2f *bounds)
 {
+	real const *radius_home = &radius;
+	real const &radius_value = *radius_home;
 	real dx = p->x - view->position.x;
 	real dy = p->y - view->position.y;
 	real dz = p->z - view->position.z;
@@ -87,7 +89,7 @@ void function_30290(point3f const *p, s_view const *view, s_camera const *camera
 	real cy = camera->forward.j * sz + camera->up.j * sy + camera->right.j * sx;
 	real cz = (camera->forward.k * sz + camera->up.k * sy + camera->right.k * sx) * -1.f;
 
-	if (cz + radius > 0.01f)
+	if (cz + radius_value > 0.01f)
 	{
 		real m78 = camera->unknown78;
 		real m98 = camera->unknown98;
@@ -99,16 +101,16 @@ void function_30290(point3f const *p, s_view const *view, s_camera const *camera
 		real bottom = view->bounds.bottom * 0.5f;
 
 		real xz = cx * cx + cz * cz;
-		real r2 = radius * radius;
+		real r2 = radius_value * radius_value;
 		real disc = xz - r2;
 		if (disc > k_real_epsilon)
 		{
 			real root = (real)sqrt(disc);
-			real k = radius / xz;
-			real za = cz - (cz * radius + root * cx) * k;
-			real xa = cx - (cx * radius + root * cz) * k;
-			real zb = cz - (cz * radius - root * cx) * k;
-			real xb = cx - (cx * radius - root * cz) * k;
+			real k = radius_value / xz;
+			real za = cz - (cz * radius_value + root * cx) * k;
+			real xa = cx - (cx * radius_value + root * cz) * k;
+			real zb = cz - (cz * radius_value - root * cx) * k;
+			real xb = cx - (cx * radius_value - root * cz) * k;
 			if (za > 0.01f)
 			{
 				real n = xa / za * m78 + m98;
@@ -135,11 +137,11 @@ void function_30290(point3f const *p, s_view const *view, s_camera const *camera
 		if (disc2 > k_real_epsilon)
 		{
 			real root = (real)sqrt(disc2);
-			real k = radius / yz;
-			real za = cz - (cz * radius + root * cy) * k;
-			real ya = cy - (cy * radius + root * cz) * k;
-			real zb = cz - (cz * radius - root * cy) * k;
-			real yb = cy - (cy * radius - root * cz) * k;
+			real k = radius_value / yz;
+			real za = cz - (cz * radius_value + root * cy) * k;
+			real ya = cy - (cy * radius_value + root * cz) * k;
+			real zb = cz - (cz * radius_value - root * cy) * k;
+			real yb = cy - (cy * radius_value - root * cz) * k;
 			if (za > 0.01f)
 			{
 				real n = ya / za * m8c + m9c;
