@@ -562,7 +562,7 @@ struct s_havok_component_owner_header
 
 void function_1d56a0(s_havok_component *component);
 void function_1d56f0(s_havok_component *component);
-signed char __stdcall function_1d5940(s_havok_component *component, long a, long b, long c);
+long __stdcall function_1d5940(s_havok_component *component, bool a, bool b, bool c);
 void function_1d6b80(s_havok_component *component);
 void function_1d6ca0(s_havok_component *component);
 void function_1c4b00(long object_index, void *a, void *b, long c);

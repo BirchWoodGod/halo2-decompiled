@@ -1774,7 +1774,10 @@ void function_203360(long squad_index)
         *(short *)(squad + 0xa) += count;
         *(real *)(squad + 0x10) += health;
         *(short *)(squad + 0xc) += *((byte *)actor + 7) * count;
+        /* retail calls the actor test here */
+#pragma inline_depth(0)
         *(short *)(squad + 0x16) += function_1e1de0(iterator.actor_index) * count;
+#pragma inline_depth()
         long tracking_index = *(long *)((byte *)actor + 0x338);
         if (tracking_index != NONE)
         {

@@ -636,8 +636,8 @@ public:
 void c_30b080::function_30b080(__m128 const *arg_0) { }
 
 struct s_physics_model_owner;
-// @stub 0x1d6ad0
-void function_1d6ad0(s_havok_component *arg_0, s_physics_model_owner *arg_1) {}
+// @stub 0x1d77d0
+void __stdcall function_1d77d0(s_havok_component *arg_0, s_physics_model_owner *arg_1) {}
 
 
 
