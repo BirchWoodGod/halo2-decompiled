@@ -351,9 +351,7 @@ void function_1e6120(s_biped_physics_output *output, void *physics, real rate,
 	state->field_a8 = *mode_reference;
 	state->direction = state->default_direction;
 	state->enabled = true;
-	real blend = 0.0f;
-	if (!(state->flags & 4))
-		blend = *crouch_reference;
+	real blend = (state->flags & 4) ? 0.0f : *crouch_reference;
 	if ((bool)((state->definition->flags >> 2) & 1) && !*airborne_reference)
 	{
 		s_physics_movement_settings *settings = ((s_physics_movement_globals *)g_4e034c)->settings;
@@ -365,6 +363,7 @@ void function_1e6120(s_biped_physics_output *output, void *physics, real rate,
 			control.i = (real)(control.i * scale);
 			control.j = (real)(control.j * scale);
 		}
+		state->velocity.k = 0.0f;
 		real remaining = 1.0f - blend;
 		real first, second;
 		if (!(control.i > 0.0f)) {
@@ -376,7 +375,6 @@ void function_1e6120(s_biped_physics_output *output, void *physics, real rate,
 		}
 		state->velocity.i = first * remaining + second * blend;
 		state->velocity.j = settings->sideways * remaining + settings->crouched_sideways * blend;
-		state->velocity.k = 0.0f;
 		state->speed = settings->speed * remaining + settings->crouched_speed * blend;
 		state->field_148 = settings->field_4c;
 		if (*limited_reference)
@@ -535,20 +533,14 @@ void function_1e68a0(s_character_physics_update_input_datum_a *datum, s_source_a
 	datum->unknown10 = source_mode;
 	*(dword volatile *)&datum->flags = 0;
 	datum->unknown14 = 0;
-	datum->flags = b0 ? 1 : 0;
+	if (b0) datum->flags = 1; else datum->flags = 0;
 	if (b1) datum->flags |= 2; else datum->flags &= ~2;
 	if (b2) datum->flags |= 4; else datum->flags &= ~4;
 	if (b3) datum->flags |= 8; else datum->flags &= ~8;
 	if (b4) datum->flags |= 16; else datum->flags &= ~16;
-	datum->point1c.x = p1->x;
-	datum->point1c.y = p1->y;
-	datum->point1c.z = p1->z;
-	datum->point28.x = p2->x;
-	datum->point28.y = p2->y;
-	datum->point28.z = p2->z;
-	datum->point34.x = p3->x;
-	datum->point34.y = p3->y;
-	datum->point34.z = p3->z;
+	datum->point1c = *p1;
+	datum->point28 = *p2;
+	datum->point34 = *p3;
 }
 
 // @retail 0x1e6980

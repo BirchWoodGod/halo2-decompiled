@@ -109,7 +109,7 @@ inline bool slot_type_enabled(short type)
 
 	return handler->unknown8 != g_46f348 &&
 		(handler->mask & g_4ee4ec) == g_4ee4ec &&
-		((g_557c40[type >> 5] >> (type & 31)) & 1) != 0;
+		(bool)((g_557c40[type >> 5] >> (type & 31)) & 1);
 }
 
 /* the game's deterministic random (g_4e7408), inlined as Bungie's macros do */

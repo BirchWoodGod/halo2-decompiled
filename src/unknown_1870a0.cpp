@@ -44,8 +44,8 @@ void __stdcall function_1870a0(real arg_0, real arg_1)
         local_3 = local_5 == 8 ? NONE : *local_6;
         if (local_3 != NONE)
         {
-            real local_7 = function_1870a1(&arg_1);
             real local_8 = function_1870a1(&arg_0);
+            real local_7 = function_1870a1(&arg_1);
             function_186ab0(local_3, local_8, local_7, local_4);
             local_1 |= 1 << local_2;
         }
