@@ -147,16 +147,16 @@ void __stdcall function_2056e0(long vehicle_index, s_vehicle_physics_state *stat
 	matrix3x3 rotation = step->rotation;
 	function_142eb0(&rotation, &inverse_inertia, &inverse_inertia);
 	function_142eb0(&inverse_inertia, function_142b80(&rotation, &rotation), &inverse_inertia);
-	vector3f angular_acceleration;
-	angular_acceleration.i = inverse_inertia.up.i * angular_change.k + inverse_inertia.left.i * angular_change.j + inverse_inertia.forward.i * angular_change.i;
-	angular_acceleration.j = inverse_inertia.up.j * angular_change.k + inverse_inertia.left.j * angular_change.j + inverse_inertia.forward.j * angular_change.i;
-	angular_acceleration.k = inverse_inertia.up.k * angular_change.k + inverse_inertia.left.k * angular_change.j + inverse_inertia.forward.k * angular_change.i;
+	vector3f local_461a4b_2;
+	local_461a4b_2.i = inverse_inertia.up.i * angular_change.k + inverse_inertia.left.i * angular_change.j + inverse_inertia.forward.i * angular_change.i;
+	local_461a4b_2.j = inverse_inertia.up.j * angular_change.k + inverse_inertia.left.j * angular_change.j + inverse_inertia.forward.j * angular_change.i;
+	local_461a4b_2.k = inverse_inertia.up.k * angular_change.k + inverse_inertia.left.k * angular_change.j + inverse_inertia.forward.k * angular_change.i;
 	linear_velocity.i += linear_change.i * dt;
 	linear_velocity.j += linear_change.j * dt;
 	linear_velocity.k += linear_change.k * dt;
-	angular_velocity.i += angular_acceleration.i * dt;
-	angular_velocity.j += angular_acceleration.j * dt;
-	angular_velocity.k += angular_acceleration.k * dt;
+	angular_velocity.i += local_461a4b_2.i * dt;
+	angular_velocity.j += local_461a4b_2.j * dt;
+	angular_velocity.k += local_461a4b_2.k * dt;
 	if (braking > 0.0f)
 	{
 		real scale = 0.0f - braking / dt;
