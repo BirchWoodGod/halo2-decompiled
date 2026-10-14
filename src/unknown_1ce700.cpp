@@ -121,10 +121,10 @@ void s_1ce4f0::function_1ce4f0(hkRigidBody *arg_1, hkRigidBody *arg_2,
  field_30 = *arg_6;
  function_1ce701(&local_1);
  long local_5 = 0, local_6 = 1, local_7 = 2;
+ function_1ce701(&field_30);
  real local_2 = (real)fabs(((real *)&local_1)[0]);
  real local_3 = (real)fabs(((real *)&local_1)[1]);
  real local_4 = (real)fabs(((real *)&local_1)[2]);
- function_1ce701(&field_30);
 
  if (local_2 > local_3)
  {

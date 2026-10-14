@@ -299,7 +299,7 @@ real function_13b390(void const *function, real input, real range)
 		}
 		else if (result > 1.0f)
 		{
-			result = 1.0f;
+			return 1.0f;
 		}
 	}
 
@@ -316,7 +316,7 @@ real function_13bb40(s_tag_data const *function, real value)
 		real lo = header->bounds.lo;
 		real hi = header->bounds.hi;
 		real t = 0.0f > value ? 0.0f : (value > 1.0f ? 1.0f : value);
-		value = (hi - lo) * t + lo;
+		return (hi - lo) * t + lo;
 	}
 	return value;
 }
@@ -345,15 +345,15 @@ long function_016ae0(real value);
 real const g_47ff50 = 16384.0f;
 
 /* interpolates two colours channel by channel in fixed point (MMX) */
-static __forceinline dword pixel32_interpolate(dword a, dword b, real t)
+static __forceinline dword pixel32_interpolate(real t, dword second, dword first)
 {
 	__m64 zero = _mm_setzero_si64();
 	__int64 rounding = 0x0001000100010001;
 
 	__asm
 	{
-		movd mm0, a
-		movd mm1, b
+		movd mm0, first
+		movd mm1, second
 		punpcklbw mm0, zero
 		punpcklbw mm1, zero
 		movss xmm2, t
@@ -386,6 +386,7 @@ dword function_13bc00(s_tag_data const *function, real input)
 {
 	dword result = 0xffffffff;
 	s_function_header const *header = (s_function_header const *)function->address;
+	long index;
 
 	if (header && function->size > 0)
 	{
@@ -416,19 +417,20 @@ dword function_13bc00(s_tag_data const *function, real input)
 			result = header->colors[0];
 			goto local_1;
 		case _function_output_color_2:
-			result = pixel32_interpolate(header->colors[0], header->colors[3], input);
+			result = pixel32_interpolate(input, header->colors[3], header->colors[0]);
 			goto local_1;
 		case _function_output_color_3:
 		{
 			input *= 2.0;
-			long index = function_016ae0(input);
+			index = function_016ae0(input);
 			input -= index;
+			dword a;
+			dword b;
 			if (index >= 2)
 			{
 				input = 1.0f;
+				goto upper;
 			}
-			dword a;
-			dword b;
 			if (index == 0)
 			{
 				a = header->colors[0];
@@ -436,23 +438,24 @@ dword function_13bc00(s_tag_data const *function, real input)
 			}
 			else
 			{
+			upper:
 				a = header->colors[1];
 				b = header->colors[3];
 			}
-			result = pixel32_interpolate(a, b, input);
+			result = pixel32_interpolate(input, b, a);
 			goto local_1;
 		}
 		case _function_output_color_4:
 		{
 			input *= 3.0;
-			long index = function_016ae0(input);
+			index = function_016ae0(input);
 			input -= index;
 			if (index >= 3)
 			{
 				input = 1.0f;
 				index = 2;
 			}
-			result = pixel32_interpolate(header->colors[index], header->colors[index + 1], input);
+			result = pixel32_interpolate(input, header->colors[index + 1], header->colors[index]);
 			goto local_1;
 		}
 		}
