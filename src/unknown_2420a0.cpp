@@ -1659,7 +1659,6 @@ void function_242660(long object_index, bool arg_1)
 		{
 			long effect_index;
 			long value;
-			point3f position;
 
 			if (!arg_1 && (g_51ec80->flags[slot] & 2))
 			{
@@ -1685,6 +1684,7 @@ void function_242660(long object_index, bool arg_1)
 			if (effect_index != NONE)
 			{
 				vector3f local_0 = *g_4687b0;
+				point3f position;
 				s_effect_marker markers[5];
 				s_damage_owner owner;
 
@@ -1698,10 +1698,10 @@ void function_242660(long object_index, bool arg_1)
 				markers[0].forward = *g_4687b0;
 				markers[1].forward = *g_4687bc;
 				markers[2].forward = *g_4687b0;
+				markers[4].forward = *g_4687b0;
 				markers[3].forward.i = 0.0f - local_0.i;
 				markers[3].forward.j = 0.0f - local_0.j;
 				markers[3].forward.k = 0.0f - local_0.k;
-				markers[4].forward = *g_4687b0;
 				markers[0].name = 0x700054c;
 				markers[1].name = 0x70000c0;
 				markers[2].name = 0x20000ca;
@@ -1714,6 +1714,7 @@ void function_242660(long object_index, bool arg_1)
 			if (damage_index != NONE)
 			{
 				s_type_1e6529 data;
+				point3f position;
 
 				data.field_7c = NONE;
 				function_b9dd0(object_index, &position);
@@ -1732,7 +1733,10 @@ void function_242660(long object_index, bool arg_1)
 
 	if (object->slot != NONE)
 	{
+		/* retail calls the marker lookup here */
+#pragma inline_depth(0)
 		long marker_index = function_2421d0(object->slot);
+#pragma inline_depth()
 
 		g_51ec80->d[object->slot] = NONE;
 		g_51ec80->times[object->slot] = g_510c54->field_2_3;
