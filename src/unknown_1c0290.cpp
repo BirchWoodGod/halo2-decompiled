@@ -315,12 +315,16 @@ void __stdcall function_1c04c0(long actor_index, s_slot *slot)
 	actor_get(actor_index)->times[3] = g_510c54->game_time;
 }
 
-#pragma optimize("g", off)
 PRIVATE __forceinline bool function_1c0a31(point2f *arg_0)
 {
-	return normalize2d(arg_0) > g_45dbd8;
+	return normalize2d(arg_0) > 0.0f;
 }
-#pragma optimize("g", on)
+
+PRIVATE __forceinline void vector2d_from_points2d_1c0a30(point2f const *a, point2f const *b, point2f *out)
+{
+	out->x = b->x - a->x;
+	out->y = b->y - a->y;
+}
 
 // @retail 0x1c0a30
 void __stdcall function_1c0a30(long actor_index, s_slot *slot)
@@ -334,20 +338,18 @@ void __stdcall function_1c0a30(long actor_index, s_slot *slot)
 	}
 	else
 	{
-		s_actor_view *actor = actor_get(actor_index);
-
-		if (actor->unknown50c && actor->unknown504 == 1)
+		if (actor_get(actor_index)->unknown50c && actor_get(actor_index)->unknown504 == 1)
 		{
+			s_actor_view *actor = actor_get(actor_index);
 			s_prop_state_position *prop = (s_prop_state_position *)prop_node_state(prop_node_get(actor->prop_index));
 			point2f direction;
 			point2f facing;
 
-			direction.y = prop->position.y - actor->position.y;
-			direction.x = prop->position.x - actor->position.x;
+			vector2d_from_points2d_1c0a30((point2f const *)&actor->position, &prop->position, &direction);
 			if (function_1c0a31(&direction))
 			{
 				facing = *(point2f *)&actor->unknown290;
-				if (function_1c0a31(&facing) && facing.y * direction.y + facing.x * direction.x > 0.9f)
+				if (function_1c0a31(&facing) && direction.y * facing.y + direction.x * facing.x > 0.9f)
 				{
 					actor->unknown482 = true;
 				}

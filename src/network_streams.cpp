@@ -473,32 +473,28 @@ bool c_network_unreliable_stream::v4(long identifier, s_bitstream *stream, long 
 	return result;
 }
 
-static __forceinline bool function_951c1(s_bitstream *arg_0)
-{
-	long *local_0 = &arg_0->size_in_bytes;
-	long local_1 = local_0[0] << 3;
-	long local_2 = local_0[3];
-	bool local_3 = false;
-	if (local_2 <= local_1)
-	{
-		byte *local_4 = *(byte **)(local_0 - 1);
-		local_3 = (local_4[local_2 / 8] & (1 << (local_2 % 8))) != 0;
-	}
-	local_0[3] = local_2 + 1;
-	return local_3;
-}
-
 // @retail 0x951c0
 long c_network_unreliable_stream::v5(long const *identifier, s_bitstream *stream)
 {
-	volatile long result = 0;
+	long return_value = 0;
+	volatile long result = return_value;
 	long previous = NONE;
 	if (*identifier != NONE)
 	{
 		for (;;)
 		{
-			bool relative = function_951c1(stream);
-			bool next = function_951c1(stream);
+			long capacity = stream->size_in_bytes;
+			capacity <<= 3;
+			long position = stream->bit_position;
+			bool relative = false;
+			if (position <= capacity)
+				relative = (stream->data[position / 8] & (1 << (position % 8))) != 0;
+			stream->bit_position = position + 1;
+			long next_position = stream->bit_position;
+			bool next = false;
+			if (next_position <= capacity)
+				next = (stream->data[next_position / 8] & (1 << (next_position % 8))) != 0;
+			stream->bit_position = next_position + 1;
 			long sequence = NONE;
 			if (!relative)
 			{
@@ -543,7 +539,13 @@ long c_network_unreliable_stream::v5(long const *identifier, s_bitstream *stream
 				sequence = previous + 1;
 			}
 			previous = sequence;
-			bool partial = function_951c1(stream);
+			long partial_capacity = stream->size_in_bytes;
+			partial_capacity <<= 3;
+			long partial_position = stream->bit_position;
+			bool partial = false;
+			if (partial_position <= partial_capacity)
+				partial = (stream->data[partial_position / 8] & (1 << (partial_position % 8))) != 0;
+			stream->bit_position = partial_position + 1;
 			long bits;
 			long size;
 			if (partial)
@@ -564,8 +566,9 @@ long c_network_unreliable_stream::v5(long const *identifier, s_bitstream *stream
 				break;
 			}
 		}
+		return_value = result;
 	}
-	return result;
+	return return_value;
 }
 
 // @retail 0x95cf0

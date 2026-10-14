@@ -441,7 +441,7 @@ void c_game_engine_markers::v45(dword *flags, long, s_marker_update *update)
 	 ((flags) & 4) && (options)->team_mode == 2)
 
 // @retail 0x243b10
-long function_243b10(bool team_only, long key_b, long *second)
+long function_243b10(long key_b, bool team_only, long *second)
 {
 	s_game_options_view *options = g_4e6948;
 	long results[8];
@@ -952,22 +952,26 @@ bool c_game_engine_markers::v1()
 	long i;
 
 	memset(table, 0, sizeof(s_slot_table));
-	memset(table->c, 0xff, sizeof(table->c));
 	g_51ec80 = table;
+
+	for (i = 0; i < 9; i++)
+		table->c[i] = NONE;
 
 	for (i = 0; i < 9; i++)
 	{
 		long second = NONE;
 
-		table->a[i] = (short)function_243b10(true, i, NULL);
-		table->b[i] = (short)function_243b10(false, i, &second);
+		table->a[i] = (short)function_243b10(i, true, NULL);
+		table->b[i] = (short)function_243b10(i, false, &second);
 		table->c[i] = (short)second;
 		function_243c00(i);
 	}
 
-	table->l38 = function_243b10(true, NONE, NULL);
+	table->l38 = function_243b10(NONE, true, NULL);
 	table->initialized = true;
-	memset(table->d, 0xff, sizeof(table->d));
+
+	for (i = 0; i < 9; i++)
+		table->d[i] = NONE;
 
 	for (i = 0; i < 9; i++)
 		table->objects[i] = NONE;
@@ -1325,14 +1329,9 @@ static inline bool ctf_engine_running()
 // @retail 0x241520
 bool c_game_engine_markers::v16(long player_index, long object_index)
 {
-	bool result;
-	*(bool volatile *)&result = true;
+	bool result = ctf_engine_running();
 
-	if (!ctf_engine_running())
-	{
-		result = false;
-	}
-	else if (player_index != NONE && object_index != NONE)
+	if (result && player_index != NONE && object_index != NONE)
 	{
 		s_player_view *player = ctf_player_get(player_index);
 		long slot = slot_object_get(object_index)->slot;
@@ -1421,12 +1420,13 @@ long function_2421d0(long team)
 // @retail 0x242210
 long function_242210(point3f const *point)
 {
-	long definition_index = NONE;
 	s_object_placement data;
 	long object_index;
+	long definition_index;
 
 	long engine_type = ctf_options()->engine_type;
 	c_engine_peer *enabled = g_55e4d0[g_4e9ae8->engine_index];
+	definition_index = NONE;
 	if (engine_type == 9)
 	{
 		if (enabled)
@@ -1486,8 +1486,7 @@ bool function_2423f0()
 	long count = 0;
 	long i;
 
-	for (i = 0; i < 9; i++)
-		slot_objects[i] = NONE;
+	memset(slot_objects, NONE, sizeof(slot_objects));
 
 	for (i = 0; i < ((s_ctf_team_view *)g_4e9ae8)->team_count; i++)
 	{
@@ -1500,8 +1499,8 @@ bool function_2423f0()
 		}
 		else
 		{
-			others[count++] = object_index;
 			result = false;
+			others[count++] = object_index;
 		}
 	}
 

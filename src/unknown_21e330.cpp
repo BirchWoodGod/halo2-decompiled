@@ -730,20 +730,25 @@ void function_21ece0(long effect_index, s_sound_driver_reverb const *reverb)
 {
 	DSFX_HIGH_LEVEL_EFFECT_DESCRIPTION description;
 	description.effectType = DSFX_EFFECT_TYPE_I3DL2REVERB;
-	union { long field_0; real field_4; } volatile local_0;
+	union { long field_0; real field_4; } local_0;
 	local_0.field_0 = function_2197f0(g_468834);
+	real value;
+	value = function_21ece1(local_0.field_4, reverb->room);
 	description.I3DL2Reverb.lRoom = (long)(function_12aff0(-64.0f, 0.0f,
-		function_21ece1(local_0.field_4, reverb->room), true) * 6400.0f - 6400.0f);
+		value, true) * 6400.0f - 6400.0f);
+	value = function_21ece1(local_0.field_4, reverb->room_hf);
 	description.I3DL2Reverb.lRoomHF = (long)(function_12aff0(-64.0f, 0.0f,
-		function_21ece1(local_0.field_4, reverb->room_hf), true) * 6400.0f - 6400.0f);
+		value, true) * 6400.0f - 6400.0f);
 	description.I3DL2Reverb.flRoomRolloffFactor = reverb->room_rolloff;
 	description.I3DL2Reverb.flDecayTime = reverb->decay_time;
 	description.I3DL2Reverb.flDecayHFRatio = reverb->decay_hf_ratio;
+	value = function_21ece1(local_0.field_4, reverb->reflections);
 	description.I3DL2Reverb.lReflections = (long)(function_12aff0(-64.0f, 10.0f,
-		function_21ece1(local_0.field_4, reverb->reflections), true) * 7400.0f - 6400.0f);
+		value, true) * 7400.0f - 6400.0f);
 	description.I3DL2Reverb.flReflectionsDelay = reverb->reflections_delay;
+	value = function_21ece1(local_0.field_4, reverb->reverb);
 	description.I3DL2Reverb.lReverb = (long)(function_12aff0(-64.0f, 20.0f,
-		function_21ece1(local_0.field_4, reverb->reverb), true) * 8400.0f - 6400.0f);
+		value, true) * 8400.0f - 6400.0f);
 	description.I3DL2Reverb.flReverbDelay = reverb->reverb_delay;
 	description.I3DL2Reverb.flDiffusion = reverb->diffusion * 100.0f;
 	description.I3DL2Reverb.flDensity = reverb->density * 100.0f;
