@@ -773,7 +773,7 @@ void function_1905bf(long controller, bool flag)
 }
 
 short player_slot_count_active(void);
-bool function_1a0540(s_player_profile_settings *settings, long file_index);
+bool function_1a0540(long file_index, s_player_profile_settings *settings);
 void function_120df0(long index, wchar_t const *name);
 c_class_1473c9 *__stdcall function_24b4a9(s_screen_parameters *parameters);
 
@@ -791,7 +791,7 @@ void function_19060a(long controller, long profile_index)
 	else
 		select = false;
 	slot = player_slot_profile_get(controller);
-	function_1a0540(&settings, profile_index);
+	function_1a0540(profile_index, &settings);
 	slot->initialize(controller);
 	slot->set_profile_index(profile_index);
 	function_120df0(controller, (wchar_t const *)settings.name);

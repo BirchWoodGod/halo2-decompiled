@@ -274,12 +274,11 @@ void function_b8b70(long object_index)
     s_object_partition_view_ab *object = header->object;
     if ((*((byte *)header + 2) & 0x40) && (bool)((object->flags >> 9) & 1))
     {
-        struct { s_object_partition_record_ab record; s_cluster_partition partition; } state;
-        function_b88e0(object_index, &state.record);
-        state.partition.cluster_first_data_references = (long *)g_4de2e0;
-        state.partition.data_references = (s_record_pool *)g_4de2e4;
-        state.partition.cluster_references = (s_record_pool *)g_4de2e8;
-        function_1cadf0(&state.partition, *(long *)((byte *)object + 0x60), object_index, sizeof(state.record), &state.record);
+        s_object_partition_record_ab record;
+        function_b88e0(object_index, &record);
+        // The existing whole partition storage has the same three-pointer layout.
+        function_1cadf0((s_cluster_partition *)&g_partition_colliding_storage,
+            *(long *)((byte *)object + 0x60), object_index, sizeof(record), &record);
     }
 }
 
@@ -338,7 +337,21 @@ long function_b8940(short cluster_index, s_object_cluster_reference **record, s_
 // @retail 0xb89b0
 long function_b89b0(s_object_cluster_reference **record, s_object_cluster_iterator *iterator)
 {
-	return object_cluster_next_ab((s_record_pool *)g_4de2e4, iterator, record);
+	long result = NONE;
+	if (iterator->next != NONE)
+	{
+		s_record_pool *array = (s_record_pool *)g_4de2e4;
+		long *size = &array->size;
+		byte **data = &array->data;
+		s_partition_object_link_ab *link = (s_partition_object_link_ab *)(*data + (iterator->next & 0xffff) * *size);
+		long next = link->next;
+		*record = (s_object_cluster_reference *)&link->record;
+		if (next != NONE)
+			_mm_prefetch((char const *)(*data + (next & 0xffff) * *size), _MM_HINT_T0);
+		iterator->next = next;
+		result = link->object_index;
+	}
+	return result;
 }
 
 // @retail 0xb8a10

@@ -283,6 +283,7 @@ long looping_sound_new_attached(long tag_index, long object_index, short marker_
 }
 #pragma function(_ReadWriteBarrier)
 
+#pragma auto_inline(off)
 // @retail 0x18a5a0
 long function_18a5a0(long tag_index, long object_index, real value)
 {
@@ -300,6 +301,8 @@ long function_18a5a0(long tag_index, long object_index, real value)
 	}
 	return datum_index;
 }
+
+#pragma auto_inline(on)
 
 #pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x18a600

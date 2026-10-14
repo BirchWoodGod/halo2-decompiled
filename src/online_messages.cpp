@@ -283,7 +283,7 @@ bool online_message_property_size_valid(long property, DWORD size)
 }
 
 // @retail 0x8f4b0
-void online_message_block_set_property(s_state_block *block, long property, DWORD size, const void *value)
+void online_message_block_set_property(s_state_block *block, long property, const void *value, DWORD size)
 {
 	long tag = online_message_property_get_tag(property);
 
@@ -572,22 +572,22 @@ void online_message_block_set_properties(s_state_block *block, long controller_i
 		long length = wcslen(text);
 		value = XGetLanguage();
 		long local_0 = (length + 1) * sizeof(wchar_t);
-		online_message_block_set_property(block, 3, local_0, text);
-		online_message_block_set_property(block, 4, sizeof(value), &value);
+		online_message_block_set_property(block, 3, text, local_0);
+		online_message_block_set_property(block, 4, &value, sizeof(value));
 	}
 	if (block->unknown210 > 0)
 	{
 		value = 1;
-		online_message_block_set_property(block, 0, block->unknown210, (const void *)block->unknown20c);
-		online_message_block_set_property(block, 1, sizeof(word), &value);
-		online_message_block_set_property(block, 2, sizeof(long), block->unknown214);
+		online_message_block_set_property(block, 0, (const void *)block->unknown20c, block->unknown210);
+		online_message_block_set_property(block, 1, &value, sizeof(word));
+		online_message_block_set_property(block, 2, block->unknown214, sizeof(long));
 	}
 	if (block->unknown4 == 3)
 	{
 		s_long_pair *session_id;
 		session_id = function_8f175();
 		if (session_id)
-			online_message_block_set_property(block, 5, 8, session_id);
+			online_message_block_set_property(block, 5, session_id, 8);
 		else
 			block->unknown8 = 4;
 	}
@@ -597,7 +597,7 @@ void online_message_block_set_properties(s_state_block *block, long controller_i
 		{
 			long local_1 = wcslen(identity.name);
 			long local_2 = (local_1 + 1) * sizeof(wchar_t);
-			online_message_block_set_property(block, 6, local_2, identity.name);
+			online_message_block_set_property(block, 6, identity.name, local_2);
 		}
 		else
 			block->unknown8 = 4;

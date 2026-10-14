@@ -2498,7 +2498,8 @@ void __stdcall function_fda00(long weapon_index, s_scenario_weapon_view *placeme
 		function_101980(weapon_index, loaded, 0, total);
 	}
 	function_b9b90(weapon_index, TEST_FIELD_BIT(placement->flags.at_rest));
-	*(dword *)((byte *)weapon + 4) |= 0x8000;
+	dword *flags = (dword *)((byte *)weapon + 4);
+	*flags |= 0x8000;
 	weapon->item_flag7 = !TEST_FIELD_BIT(placement->flags.accelerates);
 	if (!TEST_FIELD_BIT(placement->flags.at_rest))
 		*(real *)((byte *)weapon + 0x6c) += 0.05f;

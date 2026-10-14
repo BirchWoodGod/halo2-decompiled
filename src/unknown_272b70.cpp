@@ -776,7 +776,7 @@ void function_273670(long ai_index, bool flag)
 	}
 }
 
-void function_201520(short value, word type, long a, long b, long c);
+void function_201520(short value, long type, long a, long b, long c);
 void function_204010(long squad_index, long other_squad_index);
 
 /* for every squad an ai index names (or the squad of a starting location),
@@ -2311,7 +2311,7 @@ void function_276480(long ai_index, short script_index)
 		function_257fa0(iterator.actor_index, script_index, NONE);
 }
 
-long function_257ed0(long thread_index, long actor_index, short script_index);
+long function_257ed0(long actor_index, short script_index, long thread_index);
 bool function_2580c0(short squad_index, short script_index, long *actor_indices, short count);
 
 /* gives every actor an ai index names a command script (257ed0) */
@@ -2322,7 +2322,7 @@ void function_2764c0(long ai_index, short script_index)
 
 	ai_actor_iterator_new(ai_index, &iterator);
 	while (ai_actor_iterator_next(&iterator))
-		function_257ed0(NONE, iterator.actor_index, script_index);
+		function_257ed0(iterator.actor_index, script_index, NONE);
 }
 
 /* gives the first actors two ai indices name a shared command script */
@@ -2784,7 +2784,7 @@ void function_2773d0(long facing_point_reference, long point_reference)
 			}
 			else
 			{
-				local_0.field_4.k = 0.0f;
+				local_0.field_4.k = g_45dbd8;
 				if (normalize2d((point2f *)&local_0.field_4) == 0.0f)
 				{
 					function_118e80(unit_index, &local_0.field_4);

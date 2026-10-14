@@ -44,7 +44,7 @@ struct s_float_rect
 struct s_widget_quad_2b11;
 void function_1396c7(long arg_0, point2f *arg_1);
 real function_200891(s_interface_pulse const *arg_0, bool arg_1);
-void function_22a664(s_widget_quad_2b11 const *arg_0, s_float_rect const *arg_1,
+void function_22a664(s_float_rect const *arg_1, s_widget_quad_2b11 const *arg_0,
     long arg_2, long arg_3, long arg_4);
 
 // @retail 0x200462
@@ -136,7 +136,7 @@ void function_200462(long arg_0)
         g_4e6950.value18 = 0.0f;
         g_4e6950.value20 = (real)local_22->delay * g_510c54->rate * 2.0f;
         g_4e696c = function_200891(local_22, false) * g_4e69c0[g_4b9ed8];
-        function_22a664((s_widget_quad_2b11 const *)local_27, &local_19,
+        function_22a664(&local_19, (s_widget_quad_2b11 const *)local_27,
             *(long *)(local_16 + 4), local_18, *(long *)(local_16 + 0xc));
         local_14.x += local_26;
     }

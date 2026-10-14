@@ -254,15 +254,15 @@ bool __stdcall function_1c2130(long actor_index, s_slot *slot)
 		bool flag;
 		byte *buffer;
 		long unknown;
-		s_prop_search search;
+		s_2605d0_request request;
 
 		actor->unknown5e8 = 1;
 		buffer = ai_scratch_buffer_get();
-		memset(&search, 0, sizeof(search));
-		search.unknown19 = true;
+		memset(&request, 0, sizeof(request));
+		request.unknown015 = true;
 		flag = false;
-		search.type = 4;
-		function_2605d0(actor_index, (s_2605d0_request *)&search, 0, (long)&unknown, buffer, &flag);
+		request.type = 4;
+		function_2605d0(actor_index, &request, 0, (long)&unknown, buffer, &flag);
 		if (actor->unknown5e8 == 0)
 		{
 			state->unknown10 = true;
@@ -271,7 +271,7 @@ bool __stdcall function_1c2130(long actor_index, s_slot *slot)
 		if (!state->unknown10)
 		{
 			s_path_query query;
-			s_type_f17a25 *path;
+			bool valid;
 			bool found = false;
 
 			function_26c180(actor_index);
@@ -281,15 +281,15 @@ bool __stdcall function_1c2130(long actor_index, s_slot *slot)
 			query.source.unknown48 = 20.0f;
 			buffer = ai_scratch_buffer_get();
 			function_271300((s_type_f17a25 *)buffer, NULL, &query.settings, &query.source, 0);
-			path = function_2715a0(buffer) ? (s_type_f17a25 *)buffer : NULL;
+			valid = function_2715a0(buffer);
 			if (!(state->flags & 1))
 			{
-				found = function_1c1d50(actor_index, path);
+				found = function_1c1d50(actor_index, valid ? (s_type_f17a25 *)buffer : NULL);
 				state->flags |= 1;
 			}
 			if (!found && !(state->flags & 4))
 			{
-				found = function_1c1e70(actor_index, path);
+				found = function_1c1e70(actor_index, valid ? (s_type_f17a25 *)buffer : NULL);
 				state->flags |= 4;
 			}
 			if (!found)

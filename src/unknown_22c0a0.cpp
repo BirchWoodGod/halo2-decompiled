@@ -60,11 +60,10 @@ void c_havok_fixed_memory::deallocate_aligned(void *address)
 	{
 		if ((byte *)m_buffer + ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - i].offset == address)
 		{
-			for (; i < m_count - 1; i++)
+			for (long j = i; j < m_count - 1; j++)
 			{
-				s_fixed_memory_entry *entries = (s_fixed_memory_entry *)((byte *)m_buffer + m_size);
-				entries[-1 - i].offset = entries[-2 - i].offset;
-				entries[-1 - i].size = entries[-2 - i].size;
+				((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - j].offset = ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-2 - j].offset;
+				((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - j].size = ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-2 - j].size;
 			}
 			m_count--;
 			return;

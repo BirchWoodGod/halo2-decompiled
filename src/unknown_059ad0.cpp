@@ -3747,16 +3747,17 @@ bool __stdcall function_59e50(c_class_58d20 *session, long mode, long local,
 struct s_network_message_session_query;
 
 // @retail 0x63080
-void __stdcall function_063080(c_class_58d20 *session, const s_network_message_session_query *message,
+bool __stdcall function_063080(c_class_58d20 *session, const s_network_message_session_query *message,
  const s_type_99af70 *address)
 {
- __declspec(align(8)) s_session_join_request request;
+ s_session_join_request request;
  memcpy(&request, (const byte *)message + 0xc, sizeof(request));
  long reason = network_session_evaluate_join_request(session, &request);
  if (!reason && session->listener)
   session->listener->unknown00(address, &request);
  else
   function_630f0(session, &request, (long)address, reason);
+ return true;
 }
 
 inline long count_bits(dword value);
