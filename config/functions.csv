@@ -3912,7 +3912,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 001223a0,273,game,speed,a16 pad,,,001208b0 001209c0 00120d80 002d2084 003203e0,src/font_loading.cpp,matched
 001224c0,115,game,speed,a16 pad,,,00120ce0 002d2084,src/font_loading.cpp,matched
 00122540,40,game,speed,a16 pad,,,001224c0,src/font_loading.cpp,matched
-00122570,160,game,speed,a16 pad,,,,src/font_loading.cpp,todo
+00122570,160,game,speed,a16 pad,,,,src/font_loading.cpp,matched
 00122610,504,game,unknown,a16,,,,src/font_loading.cpp,todo
 00122810,91,game,speed,a16 pad,,,003203e0,src/unknown_122810.cpp,matched
 00122870,125,game,speed,a16 pad,,,00214ed0 003303f3,src/unknown_122870.cpp,matched
@@ -8818,7 +8818,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0024a80d,27,game,size,packed,,,0023021e 00249fcc,src/unknown_24a2e7.cpp,matched
 0024a828,45,game,size,packed,,,0024a763,src/unknown_24a2e7.cpp,matched
 0024a855,49,game,size,packed,,,0016bae0 0024c447,src/unknown_24a2e7.cpp,matched
-0024a886,587,game,size,packed,,,0019c1f0 0019c440 0019c4e0 001a06f0 0022e391 0022edb8 0022ee47 0022f042 0024a7ec 0024a828 0024a855 00253b1a 00253c06 002afd10,src/unknown_24a2e7.cpp,todo
+0024a886,587,game,size,packed,,,0019c1f0 0019c440 0019c4e0 001a06f0 0022e391 0022edb8 0022ee47 0022f042 0024a7ec 0024a828 0024a855 00253b1a 00253c06 002afd10,src/unknown_24a2e7.cpp,matched
 0024aad1,23,game,size,packed,,,00148b27,src/unknown_249fa3.cpp,matched
 0024aae8,36,game,size,packed,,,0008d7c0 003303c7,src/unknown_249fa3.cpp,matched
 0024ab0c,162,game,size,ebp packed,,,0006c800 0024aae8,src/unknown_24ab0c.cpp,matched
