@@ -32,7 +32,7 @@ wchar_t const *loading_text_get(void);
 wchar_t *ustrnzcatf(wchar_t *, wchar_t const *, ...);
 
 // @retail 0x2233a0
-void function_2233a0(real const *arg_0)
+void __stdcall function_2233a0(real const *arg_0)
 {
 	real const *const *local_5 = &arg_0;
 	long local_4 = (long)(**local_5 * 100.0f);
