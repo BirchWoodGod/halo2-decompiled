@@ -1017,13 +1017,10 @@ void havok_component_rigid_body_state_update(long rigid_body_index, s_havok_comp
 		vector3d_from_havok(&linear_velocity, &local_0->m_motion->m_linear_velocity);
 	else
 		linear_velocity = *g_4687a4;
-	vector3f const *local_2 = g_4687a4;
-	long const volatile *local_3 = (long const volatile *)local_2;
-	((long *)&angular_velocity)[0] = local_3[0];
-	((long *)&angular_velocity)[1] = local_3[1];
-	((long *)&angular_velocity)[2] = local_3[2];
-	if (!local_1)
+	if (!local_0->m_fixed)
 		vector3d_from_havok(&angular_velocity, &local_0->m_motion->m_angular_velocity);
+	else
+		angular_velocity = *g_4687a4;
 	rigid_body->position = position;
 	rigid_body->linear_velocity = linear_velocity;
 	rigid_body->angular_velocity = angular_velocity;

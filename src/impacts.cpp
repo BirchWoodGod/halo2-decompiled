@@ -857,13 +857,14 @@ void impact_orientation_get(
 	{
 		*half_width = 0.0f;
 		*half_length = 0.0f;
-		function_227814(up, g_4687b0, forward);
+		vector3f const *normal = up;
+		function_227814(normal, g_4687b0, forward);
 		if (function_30bf0(forward) < 0.001f)
 		{
-			function_227814(up, g_4687a8, forward);
+			function_227814(normal, g_4687a8, forward);
 			function_30bf0(forward);
 		}
-		function_227814(up, forward, left);
+		function_227814(normal, forward, left);
 		function_30bf0(left);
 	}
 	else
