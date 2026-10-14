@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8552 functions match
+
+```
+matched 8552 of 11318 game functions (1116405 of 2784283 bytes, 40.10%)
+```
+
+5 new matches, none lost:
+- Machine 1 key lane 1 round 7: `0x82a40` (its threshold values are fields of the network configuration)
+- Machine 1 key lane 2 round 7: `0x137fe0` and `0x13954b` (new functions; the standard marker gives retail's unaligned entry)
+- Machine 3 Codex deep lane 2 round 47 (#453): `0x1486b8` and `0x2b01eb`
+
 ## 2026-10-14: 8547 functions match
 
 ```
