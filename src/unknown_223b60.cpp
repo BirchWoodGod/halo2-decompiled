@@ -148,9 +148,13 @@ void fixup_group_apply(s_fixup_group *group, byte *base)
 	}
 }
 
-PRIVATE inline bool fixup_resource_is_busy(D3DResource *resource)
+PRIVATE inline bool fixup_element_busy_223d80(s_fixup_element *element)
 {
-	return resource->IsBusy() > 0;
+	D3DResource *resource = (D3DResource *)element->trailer;
+	bool busy = false;
+	if (resource)
+		busy = resource->IsBusy() > 0;
+	return busy;
 }
 
 // @retail 0x223d80
@@ -163,14 +167,10 @@ bool fixup_group_has_resource(s_fixup_group *group, byte *base)
 		s_fixup_entry *entry = &group->entries[i];
 		if (entry->offset != NONE && entry->type == 2)
 		{
-			D3DResource *resource = (D3DResource *)fixup_entry_target(entry, base8)->trailer;
-			if (resource)
+			if (fixup_element_busy_223d80(fixup_entry_target(entry, base8)))
 			{
-				if (fixup_resource_is_busy(resource))
-				{
-					result = true;
-					break;
-				}
+				result = true;
+				break;
 			}
 		}
 	}

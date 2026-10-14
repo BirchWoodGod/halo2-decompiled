@@ -19,6 +19,7 @@ struct s_physical_allocator_view
 
 /* whether block a should go before block b: the one used longer ago (by more
    than 150 ticks, up to 300), else the larger */
+#pragma auto_inline(off)
 // @retail 0x13d320
 bool function_13d320(s_physical_allocator_view const *allocator, s_physical_block_view const *a, s_physical_block_view const *b)
 {
@@ -44,3 +45,4 @@ bool function_13d320(s_physical_allocator_view const *allocator, s_physical_bloc
 	}
 	return result;
 }
+#pragma auto_inline(on)
