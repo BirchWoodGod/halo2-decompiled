@@ -1212,14 +1212,14 @@ bool function_2dba0(long tag, vector3f const *direction, long c, long d, long e,
         if ((amount > 0.0f || !(definition[0x2a] & 1)) &&
             !(definition[0x28] & (*alternate_input ? 8 : 4)))
         {
-            vector3f delta;
-            delta.i = position->x - g_4b9da0.x;
-            delta.j = position->y - g_4b9da0.y;
-            delta.k = position->z - g_4b9da0.z;
+            real delta_i, delta_j, delta_k;
+            delta_i = position->x - g_4b9da0.x;
+            delta_j = position->y - g_4b9da0.y;
+            delta_k = position->z - g_4b9da0.z;
             real near_distance = *(real *)(definition + 0x18);
             real far_distance = *(real *)(definition + 0x1c);
             if (near_distance == far_distance || far_distance >
-                delta.k * g_4b9dac.k + g_4b9dac.j * delta.j + g_4b9dac.i * delta.i)
+                delta_k * g_4b9dac.k + g_4b9dac.j * delta_j + g_4b9dac.i * delta_i)
             {
                 s_slot_key key;
                 memset(&key, 0, sizeof(key));
@@ -1331,7 +1331,7 @@ bool __stdcall function_3ebd0(vector3f const *offset, transform4x3f const *matri
         byte *definition = NULL;
         if (index != NONE)
             definition = g_4e3b44[index & 0xffff].bytes;
-        real heading = *(real *)(definition + 0x80);
+        real const &heading = *(real *)(definition + 0x80);
         vector3f forward;
         forward.i = (real)(cos(heading));
         forward.j = (real)(sin(heading));
@@ -2064,8 +2064,8 @@ bool function_39a80(byte *state)
 // @retail 0x3e5a0
 void function_3e5a0(vector3f *current, vector3f const *target, real step)
 {
-    real current_size = (real)sqrt((double)current->i * current->i + (double)current->j * current->j + (double)current->k * current->k);
-    real a = current_size < 0.0001f ? 0.0001f : current_size > 10.0f ? 10.0f : current_size;
+    real const &name_734d0c = (real)sqrt((double)current->i * current->i + (double)current->j * current->j + (double)current->k * current->k);
+    real a = name_734d0c < 0.0001f ? 0.0001f : name_734d0c > 10.0f ? 10.0f : name_734d0c;
     real target_size = (real)sqrt((double)target->i * target->i + (double)target->j * target->j + (double)target->k * target->k);
     real b = target_size < 0.0001f ? 0.0001f : target_size > 10.0f ? 10.0f : target_size;
     vector3f first, second;
@@ -2693,12 +2693,12 @@ PRIVATE inline real object_view_distance(point3f const *position)
 // @retail 0x3d7f0
 bool __stdcall function_3d7f0(long object_index, real *out_alpha, bool *out_special)
 {
+    bool result = false;
     s_scalar_object_header *header = &((s_scalar_object_header *)g_4e0300->data)[object_index & 0xffff];
     byte *object = header->object;
     byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
     volatile long kind = *(signed char *)(object + 0xaa);
     real alpha = 0.0f;
-    bool result = false;
     if (!(object[6] & 1))
     {
         byte opacity, second;
@@ -3670,18 +3670,20 @@ PRIVATE __forceinline void draw_light_source_pass(long group, long mode, bool ex
 // @retail 0x31170
 void function_31170(long tag, s_view_camera *camera, long resource, s_view_source *source, bool special, real scale)
 {
+    bool enabled = special;
     byte *definition = g_4e3b44[tag & 0xffff].bytes;
     function_40e90(0);
-    if (special) special = (g_4c1a48[2].flags & 0x400) != 0;
-    function_4a1e0(source, camera, resource, (s_view_flags *)definition, 1024.0f, special, scale);
+    if (enabled) enabled = (g_4c1a48[2].flags & 0x400) != 0;
+    function_4a1e0(source, camera, resource, (s_view_flags *)definition, 1024.0f, enabled, scale);
     g_4ba018 = 1;
     g_4ba014 = 0;
     if ((!g_510c50 || !((byte *)g_510c50)[5]) && *(short *)(definition + 4) == 0)
         g_485950.i = g_485950.j = g_485950.k = 0.0f;
-    dword flags = *(short *)camera == 0 ? 1 : 0;
+    s_view_camera *const *camera_home = &camera;
+    dword flags = *(short *)*camera_home == 0 ? 1 : 0;
     if (g_485950.i > 0.009999999776482582f || g_485950.j > 0.009999999776482582f || g_485950.k > 0.009999999776482582f) flags |= 2;
     else flags &= ~2;
-    if (special && !(flags & 1))
+    if (enabled && !(flags & 1))
     {
         flags |= 0x24;
         if (g_485a40 > 0.0f && *(short *)(definition + 0x14) != 2) flags |= 8;
@@ -3689,12 +3691,12 @@ void function_31170(long tag, s_view_camera *camera, long resource, s_view_sourc
     }
     else flags &= ~0x2c;
     g_4ba014 = flags & ~0x10;
-    if (g_4ba014 & 4)
+    if ((bool)((g_4ba014 >> 2) & 1))
     {
         function_48ee0((byte const *)source, (byte const *)camera, definition);
         draw_configured_pass_r18(10);
     }
-    if ((g_4ba014 & 6) || (definition[0] & 0x20))
+    if ((bool)((g_4ba014 >> 2) & 1) || (bool)((g_4ba014 >> 1) & 1) || (definition[0] & 0x20))
         draw_light_source_pass(1, 11, true, false, false, g_4858b8, true);
     if (g_510c50 && ((byte *)g_510c50)[5] && (g_4ba014 & 4) && g_4ba134 > 0) function_30ed0();
     draw_light_source_pass(1, 14, true, false, false, 1, false);
