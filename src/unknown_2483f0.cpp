@@ -144,15 +144,15 @@ void function_248450(matrix3x3 *rotation, s_particle_frame const *frame, point3f
 
 		*rotation = frame->rotation;
 		*position = frame->position;
+		particle_cross_product3d(&g_485618.up, &g_485618.forward, &offset.left);
 		offset.forward = g_485618.forward;
 		offset.up = g_485618.up;
-		particle_cross_product3d(&g_485618.up, &g_485618.forward, &offset.left);
 		function_142eb0(&offset, rotation, rotation);
 
 		point = *position;
-		position->x = point.y * offset.left.i + point.z * offset.up.i + point.x * offset.forward.i;
-		position->y = point.x * offset.forward.j + point.y * offset.left.j + point.z * offset.up.j;
-		position->z = point.x * offset.forward.k + point.y * offset.left.k + point.z * offset.up.k;
+		position->x = point.y * offset.left.i + offset.up.i * point.z + offset.forward.i * point.x;
+		position->y = offset.forward.j * point.x + point.y * offset.left.j + offset.up.j * point.z;
+		position->z = offset.forward.k * point.x + point.y * offset.left.k + offset.up.k * point.z;
 		position->x += g_485618.position.x;
 		position->y += g_485618.position.y;
 		position->z += g_485618.position.z;

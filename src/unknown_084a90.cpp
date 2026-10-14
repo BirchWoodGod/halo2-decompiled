@@ -346,26 +346,6 @@ struct s_player_machine_table
 long function_14bc00(long player_index, const s_player_creation_record *record);
 void __stdcall function_14bf80(long player_index, const s_player_creation_record *record);
 
-static __forceinline long simulation_player_next_absolute_index(s_record_pool *data, long index)
-{
- long result = NONE;
- if (index >= 0 && index < data->high_water_index)
- {
-  long count = data->high_water_index;
-  dword *bits = data->bitmap;
-  do
-  {
-   if (bits[index >> 5] & (1 << (index & 0x1f)))
-   {
-    result = index;
-    break;
-   }
-   index++;
-  } while (index < count);
- }
- return result;
-}
-
 // @retail 0x85140
 bool __stdcall function_85140(const s_simulation_player_update *update)
 {
@@ -395,21 +375,23 @@ bool __stdcall function_85140(const s_simulation_player_update *update)
   if (machine_index == NONE)
    return result;
  }
- long cursor = NONE;
- while ((cursor = simulation_player_next_absolute_index(data, cursor + 1)) != NONE)
+ s_record_pool_iterator iterator;
+ s_simulation_player_datum *player;
+ iterator.data = g_4e8c24;
+ iterator.index = NONE;
+ while ((player = (s_simulation_player_datum *)data_iterator_next_inlined(&iterator)) != 0)
  {
-  s_simulation_player_datum *player = (s_simulation_player_datum *)(data->data + data->size * cursor);
-  if ((short)data_datum_index(data, cursor) != index &&
+  if ((short)iterator.datum_index != index &&
    !memcmp(player->key, update->key, sizeof(player->key)))
    return result;
  }
  if (!update->field_2_2)
  {
-  cursor = NONE;
-  while ((cursor = simulation_player_next_absolute_index(data, cursor + 1)) != NONE)
+  iterator.data = g_4e8c24;
+  iterator.index = NONE;
+  while ((player = (s_simulation_player_datum *)data_iterator_next_inlined(&iterator)) != 0)
   {
-   s_simulation_player_datum *player = (s_simulation_player_datum *)(data->data + data->size * cursor);
-   if (player->machine_index == machine_index && (short)data_datum_index(data, cursor) != index &&
+   if (player->machine_index == machine_index && (short)iterator.datum_index != index &&
     (player->index28 == update->controller_index || player->value24 == update->unknown20))
     return result;
   }
@@ -419,31 +401,31 @@ bool __stdcall function_85140(const s_simulation_player_update *update)
  bool special = update->field_2_2;
  record.active = true;
  record.field_2_2 = special;
+ long value04;
  if (!special)
  {
   record.machine = update->machine;
   record.controller_index = (short)update->controller_index;
-  record.value04 = update->unknown20;
+  value04 = update->unknown20;
  }
  else
  {
   record.controller_index = NONE;
-  record.value04 = NONE;
+  value04 = NONE;
  }
  memcpy(record.key, update->key, sizeof(record.key));
+ record.value04 = value04;
  memcpy(record.configuration, update->configuration, sizeof(record.configuration));
  char *team = (char *)record.configuration + 0x7c;
  if (*team != NONE)
  {
   if (g_4e6948->flags184.bit0)
   {
-   char value = *team;
-   if (value < 0) value = 0;
-   else if (value > 7) value = 7;
-   *team = value;
+   if (*team < 0) *team = 0;
+   else if (*team > 7) *team = 7;
   }
   else
-   *team = (char)index;
+   *team = (char)update->player_index;
  }
  if (!existing)
  {
@@ -452,7 +434,10 @@ bool __stdcall function_85140(const s_simulation_player_update *update)
  }
  else if (!memcmp(existing->key, record.key, sizeof(record.key)) && existing->field_2_2)
  {
-  function_14bf80(data_datum_index(data, index), &record);
+  long datum = NONE;
+  if (index != NONE)
+   datum = (((short *)(data->data + data->size * index))[0] << 16) | index;
+  function_14bf80(datum, &record);
   result = true;
  }
  return result;

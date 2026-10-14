@@ -497,6 +497,7 @@ s_type_f4462a const g_44b158 = { _hs_type_real, 2, function_208310, "<number(s)>
 // @retail 0x2081e0
 void __stdcall function_2081e0(short function_index, long thread_index, bool initialize)
 {
+	s_hs_thread *thread = hs_thread_get(thread_index);
 	long *next = hs_frame_allocate_value(thread_index);
 	long *value = hs_frame_allocate_value(thread_index);
 	s_hs_frame *frame = hs_thread_get(thread_index)->frame;
@@ -505,15 +506,19 @@ void __stdcall function_2081e0(short function_index, long thread_index, bool ini
 	bool conjunction = function_index == 5;
 	if (initialize)
 	{
-		s_hs_expression *expression = hs_expression_get(hs_thread_get(thread_index)->frame->expression_index);
+		s_hs_expression *expression = hs_expression_get(thread->frame->expression_index);
 		s_hs_expression *name = hs_expression_get(expression->value);
 		*next = *(long *)((byte *)name + 8);
 		*result = conjunction;
 	}
-	else if (conjunction)
-		*result = *result && *(bool *)value;
 	else
-		*result = *result || *(bool *)value;
+	{
+		bool other = *(bool *)value;
+		if (conjunction)
+			*result = *result && other;
+		else
+			*result = *result || other;
+	}
 	if (*next != NONE && *result == conjunction)
 	{
 		function_2099f0(thread_index, value, *next);

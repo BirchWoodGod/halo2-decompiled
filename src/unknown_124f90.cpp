@@ -1483,7 +1483,10 @@ short sound_voice_find(long sound_index, long *reason)
 		if (definition->type == voice->definition_type)
 		{
 			if (voice->sound_index == NONE)
-				return i;
+			{
+				result = i;
+				break;
+			}
 			if (function_128b90(sound_index, voice->sound_index, distance) &&
 				(result == NONE || function_128b90(result_sound_index, voice->sound_index, result_distance)))
 			{

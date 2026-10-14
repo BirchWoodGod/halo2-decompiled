@@ -223,29 +223,47 @@ void __stdcall function_2564e0(long actor_index, s_slot *slot)
 	actor->unknown4a8 = actor->prop_index;
 }
 
+struct s_member_iterator_256520
+{
+	long next_index;
+	long index;
+};
+
+static inline s_actor_view *member_iterator_next_256520(s_member_iterator_256520 *iterator)
+{
+	s_actor_view *member = 0;
+
+	if (iterator->next_index != NONE)
+	{
+		member = actor_get(iterator->next_index);
+		iterator->index = iterator->next_index;
+		iterator->next_index = member->next_index;
+	}
+	return member;
+}
+
 // @retail 0x256520
 bool function_256520(long actor_index, real range)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	bool result = false;
+	s_actor_view *actor = actor_get(actor_index);
 
 	if (actor->prop_index != NONE && actor->unknown07c != NONE)
 	{
 		s_prop_datum *prop = prop_ref_get(actor->prop_index);
-		long member_index = element_502420_get(actor->unknown07c)->first_actor_index;
+		s_member_iterator_256520 iterator;
+		s_actor_view *member;
 
-		while (member_index != NONE)
+		iterator.next_index = element_502420_get(actor->unknown07c)->first_actor_index;
+		iterator.index = NONE;
+		while ((member = member_iterator_next_256520(&iterator)) != 0)
 		{
-			s_actor_view *member = actor_get(member_index);
-			long current_index = member_index;
-			member_index = member->next_index;
-
 			if (member != actor && !member->unknown007 && member->prop_index != NONE)
 			{
 				s_prop_datum *other = prop_ref_get(member->prop_index);
 
 				if (other->prop_index == prop->prop_index &&
-					function_1a6fe0(current_index, 0xe) != NONE &&
+					function_1a6fe0(iterator.index, 0xe) != NONE &&
 					range > other->unknown28)
 				{
 					result = true;
