@@ -2,6 +2,25 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8428 functions match
+
+```
+matched 8428 of 11318 game functions (1084596 of 2784283 bytes, 38.95%)
+```
+
+4 new matches, none lost:
+- Machine 3 lane M round 28 (#433): `0x1a0560`, `0x1a07b0`, `0x1a0850` and `0x1acb50`
+
+## 2026-10-13: 8424 functions match
+
+```
+matched 8424 of 11318 game functions (1083602 of 2784283 bytes, 38.92%)
+```
+
+8 new matches, none lost:
+- Claude lane 1 round 17 (Opus): `0x2c4ea0` (the globals it reads are fields of an existing struct, as in retail), `0x1366d0` and `0x11c0b0` (handed over by machine 3), `0x1fa50` and `0x1fb10`, `0x2b102f` and `0x2b0f76`
+- Deep lane 1 round 52: `0x22d68f`
+
 ## 2026-10-13: 8416 functions match
 
 ```
