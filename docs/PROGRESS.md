@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8609 functions match
+
+```
+matched 8609 of 11318 game functions (1140661 of 2784283 bytes, 40.97%)
+```
+
+2 new matches, none lost:
+- Machine 3's batch 24 (#466): `0x226f80` matches.
+- Machine 1's key lane 2 round 14: `0x156b60` matches, through `0x40e30`'s `kind` parameter as a signed `short`.
+
 ## 2026-10-14: 8607 functions match
 
 ```
