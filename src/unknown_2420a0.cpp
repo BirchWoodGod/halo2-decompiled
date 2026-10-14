@@ -441,7 +441,7 @@ void c_game_engine_markers::v45(dword *flags, long, s_marker_update *update)
 	 ((flags) & 4) && (options)->team_mode == 2)
 
 // @retail 0x243b10
-long function_243b10(bool team_only, long key_b, long *second)
+long function_243b10(long key_b, bool team_only, long *second)
 {
 	s_game_options_view *options = g_4e6948;
 	long results[8];
@@ -961,13 +961,13 @@ bool c_game_engine_markers::v1()
 	{
 		long second = NONE;
 
-		table->a[i] = (short)function_243b10(true, i, NULL);
-		table->b[i] = (short)function_243b10(false, i, &second);
+		table->a[i] = (short)function_243b10(i, true, NULL);
+		table->b[i] = (short)function_243b10(i, false, &second);
 		table->c[i] = (short)second;
 		function_243c00(i);
 	}
 
-	table->l38 = function_243b10(true, NONE, NULL);
+	table->l38 = function_243b10(NONE, true, NULL);
 	table->initialized = true;
 
 	for (i = 0; i < 9; i++)
@@ -1488,8 +1488,7 @@ bool function_2423f0()
 	long count = 0;
 	long i;
 
-	for (i = 0; i < 9; i++)
-		slot_objects[i] = NONE;
+	memset(slot_objects, NONE, sizeof(slot_objects));
 
 	for (i = 0; i < ((s_ctf_team_view *)g_4e9ae8)->team_count; i++)
 	{
@@ -1502,8 +1501,8 @@ bool function_2423f0()
 		}
 		else
 		{
-			others[count++] = object_index;
 			result = false;
+			others[count++] = object_index;
 		}
 	}
 
