@@ -1027,12 +1027,13 @@ bool function_211b30(byte const *location, real const *position, byte flags, vec
 	return false;
 }
 
-PRIVATE real random_step(void)
+/* retail inlines the random step and the clamp into 0x2118c0 */
+static inline real random_step(void)
 {
 	return random_index(&g_4e7408->seed, 2) ? 0.01f : -0.01f;
 }
 
-PRIVATE real pin_real(real x, real lower, real upper)
+static inline real pin_real(real x, real lower, real upper)
 {
 	if (x < lower)
 	{
@@ -1062,8 +1063,8 @@ void function_2118c0(void)
 		if (source->tag_index != NONE)
 		{
 			s_cell_tag *tag = (s_cell_tag *)g_4e3b44[source->tag_index & 0xffff].bytes;
-			real azimuth;
-			real elevation;
+			double azimuth;
+			double elevation;
 			real scale;
 			long j;
 
@@ -1078,8 +1079,8 @@ void function_2118c0(void)
 
 			cell->interpolation = (tag->value4 - tag->value0) * cell->value4 + tag->value0;
 
-			azimuth = (real)atan2(source->direction.j, source->direction.i);
-			elevation = (real)atan2(source->direction.k, sqrt(source->direction.j * source->direction.j + source->direction.i * source->direction.i));
+			azimuth = atan2(source->direction.j, source->direction.i);
+			elevation = atan2(source->direction.k, sqrt(source->direction.j * source->direction.j + source->direction.i * source->direction.i));
 			elevation += tag->valuec * cell->valuec * 0.5f;
 			azimuth += cell->value8 * tag->value8 * 0.5f;
 
