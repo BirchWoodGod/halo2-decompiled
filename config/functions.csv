@@ -1450,7 +1450,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00080490,306,game,speed,a16 pad,,,0007f8b0 0007fc80 0007fe40 0007fe90 00320d00 003303f3,src/unknown_0805e0.cpp,near
 000805d0,16,game,speed,a16 pad,,,00080490,src/unknown_0805e0.cpp,matched
 000805e0,127,game,unknown,a16,,,,src/unknown_0805e0.cpp,todo
-00080660,731,game,speed,a16 pad,,,00153750,src/unknown_0805e0.cpp,todo
+00080660,731,game,speed,a16 pad,,,00153750,src/unknown_0805e0.cpp,matched
 00080940,352,game,speed,a16 pad,,,,src/unknown_0805e0.cpp,todo
 00080aa0,327,game,unknown,a16,,,0007fc80 003207ed 00320d00 003303f3,src/unknown_0805e0.cpp,matched
 00080bf0,382,game,speed,a16 pad,,,,src/unknown_0805e0.cpp,todo
@@ -1482,7 +1482,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 000821c0,120,game,speed,a16 pad,,,00081550 00081590 0016b840 0016b910,src/unknown_081f80.cpp,matched
 00082240,398,game,speed,a16 pad,,,,,todo
 000823d0,251,game,speed,a16 pad,,,00082d20 001a1d55,src/unknown_082b70.cpp,todo
-000824d0,257,game,speed,a16 pad,,,00082d20,src/unknown_0824d0.cpp,todo
+000824d0,257,game,speed,a16 pad,,,00082d20,src/unknown_0824d0.cpp,matched
 000825e0,338,game,speed,a16 pad,,,000a58d0 0014d040,src/unknown_0825e0.cpp,matched
 00082740,368,game,speed,a16 pad,,,000a58d0 000c6ef0,src/unknown_082b70.cpp,matched
 000828b0,195,game,unknown,a16,,,000a5980 000b9dd0 000b9fc0 000ba1d0,src/unknown_082b70.cpp,todo
@@ -1733,7 +1733,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0008ef90,86,game,speed,a16 pad,,,0008f070 0008f170 0008f2c0 0008fa30,src/online_messages.cpp,matched
 0008eff0,120,game,speed,a16 pad,,,0008f070 0008f170 0008f2c0 0008fa30 00320870,src/online_messages.cpp,matched
 0008f070,256,game,speed,a16 pad,,,0006cd50 0008f390 00320870 003a9d8e,src/online_messages.cpp,matched
-0008f170,327,game,unknown,a16,,,0008f4b0 0018ff88 00320870 0033039a,src/online_messages.cpp,near
+0008f170,327,game,unknown,a16,,,0008f4b0 0018ff88 00320870 0033039a,src/online_messages.cpp,matched
 0008f2c0,196,game,speed,a16 pad,,,00064cf0 0008f500 0008f6e0 0008f7e0 0008f8b0 001487c3 0019b527,src/online_messages.cpp,matched
 0008f390,88,game,speed,a16 pad ebp,,,,src/online_messages.cpp,matched
 0008f3f0,88,game,speed,a16 pad,,,,src/online_messages.cpp,matched

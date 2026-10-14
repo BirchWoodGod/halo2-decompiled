@@ -875,9 +875,7 @@ bool function_862e0(c_simulation_view *view)
    header.kind = 0;
    header.size = 0;
    header.value = view->world->unknown28;
-   if (view_buffer_write(buffer, sizeof(header), &header) == NONE)
-    result = false;
-   else
+   if (view_buffer_write(buffer, sizeof(header), &header) != NONE)
    {
     view->unknownac++;
     long size;
@@ -886,6 +884,8 @@ bool function_862e0(c_simulation_view *view)
     view->world->flag11fc = 0;
     g_46e320[4](0);
    }
+   else
+    result = false;
    if (!result) view->release_buffer();
   }
   else
