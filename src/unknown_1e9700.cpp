@@ -485,8 +485,10 @@ bool __stdcall function_1e9ad0(void *state, long mask, void *data)
 	{
 		if (*mask_reference & (1 << (team + 16)))
 		{
+			short *destination = &table->team_values[team][0];
+			short const *source = &packet->team_values[team][0];
 			for (long column = 0; column < 9; column++)
-				table->team_values[team][column] = packet->team_values[team][column];
+				destination[column] = source[column];
 		}
 	}
 	return true;

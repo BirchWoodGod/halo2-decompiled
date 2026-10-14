@@ -650,7 +650,8 @@ bool function_1b580(byte const *definition, long component, long unused, long mo
 void __stdcall function_17960(byte *state, word const *range)
 {
     dword initial_range = *range;
-    if (initial_range & 0xfe00)
+    s_packed_shader_range const *range_view = (s_packed_shader_range const *)range;
+    if (range_view->count() > 0)
     {
         byte const *definition = *(byte **)(state + 0xc);
         byte const *entry = *(byte **)(definition + 0x58) + (initial_range & 0x1ff) * 4;
@@ -669,7 +670,8 @@ void __stdcall function_17960(byte *state, word const *range)
             if (mode < 5)
             {
                 s_1b230_function const *volatile curve = (s_1b230_function const *)(parameter + 12);
-                real value = function_1b230(curve, *(long const *)parameter,
+                s_1b230_function const *input_curve = curve;
+                real value = function_1b230(input_curve, *(long const *)parameter,
                     *(long const *)(parameter + 4), *(real const *)(parameter + 8));
                 if (mode != 4)
                 {
@@ -835,6 +837,7 @@ bool function_1b2c0(byte const *state, long index, long component, long texture,
             break;
         }
         out[component] = value;
+        return true;
     }
     else if (component == 4)
         *(color3f *)out = ((color3f const *)(state + 0x108))[index];
@@ -1233,9 +1236,10 @@ void function_1ae70(byte *state)
     dword pending[5];
     for (long mask = 0; mask < 5; ++mask)
         pending[mask] = ((dword *)(state + 0x30))[mask] & ((dword *)(state + 0x44))[mask];
+    dword *scalar_masks = pending;
     for (long base = 0; base < 64; base += 32)
     {
-        dword remaining = pending[base >> 5];
+        dword remaining = *scalar_masks++;
         while (remaining)
         {
             long bit;
@@ -1248,9 +1252,10 @@ void function_1ae70(byte *state)
             ((dword *)(state + 0x30))[index >> 5] &= ~(1 << (index & 31));
         }
     }
+    dword *vector_masks = pending + 2;
     for (long base = 0; base < 64; base += 32)
     {
-        dword remaining = pending[2 + (base >> 5)];
+        dword remaining = *vector_masks++;
         while (remaining)
         {
             long bit;

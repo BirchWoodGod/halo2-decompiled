@@ -1289,9 +1289,10 @@ bool function_25ccd0(s_type_5cfb45 *arg_0, long arg_1, short arg_2, s_2640c0 *ar
 	long local_4 = NONE;
 	if ((1 << local_2->type) & 3)
 	{
+		long local_12 = local_2->actor_index;
 		local_3 = local_2;
-		if (local_3->actor_index != NONE)
-			local_4 = local_3->actor_index;
+		if (local_12 != NONE)
+			local_4 = local_12;
 	}
 	union
 	{
@@ -1318,7 +1319,10 @@ bool function_25ccd0(s_type_5cfb45 *arg_0, long arg_1, short arg_2, s_2640c0 *ar
 	{
 		*(point3f *)((byte *)arg_0 + 0x10) = arg_0->position;
 	}
+	/* retail calls the cluster test here */
+#pragma inline_depth(0)
 	arg_0->unknown69 = function_11c120((s_location *)((byte *)arg_0 + 0x28), (point3f *)((byte *)arg_0 + 0x10), NULL);
+#pragma inline_depth()
 	arg_0->unknown3c = NONE;
 	arg_0->unknown65 = false;
 	arg_0->unknown66 = false;
@@ -1502,7 +1506,14 @@ void function_25b6b0(long arg_0, long arg_1)
 			{
 				s_prop_datum *local_6 = prop_ref_get(local_5);
 				s_type_f95cd3 *local_7 = function_25d740((s_prop_node *)local_6);
-				if (local_6->state < 1 || (local_7 && *(long *)((byte *)local_7 + 0xc) + 3 * g_510c54->field_2_3 < g_510c54->game_time))
+				bool local_12;
+				if (local_6->state < 1)
+					local_12 = true;
+				else if (!local_7)
+					local_12 = false;
+				else
+					local_12 = *(long *)((byte *)local_7 + 0xc) + 3 * g_510c54->field_2_3 < g_510c54->game_time;
+				if (local_12)
 				{
 					if (function_25d020(arg_0, local_4, 0, local_5, NONE, NONE))
 					{

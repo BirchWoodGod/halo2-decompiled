@@ -456,6 +456,7 @@ long g_4c8790;
 void function_144f0(long tag, short stage, long fallback, short fallback_index, short index, real priority);
 void function_1cf50(void);
 
+#pragma inline_depth(0)
 // @retail 0x44040
 void __stdcall function_44040(long cell, short mask)
 {
@@ -499,6 +500,7 @@ void __stdcall function_44040(long cell, short mask)
         while (handle != NONE);
     }
 }
+#pragma inline_depth()
 
 extern byte *g_4858c4;
 long g_485a2c, g_485a64, g_485a68;
@@ -916,38 +918,8 @@ void function_45a80(short index, bool ranges, s_geometry_visibility_list const *
 
 
 
-#include "unknown_03bcb0.h"
 
-// @retail 0x3d600
-void function_3d600(void)
-{
-	for (long cache = 0; cache < g_4c1bd4; ++cache)
-	{
-		byte *definition = g_4e3b44[g_4c1bd8[cache].tag & 0xffff].bytes;
-		for (long section = 0; section < *(long *)(definition + 0x24); ++section)
-		{
-			byte *sections = *(byte **)(definition + 0x28);
-			function_12de70((s_geometry_block_info *)(sections + section * 0x5c + 0x38), 10);
-		}
-		for (long material = 0; material < *(long *)(definition + 0x60); ++material)
-		{
-			long tag = *(long *)(*(byte **)(definition + 0x64) + material * 0x20 + 0xc);
-			if (tag == NONE) continue;
-			byte *shader = *(byte **)(g_4e3b44[tag & 0xffff].bytes + 0x24);
-			for (long texture = 0; texture < *(long *)(shader + 4); ++texture)
-			{
-				long bitmap_tag = *(long *)(*(byte **)(shader + 8) + texture * 0xc);
-				if (bitmap_tag == NONE) continue;
-				byte *bitmap = g_4e3b44[bitmap_tag & 0xffff].bytes;
-				for (long index = 0; index < *(long *)(bitmap + 0x44); ++index)
-				{
-					s_bitmap_predict_view *image = (s_bitmap_predict_view *)(*(byte **)(bitmap + 0x48) + index * 0x74);
-					if (image) bitmap_predict_inline(image, 14);
-				}
-			}
-		}
-	}
-}
+void function_3d600(void);
 
 struct s_planar_camera_source
 {

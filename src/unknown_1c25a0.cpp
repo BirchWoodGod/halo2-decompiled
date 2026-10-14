@@ -26,12 +26,6 @@ struct s_1c4261
  long field_6c;
 };
 
-PRIVATE __forceinline hkRigidBody *function_1c4261(byte *arg_0)
-{
- long local_0 = *(long *)(arg_0 + 8);
- byte *local_1 = arg_0 - 0x10;
- return local_0 == 1 ? *(hkRigidBody **)(local_1 + 0x20) : NULL;
-}
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -1170,10 +1164,21 @@ PRIVATE __forceinline void function_1c4262(long arg_0)
  }
 }
 
+/* the rigid body owning a collidable (0x1c4260): the owner sits 0x10 bytes
+   before the collidable, and retail reads the type through the owner */
+PRIVATE __forceinline hkRigidBody *collidable_rigid_body_1c4260(byte *arg_0)
+{
+ byte *local_1 = arg_0 - 0x10;
+ long local_0 = *(long *)(local_1 + 0x18);
+ return local_0 == 1 ? *(hkRigidBody **)(local_1 + 0x20) : NULL;
+}
+
 // @retail 0x1c4260
 void function_1c4260()
 {
- if (g_51e9a4 && !g_47f05b)
+ /* read through a const pointer, as retail keeps the flag store ahead of the
+    island count load */
+ if (g_51e9a4 && !*(bool const *)&g_47f05b)
  {
   g_47f05b = true;
   for (long local_0 = 0; local_0 < g_51e9a4->m_island_count; ++local_0)
@@ -1185,18 +1190,19 @@ void function_1c4260()
     for (long local_3 = 0; local_3 < ((s_1c4261 *)local_1)->field_6c; ++local_3)
     {
      s_1c4260 *local_4 = &((s_1c4261 *)local_1)->field_68[local_3];
-     hkRigidBody *local_5 = function_1c4261(local_4->field_0);
-     hkRigidBody *local_6 = function_1c4261(local_4->field_4);
+     hkRigidBody *local_5 = collidable_rigid_body_1c4260(local_4->field_0);
+     hkRigidBody *local_6 = collidable_rigid_body_1c4260(local_4->field_4);
      if (local_5->m_motion->getType() == 7 || local_5->m_motion->getType() == 6 ||
          local_6->m_motion->getType() == 7 || local_6->m_motion->getType() == 6)
       --local_2;
     }
     if (local_2 > 24)
     {
-     long local_7 = NONE;
-     for (long local_8 = 0; local_8 < 3 && local_7 == NONE; ++local_8)
+     long local_7;
+     for (long local_8 = 0; local_8 < 3; ++local_8)
      {
       long local_9 = 0x80000000;
+      local_7 = NONE;
       for (long local_10 = 0; local_10 < local_1->m_entity_count; ++local_10)
       {
        hkEntity *local_11 = local_1->m_entities[local_10];
@@ -1211,6 +1217,8 @@ void function_1c4260()
         }
        }
       }
+      if (local_7 != NONE)
+       break;
      }
      if (local_7 != NONE)
      {
@@ -1823,15 +1831,12 @@ void __stdcall function_1c4590(long flags)
     }
     long contacts_total = 0, bodies_total = 0, constraints_total = 0, other_total = 0;
     long contacts_maximum = 0, bodies_maximum = 0, constraints_maximum = 0, other_maximum = 0;
-    long index = NONE;
-    for (;;)
+    s_record_pool_iterator iterator2;
+    iterator2.data = g_51e9b8;
+    iterator2.index = NONE;
+    s_havok_component *component;
+    while ((component = (s_havok_component *)data_iterator_next_inlined(&iterator2)) != NULL)
     {
-        index = data_next_absolute_index_inlined(g_51e9b8, index + 1);
-        if (index == NONE)
-            break;
-        s_havok_component *component = (s_havok_component *)(g_51e9b8->data + g_51e9b8->size * index);
-        if (!component)
-            break;
         long contacts, constraints, other, bodies;
         function_1d3880(component, &contacts, &constraints, &other, &bodies);
         contacts_total += contacts;

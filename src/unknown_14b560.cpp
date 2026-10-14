@@ -263,8 +263,9 @@ void player_configuration_verify(s_type_b07538 *configuration)
 				break;
 			}
 		}
-		configuration->team_index = 1;
-		configuration->representation_index = representation_index;
+		/* retail stores the team before the representation */
+		*(char volatile *)&configuration->team_index = 1;
+		*(char volatile *)&configuration->representation_index = (char)representation_index;
 	}
 
 	if (configuration->representation_index != NONE)

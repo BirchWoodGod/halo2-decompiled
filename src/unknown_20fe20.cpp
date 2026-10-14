@@ -1041,12 +1041,13 @@ bool function_211b30(byte const *location, real const *position, byte flags, vec
 	return false;
 }
 
-PRIVATE real random_step(void)
+/* retail inlines the random step and the clamp into 0x2118c0 */
+static inline real random_step(void)
 {
 	return random_index(&g_4e7408->seed, 2) ? 0.01f : -0.01f;
 }
 
-PRIVATE real pin_real(real x, real lower, real upper)
+static inline real pin_real(real x, real lower, real upper)
 {
 	if (x < lower)
 	{
@@ -1076,8 +1077,8 @@ void function_2118c0(void)
 		if (source->tag_index != NONE)
 		{
 			s_cell_tag *tag = (s_cell_tag *)g_4e3b44[source->tag_index & 0xffff].bytes;
-			real azimuth;
-			real elevation;
+			double azimuth;
+			double elevation;
 			real scale;
 			long j;
 
@@ -1092,8 +1093,8 @@ void function_2118c0(void)
 
 			cell->interpolation = (tag->value4 - tag->value0) * cell->value4 + tag->value0;
 
-			azimuth = (real)atan2(source->direction.j, source->direction.i);
-			elevation = (real)atan2(source->direction.k, sqrt(source->direction.j * source->direction.j + source->direction.i * source->direction.i));
+			azimuth = atan2(source->direction.j, source->direction.i);
+			elevation = atan2(source->direction.k, sqrt(source->direction.j * source->direction.j + source->direction.i * source->direction.i));
 			elevation += tag->valuec * cell->valuec * 0.5f;
 			azimuth += cell->value8 * tag->value8 * 0.5f;
 
@@ -1159,6 +1160,7 @@ void function_211cc0(void)
 
 			do
 			{
+				vector3f *out = &g_4f93bc[b * 8 + k][m];
 				vector3f *p3 = &g_4f93bc[b * 8 + (word)((k + 2) & 7)][0];
 				vector3f *p2 = &g_4f93bc[b * 8 + (word)((k + 1) & 7)][0];
 				vector3f *p1 = &g_4f93bc[b * 8 + k][0];
@@ -1173,7 +1175,7 @@ void function_211cc0(void)
 					real d2 = s1 - s2;
 					real d3 = (s0 - s1) - d2;
 
-					g_4f93bc[b * 8 + k][m].n[i] = ((d3 * ta * (1.0f / 3.0f) + d2) * tb * 0.5f + s2) * tc + p0->n[i];
+					out->n[i] = ((d3 * ta * (1.0f / 3.0f) + d2) * tb * 0.5f + s2) * tc + p0->n[i];
 				}
 
 				b++;
@@ -2367,28 +2369,26 @@ long function_20e720(bool same_team, long ai_index, s_audio_priority_table *tabl
     long target_index, long source_index, long previous_index, bool require_related, bool same_type,
     long *tag_index, short *type, real *weight, real *distance_weight)
 {
-    (void)&table; (void)&request; (void)&target_index; (void)&source_index; (void)&previous_index;
-    (void)&require_related; (void)&same_type;
-    (void)&tag_index; (void)&type; (void)&weight; (void)&distance_weight;
-    long chosen = NONE;
+    long result = NONE;
     if (target_index == NONE)
     {
         if (ai_index != NONE)
         {
             if (same_team)
-                chosen = function_20e460(ai_index, table, request, previous_index, tag_index, type, weight, distance_weight);
+                return function_20e460(ai_index, table, request, previous_index, tag_index, type, weight, distance_weight);
             else
-                chosen = function_20e580(ai_index, table, request, previous_index, tag_index, type, weight, distance_weight);
+                return function_20e580(ai_index, table, request, previous_index, tag_index, type, weight, distance_weight);
         }
     }
     else
     {
-        byte *object = *(byte **)(g_4e0300->data + (target_index & 0xffff) * 12 + 8);
+        long chosen = NONE;
         real best = 0.0f;
         real chosen_weight = 0.0f;
         real chosen_distance = 0.0f;
-        long chosen_type = NONE;
+        short chosen_type = NONE;
         long chosen_tag = NONE;
+        byte *object = *(byte **)(g_4e0300->data + (target_index & 0xffff) * 12 + 8);
         byte *actor = NULL;
         long actor_index = *(long *)(object + 0x12c);
         if (actor_index != NONE)
@@ -2405,12 +2405,12 @@ long function_20e720(bool same_team, long ai_index, s_audio_priority_table *tabl
                 continue;
             if (actor)
             {
+                bool related = true;
                 if (require_related)
-                {
-                    if (!function_277790(iterator.result_index, *(long *)(object + 0x12c)))
-                        continue;
-                }
-                else if (same_type && *(short *)(actor + 4) != *(short *)(candidate_actor + 4))
+                    related = function_277790(*(long *)(object + 0x12c), iterator.result_index);
+                else if (same_type)
+                    related = *(short *)(actor + 4) == *(short *)(candidate_actor + 4);
+                if (!related)
                     continue;
             }
             long tag;
@@ -2442,11 +2442,12 @@ long function_20e720(bool same_team, long ai_index, s_audio_priority_table *tabl
             }
         }
         *tag_index = chosen_tag;
-        *type = (short)chosen_type;
+        *type = chosen_type;
         *weight = chosen_weight;
         *distance_weight = chosen_distance;
+        result = chosen;
     }
-    return chosen;
+    return result;
 }
 
 bool __stdcall function_20bbb0(short condition, long object_index, real *weight);

@@ -1,6 +1,7 @@
 #include "unknown_11c920.h"
 #include "unknown_0259d0.h"
 #include "globals.h"
+#include "unknown_0bad50.h"
 #include "object_iterator.h"
 #include "unknown_16d180.h"
 #include <string.h>
@@ -210,30 +211,6 @@ void __stdcall function_ba590(long object_index, dword fixed_region_mask)
     function_17b1d0(object_index);
     function_1c54b0(previous, object_index);
 }
-
-struct s_object
-{
-	byte unknown00[4];
-	dword : 26;
-	dword flag26 : 1;
-	dword : 5;
-	byte unknown08[0xc];
-	long parent_index;
-	byte unknown18[0xc0 - 0x18];
-    word flags_c0;
-    byte unknownc2[0x124 - 0xc2];
-	short markers_size;
-	short markers_offset;
-};
-
-struct s_object_header
-{
-	short identifier;
-	byte flags;
-	byte type;
-	byte unknown04[4];
-	s_object *object;
-};
 
 #define OBJECT_HEADER(index) ((s_object_header *)(g_4e0300->data + g_4e0300->size * (index)))
 
@@ -447,8 +424,8 @@ short function_bb430(long mask, short cluster_count, short const *clusters, shor
         mask = NONE;
     ++g_4de2fc;
     g_4de2f8 = true;
-    { short i = 0; if (i < cluster_count) do {
-        short cluster = clusters[i];
+    { long i = 0; if (i < cluster_count) do {
+        short cluster = clusters[(short)i];
         long next;
         long object;
         if (mask & 1)
@@ -487,21 +464,6 @@ done:
     return count;
 }
 
-struct s_tag_data
-{
-    long size;
-    byte *address;
-};
-struct s_object_function_ab
-{
-    dword flags;
-    long input_name;
-    long output_name;
-    long enable_name;
-    real threshold;
-    s_tag_data curve;
-    long scale_name;
-};
 struct s_object_functions_definition_ab
 {
     byte unknown00[0x64];
@@ -513,72 +475,7 @@ bool function_10aac0(long object_index, long name, real *value, long *index);
 real function_13bb90(s_tag_data const *function, real input, real range);
 bool __stdcall function_bab40(long object_index, long name, real *value);
 
-#pragma inline_depth(0)
-// @retail 0xba8c0
-bool function_ba8c0(s_object_function_ab const *function, long object_index, real *out)
-{
-    bool implicit_enable = !(bool)((function->flags >> 1) & 1);
-    bool periodic = function->curve.address[0] == 3;
-    bool enabled = false;
-    real value = 0.0f;
-    s_object *object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-    if ((bool)(((dword)object->flags_c0 >> 9) & 1))
-    {
-        long index;
-        if (function_10aac0(object_index, function->input_name, out, &index))
-            return true;
-    }
-    function_108d90(object_index, function->input_name, &value, &enabled);
-    if (enabled || implicit_enable || periodic)
-    {
-        if (!periodic)
-        {
-            if (function->flags & 1)
-                value = 1.0f - value;
-            value = function_13bb90(&function->curve, value, 1.0f);
-            if (implicit_enable)
-                enabled = value > 0.0f;
-        }
-        else
-        {
-            real time = g_510c54->game_time * g_510c54->rate;
-            if (function->flags & 8)
-            {
-                dword random = ((dword)object_index * 0x19660d + 0x3c6ef35f) >> 16;
-                time += random * 0.000015259021893143654f;
-            }
-            value *= function_13bb90(&function->curve, time, 1.0f);
-        }
-    }
-    if (function->scale_name)
-    {
-        real scale;
-        bool scale_enabled = function_bab40(object_index, function->scale_name, &scale);
-        value = scale * value;
-        enabled = enabled && scale_enabled;
-    }
-    if (enabled && function->threshold > 0.0f)
-        enabled = value > function->threshold;
-    if (function->flags & 4)
-        enabled = true;
-    if (function->enable_name && enabled)
-    {
-        real ignored = 0.0f;
-        bool gate = false;
-        function_108d90(object_index, function->enable_name, &ignored, &gate);
-        if (!gate)
-        {
-            *out = 0.0f;
-            return false;
-        }
-    }
-    if (enabled)
-        *out = value < 0.0f ? 0.0f : value > 1.0f ? 1.0f : value;
-    else
-        *out = 0.0f;
-    return enabled;
-}
-#pragma inline_depth()
+bool function_ba8c0(s_object_function_ab const *function, long object_index, real *out);
 
 
 // @retail 0xba7f0
