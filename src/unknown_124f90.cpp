@@ -2082,7 +2082,7 @@ long __stdcall function_127d00(s_type_99c531 const *source, real maximum_distanc
 short sound_definition_rate_limit_pitch_range(long stage_index, s_sound_definition const *definition);
 struct s_looping_playback_definition;
 short function_218f50(s_looping_playback_definition *definition, short previous, real pitch);
-byte __stdcall function_219070(long set_index);
+short function_219070(long set_index, s_sound_definition const *definition);
 struct s_sound_effect_request;
 void function_2226b0(long tag_index, s_sound_effect_request *request);
 long record_pool_allocate(s_record_pool *data);
@@ -2337,7 +2337,7 @@ long function_126000(long tag_index, long listener_index, s_sound_play_state *st
 
 					arg_58ecd0 = function_218f50((s_looping_playback_definition *)definition, NONE, ((real)pitch_bounds[1] - lower) * state->location.scale + sound->pitch + lower);
 				}
-				sound_playback_set_chunk(result, tag_index, (char)arg_58ecd0, (char)function_219070(arg_58ecd0), (short)chunk_index);
+				sound_playback_set_chunk(result, tag_index, (char)arg_58ecd0, (char)function_219070(arg_58ecd0, definition), (short)chunk_index);
 			}
 			sound->value_a0 = (char)rate_limit_stage;
 			sound->fade_end_time = chunk_index;

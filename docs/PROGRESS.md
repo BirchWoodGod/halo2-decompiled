@@ -2,6 +2,45 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8659 functions match
+
+```
+matched 8659 of 11318 game functions (1152199 of 2784283 bytes, 41.38%)
+```
+
+4 new matches, none lost:
+- Machine 3's batch 32 (#477): `0x3d2c0`, `0xb2fc0`, `0x273040` and `0x28cb70` match.
+- A GitHub Actions workflow now runs the Python tests on pull requests and on main (#476).
+
+## 2026-10-14: 8655 functions match
+
+```
+matched 8655 of 11318 game functions (1151254 of 2784283 bytes, 41.35%)
+```
+
+8 new matches, none lost:
+- Machine 3's batch 31 (#473): `0x7acc0`, `0x7acf0`, `0x784a0`, `0x924e0`, `0xb8600`, `0x238114`, `0x22c280` and `0x22cbd0` match.
+- Machine 1's key lane round 19: `0x146bf0` goes from 115 to 5 at retail's length.
+
+## 2026-10-14: 8647 functions match
+
+```
+matched 8647 of 11318 game functions (1149856 of 2784283 bytes, 41.30%)
+```
+
+10 new matches, none lost:
+- Machine 3's batch 30 (#472): `0x18e1f0`, `0x1a474c`, `0x114e80`, `0x17b5d0`, `0x2ad380`, `0x2ad400`, `0x2ad5f0`, `0x2b0328`, `0xba8c0` and `0x72950` match.
+
+## 2026-10-14: 8637 functions match
+
+```
+matched 8637 of 11318 game functions (1147436 of 2784283 bytes, 41.21%)
+```
+
+3 new matches, none lost:
+- Machine 1's key lane 1 rounds 18-19: `0xbaff0` matches once its callee `0x183910` (handed over by machine 3) takes retail's convention, and `0x25edd0` matches; `0x183910` goes from 140 to 30.
+- Machine 1's key lane 2 round 17: `0x22af8d` is written and matches; `0x219070` is written at retail's length.
+
 ## 2026-10-14: 8634 functions match
 
 ```

@@ -414,6 +414,7 @@ void function_3dd10(long object_index, bool force);
 // @retail 0xbe240
 void __stdcall function_be240(long object_index, dword color_mask, color3f const *colors)
 {
+    color3f const *const *colors_reference = &colors;
     byte *object = (byte *)((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
     byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
     color3f *output = (color3f *)(object + *(short *)(object + 0x126));
@@ -422,7 +423,7 @@ void __stdcall function_be240(long object_index, dword color_mask, color3f const
     {
         s_colour_choices_ab *entry = &(*(s_colour_choices_ab **)(definition + 0xb0))[i];
         if (color_mask & (1 << i))
-            output[i] = colors[i];
+            output[i] = (*colors_reference)[i];
         else
         {
             output[i] = *(color3f *)g_468710;
