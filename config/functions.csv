@@ -5432,7 +5432,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0018a2f0,129,game,speed,a16 pad,,,,src/unknown_18a2f0.cpp,matched
 0018a380,87,game,speed,a16 pad,,,00126360,src/unknown_18a2f0.cpp,matched
 0018a3e0,65,game,speed,a16 pad,,,00125f10,src/unknown_18a3e0.cpp,matched
-0018a430,158,game,speed,a16 pad,,,0018a4d0 0018a5a0 0018a600 0018d290 0018d360 0018d3d0,src/unknown_18a2f0.cpp,todo
+0018a430,158,game,speed,a16 pad,,,0018a4d0 0018a5a0 0018a600 0018d290 0018d360 0018d3d0,src/unknown_18a2f0.cpp,matched
 0018a4d0,95,game,speed,a16 pad,,,0018d1c0,src/unknown_18a2f0.cpp,matched
 0018a530,101,game,speed,a16 pad,,,0018d1c0,src/unknown_18a2f0.cpp,matched
 0018a5a0,60,game,speed,a16 pad,,,00188f90,src/unknown_18a2f0.cpp,matched
