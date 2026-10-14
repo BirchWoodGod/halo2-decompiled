@@ -386,23 +386,24 @@ bool function_2b6db1(s_time_left *time, c_widget *screen, word *result_string)
 	format[0] = 0;
 	if (time->game_seconds > 0)
 	{
-		minutes = time->game_seconds / 60;
 		seconds = time->game_seconds % 60;
+		minutes = time->game_seconds / 60;
 		string_handle = 0x13000264;
 	}
 	else if (time->session_seconds > 0)
 	{
-		minutes = time->session_seconds / 60;
 		seconds = time->session_seconds % 60;
+		minutes = time->session_seconds / 60;
 		string_handle = 0x15000265;
 	}
 	else
 	{
-		return result;
+		goto done;
 	}
 	screen->function_230134(string_handle, format);
 	function_1630e0(result_string, format, minutes, seconds);
 	result = true;
+done:
 	return result;
 }
 

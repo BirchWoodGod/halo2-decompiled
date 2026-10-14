@@ -11,8 +11,8 @@ char *function_11c9c0(char *buffer, long maximum_count, const char *format, ...)
 /* the saved game drive: saved games go to the utility drive when set */
 struct s_saved_game_drive
 {
-	byte utility_drive : 1;
-	byte unused : 7;
+	word utility_drive : 1;
+	word unused : 15;
 };
 
 s_saved_game_drive g_4e61c0;

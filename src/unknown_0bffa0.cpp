@@ -632,6 +632,7 @@ void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_li
 // @retail 0xc17f0
 bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engine)
 {
+    bool result = false;
     s_light_ab *light = &((s_light_ab *)g_4e030c->data)[light_index & 0xffff];
     s_light_definition_ab *definition = (s_light_definition_ab *)g_4e3b44[light->tag_index & 0xffff].bytes;
     bool enabled = true;
@@ -647,13 +648,13 @@ bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engi
         function_c1a80((s_light_frame_ab *)((byte *)light + 0x84), shape, definition);
         if ((short)shape->kind == 0)
         {
-            if (shape->sphere_render.radius > 0.0001f) return true;
+            if (shape->sphere_render.radius > 0.0001f) result = true;
         }
         else if (shape->cone_render.far_distance > 0.0001f &&
             shape->cone_render.far_width * shape->cone_render.far_width + shape->cone_render.far_height * shape->cone_render.far_height > 0.0001f * 0.0001f)
-            return true;
+            result = true;
     }
-    return false;
+    return result;
 }
 
 // @retail 0xc35a0
@@ -1472,20 +1473,16 @@ void function_1cabc0(s_cluster_partition *partition, char const *name, long payl
 void function_bffa0()
 {
     s_record_pool *lights = data_new_inlined("lights", 0x15e, 0x110, 0, g_510c2c);
+    g_4e030c = lights;
     long size = 12;
     byte *allocation = game_state_globals.base_address + game_state_globals.cpu_allocation_size;
     game_state_globals.cpu_allocation_size += size;
-    g_4e030c = lights;
     function_163ba0(&game_state_globals.allocation_size_checksum, &size, sizeof(size));
     g_5107e8 = (s_5107e8 *)allocation;
     g_5107e8->flag8 = true;
     if (lights)
     {
-        s_cluster_partition partition;
-        function_1cabc0(&partition, "light", 0);
-        g_4e0310 = partition.cluster_first_data_references;
-        g_4e0314 = partition.data_references;
-        g_4e0318 = partition.cluster_references;
+        function_1cabc0(&g_4e0310_partition, "light", 0);
     }
 }
 

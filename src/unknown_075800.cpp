@@ -226,8 +226,10 @@ void network_message_handler_refuse_connect(const s_connect_request *request, c_
 }
 
 // @retail 0x940b0
-void network_message_handler_handle_session_query(const s_network_message_session_query *message, const s_type_99af70 *address)
+void __stdcall network_message_handler_handle_session_query(const s_network_message_session_query *message, const s_type_99af70 *address)
 {
+	const s_type_99af70 *const *address_reference = &address;
+	(void)*address_reference;
 	if (message->identifier == 2 && g_4d8eb4.active)
 	{
 		s_session_id id = g_4d8eb4.session_id;

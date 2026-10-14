@@ -839,9 +839,9 @@ void function_2a0380(long object_index, long region_name, short state)
 	if (object_index != NONE)
 	{
 		s_object_definition_header_view *object = (s_object_definition_header_view *)object_get(object_index);
-		long model_index = ((s_object_definition_model_view *)g_4e3b44[object->definition_index & 0xffff].bytes)->model_index;
-		if (model_index != NONE)
-			function_ba6f0(object_index, function_16d1d0(model_index, (string_handle)region_name), state, true);
+		s_object_definition_model_view *definition = (s_object_definition_model_view *)g_4e3b44[object->definition_index & 0xffff].bytes;
+		if (definition->model_index != NONE)
+			function_ba6f0(object_index, function_16d1d0(definition->model_index, (string_handle)region_name), state, true);
 	}
 }
 
@@ -2974,7 +2974,8 @@ void __stdcall function_2a2ce0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_1fb360(arguments[0], *(short *)&arguments[1], 0);
+		long unit = arguments[0];
+		*(bool *)&result = function_1fb360(unit, (word)arguments[1], 0);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -2990,7 +2991,8 @@ void __stdcall function_2a2d40(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_1fb360(arguments[0], *(short *)&arguments[1], 8);
+		long unit = arguments[0];
+		*(bool *)&result = function_1fb360(unit, (word)arguments[1], 8);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -3006,7 +3008,8 @@ void __stdcall function_2a2da0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_1fb360(arguments[0], *(short *)&arguments[1], 0x10);
+		long unit = arguments[0];
+		*(bool *)&result = function_1fb360(unit, (word)arguments[1], 0x10);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -3113,7 +3116,7 @@ s_type_f4462a const g_44bba4 = { _hs_type_void, 0, function_2a2f80, NULL, 4, { _
 
 long function_10a460(long object_index);
 
-bool function_10a660(long volatile object_index, long animation_name, short frame, long other_object_index, bool volatile a, bool b, long animation_graph_index);
+bool function_10a660(long object_index, long animation_name, short frame, long other_object_index, bool a, bool b, long animation_graph_index);
 
 /* 184: void (scenery, arg_0e6cbc, string_handle) */
 // @retail 0x2a2fd0
@@ -4704,7 +4707,7 @@ void __stdcall function_2a4fd0(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44c734 = { _hs_type_void, 0, function_2a4fd0, NULL, 1, { _hs_type_ai } };
 
-void function_201520(short value, word type, long a, long b, long c);
+void function_201520(short value, long type, long a, long b, long c);
 
 /* 291: void (ai, short_integer) */
 // @retail 0x2a5010
@@ -4719,7 +4722,7 @@ void __stdcall function_2a5010(short function_index, long thread_index, bool ini
 		if (ai_index != NONE)
 		{
 			if (!(ai_index & 0xc0000000) && value > 0)
-				function_201520(value, (word)(short)ai_index, NONE, 0, 1);
+				function_201520(value, (short)ai_index, NONE, 0, 1);
 			g_4f55d0->unknown364 = ai_index;
 		}
 		function_209ae0(thread_index, 0);

@@ -266,8 +266,11 @@ static __forceinline void function_94bf7(s_sequence_window *arg_0)
 void function_094bf0(s_network_stream_header *header)
 {
 	c_network_unreliable_stream *stream = (c_network_unreliable_stream *)header;
-	long local_0;
-	s_allocator_globals *local_1;
+	union
+	{
+		long query_info;
+		long fragment_sequence;
+	} phase;
 	if (stream->m_active)
 	{
 		if (sequence_window_count(&stream->m_message_window))
@@ -281,18 +284,18 @@ void function_094bf0(s_network_stream_header *header)
 					message = &stream->m_messages[index];
 				stream->m_message_bytes -= message->size;
 				void *local_2 = message->data;
-				if (!g_4d87f8->allocator->get_info(local_2, &local_0))
-					local_0 = NONE;
-				function_94bf4(g_4d87f8, local_2, &local_1);
+				if (!g_4d87f8->allocator->get_info(local_2, &phase.query_info))
+					phase.query_info = NONE;
+				function_94bf3(g_4d87f8, local_2);
 				message->data = 0;
 			}
 		}
 		if (sequence_window_count(&stream->m_fragment_window))
 		{
-			for (local_0 = stream->m_fragment_window.oldest + 1; local_0 <= stream->m_fragment_window.newest; local_0++)
+			for (phase.fragment_sequence = stream->m_fragment_window.oldest + 1; phase.fragment_sequence <= stream->m_fragment_window.newest; phase.fragment_sequence++)
 			{
 				s_stream_fragment *fragment;
-				long index = sequence_window_index(&stream->m_fragment_window, local_0);
+				long index = sequence_window_index(&stream->m_fragment_window, phase.fragment_sequence);
 				fragment = 0;
 				if (index != NONE)
 					fragment = &stream->m_fragments[index];
@@ -300,8 +303,9 @@ void function_094bf0(s_network_stream_header *header)
 				{
 					stream->m_fragment_bytes -= fragment->size;
 					void *local_2 = fragment->data;
-					if (!g_4d87f8->allocator->get_info(local_2, (long *)&local_1))
-						local_1 = (s_allocator_globals *)NONE;
+					long local_0;
+					if (!g_4d87f8->allocator->get_info(local_2, &local_0))
+						local_0 = NONE;
 					function_94bf3(g_4d87f8, local_2);
 					fragment->data = 0;
 				}
