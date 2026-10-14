@@ -11,7 +11,6 @@
 #include <string.h>
 
 extern s_record_pool *g_509434;
-extern long g_4c1bd0;
 extern dword g_4ba034;
 
 struct s_3dd10_object_header
@@ -64,7 +63,6 @@ void function_3dfe0(long cache_index, long object_index, real priority);
 
 extern s_lighting_record g_55ee60;
 
-extern long g_4c1bd4;
 struct s_first_person_model;
 struct s_unknown_78;
 extern s_unknown_78 *g_510c6c;
@@ -83,8 +81,7 @@ void function_3d2c0()
     g_4c1bd0 = NONE;
     g_4c1bd4 = 0;
     g_4c1bd0 = function_16c2b0();
-    // Keep the later published-object read separate from the local selection.
-    if (*(long const *)&g_4c1bd0 == NONE)
+    if (g_4c1bd0 == NONE)
     {
         g_4c1bd0 = g_4b72c0;
         if (g_4c1bd0 == NONE && g_4b9ed8 != NONE && !function_155760(g_4b9ed8))
