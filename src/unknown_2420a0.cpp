@@ -1421,12 +1421,13 @@ long function_2421d0(long team)
 // @retail 0x242210
 long function_242210(point3f const *point)
 {
-	long definition_index = NONE;
 	s_object_placement data;
 	long object_index;
+	long definition_index;
 
 	long engine_type = ctf_options()->engine_type;
 	c_engine_peer *enabled = g_55e4d0[g_4e9ae8->engine_index];
+	definition_index = NONE;
 	if (engine_type == 9)
 	{
 		if (enabled)
