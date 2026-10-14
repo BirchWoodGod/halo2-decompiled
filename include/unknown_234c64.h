@@ -264,6 +264,14 @@ public:
 };
 
 extern c_window_manager g_54d598;
+/* the session menu values at 0x54e7b8..0x54e7c8 are these window manager
+   fields: stores to them may alias other stores, as retail orders them
+   (0x2c4ea0) */
+#define g_54e7b8 (g_54d598.m1220)
+#define g_54e7bc (g_54d598.m1224)
+#define g_54e7c0 (g_54d598.m1228)
+#define g_54e7c4 (g_54d598.m122c)
+#define g_54e7c8 (g_54d598.m1230)
 
 struct s_screen_sort_entry
 {

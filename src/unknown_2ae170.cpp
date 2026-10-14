@@ -605,13 +605,15 @@ inline real const &sound_effects_send_level(c_sound_effects *effects, s_sound_se
 // @retail 0x2aefe0
 void c_sound_effects::add_effect_sends_direct(s_sound_send_parameters *parameters, bool rear, long mode, s_mixbin_settings *mixbins)
 {
-	if (TEST_FLAG(parameters->flags, 2))
+	if ((bool)((parameters->flags >> 2) & 1))
 	{
-		volatile bool alternate = TEST_FLAG(parameters->flags, 3) != 0;
-		real level = rear ? m_settings.level1c : m_settings.level24;
+		bool alternate = TEST_FLAG(parameters->flags, 3) != 0;
+		long left = alternate ? 0 : 6;
+		long right = alternate ? 1 : 7;
+		real const &level = rear ? m_settings.level1c : m_settings.level24;
 		real level2 = rear ? m_settings.level20 : m_settings.level28;
-		sound_stream_append_mixbin(mixbins, alternate ? 0 : 6, level + parameters->level);
-		sound_stream_append_mixbin(mixbins, alternate ? 1 : 7, parameters->level + level);
+		sound_stream_append_mixbin(mixbins, left, level + parameters->level);
+		sound_stream_append_mixbin(mixbins, right, parameters->level + level);
 		add_send(2, mode, level2 + parameters->level, mixbins);
 		add_send(10, mode, parameters->level_offset, mixbins);
 	}
@@ -654,9 +656,9 @@ void c_sound_effects::add_effect_sends_direct(s_sound_send_parameters *parameter
 // @retail 0x2af450
 void c_sound_effects::add_effect_sends_split(s_sound_send_parameters *parameters, bool rear, long mode, s_mixbin_settings *mixbins)
 {
+	real level = parameters->level;
 	real send_level = sound_effects_send_level(this, parameters, mode);
 	real offset = parameters->level_offset;
-	real level = parameters->level;
 	bool alternate = TEST_FLAG(parameters->flags, 3) != 0;
 	long left = alternate ? 0 : 6;
 	long right = alternate ? 1 : 7;

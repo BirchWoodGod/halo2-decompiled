@@ -1750,11 +1750,7 @@ void function_19a864(void)
 	}
 }
 
-long g_54e7bc;
-long g_54e7c0;
-long g_54e7c4;
-long g_54e7c8;
-bool g_54e7b8;
+#include "unknown_234c64.h"
 
 // @retail 0x199a57
 void function_199a57(void)

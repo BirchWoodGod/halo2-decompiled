@@ -763,19 +763,25 @@ bool sound_voice_promotion_enabled(short voice_index)
 	return result;
 }
 
+static inline bool bit_test_12af10(dword const *bits, long index)
+{
+	return (bits[index >> 5] & (1 << (index & 31))) != 0;
+}
+
 // @retail 0x12af10
 short sound_channel_allocate(void)
 {
-	s_sound_system_channels_view *sound_system = (s_sound_system_channels_view *)g_4e6380;
-	short channel_count = sound_system->channel_count;
+	short channel_count = ((s_sound_system_channels_view *)g_4e6380)->channel_count;
 	short result = NONE;
 
 	for (short i = 0; i < channel_count; i++)
 	{
-		if ((sound_system->available_bits[i >> 5] & (1 << (i & 31))) && !(sound_system->used_bits[i >> 5] & (1 << (i & 31))))
+		if (bit_test_12af10(((s_sound_system_channels_view *)g_4e6380)->available_bits, i) &&
+			!bit_test_12af10(((s_sound_system_channels_view *)g_4e6380)->used_bits, i))
 		{
-			sound_system->used_bits[i >> 5] |= 1 << (i & 31);
-			return i;
+			((s_sound_system_channels_view *)g_4e6380)->used_bits[i >> 5] |= 1 << (i & 31);
+			result = i;
+			break;
 		}
 	}
 	return result;
@@ -2638,7 +2644,7 @@ void function_129790(short voice_index, vector3f const *attenuation)
 					parameters.obstruction = PIN(attenuation->k * scale, 0.0f, 1.0f);
 					long decibels = function_2197f0(gain);
 					long base = *(long *)((byte *)function_221810(index) + 0x10);
-					parameters.decibels = *(real *)&decibels + *(real *)&base;
+					parameters.decibels = *(real *)&base + *(real *)&decibels;
 					parameters.obstruction_rate = *(real *)((byte *)function_221810(index) + 0x54) * SOUND_SYSTEM->elapsed_time;
 					parameters.occlusion_rate = *(real *)((byte *)function_221810(index) + 0x58) * SOUND_SYSTEM->elapsed_time;
 				}

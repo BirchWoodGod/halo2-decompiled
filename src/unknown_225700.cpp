@@ -150,25 +150,22 @@ void function_225730(void)
 void function_225880(
 	long player_index)
 {
-	if (player_index != NONE)
+	s_unknown_225700 *state = unknown_225700_get(player_index);
+
+	if (state)
 	{
 		s_unknown_225700_player *player = unknown_225700_player_get(player_index);
+		real level;
 
-		if (player->gamepad_index != NONE)
+		state->level_time = GetTickCount();
+		level = (real)(long)((long)g_510a0c + 1.0f);
+		if (level >= g_4cf754)
 		{
-			s_unknown_225700 *state = &g_502124;
-			real level;
-
-			state->level_time = GetTickCount();
-			level = (real)(long)((long)g_510a0c + 1.0f);
-			if (level >= g_4cf754)
-			{
-				((s_unknown_225700_slot *)g_54e8e0)[player->gamepad_index].level_reached = true;
-				function_18fe9e(player->gamepad_index);
-			}
-			g_510a0c = level;
-			global_preferences_globals.dirty = true;
+			((s_unknown_225700_slot *)g_54e8e0)[player->gamepad_index].level_reached = true;
+			function_18fe9e(player->gamepad_index);
 		}
+		g_510a0c = level;
+		global_preferences_globals.dirty = true;
 	}
 }
 
@@ -176,25 +173,22 @@ void function_225880(
 void function_225910(
 	long player_index)
 {
-	if (player_index != NONE)
+	s_unknown_225700 *state = unknown_225700_get(player_index);
+
+	if (state)
 	{
 		s_unknown_225700_player *player = unknown_225700_player_get(player_index);
+		real level;
 
-		if (player->gamepad_index != NONE)
+		state->level_time = GetTickCount();
+		level = (real)(long)((long)g_510a0c + g_4cf75c);
+		if (level >= g_4cf754)
 		{
-			s_unknown_225700 *state = &g_502124;
-			real level;
-
-			state->level_time = GetTickCount();
-			level = (real)(long)((long)g_510a0c + g_4cf75c);
-			if (level >= g_4cf754)
-			{
-				((s_unknown_225700_slot *)g_54e8e0)[player->gamepad_index].level_reached = true;
-				function_18fe9e(player->gamepad_index);
-			}
-			g_510a0c = level;
-			global_preferences_globals.dirty = true;
+			((s_unknown_225700_slot *)g_54e8e0)[player->gamepad_index].level_reached = true;
+			function_18fe9e(player->gamepad_index);
 		}
+		g_510a0c = level;
+		global_preferences_globals.dirty = true;
 	}
 }
 
