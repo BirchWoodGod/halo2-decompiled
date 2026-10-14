@@ -601,28 +601,29 @@ void function_28580(long tag, real time, vector3f *out)
     s_28580_definition const *definition =
         (s_28580_definition const *)g_4e3b44[tag & 0xffff].data;
     s_28580_view *state = &g_4b9a04[g_4b9a00];
+    point2f *direction = &state->direction;
     real delta = time - state->previous_time;
     state->previous_time = time;
     if (definition->speed_high > 0.0f)
     {
         real blend = definition->blend;
-        state->direction.x *= 1.0f - blend;
-        state->direction.y *= 1.0f - blend;
-        state->direction.x += state->target_direction.x * blend;
-        state->direction.y += state->target_direction.y * blend;
-        real magnitude = (real)sqrt(state->direction.x * state->direction.x +
-            state->direction.y * state->direction.y);
+        direction->x *= 1.0f - blend;
+        direction->y *= 1.0f - blend;
+        direction->x += state->target_direction.x * blend;
+        direction->y += state->target_direction.y * blend;
+        real magnitude = (real)sqrt(direction->x * direction->x +
+            direction->y * direction->y);
         if (!(fabs(magnitude) < k_real_epsilon))
         {
             real inverse = 1.0f / magnitude;
-            state->direction.x *= inverse;
-            state->direction.y *= inverse;
+            direction->x *= inverse;
+            direction->y *= inverse;
         }
         else magnitude = 0.0f;
         if (magnitude == 0.0f)
         {
-            state->direction.x = 1.0f;
-            state->direction.y = 0.0f;
+            direction->x = 1.0f;
+            direction->y = 0.0f;
         }
         state->speed = (1.0f - definition->blend) * state->speed +
             definition->blend * state->target_speed;
@@ -633,10 +634,10 @@ void function_28580(long tag, real time, vector3f *out)
             real turn = (real)pow(fraction, 1.0 - definition->turn);
             g_4e7408->seed = g_4e7408->seed * 1664525 + 1013904223;
             real sign = (g_4e7408->seed & 0x80000000) ? -1.0f : 1.0f;
-            real cross_x = 0.0f - state->direction.y;
-            real cross_y = state->direction.x;
-            state->target_direction.x = (1.0f - turn) * state->direction.x + sign * turn * cross_x;
-            state->target_direction.y = (1.0f - turn) * state->direction.y + sign * turn * cross_y;
+            real cross_x = 0.0f - direction->y;
+            real cross_y = direction->x;
+            state->target_direction.x = (1.0f - turn) * direction->x + sign * turn * cross_x;
+            state->target_direction.y = (1.0f - turn) * direction->y + sign * turn * cross_y;
             if (normalize2d(&state->target_direction) == 0.0f)
             {
                 state->target_direction.x = 1.0f;
@@ -653,8 +654,8 @@ void function_28580(long tag, real time, vector3f *out)
                 (definition->duration_high - definition->duration_low) * duration_fraction);
         }
     }
-    out->i = state->direction.x * state->speed * delta;
-    out->j = state->direction.y * state->speed * delta;
+    out->i = direction->x * state->speed * delta;
+    out->j = direction->y * state->speed * delta;
     out->k = 0.0f;
 }
 

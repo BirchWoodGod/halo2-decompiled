@@ -16,6 +16,8 @@ real normalize2d(point2f *arg_0);
 bool __stdcall function_1badc0(long arg_0, long arg_1, point3f const *arg_2,
     s_type_c3b527 *arg_3, long *arg_4, bool arg_5, bool *arg_6)
 {
+    s_type_c3b527 *const *output_reference = &arg_3;
+    arg_3 = *output_reference;
     s_actor_view *local_0 = actor_get(arg_0);
     if (arg_6)
         *arg_6 = false;

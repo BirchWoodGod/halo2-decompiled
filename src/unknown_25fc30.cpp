@@ -220,14 +220,13 @@ void __stdcall function_25dd50(
 		{
 			vector3f segment;
 			vector3f offset;
-			real reach = actor->unknown39c + 2.5f;
+			real reach;
 
-			vector3d_from_points3d(&actor->unknown370, &actor->unknown388, &segment);
 			vector3d_from_points3d(&actor->unknown3a0, &position->position, &offset);
-			if (reach * reach > length_sq3f(&offset))
+			vector3d_from_points3d(&actor->unknown370, &actor->unknown388, &segment);
+			if ((actor->unknown39c + 2.5f) * (actor->unknown39c + 2.5f) > length_sq3f(&offset))
 			{
 				real distance;
-				real bonus = 0.f;
 
 				if ((real)sqrt(length_sq3f(&segment)) > 0.f)
 				{
@@ -241,6 +240,7 @@ void __stdcall function_25dd50(
 					distance = (real)sqrt(length_sq3f(&delta));
 				}
 
+				real bonus = 0.f;
 				if (actor->unknown36c * actor->unknown36c > distance)
 				{
 					position->unknown4d = true;
@@ -1088,7 +1088,6 @@ void __stdcall function_25f290(
 	s_type_b36ac5 *positions)
 {
 	s_actor_firing_view *actor = (s_actor_firing_view *)((s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view)));
-	bool scored = false;
 	short i;
 
 	if (context->unknown5b)
@@ -1096,6 +1095,7 @@ void __stdcall function_25f290(
 		return;
 	}
 
+	bool scored = false;
 	real weight = 12.f;
 
 	if (context->unknown618)
@@ -1104,17 +1104,20 @@ void __stdcall function_25f290(
 
 		if (weapon)
 		{
-			if (context->unknown61c > weapon->unknown0c * 1.5f)
+			if (!(context->unknown61c > weapon->unknown0c * 1.5f))
+			{
+				if (context->unknown61c > weapon->unknown0c)
+				{
+					weight = (1.f - (context->unknown61c - weapon->unknown0c) * weapon->unknown0c * 2.f) * weight;
+					if (!(weight > 4.f))
+					{
+						weight = 4.f;
+					}
+				}
+			}
+			else
 			{
 				weight = 4.f;
-			}
-			else if (context->unknown61c > weapon->unknown0c)
-			{
-				weight = (1.f - (context->unknown61c - weapon->unknown0c) * weapon->unknown0c * 2.f) * weight;
-				if (!(weight > 4.f))
-				{
-					weight = 4.f;
-				}
 			}
 		}
 	}

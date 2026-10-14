@@ -754,11 +754,11 @@ c_child_transform *function_1ef070(dword key, void *storage)
 {
  (void)&key;
  (void)&storage;
+ long position = (key >> 16) & 0x1fff;
  long object_index = g_51e9cc[key & 0xffff];
  byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
  byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
  byte *model = g_4e3b44[*(long *)(definition + 0x38) & 0xffff].bytes;
- long position = (key >> 16) & 0x1fff;
  byte *region = *(byte **)(model + 0x74) + (position & 31) * 16;
  byte *choice = *(byte **)(region + 0xc) + ((position >> 5) & 255) * 8;
  if ((key & 0xe0000000) == 0x80000000)
@@ -773,7 +773,10 @@ c_child_transform *function_1ef070(dword key, void *storage)
   const transform4x3f *matrix = (const transform4x3f *)(object + *(short *)(object + 0x116));
   c_query_transform transform;
   query_transform(matrix, &transform);
-  result->transform = transform;
+  result->transform.axes[0] = transform.axes[0];
+  result->transform.axes[1] = transform.axes[1];
+  result->transform.axes[2] = transform.axes[2];
+  result->transform.position = transform.position;
   result->user = key;
   return result;
  }
@@ -793,7 +796,10 @@ c_child_transform *function_1ef070(dword key, void *storage)
   const transform4x3f *matrix = node == NONE ? &info.root_matrix : &info.field_50[node];
   c_query_transform transform;
   query_transform(matrix, &transform);
-  result->transform = transform;
+  result->transform.axes[0] = transform.axes[0];
+  result->transform.axes[1] = transform.axes[1];
+  result->transform.axes[2] = transform.axes[2];
+  result->transform.position = transform.position;
   result->user = key;
   return result;
  }

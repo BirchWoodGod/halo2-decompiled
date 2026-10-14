@@ -2174,11 +2174,26 @@ static __forceinline bool function_57d63(long arg_0, long arg_1)
     return local_0;
 }
 
+static __forceinline long function_57d64(long other, long result)
+{
+    if (result == 2 || result == 3)
+    {
+        dword local_mask = voice_get_local_player_mask();
+        for (long local = 0; local < 16; local++)
+            if ((local_mask & (1 << local)) && voice_test_unknown110(local, other))
+            {
+                result = 0;
+                return result;
+            }
+    }
+    return result;
+}
+
 // @retail 0x57d60
 long function_57d60(long mode, long player, long other)
 {
 	long result = 0;
-	if (!function_57d63(player, other) && !function_57d63(other, player))
+	if (function_57d63(player, other) || function_57d63(other, player)) goto failed;
 	{
 		switch (mode)
 		{
@@ -2197,14 +2212,11 @@ long function_57d60(long mode, long player, long other)
 		case 2: { result = 1; goto done; }
 		case 3: { result = 0; goto done; }
 		}
-		if (result == 2 || result == 3)
-		{
-			dword local_mask = voice_get_local_player_mask();
-			for (long local = 0; local < 16; local++)
-				if ((local_mask & (1 << local)) && voice_test_unknown110(local, other))
-					{ result = 0; goto done; }
-		}
+		result = function_57d64(other, result);
 	}
+	goto done;
+failed:
+	result = 0;
 done:
 	return result;
 }
