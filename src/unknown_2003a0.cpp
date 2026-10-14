@@ -277,15 +277,10 @@ void __stdcall function_202570(long group_index)
 	group->active = active;
 }
 
-PRIVATE __forceinline s_squad_group_datum *next_group_record(s_group_record_iterator *iterator)
+/* the group walk of 0x202370 and 0x2024c0 */
+PRIVATE __forceinline s_squad_group_datum *next_group_record_202370(s_group_record_iterator *iterator)
 {
-	s_squad_group_datum *result = NULL;
-	if (g_4f55d0->active)
-	{
-		result = (s_squad_group_datum *)data_iterator_next_inlined(&iterator->records);
-		iterator->group = result;
-	}
-	return result;
+	return iterator->group = g_4f55d0->active ? (s_squad_group_datum *)data_iterator_next_inlined(&iterator->records) : NULL;
 }
 
 // @retail 0x202370
@@ -298,7 +293,7 @@ void function_202370(void)
 		iterator.records.index = NONE;
 	}
 	s_squad_group_datum *group;
-	while ((group = next_group_record(&iterator)) != NULL)
+	while ((group = next_group_record_202370(&iterator)) != NULL)
 	{
 		if (group->parent_index == NONE)
 			function_202420(iterator.records.datum_index);
@@ -315,7 +310,7 @@ void function_2024c0(void)
 		iterator.records.index = NONE;
 	}
 	s_squad_group_datum *group;
-	while ((group = next_group_record(&iterator)) != NULL)
+	while ((group = next_group_record_202370(&iterator)) != NULL)
 	{
 		if (group->parent_index == NONE)
 			function_202570(iterator.records.datum_index);
@@ -836,7 +831,7 @@ short function_205010(s_squad_iterator *iterator)
 	return result;
 }
 
-long function_257ed0(long thread_index, long actor_index, short script_index);
+long function_257ed0(long actor_index, short script_index, long thread_index);
 
 PRIVATE __forceinline short squad_valid_command_script(s_squad_placement_table *scenario, short index, char const *name)
 {
@@ -862,7 +857,7 @@ void function_201b70(long squad_index, short entry_index, long actor_index)
 	if (script_index == NONE)
 		script_index = squad_valid_command_script(scenario, squad->command_script_index, squad->command_script_name);
 	if (script_index != NONE)
-		function_257ed0(NONE, actor_index, script_index);
+		function_257ed0(actor_index, script_index, NONE);
 }
 
 PRIVATE __forceinline s_squad_placement_entry *squad_placement_entry(s_squad_placement_definition *squad, long index)

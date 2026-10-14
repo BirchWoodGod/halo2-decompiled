@@ -281,8 +281,8 @@ __declspec(noinline) void *function_122c10(long group_tag, long tag_index);
 // @retail 0x122c10
 void *function_122c10(long group_tag, long tag_index)
 {
-	void *result = NULL;
 	s_cache_tag_instance *instance = cache_tag_instance_get(tag_index);
+	void *result = NULL;
 
 	if (instance && cache_tag_group_is(cache_tag_group_get(instance->group_tag), group_tag))
 		result = instance->address;
