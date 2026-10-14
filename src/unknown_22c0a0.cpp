@@ -3,6 +3,7 @@
    (vtable 0x4576a4; unknown_146a20.h): allocations grow up from the buffer's
    start and their table (an offset and a size each) down from its end */
 
+#include <string.h>
 #include "unknown_11c920.h"
 #include "unknown_146a20.h"
 
@@ -147,8 +148,7 @@ void fixed_memory_get_statistics_16(c_havok_fixed_memory *memory, s_fixed_memory
 	}
 	else
 	{
-		s_fixed_memory_statistics_16 empty = {0};
-		*statistics = empty;
+		memset(statistics, 0, sizeof(*statistics));
 	}
 }
 

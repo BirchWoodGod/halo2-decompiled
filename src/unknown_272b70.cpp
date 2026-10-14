@@ -1177,7 +1177,7 @@ void function_273040(long unit_index, long squad_index)
 			s_scenario_squad_273040 *squad = &scenario->squads[index & 0xffff];
 			if (squad->entry_index != NONE)
 			{
-				long entry_index = scenario->entries[squad->entry_index].index;
+				long const &entry_index = scenario->entries[squad->entry_index].index;
 				if (entry_index != NONE)
 				{
 					function_1e0160(index, entry_index, unit_index, (bool)((squad->flags >> 10) & 1));
@@ -2759,7 +2759,7 @@ inline s_type_c3b527 *scenario_point_get(long point_reference)
 
 /* places the current actor's unit at a point, facing another point */
 // @retail 0x2773d0
-void function_2773d0(long facing_point_reference, long point_reference)
+void function_2773d0(long point_reference, long facing_point_reference)
 {
 	if (g_50240c != NONE && function_25ab50(point_reference))
 	{

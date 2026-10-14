@@ -1273,9 +1273,9 @@ void function_79a10(s_network_observer *observer, long index)
 	if (elapsed == NONE || elapsed >= *(long *)((byte *)observer->configuration + 0x1bc))
 	{
 		bool has_callback = channel->has_callback;
-		bool selected_callback = has_callback;
 		long selected = NONE;
 		long maximum = function_79a11(channel, observer->configuration);
+		bool selected_callback = has_callback;
 		for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++)
 		{
 			s_observer_bandwidth_channel *candidate = (s_observer_bandwidth_channel *)&observer->channels[i];

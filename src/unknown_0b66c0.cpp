@@ -376,7 +376,7 @@ s_http_callbacks_ab g_4d8b1c;
 // @retail 0xb5cd0
 s_http_connection_ab *function_b5cd0(s_http_connection_ab *connection)
 {
-    *(volatile char *)connection->hostname = 0;
+    connection->hostname[0] = 0;
     function_b62b0((s_upload_ab *)((byte *)connection + 0x30));
     s_transport_endpoint *endpoint = &connection->internal_endpoint;
     ((dword *)endpoint)[0] = 0;
