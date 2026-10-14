@@ -1628,7 +1628,7 @@ long function_12a810(long sound_index)
 		t = function_12aff0((real)(start - latest), (real)(end - latest), (real)(sound_system->time - latest), start < end);
 		{
 			long lower = *(start < end ? &sound->fade_gain : &g_440c4c);
-			long upper = *(start < end ? &g_440c48 : &sound->fade_gain);
+			long upper = *(start >= end ? &sound->fade_gain : &g_440c48);
 
 			switch (sound->fade_curve)
 			{
@@ -1655,7 +1655,7 @@ long function_12a810(long sound_index)
 			}
 			}
 		}
-		return decibels_pin(result);
+		result = decibels_pin(result);
 	}
 	return result;
 }
