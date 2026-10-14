@@ -9,7 +9,8 @@ struct s_render_object_header
 };
 
 struct s_geometry_block_info;
-extern long g_4c1bd0, g_4ba01c;
+#include "target_cache_storage.h"
+extern long g_4ba01c;
 extern bool g_4ba019;
 extern byte *g_485a80;
 bool object_or_parent_hidden(long object_index);

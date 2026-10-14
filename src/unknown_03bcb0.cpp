@@ -1170,7 +1170,7 @@ bool __stdcall function_4cbf0(long tag, long context, long pass, long stage,
 {
     s_sort_record *out = (s_sort_record *)record;
     tag = *(long volatile *)&tag;
-    long key = (byte)handle;
+    short key = (byte)handle;
     short index = (short)(handle >> 8);
     s_44940_entry *source = &g_4ba138[index];
     byte *object = *(byte **)source->unknown10;

@@ -13,6 +13,6 @@ void __stdcall function_20d570(long arg_0, short arg_1, long arg_2, void *arg_3)
 
 union vector3f;
 
-// @stub 0xe5840
-void function_e5840(long arg_0, vector3f const *arg_1, bool arg_2) {}
+
+
 

@@ -2,6 +2,45 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8671 functions match
+
+```
+matched 8671 of 11318 game functions (1154472 of 2784283 bytes, 41.46%)
+```
+
+9 new matches, none lost:
+- @BirchWoodGod's #474 (unit and biped update code): `0xe5300`, `0xe56f0`, `0xe5750`, `0xe57e0`, `0xe5930` and `0xe63b0` match, and with them their callers `0xea7c0`, `0xeaeb0` and `0xeb340`.
+
+## 2026-10-14: 8662 functions match
+
+```
+matched 8662 of 11318 game functions (1153269 of 2784283 bytes, 41.42%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 33 (#478): `0x69b50`, `0x57d60` and `0x26e180` match.
+- Machine 1's key lane round 21: `0x2c8a0` goes from 71 to 64.
+
+## 2026-10-14: 8659 functions match
+
+```
+matched 8659 of 11318 game functions (1152199 of 2784283 bytes, 41.38%)
+```
+
+4 new matches, none lost:
+- Machine 3's batch 32 (#477): `0x3d2c0`, `0xb2fc0`, `0x273040` and `0x28cb70` match.
+- A GitHub Actions workflow now runs the Python tests on pull requests and on main (#476).
+
+## 2026-10-14: 8655 functions match
+
+```
+matched 8655 of 11318 game functions (1151254 of 2784283 bytes, 41.35%)
+```
+
+8 new matches, none lost:
+- Machine 3's batch 31 (#473): `0x7acc0`, `0x7acf0`, `0x784a0`, `0x924e0`, `0xb8600`, `0x238114`, `0x22c280` and `0x22cbd0` match.
+- Machine 1's key lane round 19: `0x146bf0` goes from 115 to 5 at retail's length.
+
 ## 2026-10-14: 8647 functions match
 
 ```

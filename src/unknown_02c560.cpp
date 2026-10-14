@@ -161,10 +161,7 @@ void function_2ca00(point3f const *position, t_aux_view_callback callback, void 
 void __stdcall function_2c8a0(byte const *source)
 {
     s_frame_parameters_12a50 parameters;
-    parameters.identifier = 0;
-    parameters.time = 0.0;
-    parameters.unknown10 = 0;
-    parameters.unknown14 = 0;
+    memset(&parameters, 0, sizeof(parameters));
     parameters.mode = 1;
     g_4ba030 = 1;
     ++g_4ba034;

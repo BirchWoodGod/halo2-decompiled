@@ -3654,6 +3654,33 @@ void __stdcall function_e5690(long unit_index, point3f const *point)
 	function_b75a0(unit_index, point, NULL, NULL, NULL, false);
 }
 
+/* The same as function_e5690, but switches to mode 5. */
+// @retail 0xe56f0
+void __stdcall function_e56f0(long unit_index, point3f const *point)
+{
+	s_unit_action_unit *unit = UNIT_ACTION_UNIT_GET(unit_index);
+
+	*(short *)((byte *)unit + 0x34c) = NONE;
+	*((byte *)unit + 0x34e) = 0;
+	*((byte *)unit + 0x34f) = 0;
+
+	function_1e54d0((byte *)unit + 0x3dc, 5);
+	function_b75a0(unit_index, point, NULL, NULL, NULL, false);
+}
+
+/* Switches the unit to physics mode 2, then resets the state function_e5690
+   resets. */
+// @retail 0xe5750
+void function_e5750(long unit_index)
+{
+	byte *unit = (byte *)UNIT_ACTION_UNIT_GET(unit_index);
+
+	function_1e54d0(unit + 0x3dc, 2);
+	*(short *)(unit + 0x34c) = NONE;
+	unit[0x34e] = 0;
+	unit[0x34f] = 0;
+}
+
 // @retail 0xecb20
 void __stdcall function_ecb20(long unit_index, long type)
 {
