@@ -26,8 +26,6 @@ struct s_system_link_globals
 };
 
 #include "system_link_globals.h"
-long g_4d8ec4;
-void *g_4d8ec8;
 void *g_4d8eb0;
 
 struct s_network_message_session_query
@@ -64,6 +62,8 @@ s_online_search_globals g_4d8ecc = { 0 };
 #define g_4d8ef8 g_4d8ecc.capacity
 #define g_4d8efc g_4d8ecc.entries
 #define g_4d8f00 g_4d8ecc.start_time
+
+__declspec(noinline) void function_b31b0(void);
 
 // @retail 0xb31b0
 void function_b31b0(void)
@@ -212,7 +212,7 @@ extern long g_4d8f14;
 extern s_0b35e0_entry *g_4d8f18;
 
 bool function_b3610(void);
-void function_b3670(void);
+__declspec(noinline) void function_b3670(void);
 
 // @retail 0xb3610
 bool function_b3610(void)

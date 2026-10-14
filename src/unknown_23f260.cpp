@@ -407,7 +407,7 @@ void function_23f3e0(s_score_display *display, long mode, bool fallback)
 	}
 	if (teams)
 	{
-		for (long team = 2; team - 2 < 8; team += 4)
+		for (long team = 2; team < 10; team += 4)
 		{
 			if (score_team_present(team - 2))
 				display->teams[display->team_count++] = (short)(team - 2);

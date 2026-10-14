@@ -507,18 +507,19 @@ static inline long font_character_pixel(long alpha, long color)
 // @retail 0x122610
 long function_122610(long size, void *destination, void const *pixels)
 {
+	long remaining = size;
+	long count = 0;
 	byte const *source = (byte const *)pixels;
 	word *output = (word *)destination;
-	long count = 0;
 	long color = 0xfff;
 
-	while (size > 0)
+	while (remaining > 0)
 	{
 		dword code = *source;
 		dword type = code >> 6;
 		long length;
 
-		if (type > 1)
+		if ((long)type > 1)
 		{
 			long run = 2;
 
@@ -542,8 +543,7 @@ long function_122610(long size, void *destination, void const *pixels)
 				{
 				case 0:
 					run = 0;
-					count += run;
-					break;
+					goto counted;
 				case 1:
 					run = 4;
 					pixel = color | 0xf000;
@@ -576,6 +576,7 @@ long function_122610(long size, void *destination, void const *pixels)
 							output[i] = (word)pixel;
 						output += run;
 					}
+				counted:
 					count += run;
 					break;
 				default:
@@ -602,17 +603,20 @@ long function_122610(long size, void *destination, void const *pixels)
 			{
 				if (output)
 				{
-					word pixel = (word)font_character_pixel((type == 0 ? 0 : 0xff) & 7, color);
+					byte alpha = type == 0;
+
+					alpha--;
+					long pixel = font_character_pixel(alpha & 7, color);
 
 					for (long i = 0; i < run; i++)
-						output[i] = pixel;
+						output[i] = (word)pixel;
 					output += run;
 				}
 				count += run;
 				length = 1;
 			}
 		}
-		size -= length;
+		remaining -= length;
 		source += length;
 	}
 	return count;

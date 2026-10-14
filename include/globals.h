@@ -1172,12 +1172,15 @@ struct s_peer_list_globals
 	short presence_minutes;
 	short unknown16;
 	dword presence_start_time;
-	byte unknown1c;
+	bool unknown1c;
 	bool session_booted; /* set when a session the states drop had been booted (unknown_058dd0.cpp) */
 	byte unknown1e[0x20 - 0x1e];
 };
 
 extern s_peer_list_globals g_4ee4c4;
+/* the flag at 0x4ee4e0 is a member of the peer list's state, which is
+   cleared as a whole, so its stores may alias other memory */
+#define g_4ee4e0 (g_4ee4c4.unknown1c)
 
 /* g_4686cc: the global colours, white first (defined in unknown_13b390.cpp;
    read by the tag function evaluators and the text drawing state) */
