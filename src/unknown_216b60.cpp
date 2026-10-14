@@ -110,6 +110,8 @@ const char *function_216b60(long type)
 	return name;
 }
 
+__declspec(noinline) long function_217480(long type);
+
 /* the size of a saved game file of a type */
 // @retail 0x217480
 long function_217480(long type)

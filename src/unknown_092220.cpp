@@ -183,12 +183,11 @@ long online_round_register(bool free_for_all, XNKID const *session_id, ULONGLONG
 				task->flags = 1;
 				task->type = 0x12;
 				task->controller_index = NONE;
-				return task_index;
 			}
 			else
 			{
 				function_6b640(task_index);
-				return NONE;
+				task_index = NONE;
 			}
 		}
 	}
