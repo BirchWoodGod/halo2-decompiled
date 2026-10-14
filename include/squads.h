@@ -119,6 +119,33 @@ struct s_squad_group_iterator
 	long previous_squad_index;
 };
 
+/* the walk's first step and next step (0x204d30, 0x204d70), which retail
+   also inlines into callers such as 0x1c7bb0 */
+inline void squad_actors_begin(s_squad_actor_iterator *iterator, long squad_index)
+{
+	if (g_4f55d0->active)
+	{
+		iterator->squad_index = squad_index;
+		iterator->actor_index = NONE;
+		if (squad_index == NONE)
+			iterator->next_actor_index = g_4f55d0->unknown14;
+		else
+			iterator->next_actor_index = squad_get(squad_index)->first_actor_index;
+	}
+}
+
+inline s_actor_datum *squad_actors_next(s_squad_actor_iterator *iterator)
+{
+	s_actor_datum *actor = NULL;
+	if (g_4f55d0->active && iterator->next_actor_index != NONE)
+	{
+		actor = actor_datum_get(iterator->next_actor_index);
+		iterator->actor_index = iterator->next_actor_index;
+		iterator->next_actor_index = actor->next_actor_index;
+	}
+	return actor;
+}
+
 void function_204d30(s_squad_actor_iterator *iterator, long squad_index);
 s_actor_datum *function_204d70(s_squad_actor_iterator *iterator);
 void function_204db0(s_squad_group_iterator *iterator, long squad_group_index);

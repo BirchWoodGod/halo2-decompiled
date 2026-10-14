@@ -233,23 +233,42 @@ long __stdcall function_1add50(long actor_index, s_slot *slot)
 	return joint_index;
 }
 
+/* walks the actors of the group at 0x502420 (the walk 0x256150 makes);
+   retail tests the next index at the loop head */
+struct s_member_iterator_1addd0
+{
+	long next_index;
+	long index;
+};
+
+static inline s_actor_view *member_iterator_next_1addd0(s_member_iterator_1addd0 *iterator)
+{
+	s_actor_view *member = 0;
+
+	if (iterator->next_index != NONE)
+	{
+		member = actor_get(iterator->next_index);
+		iterator->index = iterator->next_index;
+		iterator->next_index = member->next_index;
+	}
+	return member;
+}
+
 // @retail 0x1addd0
-short __stdcall function_1addd0(long actor_index, s_slot *slot, long joint_index, long unknown)
+short __stdcall function_1addd0(long actor_index, long joint_index, s_slot *slot, long unknown)
 {
 	short count = 0;
 	s_actor_view *actor = actor_get(actor_index);
 
 	if (actor->unknown07c != NONE)
 	{
-		long other_index = element_502420_get(actor->unknown07c)->first_actor_index;
-		for (;;)
+		s_member_iterator_1addd0 iterator;
+		s_actor_view *other;
+		iterator.next_index = element_502420_get(actor->unknown07c)->first_actor_index;
+		iterator.index = NONE;
+		while ((other = member_iterator_next_1addd0(&iterator)) != 0)
 		{
-			if (other_index == NONE)
-				return count;
-			s_actor_view *other = actor_get(other_index);
-			long index = other_index;
-			other_index = other->next_index;
-			if (actor != other && function_26eae0(joint_index, index, 3, 1.0f))
+			if (actor != other && function_26eae0(joint_index, iterator.index, 3, 1.0f))
 				count++;
 		}
 	}

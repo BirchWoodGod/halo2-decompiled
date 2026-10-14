@@ -164,7 +164,7 @@ bool __stdcall function_20ba60(short arg_0, long arg_1, long arg_2, long arg_3, 
 bool __stdcall function_20cdc0(long arg_0, long arg_1, long arg_2, s_audio_selection *arg_3, long *arg_4)
 {
     long local_0 = 0;
-    long local_1;
+    bool local_16 = false;
     s_audio_priority_table *local_2 = function_20cdc1();
     byte *local_3 = g_4f9398->data + (arg_2 & 0xffff) * 0x54;
     long local_4 = *(short *)(local_3 + 2);
@@ -185,8 +185,8 @@ bool __stdcall function_20cdc0(long arg_0, long arg_1, long arg_2, s_audio_selec
                 if (local_11 != NONE)
                 {
                     *(short *)(local_7 + 0) = NONE;
-                    *(short *)(local_7 + 2) = local_11;
                     *(long *)(local_7 + 4) = *(long *)local_10;
+                    *(short *)(local_7 + 2) = local_11;
                     *(short *)(local_7 + 0xa) = 0;
                     *(short *)(local_7 + 0x14) = 0;
                     *(short *)(local_7 + 0x16) = NONE;
@@ -225,9 +225,9 @@ bool __stdcall function_20cdc0(long arg_0, long arg_1, long arg_2, s_audio_selec
         local_4 = *(short *)(local_8 + 8);
     }
     short local_12 = function_20f0a0((s_audio_weighted_entry *)local_6, (short)local_0);
-    bool local_16 = false;
     if (local_12 != NONE)
     {
+        long local_1;
         real local_13 = g_510c54->field_2_3 * 0.2f;
         __asm
         {
