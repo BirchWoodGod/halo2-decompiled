@@ -1645,6 +1645,8 @@ long function_12a810(long sound_index)
 
 /* fades a playing sound out over 300 ms from where its fade is, after
    telling its source it is going */
+void function_0bfe40(word *flags, long bit, bool value);
+
 // @retail 0x126360
 void function_126360(long sound_index)
 {
@@ -1661,7 +1663,7 @@ void function_126360(long sound_index)
 			sound->fade_curve = 0;
 			sound->fade_start_time = 300;
 			sound->fade_end_time = NONE;
-			sound->fading = true;
+			function_0bfe40(&sound->flags, 7, true);
 		}
 	}
 }
@@ -1671,7 +1673,6 @@ void function_126360(long sound_index)
 // @retail 0x126df0
 void function_126df0(long fade_in_index, long fade_out_index, short curve, real duration)
 {
-	real const volatile *local_0 = &duration;
 	if (fade_in_index != NONE)
 	{
 		s_sound_playback *sound = SOUND_PLAYBACK_GET(fade_in_index);
@@ -1682,8 +1683,8 @@ void function_126df0(long fade_in_index, long fade_out_index, short curve, real 
 			sound->fade_gain = 0xc2800000;
 		sound->fade_curve = curve;
 		sound->fade_start_time = NONE;
-		sound->fade_end_time = (long)(*local_0 * 1000.0f);
-		sound->fading = true;
+		sound->fade_end_time = (long)(duration * 1000.0f);
+		function_0bfe40(&sound->flags, 7, true);
 	}
 	if (fade_out_index != NONE)
 	{
@@ -1691,9 +1692,9 @@ void function_126df0(long fade_in_index, long fade_out_index, short curve, real 
 
 		sound->fade_gain = function_12a810(fade_out_index);
 		sound->fade_curve = curve;
-		sound->fade_start_time = (long)(*local_0 * 1000.0f);
+		sound->fade_start_time = (long)(duration * 1000.0f);
 		sound->fade_end_time = NONE;
-		sound->fading = true;
+		function_0bfe40(&sound->flags, 7, true);
 	}
 }
 
