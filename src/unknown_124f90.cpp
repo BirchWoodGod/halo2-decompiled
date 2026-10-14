@@ -1343,10 +1343,26 @@ real function_12aff0(real a, real b, real c, bool flag);
 // @retail 0x12ac20
 real sound_get_distance_gain(long definition_index, s_sound const *sound, real distance)
 {
-	real minimum_distance = MAXIMUM(sound_get_minimum_distance(sound, definition_index), 0.001f);
-	real maximum_distance = sound_get_maximum_distance(sound, definition_index);
+	real minimum_distance;
+	real maximum_distance;
+	real gain;
 
-	return minimum_distance / MAXIMUM(minimum_distance, distance) * function_12aff0(maximum_distance, minimum_distance, distance, false);
+	/* the getter is expanded inline for the test and called for the value */
+	if (sound_get_minimum_distance(sound, definition_index) > 0.001f)
+	{
+#pragma inline_depth(0)
+		minimum_distance = sound_get_minimum_distance(sound, definition_index);
+#pragma inline_depth()
+	}
+	else
+	{
+		minimum_distance = 0.001f;
+	}
+	maximum_distance = sound_get_maximum_distance(sound, definition_index);
+
+	gain = function_12aff0(maximum_distance, minimum_distance, distance, false);
+
+	return (minimum_distance / MAXIMUM(minimum_distance, distance)) * gain;
 }
 
 real function_30bf0(vector3f *vector);
