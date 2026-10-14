@@ -879,19 +879,20 @@ void function_23ed30(point3f *a, point3f *b, real c, real d, dword color, real e
 		push = push_vertex_data4f(push, g_470a3c[2], f[0], f[1], f[2], f[3]);
 		push = push_vertex_data4f(push, g_470a3c[5], g[0], g[1], g[2], g[3]);
 		push = push_vertex_data4f(push, g_470a3c[6], h[0], h[1], h[2], h[3]);
-		*push++ = D3DPUSH_ENCODE(D3DPUSH_SET_BEGIN_END, 1);
-		*push++ = 8;
-		*push++ = D3DPUSH_ENCODE(D3DPUSH_INLINE_ARRAY, 8) | D3DPUSH_NOINCREMENT_FLAG;
-		*push++ = 0;
-		*push++ = 0;
-		*push++ = 1;
-		*push++ = 0;
-		*push++ = 0x10001;
-		*push++ = 0;
-		*push++ = 0x10000;
-		*push++ = 0;
-		*push++ = D3DPUSH_ENCODE(D3DPUSH_SET_BEGIN_END, 1);
-		*push++ = 0;
+		push[0] = D3DPUSH_ENCODE(D3DPUSH_SET_BEGIN_END, 1);
+		push[1] = 8;
+		push[2] = D3DPUSH_ENCODE(D3DPUSH_INLINE_ARRAY, 8) | D3DPUSH_NOINCREMENT_FLAG;
+		push[3] = 0;
+		push[4] = 0;
+		push[5] = 1;
+		push[6] = 0;
+		push[7] = 0x10001;
+		push[8] = 0;
+		push[9] = 0x10000;
+		push[10] = 0;
+		push[11] = D3DPUSH_ENCODE(D3DPUSH_SET_BEGIN_END, 1);
+		push[12] = 0;
+		push += 13;
 		D3DDevice_EndPush(push);
 	}
 }

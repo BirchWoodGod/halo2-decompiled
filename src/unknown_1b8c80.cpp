@@ -683,8 +683,8 @@ short __stdcall function_1b99d0(long actor_index, s_slot *slot)
 	function_26c180(actor_index);
 	if (properties && actor->unknown27c.unknown10 != NONE && actor->unknown278[0])
 	{
-		byte *buffer = ai_scratch_buffer_get();
 		bool prepared = false;
+		byte *buffer = ai_scratch_buffer_get();
 		s_prop_node_view *node = (s_prop_node_view *)function_26be30(&iterator);
 		while (node)
 		{

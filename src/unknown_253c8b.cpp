@@ -193,9 +193,9 @@ void c_class_19b8b1::v4(long screen_rect_address)
         s_float_rect from, to;
         real width = element->width;
         real height = element->height;
-        from.y0 = 0.0f;
         from.x0 = 0.0f;
         from.x1 = width;
+        from.y0 = 0.0f;
         from.y1 = height;
         get_real_bounds((box2f *)&to);
         real px = *(short *)definition->unknown2c + to.x0;

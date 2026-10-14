@@ -141,7 +141,7 @@ long function_699a0(long index, void *table)
 }
 
 // @retail 0x89e70
-void function_89e70(s_node_450d1c *node, s_owner_450d1c *owner)
+void function_89e70(s_owner_450d1c *owner, s_node_450d1c *node)
 {
 	s_node_450d1c **link = &owner->head;
 	if (*link != 0)
@@ -278,7 +278,7 @@ void function_8b4d0(s_event_distribution *distribution, long type, long entity_c
 			}
 			if (size > 0 && !function_8b0a0(node, size, data))
 			{
-				function_89e70(node, distribution->owner);
+				function_89e70(distribution->owner, node);
 				return;
 			}
 			if (definition->v4())
