@@ -549,7 +549,8 @@ void c_screen_24a7bf::v3()
 				}
 			}
 		}
-		local_4->function_253b1a(function_253c06(local_4)->string_handle);
+		long local_10 = function_253c06(local_4)->string_handle;
+		local_4->function_253b1a(local_10);
 	}
 local_9:
 	local_4 = (c_text_widget_45a5e0 *)find_child(6, 7, false);
@@ -563,7 +564,7 @@ local_9:
 			switch (local_7)
 			{
 			case 0: local_5 = 0x400028e; break;
-			case 1: break;
+			case 1: local_5 = 0x60000b8; break;
 			case 2: local_5 = 0x600028f; break;
 			case 3: local_5 = 0x9000290; break;
 			}
