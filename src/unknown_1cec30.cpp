@@ -961,11 +961,9 @@ void havok_component_node_states_get(s_havok_component *component, s_havok_node_
 	memset(states->valid, 0, sizeof(states->valid));
 	for (rigid_body_index = 0; rigid_body_index < component->rigid_bodies.size; rigid_body_index++)
 	{
-		s_havok_component_rigid_body *rigid_body = &component->rigid_bodies.data[rigid_body_index];
-
-		if (rigid_body->node_count > 0)
+		if (component->rigid_bodies.data[rigid_body_index].node_count > 0)
 		{
-			long node_index = rigid_body->nodes[0];
+			long node_index = component->rigid_bodies.data[rigid_body_index].nodes[0];
 
 			if (node_index >= 0 && node_index < MAXIMUM_HAVOK_NODES)
 			{
@@ -1545,6 +1543,10 @@ PRIVATE inline void component_property_replace(hkEntity *entity, dword key, hkPr
  entity->addProperty(key, value);
 }
 
+/* drops a reference to a body and frees it when none are left, unless it sits
+   in the pinned memory range; retail computes the range's limit a second time
+   for the pinned value (the second test is written the other way round so the
+   two are not shared) */
 PRIVATE inline void component_body_release(c_havok_reference_counted *body)
 {
  --body->reference_count;
@@ -1552,7 +1554,7 @@ PRIVATE inline void component_body_release(c_havok_reference_counted *body)
  {
   long value = (long)body;
 #define COMPONENT_MEMORY_LIMIT ((long)0x80061000 + (cache_file_globals.loaded ? cache_file_globals.header.unknown1c : 0))
-  if ((value < (long)0x80061000 ? (long)0x80061000 : value > COMPONENT_MEMORY_LIMIT ? COMPONENT_MEMORY_LIMIT : value) == value)
+  if ((value < (long)0x80061000 ? (long)0x80061000 : value > COMPONENT_MEMORY_LIMIT ? (long)0x80061000 + (!cache_file_globals.loaded ? 0 : cache_file_globals.header.unknown1c) : value) == value)
    body->reference_count = 1;
   else
    delete body;
