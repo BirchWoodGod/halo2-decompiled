@@ -614,9 +614,11 @@ void sound_driver_voice_environment_set(
 {
 	s_sound_driver_globals *globals = SOUND_DRIVER_GLOBALS;
 	s_sound_driver_voice *voice = &globals->voices[voice_index];
-	DSI3DL2BUFFER parameters = {0};
+	DSI3DL2BUFFER parameters;
 	DSFILTERDESC filter;
 	real attenuation;
+
+	memset(&parameters, 0, sizeof(parameters));
 
 	parameters.lDirect = sound_gain_to_volume(globals->volume_a);
 	parameters.lDirectHF = sound_gain_to_volume(globals->volume_b);
@@ -624,7 +626,8 @@ void sound_driver_voice_environment_set(
 	parameters.Obstruction.flLFRatio = 0.0f;
 	parameters.Occlusion.flLFRatio = 0.25f;
 	attenuation = function_12aff0(-64.0f, 0.0f, decibels, true);
-	parameters.lRoom = PIN(sound_gain_to_volume(globals->volume_c) - (long)(6400.0f - attenuation * 6400.0f), -10000, 0);
+	long room = sound_gain_to_volume(globals->volume_c) - (long)(6400.0f - attenuation * 6400.0f);
+	parameters.lRoom = PIN(room, -10000, 0);
 	parameters.lRoomHF = parameters.lRoom;
 	parameters.Obstruction.lHFLevel = sound_gain_to_volume(1.0f - voice->unknown30);
 	parameters.Occlusion.lHFLevel = sound_gain_to_volume(1.0f - voice->unknown2c);

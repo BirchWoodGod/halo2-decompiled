@@ -928,12 +928,16 @@ static __forceinline void item_add_scaled(vector3f *a, vector3f const &b, real s
 }
 static __forceinline void item_spin_vector(vector3f *vector, s_item const *item)
 {
-    vector3f original = *vector;
-    real projection = item_dot(original, item->spin_axis) * (1.0f-item->spin_cosine);
-    vector3f cross = item_cross(original, item->spin_axis);
-    vector->i = original.i*item->spin_cosine + projection*item->spin_axis.i - cross.i*item->spin_sine;
-    vector->j = original.j*item->spin_cosine + projection*item->spin_axis.j - cross.j*item->spin_sine;
-    vector->k = original.k*item->spin_cosine + projection*item->spin_axis.k - cross.k*item->spin_sine;
+    real i = vector->i;
+    real j = vector->j;
+    real k = vector->k;
+    real projection = (i*item->spin_axis.i + j*item->spin_axis.j + k*item->spin_axis.k) * (1.0f-item->spin_cosine);
+    real cross_i = j*item->spin_axis.k - k*item->spin_axis.j;
+    real cross_j = k*item->spin_axis.i - i*item->spin_axis.k;
+    real cross_k = i*item->spin_axis.j - j*item->spin_axis.i;
+    vector->i = i*item->spin_cosine + projection*item->spin_axis.i - cross_i*item->spin_sine;
+    vector->j = j*item->spin_cosine + projection*item->spin_axis.j - cross_j*item->spin_sine;
+    vector->k = k*item->spin_cosine + projection*item->spin_axis.k - cross_k*item->spin_sine;
 }
 
 struct s_item_flags_view_10b850
@@ -1090,8 +1094,8 @@ void __stdcall function_10b850(long object_index)
             transform4x3f matrix = marker.matrix;
             item_spin_vector(&matrix.forward, item);
             item_spin_vector(&matrix.up, item);
-            matrix.left = item_cross(matrix.up, matrix.forward);
-            matrix.forward = item_cross(matrix.left, matrix.up);
+            item_cross_product(&matrix.up, &matrix.forward, &matrix.left);
+            item_cross_product(&matrix.left, &matrix.up, &matrix.forward);
             function_30bf0(&matrix.forward); function_30bf0(&matrix.left); function_30bf0(&matrix.up);
             function_b92d0(object_index, &marker, &matrix);
         }
@@ -1101,8 +1105,9 @@ void __stdcall function_10b850(long object_index)
             item_spin_vector(&item->up, item);
         }
         function_30bf0(&item->up);
-        vector3f side = item_cross(item->up, item->forward);
-        item->forward = item_cross(side, item->up);
+        vector3f side;
+        item_cross_product(&item->up, &item->forward, &side);
+        item_cross_product(&side, &item->up, &item->forward);
         function_30bf0(&item->forward);
     }
 }

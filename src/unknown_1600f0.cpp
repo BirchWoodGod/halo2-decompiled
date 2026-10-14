@@ -1258,7 +1258,7 @@ void __stdcall function_1608e0(long player_index, s_score_panel_1608e0 *panel, r
 		(real &)g_4e9af0.unknown04[4 + local_player->local_user_index * 4] =
 			PIN(scroll, 0.0f, (real)(height - screen_height));
 	}
-	short y = (short)(g_4b9dd8.top -
+	long y = (short)(g_4b9dd8.top -
 		(long)(real &)g_4e9af0.unknown04[4 + local_player->local_user_index * 4] - g_4b9dd0);
 	struct
 	{
@@ -1298,7 +1298,7 @@ void __stdcall function_1608e0(long player_index, s_score_panel_1608e0 *panel, r
 	long name_width = 0xec - score_width - time_width;
 	word text[0x100];
 	text[0] = 0;
-	y += 0x18;
+	y = (short)(y + 0x18);
 	work.position[1] = y;
 	work.bounds.top = y;
 	work.bounds.left = x;

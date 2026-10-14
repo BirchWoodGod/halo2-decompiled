@@ -1608,9 +1608,9 @@ long function_26a740(long object_index, s_clump_activity_view *clump)
 // @retail 0x269580
 void function_269580(long destination_index, long source_index)
 {
+	g_4de2fc++;
 	s_clump_activity_view *destination = (s_clump_activity_view *)(g_502420->data + (destination_index & 0xffff) * sizeof(s_clump_activity_view));
 	s_clump_activity_view *source = (s_clump_activity_view *)(g_502420->data + (source_index & 0xffff) * sizeof(s_clump_activity_view));
-	g_4de2fc++;
 	g_4de2f8 = true;
 	s_iterator iterator;
 	iterator.next = destination->first_prop;
