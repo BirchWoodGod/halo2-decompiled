@@ -32,12 +32,9 @@ struct s_22a664
 
 PRIVATE __forceinline real function_22a665(byte const *arg_0, long arg_1)
 {
-    real local_0;
     if (*(word const *)(arg_0 + 0xe) & 0x10)
-        local_0 = (real)*(short const *)(arg_0 + arg_1);
-    else
-        local_0 = 1.0f;
-    return local_0;
+        return (real)*(short const *)(arg_0 + arg_1);
+    return 1.0f;
 }
 
 // @retail 0x22a664

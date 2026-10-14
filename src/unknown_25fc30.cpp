@@ -740,6 +740,18 @@ void __stdcall function_25eb00(
 	}
 }
 
+static inline real range_score_25eb70(s_type_967e20 const *context, s_type_b36ac5 const *position)
+{
+	real value = 0.f;
+	if (context->range08 > position->unknown18)
+		return value;
+	if (context->range08 * 2.f > position->unknown18)
+		value = (position->unknown18 - context->range08) / context->range08 * 8.f;
+	else if (context->range18 > position->unknown18)
+		value = (context->range18 - position->unknown18) * 8.f / (context->range18 - context->range08 * 2.f);
+	return value;
+}
+
 // @retail 0x25eb70
 void __stdcall function_25eb70(
 	long actor_index,
@@ -753,24 +765,7 @@ void __stdcall function_25eb70(
 
 		if (position->unknown4c)
 		{
-			real value = 0.f;
-
-			if (context->range08 > position->unknown18)
-			{
-			}
-			else if (context->range08 * 2.f > position->unknown18)
-			{
-				value = (position->unknown18 - context->range08) / context->range08 * 8.f;
-			}
-			else if (context->range18 > position->unknown18)
-			{
-				value = (context->range18 - position->unknown18) * 8.f / (context->range18 - context->range08 * 2.f);
-			}
-			else
-			{
-				value = 0.f;
-			}
-			position->score += value;
+			position->score += range_score_25eb70(context, position);
 
 			if (context->unknown618)
 			{
@@ -1734,7 +1729,7 @@ bool (__stdcall *g_comparator)(long, long, void *) = function_2600e0;
 
 void function_1e3b00(long object_index, long mode, point3f const *reference,
 	void const *unknown0, void const *unknown1, point3f *position);
-long function_11c010(short row, short column);
+bool function_11c010(short row, short column);
 short __stdcall function_272af0(s_match_globals *arg_0, point3f const *arg_1);
 short __stdcall function_1c8df0(long arg_0, point3f const *arg_4, short arg_3, short arg_2,
 	void const *arg_1, long arg_5, bool arg_6, bool arg_7, bool arg_8, long *arg_9);

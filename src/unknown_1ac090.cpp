@@ -1041,8 +1041,7 @@ bool __stdcall function_1acb50(long arg_0, s_slot *arg_1)
 	{
 		if (local_4 == 6)
 			function_e68c0(0x27, local_3);
-		s_reference local_5 = g_470fa0;
-		if (*(long *)&local_0->unknown418 != *(long *)&local_5)
+		if (!REFERENCE_EQUAL(local_0->unknown418, g_470fa0))
 			function_262800(arg_0, local_0->unknown418, false);
 	}
 	s_object_marker local_6[32];
@@ -1054,10 +1053,10 @@ bool __stdcall function_1acb50(long arg_0, s_slot *arg_1)
 	*(volatile bool *)((byte *)&local_8 + 0x46) = true;
 	*(volatile bool *)&local_8.unknown015 = true;
 	*(volatile bool *)((byte *)&local_8 + 0x59) = true;
-	*(volatile real *)((byte *)&local_8 + 0x48) = 10.0f;
+	s_object_marker *local_9 = local_2 ? local_6 : NULL;
+	*(real *)((byte *)&local_8 + 0x48) = 10.0f;
 	*(volatile short *)&local_8.type = 2;
 	*(volatile real *)((byte *)&local_8 + 0x4c) = 3.0f;
-	s_object_marker *local_9 = local_2 ? local_6 : NULL;
 	*(s_object_marker *volatile *)((byte *)&local_8 + 0x64) = local_9;
 	byte *local_10 = ai_scratch_buffer_get();
 
@@ -1070,11 +1069,10 @@ bool __stdcall function_1acb50(long arg_0, s_slot *arg_1)
 	{
 		local_16 = false;
 		actor_get(arg_0)->unknown040 = local_16;
-		ai_scratch_buffer_release(local_10);
-		return local_16;
 	}
-	local_16 = function_1ac9e0(arg_0, local_14, (s_1f4a20_entry const *)&local_7.field_00,
-		local_10, local_13, local_12, (s_1f4a20_source const *)local_9, (s_1ac9e1 *)arg_1);
+	else
+		local_16 = function_1ac9e0(arg_0, local_14, (s_1f4a20_entry const *)&local_7.field_00,
+			local_10, local_13, local_12, (s_1f4a20_source const *)local_9, (s_1ac9e1 *)arg_1);
 	ai_scratch_buffer_release(local_10);
 	return local_16;
 }

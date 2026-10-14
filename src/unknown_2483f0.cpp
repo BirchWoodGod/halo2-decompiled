@@ -127,7 +127,7 @@ matrix3x3 *function_142eb0(matrix3x3 const *right, matrix3x3 const *left, matrix
 
 static inline void particle_cross_product3d(vector3f const *a, vector3f const *b, vector3f *result)
 {
-	result->i = a->j * b->k - a->k * b->j;
+	result->i = a->j * b->k - b->j * a->k;
 	result->j = a->k * b->i - a->i * b->k;
 	result->k = a->i * b->j - a->j * b->i;
 }

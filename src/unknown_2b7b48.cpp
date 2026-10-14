@@ -259,12 +259,11 @@ void c_xbox_live_message_send_screen::v3()
 	{
 		if (list.task_index != NONE)
 		{
-			switch (online_task_poll(list.task_index))
-			{
-			case 0:
-			case 1:
+			long status = online_task_poll(list.task_index);
+			if (status == 0)
 				return;
-			}
+			if (status == 1)
+				return;
 		}
 		start_animation(3);
 	}

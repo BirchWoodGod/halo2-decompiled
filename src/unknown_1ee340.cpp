@@ -631,7 +631,8 @@ void c_shape_owner::query_box(const c_query_transform *matrix, const __m128 *ext
     query_remove_key(keys, i);
     long first = keys->count;
     --i;
-    ((c_instance_surface_query *)(shape + 0x50))->query_box(&local, extent, tolerance, keys);
+    c_instance_surface_query *instance_query = (c_instance_surface_query *)(shape + 0x50);
+    instance_query->query_box(&local, extent, tolerance, keys);
     if (first < keys->count)
     {
      void *volatile filtered_owner = (byte *)owner_home + 0x14;

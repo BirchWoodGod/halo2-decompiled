@@ -87,8 +87,8 @@ static inline s_actor_view *member_iterator_next_256150(s_member_iterator_256150
 
 	if (iterator->next_index != NONE)
 	{
+		member = actor_get(iterator->next_index);
 		iterator->index = iterator->next_index;
-		member = actor_get(iterator->index);
 		iterator->next_index = member->next_index;
 	}
 	return member;
@@ -97,9 +97,9 @@ static inline s_actor_view *member_iterator_next_256150(s_member_iterator_256150
 // @retail 0x256150
 bool __stdcall function_256150(long actor_index, s_slot *slot)
 {
-	bool local_0 = false;
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_70_state *state = (s_slot_70_state *)slot;
+	bool local_0 = false;
 
 	if (actor->unknown07c != NONE)
 	{

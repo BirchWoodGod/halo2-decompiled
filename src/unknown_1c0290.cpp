@@ -330,8 +330,7 @@ void __stdcall function_1c0a30(long actor_index, s_slot *slot)
 	if (state->unknown0c)
 	{
 		s_actor_view *local_0 = actor_get(actor_index);
-		volatile dword *local_1 = &local_0->flags810;
-		*local_1 = *local_1 | 0x2000;
+		local_0->flags810 = local_0->flags810 | 0x2000;
 	}
 	else
 	{
@@ -343,8 +342,8 @@ void __stdcall function_1c0a30(long actor_index, s_slot *slot)
 			point2f direction;
 			point2f facing;
 
-			direction.x = prop->position.x - actor->position.x;
 			direction.y = prop->position.y - actor->position.y;
+			direction.x = prop->position.x - actor->position.x;
 			if (function_1c0a31(&direction))
 			{
 				facing = *(point2f *)&actor->unknown290;
