@@ -468,7 +468,7 @@ struct s_bsp3d;
 extern s_bsp3d *g_4e033c;
 long function_14a280(s_bsp3d *arg_0, long arg_2, point3f *arg_1);
 long function_baf40(long arg_0);
-long function_11c010(short arg_0, short arg_1);
+bool function_11c010(short arg_0, short arg_1);
 struct s_object_motion_view;
 void function_2640c0(long arg_0, s_object_motion_view *arg_1);
 void function_1e3b00(long arg_0, long arg_1, point3f const *arg_2, void const *arg_3, void const *arg_4, point3f *arg_5);
@@ -512,46 +512,64 @@ struct s_1af5c4
 	byte *field_30;
 };
 
+struct s_1af5c6
+{
+	long field_0;
+	point3f field_4;
+	point3f field_10;
+};
+
 // @retail 0x1af5c0
-long function_1af5c0(long arg_0, long arg_1, point3f const *arg_2, short arg_3)
+long function_1af5c0(long arg_0, long arg_1, point3f const *arg_2, long arg_3)
 {
 	s_actor_view *local_0 = actor_get(arg_0);
 	s_prop_node_view *local_1 = prop_node_get(arg_1);
 	s_1af5c1 *local_2 = (s_1af5c1 *)function_25d690((s_prop_datum *)local_1);
-	s_1af5c2 *local_3 = &((s_1af5c2 *)g_4e0300->data)[local_1->object_index & 0xffff];
+	long local_19 = local_1->object_index;
+	s_1af5c2 *local_3 = &((s_1af5c2 *)g_4e0300->data)[local_19 & 0xffff];
 	s_ai_object *local_4 = local_3->field_8;
-	point3f local_5 = *arg_2;
-	long local_6 = NONE;
 	s_1af5c0 local_7;
-	function_2640c0(local_1->object_index, (s_object_motion_view *)&local_7);
-	long local_8 = local_1->object_index;
-    local_3 = &((s_1af5c2 *)g_4e0300->data)[local_8 & 0xffff];
+	long local_8;
+	s_1af5c6 local_9;
+	point3f &local_5 = local_9.field_10;
+
+	local_5 = *arg_2;
+
+	local_9.field_0 = NONE;
+	function_2640c0(local_19, (s_object_motion_view *)&local_7);
+	local_8 = local_1->object_index;
+	local_3 = &((s_1af5c2 *)g_4e0300->data)[local_8 & 0xffff];
 	if (local_3->field_3 == 0 && ((s_1af5c3 *)local_4)->field_14 != NONE)
 		local_8 = ((s_1af5c3 *)local_4)->field_14;
 	local_8 = function_baf40(local_8);
-	point3f local_9;
-	if (arg_3 == 0)
+	if ((short)arg_3 == 0)
 	{
-		local_9 = local_5;
-		local_9.z += 0.05f;
+		local_9.field_4 = local_5;
+		local_9.field_4.z += 0.05f;
 	}
 	else
-		function_1e3b00(local_0->unknown018, arg_3, &local_5, NULL, NULL, &local_9);
-	long local_10 = function_14a280(g_4e033c, 0, &local_9);
+		function_1e3b00(local_0->unknown018, arg_3, &local_5, NULL, NULL, &local_9.field_4);
+	long local_10 = function_14a280(g_4e033c, 0, &local_9.field_4);
 	if (local_10 != NONE)
 		local_10 = *(short *)(((s_1af5c4 *)g_4e0348)->field_30 + local_10 * 8);
 	else
-		local_10 = local_6;
+		local_10 = local_9.field_0;
 	bool local_11 = local_0->unknown26c != NONE;
-	if ((short)local_10 != NONE && local_2->field_2c != NONE && !function_11c010(local_2->field_2c, (short)local_10))
+	short local_15 = local_2->field_2c;
+	if ((short)local_10 != NONE && local_15 != NONE && !function_11c010(local_15, (short)local_10))
 		return 4;
 	local_7.field_24 = NONE;
-	long local_12 = local_11 ? 0x15808c0f : 0x15808c2f;
-	vector3f local_13;
-	vector3d_from_points3d(&local_9, &local_2->field_30, &local_13);
-	if (!function_1697c0(local_12, &local_9, &local_13, local_8, NONE, (s_collision_result_1697c0 *)&local_7))
+	long local_12 = 0x15808c2f;
+	if (local_11)
+		local_12 = 0x15808c0f;
+	vector3f *local_13 = (vector3f *)&local_5;
+	vector3d_from_points3d(&local_9.field_4, &local_2->field_30, local_13);
+	if (!function_1697c0(local_12, &local_9.field_4, local_13, local_8, NONE, (s_collision_result_1697c0 *)&local_7))
 		return 0;
-	real local_14 = distance3d(&local_9, &local_2->field_30);
+	real local_16 = local_2->field_30.x - local_9.field_4.x;
+	real local_17 = local_2->field_30.y - local_9.field_4.y;
+	real local_18 = local_2->field_30.z - local_9.field_4.z;
+	real local_14 = (real)sqrt(local_18 * local_18 + local_17 * local_17 + local_16 * local_16);
 	if (1.0f > local_14)
 		return 4;
 	return 1.0f > local_14 * local_7.field_4 ? 2 : 4;

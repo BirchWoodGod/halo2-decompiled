@@ -105,8 +105,10 @@ bool __stdcall function_18c250(long object_index, long tag_index, s_sound_marker
 	if (object_index == NONE || result)
 	{
 		s_sound_tag *sound = (s_sound_tag *)((s_tag_instance_view *)g_4e3b44)[tag_index & 0xffff].data;
-		s_sound_class_view *sound_class = &((s_sound_globals_view *)g_51ebd4)->classes[sound->class_index];
-		s_sound_class_spatialization *class_spatialization = sound_class_get_spatialization(sound_class);
+		register long local_0 = sound->class_index;
+		s_sound_class_view *local_1 = ((s_sound_globals_view *)g_51ebd4)->classes;
+		s_sound_class_spatialization *class_spatialization = sound_class_get_spatialization(
+			&local_1[local_0]);
 
 		if (class_spatialization && (class_spatialization->flags & 1))
 		{
@@ -124,7 +126,7 @@ bool __stdcall function_18c250(long object_index, long tag_index, s_sound_marker
 // @retail 0x18c3b0
 bool __stdcall function_18c3b0(long object_index, long tag_index, s_sound_marker const *marker, s_type_99c531 *location)
 {
-	bool result = false;
+	byte result = 0;
 	s_sound_object_view *object = (s_sound_object_view *)function_badc0(object_index, NONE);
 
 	if (object && !object_or_parent_hidden(object_index))
@@ -184,7 +186,7 @@ bool __stdcall function_18c3b0(long object_index, long tag_index, s_sound_marker
 			}
 		}
 	}
-	return result;
+	return result != 0;
 }
 
 struct s_sound_unit_view

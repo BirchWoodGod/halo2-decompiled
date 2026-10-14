@@ -730,8 +730,18 @@ local_27:
 			if ((real)*(short *)((byte *)local_0 + 0x1a) * g_510c54->rate > 0.5f)
 				local_0->field_14 = true;
 		}
-		else if (local_30 >= local_0->field_c + real_to_long((real)g_510c54->field_2_3 * local_3->field_14))
-			local_0->field_14 = true;
+		else
+		{
+			real local_31 = (real)g_510c54->field_2_3 * local_3->field_14;
+			long local_32;
+			__asm
+			{
+				fld local_31
+				fistp local_32
+			}
+			if (local_30 >= local_0->field_c + local_32)
+				local_0->field_14 = true;
+		}
 	}
 	if (!local_0->field_12 && !local_0->field_17 && !local_0->field_18)
 		function_1a9d80(arg_0, local_3->field_1c, &local_0->field_2c, &local_0->field_2d);

@@ -961,13 +961,13 @@ void function_2735c0(long ai_index, long squad_ai_index)
 {
 	if (ai_index != NONE && squad_ai_index != NONE && !(squad_ai_index & 0xc0000000))
 	{
-		long squad_index = squad_ai_index & 0xffff;
-		s_ai_squad_iterator iterator;
-		ai_squad_iterator_new(&iterator, ai_index);
-		while (ai_squad_iterator_next(&iterator))
+		struct { s_ai_squad_iterator cursor; word target; } work;
+		work.target = squad_ai_index & 0xffff;
+		ai_squad_iterator_new(&work.cursor, ai_index);
+		while (ai_squad_iterator_next(&work.cursor))
 		{
-			function_201520(NONE, (word)iterator.squad_index, NONE, 0, 1);
-			function_204010(squad_index, iterator.squad_index);
+			function_201520(NONE, (word)work.cursor.squad_index, NONE, 0, 1);
+			function_204010(work.target, *(long const volatile *)&work.cursor.squad_index);
 		}
 		g_4f55d0->unknown364 = ai_index;
 	}
@@ -1367,8 +1367,8 @@ void function_2742f0(short team_a, short team_b)
 	{
 		long difficulty = 1;
 		short ai_team = NONE;
-		short incident_decay_ticks = NONE;
 		short incident_threshold = NONE;
+		short incident_decay_ticks = NONE;
 		bool player_alliance = false;
 
 		if (team_a == 1)
@@ -1381,8 +1381,8 @@ void function_2742f0(short team_a, short team_b)
 
 			if (g_4e6948->state == 1)
 				difficulty = g_4e6948->difficulty;
-			incident_threshold = 5;
 			player_alliance = true;
+			incident_threshold = 5;
 			incident_decay_ticks = (short)ai_seconds_to_ticks_round(decay_seconds[(short)difficulty]);
 		}
 		function_1df6c0(team_a, team_b, player_alliance && team_a == ai_team, player_alliance && team_b == ai_team,

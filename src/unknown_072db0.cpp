@@ -109,10 +109,10 @@ public:
 void c_helper_a::v0(long a, long b)
 {
 	source = (s_helper_source *)a;
+	ba = 0;
 	lc = NONE;
 	l14 = NONE;
 	l1c = NONE;
-	ba = 0;
 	l10 = 0;
 	l18 = 0;
 	l20 = 0;
