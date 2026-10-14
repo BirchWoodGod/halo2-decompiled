@@ -140,7 +140,8 @@ bool function_183910(long arg_0, point3f const *arg_1, point3f *arg_2, vector3f 
   real local_7 = FLT_MAX;
   for (long local_8 = 0; local_8 < local_1->field_74; ++local_8)
   {
-   s_183912 *local_9 = local_1->field_70[local_8].field_40;
+   s_183912 *&local_9r = local_1->field_70[local_8].field_40;
+   s_183912 *local_9 = local_9r;
    if (!local_9->field_40)
    {
     s_18391a local_23;
@@ -150,7 +151,8 @@ bool function_183910(long arg_0, point3f const *arg_1, point3f *arg_2, vector3f 
     local_10.entries.capacity_and_flags = 0x80000008;
     local_10.entries.count = 0;
     c_183911 **local_12 = &local_9->field_c;
-    long local_13 = (*local_12)->function_5();
+    long local_13 = local_9->field_c->function_5();
+    local_12 = &local_9r->field_c;
     long local_14 = local_6->function_5();
     local_0.field_0->field_218c[local_14][local_13]((byte *)&local_5 + 0xc, local_12, &local_0, &local_10);
     s_183919 *local_15 = (s_183919 *)local_10.entries.data;
