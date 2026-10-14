@@ -29,6 +29,17 @@ bool function_e63b0(vector3f const *aim, bool flag) { return 0; }
 
 
 
-// @stub 0x1e55d0
-void __stdcall function_1e55d0(s_biped_physics_move *move, void *physics, s_biped_physics_output *output) { }
+struct s_state_c570;
+// @stub 0x1ec690
+void function_1ec690(byte const *input, s_state_c570 *state, byte *output) {}
+
+class __declspec(align(16)) c_z_capsule_temp
+{
+public:
+ c_z_capsule_temp(void const *first, void const *second, real radius);
+ ~c_z_capsule_temp();
+ byte unknown00[0x30];
+};
+// @stub 0x2de0a0
+c_z_capsule_temp::c_z_capsule_temp(void const *first, void const *second, real radius) {}
 

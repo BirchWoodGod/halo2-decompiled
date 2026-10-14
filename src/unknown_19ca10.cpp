@@ -179,6 +179,7 @@ void __stdcall function_a7840(short player_index, dword mask);
 // @retail 0x19cb90
 bool function_19cb90(s_marker_pair *pair, long player_index)
 {
+	bool result = false;
 	long const *player_reference = &player_index;
 	s_marker_player *player = (s_marker_player *)(g_4e8c24->data + (*player_reference & 0xffff) * sizeof(s_marker_player));
 	s_marker_entry const &selected = g_4e0350->marker_entries[pair->second];
@@ -213,10 +214,10 @@ bool function_19cb90(s_marker_pair *pair, long player_index)
 			}
 		}
 	}
-	return true;
+	result = true;
 	}
 	}
-	return false;
+	return result;
 }
 
 void marker_get_position_and_angle(long index, point3f *position, real *angle);

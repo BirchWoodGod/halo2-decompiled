@@ -213,7 +213,8 @@ void function_15370(short mode)
 	{
 	case 0:
 		function_0222d0(D3DRS_STENCILENABLE, FALSE);
-		break;
+		g_467010 = mode;
+		return;
 	case 1: case 2:
 		function_0222d0(D3DRS_STENCILENABLE, TRUE);
 		function_0222d0(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
@@ -223,27 +224,19 @@ void function_15370(short mode)
 		function_0222d0(D3DRS_STENCILREF, mode == 1 ? 0 : 255);
 		function_0222d0(D3DRS_STENCILMASK, 255);
 		function_0222d0(D3DRS_STENCILWRITEMASK, 255);
-		break;
-	case 3:
+		g_467010 = mode;
+		return;
+	case 3: case 4:
 		function_0222d0(D3DRS_STENCILENABLE, TRUE);
 		function_0222d0(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
 		function_0222d0(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
 		function_0222d0(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
-		function_0222d0(D3DRS_STENCILFUNC, D3DCMP_EQUAL);
+		function_0222d0(D3DRS_STENCILFUNC, mode == 3 ? D3DCMP_EQUAL : D3DCMP_NOTEQUAL);
 		function_0222d0(D3DRS_STENCILREF, 0);
 		function_0222d0(D3DRS_STENCILMASK, 1);
 		function_0222d0(D3DRS_STENCILWRITEMASK, 0);
-		break;
-	case 4:
-		function_0222d0(D3DRS_STENCILENABLE, TRUE);
-		function_0222d0(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
-		function_0222d0(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
-		function_0222d0(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
-		function_0222d0(D3DRS_STENCILFUNC, D3DCMP_NOTEQUAL);
-		function_0222d0(D3DRS_STENCILREF, 0);
-		function_0222d0(D3DRS_STENCILMASK, 1);
-		function_0222d0(D3DRS_STENCILWRITEMASK, 0);
-		break;
+		g_467010 = mode;
+		return;
 	case 5:
 		function_0222d0(D3DRS_STENCILENABLE, TRUE);
 		function_0222d0(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
@@ -253,7 +246,8 @@ void function_15370(short mode)
 		function_0222d0(D3DRS_STENCILREF, 2);
 		function_0222d0(D3DRS_STENCILMASK, 1);
 		function_0222d0(D3DRS_STENCILWRITEMASK, 2);
-		break;
+		g_467010 = mode;
+		return;
 	case 6:
 		function_0222d0(D3DRS_STENCILENABLE, TRUE);
 		function_0222d0(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
@@ -263,7 +257,8 @@ void function_15370(short mode)
 		function_0222d0(D3DRS_STENCILREF, 0);
 		function_0222d0(D3DRS_STENCILMASK, 3);
 		function_0222d0(D3DRS_STENCILWRITEMASK, 0);
-		break;
+		g_467010 = mode;
+		return;
 	}
 	g_467010 = mode;
 }

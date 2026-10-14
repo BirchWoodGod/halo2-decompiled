@@ -413,6 +413,25 @@ bool function_256790(long prop_ref_index)
 	return result;
 }
 
+struct s_prop_ref_iterator_256810
+{
+	long next_index;
+	long index;
+};
+
+static inline s_prop_datum *prop_ref_iterator_next_256810(s_prop_ref_iterator_256810 *iterator)
+{
+	s_prop_datum *prop_ref = 0;
+
+	if (iterator->next_index != NONE)
+	{
+		prop_ref = prop_ref_get(iterator->next_index);
+		iterator->index = iterator->next_index;
+		iterator->next_index = prop_ref->next_index;
+	}
+	return prop_ref;
+}
+
 // @retail 0x256810
 short __stdcall function_256810(long actor_index, s_slot *slot)
 {
@@ -422,16 +441,17 @@ short __stdcall function_256810(long actor_index, s_slot *slot)
 		short front;
 		s_actor_view *actor = actor_get(actor_index);
 		real best_distance = 3.4028235e38f;
-		long prop_ref_index = actor->first_prop_index;
+		s_prop_ref_iterator_256810 prop_iterator;
+		s_prop_datum *prop_ref;
 
-		while (prop_ref_index != NONE)
+		prop_iterator.next_index = actor->first_prop_index;
+		prop_iterator.index = NONE;
+		while ((prop_ref = prop_ref_iterator_next_256810(&prop_iterator)) != 0)
 		{
-			s_prop_datum *prop_ref = prop_ref_get(prop_ref_index);
-			long index = prop_ref_index;
+			long index = prop_iterator.index;
 			s_object_marker markers[1];
 			bool facing;
 
-			prop_ref_index = prop_ref->next_index;
 			if (function_256790(index) && !prop_get(prop_ref->prop_index)->unknown36 &&
 				function_2566c0(markers, prop_ref->object_index, &facing))
 			{
@@ -456,11 +476,12 @@ short __stdcall function_256810(long actor_index, s_slot *slot)
 			s_ai_object_iterator iterator;
 			s_handler_object_view *object;
 			point3f origin;
-			long best_object_index = NONE;
+			long best_object_index;
 			real nearest = 3.4028235e38f;
 
 			iterator.next_index = perception_get(((s_handler_actor_view *)actor)->perception_index)->object_index;
 			function_b9dd0(prop_ref->object_index, &origin);
+			best_object_index = NONE;
 			while ((object = function_290c80(&iterator)) != NULL)
 			{
 				s_object_ai_256810_view *data;
