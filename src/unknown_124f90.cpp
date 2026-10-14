@@ -2885,7 +2885,7 @@ void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f
 
 struct s_animation_state;
 struct s_animation_ref;
-void function_219310(s_animation_state *state, s_animation_ref *ref, byte value);
+void function_219310(s_animation_state *state, s_animation_ref *ref, short value);
 long function_2193d0(s_animation_state *state, s_animation_ref *ref);
 
 // @retail 0x1282d0
