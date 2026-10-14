@@ -983,6 +983,7 @@ void __stdcall function_2cbc0(bool enabled)
 // @retail 0x3f2c0
 void function_3f2c0(s_planar_camera_source const *source, byte const *view, long object_index, long identifier)
 {
+	volatile long context = identifier;
 	byte camera[0x1b4];
 	real offset = 0.0f;
 	function_441b0(source, (s_planar_camera *)camera, view);

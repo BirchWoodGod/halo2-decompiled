@@ -2286,8 +2286,11 @@ bool function_1e4e0(point3f const *position, t_1e4e0_callback callback, void con
 
 void __stdcall function_35b00(void *payload);
 
-// @retail 0x1e5e0
-bool function_1e5e0(point3f const *position, long size, long a, long b, long c,
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
+// @retail 0x1e5e0 standard
+bool function_1e5e0(long size, point3f const *position, long a, long b, long c,
 	long d, long e, long f, long g, void const *data)
 {
 	(void)&a; (void)&b; (void)&c; (void)&d;
@@ -2312,15 +2315,15 @@ bool function_1e5e0(point3f const *position, long size, long a, long b, long c,
 		record->flags = 0;
 		record->callback = function_35b00;
 		vector3f delta;
-		delta.k = position->z - g_485618.position.z;
-		delta.j = position->y - g_485618.position.y;
 		delta.i = position->x - g_485618.position.x;
-		real depth = g_485618.forward.k * delta.k;
-		depth += g_485618.forward.j * delta.j;
-		depth += g_485618.forward.i * delta.i;
+		delta.j = position->y - g_485618.position.y;
+		delta.k = position->z - g_485618.position.z;
+		real depth = (real)(g_485618.forward.k * delta.k) + (real)(g_485618.forward.j * delta.j) + (real)(g_485618.forward.i * delta.i);
 		record->depth = 0.0f - depth;
 		record->position = *position;
+		_ReadWriteBarrier();
 		result = true;
+		_ReadWriteBarrier();
 	}
 	else if (g_4b6280.available)
 		g_4b6280.available = false;
@@ -4826,6 +4829,7 @@ void function_4b2d0(long tag, long first, long second, long third, long fourth)
 {
     (void)&third; (void)&fourth;
     long selected = tag == NONE ? *(long *)(g_485a80 + 0xd0) : tag;
+    long first_offset = first * 10;
     dword group = ((dword *)g_4e3b44)[(short)tag * 4];
     byte const *parameters;
     if (group == 0x5052544d || group == 0x70727433)
@@ -4833,7 +4837,7 @@ void function_4b2d0(long tag, long first, long second, long third, long fourth)
     else parameters = *(byte **)(g_4e3b44[tag & 0xffff].bytes + 0x24);
     byte *definition = g_4e3b44[*(long const *)parameters & 0xffff].bytes;
     byte *tables = *(byte **)(definition + 0x5c);
-    byte *entry = *(byte **)(tables + 4) + first * 10;
+    byte *entry = *(byte **)(tables + 4) + first_offset;
     word range = ((word *)*(byte **)(tables + 0xc))[(*(word *)entry & 0x1ff) + second];
     byte *pass = *(byte **)(tables + 0x14) + ((range & 0x1ff) + fourth) * 10;
     byte *pass_definition = g_4e3b44[*(long *)(pass + 4) & 0xffff].bytes;
