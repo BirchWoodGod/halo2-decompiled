@@ -570,12 +570,12 @@ bool __stdcall function_261ec0(long actor_index, long squad_index, s_261d20_entr
             result = recursive_result;
             return recursive_result;
         }
-        result = true;
         s_actor_view *actor = actor_get(*actor_reference);
         s_candidate_range_list *list = *(volatile byte *)(squad + 0x60) ? (s_candidate_range_list *)(definition + 0x5c) : (s_candidate_range_list *)(definition + 0x54);
+        result = true;
         short flags = *((bool *)actor + 0x3f2) ? 6 : 4;
         if (!*search_reference || !*((bool *)*search_reference + 0x69c)) flags |= 1;
-        if ((flags & 4) && !(flags & 1))
+        if (!(flags & 1) && (flags & 4))
         {
             short index;
             for (index = 0; index < list->count; ++index)
