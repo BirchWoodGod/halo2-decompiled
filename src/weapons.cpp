@@ -3641,7 +3641,7 @@ bool function_16a7c0(point3f const *from, point3f const *to, long ignore_object_
     long ignore_unit_index, point3f *clipped);
 bool function_106400(long object_index, bool flag);
 bool function_106320(s_entry_pair *pair);
-void function_1a4c00(long player_index, s_entry_pair *pair, bool primary, vector3f *direction, point3f *point);
+bool function_1a4c00(long player_index, s_entry_pair *pair, bool primary, vector3f *direction, point3f *point);
 bool function_1fddd0(long actor_index, point3f const *origin, vector3f *direction,
     long *out_index, real *spread, long *out_object);
 short function_15cca0(long player_index, byte code);

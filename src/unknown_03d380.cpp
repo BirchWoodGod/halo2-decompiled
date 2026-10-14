@@ -563,22 +563,23 @@ void __stdcall function_188ac0(dword flags)
 	{
 		s_element_18 *element = ELEMENT(array, s_element_18, datum);
 
-		s_element_18_flags flags5 = element->flags;
-
 		if (element->state == 2)
 			record_pool_release(array, datum);
-		else if (flags5.flag5)
+		else
 		{
-			long value = element->value;
-
-			if (!(function_18d360(value) && a))
+			register word flags5 = *(word const *)&element->flags;
+			if ((bool)((flags5 >> 5) & 1))
 			{
-				if (flags5.flag6 || (*(byte *)g_4e3b44[value & 0xffff].flags & 2))
-					record_pool_release(array, datum);
-				else
+				long value = element->value;
+				if (!(function_18d360(value) && a))
 				{
-					function_18d290(datum, value);
-					array = g_4ed28c;
+					if ((bool)((flags5 >> 6) & 1) || (*(byte *)g_4e3b44[value & 0xffff].flags & 2))
+						record_pool_release(array, datum);
+					else
+					{
+						function_18d290(datum, value);
+						array = g_4ed28c;
+					}
 				}
 			}
 		}

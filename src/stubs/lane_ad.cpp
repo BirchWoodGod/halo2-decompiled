@@ -7,9 +7,6 @@ struct s_effect_color_query;
 
 
 
-struct s_entry_pair;
-// @stub 0x1a4c00
-void function_1a4c00(long player_index, s_entry_pair *pair, bool primary, vector3f *direction, point3f *point) {}
 
 struct s_collision_result_1697c0;
 

@@ -26,7 +26,7 @@ dword friend_get_flags(XUID const *xuid);
 
 #include <wchar.h>
 struct s_screen_view_2b39;
-long function_2b3923(s_screen_view_2b39 *screen);
+inline __declspec(noinline) long function_2b3923(s_screen_view_2b39 *screen);
 struct s_name_buffer;
 void function_08cc20(s_name_buffer *buffer, wchar_t const *name);
 bool network_session_interface_has_user(XUID const *xuid);
@@ -85,10 +85,10 @@ void c_y_menu_recent_players_list::v20(c_class_1a2c81 *item, long index)
         bool unavailable = !has_voice || (player != NONE ? voice_port_flag1(player) : false);
         bool muted = player != NONE && local_player != NONE ? voice_test_unknownF0(local_player, player) : false;
         bool speaking = player != NONE ? function_53750(player) : false;
-        bool invitation = (friend_flags >> 5) & 1;
         bool blocked = false;
         bool active = false;
         bool joinable = false;
+        bool invitation = (friend_flags >> 5) & 1;
         if (in_session)
         {
             active = function_19acc6(xuid);

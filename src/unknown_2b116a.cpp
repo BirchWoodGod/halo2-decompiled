@@ -459,8 +459,10 @@ struct s_screen_view_2b39
 	byte item[4];
 };
 
+inline __declspec(noinline) long function_2b3923(s_screen_view_2b39 *screen);
+
 // @retail 0x2b3923
-long function_2b3923(s_screen_view_2b39 *screen)
+inline long function_2b3923(s_screen_view_2b39 *screen)
 {
 	void *item = screen->item;
 
@@ -719,8 +721,6 @@ void __stdcall function_2acab4(long a, long user_flags, long string_handle, bool
 void function_120d50(bool volatile *done, bool idle);
 long __stdcall function_2b186e(c_campaign_options_list *list, long unused, real *fraction, long *error);
 
-extern long g_54e7c0;
-extern long g_54e7c4;
 extern bool g_54e7cc;
 
 // @retail 0x2b14dc
