@@ -2163,15 +2163,15 @@ void function_34d90(long target, real const *weights, short blend, dword color_w
     if (!(full_surface))
     {
         bounds[0] = (real)g_4b9dd2;
-        bounds[1] = (real)g_4b9dd6;
         bounds[2] = (real)g_4b9dd0;
+        bounds[1] = (real)g_4b9dd6;
         bounds[3] = (real)g_4b9dd4;
     }
     else
     {
         bounds[0] = 0.0f;
-        bounds[1] = (real)width;
         bounds[2] = 0.0f;
+        bounds[1] = (real)width;
         bounds[3] = (real)height;
     }
     real inverse_x = 1.0f / width;
@@ -2179,12 +2179,36 @@ void function_34d90(long target, real const *weights, short blend, dword color_w
     s_34a90_parameters parameters;
     parameters.depth = depth >= 0.0f ? depth : 0.0f - depth;
     parameters.distortion = 0.0f;
-    for (long i = 0; i < 4; ++i)
     {
-        parameters.offsets[i].x = 0.0f;
-        parameters.offsets[i].y = 0.0f;
+        long i = 0;
         parameters.scales[i].x = g_485af4[i] * inverse_x;
         parameters.scales[i].y = g_485b04[i] * inverse_y;
+        parameters.offsets[i].x = 0.0f;
+        parameters.offsets[i].y = 0.0f;
+        parameters.weights[i] = weights[i];
+    }
+    {
+        long i = 1;
+        parameters.scales[i].x = g_485af4[i] * inverse_x;
+        parameters.scales[i].y = g_485b04[i] * inverse_y;
+        parameters.offsets[i].x = 0.0f;
+        parameters.offsets[i].y = 0.0f;
+        parameters.weights[i] = weights[i];
+    }
+    {
+        long i = 2;
+        parameters.scales[i].x = g_485af4[i] * inverse_x;
+        parameters.scales[i].y = g_485b04[i] * inverse_y;
+        parameters.offsets[i].x = 0.0f;
+        parameters.offsets[i].y = 0.0f;
+        parameters.weights[i] = weights[i];
+    }
+    {
+        long i = 3;
+        parameters.scales[i].x = g_485af4[i] * inverse_x;
+        parameters.scales[i].y = g_485b04[i] * inverse_y;
+        parameters.offsets[i].x = 0.0f;
+        parameters.offsets[i].y = 0.0f;
         parameters.weights[i] = weights[i];
     }
     parameters.low = low;
@@ -2192,8 +2216,8 @@ void function_34d90(long target, real const *weights, short blend, dword color_w
     parameters.scale = 1.0f;
     parameters.count = 4;
     configure_34a90_state(target, blend, color_write, use_depth, depth_write, depth);
-    if (!vertex) vertex = (t_34770_vertex)function_34100;
-    function_34770(NULL, bounds, vertex, NULL, 20, 30, (long)&parameters);
+    t_34770_vertex chosen = vertex ? vertex : (t_34770_vertex)function_34100;
+    function_34770(NULL, bounds, chosen, NULL, 20, 30, (long)&parameters);
 }
 
 struct s_245c0_state

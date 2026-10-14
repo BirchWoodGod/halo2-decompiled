@@ -1218,9 +1218,9 @@ bool __stdcall function_110ab0(long unit_index)
 	long overlay = control->channel_9c.unknown08;
 	long name = state->unknown7c;
 	long controlling = unit->field_13c;
-	bool result = false;
+	volatile bool result = false;
 	bool depleted = false;
-	bool interruptible = false;
+	volatile bool interruptible = false;
 	if (controlling != NONE)
 	{
 		long first = held_object_110ab0(unit_index, *(char *)((byte *)UNIT_ANIMATION_OBJECT(unit_index) + 0x212));
@@ -1232,7 +1232,7 @@ bool __stdcall function_110ab0(long unit_index)
 		if (*(byte *)((byte *)state + 0x14) & 0x10)
 			interruptible = true;
 	}
-	if (function_c70b0(unit_index))
+	if (function_c70b0(*(long const volatile *)unit_reference))
 		result = true;
 	else
 	{
