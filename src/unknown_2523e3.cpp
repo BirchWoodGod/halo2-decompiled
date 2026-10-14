@@ -54,12 +54,13 @@ void c_4way_signin_screen::v3()
         long profile_index;
         if (signed_in)
         {
+            s_widget_item *item = &items[controller];
             player_slot_get_profile(controller, &profile, &profile_index);
             appearance = &profile.data[0x46];
-            items[controller].flags |= 2;
-            memcpy(items[controller].value48, appearance, 16);
-            items[controller].flags |= 1;
-            items[controller].value4 = (long)&profile.data[2];
+            item->flags |= 2;
+            memcpy(item->value48, appearance, 16);
+            item->flags |= 1;
+            item->value4 = (long)&profile.data[2];
         }
         long name, connection, warning, live0, live1, live2, model0, model1, active_bitmap, missing_bitmap;
         switch (controller)

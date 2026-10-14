@@ -228,7 +228,7 @@ bool function_1f3540(long actor_index, vector3f *normal)
 			actor->unknown605 = false;
 			actor->unknown61c = 0;
 		}
-		else
+		if (result)
 		{
 			*normal = actor->unknown608.n;
 			if (actor->unknown61c > 0)

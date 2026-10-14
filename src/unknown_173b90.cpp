@@ -950,7 +950,7 @@ typedef void (__stdcall *t_1e4e0_callback)(void *);
 bool function_1e4e0(point3f const *, t_1e4e0_callback, void const *, long);
 struct s_sort_record;
 typedef bool (__stdcall *t_record_fill)(long, void *, long, long, long, void *, s_sort_record *);
-void function_40e30(short, long, real, long, word, dword, dword, t_record_fill, dword, void *);
+void function_40e30(short, long, real, long, short, dword, dword, t_record_fill, dword, void *);
 
 /* the particle system definition's flags byte at 0x16, as 0x174420 tests it */
 struct s_definition_flags_174420

@@ -93,18 +93,15 @@ void function_220790(s_sound_listener const *listener);
 bool sound_driver_voice_create_buffer(long voice_index);
 void function_221490(LPDIRECTSOUNDBUFFER *buffer_reference);
 
-#pragma inline_depth(0)
 // @retail 0x21e4b0
 bool function_21e4b0(s_sound_driver_counts const *counts)
 {
-	byte *top = (byte *)(g_510800_pool_base + g_510804_pool_size);
+	byte *top = (byte *)(g_510804_pool_size + g_510800_pool_base);
 	byte *memory = (byte *)(((dword)top + 3) & ~3);
 	long allocated_size = (memory - top) + sizeof(s_sound_driver_globals);
 	bool result = false;
 	g_510804_pool_size += allocated_size;
-	dword checksum = g_510808_pool_checksum;
-	function_163ba0(&checksum, &allocated_size, sizeof(allocated_size));
-	g_510808_pool_checksum = checksum;
+	function_163ba0(&g_510808_pool_checksum, &allocated_size, sizeof(allocated_size));
 	memset(memory, 0, sizeof(s_sound_driver_globals));
 	g_51ebe4 = (s_bink_sound_settings *)memory;
 	SOUND_DRIVER_GLOBALS->unknown0000 = false;
@@ -164,18 +161,18 @@ bool function_21e4b0(s_sound_driver_counts const *counts)
 					long mixbin = SOUND_DRIVER_GLOBALS->effect_mixbins[send];
 					LPDIRECTSOUNDBUFFER *buffer = &SOUND_DRIVER_GLOBALS->effect_buffers_a[send];
 					LPDIRECTSOUNDBUFFER *spatial_buffer = &SOUND_DRIVER_GLOBALS->effect_buffers_b[send];
-					union { DSBUFFERDESC field_0; DSBUFFERDESC field_0_1; } local_0;
-					memset(&local_0.field_0, 0, sizeof(DSBUFFERDESC));
-					local_0.field_0.dwSize = sizeof(local_0.field_0);
-					local_0.field_0.dwFlags = DSBCAPS_FXIN2;
-					local_0.field_0.dwInputMixBin = mixbin;
-					if (SUCCEEDED(SOUND_DRIVER_GLOBALS->direct_sound->CreateSoundBuffer(&local_0.field_0, buffer, NULL)))
+					DSBUFFERDESC local_0;
+					memset(&local_0, 0, sizeof(DSBUFFERDESC));
+					local_0.dwSize = sizeof(local_0);
+					local_0.dwFlags = DSBCAPS_FXIN2;
+					local_0.dwInputMixBin = mixbin;
+					if (SUCCEEDED(SOUND_DRIVER_GLOBALS->direct_sound->CreateSoundBuffer(&local_0, buffer, NULL)))
 						(*buffer)->Play(0, 0, 0);
-					memset(&local_0.field_0_1, 0, sizeof(DSBUFFERDESC));
-					local_0.field_0_1.dwSize = sizeof(local_0.field_0_1);
-					local_0.field_0_1.dwFlags = DSBCAPS_FXIN2 | DSBCAPS_CTRL3D;
-					local_0.field_0_1.dwInputMixBin = mixbin;
-					if (SUCCEEDED(SOUND_DRIVER_GLOBALS->direct_sound->CreateSoundBuffer(&local_0.field_0_1, spatial_buffer, NULL)))
+					memset(&local_0, 0, sizeof(DSBUFFERDESC));
+					local_0.dwSize = sizeof(local_0);
+					local_0.dwFlags = DSBCAPS_FXIN2 | DSBCAPS_CTRL3D;
+					local_0.dwInputMixBin = mixbin;
+					if (SUCCEEDED(SOUND_DRIVER_GLOBALS->direct_sound->CreateSoundBuffer(&local_0, spatial_buffer, NULL)))
 					{
 						(*spatial_buffer)->SetMaxDistance(FLT_MAX, DS3D_DEFERRED);
 						(*spatial_buffer)->SetMinDistance(FLT_MAX, DS3D_DEFERRED);
@@ -228,4 +225,3 @@ bool function_21e4b0(s_sound_driver_counts const *counts)
 		function_21eae0();
 	return result;
 }
-#pragma inline_depth(8)
