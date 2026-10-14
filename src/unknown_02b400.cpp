@@ -302,10 +302,10 @@ double __stdcall function_2b480(real value)
 }
 
 /* Preserve the retail call boundary used by 0x2c2a70. */
-__declspec(noinline) real normalize2d(point2f *v);
+__declspec(noinline) inline real normalize2d(point2f *v);
 
 // @retail 0x2b400
-real normalize2d(point2f *v)
+inline real normalize2d(point2f *v)
 {
 	real m = (real)sqrt(v->x * v->x + v->y * v->y);
 	if (!(fabs(m) < k_real_epsilon))

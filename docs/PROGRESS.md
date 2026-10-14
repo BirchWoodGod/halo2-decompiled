@@ -2,6 +2,18 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8508 functions match
+
+```
+matched 8508 of 11318 game functions (1102954 of 2784283 bytes, 39.61%)
+```
+
+14 new matches, none lost:
+- Machine 3 batch 13 (#445): `0x126360`, `0x126df0`, `0x1c6010`, `0x1dd290`, `0x200ee0`, `0x240160` and `0x2580c0`, and through an `inline` on normalize2d `0xede60`, `0x1be6e0` and `0x1c0a30`
+- Machine 3 Opus lane P round 23 (#442): `0x13f700` (a behaviour fix to its kerning call) and `0x13bb40`
+- Machine 3 Codex deep lane 1 round 56 (#443): `0x191420`
+- Machine 3 Codex lane Y round 22 (#444): `0x927b0`
+
 ## 2026-10-14: 8494 functions match
 
 ```
