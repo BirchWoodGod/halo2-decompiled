@@ -202,31 +202,26 @@ void function_20ad40(s_anim_data *data, vector3f *a, vector3f *b, long index)
 // @retail 0x20adf0
 void function_20adf0(s_anim_data *data, byte *dest)
 {
-	s_anim_header *h;
-	byte *src;
-	long n;
-	long i;
-
-	h = data->header;
-	if (h->unknown1)
+	if (data->header->unknown1)
 	{
-		src = data->base + h->unknown6 + h->unknownc + h->unknown0;
-		n = h->unknown1 / 3;
-		for (i = 0; i < n; i++)
+		byte *src = data->base + data->header->unknown6 + data->header->unknownc + data->header->unknown0;
+		long n = data->header->unknown1 / 3;
+
+		for (long i = 0; i < n; i++)
 		{
 			dest[i] |= src[i];
 			dest[i] |= src[n + i];
 			dest[i] |= src[2 * n + i];
 		}
 	}
-	h = data->header;
-	if (h->unknown0)
+	if (data->header->unknown0)
 	{
-		if (h->unknown6)
+		if (data->header->unknown6)
 		{
-			src = data->base + h->unknown6 + h->unknownc;
-			n = h->unknown0 / 3;
-			for (i = 0; i < n; i++)
+			byte *src = data->base + data->header->unknown6 + data->header->unknownc;
+			long n = data->header->unknown0 / 3;
+
+			for (long i = 0; i < n; i++)
 			{
 				dest[i] |= src[i];
 				dest[i] |= src[n + i];
