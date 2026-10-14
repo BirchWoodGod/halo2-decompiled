@@ -16,8 +16,8 @@ PRIVATE __forceinline void function_2123b0(s_game_variant *arg_0, long arg_1)
 {
     memset(arg_0, 0, sizeof(*arg_0));
     wchar_t local_0[0x100];
-    local_0[0] = 0;
     byte *local_1 = (byte *)g_4e034c;
+    local_0[0] = 0;
     if (local_1)
     {
         long local_2 = *(long *)(local_1 + 0x16c);
@@ -174,8 +174,18 @@ long function_212380(long arg_0, long arg_1, byte *arg_2)
         *(long *)(local_4 + 0x88) = 0;
         *(long *)(local_4 + 0xa4) = 0;
         *(long *)(local_4 + 0xb0) = 0;
-        for (long local_5 = 0; local_5 < 12; local_5++)
-            local_4[0xcc + local_5] = 0;
+        local_4[0xcc] = 0;
+        local_4[0xcd] = 0;
+        local_4[0xce] = 0;
+        local_4[0xcf] = 0;
+        local_4[0xd0] = 0;
+        local_4[0xd1] = 0;
+        local_4[0xd2] = 0;
+        local_4[0xd3] = 0;
+        local_4[0xd4] = 0;
+        local_4[0xd5] = 0;
+        local_4[0xd6] = 0;
+        local_4[0xd7] = 0;
         local_4[3] = 0xff;
         *(long *)(local_4 + 0x54) = 0x1e0;
         union
