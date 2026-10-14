@@ -63,8 +63,7 @@ void c_havok_fixed_memory::deallocate_aligned(void *address)
 		{
 			for (long j = i; j < m_count - 1; j++)
 			{
-				((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - j].offset = ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-2 - j].offset;
-				((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - j].size = ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-2 - j].size;
+				((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - j] = ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-2 - j];
 			}
 			m_count--;
 			return;
@@ -121,11 +120,7 @@ void fixed_memory_get_statistics(c_havok_fixed_memory *memory, s_fixed_memory_st
 	}
 	else
 	{
-		statistics->header_size = 0;
-		statistics->allocated_size = 0;
-		statistics->unknown08 = 0;
-		statistics->allocation_count = 0;
-		statistics->unknown10 = 0;
+		memset(statistics, 0, sizeof(*statistics));
 	}
 }
 
