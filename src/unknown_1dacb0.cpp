@@ -534,7 +534,7 @@ PRIVATE __forceinline void graph_resources_request(s_graph_tag *graph, long mode
 }
 
 // @retail 0x1dacb0
-void function_1dacb0(s_graph_tag *graph, c_type_709360 animation_id, real *distance, real *event_distance)
+void function_1dacb0(s_graph_tag *graph, c_type_709360 animation_id, real *event_distance, real *distance)
 {
 	real total = 0.0f;
 	real total_at_event = 0.0f;
@@ -556,7 +556,11 @@ void function_1dacb0(s_graph_tag *graph, c_type_709360 animation_id, real *dista
 			switch (animation->frame_info_type)
 			{
 			case 1:
+				total += *movement++;
+				break;
 			case 2:
+				total += *movement++;
+				break;
 			case 3:
 				total += *movement++;
 				break;
