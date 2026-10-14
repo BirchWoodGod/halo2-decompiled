@@ -205,6 +205,8 @@ struct s_record_source
 
 class c_type_4e7709;
 c_type_4e7709 *function_137bd0(long tag_index);
+extern c_type_4e7709 g_479868;
+extern c_type_4e7709 g_479874;
 
 class c_record_reference_view
 {
@@ -220,6 +222,16 @@ public:
 	virtual void slot8() = 0;
 	virtual void slot9() = 0;
 	virtual long *reference() = 0;
+	virtual void slot11() = 0;
+	virtual void slot12() = 0;
+	virtual void slot13() = 0;
+	virtual void slot14() = 0;
+	virtual void slot15() = 0;
+	virtual void slot16() = 0;
+	virtual void slot17() = 0;
+	virtual void slot18() = 0;
+	virtual void slot19() = 0;
+	virtual void initialize(long tag_index) = 0;
 };
 
 PRIVATE __forceinline byte *record_format_groups(long tag_index)
@@ -613,7 +625,24 @@ bool function_1bf50(long level, long tag, real distance, long *out)
         real threshold = g_485b28[level] * distance;
         for (selected = 0; selected < count; ++selected)
         {
-            byte *entries = *(byte **)(record_format_groups(*tag_pointer) + 4);
+            long *reference;
+            dword kind = *(dword *)g_4e3b44[(short)*tag_pointer].unknown00;
+            if (kind == 0x5052544d || kind == 0x70727433)
+            {
+                c_record_reference_view *provider = 0;
+                switch (kind)
+                {
+                case 0x5052544d: provider = (c_record_reference_view *)&g_479874; break;
+                case 0x70727433: provider = (c_record_reference_view *)&g_479868; break;
+                }
+                if (provider)
+                    provider->initialize(*tag_pointer);
+                reference = provider->reference();
+            }
+            else
+                reference = *(long **)(g_4e3b44[*tag_pointer & 0xffff].bytes + 0x24);
+            byte *groups = *(byte **)(g_4e3b44[*reference & 0xffff].bytes + 0x5c);
+            byte *entries = *(byte **)(groups + 4);
             if (threshold >= *(real *)(entries + selected * 10 + 6))
                 break;
         }
@@ -1554,8 +1583,7 @@ void function_40e30(short group, long tag, real distance, long level, word kind,
     long const *level_reference = &level;
     word const *kind_reference = &kind;
     (void)*kind_reference;
-    bool (*select)(long, long, real, long *) = function_1bf50;
-    if (group != NONE && select(*level_reference, tag, distance, (long *)&distance))
+    if (group != NONE && function_1bf50(*level_reference, tag, distance, (long *)&distance))
         function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
 }
 
