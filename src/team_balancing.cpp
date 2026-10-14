@@ -461,6 +461,7 @@ static __forceinline void function_91fc1(s_balance_team *arg_0, s_balance_party 
         arg_0->flagged_count++;
 }
 
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x91fc0
 bool balance_teams(long team_count, long maximum_team_size, bool flag_parties, long flag_minimum, long flag_maximum,
 	bool use_parties, long player_count, long const *party_indices, long const *weights, bool optimize, long *team_indices)
@@ -494,17 +495,28 @@ bool balance_teams(long team_count, long maximum_team_size, bool flag_parties, l
 	if (!balance_teams_greedy(&problem, team_count, &pool, maximum_team_size))
 		return false;
 
-	s_balance_optimizer optimizer;
+	long optimizer_storage[sizeof(s_balance_optimizer) / sizeof(long)];
+	s_balance_optimizer &optimizer = *(s_balance_optimizer *)optimizer_storage;
+	new (optimizer_storage) s_balance_optimizer;
 	s_balance_solution const *solution = &optimizer.current;
 	if (!optimize || !optimizer.optimize(&problem.solution))
 		solution = &problem.solution;
 	for (long team = 0; team < solution->team_count; team++)
 	{
-		for (long j = 0; j < solution->teams[team].players.count; j++)
+		long j = 0;
+		for (;;)
+		{
+			_ReadWriteBarrier();
+			if (j >= solution->teams[team].players.count)
+				break;
 			team_indices[solution->teams[team].players.players[j].index] = team;
+			++j;
+		}
 	}
 	return true;
 }
+
+#pragma function(_ReadWriteBarrier)
 
 /* balances the players without their weights and returns the difference
    between the largest and the smallest team */

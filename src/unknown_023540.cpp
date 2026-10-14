@@ -1293,9 +1293,11 @@ bool __stdcall function_298f0(long mode, real const *bounds, real const *t, real
                 out[1] = (bounds[3] - bounds[2]) * (1.0f - inverse_y) * 0.5f + out[1] * inverse_y;
                 return true;
             }
-            return mode == 1;
+            if (mode != 1) goto failed;
+            return true;
         }
     default:
+    failed:
         return false;
     }
 }
@@ -1381,7 +1383,7 @@ bool __stdcall function_2b000(void *context)
     return true;
 }
 
-// @retail 0x296c0
+// @retail 0x296c0 standard
 bool __stdcall function_296c0(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1])
@@ -1610,7 +1612,7 @@ bool __stdcall function_251b0(void *context)
 }
 
 
-// @retail 0x29370
+// @retail 0x29370 standard
 bool __stdcall function_29370(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1]) return false;
