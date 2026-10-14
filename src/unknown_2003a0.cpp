@@ -1270,24 +1270,6 @@ bool function_203900(short squad_index, real probability)
 	return result;
 }
 
-PRIVATE __forceinline s_actor_datum *next_active_squad_actor(s_squad_actor_iterator *iterator)
-{
-	s_actor_datum *result = NULL;
-	while (g_4f55d0->active && iterator->next_actor_index != NONE)
-	{
-		long current = iterator->next_actor_index;
-		s_actor_datum *actor = actor_datum_get(current);
-		iterator->actor_index = current;
-		iterator->next_actor_index = actor->next_actor_index;
-		if (*(bool *)((byte *)actor + 9))
-		{
-			result = actor_datum_get(current);
-			break;
-		}
-	}
-	return result;
-}
-
 // @retail 0x203cc0
 void function_203cc0(long squad_index)
 {
@@ -1296,13 +1278,17 @@ void function_203cc0(long squad_index)
 	s_squad_actor_iterator iterator;
 	squad_actor_begin_inline(&iterator, squad_index);
 	s_actor_datum *actor;
-	while ((actor = next_active_squad_actor(&iterator)) != NULL)
+	while ((actor = squad_actor_next_inline(&iterator)) != NULL)
 	{
 		if (*(bool *)((byte *)actor + 9))
 		{
-			*(bool *)((byte *)actor + 9) = false;
-			*(long *)((byte *)actor + 0x10) = g_510c54->game_time;
-			(*(short *)((byte *)g_4f55d0 + 0x36a))--;
+			actor = actor_datum_get(iterator.actor_index);
+			if (*(bool *)((byte *)actor + 9))
+			{
+				*(bool *)((byte *)actor + 9) = false;
+				*(long *)((byte *)actor + 0x10) = g_510c54->game_time;
+				(*(short *)((byte *)g_4f55d0 + 0x36a))--;
+			}
 		}
 	}
 }
