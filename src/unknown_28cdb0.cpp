@@ -481,6 +481,7 @@ void function_28d6f0()
 	}
 }
 
+#pragma optimize("p", on)
 // @retail 0x28d840
 void function_28d840()
 {
@@ -523,3 +524,4 @@ void function_28d840()
 		}
 	}
 }
+#pragma optimize("", on)
