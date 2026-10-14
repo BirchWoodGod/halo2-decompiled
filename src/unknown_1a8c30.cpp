@@ -23,7 +23,7 @@ struct s_1a8c30
 short __stdcall function_1a8c30(long arg_0, s_slot *arg_1)
 {
     s_actor_view *local_0 = (s_actor_view *)(g_4f55f0->data + (arg_0 & 0xffff) * sizeof(s_actor_view));
-    volatile long local_1 = g_46fbe4;
+    volatile short local_1 = g_46fbe4;
     if (local_0->unknown358 == 0 ||
         ((s_prop_node_view *)g_502418->data)[local_0->unknown368 & 0xffff].unknown24 < 1 || local_0->unknown35e)
         return (short)local_1;
@@ -31,13 +31,13 @@ short __stdcall function_1a8c30(long arg_0, s_slot *arg_1)
     if (local_0->unknown398 > local_2 * local_2 || function_1f50e0(arg_0) || local_0->unknown018 == NONE)
         return (short)local_1;
     vector3f local_3;
-    local_3.i = *(real *)((byte *)local_0 + 0x388) - local_0->unknown370.x;
-    local_3.j = *(real *)((byte *)local_0 + 0x38c) - local_0->unknown370.y;
-    local_3.k = *(real *)((byte *)local_0 + 0x390) - local_0->unknown370.z;
-    volatile real local_4 = local_0->unknown36c;
-    real local_15 = function_11e000(&local_0->position, &local_0->unknown370, &local_3);
-    real local_16 = local_4;
-    bool local_5 = local_16 * local_16 > local_15;
+    point3f *local_17 = &local_0->unknown370;
+    local_3.i = *(real *)((byte *)local_0 + 0x388) - local_17->x;
+    local_3.j = *(real *)((byte *)local_0 + 0x38c) - local_17->y;
+    local_3.k = *(real *)((byte *)local_0 + 0x390) - local_17->z;
+    real local_4 = local_0->unknown36c;
+    real local_15 = function_11e000(&local_0->position, local_17, &local_3);
+    bool local_5 = local_4 * local_4 > local_15;
     function_1a8fa0(arg_0, 0.0f, NULL, &local_5, NULL);
     if (local_5)
     {
@@ -47,23 +47,23 @@ short __stdcall function_1a8c30(long arg_0, s_slot *arg_1)
             local_6 *= 1.5f;
         switch (local_0->unknown358)
         {
-        case 1:
-            if (local_6 <= 0.0f && *(short *)((byte *)local_0 + 0x3ac) != NONE &&
-                1.0f > (real)*(short *)((byte *)local_0 + 0x3ac) * g_510c54->rate)
-                local_7 = true;
-            break;
         case 2:
             if (local_6 <= 0.0f && *(short *)((byte *)local_0 + 0x3ac) != NONE &&
                 0.66f > (real)*(short *)((byte *)local_0 + 0x3ac) * g_510c54->rate)
                 local_7 = true;
             break;
-        case 3:
-            if (1.0f > local_6)
-                local_7 = true;
-            break;
         case 4:
             if (local_6 <= 0.0f && *(short *)((byte *)local_0 + 0x3ac) != NONE &&
                 0.66f > (real)*(short *)((byte *)local_0 + 0x3ac) * g_510c54->rate)
+                local_7 = true;
+            break;
+        case 1:
+            if (local_6 <= 0.0f && *(short *)((byte *)local_0 + 0x3ac) != NONE &&
+                1.0f > (real)*(short *)((byte *)local_0 + 0x3ac) * g_510c54->rate)
+                local_7 = true;
+            break;
+        case 3:
+            if (1.0f > local_6)
                 local_7 = true;
             break;
         }
@@ -77,20 +77,19 @@ short __stdcall function_1a8c30(long arg_0, s_slot *arg_1)
             bool local_13 = false;
             switch (local_0->unknown358)
             {
-            case 1:
-                if ((local_12 || local_11) && local_6 <= 0.0f)
-                    local_13 = true;
-                break;
             case 2:
-                if ((local_12 || local_11) && 0.25f > local_6)
-                    local_13 = true;
-                break;
-            case 3:
-                break;
             case 4:
                 if ((local_12 || local_11) && 0.25f > local_6)
                     local_13 = true;
                 break;
+            case 1:
+                if ((local_12 || local_11) && local_6 <= 0.0f)
+                    local_13 = true;
+                break;
+            case 3:
+                break;
+            default:
+                goto local_done;
             }
             if ((local_13 || local_7) && function_1a8a10(&local_10, arg_0, (short)local_8, local_9, 0.0f))
             {
@@ -102,6 +101,7 @@ short __stdcall function_1a8c30(long arg_0, s_slot *arg_1)
             }
         }
     }
+local_done:
     return (short)local_1;
 }
 #pragma inline_depth(255)

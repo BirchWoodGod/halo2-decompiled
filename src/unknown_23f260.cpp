@@ -407,16 +407,16 @@ void function_23f3e0(s_score_display *display, long mode, bool fallback)
 	}
 	if (teams)
 	{
-		for (long team = 2; team < 10; team += 4)
+		for (long team = 0; team < 8; team += 4)
 		{
-			if (score_team_present(team - 2))
-				display->teams[display->team_count++] = (short)(team - 2);
-			if (score_team_present(team - 1))
-				display->teams[display->team_count++] = (short)(team - 1);
 			if (score_team_present(team))
 				display->teams[display->team_count++] = (short)team;
 			if (score_team_present(team + 1))
 				display->teams[display->team_count++] = (short)(team + 1);
+			if (score_team_present(team + 2))
+				display->teams[display->team_count++] = (short)(team + 2);
+			if (score_team_present(team + 3))
+				display->teams[display->team_count++] = (short)(team + 3);
 		}
 		s_score_sort_context team_context;
 		team_context.criteria = criteria;
