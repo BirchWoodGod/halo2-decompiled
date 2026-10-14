@@ -1327,11 +1327,7 @@ bool finish_profile_create_2(c_virtual_keyboard_screen *keyboard)
 	s_player_profile_settings settings;
 	long profile_index = function_1a03a0(keyboard->get_controller_index(), keyboard->string);
 
-	if (!(profile_index != NONE))
-	{
-		function_148ca8(g_55c154, keyboard->user_flags);
-	}
-	else
+	if (profile_index != NONE)
 	{
 		s_screen_parameters parameters;
 
@@ -1340,6 +1336,10 @@ bool finish_profile_create_2(c_virtual_keyboard_screen *keyboard)
 		parameters.field_c = 0;
 		function_149f49((s_message *)&parameters, 0, 0, keyboard->user_flags, 5, 4, (long)function_237713);
 		parameters.load(&parameters);
+	}
+	else
+	{
+		function_148ca8(g_55c154, keyboard->user_flags);
 	}
 	return true;
 }
