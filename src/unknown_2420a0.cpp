@@ -1420,14 +1420,16 @@ long function_242210(point3f const *point)
 	s_object_placement data;
 	long object_index;
 
-	if (ctf_options()->engine_type == 9)
+	long engine_type = ctf_options()->engine_type;
+	c_engine_peer *enabled = g_55e4d0[g_4e9ae8->engine_index];
+	if (engine_type == 9)
 	{
-		if (g_55e4d0[g_4e9ae8->engine_index])
+		if (enabled)
 			definition_index = mp_globals_block()->bomb_definition_index;
 	}
 	else
 	{
-		if (g_55e4d0[g_4e9ae8->engine_index])
+		if (enabled)
 			definition_index = mp_globals_block()->flag_definition_index;
 	}
 
@@ -2429,8 +2431,9 @@ void function_242e00(long player_index, long team)
 
 	game_engine_event_initialize_inline(&event, ctf_options()->engine_type == 9 ? 10 : 3, 5);
 	event.cause_player_index = player_index;
-	event.cause_team = ctf_player_get(player_index)->team;
+	long cause_team = ctf_player_get(player_index)->team;
 	event.effect_team = team;
+	event.cause_team = cause_team;
 	game_engine_event_send_inline(&event);
 }
 #pragma inline_depth(255)

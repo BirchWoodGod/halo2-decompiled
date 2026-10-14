@@ -2498,7 +2498,8 @@ void __stdcall function_fda00(long weapon_index, s_scenario_weapon_view *placeme
 		function_101980(weapon_index, loaded, 0, total);
 	}
 	function_b9b90(weapon_index, TEST_FIELD_BIT(placement->flags.at_rest));
-	*(dword *)((byte *)weapon + 4) |= 0x8000;
+	dword *flags = (dword *)((byte *)weapon + 4);
+	*flags |= 0x8000;
 	weapon->item_flag7 = !TEST_FIELD_BIT(placement->flags.accelerates);
 	if (!TEST_FIELD_BIT(placement->flags.at_rest))
 		*(real *)((byte *)weapon + 0x6c) += 0.05f;
@@ -3641,7 +3642,7 @@ bool function_16a7c0(point3f const *from, point3f const *to, long ignore_object_
     long ignore_unit_index, point3f *clipped);
 bool function_106400(long object_index, bool flag);
 bool function_106320(s_entry_pair *pair);
-void function_1a4c00(long player_index, s_entry_pair *pair, bool primary, vector3f *direction, point3f *point);
+bool function_1a4c00(long player_index, s_entry_pair *pair, bool primary, vector3f *direction, point3f *point);
 bool function_1fddd0(long actor_index, point3f const *origin, vector3f *direction,
     long *out_index, real *spread, long *out_object);
 short function_15cca0(long player_index, byte code);
