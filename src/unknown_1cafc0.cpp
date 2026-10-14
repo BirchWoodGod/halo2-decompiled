@@ -956,47 +956,43 @@ names_store:
 	return result;
 }
 
+bool animation_graph_fits_model(long graph_tag_index, long model_tag_index);
+
 // @retail 0x1cb0d0
 bool s_animation_state::initialize(long graph_tag_index, long model_tag_index, bool flag)
 {
-	if (model_tag_index != NONE)
+	bool result = false;
+	if (model_tag_index == NONE || animation_graph_fits_model(graph_tag_index, model_tag_index))
 	{
-		if (graph_tag_index == NONE)
+		if (flag)
 		{
-			return false;
+			flags |= 2;
 		}
-		if ((short)graph_tag_get(graph_tag_index)->node_count != *(long *)((byte *)graph_tag_get(model_tag_index) + 0x78))
+		else
 		{
-			return false;
+			flags &= ~2;
 		}
+		unknown70 = NONE;
+		unknown7c = NONE;
+		unknown74 = NONE;
+		unknown78 = NONE;
+		this->graph_tag_index = graph_tag_index;
+		channels[0].clear();
+		channels[1].clear();
+		channels[2].clear();
+		animation_set(0x7000001, 0x7000001, 0x7000001, 0x7000001, 0x317, 0x3f);
+		unknown64.unknown1 = 0;
+		unknown64.unknown0 = 0;
+		unknown64.unknown3 = 0;
+		unknown64.unknown2 = 1;
+		unknown60.unknown1 = 0;
+		unknown60.unknown0 = 0;
+		unknown60.unknown3 = 0;
+		unknown6e = 0;
+		unknown80 = 0.0f;
+		result = true;
 	}
-	if (flag)
-	{
-		flags |= 2;
-	}
-	else
-	{
-		flags &= ~2;
-	}
-	unknown70 = NONE;
-	unknown7c = NONE;
-	unknown74 = NONE;
-	unknown78 = NONE;
-	this->graph_tag_index = graph_tag_index;
-	channels[0].clear();
-	channels[1].clear();
-	channels[2].clear();
-	animation_set(0x7000001, 0x7000001, 0x7000001, 0x7000001, 0x317, 0x3f);
-	unknown64.unknown1 = 0;
-	unknown64.unknown0 = 0;
-	unknown64.unknown3 = 0;
-	unknown64.unknown2 = 1;
-	unknown60.unknown1 = 0;
-	unknown60.unknown0 = 0;
-	unknown60.unknown3 = 0;
-	unknown6e = 0;
-	unknown80 = 0.0f;
-	return true;
+	return result;
 }
 
 /* the identity transform (arg_0e6cbc.cpp) */

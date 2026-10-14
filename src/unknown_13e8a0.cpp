@@ -534,7 +534,7 @@ s_text_line_measurement function_13ef40(s_text_iterator *iterator, point2f const
 			}
 			if (header)
 			{
-				real kerning = function_122570(iterator->field_4_3, iterator->character, iterator->previous_character) * scale;
+				real kerning = function_122570(iterator->field_4_3, iterator->previous_character, iterator->character) * scale;
 				real advance = (short)header->unknown00 * scale;
 				real offset = *(short *)header->unknown08 * scale;
 				if (iterator->can_break)
@@ -612,11 +612,11 @@ void function_13f700(box2f const *bounds, box2f const *clip, short first,
 					s_font_character_header *header = font_cache_get_character_header(iterator.font, iterator.character, flags);
 					if (header)
 					{
-						real width = header->width;
-						real height = header->height;
 						real source_x = 0.0f;
 						real source_y = 0.0f;
-						real kerning = function_122570(iterator.field_4_3, iterator.character, iterator.previous_character) * scale;
+						real width = header->width;
+						real height = header->height;
+						real kerning = function_122570(iterator.field_4_3, iterator.previous_character, iterator.character) * scale;
 						real offset = *(short *)header->unknown08 * scale;
 						real x = position->x + offset + kerning;
 						real y = position->y - *(short *)(header->unknown08 + 2) * scale;
