@@ -3116,7 +3116,7 @@ s_type_f4462a const g_44bba4 = { _hs_type_void, 0, function_2a2f80, NULL, 4, { _
 
 long function_10a460(long object_index);
 
-bool function_10a660(long volatile object_index, long animation_name, short frame, long other_object_index, bool volatile a, bool b, long animation_graph_index);
+bool function_10a660(long object_index, long animation_name, short frame, long other_object_index, bool a, bool b, long animation_graph_index);
 
 /* 184: void (scenery, arg_0e6cbc, string_handle) */
 // @retail 0x2a2fd0
