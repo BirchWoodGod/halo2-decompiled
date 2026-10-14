@@ -1133,8 +1133,10 @@ void function_19ca0(byte *state, word const *range)
             function_1b2c0(state, entry[3], entry[2] & 7, 0, (entry[2] >> 3) & 7, values);
             if (*(word const *)entry & 0x800)
                 for (long j = 0; j < 4; ++j) values[j] = (values[j] + 1.0f) * 0.5f;
-            for (long k = 0; k < 4; ++k)
-                values[k] = values[k] < 0.0f ? 0.0f : values[k] > 1.0f ? 1.0f : values[k];
+            values[0] = values[0] < 0.0f ? 0.0f : values[0] > 1.0f ? 1.0f : values[0];
+            values[1] = values[1] < 0.0f ? 0.0f : values[1] > 1.0f ? 1.0f : values[1];
+            values[2] = values[2] < 0.0f ? 0.0f : values[2] > 1.0f ? 1.0f : values[2];
+            values[3] = values[3] < 0.0f ? 0.0f : values[3] > 1.0f ? 1.0f : values[3];
             color4f color;
             color.red = values[0]; color.green = values[1]; color.blue = values[2]; color.alpha = values[3];
             dword value = pack_color4f(&color);
@@ -1155,8 +1157,10 @@ void function_19ca0(byte *state, word const *range)
             function_1b2c0(state, entry[3], entry[2] & 7, 0, (entry[2] >> 3) & 7, values);
             if (*(word const *)entry & 0x800)
                 for (long j = 0; j < 4; ++j) values[j] = (values[j] + 1.0f) * 0.5f;
-            for (long k = 0; k < 4; ++k)
-                values[k] = values[k] < 0.0f ? 0.0f : values[k] > 1.0f ? 1.0f : values[k];
+            values[0] = values[0] < 0.0f ? 0.0f : values[0] > 1.0f ? 1.0f : values[0];
+            values[1] = values[1] < 0.0f ? 0.0f : values[1] > 1.0f ? 1.0f : values[1];
+            values[2] = values[2] < 0.0f ? 0.0f : values[2] > 1.0f ? 1.0f : values[2];
+            values[3] = values[3] < 0.0f ? 0.0f : values[3] > 1.0f ? 1.0f : values[3];
             color4f color;
             color.red = values[0]; color.green = values[1]; color.blue = values[2]; color.alpha = values[3];
             dword value = pack_color4f(&color);
