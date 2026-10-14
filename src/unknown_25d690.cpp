@@ -1308,7 +1308,7 @@ bool function_25ccd0(s_type_5cfb45 *arg_0, long arg_1, short arg_2, s_2640c0 *ar
 	arg_0->position = arg_3->field_c;
 	*(s_location *)((byte *)arg_0 + 0x28) = arg_3->field_24;
 	*(vector3f *)((byte *)arg_0 + 0x1c) = arg_3->field_2c;
-	bool local_6 = false;
+	bool local_6;
 	if (local_3)
 	{
 		function_b8d30(arg_1, 0x40000bd, &local_5.field_1, 1, false);
@@ -1369,6 +1369,7 @@ bool function_25ccd0(s_type_5cfb45 *arg_0, long arg_1, short arg_2, s_2640c0 *ar
 	bool local_11;
 	if (local_4 == NONE)
 	{
+		local_6 = false;
 		local_10 = false;
 		local_11 = !local_9;
 	}
