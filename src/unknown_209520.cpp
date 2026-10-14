@@ -101,7 +101,7 @@ long function_bb760(short index);
 long function_2097c0(long script_index, byte type);
 void function_2099f0(long thread_index, long *result, long expression_index);
 long function_209bc0(short global_index);
-long function_20a290(short type, short value_type, long value);
+long function_20a290(long thread_index, short value_type, short type, long value);
 void function_20a2e0(short global_index);
 
 inline s_hs_thread *hs_thread_get(long thread_index)
@@ -307,13 +307,25 @@ long function_2097c0(long script_index, byte type)
 	return thread_index;
 }
 
+static inline void hs_thread_stack_adjust(long thread_index)
+{
+	s_hs_thread *thread = hs_thread_get(thread_index);
+	s_hs_frame *frame = thread->frame;
+	s_hs_frame *pushed = (s_hs_frame *)((byte *)frame + sizeof(s_hs_frame) + frame->size);
+
+	pushed->next = frame;
+	thread->frame = pushed;
+	pushed->size = 0;
+}
+
 // @retail 0x2099f0
 void function_2099f0(long thread_index, long *result, long expression_index)
 {
 	s_hs_thread *thread = hs_thread_get(thread_index);
 	s_hs_expression *expression = hs_expression_get(expression_index);
+	__assume(result != NULL);
 
-	if (expression->flags & 1)
+	if (hs_expression_get(expression_index)->flags & 1)
 	{
 		if (expression->flags & 4)
 		{
@@ -328,30 +340,24 @@ void function_2099f0(long thread_index, long *result, long expression_index)
 			{
 				type = ((s_hs_scenario_view *)g_4e0350)->globals[global_index & 0x7fff].type;
 			}
-			*result = function_20a290(expression->type, type, function_209bc0(global_index));
+			*result = function_20a290(thread_index, type, expression->type, function_209bc0(global_index));
 		}
 		else
 		{
-			*result = function_20a290(expression->type, expression->value_type, expression->value);
+			*result = function_20a290(thread_index, expression->value_type, expression->type, expression->value);
 		}
 	}
 	else
 	{
-		s_hs_frame *frame;
-
 		thread->frame->result = result;
-		frame = hs_thread_get(thread_index)->frame;
-		s_hs_frame *pushed = (s_hs_frame *)((byte *)frame + sizeof(s_hs_frame) + frame->size);
-		pushed->next = frame;
-		hs_thread_get(thread_index)->frame = pushed;
-		pushed->size = 0;
+		hs_thread_stack_adjust(thread_index);
 		thread->flags |= 1;
 		thread->frame->expression_index = expression_index;
 	}
 }
 
 // @retail 0x20a290
-long function_20a290(short type, short value_type, long value)
+long function_20a290(long thread_index, short value_type, short type, long value)
 {
 	if (value_type != type && value_type != _hs_type_passthrough)
 	{
