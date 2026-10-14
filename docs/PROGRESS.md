@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8527 functions match
+
+```
+matched 8527 of 11318 game functions (1106806 of 2784283 bytes, 39.75%)
+```
+
+10 new matches, none lost:
+- Machine 1 key lane 1 round 5: `0x137d00`, `0x137ca0` and `0x137e40` (new functions), and `0x12b6f0` once `0x2ca00` takes its callback on the stack
+- Machine 1 key lane 2 round 5: `0x137da0`, `0x137d40` and `0x137c20` (new functions)
+- Machine 3 Codex deep lane 4 rounds 11 and 12 (#448, #450), Codex lane B rounds 26 and 27 (#449): `0x30d10`, `0x4dfa0` and `0x1bc4f0`
+
 ## 2026-10-14: 8517 functions match
 
 ```

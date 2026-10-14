@@ -16,14 +16,8 @@ void __cdecl function_2e90a0(s_184251 arg_0)
 }
 
 
-// @stub 0x137d00
-void function_137d00(void) { }
 
 struct s_game_options;
-// @stub 0x137ca0
-void __stdcall function_137ca0(s_game_options const *arg_0) { }
-// @stub 0x137e40
-void function_137e40(void) { }
 
 struct s_1870a0;
 struct s_player_action;
