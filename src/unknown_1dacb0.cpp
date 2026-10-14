@@ -800,19 +800,6 @@ bool function_1dd8f0(s_graph_tag *graph, c_type_709360 animation_id, real_quater
 	return result;
 }
 
-/* the weapon class entry of a mode (inlined copies) */
-inline s_graph_mode_entry *graph_weapon_class_get(s_graph_tag *graph, long mode, long weapon_class)
-{
-	s_graph_mode_entry *result = NULL;
-	s_graph_mode_entry *mode_entry = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&graph->mode_count, mode, 0x14);
-
-	if (mode_entry)
-	{
-		result = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&mode_entry->child_count, weapon_class, 0x14);
-	}
-	return result;
-}
-
 // @retail 0x1dcf20
 bool function_1dcf20(s_graph_tag *graph, s_graph_pair_iterator *iterator)
 {
