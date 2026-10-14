@@ -1020,7 +1020,7 @@ bool function_22af8d(long arg_1, byte const *arg_2);
 struct s_22b8e2;
 void function_22b8e2(s_22b8e2 const *arg_0, long arg_1, color4f const *arg_2);
 void function_22aff1(long arg_1, byte const *arg_2, byte const *arg_3, real const *arg_4);
-void function_22aa16(long arg_1, byte const *arg_2, byte const *arg_3, real const *arg_4);
+void __stdcall function_22aa16(long arg_1, byte const *arg_2, byte const *arg_3, real const *arg_4);
 
 // @retail 0x13a3c6
 bool function_13a3c6(long arg_1, long arg_2, byte const *arg_3, long arg_4)

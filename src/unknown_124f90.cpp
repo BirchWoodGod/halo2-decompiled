@@ -1226,9 +1226,12 @@ long function_127010(short class_index)
 	s_sound_class_fade *fade = &g_502118[class_index];
 	long gain = fade->current;
 
-	if (!TEST_FIELD_BIT(fade->flags & 1))
+	if ((byte)~fade->flags & 1)
 	{
+/* retail calls the class lookup out of line here */
+#pragma inline_depth(0)
 		s_sound_promotion_view *sound_class = (s_sound_promotion_view *)function_221810(class_index);
+#pragma inline_depth(255)
 		s_sound_system_view *sound_system = SOUND_SYSTEM;
 
 		if (sound_system->previous_ambience_index != NONE && sound_system->ambience_index == sound_system->previous_ambience_index)
@@ -1240,22 +1243,21 @@ long function_127010(short class_index)
 			{
 				if (ducking->fade_in_time >= 0.001f)
 				{
-					real t;
-
 					if (ducking->fade_out_time >= 0.001f && ducking->fade_out_time + ducking->hold_time > elapsed)
 					{
 						real inverse = 1.0f / ducking->fade_in_time;
 						real time = sound_system->ambience_fade - elapsed + (elapsed - ducking->hold_time) * inverse * ducking->fade_out_time;
+						real t = 1.0f > time * inverse ? time / ducking->fade_in_time : 1.0f;
 
-						t = 1.0f > time * inverse ? time / ducking->fade_in_time : 1.0f;
+						return decibels_add(gain, decibels_interpolate(0, ducking->gain, t));
 					}
 					else
 					{
 						real time = (sound_system->ambience_fade - elapsed) / ducking->fade_in_time;
+						real t = 1.0f > time ? time : 1.0f;
 
-						t = 1.0f > time ? time : 1.0f;
+						return decibels_add(decibels_interpolate(0, ducking->gain, t), gain);
 					}
-					return decibels_add(gain, decibels_interpolate(0, ducking->gain, t));
 				}
 			}
 			else
