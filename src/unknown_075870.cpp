@@ -126,6 +126,7 @@ long network_observer_find_channel(s_network_observer *observer, long owner, lon
 // @retail 0x75d30
 long network_observer_find_channel_by_machine(s_network_observer *observer, const s_session_machine_address *address, long volatile owner)
 {
+	long result = NONE;
 	for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++)
 	{
 		s_network_observer_channel *channel = &observer->channels[i];
@@ -133,10 +134,13 @@ long network_observer_find_channel_by_machine(s_network_observer *observer, cons
 		{
 			s_session_machine_address machine = *(s_session_machine_address *)((byte *)channel->remote_id + 0xa);
 			if (memcmp(address, &machine, sizeof(machine)) == 0)
-				return i;
+			{
+				result = i;
+				break;
+			}
 		}
 	}
-	return NONE;
+	return result;
 }
 
 // @retail 0x75e40
@@ -1557,29 +1561,40 @@ void function_7a160(s_network_observer *observer, long index)
 
 long function_79560(s_network_observer *observer, long index);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x7a1c0
 long function_7a1c0(s_network_observer *observer, long index)
 {
-	s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)&observer->channels[index];
+	struct s_channel_view
+	{
+		byte prefix[0xa8];
+		s_observer_bandwidth_channel channel;
+	};
+	s_channel_view *slot = (s_channel_view *)((byte *)observer + index * sizeof(s_network_observer_channel));
 	long started = observer->value4f38;
+	_ReadWriteBarrier();
 	if (observer_time_get() - started < *(long *)((byte *)observer->configuration + 0x1a0))
 		return 1;
 	long received = function_79560(observer, index);
 	long tolerance;
-	if (channel->has_callback)
-		tolerance = *(long *)((byte *)observer->configuration + 0x1d8);
-	else
+	if (!slot->channel.has_callback)
 		tolerance = *(long *)((byte *)observer->configuration + 0x1d4);
-	bool acceptable = channel->smoothed_delay - channel->smoothed_interval <= channel->baseline_delay + tolerance;
-	if (channel->smoothed_delay > channel->probe_delay + tolerance)
+	else
+		tolerance = *(long *)((byte *)observer->configuration + 0x1d8);
+	bool acceptable = slot->channel.smoothed_delay - slot->channel.smoothed_interval <= slot->channel.baseline_delay + tolerance;
+	if (slot->channel.smoothed_delay > slot->channel.probe_delay + tolerance)
 		return 2;
-	if (received > channel->probe_received_rate && acceptable)
+	if (received > slot->channel.probe_received_rate && acceptable)
 		return 0;
 	long result = 1;
 	if (!acceptable)
 		function_7a160(observer, index);
 	return result;
 }
+
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x79560
 long function_79560(s_network_observer *observer, long index)
@@ -1925,8 +1940,8 @@ void function_79260(s_network_observer *observer)
 		{
 			long penalized = 0;
 			count = 0;
-			long qualifying = 0;
 			total = 0;
+			long qualifying = 0;
 			for (long index = 0; index < MAXIMUM_OBSERVER_CHANNELS; index++)
 			{
 				s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)&observer->channels[index];

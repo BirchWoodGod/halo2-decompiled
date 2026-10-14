@@ -2,6 +2,39 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8508 functions match
+
+```
+matched 8508 of 11318 game functions (1102954 of 2784283 bytes, 39.61%)
+```
+
+14 new matches, none lost:
+- Machine 3 batch 13 (#445): `0x126360`, `0x126df0`, `0x1c6010`, `0x1dd290`, `0x200ee0`, `0x240160` and `0x2580c0`, and through an `inline` on normalize2d `0xede60`, `0x1be6e0` and `0x1c0a30`
+- Machine 3 Opus lane P round 23 (#442): `0x13f700` (a behaviour fix to its kerning call) and `0x13bb40`
+- Machine 3 Codex deep lane 1 round 56 (#443): `0x191420`
+- Machine 3 Codex lane Y round 22 (#444): `0x927b0`
+
+## 2026-10-14: 8494 functions match
+
+```
+matched 8494 of 11318 game functions (1098574 of 2784283 bytes, 39.46%)
+```
+
+19 new matches, none lost:
+- Machine 1 Opus lane round 19 (blockers handed over between the machines): `0x7ad80` and `0x6c8b0`, their callers `0x23643f`, `0x24b824` and `0x10a3f0`, and twelve functions that follow with no change to their bodies: `0x6e620`, `0x7ad50`, `0x105e80`, `0x10f1e0`, `0x10a1b0`, `0x18f170` and `0x2a2fd0` through `0x2a3170` (six)
+- Machine 3 Codex deep lane 2 round 45 (#440): `0x2a5010`
+- Machine 3 Codex deep lane 3 round 60 (#441): `0x40e30`
+
+## 2026-10-14: 8475 functions match
+
+```
+matched 8475 of 11318 game functions (1096078 of 2784283 bytes, 39.37%)
+```
+
+4 new matches, none lost:
+- Machine 1 key lane 1 round 2 (new functions in their own files): `0xb8a80` and `0xf8190`, with `0xb8a10` following
+- Machine 1 key lane 2 round 2 (new functions in their own files): `0xa9f20`
+
 ## 2026-10-14: 8471 functions match
 
 ```

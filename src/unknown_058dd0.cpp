@@ -1133,6 +1133,7 @@ struct s_player_rating_properties
 
 long __stdcall function_063190(void *summary, long user);
 
+#pragma optimize("s", on)
 // @retail 0x72540
 void function_72540(c_session_state_matchmaking *state)
 {
@@ -1196,7 +1197,8 @@ void function_72540(c_session_state_matchmaking *state)
 			long total = 0;
 			long count = 0;
 			long minimum = 127;
-			for (long i = 0; i < ratings->player_count; i++)
+			long i = 0;
+			if (ratings->player_count > 0) do
 			{
 				long rank = ratings->ranks[i];
 				if (rank != NONE)
@@ -1207,6 +1209,7 @@ void function_72540(c_session_state_matchmaking *state)
 					count++;
 				}
 			}
+			while (++i < ratings->player_count);
 			if (count > 0)
 			{
 				ratings->minimum = minimum;
@@ -1218,6 +1221,7 @@ void function_72540(c_session_state_matchmaking *state)
 		}
 	}
 }
+#pragma optimize("", on)
 
 bool network_session_host_clear_flag49fc(c_class_58d20 *session);
 struct s_member_quality_collection;
@@ -1733,6 +1737,9 @@ long g_55e6fc;
 long online_get_nat_type(void);
 long function_75890(long time);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x70d60
 bool function_70d60(c_session_state_matchmaking *state)
 {
@@ -1754,7 +1761,10 @@ bool function_70d60(c_session_state_matchmaking *state)
 			{
 				bool host = false;
 				if (!state->unknowna7c || function_75890(state->unknowna7c) >= function_75890(state->unknowna68))
+				{
 					host = true;
+					_ReadWriteBarrier();
+				}
 				else
 				{
 					bool restricted = g_network_configuration.flag1ac;
@@ -1786,6 +1796,7 @@ bool function_70d60(c_session_state_matchmaking *state)
 	}
 	return result;
 }
+#pragma function(_ReadWriteBarrier)
 
 struct s_match_player_list
 {
@@ -1876,9 +1887,8 @@ bool c_session_state_start_match::update()
             {
                 if (!unknown18)
                     unknown18 = function_75870();
-                long remaining = 10000 - function_75890(unknown18);
-                if (remaining < 0)
-                    remaining = 0;
+                long remaining_raw = 10000 - function_75890(unknown18);
+                long remaining = ((long)(remaining_raw < 0) - 1) & remaining_raw;
                 network_session_host_become_leader(b);
                 network_session_start_countdown(b, (remaining + 999) / 1000, true, 0, NULL);
                 ready = remaining == 0;
