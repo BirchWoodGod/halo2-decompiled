@@ -157,9 +157,8 @@ __declspec(noinline) long function_1366d0(short width, short height, short depth
 // @retail 0x1366d0
 long function_1366d0(short width, short height, short depth, short format, short alignment, long mipmap_count)
 {
-	long local_1 = *(long volatile *)&mipmap_count;
 	long total = 0;
-	for (short mipmap_index = 0; mipmap_index <= (short)local_1; mipmap_index++)
+	for (short mipmap_index = 0; mipmap_index <= (short)mipmap_count; mipmap_index++)
 	{
 		total += function_136600(width, height, mipmap_index, depth, format, alignment);
 	}

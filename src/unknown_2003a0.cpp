@@ -1270,24 +1270,6 @@ bool function_203900(short squad_index, real probability)
 	return result;
 }
 
-PRIVATE __forceinline s_actor_datum *next_active_squad_actor(s_squad_actor_iterator *iterator)
-{
-	s_actor_datum *result = NULL;
-	while (g_4f55d0->active && iterator->next_actor_index != NONE)
-	{
-		long current = iterator->next_actor_index;
-		s_actor_datum *actor = actor_datum_get(current);
-		iterator->actor_index = current;
-		iterator->next_actor_index = actor->next_actor_index;
-		if (*(bool *)((byte *)actor + 9))
-		{
-			result = actor_datum_get(current);
-			break;
-		}
-	}
-	return result;
-}
-
 // @retail 0x203cc0
 void function_203cc0(long squad_index)
 {
@@ -1296,13 +1278,17 @@ void function_203cc0(long squad_index)
 	s_squad_actor_iterator iterator;
 	squad_actor_begin_inline(&iterator, squad_index);
 	s_actor_datum *actor;
-	while ((actor = next_active_squad_actor(&iterator)) != NULL)
+	while ((actor = squad_actor_next_inline(&iterator)) != NULL)
 	{
 		if (*(bool *)((byte *)actor + 9))
 		{
-			*(bool *)((byte *)actor + 9) = false;
-			*(long *)((byte *)actor + 0x10) = g_510c54->game_time;
-			(*(short *)((byte *)g_4f55d0 + 0x36a))--;
+			actor = actor_datum_get(iterator.actor_index);
+			if (*(bool *)((byte *)actor + 9))
+			{
+				*(bool *)((byte *)actor + 9) = false;
+				*(long *)((byte *)actor + 0x10) = g_510c54->game_time;
+				(*(short *)((byte *)g_4f55d0 + 0x36a))--;
+			}
 		}
 	}
 }
@@ -2013,6 +1999,30 @@ void function_201ea0(void)
 
 PRIVATE __forceinline s_squad_datum *function_201c83(s_squad_record_iterator *arg_0);
 
+PRIVATE __forceinline s_squad_datum *squad_iterator_next_201df0(s_squad_record_iterator *arg_0)
+{
+    s_squad_datum *local_0 = NULL;
+    if (g_4f55d0->active)
+    {
+        s_record_pool *local_1 = arg_0->records.data;
+        long local_2 = data_next_absolute_index_inlined(local_1, arg_0->records.index + 1);
+        if (local_2 != NONE)
+        {
+            local_0 = (s_squad_datum *)(local_1->data + local_1->size * local_2);
+            arg_0->records.index = local_2;
+            arg_0->records.datum_index = (*(short *)local_0 << 16) | local_2;
+        }
+        else
+        {
+            arg_0->records.index = local_1->maximum_count;
+            arg_0->records.datum_index = NONE;
+        }
+        arg_0->squad_index = arg_0->records.datum_index & 0xffff;
+        arg_0->squad = local_0;
+    }
+    return local_0;
+}
+
 // @retail 0x201df0
 void function_201df0(void)
 {
@@ -2022,7 +2032,7 @@ void function_201df0(void)
         local_0.records.data = g_51e9d8;
         local_0.records.index = NONE;
     }
-    while (function_201c83(&local_0))
+    while (squad_iterator_next_201df0(&local_0))
     {
         if (*((byte *)local_0.squad + 3) & 1)
             function_203360(local_0.squad_index);
