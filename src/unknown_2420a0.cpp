@@ -1425,14 +1425,16 @@ long function_242210(point3f const *point)
 	s_object_placement data;
 	long object_index;
 
-	if (ctf_options()->engine_type == 9)
+	long engine_type = ctf_options()->engine_type;
+	c_engine_peer *enabled = g_55e4d0[g_4e9ae8->engine_index];
+	if (engine_type == 9)
 	{
-		if (g_55e4d0[g_4e9ae8->engine_index])
+		if (enabled)
 			definition_index = mp_globals_block()->bomb_definition_index;
 	}
 	else
 	{
-		if (g_55e4d0[g_4e9ae8->engine_index])
+		if (enabled)
 			definition_index = mp_globals_block()->flag_definition_index;
 	}
 
