@@ -66,19 +66,19 @@ static inline s_player_2bd0 *player_get_2bd0(long player_index)
 long function_2bd0b0(long excluded)
 {
 	dword *seed = &g_4e7408->unknown0;
-	short count = g_5092e8;
 	long result = NONE;
 
 	*seed = *seed * 0x19660d + 0x3c6ef35f;
-	short first = (short)(((*seed >> 16) * count) >> 16);
+	short first = (short)(((*seed >> 16) * g_5092e8) >> 16);
 
-	for (short i = 0; i < count; i++)
+	for (short i = 0; i < g_5092e8; i++)
 	{
-		short index = (short)((first + i) % count);
+		short index = (short)((first + i) % g_5092e8);
 
 		if (excluded != g_5092f0[index])
 		{
-			return g_5092f0[index];
+			result = g_5092f0[index];
+			break;
 		}
 	}
 	return result;
