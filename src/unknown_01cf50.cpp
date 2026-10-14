@@ -4859,7 +4859,7 @@ struct s_4ca40_colors;
 void function_4ca00(s_4ca40_colors const *settings, byte const *data, color3f *light, color3f *color);
 vector3f *function_4dd70(vector3f *out, dword packed);
 vector3f *function_4dcd0(vector3f *out, dword packed);
-vector3f *function_4efb0(vector3f *vector);
+inline vector3f *function_4efb0(vector3f *vector);
 point3f *function_3f220(dword first, dword second, dword third, point3f *out);
 vector3f *function_11d000(vector3f const *vector, vector3f *perpendicular);
 void function_141ce0(real first, real second, real third, transform4x3f *out);

@@ -330,7 +330,7 @@ bool __stdcall function_4de20(long tag, long context, long pass, long stage, lon
 	s_geometry_block_info *block = (s_geometry_block_info *)(*(byte **)(table + 0x14) + *(short *)(record + 6) * 0x2c);
 	if (function_12de70((s_geometry_block_info *)(definition + 0x38), 3) && function_12de70(block, 3))
 	{
-		byte index = out->unknown04;
+		dword index = out->unknown04;
 		out->group = 1;
 		out->subkey = 0xffff;
 		out->value0c = handle;
@@ -338,7 +338,10 @@ bool __stdcall function_4de20(long tag, long context, long pass, long stage, lon
 		out->value10 = (dword)material;
 		out->value08 = 1;
 		out->unknown14 = 0;
-		{ final_value = function_4cbb0(*(long *)(material + 0x100), 1) != 0; goto complete; }
+		union { long value; bool ready; } availability;
+		availability.value = function_4cbb0(*(long *)((byte *)out->value10 + 0x100), 1);
+		final_value = availability.ready;
+		goto complete;
 	}
 	{ final_value = false; goto complete; }
 complete:
@@ -1540,8 +1543,9 @@ bool __stdcall function_3c3c0(bool render, bool clear)
         byte *shader = *(byte **)(*(byte **)(g_4e3b44[shader_tag & 0xffff].bytes + 0x20) + 4);
         long shader_index = *(long *)(shader + 0x100);
         dword flags = *(dword *)(shader + 0x118);
+        render = (bool)((flags >> 19) & 1);
         if (flags & 0x100000) function_3bea0();
-        if (flags & 0x80000) function_3bd00(*(real *)(state + 0x84), pack_color3f((color3f const *)(state + 0x58)));
+        if (render) function_3bd00(*(real *)(state + 0x84), pack_color3f((color3f const *)(state + 0x58)));
         if (clear) function_14b60(0x10, 0xffffff, 0.0f, 0);
         byte *geometry = *(byte **)(state + 0xc);
         function_1cbb0(1, 1, shader_index);
