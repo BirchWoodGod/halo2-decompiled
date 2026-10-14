@@ -1561,10 +1561,10 @@ static __forceinline bool function_65341(c_class_58d20 **out)
 // @retail 0x65340
 void function_065340(void)
 {
+	real progress = 0.0f;
 	c_class_58d20 *session = 0;
 	bool found = function_65341(&session);
 	long status = 0;
-	real progress = 0.0f;
 	long variant_index = NONE;
 	if (found && session && SESSION_STATE_IS_LIVE(session->state))
 	{

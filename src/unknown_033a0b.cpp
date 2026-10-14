@@ -137,7 +137,11 @@ void function_33980(long selector, vector3f *out)
 {
 	switch (selector)
 	{
-	case 0: *out = g_485618.forward; return;
+	case 0:
+		out->i = g_485618.forward.i;
+		out->j = g_485618.forward.j;
+		out->k = g_485618.forward.k;
+		return;
 	case 3:
 	case 4:
 	case 21:

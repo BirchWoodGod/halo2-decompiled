@@ -424,32 +424,35 @@ PRIVATE __forceinline void normalize_projection_axis(vector3f *axis)
 // @retail 0x2fd90
 void function_2fd90(s_2f800_view const *view, box2f const *clip, byte *out)
 {
+    byte *const *out_reference = &out;
     s_projection_scalars scalars;
     function_2fb70(view, clip, &scalars);
     vector3f right, up, backward;
-    right.i = view->up.k * view->forward.j - view->up.j * view->forward.k;
-    right.j = view->forward.k * view->up.i - view->up.k * view->forward.i;
-    right.k = view->up.j * view->forward.i - view->forward.j * view->up.i;
-    up.i = view->forward.k * right.j - view->forward.j * right.k;
-    up.j = view->forward.i * right.k - view->forward.k * right.i;
-    up.k = view->forward.j * right.i - view->forward.i * right.j;
-    backward.i = 0.0f - view->forward.i;
-    backward.j = 0.0f - view->forward.j;
-    backward.k = 0.0f - view->forward.k;
+    vector3f const *input_forward = &view->forward;
+    vector3f const *input_up = &view->up;
+    right.i = input_up->k * input_forward->j - input_up->j * input_forward->k;
+    right.j = input_forward->k * input_up->i - input_up->k * input_forward->i;
+    right.k = input_up->j * input_forward->i - input_forward->j * input_up->i;
+    up.i = input_forward->k * right.j - input_forward->j * right.k;
+    up.j = input_forward->i * right.k - input_forward->k * right.i;
+    up.k = input_forward->j * right.i - input_forward->i * right.j;
+    backward.i = 0.0f - input_forward->i;
+    backward.j = 0.0f - input_forward->j;
+    backward.k = 0.0f - input_forward->k;
     normalize_projection_axis(&right);
     normalize_projection_axis(&up);
     normalize_projection_axis(&backward);
-    transform4x3f *camera = (transform4x3f *)(out + 0x34);
+    transform4x3f *camera = (transform4x3f *)((*out_reference) + 0x34);
     camera->forward = right;
     camera->left = up;
     camera->up = backward;
     camera->position = view->position;
     camera->scale = 1.0f;
-    transform4x3f *inverse = (transform4x3f *)out;
+    transform4x3f *inverse = (transform4x3f *)*out_reference;
     function_141590(camera, inverse);
-    memcpy(out + 0x68, &scalars.left, 16);
-    *(real *)(out + 0xb8) = scalars.scale_x * scalars.width * 0.5f;
-    *(real *)(out + 0xbc) = scalars.scale_y * scalars.height * 0.5f;
+    memcpy((*out_reference) + 0x68, &scalars.left, 16);
+    *(real *)((*out_reference) + 0xb8) = scalars.scale_x * scalars.width * 0.5f;
+    *(real *)((*out_reference) + 0xbc) = scalars.scale_y * scalars.height * 0.5f;
     real x, y, z, distance;
     if (view->near_distance == 0.0f)
     {
@@ -479,7 +482,7 @@ void function_2fd90(s_2f800_view const *view, box2f const *clip, byte *out)
         c = 0.0f - c;
         scale = 0.0f - scale;
     }
-    real *matrix = (real *)(out + 0x78);
+    real *matrix = (real *)((*out_reference) + 0x78);
     memset(matrix, 0, 64);
     matrix[0] = scalars.scale_x;
     matrix[5] = scalars.scale_y;
