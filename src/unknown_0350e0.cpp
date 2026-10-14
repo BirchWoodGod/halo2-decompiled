@@ -75,7 +75,8 @@ void __stdcall function_39e50(real step)
     vector3f axis1 = g_485618.up;
     matrix3x3 first, second;
     rotation_from_axis(&axis0, (double)step * 0.5f, &first);
-    rotation_from_axis(&axis1, (double)step * 0.30000001192092896f, &second);
+    axis0 = axis1;
+    rotation_from_axis(&axis0, (double)step * 0.30000001192092896f, &second);
     vector3f forward = g_467104.forward;
     vector3f left = g_467104.left;
     vector3f up = g_467104.up;
