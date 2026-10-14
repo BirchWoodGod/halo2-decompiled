@@ -126,26 +126,29 @@ long function_201010(long object_index, short type_index, short mode, short *sea
 // @retail 0x211830
 bool function_211830(long filter_range, long object_index, long seat_index)
 {
-	long const *seat_reference = &seat_index;
 	bool result = false;
+	long const *seat_reference = &seat_index;
 	long definition_index = object_get(object_index)->tag_index;
 
 	if (filter_range == NONE)
-		return true;
-
-	long first = filter_range & 0xffff;
-	long count = (dword)filter_range >> 16;
-	for (long i = 0; i < count; i++)
 	{
-		s_seat_filter *filter = &((s_scenario_seat_filters_view *)g_4e0350)->seat_filters[first + i];
-
-		if (filter->definition_index == definition_index)
+		result = true;
+	}
+	else
+	{
+		long first = filter_range & 0xffff;
+		long count = (dword)filter_range >> 16;
+		for (long i = 0; i < count; i++)
 		{
-			result = (filter->seats[*seat_reference >> 5] & (1 << (*seat_reference & 0x1f))) != 0;
-			break;
+			s_seat_filter *filter = &((s_scenario_seat_filters_view *)g_4e0350)->seat_filters[first + i];
+
+			if (filter->definition_index == definition_index)
+			{
+				result = (filter->seats[*seat_reference >> 5] & (1 << (*seat_reference & 0x1f))) != 0;
+				break;
+			}
 		}
 	}
-
 	return result;
 }
 
