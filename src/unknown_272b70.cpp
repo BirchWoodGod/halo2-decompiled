@@ -2312,7 +2312,7 @@ void function_276480(long ai_index, short script_index)
 		function_257fa0(iterator.actor_index, script_index, NONE);
 }
 
-long function_257ed0(long thread_index, long actor_index, short script_index);
+long function_257ed0(long actor_index, short script_index, long thread_index);
 bool function_2580c0(short squad_index, short script_index, long *actor_indices, short count);
 
 /* gives every actor an ai index names a command script (257ed0) */
@@ -2323,7 +2323,7 @@ void function_2764c0(long ai_index, short script_index)
 
 	ai_actor_iterator_new(ai_index, &iterator);
 	while (ai_actor_iterator_next(&iterator))
-		function_257ed0(NONE, iterator.actor_index, script_index);
+		function_257ed0(iterator.actor_index, script_index, NONE);
 }
 
 /* gives the first actors two ai indices name a shared command script */

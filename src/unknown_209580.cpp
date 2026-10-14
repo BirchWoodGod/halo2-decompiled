@@ -78,20 +78,19 @@ void function_209310(void)
 		long current_time = g_510c54->game_time;
 		s_record_pool *records = g_4f9384;
 		long index = next_script_record(records, NONE);
-		while (index != NONE)
+		do
 		{
-			long local_0 = index;
-            index &= 0xffff;
-            s_hs_due_thread *thread = (s_hs_due_thread *)(records->data + index * sizeof(s_hs_due_thread));
+			if (index == NONE)
+				break;
+			long absolute_index = index & 0xffff;
+			s_hs_due_thread *thread = (s_hs_due_thread *)(records->data + absolute_index * sizeof(s_hs_due_thread));
 			if (thread->unknown00[2] != 4 && thread->sleep_until >= 0 && thread->sleep_until <= current_time)
 			{
-				function_209850(local_0);
+				function_209850(index);
 				records = g_4f9384;
 			}
-			index = data_datum_index(records, function_16bc00(records, index + 1));
-			if (!g_4f9388)
-				break;
-		}
+			index = data_datum_index(records, function_16bc00(records, absolute_index + 1));
+		} while (g_4f9388);
 		object_lists_garbage_collect();
 	}
 }
