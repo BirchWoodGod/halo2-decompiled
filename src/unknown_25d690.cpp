@@ -968,10 +968,8 @@ bool function_25d610(s_prop_datum *datum)
 {
 	bool result = false;
 	s_prop_type_entry *entry = &g_470f10[datum->type];
-	long local_0 = datum->prop_index & 0xffff;
-	s_type_76cf92 *local_1 = (s_type_76cf92 *)((s_record_pool volatile *)g_50241c)->data;
-	short type = local_1[local_0].unknown04;
-	s_type_76cf92 *prop = &local_1[local_0];
+	s_type_76cf92 *prop = function_25da41(datum->prop_index);
+	short type = prop->unknown04;
 
 	if (type != 1 || (entry->kind && (type != prop->unknown04 || entry->unknown8 >= 2 || prop->unknown25)))
 	{

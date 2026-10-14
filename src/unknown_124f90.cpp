@@ -2644,7 +2644,7 @@ void function_129790(short voice_index, vector3f const *attenuation)
 					parameters.obstruction = PIN(attenuation->k * scale, 0.0f, 1.0f);
 					long decibels = function_2197f0(gain);
 					long base = *(long *)((byte *)function_221810(index) + 0x10);
-					parameters.decibels = *(real *)&decibels + *(real *)&base;
+					parameters.decibels = *(real *)&base + *(real *)&decibels;
 					parameters.obstruction_rate = *(real *)((byte *)function_221810(index) + 0x54) * SOUND_SYSTEM->elapsed_time;
 					parameters.occlusion_rate = *(real *)((byte *)function_221810(index) + 0x58) * SOUND_SYSTEM->elapsed_time;
 				}

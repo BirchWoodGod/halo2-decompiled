@@ -77,14 +77,16 @@ void function_223e70(const word *rgb, S3TC_COLOR *out)
 		word w;
 		byte bytes[4];
 	} u;
-	dword c = *rgb;
+	word w = *rgb;
+	dword c = w;
 	byte b = (byte)(c << 3);
 	b |= b >> 5;
 	u.d = c;
 	u.w >>= 5;
 	byte g = (byte)(u.bytes[0] << 2);
 	g |= g >> 6;
-	byte r = (byte)((u.d >> 6) << 3);
+	byte r = (byte)(u.d >> 6);
+	r <<= 3;
 	r |= r >> 5;
 	u.bytes[0] = b;
 	u.bytes[1] = g;
@@ -146,9 +148,13 @@ void fixup_group_apply(s_fixup_group *group, byte *base)
 	}
 }
 
-PRIVATE inline bool fixup_resource_is_busy(D3DResource *resource)
+PRIVATE inline bool fixup_element_busy_223d80(s_fixup_element *element)
 {
-	return resource->IsBusy() > 0;
+	D3DResource *resource = (D3DResource *)element->trailer;
+	bool busy = false;
+	if (resource)
+		busy = resource->IsBusy() > 0;
+	return busy;
 }
 
 // @retail 0x223d80
@@ -161,14 +167,10 @@ bool fixup_group_has_resource(s_fixup_group *group, byte *base)
 		s_fixup_entry *entry = &group->entries[i];
 		if (entry->offset != NONE && entry->type == 2)
 		{
-			D3DResource *resource = (D3DResource *)fixup_entry_target(entry, base8)->trailer;
-			if (resource)
+			if (fixup_element_busy_223d80(fixup_entry_target(entry, base8)))
 			{
-				if (fixup_resource_is_busy(resource))
-				{
-					result = true;
-					break;
-				}
+				result = true;
+				break;
 			}
 		}
 	}

@@ -92,13 +92,13 @@ c_type_4e7709 *function_137bd0(long tag_index)
 	{
 	case 'prt3':
 		result = &g_479868;
-		result->initialize(tag_index);
 		break;
 	case 'PRTM':
 		result = &g_479874;
-		result->initialize(tag_index);
 		break;
 	}
+	if (result)
+		result->initialize(tag_index);
 	return result;
 }
 
