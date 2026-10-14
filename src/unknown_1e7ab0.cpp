@@ -124,7 +124,7 @@ long function_cbd50(long unit_index, short weapon_index);
 bool function_f42f0(long vehicle_index);
 bool function_15eaf0(void);
 
-PRIVATE inline real request_angle_delta(real angle, real previous)
+PRIVATE __forceinline real request_angle_delta(real angle, real previous)
 {
  real delta = angle - previous;
  if (delta > 3.1415927410125732f) delta -= 6.2831854820251465f;
@@ -173,8 +173,7 @@ bool function_1e7ab0(long local_index, long type)
  s_local_player_state_view *state = &((s_local_player_state_view *)g_51e9c0)[local_index];
  byte *data = (byte *)state;
  volatile bool result = false;
- long player_index = NONE;
- if (local_index != NONE) player_index = g_4e8c20->entries[local_index];
+ long player_index = local_index == NONE ? NONE : g_4e8c20->entries[local_index];
  s_entry_420 *entry = entry_420_get(type);
  if (player_index != NONE && entry &&
   (!(*((byte *)entry + 0x10) & 1) || g_4e6948->state != 2))
@@ -337,8 +336,10 @@ bool function_1e83c0(long local_index, long type)
      }
      else
      {
-      volatile real yaw = request_angle_delta(*(real *)(data + 0x8c), *(real *)(data + 0x1a4));
-      volatile real pitch = *(real *)(data + 0x90) - *(real *)(data + 0x1a8);
+      real yaw = *(real *)(data + 0x8c) - *(real *)(data + 0x1a4);
+      real pitch = *(real *)(data + 0x90) - *(real *)(data + 0x1a8);
+      if (yaw > 3.1415927410125732f) yaw -= 6.2831854820251465f;
+      if (yaw < -3.1415927410125732f) yaw += 6.2831854820251465f;
       if (fabs(yaw) > 0.1745329201221466f || fabs(pitch) > 0.1745329201221466f) result = true;
      }
     }
@@ -372,8 +373,10 @@ bool function_1e83c0(long local_index, long type)
      }
      else
      {
-      volatile real yaw = request_angle_delta(*(real *)(data + 0x8c), *(real *)(data + 0x1a4));
-      volatile real pitch = *(real *)(data + 0x90) - *(real *)(data + 0x1a8);
+      real yaw = *(real *)(data + 0x8c) - *(real *)(data + 0x1a4);
+      real pitch = *(real *)(data + 0x90) - *(real *)(data + 0x1a8);
+      if (yaw > 3.1415927410125732f) yaw -= 6.2831854820251465f;
+      if (yaw < -3.1415927410125732f) yaw += 6.2831854820251465f;
       if (fabs(yaw) > 0.1745329201221466f || fabs(pitch) > 0.1745329201221466f) result = true;
      }
     }
@@ -419,12 +422,12 @@ bool function_1e83c0(long local_index, long type)
    case 15: if (state->timer19a > 0) { result = true; state->timer19a = 0; } break;
    case 18: if (state->timer199 > 0) { result = true; state->timer199 = 0; } break;
    case 0:
-    if (data[0x88] & 4) { state->field_194 &= ~1; result = true; }
+    if (data[0x88] & 4) { result = true; state->field_194 &= ~1; }
     break;
    case 1:
-    if (data[0x88] & 1) { state->field_194 &= ~2; result = true; }
+    if (data[0x88] & 1) { result = true; state->field_194 &= ~2; }
     break;
-   case 31: if (data[0x88] & 4) { state->field_194 &= ~4; result = true; } break;   case 17: if (state->timer198 > 0) { result = true; state->timer198 = 0; } break;
+   case 31: if (data[0x88] & 4) { result = true; state->field_194 &= ~4; } break;   case 17: if (state->timer198 > 0) { result = true; state->timer198 = 0; } break;
    case 30:
     if (g_4e6948->state == 2 && function_15eaf0())
     {

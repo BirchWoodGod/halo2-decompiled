@@ -273,8 +273,8 @@ PRIVATE inline short carrier_component_default_body(s_carrier_component const *c
 // @retail 0x109660
 void function_109660(long object_index, long entry_index)
 {
-	s_carrier_motion *entry = (s_carrier_motion *)&g_5107f0->entries[entry_index];
 	s_carried_object *object = ((s_carried_object_header *)g_4e0300->data)[object_index & 0xffff].object;
+	s_carrier_motion *entry = (s_carrier_motion *)&g_5107f0->entries[entry_index];
 	long component_index = object->component_index;
 	if (component_index != NONE)
 	{

@@ -394,6 +394,7 @@ bool __stdcall function_1ffa30(s_type_c3b527 const *arg_0, long arg_4, long arg_
 bool function_255b10(long arg_0, s_type_c3b527 const *arg_1, long arg_2, bool arg_3)
 {
 	s_actor_view *local_0 = actor_get(arg_0);
+	bool result = false;
 	long local_2 = NONE;
 	point3f local_3;
 	if (arg_1->output_index == NONE || !function_2104b0(arg_1->output_index, &arg_1->point, &local_3))
@@ -410,21 +411,27 @@ bool function_255b10(long arg_0, s_type_c3b527 const *arg_1, long arg_2, bool ar
 	}
 	c_type_709360 local_8 = ((s_graph_tag *)g_4e3b44[local_6->field_68 & 0xffff].bytes)->overlay_get(
 		local_7, local_6->field_74, local_6->field_78, 0xd000021, NULL, NULL, NULL);
-	if ((local_8.index == NONE && !function_10f340(local_4, 0x7000101, 0xd000021)) || local_0->unknown07c == NONE)
-		return false;
-	point2f local_9;
-	local_9.x = local_3.x - local_0->position.x;
-	local_9.y = local_3.y - local_0->position.y;
-	if (!(normalize2d(&local_9) > 0.f &&
-		local_0->unknown290.i * local_9.x + local_0->unknown290.j * local_9.y >= 0.f))
-		return false;
-	byte *local_10 = (byte *)function_1e5380(arg_0);
-	if (!local_10 || !function_1ff6c0(arg_0, arg_2, &local_3, &local_2))
-		return false;
-	short local_11;
-	if (function_255d60(arg_0, &local_3, *(real *)(local_10 + 0xc), *(real *)(local_10 + 0x20), &local_11))
-		return false;
-	return function_1ffa30(arg_1, arg_0, arg_2, local_2, arg_3);
+	if ((local_8.index != NONE || function_10f340(local_4, 0x7000101, 0xd000021)) && local_0->unknown07c != NONE)
+	{
+		point2f local_9;
+		local_9.x = local_3.x - local_0->position.x;
+		local_9.y = local_3.y - local_0->position.y;
+		if (normalize2d(&local_9) > 0.f &&
+			local_0->unknown290.i * local_9.x + local_0->unknown290.j * local_9.y >= 0.f)
+		{
+			byte *local_10 = (byte *)function_1e5380(arg_0);
+			if (local_10 && function_1ff6c0(arg_0, arg_2, &local_3, &local_2))
+			{
+				short local_11;
+				if (!function_255d60(arg_0, &local_3, *(real *)(local_10 + 0xc), *(real *)(local_10 + 0x20), &local_11) &&
+					function_1ffa30(arg_1, arg_0, arg_2, local_2, arg_3))
+				{
+					result = true;
+				}
+			}
+		}
+	}
+	return result;
 }
 
 // @retail 0x255ce0

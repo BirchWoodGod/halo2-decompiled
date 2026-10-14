@@ -267,8 +267,12 @@ extern long g_55c158;
 extern long g_55c15c;
 extern long g_55c280;
 byte g_55c030[0x11c];
-dword g_51e9f8;
-dword g_51e9fc;
+struct s_51e9f8
+{
+    dword field_0;
+    dword field_4;
+};
+s_51e9f8 g_51e9f8;
 
 bool __stdcall function_216440(char const *path);
 long function_11ca80(long language);
@@ -292,8 +296,8 @@ void function_215690(void)
     g_55c274 = true;
     g_55c278 = 0;
     g_55c27c = 0;
-    g_51e9f8 = 0;
-    g_51e9fc = 1;
+    g_51e9f8.field_0 = 0;
+    g_51e9f8.field_4 = 1;
     if (g_47ff38 == NONE)
         g_47ff38 = function_11ca80(XGetLanguage());
     g_55c280 = g_47ff38;

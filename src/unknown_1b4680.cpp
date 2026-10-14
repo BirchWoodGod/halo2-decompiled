@@ -575,6 +575,8 @@ real function_259a0(dword *seed);
 void *function_1e5380(long actor_index);
 bool function_255b10(long actor_index, s_type_c3b527 const *point, long target_index, bool unknown);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1b54d0
 short __stdcall function_1b54d0(long actor_index, s_slot *slot)
 {
@@ -603,6 +605,7 @@ short __stdcall function_1b54d0(long actor_index, s_slot *slot)
                     s_type_c3b527 point;
                     point.point.x = actor->position.x + direction.i * distance;
                     point.point.y = actor->position.y + direction.j * distance;
+                    _ReadWriteBarrier();
                     point.point.z = actor->position.z + direction.k * distance;
                     point.output_index = NONE;
                     function_255b10(actor_index, &point, NONE, false);
@@ -612,3 +615,4 @@ short __stdcall function_1b54d0(long actor_index, s_slot *slot)
     }
     return g_46fbe4;
 }
+#pragma function(_ReadWriteBarrier)

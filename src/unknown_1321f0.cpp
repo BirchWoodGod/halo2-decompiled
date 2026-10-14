@@ -82,15 +82,15 @@ void function_132d60(s_132d60 *data)
 			g_4e7411 = true;
 			count = function_14a5b0(data->cluster_index, &data->point, radius, 0x200, clusters);
 			g_4e7411 = false;
-			if (count > 0x200)
-			{
-				count = 0x200;
-			}
 		}
 		else
 		{
 			count = 1;
 			clusters[0] = data->cluster_index;
+		}
+		if (count > 0x200)
+		{
+			count = 0x200;
 		}
 	}
 
@@ -187,7 +187,7 @@ void function_132a30(s_bit_vector_pool *data, long index, long section_index, bo
 	}
 }
 
-PRIVATE __forceinline double function_132e61(point3f const *arg_1, point3f const *arg_2)
+PRIVATE __forceinline real function_132e61(point3f const *arg_1, point3f const *arg_2)
 {
 	double local_1 = (double)arg_1->x - arg_2->x;
 	double local_2 = (double)arg_1->y - arg_2->y;
@@ -207,17 +207,19 @@ bool function_132e60(s_bit_vector_pool *data, point3f const *center, real radius
 	{
 		if (!visible)
 			result = function_165010((s_frustum_set_view *)data->context, section, center, radius, contained);
+		else
+			result = true;
 		if (result && !*contained && data->mode == 0 && radius <= 2.5f)
 			*contained = true;
 	}
 	else if (data->query_type == 1)
 	{
+		real sum = radius + data->radius;
 		vector3f delta;
 		vector3d_from_points3d(&data->center, center, &delta);
-		real sum = radius + data->radius;
-		if (!(sum * sum >= delta.k * delta.k + delta.i * delta.i + delta.j * delta.j))
-			return false;
-		*contained = function_132e61(&data->center, center) + radius <= data->radius;
+		result = delta.j * delta.j + delta.i * delta.i + delta.k * delta.k <= sum * sum;
+		if (result)
+			*contained = function_132e61(&data->center, center) + radius <= data->radius;
 	}
 	if (result && list && (data->flags2a60 & 1))
 	{
