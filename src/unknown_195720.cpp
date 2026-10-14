@@ -32,9 +32,9 @@ void function_194710(s_bitstream *stream, bool discard)
 	{
 		if (stream->mode == 1 && saved < stream->bit_position)
 		{
+			stream->unknown30++;
 			stream->unknown2c = stream->bit_position - saved;
 			long byte_index = saved / 8;
-			stream->unknown30++;
 			if (byte_index < stream->size_in_bytes)
 				stream->data[byte_index] &= (byte)((1 << (saved % 8)) - 1);
 			long count = stream->size_in_bytes - byte_index - 1;
@@ -89,14 +89,10 @@ PRIVATE __forceinline void vector_basis_cross(vector3f const *v, vector3f const 
 // @retail 0x194870
 real function_194870(vector3f const *v, vector3f *a, vector3f *b)
 {
-	vector3f const *r0 = g_4687a8;
-	vector3f const *r1 = g_4687ac;
-	real d0 = (real)fabs(r0->i * v->i + r0->j * v->j + r0->k * v->k);
-	real d1 = (real)fabs(r1->i * v->i + r1->j * v->j + r1->k * v->k);
-	if (d0 < d1)
-		vector_basis_cross(v, r0, a);
+	if ((real)fabs(g_4687a8->i * v->i + g_4687a8->j * v->j + g_4687a8->k * v->k) < (real)fabs(g_4687ac->i * v->i + g_4687ac->j * v->j + g_4687ac->k * v->k))
+		vector_basis_cross(v, g_4687a8, a);
 	else
-		vector_basis_cross(r1, v, a);
+		vector_basis_cross(g_4687ac, v, a);
 	function_30bf0(a);
 	vector_basis_cross(v, a, b);
 	return function_30bf0(b);
