@@ -2697,6 +2697,7 @@ PRIVATE __forceinline real weapon_activity_value(long weapon_index, s_weapon *we
 // @retail 0xff5f0
 bool __stdcall function_ff5f0(long weapon_index, long name, real *value, bool *active)
 {
+	bool found = true;
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
 	real result = 0.0f;
@@ -2708,11 +2709,11 @@ bool __stdcall function_ff5f0(long weapon_index, long name, real *value, bool *a
 	case 0x05000024: result = function_10cf50(weapon_index) ? 1.0f : 0.0f; break;
 	case 0x05000081: result = *(real *)((byte *)weapon + 0x18c); break;
 	case 0x09000568:
-		if (!function_10cf50(weapon_index) || (*(word *)((byte *)weapon + 0x16c) & 0x20))
+		if (!function_10cf50(weapon_index) || ((bool)(((dword)*(word *)((byte *)weapon + 0x16c) >> 5) & 1)))
 			result = weapon->heat < 1.0f ? 1.0f : 0.0f;
 		break;
 	case 0x0a000066:
-		if ((*(word *)((byte *)weapon + 0x16c) & 2) && *(real *)((byte *)definition + 0x150) != 1.0f)
+		if (((bool)(((dword)*(word *)((byte *)weapon + 0x16c) >> 1) & 1)) && *(real *)((byte *)definition + 0x150) != 1.0f)
 			result = (*(real *)((byte *)weapon + 0x180) - *(real *)((byte *)definition + 0x150)) /
 				(1.0f - *(real *)((byte *)definition + 0x150));
 		break;
@@ -2779,14 +2780,16 @@ bool __stdcall function_ff5f0(long weapon_index, long name, real *value, bool *a
 		if (definition->magazine_count > 0)
 			result = (real)((weapon->magazines[0].rounds_loaded / 10) % 10) * 0.1f;
 		break;
-	default: return false;
+	default: found = false; break;
 	}
+	if (!found) return false;
 	if (result < 0.0f)
 		result = 0.0f;
 	else if (result > 1.0f)
 		result = 1.0f;
 	*value = result;
-	*active = result > 0.0f;
+	if (result > 0.0f) *active = true;
+	else *active = false;
 	return true;
 }
 
