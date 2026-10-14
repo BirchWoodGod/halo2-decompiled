@@ -1793,8 +1793,9 @@ void function_73ca0(byte *results)
 }
 
 bool online_task_service_unavailable(long task_index);
-long online_round_extend(ULONGLONG const *round_key, XNKID const *session_id, word seconds);
+long online_round_extend(XNKID const *session_id, ULONGLONG const *round_key, word seconds);
 
+#pragma optimize("s", on)
 // @retail 0x755d0
 void function_755d0(void)
 {
@@ -1845,8 +1846,8 @@ void function_755d0(void)
             {
                 s_session_id session_id = g_510528;
                 s_session_id round_key = g_510520;
-                long created = online_round_extend((const ULONGLONG *)&round_key,
-                    (const XNKID *)&session_id, (word)g_network_configuration.value374);
+                long created = online_round_extend((const XNKID *)&session_id,
+                    (const ULONGLONG *)&round_key, (word)g_network_configuration.value374);
                 if (created != NONE)
                     g_510538 = created;
             }
@@ -1863,7 +1864,7 @@ void function_755d0(void)
             {
                 if (status != 3 || !online_task_service_unavailable(task))
                     function_73dc0(3);
-                time = query_time_now();
+                time = function_75870();
             }
             g_510534 = time;
             function_6b640(g_510538);
@@ -1871,3 +1872,4 @@ void function_755d0(void)
         }
     }
 }
+#pragma optimize("", on)

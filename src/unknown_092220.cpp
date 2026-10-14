@@ -268,7 +268,7 @@ bool online_task_service_unavailable(long task_index)
 }
 
 // @retail 0x927b0
-long online_round_extend(ULONGLONG const *round_key, XNKID const *session_id, word seconds)
+long online_round_extend(XNKID const *session_id, ULONGLONG const *round_key, word seconds)
 {
 	long task_index = online_task_new_if_logged_on();
 	long local_0 = task_index;
