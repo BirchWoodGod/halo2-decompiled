@@ -290,24 +290,33 @@ s_saved_game_file *saved_game_file_new_from_id(s_saved_game_file *file, long fla
 	return file;
 }
 
+/* creates the saved game's directory on the file's device */
+__forceinline bool saved_game_file_create_directory(const s_saved_game_file *file, const wchar_t *name, char *path)
+{
+	char root[8];
+
+	saved_game_file_get_root(file, root);
+	return XCreateSaveGame(root, name, CREATE_NEW, 0, path, 0x100) == ERROR_SUCCESS;
+}
+
 // @retail 0x2ad020
 bool saved_game_file_copy_create(s_saved_game_file *file)
 {
-	volatile long type = file->flags & 0xf;
-	volatile long result = 0;
-	wchar_t name[0x80];
-	char root[8];
+	bool result = false;
+	long type = file->flags & 0xf;
+	long language = get_current_language();
 	char path[0x100] = { 0 };
+	wchar_t name[0x80];
 	char file_path[0x100];
 	s_saved_game_file_id id;
 	s_type_acf665 s_type_acf665;
-	dword error;
 
 	name[0] = 0;
-	function_216da0(name, type, file->display_name, get_current_language());
-	saved_game_file_get_root(file, root);
-	if (XCreateSaveGame(root, name, CREATE_NEW, 0, path, sizeof(path)) == ERROR_SUCCESS)
+	function_216da0(name, type, file->display_name, language);
+	if (saved_game_file_create_directory(file, name, path))
 	{
+		dword error;
+
 		file_path[0] = 0;
 		function_x91aa57(id.data, path, sizeof(id.data));
 		function_x91aa57(file_path, id.data, sizeof(file_path));
@@ -323,51 +332,43 @@ bool saved_game_file_copy_create(s_saved_game_file *file)
 			function_136bb0(&s_type_acf665);
 		}
 	}
-	return result != 0;
+	return result;
 }
 // @retail 0x2ad380
 bool file_copy_read_chunk(s_saved_game_file *copy)
 {
-	word result = 0;
+	bool result = false;
 	dword offset = copy->read_offset;
-	dword size = copy->size - offset;
+	dword remaining = copy->size - offset;
+	dword size = remaining < FILE_COPY_CHUNK_SIZE ? remaining : FILE_COPY_CHUNK_SIZE;
 	dword bytes;
 
-	if (size >= FILE_COPY_CHUNK_SIZE)
-	{
-		size = FILE_COPY_CHUNK_SIZE;
-	}
 	if (SetFilePointer(copy->source, offset, NULL, FILE_BEGIN) == copy->read_offset)
 	{
 		if (ReadFile(copy->source, copy->buffer, size, &bytes, NULL) && size == bytes)
 		{
+			result = true;
 			copy->read_offset += bytes;
-			result = 1;
 		}
 	}
-	return result != 0;
+	return result;
 }
 
 // @retail 0x2ad400
 bool file_copy_write_chunk(s_saved_game_file *copy)
 {
-	s_saved_game_file *const *copy_reference = &copy;
-	copy = *copy_reference;
 	bool result = false;
 	dword offset = copy->write_offset;
-	dword size = copy->size - offset;
+	dword remaining = copy->size - offset;
+	dword size = remaining < FILE_COPY_CHUNK_SIZE ? remaining : FILE_COPY_CHUNK_SIZE;
 	dword bytes;
 
-	if (size >= FILE_COPY_CHUNK_SIZE)
-	{
-		size = FILE_COPY_CHUNK_SIZE;
-	}
 	if (SetFilePointer(copy->destination, offset, NULL, FILE_BEGIN) == copy->write_offset)
 	{
 		if (WriteFile(copy->destination, copy->buffer, size, &bytes, NULL) && size == bytes)
 		{
-			copy->write_offset += bytes;
 			result = true;
+			copy->write_offset += bytes;
 		}
 	}
 	return result;
@@ -465,6 +466,7 @@ bool saved_game_file_copy_update(s_saved_game_file *file, long *error)
 {
 	bool result = false;
 	bool exists;
+	long type;
 
 	*error = 0;
 	switch (file->copy_state)
@@ -477,7 +479,8 @@ bool saved_game_file_copy_update(s_saved_game_file *file, long *error)
 		break;
 
 	case _saved_game_file_copy_finish:
-		if (function_216f80(file->flags & 0xf, &file->location))
+		type = file->flags & 0xf;
+		if (function_216f80(type, &file->location))
 			file->copy_state = _saved_game_file_copy_open;
 		else
 			*error = 2;
