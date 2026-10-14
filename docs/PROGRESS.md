@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8390 functions match
+
+```
+matched 8390 of 11318 game functions (1075652 of 2784283 bytes, 38.63%)
+```
+
+21 new matches, none lost:
+- Machine 3 batch 9 (#430): 15 functions, among them `0x215730`, `0x218f10`, `0x223d80` and `0x25d610`
+- Deep lane 3 round 55: `0x1df770` (handed over by machine 3) and four near misses it and other handed-over functions had blocked: `0x2a5080`, `0x2a5540`, `0x2a8a50`, `0x2a8aa0`
+- Deep lane 4 round 6: `0x25820`
+
 ## 2026-10-13: 8369 functions match
 
 ```
