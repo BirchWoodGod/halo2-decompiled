@@ -496,23 +496,22 @@ void function_243c00(long slot)
 		if (marker_index != NONE)
 		{
 			long results[8];
-			long count = function_19ec40(0, 0.0f, (short)((g_4e6948->mode_180 == 9) * 2 + 1), (short)slot, (short)(k + 1), 8, results, 0.0f);
+			long key = (g_4e6948->mode_180 == 9) * 2 + 1;
+			long count = function_19ec40(0, 0.0f, (short)key, (short)slot, (short)(k + 1), 8, results, 0.0f);
 			point3f point = g_4e0350->marker_entries[marker_index].position;
-			point3f *bounds_a = &g_51ec80->bounds[0][slot];
-			point3f *bounds_b = &g_51ec80->bounds[1][slot];
 			long j;
 
 			if (k == 0)
 			{
-				bounds_a->x = 0.5f;
-				bounds_a->y = 0.0f;
-				bounds_a->z = 0.0f;
+				g_51ec80->bounds[0][slot].x = 0.5f;
+				g_51ec80->bounds[0][slot].y = 0.0f;
+				g_51ec80->bounds[0][slot].z = 0.0f;
 			}
 			else
 			{
-				bounds_b->x = 0.5f;
-				bounds_b->y = 0.0f;
-				bounds_b->z = 0.0f;
+				g_51ec80->bounds[1][slot].x = 0.5f;
+				g_51ec80->bounds[1][slot].y = 0.0f;
+				g_51ec80->bounds[1][slot].z = 0.0f;
 			}
 
 			for (j = 0; j < count; j++)
@@ -525,33 +524,31 @@ void function_243c00(long slot)
 					real dx = point.x - other_point.x;
 					real dy = point.y - other_point.y;
 					real distance = (real)sqrt(dx * dx + dy * dy);
-					real below = point.z - other_point.z;
-					real above = other_point.z - point.z;
 
 					if (k == 0)
 					{
-						bounds_a->x = distance > bounds_a->x ? distance : bounds_a->x;
-						bounds_a->y = bounds_a->y > below ? bounds_a->y : below;
-						bounds_a->z = bounds_a->z > above ? bounds_a->z : above;
+						g_51ec80->bounds[0][slot].x = distance > g_51ec80->bounds[0][slot].x ? distance : g_51ec80->bounds[0][slot].x;
+						g_51ec80->bounds[0][slot].y = g_51ec80->bounds[0][slot].y > point.z - other_point.z ? g_51ec80->bounds[0][slot].y : point.z - other_point.z;
+						g_51ec80->bounds[0][slot].z = g_51ec80->bounds[0][slot].z > other_point.z - point.z ? g_51ec80->bounds[0][slot].z : other_point.z - point.z;
 					}
 					else
 					{
-						bounds_b->x = distance > bounds_b->x ? distance : bounds_b->x;
-						bounds_b->y = bounds_b->y > below ? bounds_b->y : below;
-						bounds_b->z = bounds_b->z > above ? bounds_b->z : above;
+						g_51ec80->bounds[1][slot].x = distance > g_51ec80->bounds[1][slot].x ? distance : g_51ec80->bounds[1][slot].x;
+						g_51ec80->bounds[1][slot].y = g_51ec80->bounds[1][slot].y > point.z - other_point.z ? g_51ec80->bounds[1][slot].y : point.z - other_point.z;
+						g_51ec80->bounds[1][slot].z = g_51ec80->bounds[1][slot].z > other_point.z - point.z ? g_51ec80->bounds[1][slot].z : other_point.z - point.z;
 					}
 				}
 			}
 
 			if (k == 0)
 			{
-				bounds_a->y += 0.1f;
-				bounds_a->z += 0.9f;
+				g_51ec80->bounds[0][slot].y += 0.1f;
+				g_51ec80->bounds[0][slot].z += 0.9f;
 			}
 			else
 			{
-				bounds_b->y += 0.1f;
-				bounds_b->z += 0.9f;
+				g_51ec80->bounds[1][slot].y += 0.1f;
+				g_51ec80->bounds[1][slot].z += 0.9f;
 			}
 		}
 	}
