@@ -2974,7 +2974,8 @@ void __stdcall function_2a2ce0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_1fb360(arguments[0], *(short *)&arguments[1], 0);
+		long unit = arguments[0];
+		*(bool *)&result = function_1fb360(unit, (word)arguments[1], 0);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -2990,7 +2991,8 @@ void __stdcall function_2a2d40(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_1fb360(arguments[0], *(short *)&arguments[1], 8);
+		long unit = arguments[0];
+		*(bool *)&result = function_1fb360(unit, (word)arguments[1], 8);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -3006,7 +3008,8 @@ void __stdcall function_2a2da0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_1fb360(arguments[0], *(short *)&arguments[1], 0x10);
+		long unit = arguments[0];
+		*(bool *)&result = function_1fb360(unit, (word)arguments[1], 0x10);
 		function_209ae0(thread_index, result);
 	}
 }
