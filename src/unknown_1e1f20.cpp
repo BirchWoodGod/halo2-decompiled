@@ -589,14 +589,18 @@ void __stdcall function_1e1a00(long actor_index, long value)
 {
 	long const *index_reference = &actor_index;
 	long const *value_reference = &value;
-	s_actor_view *actor = actor_get(*index_reference);
+	struct { s_actor_view *actor; s_actor_iterator iterator; } cleanup_state;
+	s_actor_view *&actor = cleanup_state.actor;
+	actor = actor_get(*index_reference);
 	for (short slot_index = 0; slot_index <= actor->current; ++slot_index)
 	{
-		t_slot_proc stop = g_46eeb8[actor->slots[slot_index].type]->stop;
-		if (stop)
-			stop(*index_reference, slot_index < 4 ? &actor->slots[slot_index] : NULL);
+		struct { t_slot_proc stop; s_slot *slot; } dispatch;
+		dispatch.stop = g_46eeb8[actor->slots[slot_index].type]->stop;
+		dispatch.slot = slot_index < 4 ? &actor->slots[slot_index] : NULL;
+		if (dispatch.stop)
+			dispatch.stop(*index_reference, dispatch.slot);
 	}
-	actor->current = NONE;
+	*(word *)&actor->current = 0xffff;
 	function_258600(*index_reference);
 	long memory_index = 0;
 	do
@@ -640,7 +644,7 @@ void __stdcall function_1e1a00(long actor_index, long value)
 		if (*(long *)(prop + 0x1c) == *index_reference)
 			*(long *)(prop + 0x1c) = NONE;
 	}
-	s_actor_iterator iterator;
+	s_actor_iterator &iterator = cleanup_state.iterator;
 	function_x66da2b(&iterator, false);
 	s_actor_view *other;
 	while ((other = (s_actor_view *)function_1e46c0(&iterator)) != NULL)

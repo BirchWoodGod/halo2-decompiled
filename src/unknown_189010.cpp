@@ -156,6 +156,8 @@ long function_189fe0(s_sound_request const *request, long tag_index)
 	{
 		s_sound_play_tag *sound = (s_sound_play_tag *)g_4e3b44[tag_index & 0xffff].bytes;
 		s_sound_play_state state;
+		// Retail also clears the padding after the priority field.
+		*(long *)&state.priority = request->location.audible ? 3 : 1;
 		dword flags = (request->source ? 0x20 : 0) + 5;
 
 		if (request->object_index != NONE)
@@ -174,7 +176,6 @@ long function_189fe0(s_sound_request const *request, long tag_index)
 		{
 			flags &= ~0x100;
 		}
-		state.priority = request->location.audible ? 3 : 1;
 		state.flags = flags;
 		state.location = request->location;
 		state.object_index = request->object_index;
@@ -474,11 +475,13 @@ long function_189060(long object_index, short value, real scale, point3f const *
 // @retail 0x1890c0
 long function_1890c0(s_sound_label_play const *play, long object_index, short value, point3f const *position, vector3f const *direction)
 {
+	long result = NONE;
 	s_sound_source_description description;
 	s_sound_request request;
-	char audible = 1;
+	char audible;
 
 	description.flags = 0;
+	audible = 1;
 	function_18d4f0(object_index, &audible, NULL);
 	function_1892a0(&description, position, direction, value, play->tag_index, object_index);
 	request.location.audible = audible;
@@ -498,9 +501,9 @@ long function_1890c0(s_sound_label_play const *play, long object_index, short va
 		request.marker = (s_sound_marker *)&description;
 		request.platform_playback = function_18d5b0(play->label);
 		request.source = function_189010(object_index, play->tag_index) ? &g_444b1c : &g_444afc;
-		return function_189fe0(&request, play->tag_index);
+		result = function_189fe0(&request, play->tag_index);
 	}
-	return NONE;
+	return result;
 }
 
 // @retail 0x1891d0

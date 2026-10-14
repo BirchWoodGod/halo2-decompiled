@@ -985,11 +985,9 @@ void havok_component_node_states_set(s_havok_component *component, s_havok_node_
 
 	for (rigid_body_index = 0; rigid_body_index < component->rigid_bodies.size; rigid_body_index++)
 	{
-		s_havok_component_rigid_body *rigid_body = &component->rigid_bodies.data[rigid_body_index];
-
-		if (rigid_body->node_count > 0)
+		if (component->rigid_bodies.data[rigid_body_index].node_count > 0)
 		{
-			long node_index = rigid_body->nodes[0];
+			long node_index = component->rigid_bodies.data[rigid_body_index].nodes[0];
 
 			if (node_index >= 0 && node_index < MAXIMUM_HAVOK_NODES &&
 				(states->valid[node_index >> 5] & (1 << (node_index & 0x1f))))
