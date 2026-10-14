@@ -79,11 +79,14 @@ bool c_weapon_fire_event::v11(long a, long const *entities, long c, void const *
         if ((*(dword *)barrel_definition & 0x2000) && event[0x38])
         {
             long target = function_a58d0(*(long const *)(event + 0x3c));
-            long attachment = *(long const *)(event + 0x40);
-            if (target != NONE && attachment != NONE)
+            if (target != NONE)
             {
-                weapon_object[0x177] = (byte)attachment;
-                *(long *)(weapon_object + 0x194) = target;
+                long attachment = *(long const *)(event + 0x40);
+                if (attachment != NONE)
+                {
+                    weapon_object[0x177] = (byte)attachment;
+                    *(long *)(weapon_object + 0x194) = target;
+                }
             }
         }
         if (event[0xc] && entities[1] != NONE)
