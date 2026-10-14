@@ -107,14 +107,23 @@ struct s_audio_object_state
 	byte unused1 : 5;
 };
 
+/* the object flag word at +0x10a as 0x20f960 reads it */
+struct s_audio_object_state_20f960
+{
+	byte unknown000[0x10a];
+	word unused0 : 2;
+	word blocked : 1;
+	word unused1 : 13;
+};
+
 // @retail 0x20f960
 long function_20f960(long index, s_audio_priority_table *table, bool *expired)
 {
 	(void)&expired;
 	volatile bool result = false;
 	byte *record = g_4f9398->data + (index & 0xffff) * 0x54;
-	s_audio_priority_definition *definition = &table->entries[*(short *)(record + 2)];
 	long time = g_510c54->game_time;
+	s_audio_priority_definition *definition = &table->entries[*(short *)(record + 2)];
 	if (expired)
 		*expired = false;
 	if (!*((byte *)g_4f55d0 + 0x20) || *(short *)((byte *)g_4f55d0 + 0x22) > 0)
@@ -133,7 +142,7 @@ long function_20f960(long index, s_audio_priority_table *table, bool *expired)
 	{
 		byte *object = *(byte **)(g_4e0300->data + (*(long *)(record + 4) & 0xffff) * 12 + 8);
 		result = true;
-		if (TEST_FIELD_BIT(((s_audio_object_state *)object)->blocked))
+		if (TEST_FIELD_BIT(((s_audio_object_state_20f960 *)object)->blocked))
 			goto rejected;
 		long actor_index = *(long *)(object + 0x12c);
 		if (actor_index == NONE)
@@ -155,7 +164,7 @@ long function_20f960(long index, s_audio_priority_table *table, bool *expired)
 			case 196:
 			case 198:
 				{
-					s_audio_object_state *target = (s_audio_object_state *)function_badc0(*(long *)(record + 0x28), NONE);
+					s_audio_object_state_20f960 *target = (s_audio_object_state_20f960 *)function_badc0(*(long *)(record + 0x28), NONE);
 					if (!target || TEST_FIELD_BIT(target->blocked))
 						goto rejected;
 				}
@@ -168,7 +177,12 @@ rejected:
 	result = false;
 report_expiration:
 	if (expired)
-		*expired = *(long *)(g_4f9398->data + (index & 0xffff) * 0x54 + 0x2c) != 0;
+	{
+		bool value = false;
+		if (*(long *)(g_4f9398->data + (index & 0xffff) * 0x54 + 0x2c))
+			value = true;
+		*expired = value;
+	}
 done:
 	return result;
 }
@@ -1027,12 +1041,13 @@ bool function_211b30(byte const *location, real const *position, byte flags, vec
 	return false;
 }
 
-PRIVATE real random_step(void)
+/* retail inlines the random step and the clamp into 0x2118c0 */
+static inline real random_step(void)
 {
 	return random_index(&g_4e7408->seed, 2) ? 0.01f : -0.01f;
 }
 
-PRIVATE real pin_real(real x, real lower, real upper)
+static inline real pin_real(real x, real lower, real upper)
 {
 	if (x < lower)
 	{
@@ -1062,8 +1077,8 @@ void function_2118c0(void)
 		if (source->tag_index != NONE)
 		{
 			s_cell_tag *tag = (s_cell_tag *)g_4e3b44[source->tag_index & 0xffff].bytes;
-			real azimuth;
-			real elevation;
+			double azimuth;
+			double elevation;
 			real scale;
 			long j;
 
@@ -1078,8 +1093,8 @@ void function_2118c0(void)
 
 			cell->interpolation = (tag->value4 - tag->value0) * cell->value4 + tag->value0;
 
-			azimuth = (real)atan2(source->direction.j, source->direction.i);
-			elevation = (real)atan2(source->direction.k, sqrt(source->direction.j * source->direction.j + source->direction.i * source->direction.i));
+			azimuth = atan2(source->direction.j, source->direction.i);
+			elevation = atan2(source->direction.k, sqrt(source->direction.j * source->direction.j + source->direction.i * source->direction.i));
 			elevation += tag->valuec * cell->valuec * 0.5f;
 			azimuth += cell->value8 * tag->value8 * 0.5f;
 

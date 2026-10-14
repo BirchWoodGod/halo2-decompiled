@@ -1036,13 +1036,14 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 
 		if (graph)
 		{
-			if (function_1dd0b0(graph, animation_name).index == NONE)
+			c_type_709360 first_id = function_1dd0b0(graph, animation_name);
+			if (first_id.index == NONE)
 				goto done_1101e0;
 
 			s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
+			s_unit_animation_definition *definition = (s_unit_animation_definition *)TAG_BYTES(unit->definition_index);
 			s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
 			s_animation_state *state = UNIT_ANIMATION_STATE(unit);
-			s_unit_animation_definition *definition = (s_unit_animation_definition *)TAG_BYTES(unit->definition_index);
 
 			function_11b710(unit_index, 0x7000101);
 			if (state->graph_tag_index != animation_graph_index &&
@@ -1217,9 +1218,9 @@ bool __stdcall function_110ab0(long unit_index)
 	long overlay = control->channel_9c.unknown08;
 	long name = state->unknown7c;
 	long controlling = unit->field_13c;
-	bool result = false;
+	volatile bool result = false;
 	bool depleted = false;
-	bool interruptible = false;
+	volatile bool interruptible = false;
 	if (controlling != NONE)
 	{
 		long first = held_object_110ab0(unit_index, *(char *)((byte *)UNIT_ANIMATION_OBJECT(unit_index) + 0x212));
@@ -1231,7 +1232,7 @@ bool __stdcall function_110ab0(long unit_index)
 		if (*(byte *)((byte *)state + 0x14) & 0x10)
 			interruptible = true;
 	}
-	if (function_c70b0(unit_index))
+	if (function_c70b0(*(long const volatile *)unit_reference))
 		result = true;
 	else
 	{

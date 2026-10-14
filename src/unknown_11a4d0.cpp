@@ -581,7 +581,9 @@ short function_11b0c0(long vehicle_index, long filter_range, long volatile list_
 		if (seat_count > 0)
 		{
 			long reference_index;
+#pragma inline_depth(0)
 			long object_index = function_1dee50(list_index, &reference_index);
+#pragma inline_depth()
 			while (object_index != NONE)
 			{
 				s_unit_11a4d0 *unit = unit_get_11a4d0(object_index);
@@ -602,8 +604,8 @@ short function_11b0c0(long vehicle_index, long filter_range, long volatile list_
 							request.type1c.unknownb = false;
 							if (function_e6900(object_index, &request))
 							{
-								result++;
 								seat->object_index = NONE;
+								result++;
 								break;
 							}
 						}

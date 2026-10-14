@@ -77,9 +77,9 @@ long function_2170e0(long file_index)
 {
 	(void)&file_index;
 	long result = NONE;
-	s_55c164 *cached = NULL;
 	if (g_55c14f)
 	{
+		s_55c164 *cached = NULL;
 		for (long i = 0; i < g_55c160_table.count; i++)
 		{
 			long index = (long)g_55c160_table.entries[i].field0;
@@ -109,7 +109,9 @@ long function_2170e0(long file_index)
 				{
 					long current = next++;
 
-					location = table->entries[current];
+					s_profile_location_bytes const *entry = &table->entries[current];
+
+					location = *entry;
 					if (*(long *)(location.data + 0x38) != type)
 						continue;
 					if (strncmp((char const *)cached->unknown04, (char const *)location.data, 20))

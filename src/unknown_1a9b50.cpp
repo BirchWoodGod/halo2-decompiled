@@ -256,7 +256,7 @@ short __stdcall function_1aa9f0(long actor_index)
 	s_actor_view *actor = actor_get(actor_index);
 	s_ai_object *unit = ai_object_get(actor->unknown018);
 	s_actor_tag_entry *entry = (s_actor_tag_entry *)function_1e4f90(actor_index);
-	short result = 0;
+	volatile short result = 0;
 
 	if (!(unit->flags19 & 1) && entry && actor->prop_index != NONE &&
 		entry->unknown24 >= g_45dbd8 && !actor->unknown229 &&
@@ -267,11 +267,14 @@ short __stdcall function_1aa9f0(long actor_index)
 		s_prop_state_64 *state = (s_prop_state_64 *)function_25d690((s_prop_datum *)prop);
 		if (prop->unknown27 >= 1)
 		{
-			bool flag = state->unknown64;
+			bool flag = ((s_prop_state_64 volatile *)state)->unknown64;
 			if ((flag || prop->unknown28 > entry->unknown1c) && entry->unknown20 > prop->unknown28)
 			{
 				if (flag && !function_1e2030(actor_index))
-					return 4;
+				{
+					result = 4;
+					return result;
+				}
 				if (function_1c9ee0(entry->unknown24) > function_259a0(&g_4e7408->unknown0))
 					result = 3;
 			}

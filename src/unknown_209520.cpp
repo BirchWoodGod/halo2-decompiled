@@ -544,14 +544,16 @@ s_type_f4462a const g_44b0f8 = { _hs_type_boolean, 2, function_2081e0, "<boolean
 // @retail 0x2087e0
 void __stdcall function_2087e0(short function_index, long thread_index, bool initialize)
 {
+	s_hs_frame *const *frame_reference = &hs_thread_get(thread_index)->frame;
 	long *delay = hs_frame_allocate_value(thread_index);
 	long *script = hs_frame_allocate_value(thread_index);
 	s_hs_frame *frame = hs_thread_get(thread_index)->frame;
 	short *state = (short *)((byte *)frame + offsetof(s_hs_frame, unknown0e) + frame->size);
 	frame->size += sizeof(short);
+	long target = thread_index;
 	if (initialize)
 	{
-		s_hs_expression *expression = hs_expression_get(hs_thread_get(thread_index)->frame->expression_index);
+		s_hs_expression *expression = hs_expression_get((*frame_reference)->expression_index);
 		s_hs_expression *name = hs_expression_get(expression->value);
 		function_2099f0(thread_index, delay, *(long *)((byte *)name + 8));
 		*state = 0;
@@ -560,7 +562,7 @@ void __stdcall function_2087e0(short function_index, long thread_index, bool ini
 	{
 		if (*state == 0)
 		{
-			s_hs_expression *expression = hs_expression_get(hs_thread_get(thread_index)->frame->expression_index);
+			s_hs_expression *expression = hs_expression_get((*frame_reference)->expression_index);
 			s_hs_expression *name = hs_expression_get(expression->value);
 			s_hs_expression *argument = hs_expression_get(*(long *)((byte *)name + 8));
 			long script_expression = *(long *)((byte *)argument + 8);
@@ -574,12 +576,13 @@ void __stdcall function_2087e0(short function_index, long thread_index, bool ini
 		}
 		if (*state != 0)
 		{
-			long target = thread_index;
 			if (*(short *)script != NONE)
 				target = function_209e70(*(short *)script);
-			if (target != NONE && *(short *)delay >= 0)
+			long delay_value;
+			if (target != NONE && (delay_value = *(short *)delay) >= 0)
 			{
-				real seconds = (real)*(short *)delay * 0.03333333507180214f * (real)g_510c54->field_2_3;
+				real seconds = (real)delay_value * 0.03333333507180214f;
+				seconds *= (real)g_510c54->field_2_3;
 				long ticks;
 				__asm
 				{
@@ -960,13 +963,14 @@ long function_16b990(s_record_pool *data, long index);
 // @retail 0x2090a0
 void function_2090a0(void)
 {
+    byte *scenario = (byte *)g_4e0350;
+
     g_4f9384->valid = true;
     record_pool_release_all(g_4f9384);
     g_4f9388 = true;
     g_4f938c = NONE;
     if (g_4686c0 != NONE && g_4e6948->mode != 4)
     {
-        byte *scenario = (byte *)g_4e0350;
         long thread_index = function_2097c0(NONE, 1);
         s_hs_thread *thread = hs_thread_get(thread_index);
         for (long i = 0; i < *(long *)(scenario + 0x1c0); i++)
