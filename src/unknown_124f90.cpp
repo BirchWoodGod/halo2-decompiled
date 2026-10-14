@@ -1978,6 +1978,9 @@ void sound_update_locations(void)
 	}
 }
 
+/* clamps value to [lower, upper], testing the lower bound first */
+#define PIN_126660(value, lower, upper) ((value) < (lower) ? (lower) : (value) > (upper) ? (upper) : (value))
+
 /* moves the sound system's two environments toward the two requested:
    each request takes the slot already holding it or a faded-out one and
    fades it in over its transition time; slots no request takes fade out */
@@ -2024,29 +2027,32 @@ void sound_environments_update(s_sound_environment const *requests)
 				{
 					real maximum = step * k_pi;
 
-					environment->unknown0c += PIN(request->unknown0c - environment->unknown0c, 0.0f - maximum, maximum);
-					environment->unknown10 += PIN(request->unknown10 - environment->unknown10, 0.0f - maximum, maximum);
+					environment->unknown0c += PIN_126660(request->unknown0c - environment->unknown0c, 0.0f - maximum, maximum);
+					environment->unknown10 += PIN_126660(request->unknown10 - environment->unknown10, 0.0f - maximum, maximum);
 				}
-				environment->unknown18 += PIN(request->unknown18 - environment->unknown18, 0.0f - step, step);
-				environment->unknown14 += PIN(request->unknown14 - environment->unknown14, 0.0f - step, step);
-				environment->fade += PIN(1.0f - environment->fade, 0.0f - step, step);
+				environment->unknown18 += PIN_126660(request->unknown18 - environment->unknown18, 0.0f - step, step);
+				environment->unknown14 += PIN_126660(request->unknown14 - environment->unknown14, 0.0f - step, step);
+				environment->fade += PIN_126660(1.0f - environment->fade, 0.0f - step, step);
 				environment->transition_time = request->transition_time;
 				environment->index = request->index;
 				used[slot >> 5] |= 1 << (slot & 31);
 			}
 		}
 	}
-	for (i = 0; i < 2; i++)
+	s_sound_system_view *sound_system = SOUND_SYSTEM;
+
+	i = 0;
+	do
 	{
 		if (!(used[i >> 5] & (1 << (i & 31))))
 		{
-			s_sound_environment *environment = &SOUND_SYSTEM->environments[i];
+			s_sound_environment *environment = &sound_system->environments[i];
 			real transition_time = environment->transition_time > 0.001f ? environment->transition_time : 0.001f;
-			real step = SOUND_SYSTEM->elapsed_time / transition_time;
+			real step = sound_system->elapsed_time / transition_time;
 
-			environment->fade += PIN(0.0f - environment->fade, 0.0f - step, step);
+			environment->fade += PIN_126660(0.0f - environment->fade, 0.0f - step, step);
 		}
-	}
+	} while (++i < 2);
 }
 
 /* ---- starting a sound ---- */

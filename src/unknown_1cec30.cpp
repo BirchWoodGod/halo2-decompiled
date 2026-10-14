@@ -2249,18 +2249,20 @@ long __stdcall function_1d0400(s_havok_component *component, short index,
     short material_a, short material_b)
 {
     (void)&component;
-    (void)&contact_data;
-    long result = NONE;
+    void const *const volatile *contact_data_reference = &contact_data;
     bool room = component->unknown88.size < 28;
+    long result = NONE;
     if (!room && ((1 << ((s_component_transform_header *)g_4e0300->data)[component->object_index & 0xffff].type) & 1))
     {
         real minimum = 3.402823466e+38f;
         long remove_index = NONE;
         for (long i = 0; i < component->unknown88.size; i++)
         {
-            if (component->unknown88.data[i].normal.k < minimum)
+            s_havok_component_element48 *contact = &component->unknown88.data[i];
+
+            if (contact->normal.k < minimum)
             {
-                minimum = component->unknown88.data[i].normal.k;
+                minimum = contact->normal.k;
                 remove_index = i;
             }
         }
