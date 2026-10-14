@@ -119,7 +119,7 @@ s_pending_message_header g_479750 =
 };
 
 bool pending_message_request_receive(s_pending_message_header *header, long controller,
- s_pending_message_values values, short value06);
+ s_pending_message_values values, long value06);
 
 static inline XUID *user_settings_identity(XONLINE_USER *user)
 {
