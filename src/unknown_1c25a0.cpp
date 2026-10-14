@@ -139,7 +139,8 @@ public:
 
 PRIVATE __forceinline long contact_metadata_pin(long value, long lower, long upper)
 {
-	return value < lower ? lower : value > upper ? upper : value;
+	long result = value < lower ? lower : value;
+	return result > upper ? upper : result;
 }
 
 PRIVATE __forceinline bool contact_shape_has_material(s_contact_body_view const *body)

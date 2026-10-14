@@ -4582,7 +4582,7 @@ void __stdcall function_2a4dc0(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44c684 = { _hs_type_void, 0, function_2a4dc0, NULL, 1, { _hs_type_boolean } };
 
-bool function_1df770(short team_a, short volatile team_b);
+bool function_1df770(short volatile team_a, short volatile team_b);
 
 /* the checks around function_1df770 (0x1df770); retail function not identified */
 inline void allegiance_remove(short team_a, short team_b)

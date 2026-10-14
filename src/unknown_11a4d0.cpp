@@ -761,12 +761,16 @@ bool function_11b520(long unit_index, long animation_graph_index, long animation
 		bool global_flag = ((s_object_globals_11a4d0 *)g_4de2f4)->flag80;
 		if (function_1101e0(animation_graph_index, unit_index, animation_name, flag, global_flag))
 		{
-			s_unit_flags_11a4d0 *flags = (s_unit_flags_11a4d0 *)unit_get_11a4d0(unit_index);
+			struct s_flags_view
+			{
+				byte unknown000[4];
+				dword flags;
+			} *flags = (s_flags_view *)unit_get_11a4d0(unit_index);
 			s_unit_scripted_animation_11a4d0 *animation =
 				(s_unit_scripted_animation_11a4d0 *)((byte *)unit + unit->offset33e);
-			if (!TEST_FIELD_BIT(flags->flag1))
+			if (!(bool)((*(dword volatile *)&flags->flags >> 1) & 1))
 			{
-				flags->flag1 = true;
+				flags->flags |= 2;
 				function_b7360(unit_index);
 				function_b7290(unit_index);
 			}
@@ -774,13 +778,35 @@ bool function_11b520(long unit_index, long animation_graph_index, long animation
 				function_ba350(unit_index, 0.267f);
 			else
 				function_ba3d0(unit_index);
-			animation->flags |= 0x11;
+			*(word *)&animation->flags |= 0x11;
 			animation->attached_object_index = attached_object_index;
 			if (attached_object_index != NONE)
-				object_reset_default_placement(unit_index, (s_object_default_placement_view *)unit, true);
+			{
+				function_b9a50(unit_index);
+				/* the flags word at +0xc0: a word bitfield, which retail tests
+				   with a byte load and shift */
+				struct s_c0_view
+				{
+					byte unknown000[0xc0];
+					word pad0 : 6;
+					word flag_c0_6 : 1;
+					word pad1 : 9;
+				};
+				if (TEST_FIELD_BIT(((s_c0_view *)unit)->flag_c0_6))
+					function_b8840(unit_index);
+				function_b75a0(unit_index, g_468788, g_4687a8, g_4687b0, NULL, false);
+				function_b77d0(unit_index, g_4687a4, g_4687a4);
+				function_b7360(unit_index);
+
+				s_object_default_placement_view *placed = object_default_placement_get(unit_index);
+				placed->hidden = false;
+				if (!TEST_FIELD_BIT(placed->flag8) && g_4de2f4 && *(byte *)g_4de2f4)
+					function_b8600(unit_index, 0);
+				function_b7290(unit_index);
+			}
 			function_b9b90(unit_index, true);
 			function_bd020(unit_index);
-			return true;
+			result = true;
 		}
 	}
 

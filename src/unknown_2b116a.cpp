@@ -459,8 +459,10 @@ struct s_screen_view_2b39
 	byte item[4];
 };
 
+inline __declspec(noinline) long function_2b3923(s_screen_view_2b39 *screen);
+
 // @retail 0x2b3923
-long function_2b3923(s_screen_view_2b39 *screen)
+inline long function_2b3923(s_screen_view_2b39 *screen)
 {
 	void *item = screen->item;
 
