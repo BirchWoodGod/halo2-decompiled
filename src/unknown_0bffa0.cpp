@@ -693,6 +693,7 @@ bool function_c35a0(long light_index, point3f *corners)
         far_z_value = frame->position.z + direction.k * shape.cone.values[4];
         point3f far_points[4];
         point3f near_points[4];
+        real height = shape.cone_render.height;
         for (long i = 0; i < 4; i++)
         {
             real x = ((order[i] & 1) ? 1.0f : -1.0f) * 0.5f;
@@ -703,11 +704,9 @@ bool function_c35a0(long light_index, point3f *corners)
             near_points[i].x = near_centre.x;
             near_points[i].y = near_centre.y;
             near_points[i].z = near_centre.z;
-            real near_x = x * shape.cone_render.width;
-            real far_x = x * far_width;
-            point_add_scaled_c35a0(&near_points[i], &shape.left, near_x, &near_points[i]);
-            point_add_scaled_c35a0(&far_points[i], &shape.left, far_x, &far_points[i]);
-            point_add_scaled_c35a0(&near_points[i], &frame->up, (real)(y * shape.cone_render.height), &near_points[i]);
+            point_add_scaled_c35a0(&near_points[i], &shape.left, (real)(x * shape.cone_render.width), &near_points[i]);
+            point_add_scaled_c35a0(&far_points[i], &shape.left, (real)(x * far_width), &far_points[i]);
+            point_add_scaled_c35a0(&near_points[i], &frame->up, (real)(y * height), &near_points[i]);
             real far_y = (real)far_height * y;
             point_add_scaled_c35a0(&far_points[i], &frame->up, far_y, &far_points[i]);
         }
