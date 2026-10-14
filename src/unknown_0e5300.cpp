@@ -124,7 +124,11 @@ bool __stdcall function_cd7b0(long unit_index, long weapon_index, bool *modes);
 /* whether a player's unit and an AI unit next to it could swap the weapons
    they hold: both hold one, they stand less than 1.0 apart, the player's
    unit aims at the other and the other faces it, and each accepts the
-   other's weapon (inferred) */
+   other's weapon (inferred).
+
+   Near: as in 0xe5040, retail reads g_4e0300's data pointer again for each
+   object it reads (0xe54bc, 0xe54e2) where this build reuses it, and reads
+   the player's unit again before 0xe5526. */
 // @retail 0xe5470
 bool __stdcall function_e5470(long player_index, long unit_index)
 {
