@@ -113,8 +113,9 @@ struct s_18391a
 // @retail 0x183910
 bool function_183910(long arg_0, point3f const *arg_1, point3f *arg_2, vector3f *arg_3)
 {
+ s_183915 *p = ((s_183918 *)g_51e9a4)->field_cc;
+ s_183915 local_0 = *p;
  s_183914 *local_1 = &((s_183914 *)g_51e9b8->data)[arg_0 & 0xffff];
- s_183915 local_0 = *((s_183918 *)g_51e9a4)->field_cc;
  bool local_2 = false;
  if (TEST_FIELD_BIT(local_1->field_4.field_5))
  {
