@@ -420,7 +420,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0003d430,74,game,unknown,a16,,,0003ddd0,src/unknown_02b5a0.cpp,matched
 0003d480,110,game,speed,a16 pad,,,0003ebd0,src/unknown_0350e0.cpp,matched
 0003d4f0,261,game,speed,a16 pad,,,,src/unknown_03f2b0.cpp,matched
-0003d600,437,game,speed,a16 pad,,,0012ccf0 0012ce00 0012de70,src/unknown_03f2b0.cpp,todo
+0003d600,437,game,speed,a16 pad,,,0012ccf0 0012ce00 0012de70,src/unknown_3d600.cpp,todo
 0003d7c0,47,game,speed,a16 pad,,,000b9ce0,src/unknown_02b5a0.cpp,matched
 0003d7f0,773,game,speed,a16 pad,,,00030c60 0003d7f0 0004baf0 000baf80,src/unknown_0350e0.cpp,todo
 0003db00,397,game,speed,a16 pad,,,0003ddd0 0003dfe0 000baf80 000d1850 000d4080,src/unknown_03d2c0.cpp,todo
