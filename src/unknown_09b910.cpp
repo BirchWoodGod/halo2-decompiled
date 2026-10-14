@@ -1066,12 +1066,27 @@ PRIVATE __forceinline bool z_event_restore_player(long *identifier, long index)
 // @retail 0xa5650
 bool c_game_engine_event::v11(long a, long const *entities, long c, void const *data)
 {
+ struct s_player_restore
+ {
+  __forceinline bool restore(long *identifier, long index)
+  {
+   if (index != NONE)
+   {
+    if (index < 0 || index >= g_4e8c24->high_water_index) return false;
+    byte *player = g_4e8c24->data + g_4e8c24->size * index;
+    short salt = *(short *)player;
+    if (!salt) return false;
+    *identifier = ((long)salt << 16) | (index & 0xffff);
+   }
+   return true;
+  }
+ } restore;
  bool result = true;
  s_event const *source = (s_event const *)data;
  s_event event = *source;
- if (z_event_restore_player(&event.a, source->a) &&
-  z_event_restore_player(&event.cause_player_index, source->cause_player_index) &&
-  z_event_restore_player(&event.effect_player_index, source->effect_player_index))
+ if (restore.restore(&event.a, source->a) &&
+  restore.restore(&event.cause_player_index, source->cause_player_index) &&
+  restore.restore(&event.effect_player_index, source->effect_player_index))
   function_19eb30(&event);
  else
   result = false;

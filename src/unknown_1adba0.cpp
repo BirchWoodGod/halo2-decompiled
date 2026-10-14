@@ -653,16 +653,25 @@ short __stdcall function_1adff0(long arg_0, short arg_1, bool arg_2)
 		byte *local_14 = (byte *)ai_object_get(local_13);
 		short local_15 = *(short *)(local_14 + 0x342);
 		if (*(short *)(local_14 + local_15 + 0xc) > 0)
-			return 2;
-		if (local_2->field_4 > 0)
+			local_1 = 2;
+		else if (local_2->field_4 > 0)
 		{
 			local_2->field_4--;
-			return 2;
+			local_1 = 2;
 		}
-		function_114b60(NONE, 0xd, local_13, 0xd, NULL);
-		real local_16 = (AI_RANDOM_REAL() + 2.0f) * g_510c54->field_2_3;
-		local_2->field_4 = (short)real_to_long(local_16);
-		local_1 = 2;
+		else
+		{
+			function_114b60(NONE, 0xd, local_13, 0xd, NULL);
+			real local_16 = (AI_RANDOM_REAL() + 2.0f) * g_510c54->field_2_3;
+			long local_17;
+			__asm
+			{
+				fld local_16
+				fistp local_17
+			}
+			local_2->field_4 = (short)local_17;
+			local_1 = 2;
+		}
 	}
 	return local_1;
 }
