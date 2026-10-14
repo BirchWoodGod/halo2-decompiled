@@ -739,7 +739,7 @@ bool __stdcall function_1ad6a0(long arg_0, s_slot *arg_1)
 		local_5.unknown008 = local_6 * 0.5f;
 		local_5.unknown00c = local_6;
 		local_5.unknown010 = local_6 + 10.0f;
-		s_261d20_entry *local_7;
+		s_261d20_entry local_7;
 		long local_8;
 		bool local_9;
 		s_reference local_10 = function_2605d0(arg_0, &local_5, (long)&local_7,
@@ -772,9 +772,9 @@ bool __stdcall function_1ad6a0(long arg_0, s_slot *arg_1)
 				local_18 += local_15.i * local_17.i;
 				if (local_18 > 0.9f)
 				{
-					local_17.i = local_7->point.x - local_0->position.x;
-					local_17.j = local_7->point.y - local_0->position.y;
-					local_17.k = local_7->point.z - local_0->position.z;
+					local_17.i = local_7.point.x - local_0->position.x;
+					local_17.j = local_7.point.y - local_0->position.y;
+					local_17.k = local_7.point.z - local_0->position.z;
 					real local_19 = function_30bf0(&local_17);
 					local_18 = local_15.k * local_17.k;
 					local_18 += local_15.j * local_17.j;
