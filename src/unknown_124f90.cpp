@@ -2205,9 +2205,9 @@ bool function_126c30(s_sound_play_state *state, long tag_index, long *listener_i
 		{
 			failure = 1;
 			real random = function_x82e52f(&g_4e7408->seed, __FILE__, __LINE__);
-			real const *skip_fraction = &SOUND_GLOBALS_DEFINITIONS->playback_parameters[definition->playback_index].skip_fraction_lower;
-			real lower = skip_fraction[0];
-			real local_cc7843 = lower + (skip_fraction[1] - lower) * location->scale;
+			real const *local_cc7843_2 = &SOUND_GLOBALS_DEFINITIONS->playback_parameters[definition->playback_index].skip_fraction_lower;
+			real lower = local_cc7843_2[0];
+			real local_cc7843 = lower + (local_cc7843_2[1] - lower) * location->scale;
 
 			if (random > local_cc7843 * function_xaa8231(definition->class_index)->skip_fraction_scale)
 			{
