@@ -250,14 +250,15 @@ void c_list_24a64d::v24()
 					break;
 			if (j >= 0 && j < capacity)
 			{
-				entries[j].index = index;
-				s_player_profile_settings *settings = (s_player_profile_settings *)((byte *)&entries[j] + 4);
+				s_entry_24a64d *entry = entries + j;
+				entry->index = index;
+				s_player_profile_settings *settings = (s_player_profile_settings *)((byte *)entry + 4);
 				if (index == g_54e5d0.profile_index)
 					*settings = g_54e5d0.settings;
 				else if (!function_1a0540(settings, index))
 				{
 					memset(settings, 0, sizeof(*settings));
-					function_215b50(entries[j].index, entries[j].field_0c);
+					function_215b50(entry->index, entry->field_0c);
 				}
 			}
 		}

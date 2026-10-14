@@ -553,20 +553,28 @@ void function_25d420(long prop_ref_index, short type, long actor_index)
 
 #pragma inline_depth(255)
 
+static __forceinline s_prop_datum *prop_ref_next_25d510(s_iterator *iterator)
+{
+	s_prop_datum *datum = NULL;
+	long index = iterator->next;
+	if (index != NONE)
+	{
+		datum = prop_ref_get(index);
+		iterator->index = index;
+		iterator->next = datum->next_index;
+	}
+	return datum;
+}
+
 // @retail 0x25d510
 void function_25d510(long actor_index)
 {
-	long prop_ref_index = actor_get(actor_index)->first_prop_index;
+	s_iterator iterator;
+	iterator.next = actor_get(actor_index)->first_prop_index;
+	s_prop_datum *datum;
 
-	for (;;)
+	while ((datum = prop_ref_next_25d510(&iterator)) != NULL)
 	{
-		if (prop_ref_index == NONE)
-		{
-			break;
-		}
-		s_prop_datum *datum = prop_ref_get(prop_ref_index);
-		prop_ref_index = datum->next_index;
-
 		if (datum->state >= 3)
 		{
 			s_type_f95cd3 *view = prop_ref_view(datum);
@@ -581,21 +589,15 @@ void function_25d510(long actor_index)
 // @retail 0x25d580
 void function_25d580(long actor_index)
 {
-	long prop_ref_index = actor_get(actor_index)->first_prop_index;
+	s_iterator iterator;
+	iterator.next = actor_get(actor_index)->first_prop_index;
+	s_prop_datum *datum;
 
-	for (;;)
+	while ((datum = prop_ref_next_25d510(&iterator)) != NULL)
 	{
-		if (prop_ref_index == NONE)
-		{
-			break;
-		}
-		s_prop_datum *datum = prop_ref_get(prop_ref_index);
-		long current_index = prop_ref_index;
-		prop_ref_index = datum->next_index;
-
 		if (datum->state >= 3)
 		{
-			function_25c820(current_index, actor_index);
+			function_25c820(iterator.index, actor_index);
 		}
 	}
 }
@@ -730,21 +732,15 @@ bool function_25da40(s_prop_datum *datum)
 short function_25dac0(long actor_index)
 {
 	short count = 0;
-	long prop_ref_index = actor_get(actor_index)->first_prop_index;
+	s_iterator iterator;
+	iterator.next = actor_get(actor_index)->first_prop_index;
+	s_prop_datum *datum;
 
-	for (;;)
+	while ((datum = prop_ref_next_25d510(&iterator)) != NULL)
 	{
-		if (prop_ref_index == NONE)
-		{
-			break;
-		}
-		s_prop_datum *datum = prop_ref_get(prop_ref_index);
-		long current_index = prop_ref_index;
-		prop_ref_index = datum->next_index;
-
 		if (datum->tracking_index != NONE)
 		{
-			function_25c820(current_index, actor_index);
+			function_25c820(iterator.index, actor_index);
 			count++;
 		}
 	}
@@ -972,10 +968,8 @@ bool function_25d610(s_prop_datum *datum)
 {
 	bool result = false;
 	s_prop_type_entry *entry = &g_470f10[datum->type];
-	long local_0 = datum->prop_index & 0xffff;
-	s_type_76cf92 *local_1 = (s_type_76cf92 *)((s_record_pool volatile *)g_50241c)->data;
-	short type = local_1[local_0].unknown04;
-	s_type_76cf92 *prop = &local_1[local_0];
+	s_type_76cf92 *prop = function_25da41(datum->prop_index);
+	short type = prop->unknown04;
 
 	if (type != 1 || (entry->kind && (type != prop->unknown04 || entry->unknown8 >= 2 || prop->unknown25)))
 	{
@@ -1212,7 +1206,7 @@ long function_25cb60(long arg_0, long arg_1, short arg_2, void *arg_3, void *arg
 }
 
 // @retail 0x25c9d0
-long function_25c9d0(long arg_0, long arg_1, bool arg_2, long arg_3, void *arg_4, byte *arg_5, long arg_6)
+short function_25c9d0(long arg_0, long arg_1, bool arg_2, long arg_3, void *arg_4, byte *arg_5, long arg_6)
 {
 	s_actor_view *local_0 = actor_get(arg_0);
 	s_squad_datum *local_1 = local_0->unknown030 != NONE ? squad_get(local_0->unknown030) : NULL;
@@ -1433,27 +1427,27 @@ void __stdcall function_25b440(long arg_0, long arg_1)
 		return;
 	s_prop_datum *local_1 = prop_ref_get(arg_1);
 	long local_2 = NONE;
-	long local_3 = local_0->first_prop_index;
-	while (local_3 != NONE)
+	s_iterator local_3;
+	local_3.next = local_0->first_prop_index;
+	s_prop_datum *local_4;
+	while ((local_4 = prop_ref_next_25d510(&local_3)) != NULL)
 	{
-		s_prop_datum *local_4 = prop_ref_get(local_3);
-		long local_5 = local_3;
-		local_3 = local_4->next_index;
 		if (local_4->type == 1)
 		{
 			if (prop_get(local_4->prop_index)->unknown25)
 			{
-				local_2 = local_5;
+				local_2 = local_3.index;
 				break;
 			}
 			if (local_4->unknown28 < 3.402823466e38f)
-				local_2 = local_5;
+				local_2 = local_3.index;
 		}
 	}
 	if (local_2 != NONE)
 	{
 		s_prop_datum *local_6 = prop_ref_get(local_2);
-		if (function_25d020(arg_0, local_6->object_index, 0, local_2, NONE, NONE))
+		long local_9 = local_6->object_index;
+		if (function_25d020(arg_0, local_9, 0, local_2, NONE, NONE))
 		{
 			s_type_5cfb45 *local_7 = function_25d690(local_1);
 			s_type_5cfb45 *local_8 = function_25d690(local_6);
@@ -1553,7 +1547,10 @@ void __stdcall function_25b120(long arg_0, long arg_1, bool arg_2)
 		arg_2 = true;
 	}
 	if (local_4->unknown25 && local_0->unknown030 != NONE)
-		*((byte *)squad_get(local_0->unknown030) + 2) |= 8;
+	{
+		s_squad_datum *local_12 = squad_get(local_0->unknown030);
+		*(word *)((byte *)local_12 + 2) |= 8;
+	}
 	if (arg_2)
 	{
 		if (local_1->type == 7)
@@ -1564,33 +1561,22 @@ void __stdcall function_25b120(long arg_0, long arg_1, bool arg_2)
 		bool local_5 = false;
 		arg_2 = false;
 		bool local_6 = false;
-		bool local_7;
 		if (local_1->type == 1 && ((1 << object_header_get(local_1->object_index)->type) & 3) &&
 			object_get(local_1->object_index)->unknown1fc != NONE)
 		{
 			local_5 = true;
-			local_7 = false;
 		}
-		else if (prop_get(local_1->prop_index)->unknown25)
-			local_7 = false;
-		else if (local_1->type == 1 && function_2675b0(arg_1))
+		else if (!prop_get(local_1->prop_index)->unknown25)
 		{
-			local_6 = true;
-			local_7 = true;
-		}
-		else if (local_1->type == 1 && local_2->unknown3c == NONE && function_267680(arg_1))
-		{
-			arg_2 = true;
-			local_7 = true;
-		}
-		else
-		{
-			if (local_0->unknown086 >= 6)
+			if (local_1->type == 1 && function_2675b0(arg_1))
+				local_6 = true;
+			else if (local_1->type == 1 && local_2->unknown3c == NONE && function_267680(arg_1))
+				arg_2 = true;
+			else if (local_0->unknown086 >= 6)
 				return;
-			local_7 = false;
 		}
 		bool local_8, local_9, local_10;
-		function_26b7a0(local_1->prop_index, local_0->unknown07c, local_7, &local_8, &local_9, &local_10);
+		function_26b7a0(local_1->prop_index, local_0->unknown07c, local_6 || arg_2, &local_8, &local_9, &local_10);
 		if (local_8 && !function_25d690(local_1)->unknown5e && local_10)
 		{
 			if (arg_2 && function_1fb7e0(0xb, arg_0, NULL, local_1->object_index, NONE))

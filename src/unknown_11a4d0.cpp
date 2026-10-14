@@ -783,7 +783,16 @@ bool function_11b520(long unit_index, long animation_graph_index, long animation
 			if (attached_object_index != NONE)
 			{
 				function_b9a50(unit_index);
-				if ((bool)((*(dword volatile *)((byte *)unit + 0xc0) >> 6) & 1))
+				/* the flags word at +0xc0: a word bitfield, which retail tests
+				   with a byte load and shift */
+				struct s_c0_view
+				{
+					byte unknown000[0xc0];
+					word pad0 : 6;
+					word flag_c0_6 : 1;
+					word pad1 : 9;
+				};
+				if (TEST_FIELD_BIT(((s_c0_view *)unit)->flag_c0_6))
 					function_b8840(unit_index);
 				function_b75a0(unit_index, g_468788, g_4687a8, g_4687b0, NULL, false);
 				function_b77d0(unit_index, g_4687a4, g_4687a4);

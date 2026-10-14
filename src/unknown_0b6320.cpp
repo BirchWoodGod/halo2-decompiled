@@ -76,11 +76,33 @@ bool function_b6320(s_upload_ab *upload, byte *buffer, long maximum, long *writt
                 count = remaining < upload->file_length - position ? remaining : upload->file_length - position;
                 if (upload->kind == 1)
                     memcpy(out, upload->memory + position, count);
-                else if (!upload_read_ab(upload->file, position, out, count))
+                else
                 {
-                    GetLastError();
-                    SetLastError(0);
-                    result = false;
+                    s_upload_file_ab *file = upload->file;
+                    bool success = true;
+                    if (file->position != position)
+                    {
+                        file->position = SetFilePointer(file->handle, position, 0, FILE_BEGIN);
+                        success = file->position != 0xffffffff;
+                    }
+                    if (success)
+                    {
+                        dword received;
+                        bool all_received = false;
+                        if (ReadFile(file->handle, out, count, &received, 0))
+                        {
+                            if (received == count) all_received = true;
+                            else SetLastError(0x26);
+                        }
+                        file->position += received;
+                        success = all_received;
+                    }
+                    if (!success)
+                    {
+                        GetLastError();
+                        SetLastError(0);
+                        result = false;
+                    }
                 }
             }
             else if ((position -= upload->file_length) < upload->ending_length)

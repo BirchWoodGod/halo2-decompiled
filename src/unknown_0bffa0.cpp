@@ -1065,13 +1065,7 @@ void __stdcall function_c3260(long light_index, bool clear_object_flag)
     s_light_delete_view *light = &((s_light_delete_view *)lights->data)[*light_index_reference & 0xffff];
     if ((light->flags & 8) && (light->flags & 2))
     {
-        s_cluster_partition partition =
-        {
-            (long *)g_4e0310,
-            (s_record_pool *)g_4e0314,
-            (s_record_pool *)g_4e0318
-        };
-        function_1cae40(&partition, *light_index_reference, &light->first_cluster_reference);
+        function_1cae40(&g_4e0310_partition, *light_index_reference, &light->first_cluster_reference);
         light->flags &= ~8;
     }
     long object_index = light->object_index;

@@ -205,23 +205,28 @@ struct s_seat_animations
 // @retail 0x187fe0
 s_seat_animation_entry *function_187fe0(long type, s_seat_animation const *animation, short element_index)
 {
+	s_seat_animation_entry *result;
 	bool first = type == 0;
-	s_seat_animation_entry *result = NULL;
-	long count = first ? animation->first_count : animation->second_count;
+	result = NULL;
+	s_seat_animation const *const *animation_holder = &animation;
+	register s_seat_animation const *local_1 = *animation_holder;
+	short const *element_reference = &element_index;
+	short local_0 = *element_reference;
+	long count = first ? local_1->first_count : local_1->second_count;
 	s_globals_element *element;
 
-	while ((element = globals_element_get((s_globals_element_block_view *)g_4e034c, element_index)) != NULL)
+	while ((element = globals_element_get((s_globals_element_block_view *)g_4e034c, local_0)) != NULL)
 	{
-		for (long i = 0; i < count; i++)
+		for (long i = 0; i < count && !result; i++)
 		{
-			s_seat_animation_entry *entry = (first ? animation->first_entries : animation->second_entries) + i;
-			if (entry->element_index == element_index)
+			s_seat_animation_entry *entry = (first ? local_1->first_entries : local_1->second_entries) + i;
+			if (entry->element_index == local_0)
 			{
 				result = entry;
 				break;
 			}
 		}
-		element_index = element->parent_index;
+		local_0 = element->parent_index;
 		if (result)
 		{
 			break;
@@ -311,17 +316,19 @@ s_seat_animation_entry *function_188130(long tag_index, long index, long type, s
 // @retail 0x1882d0
 s_seat_animation_entry *function_1882d0(long type, short element_index, long index, short entry_element_index)
 {
+	short const *element_reference = &element_index;
+	short local_0 = *element_reference;
 	s_seat_animation_entry *result = NULL;
 	s_globals_element *element;
 
-	while ((element = globals_element_get((s_globals_element_block_view *)g_4e034c, element_index)) != NULL)
+	while ((element = globals_element_get((s_globals_element_block_view *)g_4e034c, local_0)) != NULL)
 	{
 		long tag_index = element->tag_index;
 		if (tag_index != NONE)
 		{
 			result = seat_animation_entry_find(tag_index, index, type, entry_element_index);
 		}
-		element_index = element->parent_index;
+		local_0 = element->parent_index;
 		if (result)
 		{
 			break;
