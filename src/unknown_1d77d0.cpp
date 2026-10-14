@@ -301,10 +301,10 @@ static __forceinline s_havok_contact_entities *joint_constraint_create(s_havok_c
 {
 	s_component_joint_override_group *group = &owner->physics->overrides[joint->override_index];
 	hkTransform frame_a, frame_b;
-	hkRigidBody *rigid_body_a, *rigid_body_b;
+	hkRigidBody *local_560343, *rigid_body_b;
 	real strength = 0.0f;
 	function_1d7ef0(&frame_a, component, (s_component_frame_owner *)owner,
-		(s_component_frame_map const *)bodies, &frame_b, &rigid_body_a, &rigid_body_b, &joint->frames);
+		(s_component_frame_map const *)bodies, &frame_b, &local_560343, &rigid_body_b, &joint->frames);
 	for (long i = 0; i < group->count; i++)
 	{
 		s_component_joint_override *entry = &group->entries[i];
@@ -320,7 +320,7 @@ static __forceinline s_havok_contact_entities *joint_constraint_create(s_havok_c
 	case 0:
 		{
 			c_component_joint_snapshot_0 info;
-			((s_1ce4f0 *)&info)->function_1ce4f0(rigid_body_a, rigid_body_b,
+			((s_1ce4f0 *)&info)->function_1ce4f0(local_560343, rigid_body_b,
 				&frame_a.m_translation.m_quad, &frame_b.m_translation.m_quad,
 				&frame_a.m_rotation.m_col2.m_quad, &frame_b.m_rotation.m_col2.m_quad);
 			constraint = (s_havok_contact_entities *)new c_component_joint_0(&info);
@@ -330,7 +330,7 @@ static __forceinline s_havok_contact_entities *joint_constraint_create(s_havok_c
 		{
 			s_component_joint_hinge *hinge = &owner->physics->hinges[index];
 			c_component_joint_snapshot_1 info;
-			((s_1ce2f0 *)&info)->function_1ce2f0(rigid_body_a, rigid_body_b,
+			((s_1ce2f0 *)&info)->function_1ce2f0(local_560343, rigid_body_b,
 				&frame_a.m_translation.m_quad, &frame_b.m_translation.m_quad,
 				&frame_a.m_rotation.m_col2.m_quad, &frame_b.m_rotation.m_col2.m_quad,
 				&frame_a.m_rotation.m_col1.m_quad, &frame_b.m_rotation.m_col1.m_quad);
@@ -348,7 +348,7 @@ static __forceinline s_havok_contact_entities *joint_constraint_create(s_havok_c
 		{
 			s_component_joint_angles *angles = &owner->physics->angles[index];
 			c_component_joint_snapshot_2 info;
-			((s_1ce700 *)&info)->function_1ce700(rigid_body_a, rigid_body_b,
+			((s_1ce700 *)&info)->function_1ce700(local_560343, rigid_body_b,
 				&frame_a.m_translation.m_quad, &frame_b.m_translation.m_quad,
 				&frame_a.m_rotation.m_col2.m_quad, &frame_b.m_rotation.m_col2.m_quad,
 				&frame_a.m_rotation.m_col1.m_quad, &frame_b.m_rotation.m_col1.m_quad);
@@ -365,7 +365,7 @@ static __forceinline s_havok_contact_entities *joint_constraint_create(s_havok_c
 		{
 			s_component_joint_kind3 *joint3 = &owner->physics->kind3[index];
 			c_component_joint_snapshot_3 info;
-			((s_1ce8d0 *)&info)->function_1ce8d0(rigid_body_a, rigid_body_b,
+			((s_1ce8d0 *)&info)->function_1ce8d0(local_560343, rigid_body_b,
 				&frame_a.m_translation.m_quad, &frame_b.m_translation.m_quad);
 			info.data[3].m128_f32[0] = joint3->unknown78;
 			constraint = (s_havok_contact_entities *)new c_component_joint_3(&info);
@@ -374,7 +374,7 @@ static __forceinline s_havok_contact_entities *joint_constraint_create(s_havok_c
 	case 4:
 		{
 			c_component_joint_snapshot_4 info;
-			((hkRigidBody **)&info.data[0])[0] = rigid_body_a;
+			((hkRigidBody **)&info.data[0])[0] = local_560343;
 			((hkRigidBody **)&info.data[0])[1] = rigid_body_b;
 			info.data[1] = frame_a.m_translation.m_quad;
 			info.data[2] = frame_b.m_translation.m_quad;
@@ -385,7 +385,7 @@ static __forceinline s_havok_contact_entities *joint_constraint_create(s_havok_c
 		{
 			s_component_joint_kind5 *joint5 = &owner->physics->kind5[index];
 			c_component_joint_snapshot_5 info;
-			((s_1ce970 *)&info)->function_1ce970(rigid_body_a, rigid_body_b,
+			((s_1ce970 *)&info)->function_1ce970(local_560343, rigid_body_b,
 				&frame_a.m_translation.m_quad, &frame_b.m_translation.m_quad,
 				&frame_a.m_rotation.m_col2.m_quad, &frame_b.m_rotation.m_col2.m_quad,
 				&frame_a.m_rotation.m_col1.m_quad, &frame_b.m_rotation.m_col1.m_quad);
