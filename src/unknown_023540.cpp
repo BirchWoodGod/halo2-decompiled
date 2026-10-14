@@ -187,11 +187,10 @@ bool function_25820(s_render_view_2b790 const *source)
 		}
 		g_55eed8.position = matrix.position;
 		g_55eed8.forward = matrix.forward;
-		g_55eed8.up = matrix.up;
 		g_55eed8.object_index = NONE;
-		union { dword bits; real value; } caption;
-		caption.bits = g_4b9970[10];
-		if (caption.value != 0.0f) g_55eed8.scale = caption.value * 0.5f;
+		g_55eed8.up = matrix.up;
+		real caption = *(real const *)(g_4b9970 + 10);
+		if (caption != 0.0f) g_55eed8.scale = caption * 0.5f;
 		memcpy(g_55eed8.camera, &g_55eed8.position, sizeof(g_55eed8.camera));
 		function_2b790(&g_55eed8, true);
 		if (!g_5093fc)
@@ -565,10 +564,17 @@ void function_024a70(
 	memset(histogram, 0, 256 * sizeof(real));
 	for (long y = 0; y < 48; y++)
 	{
-		for (long x = 0; x < 64; x++)
+		for (long x = 0; x < 64; x += 8)
 		{
-			histogram_add(histogram, (byte)*pixels);
-			pixels++;
+			histogram_add(histogram, (byte)pixels[0]);
+			histogram_add(histogram, (byte)pixels[1]);
+			histogram_add(histogram, (byte)pixels[2]);
+			histogram_add(histogram, (byte)pixels[3]);
+			histogram_add(histogram, (byte)pixels[4]);
+			histogram_add(histogram, (byte)pixels[5]);
+			histogram_add(histogram, (byte)pixels[6]);
+			histogram_add(histogram, (byte)pixels[7]);
+			pixels += 8;
 		}
 		pixels += stride - 64;
 	}

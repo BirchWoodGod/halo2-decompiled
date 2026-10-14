@@ -61,27 +61,41 @@ c_class_2b01eb::c_class_2b01eb(s_bitmap_block *definition) :
 	function_23625d(this->definition->tag_index);
 	if (this->definition->tag_index != NONE)
 	{
-		group = (s_bitmap_group_view *)g_4e3b44[this->definition->tag_index & 0xffff].bytes;
-		if (group)
+		s_bitmap_group_view *loaded_group = (s_bitmap_group_view *)g_4e3b44[this->definition->tag_index & 0xffff].bytes;
+		bool have_group = loaded_group != NULL;
+		group = loaded_group;
+		if (have_group)
 		{
-			shown = &group->bitmaps[sequence];
+			shown = &loaded_group->bitmaps[sequence];
 		}
 	}
 	memset(&bounds, 0, sizeof(bounds));
-	if (function_2b0a68((s_widget_view_2b0a *)this))
+	short bottom;
+	struct scale_test
+	{
+		static __forceinline bool enabled(s_widget_view_2b0a *widget)
+		{ return (byte)function_2b0a68(widget) != 0; }
+	};
+	if (scale_test::enabled((s_widget_view_2b0a *)this))
 	{
 		bounds.right = this->definition->x;
 		bounds.left = this->definition->x;
 		bounds.top = this->definition->y;
-		bounds.bottom = this->definition->height;
+		bottom = this->definition->height;
+		goto set_bottom;
 	}
 	else if (shown)
 	{
 		bounds.top = this->definition->y;
 		bounds.left = this->definition->x;
-		bounds.bottom = this->definition->y - shown->height;
+		bottom = this->definition->y - shown->height;
 		bounds.right = this->definition->x + shown->width;
+		goto set_bottom;
 	}
+	goto bounds_done;
+set_bottom:
+	bounds.bottom = bottom;
+bounds_done:
 	sequence = 0;
 	this->bounds = bounds;
 	if (group && this->definition->sequence >= 0 && this->definition->sequence < group->bitmap_count)

@@ -131,7 +131,11 @@ struct s_cache_initial_path
 
 struct s_cache_initial_state
 {
-	s_cache_initial_file files[6];
+	/* retail constructs the first and the last file outside the loop over
+	   the middle four */
+	s_cache_initial_file first_file;
+	s_cache_initial_file files[4];
+	s_cache_initial_file last_file;
 	long current;
 	s_cache_initial_path paths[8];
 	s_cache_initial_state();
