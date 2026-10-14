@@ -540,19 +540,16 @@ void packed_sta_write(s_sta_source const *source, s_packed_sta *packed)
 	packed->begin = 'bsta';
 	for (i = 0; i < 16; i++)
 	{
-		s_packed_pst *entry = &packed->entries[i];
-		s_pst_source const *entry_source = &source->entries[i];
-
-		entry->begin = 'bpst';
-		packed_shorts_write(&entry->unknown04_count, entry->unknown04, entry_source->unknown000, 45);
-		packed_shorts_write(&entry->unknown88_count, entry->unknown88, entry_source->unknown05a, 32);
-		entry->text_count = 45;
+		packed->entries[i].begin = 'bpst';
+		packed_shorts_write(&packed->entries[i].unknown04_count, packed->entries[i].unknown04, source->entries[i].unknown000, 45);
+		packed_shorts_write(&packed->entries[i].unknown88_count, packed->entries[i].unknown88, source->entries[i].unknown05a, 32);
+		packed->entries[i].text_count = 45;
 		for (j = 0; j < 45; j++)
 		{
-			entry->texts[j].flag = entry_source->texts[j].flag;
-			packed_shorts_write(&entry->texts[j].count, entry->texts[j].text, entry_source->texts[j].text, 45);
+			packed->entries[i].texts[j].flag = source->entries[i].texts[j].flag;
+			packed_shorts_write(&packed->entries[i].texts[j].count, packed->entries[i].texts[j].text, source->entries[i].texts[j].text, 45);
 		}
-		entry->end = 'epst';
+		packed->entries[i].end = 'epst';
 	}
 	for (i = 0; i < 16; i++)
 	{
