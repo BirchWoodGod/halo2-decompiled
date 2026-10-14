@@ -71,10 +71,10 @@ struct s_unit_11a4d0
 	short offset33e;
 	byte unknown340[0x346 - 0x340];
 	short offset346;
-	struct
+	struct s_flags348_11a4d0
 	{
-		byte bit0 : 1;
-		byte : 7;
+		word bit0 : 1;
+		word : 15;
 	} flags348;
 };
 
@@ -269,7 +269,10 @@ void function_11a770(long unit_index, bool flag)
 		SET_FLAG(unit->unit_flags, 20, flag);
 		unit->vector88 = *g_4687a4;
 		if (unit->object_type == 0)
-			unit_get_11a4d0(unit_index)->flags348.bit0 = false;
+		{
+			s_unit_11a4d0::s_flags348_11a4d0 *flags = &unit_get_11a4d0(unit_index)->flags348;
+			flags->bit0 = false;
+		}
 	}
 }
 
@@ -841,11 +844,11 @@ bool function_11b4a0(long unit_index, long animation_graph_index, long animation
 
 	if (function_11b520(unit_index, animation_graph_index, animation_name, interpolate, NONE, false))
 	{
-		long local_0 = *(short const volatile *)&frame;
-		real seconds = (real)local_0 * (1.0f / 30.0f);
+		real seconds = (real)frame * (1.0f / 30.0f);
 		s_unit_11a4d0 *unit = unit_get_11a4d0(unit_index);
 		s_unit_animation_11a4d0 *animation = (s_unit_animation_11a4d0 *)((byte *)unit + unit->animation_offset);
-		if (animation->index68 != NONE && animation->index0 != NONE && animation->index6 != NONE)
+		bool valid = animation->index68 != NONE && animation->index0 != NONE && animation->index6 != NONE;
+		if (valid)
 			((c_animation_channel *)animation)->set_frame_position(seconds * 30.0f);
 		result = true;
 	}
