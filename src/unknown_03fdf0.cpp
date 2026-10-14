@@ -147,7 +147,8 @@ void function_402b0(long cache_index, long mode)
                 if (function_45ce0((short)index, (byte *)&context, (short)part, (short)(entry->flags & 0xf)) &&
                     function_460d0(*(dword const **)(entry->unknown10 + 4), (short)index, part))
                 {
-                    long chosen = material == NONE ? context.material : material;
+                    long const *material_source = material == NONE ? &context.material : &material;
+                    long chosen = *material_source;
                     if (chosen != NONE)
                         function_41040((short)index, part, 1, weight, &context, chosen, true, ~0UL, 0);
                 }

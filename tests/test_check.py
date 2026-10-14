@@ -134,6 +134,41 @@ def test_jump_table_entries_must_map_to_the_same_offsets():
     assert run(ours, 0x401000, swapped, absolute=fields)[1] == 16
 
 
+def _jump_table_function(base, order, case=b'\x90'):
+    """jmp [eax*4+table]; three case bodies (case, nop, ret); two bytes of fill; a table of three absolute
+    entries at offset 12, pointing at the case bodies in order."""
+    body = bytes.fromhex('ff2485') + (base + 12).to_bytes(4, 'little') + case + bytes.fromhex('90' 'c3')
+    return body + bytes.fromhex('9090') + b''.join((base + o).to_bytes(4, 'little') for o in order)
+
+
+JUMP_TABLE_FIELDS = {0x401000 + 3, 0x401000 + 12, 0x401000 + 16, 0x401000 + 20}
+
+
+def _differing_lines(lines):
+    """The differing lines of a listing, as (ours, retail) texts."""
+    return [tuple(side.strip() for side in line[5:].split('|')) for line in lines if line.startswith('  !!')]
+
+
+def test_jump_table_entries_that_differ_only_by_layout_do_not_count():
+    # the entries hold different addresses (the functions sit at different places) but the same offsets; only
+    # the changed case body differs, and the table is compared as dwords, not decoded as instructions
+    ours = _jump_table_function(0x401000, (7, 8, 9))
+    theirs = _jump_table_function(0x1000, (7, 8, 9), case=b'\x91')
+    status, first, lines, _ = run(ours, 0x401000, theirs, absolute=JUMP_TABLE_FIELDS)
+    assert first == 7 and status == 'near'
+    assert _differing_lines(lines) == [('nop', 'xchg ecx, eax')]
+    assert sum(line[5:].startswith('dd ') for line in lines) == 3
+
+
+def test_jump_table_entries_that_differ_count_once_each():
+    ours = _jump_table_function(0x401000, (7, 8, 9))
+    theirs = _jump_table_function(0x1000, (7, 9, 8), case=b'\x91')
+    status, first, lines, _ = run(ours, 0x401000, theirs, absolute=JUMP_TABLE_FIELDS)
+    assert first == 7 and status == 'todo'
+    assert _differing_lines(lines) == [('nop', 'xchg ecx, eax'), ('dd 0x401008', 'dd 0x1009'),
+                                       ('dd 0x401009', 'dd 0x1008')]
+
+
 def test_self_recursive_call_matches_when_retail_calls_itself():
     ours = bytes.fromhex('e8' 'fbffffff' 'c3')      # call own start
     assert run(ours, 0x401000, ours, relative={0x401001})[:2] == ('matched', None)

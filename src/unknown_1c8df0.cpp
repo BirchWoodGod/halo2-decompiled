@@ -69,6 +69,8 @@ short __stdcall function_1c8df0(long arg_0, point3f const *arg_4, short arg_3, s
    if (function_30bf0(&local_8) == 0.0f)
     local_8 = *g_4687a8;
    local_4 |= 0x10000000;
+   /* retail calls the probe test at each of these */
+#pragma inline_depth(0)
    if ((short)arg_5 == 1)
    {
     point3f local_9;
@@ -111,9 +113,9 @@ short __stdcall function_1c8df0(long arg_0, point3f const *arg_4, short arg_3, s
     local_11.x = arg_4->x + g_4687bc->i * 0.1f;
     local_11.y = arg_4->y + g_4687bc->j * 0.1f;
     local_11.z = arg_4->z + g_4687bc->k * 0.1f;
-    if (function_16a040(local_4, local_3, &local_9, arg_0, NONE, &local_6) ||
-        function_16a040(local_4, local_3, &local_10, arg_0, NONE, &local_6) ||
-        function_16a040(local_4, local_3, &local_11, arg_0, NONE, &local_6))
+    if (function_16a040(local_4, &local_9, local_3, arg_0, NONE, &local_6) ||
+        function_16a040(local_4, &local_10, local_3, arg_0, NONE, &local_6) ||
+        function_16a040(local_4, &local_11, local_3, arg_0, NONE, &local_6))
     {
      local_1 = local_6.field_4;
      local_2 = local_6.field_40;
@@ -121,6 +123,7 @@ short __stdcall function_1c8df0(long arg_0, point3f const *arg_4, short arg_3, s
      goto local_14;
     }
    }
+#pragma inline_depth()
   }
   if (local_7)
    local_0 = 0;

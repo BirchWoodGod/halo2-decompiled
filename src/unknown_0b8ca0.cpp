@@ -694,7 +694,8 @@ bool function_bba80(long object_index)
                 offset.j = centre->y - position.y;
                 offset.k = centre->z - position.z;
                 vector3f *forward = (vector3f *)((byte *)OBJECT_GET(*(long *)(player + 0x2c)) + 0x15c);
-                double radius = *(real *)(object + 0x3c);
+                double radius_value = *(real *)(object + 0x3c);
+                double const &radius = radius_value;
                 real magnitude = function_30bf0(&offset);
                 if (offset.k * forward->k + offset.j * forward->j + offset.i * forward->i >
                     cos(atan2((double)magnitude, radius) + 0.7853981852531433f))
@@ -719,7 +720,7 @@ void __stdcall function_b8600(long object_index, long unknown);
 bool __stdcall function_bdef0(long object_index)
 {
     byte *object = (byte *)OBJECT_GET(object_index);
-    byte const *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+    byte const *definition = g_4e3b44[(word)*(long *)object].bytes;
     bool active = (*(dword *)(object + 4) & 0x100) != 0;
     bool from_physics = false;
     long component_index = *(long *)(object + 0xb4);
