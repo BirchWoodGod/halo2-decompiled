@@ -1176,7 +1176,9 @@ PRIVATE __forceinline hkRigidBody *collidable_rigid_body_1c4260(byte *arg_0)
 // @retail 0x1c4260
 void function_1c4260()
 {
- if (g_51e9a4 && !g_47f05b)
+ /* read through a const pointer, as retail keeps the flag store ahead of the
+    island count load */
+ if (g_51e9a4 && !*(bool const *)&g_47f05b)
  {
   g_47f05b = true;
   for (long local_0 = 0; local_0 < g_51e9a4->m_island_count; ++local_0)
@@ -1829,15 +1831,12 @@ void __stdcall function_1c4590(long flags)
     }
     long contacts_total = 0, bodies_total = 0, constraints_total = 0, other_total = 0;
     long contacts_maximum = 0, bodies_maximum = 0, constraints_maximum = 0, other_maximum = 0;
-    long index = NONE;
-    for (;;)
+    s_record_pool_iterator iterator2;
+    iterator2.data = g_51e9b8;
+    iterator2.index = NONE;
+    s_havok_component *component;
+    while ((component = (s_havok_component *)data_iterator_next_inlined(&iterator2)) != NULL)
     {
-        index = data_next_absolute_index_inlined(g_51e9b8, index + 1);
-        if (index == NONE)
-            break;
-        s_havok_component *component = (s_havok_component *)(g_51e9b8->data + g_51e9b8->size * index);
-        if (!component)
-            break;
         long contacts, constraints, other, bodies;
         function_1d3880(component, &contacts, &constraints, &other, &bodies);
         contacts_total += contacts;

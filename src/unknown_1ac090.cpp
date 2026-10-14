@@ -855,7 +855,7 @@ bool __stdcall function_1ac610(long arg_0, point3f const *arg_1,
 		short local_6 = function_bb050(1, 0x8c3, local_3, &local_4, 4.0f, local_5, 20);
 		long local_7 = NONE;
 		real local_8 = 3.402823466e38f;
-		for (long local_9 = 0; local_9 < local_6; ++local_9)
+		for (short local_9 = 0; local_9 < local_6; ++local_9)
 		{
 			long local_10 = local_5[local_9];
 			if (local_10 != local_0->unknown018)
@@ -943,9 +943,9 @@ bool __stdcall function_1ac610(long arg_0, point3f const *arg_1,
 
 struct s_1f4a20_entry;
 struct s_1f4a20_source;
-bool function_1f4a20(long arg_0, s_reference arg_1, s_1f4a20_entry const *arg_2,
+bool function_1f4a20(s_1f4a20_entry const *arg_2, long arg_0, s_reference arg_1, s_1f4a20_source const *arg_8,
 	bool arg_3, s_type_c3b527 *arg_4, vector3f *arg_5,
-	signed char *arg_6, bool *arg_7, s_1f4a20_source const *arg_8);
+	signed char *arg_6, bool *arg_7);
 
 struct s_1ac9e1
 {
@@ -975,8 +975,8 @@ bool function_1ac9e0(long arg_0, s_reference arg_1, s_1f4a20_entry const *arg_2,
 		*(long *)((byte *)local_2 + 0x14) != NONE &&
 		*(long *)((byte *)local_2 + 0x14) != 0xffff)
 	{
-		bool local_8 = function_1f4a20(arg_0, arg_1, arg_2, false, &arg_7->field_1c,
-			&arg_7->field_8, &arg_7->field_2c, &local_0, arg_6);
+		bool local_8 = function_1f4a20(arg_2, arg_0, arg_1, arg_6, false, &arg_7->field_1c,
+			&arg_7->field_8, &arg_7->field_2c, &local_0);
 		if (local_8)
 		{
 			arg_7->field_19 = true;
