@@ -1882,9 +1882,10 @@ void sound_system_update_time(void)
 
 	sound_system->field_14_2 = now;
 	sound_system->time += elapsed;
-	sound_system->ambience_fade += (real)elapsed * 0.001f;
+	real seconds = (real)elapsed * 0.001f;
+	sound_system->ambience_fade += seconds;
 	sound_system->elapsed_time = (real)elapsed / 1000.0f;
-	sound_system->previous_ambience_fade += (real)elapsed * 0.001f;
+	sound_system->previous_ambience_fade += seconds;
 	if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 1)
 	{
 		if (g_4e6948->flag1121)
@@ -1893,9 +1894,7 @@ void sound_system_update_time(void)
 				sound_system->master_fade_delay = (long)(sound_system->master_fade_times.i * 1000.0f);
 			if (sound_system->master_fade_delay > 0)
 			{
-				long remaining = sound_system->master_fade_delay - elapsed;
-
-				sound_system->master_fade_delay = remaining > 0 ? remaining : 0;
+				sound_system->master_fade_delay = sound_system->master_fade_delay - elapsed > 0 ? sound_system->master_fade_delay - elapsed : 0;
 			}
 			if (sound_system->master_fade_delay == 0)
 			{
