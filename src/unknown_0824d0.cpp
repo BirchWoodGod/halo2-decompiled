@@ -84,7 +84,8 @@ void function_824d0(const byte *input, s_weapon_activity_result *output, long ob
  real y = *(const real *)(input + 0x38);
  real x = *(const real *)(input + 0x34);
  real z = *(const real *)(input + 0x3c);
- *(real *)(result + 4) = (real)atan2(z, sqrt(x * x + y * y));
+ y *= y;
+ *(real *)(result + 4) = (real)atan2(z, sqrt(y + x * x));
  if (*(real *)result < 0.0f)
   *(real *)result += 6.2831855f;
  *(long *)(result + 8) = *(const long *)(input + 0x14);
