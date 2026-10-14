@@ -3194,7 +3194,10 @@ void function_128ca0(short arg_0, long arg_1, s_looping_channel_spatialization c
 	local_3.field_8 = local_5 - (real)SOUND_GLOBALS_DEFINITIONS->pitch_bounds[local_7->bounds_index].unknown00;
 	if (local_1->priority & 2)
 	{
+		/* retail calls the promotion lookup here */
+#pragma inline_depth(0)
 		s_unknown_5c *local_9 = function_221810(local_2->promotion_index);
+#pragma inline_depth()
 		real local_10;
 		if (local_1->effect_index != NONE)
 		{
