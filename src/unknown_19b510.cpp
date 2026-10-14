@@ -108,14 +108,14 @@ void dialog_ok_show(long a, long dialog_id, long b, short user_flags, dialog_cho
 
 /* opens the ok/cancel dialog without choice callbacks */
 // @retail 0x19b590
-void dialog_choice_show_default(long a, long b, long user_flags, dialog_choice_callback first_chosen, long dialog_id)
+void dialog_choice_show_default(long a, long b, short user_flags, dialog_choice_callback first_chosen, long dialog_id)
 {
 	dialog_choice_show(a, dialog_id, b, user_flags, first_chosen, 0, 0);
 }
 
 /* opens the ok/cancel dialog */
 // @retail 0x19b5af
-void dialog_choice_show(long a, long dialog_id, long b, long user_flags, dialog_choice_callback first_chosen, dialog_choice_callback second_chosen, dialog_closed_callback closed)
+void dialog_choice_show(long a, long dialog_id, long b, short user_flags, dialog_choice_callback first_chosen, dialog_choice_callback second_chosen, dialog_closed_callback closed)
 {
 	s_screen_parameters parameters;
 	c_dialog_choice_screen *screen;

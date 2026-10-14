@@ -49,7 +49,7 @@ class c_online_task_screen;
 void __stdcall function_1a2cb7(c_online_task_screen *screen);
 struct s_friend_request;
 bool friend_request_get(s_friend_request *request);
-void function_148ca8(long error, dword controller_flags);
+void function_148ca8(long error, short controller_flags);
 bool gamertag_valid(word *string);
 extern long g_55c154;
 
@@ -1293,9 +1293,7 @@ bool finish_profile_create(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
-		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
-		function_148ca8(g_55c154, controller_flags);
+		function_148ca8(g_55c154, keyboard->user_flags);
 	}
 	return true;
 }
@@ -1314,9 +1312,7 @@ bool finish_profile_create_1(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
-		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
-		function_148ca8(g_55c154, controller_flags);
+		function_148ca8(g_55c154, keyboard->user_flags);
 	}
 	return true;
 }
@@ -1359,9 +1355,7 @@ bool finish_profile_create_3(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
-		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
-		function_148ca8(g_55c154, controller_flags);
+		function_148ca8(g_55c154, keyboard->user_flags);
 	}
 	return true;
 }

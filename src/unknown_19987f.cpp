@@ -1253,7 +1253,7 @@ bool function_148044(long channel, long index, long value);
 bool window_manager_window_has_pause_screen_for_user(long channel, long index, long user_index);
 void function_1906b4(void);
 void __stdcall function_1483c3(long reason);
-void dialog_choice_show(long a, long dialog_id, long b, long user_flags, dialog_choice_callback first_chosen, dialog_choice_callback second_chosen, dialog_closed_callback closed);
+void dialog_choice_show(long a, long dialog_id, long b, short user_flags, dialog_choice_callback first_chosen, dialog_choice_callback second_chosen, dialog_closed_callback closed);
 bool __stdcall function_23690b(long controller);
 bool __stdcall function_236917(long controller_index);
 bool __stdcall function_236953(long controller);
