@@ -2056,7 +2056,7 @@ void function_1905bf(long controller, bool flag);
 bool c_screen_24fd74::v10(s_widget_event *event)
 {
 	bool unready = network_session_manager_session_unready();
-	bool result = true;
+	long result = 1;
 
 	if (unready && !window_manager_channel_in_use(1))
 	{

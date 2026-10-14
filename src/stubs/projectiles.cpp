@@ -8,5 +8,3 @@ struct s_location;
 struct s_damage_owner;
 struct s_collision_result_1697c0;
 struct s_type_1e6529;
-// @stub 0x184060
-void function_184060(long unknown3c, unsigned char unknown59, s_type_1e6529 *data, long unknown50) { }
