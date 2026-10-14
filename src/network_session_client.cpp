@@ -201,10 +201,10 @@ void session_owner_initialize(s_session_owner *owner_, long unknown40, long unkn
 	_ReadWriteBarrier();
 	owner->session_b = session_b;
 	_ReadWriteBarrier();
-	owner->unknown3c = unknown3c;
 	owner->mode = 0;
-	owner->unknown49 = false;
+	owner->unknown3c = unknown3c;
 	owner->unknown48 = false;
+	owner->unknown49 = false;
 	owner->failed = false;
 }
 #pragma function(_ReadWriteBarrier)

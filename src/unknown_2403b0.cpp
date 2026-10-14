@@ -25,6 +25,11 @@ void function_242e00(long player_index, long team);
 void function_242660(long object_index, bool flag);
 void function_2430a0(long player_index, bool flag);
 
+static inline bool slot_flag_clear_2403b0(s_slot_table *table, long team)
+{
+	return !(table->flags[team] & 1);
+}
+
 // @retail 0x2403b0
 void __stdcall function_2403b0(long player_index)
 {
@@ -97,7 +102,7 @@ void __stdcall function_2403b0(long player_index)
 	if ((g_4e6948->flags22c & 8) && *(long *)((byte *)g_4e6948 + 0x240) != 1 && *(long *)((byte *)g_4e6948 + 0x240) != 2 && g_4e6948->mode_180 != 9)
 	{
 		signed char team = *(signed char *)(player + 0xc0);
-		if (!function_15e410(team) || !(table->flags[team] & 1))
+		if (!function_15e410(team) || !slot_flag_clear_2403b0(table, team))
 		{
 			function_2430a0(player_index, true);
 			return;

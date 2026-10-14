@@ -785,11 +785,11 @@ static inline long sound_submix_volume(real gain)
 	return volume;
 }
 
-PRIVATE __forceinline real function_21ee81(s_sound_driver_occlusion const *arg_0, real const *arg_1)
+PRIVATE __forceinline real function_21ee81(s_sound_driver_occlusion const *arg_0, real const *arg_1, long arg_2)
 {
-    real upper = arg_1[1];
+    real upper = arg_1[arg_2 + 1];
     real maximum = arg_0->maximum;
-    real lower = arg_1[0];
+    real lower = arg_1[arg_2];
     real minimum = arg_0->minimum;
     real local_0 = maximum > upper ? upper : maximum;
     real local_1 = minimum > lower ? minimum : lower;
@@ -800,22 +800,22 @@ PRIVATE __forceinline real function_21ee81(s_sound_driver_occlusion const *arg_0
 PRIVATE __forceinline long function_21ee82(real arg_0)
 {
     long local_0;
+    real local_1;
     if (0.0f > arg_0)
+        local_1 = 0.0f;
+    else if (arg_0 > 1.0f)
+        local_1 = 1.0f;
+    else
+        local_1 = arg_0;
+    if (local_1 == 0.0f)
         local_0 = -6400;
     else
     {
-        if (arg_0 > 1.0f)
-            arg_0 = 1.0f;
-        if (arg_0 == 0.0f)
+        local_0 = (long)(log10(local_1) * 2000.0f);
+        if (local_0 < -6400)
             local_0 = -6400;
-        else
-        {
-            local_0 = (long)(log10(arg_0) * 2000.0f);
-            if (local_0 < -6400)
-                local_0 = -6400;
-            else if (local_0 > 0)
-                local_0 = 0;
-        }
+        else if (local_0 > 0)
+            local_0 = 0;
     }
     return local_0;
 }
@@ -823,7 +823,6 @@ PRIVATE __forceinline long function_21ee82(real arg_0)
 // @retail 0x21ee80
 void function_21ee80(void)
 {
-	real angles[4][6];
 	if (g_47005c.dirty)
 	{
 		SOUND_DRIVER_GLOBALS->effects->set_i3dl2(&g_47005c.room, SOUND_DRIVER_GLOBALS->surround);
@@ -838,38 +837,18 @@ void function_21ee80(void)
 		}
 		if (SOUND_DRIVER_GLOBALS->occlusion_dirty[group])
 		{
-			angles[0][0] = -0.785398185f;
-			angles[0][1] = 2.3561945f;
-			angles[0][2] = 5.49778748f;
-			angles[0][3] = 6.28318548f;
-			angles[0][4] = -6.28318548f;
-			angles[0][5] = -3.92699099f;
-			angles[1][0] = 0.785398185f;
-			angles[1][1] = 3.92699099f;
-			angles[1][2] = -5.49778748f;
-			angles[1][3] = -2.3561945f;
-			angles[1][4] = 0.0f;
-			angles[1][5] = 0.0f;
-			angles[2][0] = -2.3561945f;
-			angles[2][1] = 0.785398185f;
-			angles[2][2] = 3.92699099f;
-			angles[2][3] = 6.28318548f;
-			angles[2][4] = -6.28318548f;
-			angles[2][5] = -5.49778748f;
-			angles[3][0] = 2.3561945f;
-			angles[3][1] = 5.49778748f;
-			angles[3][2] = -3.92699099f;
-			angles[3][3] = -0.785398185f;
-			angles[3][4] = 0.0f;
-			angles[3][5] = 0.0f;
-			real const *volatile ranges[4] = { angles[0], angles[2], angles[1], angles[3] };
+			real sectors0[6] = { -0.785398185f, 2.3561945f, 5.49778748f, 6.28318548f, -6.28318548f, -3.92699099f };
+			real sectors1[6] = { -2.3561945f, 0.785398185f, 3.92699099f, 6.28318548f, -6.28318548f, -5.49778748f };
+			real sectors2[6] = { 0.785398185f, 3.92699099f, -5.49778748f, -2.3561945f, 0.0f, 0.0f };
+			real sectors3[6] = { 2.3561945f, 5.49778748f, -3.92699099f, -0.785398185f, 0.0f, 0.0f };
+			real const *volatile ranges[4] = { sectors0, sectors1, sectors2, sectors3 };
 			real scale = SOUND_DRIVER_GLOBALS->reverb_scales[group];
 			s_sound_driver_occlusion const *occlusion = &SOUND_DRIVER_GLOBALS->occlusions[group];
 			for (long channel = 0; channel < 4; channel++)
 			{
-				real overlap0 = function_21ee81(occlusion, ranges[channel]);
-				real overlap1 = function_21ee81(occlusion, ranges[channel] + 2);
-				real overlap2 = function_21ee81(occlusion, ranges[channel] + 4);
+				real overlap0 = function_21ee81(occlusion, ranges[channel], 0);
+				real overlap1 = function_21ee81(occlusion, ranges[channel], 2);
+				real overlap2 = function_21ee81(occlusion, ranges[channel], 4);
 				real fraction = (overlap2 + overlap1 + overlap0) * 0.318309873f;
 				real offset = occlusion->offset;
 				real gain = ((fraction - offset) * occlusion->scale + offset) * scale;
@@ -884,12 +863,12 @@ void function_21ee80(void)
 		s_sound_stream *stream = &SOUND_DRIVER_GLOBALS->channels[channel];
 		switch (stream->state)
 		{
-		case 0: break;
-		case 1: break;
-		case 2: break;
-		case 3: break;
+		case 0: sound_stream_update(stream); break;
+		case 1: sound_stream_update(stream); break;
+		case 2: sound_stream_update(stream); break;
+		case 3: sound_stream_update(stream); break;
+		default: sound_stream_update(stream); break;
 		}
-		sound_stream_update(stream);
 		switch (stream->state)
 		{
 		case 0: break;

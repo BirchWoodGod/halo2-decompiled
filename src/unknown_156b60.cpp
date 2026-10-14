@@ -59,7 +59,7 @@ s_cache_record *function_1e2d0();
 matrix3x3 *function_142da0(real yaw, real pitch, real roll, matrix3x3 *out);
 vector3f *function_143070(matrix3x3 const *m, vector3f const *v, vector3f *out);
 typedef bool (__stdcall *t_record_fill)(long, void *, long, long, long, void *, s_sort_record *);
-void function_40e30(short group, long tag, real distance, long level, word kind,
+void function_40e30(short group, long tag, real distance, long level, short kind,
 	dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context);
 
 void __stdcall function_157020(byte *definition, point3f const *position, vector3f const *forward,
@@ -246,7 +246,7 @@ void function_156b60(s_effect_beam *beam, real progress, transform4x3f const *ma
 		}
 	}
 	if (flags & 0xffff7fff)
-		function_40e30(0, *(long *)(definition + 4), 10000.0f, NONE, 5, 0xffffffff, 0,
+		function_40e30(0, *(long *)(definition + 4), 10000.0f, 5, NONE, 0xffffffff, 0,
 			(t_record_fill)function_156ed0, (dword)function_156fe0, (void *)g_4e92e0);
 	++g_4e92e0;
 }

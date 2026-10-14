@@ -2302,7 +2302,7 @@ long function_20ec80(long target_index, s_audio_priority_table *table, byte cons
                 {
                     long index = *(long *)entry;
                     if (index != NONE && *(short *)(entry + 4) == 3 && index != *(long *)(object + 0x12c) &&
-                        (!require_related || function_277790(index, *(long *)(object + 0x12c))))
+                        (!require_related || function_277790(*(long *)(object + 0x12c), index)))
                     {
                         byte *candidate_actor = g_4f55f0->data + (index & 0xffff) * 0x888;
                         long candidate_index = *(long *)(candidate_actor + 0x18);
