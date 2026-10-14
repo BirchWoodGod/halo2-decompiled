@@ -2,6 +2,52 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8494 functions match
+
+```
+matched 8494 of 11318 game functions (1098574 of 2784283 bytes, 39.46%)
+```
+
+19 new matches, none lost:
+- Machine 1 Opus lane round 19 (blockers handed over between the machines): `0x7ad80` and `0x6c8b0`, their callers `0x23643f`, `0x24b824` and `0x10a3f0`, and twelve functions that follow with no change to their bodies: `0x6e620`, `0x7ad50`, `0x105e80`, `0x10f1e0`, `0x10a1b0`, `0x18f170` and `0x2a2fd0` through `0x2a3170` (six)
+- Machine 3 Codex deep lane 2 round 45 (#440): `0x2a5010`
+- Machine 3 Codex deep lane 3 round 60 (#441): `0x40e30`
+
+## 2026-10-14: 8475 functions match
+
+```
+matched 8475 of 11318 game functions (1096078 of 2784283 bytes, 39.37%)
+```
+
+4 new matches, none lost:
+- Machine 1 key lane 1 round 2 (new functions in their own files): `0xb8a80` and `0xf8190`, with `0xb8a10` following
+- Machine 1 key lane 2 round 2 (new functions in their own files): `0xa9f20`
+
+## 2026-10-14: 8471 functions match
+
+```
+matched 8471 of 11318 game functions (1095650 of 2784283 bytes, 39.35%)
+```
+
+15 new matches, none lost:
+- Machine 3 batch 12 (#439): `0x128920`, `0x1c2a10`, `0x1cfe70`, `0x1d1260`, `0x1dacb0`, `0x1deed0`, `0x207c20`, `0x2081e0`, `0x209520`, `0x20adf0` and `0x256520`
+- Machine 3 Opus lane D upper round 22 (#438): `0x80660`, `0x824d0` and `0x8f170`
+- Machine 3 Codex lane F round 28 (#437): `0x18a430`
+- Restored a contributor function (`0xf8090`) to its author version until they answer on #9
+
+## 2026-10-13: 8456 functions match
+
+```
+matched 8456 of 11318 game functions (1091062 of 2784283 bytes, 39.19%)
+```
+
+28 new matches, none lost:
+- Machine 3 batch 11 (#434): `0x122570`, `0x1c35f0`, `0x1df6c0`, `0x209310`, `0x209f00`, `0x20ff50`, `0x220e00`, `0x221da0`, `0x24a886`, `0x256150`, `0x257ed0`, `0x25eb70` and `0x2764c0`
+- Machine 3 lane J rounds 21 to 23 (#435): `0x940b0` and `0x9e520`
+- Machine 3 lane D round 26 (#436): `0x63080` and `0x6a3b0`
+- Machine 1 deep lanes, final rounds before the handover to machine 3: `0x4b160`, `0xb8940`, `0xb8b70`, `0xbffa0`, `0x1e35f0` and `0x1eb020`
+- Machine 1 Opus lane round 18: `0x22e148`, `0x24b70d`, `0x2a0380`, `0x1e32e0` and `0x19060a`
+
 ## 2026-10-13: 8428 functions match
 
 ```
