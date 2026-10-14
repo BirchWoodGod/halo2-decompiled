@@ -998,19 +998,20 @@ long function_d1850(long object_index, bool value, s_effect_color_query *query)
                 if (status != 3)
                 {
                     short type = *(short *)definition;
-                    bool use_sky = false;
                     if (type == 1)
                     {
                         byte *unit_tag_bytes = g_4e3b44[OBJECT_FROM_INDEX(object_index)->tag_index & 0xffff].bytes;
-                        use_sky = ((1 << unit_tag_bytes[0x1f0]) & 0x28) != 0;
+                        if (!((1 << unit_tag_bytes[0x1f0]) & 0x28)) goto no_sky;
                     }
-                    else if (type == 0) use_sky = function_e5670(object_index) == 2;
+                    else if (type == 0) { if (function_e5670(object_index) != 2) goto no_sky; }
                     else if (type == 0xc)
                     {
                         byte *unit_tag_bytes = g_4e3b44[OBJECT_FROM_INDEX(object_index)->tag_index & 0xffff].bytes;
-                        use_sky = (bool)((*(dword *)(unit_tag_bytes + 0xd4) >> 4) & 1);
+                        if (!(bool)((*(dword *)(unit_tag_bytes + 0xd4) >> 4) & 1)) goto no_sky;
                     }
-                    if (use_sky) failed = surface_status_failed(function_d1a30(object_index, point, (s_sky_surface_record *)query));
+                    else goto no_sky;
+                    failed = surface_status_failed(function_d1a30(object_index, point, (s_sky_surface_record *)query));
+                no_sky:;
                 }
             }
         }
