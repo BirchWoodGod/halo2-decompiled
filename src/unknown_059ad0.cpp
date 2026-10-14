@@ -1127,7 +1127,7 @@ local_0:
 
 #pragma inline_depth(0)
 // @retail 0x5afc0
-bool network_session_players_fit(c_class_58d20 *session, const dword *identities, long count, bool ignore_reservations)
+bool network_session_players_fit(c_class_58d20 *session, long count, const dword *identities, bool ignore_reservations)
 {
 	long reserved = 0;
 
@@ -3188,28 +3188,29 @@ struct s_session_join_request
 };
 
 bool network_session_is_full(c_class_58d20 *session, long peer_count, long player_count);
-bool network_session_players_fit(c_class_58d20 *session, const dword *identities, long count, bool ignore_reservations);
+bool network_session_players_fit(c_class_58d20 *session, long count, const dword *identities, bool ignore_reservations);
 
 // @retail 0x62fe0
 long network_session_evaluate_join_request(c_class_58d20 *session, const s_session_join_request *request)
 {
-	long result = 4;
-	if (!session->function_058d20())
-		return 3;
-	if (session->value498c > 1)
-		return 2;
-	long state = session->state;
-	if (state == 7 || state == 6 || state == 8)
-		return 3;
-	if (network_session_find_member(session, &request->identity) != NONE)
-		result = 0;
-	else
-	{
-		long player_count = request->player_count;
-		if (!network_session_is_full(session, 1, player_count) && network_session_players_fit(session, request->identities, player_count, request->ignore_reservations))
-			result = 0;
-	}
-	return result;
+ long result = 0;
+ if (!session->function_058d20())
+  result = 3;
+ else if (session->value498c > 1)
+  result = 2;
+ else
+ {
+  long state = session->state;
+  if (state == 7 || state == 6 || state == 8)
+   result = 3;
+  else if (network_session_find_member(session, &request->identity) == NONE)
+  {
+   long player_count = request->player_count;
+   if (network_session_is_full(session, 1, player_count) || !network_session_players_fit(session, player_count, request->identities, request->ignore_reservations))
+    result = 4;
+  }
+ }
+ return result;
 }
 
 /* the state data of a host transition */
@@ -3600,8 +3601,8 @@ bool __stdcall function_5c720(c_class_58d20 *session, const s_session_member_ide
 }
 
 // @retail 0x630f0
-bool function_630f0(c_class_58d20 *session, const s_session_join_request *request,
- long address, long reason)
+bool function_630f0(c_class_58d20 *session, long address,
+ const s_session_join_request *request, long reason)
 {
  bool result = false;
  if (!reason && function_5c720(session, &request->identity, request->player_count,
@@ -3756,7 +3757,7 @@ bool __stdcall function_063080(c_class_58d20 *session, const s_network_message_s
  if (!reason && session->listener)
   session->listener->unknown00(address, &request);
  else
-  function_630f0(session, &request, (long)address, reason);
+  function_630f0(session, (long)address, &request, reason);
  return true;
 }
 
