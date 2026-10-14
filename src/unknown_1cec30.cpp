@@ -980,10 +980,13 @@ void havok_component_node_states_get(s_havok_component *component, s_havok_node_
 void havok_component_node_states_set(s_havok_component *component, s_havok_node_states const *states)
 {
 	long rigid_body_index;
+	s_havok_component_rigid_body *bodies;
 
 	for (rigid_body_index = 0; rigid_body_index < component->rigid_bodies.size; rigid_body_index++)
 	{
-		if (component->rigid_bodies.data[rigid_body_index].node_count > 0)
+		bodies = component->rigid_bodies.data;
+		/* the pointer serves the test only; retail re-reads the array for the node */
+		if (bodies[rigid_body_index].node_count > 0)
 		{
 			long node_index = component->rigid_bodies.data[rigid_body_index].nodes[0];
 
@@ -1543,23 +1546,36 @@ PRIVATE inline void component_property_replace(hkEntity *entity, dword key, hkPr
  entity->addProperty(key, value);
 }
 
+/* the size of the loaded cache file, 0 when none is loaded */
+PRIVATE inline long cache_file_size_1d01c0()
+{
+ if (cache_file_globals.loaded)
+  return cache_file_globals.header.unknown1c;
+ return 0;
+}
+
 /* drops a reference to a body and frees it when none are left, unless it sits
-   in the pinned memory range; retail computes the range's limit a second time
-   for the pinned value (the second test is written the other way round so the
-   two are not shared) */
+   in the pinned memory range (from 0x80061000 to the end of the loaded cache
+   file's size past it); the size helper is called twice on purpose, since a
+   limit computed once is shared and changes the add/sub spelling of the sum */
 PRIVATE inline void component_body_release(c_havok_reference_counted *body)
 {
  --body->reference_count;
  if (body->reference_count == 0)
  {
   long value = (long)body;
-#define COMPONENT_MEMORY_LIMIT ((long)0x80061000 + (cache_file_globals.loaded ? cache_file_globals.header.unknown1c : 0))
-  if ((value < (long)0x80061000 ? (long)0x80061000 : value > COMPONENT_MEMORY_LIMIT ? (long)0x80061000 + (!cache_file_globals.loaded ? 0 : cache_file_globals.header.unknown1c) : value) == value)
+  if ((value < (long)0x80061000 ? (long)0x80061000 : value > (long)0x80061000 + cache_file_size_1d01c0() ? (long)0x80061000 + cache_file_size_1d01c0() : value) == value)
    body->reference_count = 1;
   else
    delete body;
-#undef COMPONENT_MEMORY_LIMIT
  }
+}
+
+/* frees an hkArray's storage unless the array does not own it */
+PRIVATE inline void nodes_free_1d01c0(s_havok_array *array)
+{
+ if (!(array->capacity_and_flags & 0x80000000))
+  g_480118->allocate((long)array->data, array->capacity_and_flags & 0x7fffffff, 0x12);
 }
 
 // @retail 0x1d01c0
@@ -1580,9 +1596,7 @@ void __stdcall function_1d01c0(s_havok_component *component)
   component_property_replace((hkEntity *)body, HAVOK_PROPERTY_2002, NONE);
   component_body_release((c_havok_reference_counted *)body);
   entry->rigid_body = NULL;
-  long capacity = *(long *)entry->unknown50;
-  if (!(capacity & 0x80000000))
-   g_480118->allocate((long)entry->nodes, capacity & 0x7fffffff, 0x12);
+  nodes_free_1d01c0((s_havok_array *)&entry->nodes);
  }
  component->unknown04 = 0;
  component->unknown1c = false;
@@ -2235,18 +2249,20 @@ long __stdcall function_1d0400(s_havok_component *component, short index,
     short material_a, short material_b)
 {
     (void)&component;
-    (void)&contact_data;
-    long result = NONE;
+    void const *const volatile *contact_data_reference = &contact_data;
     bool room = component->unknown88.size < 28;
+    long result = NONE;
     if (!room && ((1 << ((s_component_transform_header *)g_4e0300->data)[component->object_index & 0xffff].type) & 1))
     {
         real minimum = 3.402823466e+38f;
         long remove_index = NONE;
         for (long i = 0; i < component->unknown88.size; i++)
         {
-            if (component->unknown88.data[i].normal.k < minimum)
+            s_havok_component_element48 *contact = &component->unknown88.data[i];
+
+            if (contact->normal.k < minimum)
             {
-                minimum = component->unknown88.data[i].normal.k;
+                minimum = contact->normal.k;
                 remove_index = i;
             }
         }
@@ -2798,7 +2814,7 @@ void function_1d56a0(s_havok_component *arg_0)
 }
 
 void __stdcall function_1d6d00(s_havok_component *arg_0, void *arg_1, byte *arg_2,
- long arg_3, long arg_4, long arg_5, bool arg_6);
+ long arg_3, long arg_4, bool arg_5, bool arg_6);
 
 // @retail 0x1d6ca0
 void function_1d6ca0(s_havok_component *arg_0)
