@@ -1211,7 +1211,7 @@ void __stdcall function_095580(void *header, long message_type, long message_siz
 				message->flags = 4;
 				message->size = (byte)size;
 				message->unknown08 = NONE;
-				message->flags = (byte)(4 + (last != false) * 8);
+				message->flags = last ? 12 : 4;
 				message->unknown02 = (word)fragment_bits;
 				message->data = block;
 				self->m_message_bytes += size;
@@ -1380,7 +1380,7 @@ bool c_network_reliable_stream::v4(long arg_0, s_bitstream *arg_1, long arg_2, l
 				stream_write_bit(arg_1, true);
 				stream_write_bit(arg_1, false);
 				for (long local_9 = 0; local_9 < 8; local_9++)
-					stream_write_bit(arg_1, (local_3 & (1 << local_9)) != 0);
+					stream_write_bit(arg_1, ((local_3 >> local_9) & 1) != 0);
 			}
 			else
 			{

@@ -719,7 +719,7 @@ void __stdcall function_b8600(long object_index, long unknown);
 bool __stdcall function_bdef0(long object_index)
 {
     byte *object = (byte *)OBJECT_GET(object_index);
-    byte const *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+    byte const *definition = g_4e3b44[(word)*(long *)object].bytes;
     bool active = (*(dword *)(object + 4) & 0x100) != 0;
     bool from_physics = false;
     long component_index = *(long *)(object + 0xb4);

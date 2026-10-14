@@ -198,7 +198,7 @@ void __stdcall function_44c90(long group, dword selection_mask, long level,
         if (!((entry->unknown00 & selection_mask) & 0x1fffff) ||
             ((entry->flags >> 4) & 0x1f) != level || !(entry->unknown00 & 1) || !entry->unknown10[0xa]) continue;
         byte weight = g_4c0b78.weights[index];
-        long transform_index = entry->flags & 0xf;
+        short transform_index = (short)(entry->flags & 0xf);
         byte material_index = g_4c0b78.material_indices[(short)index];
         long material = material_index == 0xff ? NONE : g_4c0b78.materials[material_index];
         byte *geometry = visible_entry_geometry(entry);
