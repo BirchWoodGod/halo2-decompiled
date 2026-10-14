@@ -356,6 +356,8 @@ bool function_016ac0()
 	return g_485898 >= 5 && g_485898 <= 7;
 }
 
+inline __declspec(noinline) long function_016ae0(real value);
+
 // @retail 0x16ae0
 long function_016ae0(real value)
 {

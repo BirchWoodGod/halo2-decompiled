@@ -5402,7 +5402,8 @@ PRIVATE __forceinline void convert_1fa50_text(word const *text, dword *out)
         if (first == 0x7c)
         {
             bool recognized = false;
-            value = unicode_escape_character_lookup(*next, &recognized);
+            word local_1 = *next;
+            value = unicode_escape_character_lookup(local_1, &recognized);
             if (recognized) ++next;
         }
         else value = first;
