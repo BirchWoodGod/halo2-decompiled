@@ -553,20 +553,28 @@ void function_25d420(long prop_ref_index, short type, long actor_index)
 
 #pragma inline_depth(255)
 
+static __forceinline s_prop_datum *prop_ref_next_25d510(s_iterator *iterator)
+{
+	s_prop_datum *datum = NULL;
+	long index = iterator->next;
+	if (index != NONE)
+	{
+		datum = prop_ref_get(index);
+		iterator->index = index;
+		iterator->next = datum->next_index;
+	}
+	return datum;
+}
+
 // @retail 0x25d510
 void function_25d510(long actor_index)
 {
-	long prop_ref_index = actor_get(actor_index)->first_prop_index;
+	s_iterator iterator;
+	iterator.next = actor_get(actor_index)->first_prop_index;
+	s_prop_datum *datum;
 
-	for (;;)
+	while ((datum = prop_ref_next_25d510(&iterator)) != NULL)
 	{
-		if (prop_ref_index == NONE)
-		{
-			break;
-		}
-		s_prop_datum *datum = prop_ref_get(prop_ref_index);
-		prop_ref_index = datum->next_index;
-
 		if (datum->state >= 3)
 		{
 			s_type_f95cd3 *view = prop_ref_view(datum);
@@ -581,21 +589,15 @@ void function_25d510(long actor_index)
 // @retail 0x25d580
 void function_25d580(long actor_index)
 {
-	long prop_ref_index = actor_get(actor_index)->first_prop_index;
+	s_iterator iterator;
+	iterator.next = actor_get(actor_index)->first_prop_index;
+	s_prop_datum *datum;
 
-	for (;;)
+	while ((datum = prop_ref_next_25d510(&iterator)) != NULL)
 	{
-		if (prop_ref_index == NONE)
-		{
-			break;
-		}
-		s_prop_datum *datum = prop_ref_get(prop_ref_index);
-		long current_index = prop_ref_index;
-		prop_ref_index = datum->next_index;
-
 		if (datum->state >= 3)
 		{
-			function_25c820(current_index, actor_index);
+			function_25c820(iterator.index, actor_index);
 		}
 	}
 }
@@ -730,21 +732,15 @@ bool function_25da40(s_prop_datum *datum)
 short function_25dac0(long actor_index)
 {
 	short count = 0;
-	long prop_ref_index = actor_get(actor_index)->first_prop_index;
+	s_iterator iterator;
+	iterator.next = actor_get(actor_index)->first_prop_index;
+	s_prop_datum *datum;
 
-	for (;;)
+	while ((datum = prop_ref_next_25d510(&iterator)) != NULL)
 	{
-		if (prop_ref_index == NONE)
-		{
-			break;
-		}
-		s_prop_datum *datum = prop_ref_get(prop_ref_index);
-		long current_index = prop_ref_index;
-		prop_ref_index = datum->next_index;
-
 		if (datum->tracking_index != NONE)
 		{
-			function_25c820(current_index, actor_index);
+			function_25c820(iterator.index, actor_index);
 			count++;
 		}
 	}

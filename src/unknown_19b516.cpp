@@ -262,11 +262,9 @@ bool c_widget::v18(s_event *event)
 		handled = true;
 		break;
 	case 5:
-		long button = event->param;
-		if (button != 0 && button != 12)
-			return function_22ec73(event);
 		{
-			if (!function_22ef1b())
+			long button = event->param;
+			if ((button == 0 || button == 12) && !function_22ef1b())
 			{
 				c_widget *item = function_24bae6(this);
 				if (item)
@@ -277,9 +275,9 @@ bool c_widget::v18(s_event *event)
 					key = datum;
 					function_24c7e4(sub84, &event, (long *)&key);
 				}
+				handled = true;
 			}
-			handled = true;
-		break;
+			break;
 		}
 	}
 	if (!handled)

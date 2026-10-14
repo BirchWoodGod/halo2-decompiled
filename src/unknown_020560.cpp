@@ -1104,8 +1104,8 @@ void function_1ba00(byte *state)
     do
     {
         word range = *(word *)(*(byte **)(state + 0x24) + 0xf6);
-        short *entry = *(short **)(*(byte **)(state + 0x20) + 0x24) + ((range & 0x1ff) + i) * 2;
         state[0x1520 + i] = (byte)output;
+        short *entry = *(short **)(*(byte **)(state + 0x20) + 0x24) + ((range & 0x1ff) + i) * 2;
         long block_index = (word)entry[1] & 0x1ff;
         byte *block;
         if (!(entry[0] == NONE))
@@ -1113,7 +1113,7 @@ void function_1ba00(byte *state)
         else
             block = blocks + block_index * 6;
         dword *value = values + (*(word *)(block + 4) & 0x1ff) * 8;
-        for (long j = 0; j < (*(word *)(block + 4) >> 9); ++j, value += 8)
+        for (long j = 0; j < (*(word *)(block + 4) >> 9); value += 8, ++j)
         {
             if ((block[2] & 1) && j + 1 == (*(word *)(block + 4) >> 9))
             {

@@ -224,7 +224,8 @@ void __stdcall function_44c90(long group, dword selection_mask, long level,
 void function_45560(short entry_index, point3f const *center, real radius)
 {
     (void)&center; (void)&radius;
-    point3f query_center = *center;
+    __declspec(align(16)) s_visibility_sphere_query query;
+    query.center = *center;
     long selected_entry = entry_index;
     s_44940_entry *entry = &g_4ba138[entry_index];
     byte *geometry = visible_entry_geometry(entry);
@@ -239,7 +240,6 @@ void function_45560(short entry_index, point3f const *center, real radius)
             second.list.indices = second.indices;
             second.list.count = 0;
             second.list.capacity = (long)0x80000200;
-            __declspec(align(16)) s_visibility_sphere_query query;
             query.center = *center;
             query.radius = radius;
             function_2ddbd0(*(void **)(geometry + 0x2c), &query, &first.list, &second.list);
@@ -282,15 +282,15 @@ void function_45560(short entry_index, point3f const *center, real radius)
                                     {
                                         byte *tag = g_4e3b44[entry->tag & 0xffff].bytes;
                                         function_142a60(&nodes[node], (transform4x3f *)(*(byte **)(tag + 0x4c) + node * 0x60 + 0x28), &transform);
-                                        function_142700(&transform, center, &query_center);
+                                        function_142700(&transform, center, &query.center);
                                         cached_node = node;
                                     }
                                 }
                             }
                         }
-                        real dx = query_center.x - position.x;
-                        real dy = query_center.y - position.y;
-                        real dz = query_center.z - position.z;
+                        real dx = query.center.x - position.x;
+                        real dy = query.center.y - position.y;
+                        real dz = query.center.z - position.z;
                         real combined_radius = *(real *)(bound + 0xc) + radius;
                         if (combined_radius * combined_radius >= dz * dz + dy * dy + dx * dx)
                         {

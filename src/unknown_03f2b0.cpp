@@ -1036,27 +1036,22 @@ void function_3f3f0(void);
 void function_2b990(long player_index)
 {
 	byte const *tree = *(byte **)((byte *)g_4e0348 + 0x238);
-	long object_index = NONE;
+	long object_index;
 	if (player_index != NONE)
 	{
-		long player = g_4e8c20->entries[player_index];
-		if (player != NONE && !function_155760(player_index))
-			object_index = *(long *)((byte *)g_4e8c24->data + (player & 0xffff) * 0x21c + 0x2c);
+		object_index = g_4e8c20->entries[player_index];
+		if (object_index != NONE && !function_155760(player_index))
+		{
+			object_index = *(long *)((byte *)g_4e8c24->data + (object_index & 0xffff) * 0x21c + 0x2c);
+			goto object_selected;
+		}
 	}
-	s_planar_camera_source source;
-	source.origin = g_4b9da0;
-	source.normal = g_4b9dac;
-	source.horizontal = g_4b9db8;
-	source.offset = g_4b9de0;
-	source.depth = g_4b9de4;
-	s_camera camera = g_4b9e14;
-	function_3f2c0(&source, (byte const *)&camera, object_index, g_4b9ee4);
+	object_index = NONE;
+object_selected:
+	function_3f2c0((s_planar_camera_source const *)&g_camera_storage, (byte const *)&g_projection_storage, object_index, g_4b9ee4);
 	function_3f3f0();
 	if (g_4ba025)
-	{
-		point3f center = g_4b9da0;
-		function_3f830(tree, &center);
-	}
+		function_3f830(tree, &g_camera_storage.field_0);
 }
 
 // @retail 0x3d4f0

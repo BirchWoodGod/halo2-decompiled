@@ -97,12 +97,13 @@ short __stdcall function_1b2630(long actor_index, s_slot *slot, bool active)
 					function_1fb7e0(0x30, actor_index, NULL, node->object_index, NONE);
 			}
 		}
+		result = g_46fbe4;
 	}
-	else if (actor->prop_index != NONE && prop_node_view(prop_node_get(actor->prop_index)))
+	else if (actor->prop_index == NONE || !prop_node_view(prop_node_get(actor->prop_index)))
 	{
-		return result;
+		result = g_46fbe4;
 	}
-	return g_46fbe4;
+	return result;
 }
 
 s_slot_handler_2 g_47e080 ={
