@@ -13,6 +13,4 @@ struct s_animation_frame_event;
 /* an object's forward and up vectors */
 
 
-// @stub 0xe5040
-void __stdcall function_e5040(long object_index, s_animation_frame_event const *event) {}
 

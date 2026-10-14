@@ -2408,7 +2408,9 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
         g_484f68.PSCombinerCount = 0x11002;
         real alpha = 1.0f - *(real *)(g_4b99b0 + 0x30);
         alpha = alpha < 0.0f ? 0.0f : alpha > 1.0f ? 1.0f : alpha;
+#pragma inline_depth(0)
         g_484f68.PSConstant0[0] = function_131fc0(alpha);
+#pragma inline_depth(255)
         g_484f68.PSConstant1[0] = 0xff;
         g_484f68.PSRGBInputs[0] = 0x8200211;
         g_484f68.PSRGBOutputs[0] = inverse ? 0x800 : 0;
@@ -2417,14 +2419,18 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
         g_484f68.PSRGBOutputs[1] = 0xcd;
         alpha = 1.0f - *(real *)(g_4b99b0 + 0x2c);
         alpha = alpha < 0.0f ? 0.0f : alpha > 1.0f ? 1.0f : alpha;
+#pragma inline_depth(0)
         g_484f68.PSFinalCombinerConstant0 = function_131fc0(alpha);
+#pragma inline_depth(255)
         g_484f68.PSFinalCombinerInputsABCD = ((inverse ? 0x11 : 0x20) | 0xf00) << 16;
         g_484f68.PSFinalCombinerInputsEFG = ((blend ? 0 : 0x1d) | 0xc0d00) << 8;
     }
     else
     {
         g_484f68.PSCombinerCount = 0x11001;
+#pragma inline_depth(0)
         g_484f68.PSConstant0[0] = function_131fc0(strength > 1.0f ? 1.0f : strength);
+#pragma inline_depth(255)
         g_484f68.PSAlphaInputs[0] = 0x18110000;
         g_484f68.PSAlphaOutputs[0] = 0x80;
         g_484f68.PSFinalCombinerInputsABCD = 0x8180000;
@@ -2445,13 +2451,21 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     real inverse_width = 1.0f / width;
     real inverse_height = 1.0f / height;
     D3DDevice_SetVertexData2f(1, source[0] * inverse_width, source[2] * inverse_height);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, destination[0], destination[2], 16777215.0f, 16777215.0f);
+#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, source[1] * inverse_width, source[2] * inverse_height);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, destination[1], destination[2], 16777215.0f, 16777215.0f);
+#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, source[1] * inverse_width, source[3] * inverse_height);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, destination[1], destination[3], 16777215.0f, 16777215.0f);
+#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, source[0] * inverse_width, source[3] * inverse_height);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, destination[0], destination[3], 16777215.0f, 16777215.0f);
+#pragma inline_depth(255)
     D3DDevice_End();
 }
 
@@ -2647,19 +2661,29 @@ void __stdcall function_29b00(long tag, long first_bitmap, real first_alpha,
     second_coordinates[5] = ((sine + cosine) * second_scale + 1.0f) * 0.5f;
     second_coordinates[6] = ((-cosine - sine) * second_scale + 1.0f) * 0.5f;
     second_coordinates[7] = ((cosine - sine) * second_scale + 1.0f) * 0.5f;
+#pragma inline_depth(0)
     D3DDevice_Begin(D3DPT_QUADLIST);
+#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, first_coordinates[0], first_coordinates[1]);
     D3DDevice_SetVertexData2f(2, second_coordinates[0], second_coordinates[1]);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, bounds[0], bounds[2], 16777215.0f, 16777215.0f);
+#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, first_coordinates[2], first_coordinates[3]);
     D3DDevice_SetVertexData2f(2, second_coordinates[2], second_coordinates[3]);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, bounds[1], bounds[2], 16777215.0f, 16777215.0f);
+#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, first_coordinates[4], first_coordinates[5]);
     D3DDevice_SetVertexData2f(2, second_coordinates[4], second_coordinates[5]);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, bounds[1], bounds[3], 16777215.0f, 16777215.0f);
+#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, first_coordinates[6], first_coordinates[7]);
     D3DDevice_SetVertexData2f(2, second_coordinates[6], second_coordinates[7]);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, bounds[0], bounds[3], 16777215.0f, 16777215.0f);
+#pragma inline_depth(255)
     D3DDevice_End();
 }
 
@@ -3243,6 +3267,11 @@ bool __stdcall function_25e50(void *context)
     third.red = clamp_filter_unit(g_4857a8.red);
     third.green = clamp_filter_unit(g_4857a8.green);
     third.blue = clamp_filter_unit(g_4857a8.blue);
+    dword first_pixel = pack_color4f(&first);
+    dword second_pixel = pack_color4f(&second);
+    dword first_alpha_pixel = function_131fc0(first_alpha);
+    dword second_alpha_pixel = function_131fc0(second_alpha);
+    dword third_pixel = pack_color4f(&third);
     D3DPIXELSHADERDEF program;
     memset(&program, 0, sizeof(program));
     dword *fields = (dword *)&program;
@@ -3265,11 +3294,11 @@ bool __stdcall function_25e50(void *context)
     fields[0x74 / 4] = 0xc00;
     fields[0x20 / 4] = 0xc;
     fields[0x24 / 4] = 0x1c00;
-    fields[0x28 / 4] = pack_color4f(&first);
-    fields[0x48 / 4] = pack_color4f(&second);
-    fields[0x2c / 4] = function_131fc0(first_alpha);
-    fields[0x4c / 4] = function_131fc0(second_alpha);
-    fields[0x34 / 4] = pack_color4f(&third);
+    fields[0x28 / 4] = first_pixel;
+    fields[0x48 / 4] = second_pixel;
+    fields[0x2c / 4] = first_alpha_pixel;
+    fields[0x4c / 4] = second_alpha_pixel;
+    fields[0x34 / 4] = third_pixel;
     g_484f68 = program;
     function_1ccf0(&program);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
