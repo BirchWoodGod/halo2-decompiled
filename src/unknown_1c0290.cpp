@@ -244,9 +244,12 @@ bool __stdcall function_1c0670(long actor_index, s_slot *slot)
 			s_actor_point_target target;
 			bool result = true;
 
-			target.point.x = g_4687b0->i * 2.5f + collision.point.x;
-			target.point.y = g_4687b0->j * 2.5f + collision.point.y;
-			target.point.z = g_4687b0->k * 2.5f + collision.point.z;
+			point3f point;
+
+			point.x = g_4687b0->i * 2.5f + collision.point.x;
+			point.y = g_4687b0->j * 2.5f + collision.point.y;
+			point.z = g_4687b0->k * 2.5f + collision.point.z;
+			target.point = point;
 			target.output_index = NONE;
 			actor = actor_get(actor_index);
 			if (!actor->unknown229)
