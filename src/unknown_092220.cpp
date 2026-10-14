@@ -120,31 +120,31 @@ bool online_stats_read_result(long task_index, XONLINE_STAT_SPEC *specs, word co
 // @retail 0x923c0
 long online_stats_write(XONLINE_STAT_SPEC const *specs, word count)
 {
-    long task_index = online_task_new_if_logged_on();
-    if (task_index != NONE)
-    {
-        s_record_pool *local_0 = g_4cf78c;
-        long local_1 = task_index & 0xffff;
-        if (local_1 < local_0->high_water_index)
-        {
-            byte *local_2 = local_0->data;
-            long local_3 = local_0->size;
-            s_type_9df9da *task = (s_type_9df9da *)(local_2 + local_3 * local_1);
-            if (task->salt != 0 && task->salt == (task_index >> 16))
-            {
-                if (SUCCEEDED(XOnlineStatWrite(count, specs, NULL, (PXONLINETASK_HANDLE)&task->handle)))
-                {
-                    task->flags = 1;
-                    task->type = 0x13;
-                    task->controller_index = NONE;
-                }
-                else
-                {
-                    function_6b640(task_index);
-                    return NONE;
-                }
-            }
-        }
+	long task_index = online_task_new_if_logged_on();
+	if (task_index != NONE)
+	{
+		s_record_pool *local_0 = g_4cf78c;
+		long local_1 = task_index & 0xffff;
+		if (local_1 < local_0->high_water_index)
+		{
+			byte *local_2 = local_0->data;
+			long local_3 = local_0->size;
+			s_type_9df9da *task = (s_type_9df9da *)(local_2 + local_3 * local_1);
+			if (task->salt != 0 && task->salt == (task_index >> 16))
+			{
+				if (SUCCEEDED(XOnlineStatWrite(count, specs, NULL, (PXONLINETASK_HANDLE)&task->handle)))
+				{
+					task->flags = 1;
+					task->type = 0x13;
+					task->controller_index = NONE;
+				}
+				else
+				{
+					function_6b640(task_index);
+					return NONE;
+				}
+			}
+		}
     }
     return task_index;
 }

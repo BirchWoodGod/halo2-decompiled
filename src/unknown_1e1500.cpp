@@ -73,8 +73,8 @@ bool function_1e1500(long actor_index)
    point.x = *(real *)(block + 4) + g_4687b0->i * 0.1f;
    point.y = *(real *)(block + 8) + g_4687b0->j * 0.1f;
    point.z = *(real *)(block + 12) + g_4687b0->k * 0.1f;
-   short bsp_index = g_4686c4;
-   if (bsp_index == NONE)
+   word bsp_index = (word)g_4686c4;
+   if (bsp_index == (word)NONE)
    {
     *(long *)(block + 0x28) = NONE;
     *(short *)(block + 0x2c) = NONE;
@@ -83,7 +83,7 @@ bool function_1e1500(long actor_index)
    {
     long leaf = function_14a280(g_4e033c, 0, &point);
     *(long *)(block + 0x28) = leaf;
-    *(short *)(block + 0x2c) = leaf == NONE ? NONE : ((s_actor_bsp_view *)g_4e0348)->leaves[leaf].cluster;
+    *(short *)(block + 0x2c) = leaf != NONE ? ((s_actor_bsp_view *)g_4e0348)->leaves[leaf].cluster : NONE;
    }
    *(short *)(block + 0x2e) = bsp_index;
    *(long *)(block + 0x44) = NONE;

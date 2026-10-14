@@ -1022,14 +1022,16 @@ void function_4b160(long first, s_4b160_entry *entries, long mode, long last)
 	(void)&entries;
 	(void)&mode;
 	long const volatile *last_reference = &last;
-	volatile long begin = first + 1;
+    long bound = *last_reference;
+	volatile long begin;
 	{
     long i = first;
-    if (i <= *last_reference)
+    if (i <= bound)
     {
+        begin = first + 1;
         do
         {
-		for (long j = begin; j <= *last_reference; ++j)
+		for (long j = begin; j <= bound; ++j)
 		{
 			s_4b160_entry *previous = &entries[j - 1];
 			s_4b160_entry *current = &entries[j];
@@ -1045,11 +1047,12 @@ void function_4b160(long first, s_4b160_entry *entries, long mode, long last)
 				s_4b160_entry temporary = *previous;
 				*previous = *current;
 				*current = temporary;
+                bound = *last_reference;
 			}
 		}
 	
             ++i;
-        } while (i <= *last_reference);
+        } while (i <= bound);
     }
     }
 }
@@ -1091,33 +1094,33 @@ void function_4b3d0(s_vector_perturbation *state)
 {
 	state->speed_fraction = function_36a40(state->speed_fraction, state->speed_spread * g_509418, 0.0f, 1.0f);
 	real speed = (state->speed_maximum - state->speed_minimum) * state->speed_fraction + state->speed_minimum;
-	state->velocity.i = state->direction.i * speed;
-	state->velocity.j = state->direction.j * speed;
-	state->velocity.k = state->direction.k * speed;
+	vector3f *velocity = &state->velocity;
+	velocity->i = state->direction.i * speed;
+	velocity->j = state->direction.j * speed;
+	velocity->k = state->direction.k * speed;
 	state->first_fraction = function_36a40(state->first_fraction, state->direction_spread * g_509418, -1.0f, 1.0f);
-	_ReadWriteBarrier();
 	state->second_fraction = function_36a40(state->second_fraction, state->direction_spread * g_509418, -1.0f, 1.0f);
-	_ReadWriteBarrier();
 	state->magnitude_fraction = function_36a40(state->magnitude_fraction, state->magnitude_spread * g_509418, 0.0f, 1.0f);
 	_ReadWriteBarrier();
 	real first = state->first_fraction * state->direction_scale;
 	state->perturbation.i = (real)(state->first_axis.i * first) + state->base_direction.i;
 	state->perturbation.j = (real)(state->first_axis.j * first) + state->base_direction.j;
-	state->perturbation.k = (real)(state->first_axis.k * first) + state->base_direction.k;
+	vector3f *perturbation = &state->perturbation;
+	perturbation->k = (real)(state->first_axis.k * first) + state->base_direction.k;
 	_ReadWriteBarrier();
 	real second = state->second_fraction * state->direction_scale;
-	state->perturbation.i = (real)(state->second_axis.i * second) + state->perturbation.i;
-	state->perturbation.j = (real)(state->second_axis.j * second) + state->perturbation.j;
-	state->perturbation.k = (real)(state->second_axis.k * second) + state->perturbation.k;
-	function_30bf0(&state->perturbation);
+	perturbation->i = (real)(state->second_axis.i * second) + perturbation->i;
+	perturbation->j = (real)(state->second_axis.j * second) + perturbation->j;
+	perturbation->k = (real)(state->second_axis.k * second) + perturbation->k;
+	function_30bf0(perturbation);
 	real magnitude = state->magnitude * state->magnitude_fraction;
-	state->perturbation.i *= magnitude;
-	state->perturbation.j *= magnitude;
-	state->perturbation.k *= magnitude;
+	perturbation->i *= magnitude;
+	perturbation->j *= magnitude;
+	perturbation->k *= magnitude;
 	_ReadWriteBarrier();
-	state->velocity.i += state->perturbation.i;
-	state->velocity.j += state->perturbation.j;
-	state->velocity.k += state->perturbation.k;
+	velocity->i += state->perturbation.i;
+	velocity->j += state->perturbation.j;
+	velocity->k += state->perturbation.k;
 	state->step = state->step_scale * g_509418;
 }
 #pragma function(_ReadWriteBarrier)

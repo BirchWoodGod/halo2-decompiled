@@ -64,7 +64,8 @@ void __stdcall function_f8090(long equipment_index, s_scenario_equipment_view *p
 	function_b9b90(equipment_index, TEST_FIELD_BIT(placement->flags.created_at_rest));
 	((volatile s_equipment_object_view *)equipment)->object_flags.cannot_be_garbage = true;
 	equipment->object_flags.shadowless = true;
-	equipment->item_flags.does_not_accelerate = !TEST_FIELD_BIT(placement->flags.does_accelerate);
+	struct s_item_flags { unsigned long unused : 7; unsigned long disabled : 1; unsigned long rest : 24; };
+	((volatile s_item_flags *)&equipment->item_flags)->disabled = !TEST_FIELD_BIT(placement->flags.does_accelerate);
 
 	if (!TEST_FIELD_BIT(placement->flags.created_at_rest))
 		equipment->field_x86bef3 += 0.05f;

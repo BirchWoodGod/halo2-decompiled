@@ -8,7 +8,7 @@
 #include "online_task_screen.h"
 #include "unknown_19b510.h"
 
-bool function_1a0540(s_player_profile_settings *settings, long profile_index);
+bool function_1a0540(long profile_index, s_player_profile_settings *settings);
 void __stdcall function_18fb34(long player, s_player_profile_settings *settings, long profile_index);
 void function_120df0(long index, wchar_t const *name);
 void function_190001(long index, char const *name);
@@ -73,7 +73,7 @@ void s_player_slot_profile::initialize(long player)
 // @retail 0x24b652
 void s_player_slot_profile::set_profile_index(long profile_index)
 {
-	if (function_1a0540(&settings, profile_index))
+	if (function_1a0540(profile_index, &settings))
 	{
 		this->profile_index = profile_index;
 	}
@@ -92,7 +92,7 @@ void s_player_slot_profile::set_profile(long profile_index)
 {
 	char name[16];
 
-	if (function_1a0540(&settings, profile_index))
+	if (function_1a0540(profile_index, &settings))
 	{
 		name[0] = 0;
 		this->profile_index = profile_index;
