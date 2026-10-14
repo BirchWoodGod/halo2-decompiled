@@ -13,8 +13,8 @@ bool function_216da0(wchar_t *name, long type, wchar_t const *display_name, long
 
 struct s_saved_game_drive
 {
-	byte utility_drive : 1;
-	byte unused : 7;
+	word utility_drive : 1;
+	word unused : 15;
 };
 
 extern s_saved_game_drive g_4e61c0;
@@ -29,7 +29,8 @@ bool __stdcall function_215f40(long type, byte *buffer)
 	(void)&buffer;
 	word *name = (word *)buffer;
 	name[0] = 0;
-	if (TEST_FIELD_BIT(g_4e61c0.utility_drive))
+	s_saved_game_drive drive = g_4e61c0;
+	if (TEST_FIELD_BIT(drive.utility_drive))
 	{
 		char root[8] = "";
 		char path[256] = "";

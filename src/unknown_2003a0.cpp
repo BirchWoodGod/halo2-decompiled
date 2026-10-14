@@ -2150,7 +2150,7 @@ void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
     }
 }
 
-void function_201520(short arg_0, word arg_1, long arg_2, long arg_3, long arg_4);
+void function_201520(short arg_0, long arg_1, long arg_2, long arg_3, long arg_4);
 
 struct s_200d80
 {
@@ -2209,7 +2209,7 @@ void function_200d80(void)
         long local_1 = local_0.squad_index;
         dword local_2 = *(dword *)(*(byte **)((byte *)g_4e0350 + 0x164) + (local_1 & 0xffff) * 0x74 + 0x20);
         if ((bool)((local_2 >> 12) & 1))
-            function_201520(NONE, (word)local_1, NONE, 0, 0);
+            function_201520(NONE, local_1, NONE, 0, 0);
     }
 }
 
@@ -2218,20 +2218,14 @@ void __stdcall function_203120(long arg_0, long arg_1, long arg_2);
 // @retail 0x201100
 void __stdcall function_201100(long arg_0, dword *arg_1)
 {
-    long local_0 = arg_0;
-    (void)&arg_0;
-    dword *local_1;
-    (void)&arg_1;
-    byte *local_2 = *(byte **)((byte *)g_4e0350 + 0x15c) + (local_0 & 0xffff) * 0x24;
+    byte *local_2 = *(byte **)((byte *)g_4e0350 + 0x15c) + (arg_0 & 0xffff) * 0x24;
     s_record_pool *local_10 = g_51e9dc;
-    byte *local_3 = local_10->data + (local_0 & 0xffff) * 0x38;
+    byte *local_3 = local_10->data + (arg_0 & 0xffff) * 0x38;
     if (!local_3[0x23])
     {
-        arg_0 = 1 << (local_0 & 0x1f);
-        volatile long const *local_4 = &arg_0;
-        local_1 = arg_1;
-        arg_1 += local_0 >> 5;
-        if (!(*arg_1 & *local_4))
+        dword mask = 1 << (arg_0 & 0x1f);
+        dword *bits = &arg_1[arg_0 >> 5];
+        if (!(*bits & mask))
         {
             long local_6 = *(short *)(local_2 + 0x20);
             byte *local_7 = NULL;
@@ -2240,18 +2234,18 @@ void __stdcall function_201100(long arg_0, dword *arg_1)
             {
                 local_7 = local_10->data + (local_6 & 0xffff) * 0x38;
                 if (!local_7[0x23])
-                    function_201100(local_6, local_1);
+                    function_201100(local_6, arg_1);
             }
             short local_8 = *(short *)(local_2 + 0x22);
             if (local_8 >= 0 && local_8 < *(long *)((byte *)g_4e0350 + 0x240))
-                function_203120(local_0, local_8, true);
+                function_203120(arg_0, local_8, true);
             else if (*(short *)(local_3 + 0x14) != NONE && local_7 && local_7[0x23])
             {
                 long local_9 = *(short *)(local_7 + 0x14);
                 if ((short)local_9 != NONE)
-                    function_203120(local_0, local_9, false);
+                    function_203120(arg_0, local_9, false);
             }
-            *arg_1 |= *local_4;
+            *bits |= mask;
         }
     }
 }
@@ -2619,9 +2613,9 @@ long function_201010(long arg_0, short arg_1, short arg_2, short *arg_3);
 void function_2011f0(long arg_0);
 
 // @retail 0x201520
-void function_201520(short arg_0, word arg_1, long arg_2, long arg_3, long arg_4)
+void function_201520(short arg_0, long arg_1, long arg_2, long arg_3, long arg_4)
 {
-    word const *local_0 = &arg_1;
+    word const *local_0 = (word const *)&arg_1;
     long const *local_1 = &arg_2;
     long const *local_2 = &arg_3;
     long const *local_3 = &arg_4;
