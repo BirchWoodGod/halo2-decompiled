@@ -238,9 +238,9 @@ long function_122c70(s_tag_iterator *iterator);
 struct s_sound_timer_flags
 {
     byte unknown00[0xa];
-    byte unused : 5;
-    byte timed : 1;
-    byte remaining : 2;
+    word unused : 5;
+    word timed : 1;
+    word remaining : 10;
 };
 
 // @retail 0x20b660
@@ -288,7 +288,10 @@ void function_20b660(void)
                     if (timer > 0)
                         timer--;
                     for (long i = 0; i < 5; i++)
-                        BIT_VECTOR_SET(g_51e9ec, offset + i, timer & (1 << i));
+                    {
+                        long bit = offset + i;
+                        BIT_VECTOR_SET(g_51e9ec, bit, timer & (1 << i));
+                    }
                 }
             }
         }

@@ -773,7 +773,8 @@ struct s_request_profile_slot
 	byte field_1fc[0xc70 - 0x1fc];
 };
 
-// @retail 0x1e75d0
+// Retail realigns the stack before the aligned request settings.
+// @retail 0x1e75d0 standard
 void __stdcall function_1e75d0(dword flush)
 {
 	(void)&flush;
@@ -804,7 +805,7 @@ void __stdcall function_1e75d0(dword flush)
 					s_local_player_state_view *state = &((s_local_player_state_view *)g_51e9c0)[index];
 					if (state->version == profile_index)
 					{
-						bool volatile changed = false;
+						bool changed = false;
 						if (memcmp(settings.values + 0x128, state->request_flags, sizeof(state->request_flags)))
 						{
 							memcpy(settings.values + 0x128, state->request_flags, sizeof(state->request_flags));

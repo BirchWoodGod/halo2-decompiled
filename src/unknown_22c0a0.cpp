@@ -185,7 +185,7 @@ void *c_havok_fixed_memory::allocate_aligned(long alignment, long size, long mem
                     }
                     s_fixed_memory_entry *items = (s_fixed_memory_entry *)((byte *)m_buffer + m_size);
                     items[-i - 1] = entry;
-                    break;
+                    goto done;
                 }
             }
             offset = limit + current->size;
@@ -216,5 +216,6 @@ void *c_havok_fixed_memory::allocate_aligned(long alignment, long size, long mem
             }
         }
     }
+done:
     return result;
 }

@@ -787,34 +787,30 @@ static inline long sound_submix_volume(real gain)
 
 PRIVATE __forceinline real function_21ee81(s_sound_driver_occlusion const *arg_0, real const *arg_1)
 {
-    real local_0 = arg_1[1];
-    if (!(arg_0->maximum > local_0))
-        local_0 = arg_0->maximum;
-    real local_1 = arg_0->minimum;
-    if (!(local_1 > arg_1[0]))
-        local_1 = arg_1[0];
+    real upper = arg_1[1];
+    real maximum = arg_0->maximum;
+    real lower = arg_1[0];
+    real minimum = arg_0->minimum;
+    real local_0 = maximum > upper ? upper : maximum;
+    real local_1 = minimum > lower ? minimum : lower;
     real local_2 = local_0 - local_1;
-    if (!(local_2 > 0.0f))
-        local_2 = 0.0f;
-    return local_2;
+    return local_2 > 0.0f ? local_2 : 0.0f;
 }
 
 PRIVATE __forceinline long function_21ee82(real arg_0)
 {
-    long local_0 = -6400;
-    if (!(0.0f > arg_0))
+    long local_0;
+    if (0.0f > arg_0)
+        local_0 = -6400;
+    else
     {
-        volatile real local_1;
         if (arg_0 > 1.0f)
-        {
             arg_0 = 1.0f;
-            local_1 = arg_0;
-        }
+        if (arg_0 == 0.0f)
+            local_0 = -6400;
         else
-            local_1 = arg_0;
-        if (arg_0 != 0.0f)
         {
-            local_0 = (long)(log10(local_1) * 2000.0f);
+            local_0 = (long)(log10(arg_0) * 2000.0f);
             if (local_0 < -6400)
                 local_0 = -6400;
             else if (local_0 > 0)
@@ -827,15 +823,10 @@ PRIVATE __forceinline long function_21ee82(real arg_0)
 // @retail 0x21ee80
 void function_21ee80(void)
 {
-	union
-	{
-		s_sound_effect_parameters parameters;
-		real angles[4][6];
-	} local;
+	real angles[4][6];
 	if (g_47005c.dirty)
 	{
-		local.parameters = g_47005c;
-		SOUND_DRIVER_GLOBALS->effects->set_i3dl2(&local.parameters.room, SOUND_DRIVER_GLOBALS->surround);
+		SOUND_DRIVER_GLOBALS->effects->set_i3dl2(&g_47005c.room, SOUND_DRIVER_GLOBALS->surround);
 		g_47005c.dirty = false;
 	}
 	for (long group = 0; group < k_sound_driver_reverb_count; group++)
@@ -847,31 +838,31 @@ void function_21ee80(void)
 		}
 		if (SOUND_DRIVER_GLOBALS->occlusion_dirty[group])
 		{
-			local.angles[0][0] = -0.785398185f;
-			local.angles[0][1] = 2.3561945f;
-			local.angles[0][2] = 5.49778748f;
-			local.angles[0][3] = 6.28318548f;
-			local.angles[0][4] = -6.28318548f;
-			local.angles[0][5] = -3.92699099f;
-			local.angles[1][0] = 0.785398185f;
-			local.angles[1][1] = 3.92699099f;
-			local.angles[1][2] = -5.49778748f;
-			local.angles[1][3] = -2.3561945f;
-			local.angles[1][4] = 0.0f;
-			local.angles[1][5] = 0.0f;
-			local.angles[2][0] = -2.3561945f;
-			local.angles[2][1] = 0.785398185f;
-			local.angles[2][2] = 3.92699099f;
-			local.angles[2][3] = 6.28318548f;
-			local.angles[2][4] = -6.28318548f;
-			local.angles[2][5] = -5.49778748f;
-			local.angles[3][0] = 2.3561945f;
-			local.angles[3][1] = 5.49778748f;
-			local.angles[3][2] = -3.92699099f;
-			local.angles[3][3] = -0.785398185f;
-			local.angles[3][4] = 0.0f;
-			local.angles[3][5] = 0.0f;
-			real const *volatile ranges[4] = { local.angles[0], local.angles[2], local.angles[1], local.angles[3] };
+			angles[0][0] = -0.785398185f;
+			angles[0][1] = 2.3561945f;
+			angles[0][2] = 5.49778748f;
+			angles[0][3] = 6.28318548f;
+			angles[0][4] = -6.28318548f;
+			angles[0][5] = -3.92699099f;
+			angles[1][0] = 0.785398185f;
+			angles[1][1] = 3.92699099f;
+			angles[1][2] = -5.49778748f;
+			angles[1][3] = -2.3561945f;
+			angles[1][4] = 0.0f;
+			angles[1][5] = 0.0f;
+			angles[2][0] = -2.3561945f;
+			angles[2][1] = 0.785398185f;
+			angles[2][2] = 3.92699099f;
+			angles[2][3] = 6.28318548f;
+			angles[2][4] = -6.28318548f;
+			angles[2][5] = -5.49778748f;
+			angles[3][0] = 2.3561945f;
+			angles[3][1] = 5.49778748f;
+			angles[3][2] = -3.92699099f;
+			angles[3][3] = -0.785398185f;
+			angles[3][4] = 0.0f;
+			angles[3][5] = 0.0f;
+			real const *volatile ranges[4] = { angles[0], angles[2], angles[1], angles[3] };
 			real scale = SOUND_DRIVER_GLOBALS->reverb_scales[group];
 			s_sound_driver_occlusion const *occlusion = &SOUND_DRIVER_GLOBALS->occlusions[group];
 			for (long channel = 0; channel < 4; channel++)
@@ -880,7 +871,8 @@ void function_21ee80(void)
 				real overlap1 = function_21ee81(occlusion, ranges[channel] + 2);
 				real overlap2 = function_21ee81(occlusion, ranges[channel] + 4);
 				real fraction = (overlap2 + overlap1 + overlap0) * 0.318309873f;
-				real gain = ((fraction - occlusion->offset) * occlusion->scale + occlusion->offset) * scale;
+				real offset = occlusion->offset;
+				real gain = ((fraction - offset) * occlusion->scale + offset) * scale;
 				SOUND_DRIVER_GLOBALS->submix_buffers[group * 4 + channel]->SetVolume(function_21ee82(gain));
 			}
 			SOUND_DRIVER_GLOBALS->occlusion_dirty[group] = false;

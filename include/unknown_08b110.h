@@ -309,7 +309,7 @@ struct s_owner_450d1c
 	s_node_450d1c *head;
 };
 
-void function_89e70(s_node_450d1c *node, s_owner_450d1c *owner);
+void function_89e70(s_owner_450d1c *owner, s_node_450d1c *node);
 s_node_450d1c *function_89eb0(s_node_450d1c *node, long flags);
 class c_vtable_450d1c;
 

@@ -21,6 +21,27 @@ void font_cache_initialize(void);
 void font_cache_pixels_initialize(void);
 void function_593e0(void);
 
+/* the next whitespace-separated token of a string (NULL when there is none);
+   the token is terminated in place and *next set to the text after it */
+static inline char *next_token_121fc0(char *string, char **next)
+{
+	char *token = string;
+	if (token)
+	{
+		token += strspn(token, "\t\n\r ");
+		token = *token ? token : NULL;
+	}
+	char *rest = token;
+	if (token)
+	{
+		rest = strpbrk(token, "\t\n\r ");
+		if (rest)
+			*rest++ = 0;
+	}
+	*next = rest;
+	return token;
+}
+
 // @retail 0x121fc0
 void function_121fc0(void)
 {
@@ -28,10 +49,7 @@ void function_121fc0(void)
 		g_4e28f4[local_0] = -2;
 	if (!g_4e3b40)
 	{
-		s_font_cache_entry local_1;
-		memset(&local_1, 0, sizeof(local_1));
-		for (long local_2 = 0; local_2 < k_maximum_font_count; local_2++)
-			g_4e2920[local_2] = local_1;
+		memset(g_4e2920, 0, k_maximum_font_count * sizeof(s_font_cache_entry));
 		if (!function_121b00())
 		{
 			g_51ea00 = true;
@@ -62,27 +80,25 @@ void function_121fc0(void)
 			char *local_9[11] = {0};
 			long local_10 = 0;
 			long local_11 = 0;
-			if (local_8 > sizeof(local_5) - 1)
-				local_8 = sizeof(local_5) - 1;
+			local_8 = local_8 > sizeof(local_5) - 1 ? sizeof(local_5) - 1 : local_8;
 			local_5[local_8] = 0;
-			char *local_12 = local_5;
-			while (local_12)
+			char *local_12;
+			char *local_13 = next_token_121fc0(local_5, &local_12);
+			while (local_13)
 			{
-				local_12 += strspn(local_12, "\t\n\r ");
-				if (!*local_12)
-					break;
-				char *local_13 = local_12;
-				local_12 = strpbrk(local_13, "\t\n\r ");
-				if (local_12)
-					*local_12++ = 0;
 				if (local_10 < 11)
 				{
+					long local_14 = NONE;
 					local_9[local_10] = local_13;
-					long local_14;
-					for (local_14 = 0; local_14 < local_10; local_14++)
-						if (!strcmp(local_13, local_9[local_14]))
+					for (long local_15 = 0; local_15 < local_10; local_15++)
+					{
+						if (!strcmp(local_13, local_9[local_15]))
+						{
+							local_14 = local_15;
 							break;
-					if (local_14 < local_10)
+						}
+					}
+					if (local_14 != NONE)
 						g_4e28f4[local_10] = g_4e28f4[local_14];
 					else
 					{
@@ -92,6 +108,7 @@ void function_121fc0(void)
 					}
 					local_10++;
 				}
+				local_13 = next_token_121fc0(local_12, &local_12);
 			}
 		}
 		g_4e3b40 = true;
