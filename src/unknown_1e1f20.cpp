@@ -596,7 +596,8 @@ void __stdcall function_1e1a00(long actor_index, long value)
 	long const *value_reference = &value;
 	struct { s_actor_view *actor; s_actor_iterator iterator; } cleanup_state;
 	s_actor_view *&actor = cleanup_state.actor;
-	actor = actor_get(*index_reference);
+	unsigned short actor_slot = (unsigned short)*index_reference;
+	actor = actor_get(actor_slot);
 	for (short slot_index = 0; slot_index <= actor->current; ++slot_index)
 	{
 		struct { t_slot_proc stop; s_slot *slot; } dispatch;

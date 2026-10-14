@@ -56,9 +56,9 @@ short __stdcall function_256bd0(long actor_index, s_slot *slot, bool active)
 			direction = *g_4687a8;
 	}
 	s_actor_position_state placement;
-	byte *placement_data = (byte *)&placement;
-	*(point3f *)(placement_data + 4) = position;
-	*(short *)(placement_data + 0x10) = NONE;
+	byte *local_7b726b = (byte *)&placement;
+	*(point3f *)(local_7b726b + 4) = position;
+	*(short *)(local_7b726b + 0x10) = NONE;
 	real dot = g_468778->x * direction.i + g_468778->y * direction.j;
 	if (-1.0f > dot)
 		dot = -1.0f;
@@ -67,10 +67,10 @@ short __stdcall function_256bd0(long actor_index, s_slot *slot, bool active)
 	real clamped = -1.0f > dot ? -1.0f : dot > 1.0f ? 1.0f : dot;
 	real angle = (real)acos((double)clamped);
 	real cross = g_468778->x * direction.j - g_468778->y * direction.i;
-	*(real *)(placement_data + 0x14) = 0.0f > cross ? 0.0f - angle : angle;
-	*(real *)(placement_data + 0x18) = 0.0f;
-	*(long *)(placement_data + 0x1c) = 4;
-	*(short *)(placement_data + 0x2e) = 1;
+	*(real *)(local_7b726b + 0x14) = 0.0f > cross ? 0.0f - angle : angle;
+	*(real *)(local_7b726b + 0x18) = 0.0f;
+	*(long *)(local_7b726b + 0x1c) = 4;
+	*(short *)(local_7b726b + 0x2e) = 1;
 	byte *unit = *(byte **)(g_4e0300->data + (*(long *)(actor + 0x18) & 0xffff) * 12 + 8);
 	byte *definition = g_4e3b44[*(long *)unit & 0xffff].bytes;
 	long character_index = *(long *)(definition + 0x30c);

@@ -17,12 +17,11 @@ struct s_248df0
 };
 
 
-vector3f *function_4efb0(vector3f *arg_0);
+inline vector3f *function_4efb0(vector3f *arg_0);
 
 PRIVATE __forceinline real function_248eff(real arg_0)
 {
-	real volatile local_1 = arg_0;
-	real local_0 = arg_0 - (real)real_truncate(local_1);
+	real local_0 = arg_0 - (real)real_truncate(arg_0);
 	if (local_0 < 0.f)
 		local_0 += 1.f;
 	return local_0;
