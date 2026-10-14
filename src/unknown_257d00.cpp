@@ -1317,16 +1317,13 @@ bool function_25ab50(long reference)
 		if (scenario->script_data_count > 0)
 		{
 			long set_index = (reference >> 16) & 0xffff;
+			long point_index = reference & 0xffff;
 
 			if (set_index >= 0)
 			{
-				s_cs_scenario_data *data = scenario->script_data;
-
-				if (set_index < data->point_set_count)
+				if (set_index < scenario->script_data->point_set_count)
 				{
-					long point_index = reference & 0xffff;
-
-					if (point_index >= 0 && point_index < data->point_sets[set_index].point_count)
+					if (point_index >= 0 && point_index < scenario->script_data->point_sets[set_index].point_count)
 					{
 						result = true;
 					}

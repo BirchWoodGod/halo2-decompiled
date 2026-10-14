@@ -2,6 +2,56 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8428 functions match
+
+```
+matched 8428 of 11318 game functions (1084596 of 2784283 bytes, 38.95%)
+```
+
+4 new matches, none lost:
+- Machine 3 lane M round 28 (#433): `0x1a0560`, `0x1a07b0`, `0x1a0850` and `0x1acb50`
+
+## 2026-10-13: 8424 functions match
+
+```
+matched 8424 of 11318 game functions (1083602 of 2784283 bytes, 38.92%)
+```
+
+8 new matches, none lost:
+- Claude lane 1 round 17 (Opus): `0x2c4ea0` (the globals it reads are fields of an existing struct, as in retail), `0x1366d0` and `0x11c0b0` (handed over by machine 3), `0x1fa50` and `0x1fb10`, `0x2b102f` and `0x2b0f76`
+- Deep lane 1 round 52: `0x22d68f`
+
+## 2026-10-13: 8416 functions match
+
+```
+matched 8416 of 11318 game functions (1082400 of 2784283 bytes, 38.88%)
+```
+
+24 new matches, none lost:
+- @BrassMonkey71 (#321): `0x2099f0`; giving `0x20a290` (machine 3) the retail parameters also matched seven more script functions of machine 3
+- Machine 3 batch 10 (#432): 15 functions, among them `0x1c5400`, `0x203cc0`, `0x218d70` and `0x25b120` (with a behaviour fix)
+- Machine 3 Codex lane F round 27 (#431): `0x188130`
+
+## 2026-10-13: 8392 functions match
+
+```
+matched 8392 of 11318 game functions (1076158 of 2784283 bytes, 38.65%)
+```
+
+2 new matches, none lost:
+- Claude lane 1 round 16 (Opus): `0x24c024` (machine 3's form, checked path by path against retail) and `0x11b520` (handed over by machine 3)
+
+## 2026-10-13: 8390 functions match
+
+```
+matched 8390 of 11318 game functions (1075652 of 2784283 bytes, 38.63%)
+```
+
+21 new matches, none lost:
+- Machine 3 batch 9 (#430): 15 functions, among them `0x215730`, `0x218f10`, `0x223d80` and `0x25d610`
+- Deep lane 3 round 55: `0x1df770` (handed over by machine 3) and four near misses it and other handed-over functions had blocked: `0x2a5080`, `0x2a5540`, `0x2a8a50`, `0x2a8aa0`
+- Deep lane 4 round 6: `0x25820`
+
 ## 2026-10-13: 8369 functions match
 
 ```

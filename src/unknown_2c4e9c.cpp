@@ -3285,8 +3285,6 @@ s_type_7ba8e9 *function_137550(long group_index, short bitmap_index);
 struct s_widget_view_2b0a;
 void function_2b0a7b(s_widget_view_2b0a *widget, s_type_7ba8e9 *bitmap);
 
-extern long g_54e7c0;
-extern long g_54e7c4;
 
 /* a campaign level's definition: its map id, its picture and its scenario */
 struct s_campaign_level

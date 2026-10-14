@@ -20,14 +20,14 @@ void function_fd0e0(long definition_index, real scale_a, real scale_b, vector3f 
 bool c_projectile_object_impact_effect_event::v11(long a, long const *entities, long c, void const *data)
 {
     long object = function_a58d0(entities[0]);
-    if (object != NONE)
+    if (object == NONE)
+        return true;
     {
         byte const *event = (byte const *)data;
-        long tag = *(long const *)event;
-        if (tag != NONE && function_122c10(0x70726f6a, tag) &&
+        if (*(long const *)event != NONE && function_122c10(0x70726f6a, *(long const *)event) &&
             !(0.0f > *(real const *)(event + 4) || *(real const *)(event + 4) > 1.0f ||
             0.0f > *(real const *)(event + 8) || *(real const *)(event + 8) > 1.0f))
-            function_fd0e0(tag, *(real const *)(event + 4), *(real const *)(event + 8),
+            function_fd0e0(*(long const *)event, *(real const *)(event + 4), *(real const *)(event + 8),
                 (vector3f const *)(event + 0xc), (point3f const *)(event + 0x18),
                 (vector3f const *)(event + 0x24), *(word const *)(event + 0x30), true,
                 object, (short)*(long const *)(event + 0x38), *(bool const *)(event + 0x34));

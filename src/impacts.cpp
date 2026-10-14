@@ -857,13 +857,14 @@ void impact_orientation_get(
 	{
 		*half_width = 0.0f;
 		*half_length = 0.0f;
-		function_227814(up, g_4687b0, forward);
+		vector3f const *normal = up;
+		function_227814(normal, g_4687b0, forward);
 		if (function_30bf0(forward) < 0.001f)
 		{
-			function_227814(up, g_4687a8, forward);
+			function_227814(normal, g_4687a8, forward);
 			function_30bf0(forward);
 		}
-		function_227814(up, forward, left);
+		function_227814(normal, forward, left);
 		function_30bf0(left);
 	}
 	else
@@ -898,9 +899,11 @@ void impact_orientation_get(
 				real x;
 				real y;
 
-				delta.j = constraint->position.y - position->y;
-				delta.k = constraint->position.z - position->z;
-				delta.i = constraint->position.x - position->x;
+				point3f const *point = &constraint->position;
+				delta.i = point->x - position->x;
+				delta.j = point->y - position->y;
+				delta.k = point->z - position->z;
+
 				x = dot3f(&matrix_a.forward, &delta);
 				y = dot3f(&matrix_a.left, &delta);
 				if (!(local_1.field_0 > x))
