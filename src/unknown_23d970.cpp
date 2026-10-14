@@ -29,15 +29,16 @@ typedef void *(__stdcall *texture_allocate_proc)(long size, long alignment);
 D3DTexture *function_23e340(short width, short height, short format,
 	texture_allocate_proc allocate, long *size, void **data, D3DTexture *header)
 {
-	long bytes = function_1366d0(width, height, 1, format, 0x40, 0);
+	long w = width;
+	long bytes = function_1366d0((short)w, height, 1, format, 0x40, 0);
 	D3DTexture *result = 0;
-	bytes += -bytes & 0x7f;
-	void *buffer = allocate(bytes, 0x80);
+	long aligned = (-bytes & 0x7f) + bytes;
+	void *buffer = allocate(aligned, 0x80);
 	if (header && buffer)
 	{
 		header->Lock = 0;
 		header->Format = (g_4507c8[format] << 8) | 0x10029;
-		header->Size = (((((dword)width * 4) >> 6) - 1) << 24) | ((height - 1) << 12) | (width - 1);
+		header->Size = (((((dword)w * 4) >> 6) - 1) << 24) | ((height - 1) << 12) | (w - 1);
 		header->Data = (dword)buffer & 0x0fffffff;
 		header->Common = 0x40001;
 		result = header;
@@ -46,7 +47,7 @@ D3DTexture *function_23e340(short width, short height, short format,
 	{
 		buffer = 0;
 	}
-	*size = bytes;
+	*size = aligned;
 	*data = buffer;
 	return result;
 }

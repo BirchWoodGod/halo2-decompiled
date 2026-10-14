@@ -139,8 +139,7 @@ public:
 
 PRIVATE __forceinline long contact_metadata_pin(long value, long lower, long upper)
 {
-	long result = value < lower ? lower : value;
-	return result > upper ? upper : result;
+	return value < lower ? lower : value > upper ? upper : value;
 }
 
 PRIVATE __forceinline bool contact_shape_has_material(s_contact_body_view const *body)
@@ -150,7 +149,7 @@ PRIVATE __forceinline bool contact_shape_has_material(s_contact_body_view const 
 	long metadata = body->shape->metadata;
 	if (!metadata)
 		return false;
-	if (contact_metadata_pin(metadata, 1, 16) == metadata)
+	if (contact_metadata_pin(body->shape->metadata, 1, 16) == metadata)
 		return false;
 	return *(byte *)(metadata + 0x1e) != 0xff;
 }
@@ -1351,7 +1350,7 @@ hkBool c_contact_rule_filter::accepts(void const *query, s_contact_body_view con
   if (shape->type() != 0x18 && function_182180((hkShape *)shape))
   {
    long metadata = shape->metadata;
-   if (metadata && contact_metadata_pin(metadata, 1, 16) != metadata)
+   if (metadata && contact_metadata_pin(shape->metadata, 1, 16) != metadata)
    {
     byte flag = *(byte *)(metadata + 0x1f) & 1;
     volatile byte saved_flag = flag;
