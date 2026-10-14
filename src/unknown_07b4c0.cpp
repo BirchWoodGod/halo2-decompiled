@@ -499,8 +499,8 @@ void __stdcall function_07ba10(s_bitstream *stream, void *session)
 		}
 		else
 		{
-			memset(local_392e35, 0, sizeof(local_392e35));
 			memset(&identity, 0, sizeof(identity));
+			memset(local_392e35, 0, sizeof(local_392e35));
 			memset(&appearance, 0, sizeof(appearance));
 		}
 		function_1955d0(stream, &identity, 96);

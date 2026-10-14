@@ -453,10 +453,10 @@ bool function_2466b0(
 	s_prism const *prism)
 {
 	real b = plane_distance_to_point(&prism->plane, start);
-	real a = shape_dot_reverse(&prism->plane.n, direction);
+	real a;
 	real t0 = 0.f;
 	real t1 = 1.f;
-	if (!(fabs(a) < k_real_epsilon))
+	if (!(fabs(a = shape_dot_reverse(&prism->plane.n, direction)) < k_real_epsilon))
 	{
 		real inv = 1.f / a;
 		real s0 = 0.f - inv * b;
@@ -507,10 +507,10 @@ bool function_2466b0(
 	point2f d2;
 	prism_project(q1, prism->axis, prism->side, &d2);
 	long count = prism->point_count;
-	long i = 1;
-	point2f const *local_0 = prism->points;
 	if (count > 0)
 	{
+		long i = 1;
+		point2f const *local_0 = prism->points;
 		do
 		{
 			long next = i >= count ? 0 : i;
@@ -549,8 +549,8 @@ bool function_2466b0(
 			{
 				return false;
 			}
-			i++;
 			local_0++;
+			i++;
 		} while (i - 1 < count);
 	}
 	*t = t0;
