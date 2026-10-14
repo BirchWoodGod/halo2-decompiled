@@ -848,17 +848,21 @@ void function_1c50c0(void)
 // @retail 0x1c2a10
 void function_1c2a10(void)
 {
-	s_type_f1af8e iterator;
+	struct
+	{
+		s_object *object;
+		s_type_f1af8e iterator;
+	} state;
 
-	function_bae80(&iterator, 0, 0);
-	while (function_baeb0(&iterator))
+	function_bae80(&state.iterator, 0, 0);
+	while ((state.object = function_baeb0(&state.iterator)) != NULL)
 	{
-		physics_object_get(iterator.object_index)->havok_component_index = NONE;
+		physics_object_get(state.iterator.object_index)->havok_component_index = NONE;
 	}
-	function_bae80(&iterator, 0, 0);
-	while (function_baeb0(&iterator))
+	function_bae80(&state.iterator, 0, 0);
+	while ((state.object = function_baeb0(&state.iterator)) != NULL)
 	{
-		long object_index = iterator.object_index;
+		long object_index = state.iterator.object_index;
 
 		if (physics_object_get(object_index)->havok_component_index == NONE)
 		{
