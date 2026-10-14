@@ -273,15 +273,7 @@ void function_20b660(void)
                 if (bit_index != NONE)
                 {
                     long count = set->count;
-                    dword v = count;
-                    long bits = 0;
-                    if (v > 1)
-                    {
-                        v--;
-                        while (v != 1) { v >>= 1; bits++; }
-                    }
-                    bits++;
-                    long offset = bit_index + count + (short)bits;
+                    long offset = bit_index + count + (short)log2_ceiling_plus_one(count);
                     short timer = 0;
                     for (long i = 0; i < 5; i++)
                         SET_BIT(timer, i, BIT_VECTOR_TEST(g_51e9ec, offset + i));
