@@ -220,16 +220,16 @@ bool __stdcall function_b2a90(s_bitstream *stream, long size, s_synchronous_game
 	byte *data = message->data;
 	message->unknown00 = function_1959c0(stream, 23);
 	message->size = function_1959c0(stream, 13);
-	if (stream_overflowed(stream) || message->unknown00 < 0 || message->size < 0 || message->size > 0xffff || size != message->size + 8)
-		return false;
-	struct { volatile byte valid; } local;
-	local.valid = true;
-	if (message->size > 0)
+	bool valid = !stream_overflowed(stream) && message->unknown00 >= 0 && message->size >= 0 && message->size <= 0xffff && size == message->size + 8;
+	if (valid && message->size > 0)
 	{
 		function_195820(stream, data, message->size * 8);
-		local.valid = !stream_overflowed(stream);
+		if (stream_overflowed(stream))
+			valid = false;
+		else
+			valid = true;
 	}
-	return local.valid != 0;
+	return valid;
 }
 
 // @retail 0xb2b30

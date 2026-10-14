@@ -2,6 +2,34 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8634 functions match
+
+```
+matched 8634 of 11318 game functions (1147049 of 2784283 bytes, 41.20%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 29 (#471): `0xb2a90`, `0x22cc30` and `0x5e6b0` match.
+
+## 2026-10-14: 8631 functions match
+
+```
+matched 8631 of 11318 game functions (1146492 of 2784283 bytes, 41.18%)
+```
+
+7 new matches, none lost:
+- Machine 3's batch 28 (#470): `0x2a7df0`, `0x15d00`, `0x2363d4`, `0x2651e0`, `0x2bd0b0`, `0x44720` and `0x2b81cb` match.
+
+## 2026-10-14: 8624 functions match
+
+```
+matched 8624 of 11318 game functions (1145041 of 2784283 bytes, 41.13%)
+```
+
+9 new matches, none lost:
+- Machine 3's batch 27 (#469): `0x238537`, `0x2385d6`, `0x238642`, `0x2386c5`, `0x1e1500`, `0x79a10` and `0x253b65` match.
+- Machine 1's key lane 1 round 17: `0x2084c0` and `0x1c69b0` match.
+
 ## 2026-10-14: 8615 functions match
 
 ```

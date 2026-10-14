@@ -1735,7 +1735,7 @@ void function_68f30(c_class_6a600 *world)
 
 
 void function_69a00(const byte *input, c_class_6a600 *world, dword mask);
-void function_69b50(const byte *input, c_class_6a600 *world, dword mask);
+void function_69b50(c_class_6a600 *world, dword mask, const byte *input);
 
 // @retail 0x684e0
 void function_684e0(byte *block)
@@ -1747,7 +1747,7 @@ void function_684e0(byte *block)
   else if (world->state == 4)
   {
    function_69a00(block + 0xc, world, *(dword *)(block + 8));
-   function_69b50(block + 0x610, world, *(dword *)(block + 0x5cc));
+   function_69b50(world, *(dword *)(block + 0x5cc), block + 0x610);
   }
  }
  SIMULATION_WORLD->unknown28 = *(long *)block + 1;
