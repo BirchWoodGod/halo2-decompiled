@@ -952,8 +952,10 @@ bool c_game_engine_markers::v1()
 	long i;
 
 	memset(table, 0, sizeof(s_slot_table));
-	memset(table->c, 0xff, sizeof(table->c));
 	g_51ec80 = table;
+
+	for (i = 0; i < 9; i++)
+		table->c[i] = NONE;
 
 	for (i = 0; i < 9; i++)
 	{
@@ -967,7 +969,9 @@ bool c_game_engine_markers::v1()
 
 	table->l38 = function_243b10(true, NONE, NULL);
 	table->initialized = true;
-	memset(table->d, 0xff, sizeof(table->d));
+
+	for (i = 0; i < 9; i++)
+		table->d[i] = NONE;
 
 	for (i = 0; i < 9; i++)
 		table->objects[i] = NONE;
@@ -1325,14 +1329,9 @@ static inline bool ctf_engine_running()
 // @retail 0x241520
 bool c_game_engine_markers::v16(long player_index, long object_index)
 {
-	bool result;
-	*(bool volatile *)&result = true;
+	bool result = ctf_engine_running();
 
-	if (!ctf_engine_running())
-	{
-		result = false;
-	}
-	else if (player_index != NONE && object_index != NONE)
+	if (result && player_index != NONE && object_index != NONE)
 	{
 		s_player_view *player = ctf_player_get(player_index);
 		long slot = slot_object_get(object_index)->slot;

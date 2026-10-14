@@ -310,16 +310,16 @@ void online_connect_to_service_20(void)
 extern bool g_50944f;
 
 // @retail 0x6c8b0
-long function_6c8b0(XONLINE_USER *user, long controller)
+long function_6c8b0(long controller, XONLINE_USER *user)
 {
  long result = NONE;
  if (g_transport_globals.initialized && g_transport_globals.started)
  {
-  XONLINE_USER users[XONLINE_MAX_LOGON_USERS];
-  memset(users, 0, sizeof(users));
-  users[controller] = *user;
   if (g_467214 == NONE)
   {
+   XONLINE_USER users[XONLINE_MAX_LOGON_USERS];
+   memset(users, 0, sizeof(users));
+   users[controller] = *user;
    g_467214 = online_task_new();
    s_type_9df9da *task = function_6b910(g_467214);
    if (task)
@@ -344,6 +344,9 @@ long function_6c8b0(XONLINE_USER *user, long controller)
   }
   else
   {
+   XONLINE_USER users[XONLINE_MAX_LOGON_USERS];
+   memset(users, 0, sizeof(users));
+   users[controller] = *user;
    for (long i = 0; i < XONLINE_MAX_LOGON_USERS; i++)
    {
     if (i != controller && (bool)((*(dword *)&g_54e8e0[i] >> 5) & 1))

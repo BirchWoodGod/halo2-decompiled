@@ -2316,19 +2316,20 @@ long function_1cfe70(s_havok_component *component, long node_index)
     long body = NONE;
     if (node_index < physics->node_count)
     {
-        short parent = physics->nodes[node_index].parent;
+        long current = node_index;
+        s_component_node_parent *node = &physics->nodes[current];
         do
         {
             for (long i = 0; i < physics->body_count; i++)
             {
-                if (physics->bodies[i].node == node_index)
+                if (physics->bodies[i].node == current)
                 {
                     body = i;
                     break;
                 }
             }
-            node_index = parent;
-        } while (parent != NONE && body == NONE);
+            current = node->parent;
+        } while (node->parent != NONE && body == NONE);
     }
     if (body == NONE)
     {
