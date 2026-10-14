@@ -1540,7 +1540,7 @@ void function_14bc0(short index, short element, bool use_depth);
 void __stdcall function_214f0(real passes, real distortion, real strength, real falloff,
     real scale, bool blend, bool preserve)
 {
-    struct { real first, second, alpha_scale, alpha; color4f color; } values;
+    struct { real first, second, alpha; color4f color; } values;
     values.first = 1.0f;
     values.second = 0.4f;
     if (g_510c50 && ((byte *)g_510c50)[5])
@@ -1612,13 +1612,13 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         g_484f68.PSAlphaOutputs[3] = 0x10d00;
         // Retail clears the values.alpha conversion slot before rounding.
         values.alpha = 0.0f;
-        values.alpha_scale = 255.0f;
+        values.color.red = 255.0f;
         long &packed = *(long *)&distortion;
         packed = 0;
         __asm
         {
             fld values.alpha
-            fld values.alpha_scale
+            fld values.color.red
             fmulp st(1), st(0)
             fistp distortion
         }

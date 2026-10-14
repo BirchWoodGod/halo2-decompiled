@@ -618,7 +618,7 @@ bool __stdcall function_2523b7(long controller);
 
 /* tells the controllers why a game variant could not be saved */
 // @retail 0x148aa3
-void function_148aa3(long error, dword controller_flags)
+void function_148aa3(long error, word controller_flags)
 {
 	switch (error)
 	{
