@@ -84,7 +84,7 @@ struct s_region_change_ab
 };
 
 void function_17b1d0(long object_index);
-void function_1c54b0(long object_index, char const *variants);
+void function_1c54b0(char const *variants, long object_index);
 void function_1c5710(long object_index);
 
 // @retail 0xba410
@@ -119,7 +119,7 @@ void __stdcall function_ba410(long object_index, long region_name, long arg_dbe8
             }
         }
         function_17b1d0(object_index);
-        function_1c54b0(object_index, previous);
+        function_1c54b0(previous, object_index);
     }
 }
 
@@ -146,7 +146,7 @@ void __stdcall function_ba6f0(long object_index, long region_index, long state, 
         object_change_region_permutations(object_index, definition->model_index, object->variant, region_index,
             state, force, NONE, 0, regions, (s_region_permutation_choice *)changes);
         function_17b1d0(object_index);
-        function_1c54b0(object_index, previous);
+        function_1c54b0(previous, object_index);
         function_b7360(object_index);
     }
 }
@@ -208,7 +208,7 @@ void __stdcall function_ba590(long object_index, dword fixed_region_mask)
     }
     memcpy((void *)saved_states, states, count);
     function_17b1d0(object_index);
-    function_1c54b0(object_index, previous);
+    function_1c54b0(previous, object_index);
 }
 
 struct s_object
@@ -597,6 +597,6 @@ void __stdcall function_ba7f0(long object_index, long region_index, long bit_ind
             NONE, false, bit_index, (short)bit_mask, regions,
             (s_region_permutation_choice *)(regions + count * 2));
         function_17b1d0(object_index);
-        function_1c54b0(object_index, previous);
+        function_1c54b0(previous, object_index);
     }
 }
