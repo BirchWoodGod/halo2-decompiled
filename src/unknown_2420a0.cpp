@@ -148,7 +148,7 @@ bool function_19f240(long *iterator);
 void function_1967d0(long a, long c, long b, long delta);
 void function_1970a0(long b, long a, long delta);
 void function_197210(long player_index, long value14, long value10);
-void game_engine_event_initialize(s_event *event, long type, long subtype);
+s_event *game_engine_event_initialize(s_event *event, long type, long subtype);
 void game_engine_event_set_cause_player(s_event *event, long player_index);
 point3f *function_b9dd0(long object_index, point3f *result);
 s_team_entry *function_15e410(short team);
@@ -441,7 +441,7 @@ void c_game_engine_markers::v45(dword *flags, long, s_marker_update *update)
 	 ((flags) & 4) && (options)->team_mode == 2)
 
 // @retail 0x243b10
-long function_243b10(bool team_only, long key_b, long *second)
+long function_243b10(long key_b, bool team_only, long *second)
 {
 	s_game_options_view *options = g_4e6948;
 	long results[8];
@@ -961,13 +961,13 @@ bool c_game_engine_markers::v1()
 	{
 		long second = NONE;
 
-		table->a[i] = (short)function_243b10(true, i, NULL);
-		table->b[i] = (short)function_243b10(false, i, &second);
+		table->a[i] = (short)function_243b10(i, true, NULL);
+		table->b[i] = (short)function_243b10(i, false, &second);
 		table->c[i] = (short)second;
 		function_243c00(i);
 	}
 
-	table->l38 = function_243b10(true, NONE, NULL);
+	table->l38 = function_243b10(NONE, true, NULL);
 	table->initialized = true;
 
 	for (i = 0; i < 9; i++)
@@ -1112,11 +1112,9 @@ void c_game_engine_markers::v23(long object_index, long unit_index)
 {
 	if (ctf_options()->mode != 4)
 	{
-		s_slot_object *object = slot_object_get(object_index);
-
 		if (function_101280(object_index) == 1)
 		{
-			long slot = object->slot;
+			long slot = slot_object_get(object_index)->slot;
 			s_slot_object *unit = slot_object_get(unit_index);
 
 			if (slot != NONE)
@@ -1124,19 +1122,24 @@ void c_game_engine_markers::v23(long object_index, long unit_index)
 				s_slot_table *g = g_51ec80;
 				long player_index = unit->player_index;
 
-				if (player_index != NONE && !g->flag_bits[slot].bit0)
+				if (player_index != NONE)
 				{
 					long absolute_index = player_index & 0xffff;
-					long team = ctf_player_get(player_index)->team;
+					s_player_view *player = ctf_player_get(player_index);
 
-					if (ctf_options()->engine_type == 9)
+					if (!g->flag_bits[slot].bit0)
 					{
-						function_1967d0(absolute_index, team, 0x15, 1);
-					}
-					else
-					{
-						function_1967d0(absolute_index, team, 0xf, 1);
-						function_1970a0(absolute_index, 0x12, 1);
+						long team = player->team;
+
+						if (ctf_options()->engine_type != 9)
+						{
+							function_1967d0(absolute_index, team, 0xf, 1);
+							function_1970a0(absolute_index, 0x12, 1);
+						}
+						else
+						{
+							function_1967d0(absolute_index, team, 0x15, 1);
+						}
 					}
 				}
 
@@ -1158,7 +1161,7 @@ void c_game_engine_markers::v23(long object_index, long unit_index)
 
 					game_engine_event_initialize(&event, ctf_options()->engine_type == 9 ? 10 : 3, 1);
 					game_engine_event_set_cause_player(&event, player_index);
-					event.effect_team = (short)(slot == 8 ? NONE : slot);
+					event.effect_team = (short)((short)slot == 8 ? NONE : (short)slot);
 					function_19eb90(&event);
 				}
 			}
@@ -1205,7 +1208,9 @@ void c_game_engine_markers::v24(long object_index, long unit_index)
 
 				if (ctf_options()->engine_type == 9)
 				{
-					if (!(g->flags[slot] & 1) || !(ctf_options()->flags22c.flags & 0x20))
+					if (!(g->flags[slot] & 1))
+						g->e[slot] = NONE;
+					else if (!(ctf_options()->flags22c.flags & 0x20))
 						g->e[slot] = NONE;
 					function_a7810(0x100);
 				}
@@ -1215,9 +1220,9 @@ void c_game_engine_markers::v24(long object_index, long unit_index)
 				{
 					s_event event;
 
-					game_engine_event_initialize(&event, ctf_options()->engine_type == 9 ? 10 : 3, 2);
-					game_engine_event_set_cause_player(&event, player_index);
-					event.effect_team = function_2411b1((short)slot);
+					game_engine_event_set_cause_player(game_engine_event_initialize(&event, ctf_options()->engine_type == 9 ? 10 : 3, 2),
+						player_index);
+					event.effect_team = (short)((short)slot == 8 ? NONE : (short)slot);
 					function_19eb90(&event);
 				}
 			}
@@ -1486,8 +1491,7 @@ bool function_2423f0()
 	long count = 0;
 	long i;
 
-	for (i = 0; i < 9; i++)
-		slot_objects[i] = NONE;
+	memset(slot_objects, NONE, sizeof(slot_objects));
 
 	for (i = 0; i < ((s_ctf_team_view *)g_4e9ae8)->team_count; i++)
 	{
@@ -1500,8 +1504,8 @@ bool function_2423f0()
 		}
 		else
 		{
-			others[count++] = object_index;
 			result = false;
+			others[count++] = object_index;
 		}
 	}
 

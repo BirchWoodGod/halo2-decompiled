@@ -1026,32 +1026,37 @@ void __stdcall function_12d6d0(s_bitmap_texture_view const *bitmap, long level, 
 // @retail 0x12d5a0
 bool function_12d5a0(s_bitmap_data *arg_0, long arg_1, bool arg_2, bool arg_3, long arg_4)
 {
-	long local_0 = function_13d370(g_4e6464, arg_0->field_34[arg_1], (arg_2 || arg_3) ? 2 : 5);
+	bool local_5 = arg_2 || arg_3;
+	long local_6 = arg_0->field_34[arg_1];
+	long local_0 = function_13d370(g_4e6464, local_6, local_5 ? 2 : 5);
 	if (arg_2 && !arg_3)
 		arg_4 = 7;
-	if (local_0 == NONE)
-		return false;
-	long local_1 = (((s_physical_block *)g_4e6464->blocks->data)[local_0 & 0xffff].offset << g_4e6464->page_shift) + g_4e6460;
-	datum_new_at_index_with_salt(g_4e6454, local_0);
-	s_texture_cache_entry *local_2 = texture_cache_entry_get(local_0);
-	local_2->resident = false;
-	local_2->flags &= ~1;
-	local_2->pending = arg_1;
-	local_2->bitmap = arg_0;
-	memset(&local_2->resource, 0, sizeof(D3DTexture));
-	arg_0->block_indices[arg_1] = local_0;
-	arg_0->unknown40[arg_1] = local_1;
-	if (!arg_1)
-		arg_0->unknown54 = local_1;
-	function_12d6d0((s_bitmap_texture_view *)arg_0, arg_1, (D3DTexture *)&local_2->resource);
-	long local_3 = arg_0->field_34[arg_1];
-	if (local_3 & 0x1ff)
-		local_3 = (local_3 | 0x1ff) + 1;
-	volatile long local_4 = arg_0->unknown40[3];
-	local_2->hardware_format = function_213760(arg_0->data_offsets[arg_1], local_3, (void *)local_1, NULL, &local_2->resident, 3, arg_4);
-	*(long *)local_2->unknown08 = arg_4;
-	g_4e6484++;
-	return true;
+	if (local_0 != NONE)
+	{
+		long local_1 = (((s_physical_block *)g_4e6464->blocks->data)[local_0 & 0xffff].offset << g_4e6464->page_shift) + g_4e6460;
+		datum_new_at_index_with_salt(g_4e6454, local_0);
+		s_texture_cache_entry *local_2 = texture_cache_entry_get(local_0);
+		local_2->resident = false;
+		*(word *)&local_2->flags &= ~1; /* retail clears the bit with a word-wide and */
+		local_2->pending = arg_1;
+		local_2->bitmap = arg_0;
+		memset(&local_2->resource, 0, sizeof(D3DTexture));
+		arg_0->block_indices[arg_1] = local_0;
+		arg_0->unknown40[arg_1] = local_1;
+		if (!arg_1)
+			arg_0->unknown54 = local_1;
+		function_12d6d0((s_bitmap_texture_view *)arg_0, arg_1, (D3DTexture *)&local_2->resource);
+		long local_3 = arg_0->field_34[arg_1];
+		if (local_3 & 0x1ff)
+			local_3 = (local_3 | 0x1ff) + 1;
+		long local_7 = arg_0->data_offsets[arg_1];
+		volatile long local_4 = arg_0->unknown40[3];
+		local_2->hardware_format = function_213760(local_7, local_3, (void *)local_1, NULL, &local_2->resident, 3, arg_4);
+		*(long *)local_2->unknown08 = arg_4;
+		g_4e6484++;
+		return true;
+	}
+	return false;
 }
 
 bool function_120ce0(long arg_0, long arg_1);

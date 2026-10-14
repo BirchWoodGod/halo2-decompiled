@@ -21,6 +21,13 @@ struct s_scenario_seat_filters_view
 	s_seat_filter *seat_filters;
 };
 
+/* a seat definition's type (0 for none) */
+struct s_seat_definition_type_view
+{
+	byte unknown000[0x3c];
+	short type;
+};
+
 // @retail 0x200ee0
 short function_200ee0(long object_index, short mode, long *selected_object, short *occupied_count)
 {
@@ -43,35 +50,34 @@ short function_200ee0(long object_index, short mode, long *selected_object, shor
 		}
 		else if (selected_seat == NONE)
 		{
-			s_unit_seat_definition *seat_definition = seat->definition;
-			short type = *(short *)((byte *)seat_definition + 0x3c);
-			if (!type)
+			s_seat_definition_type_view *seat_definition = (s_seat_definition_type_view *)seat->definition;
+			if (!seat_definition->type)
 				continue;
 			switch (mode)
 			{
 			case 0:
-				if (type == 3) continue;
-				if (type == 4) continue;
+				if (seat_definition->type == 3) continue;
+				if (seat_definition->type == 4) continue;
 				break;
 			case 1:
-				if (type != 1) continue;
+				if (seat_definition->type != 1) continue;
 				break;
 			case 2:
-				if (type != 2) continue;
+				if (seat_definition->type != 2) continue;
 				break;
 			case 3:
-				if (type != 5) continue;
+				if (seat_definition->type != 5) continue;
 				break;
 			case 4:
-				if (type != 3) continue;
+				if (seat_definition->type != 3) continue;
 				break;
 			case 5:
-				if (type != 4) continue;
+				if (seat_definition->type != 4) continue;
 				break;
 			case 6:
 			case 7:
 				/* only typeless seats, which the test above already skipped */
-				if (type != 0) continue;
+				if (seat_definition->type != 0) continue;
 				break;
 			default:
 				continue;
@@ -165,13 +171,10 @@ long function_2116f0(long unit_index, long filter_range, long seat_type, long oc
 	short seat_count = 0;
 
 	function_c8a40(unit_index, seats, &seat_count, 64);
-	for (long i = 0; i < seat_count; i++)
+	for (long i = 0; i < seat_count && result_count < maximum_count; i++)
 	{
 		s_object_seat *seat = &seats[i];
-		bool valid = true;
-
-		if (result_count >= maximum_count)
-			break;
+		bool valid;
 
 		if (!function_211830(filter_range, seat->object_index, seat->seat_index))
 			continue;
@@ -190,6 +193,9 @@ long function_2116f0(long unit_index, long filter_range, long seat_type, long oc
 		case 3:
 			valid = TEST_FIELD_BIT(seat->definition->flags.bit2);
 			break;
+		default:
+			valid = true;
+			break;
 		}
 		if (!valid)
 			continue;
@@ -202,11 +208,14 @@ long function_2116f0(long unit_index, long filter_range, long seat_type, long oc
 		case 2:
 			valid = function_c8f60(seat->object_index, seat->seat_index) == NONE;
 			break;
+		default:
+			valid = true;
+			break;
 		}
 		if (!valid)
 			continue;
 
-		*results++ = *seat;
+		results[result_count] = *seat;
 		result_count++;
 	}
 
