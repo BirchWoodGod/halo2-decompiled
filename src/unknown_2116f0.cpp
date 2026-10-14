@@ -171,13 +171,10 @@ long function_2116f0(long unit_index, long filter_range, long seat_type, long oc
 	short seat_count = 0;
 
 	function_c8a40(unit_index, seats, &seat_count, 64);
-	for (long i = 0; i < seat_count; i++)
+	for (long i = 0; i < seat_count && result_count < maximum_count; i++)
 	{
 		s_object_seat *seat = &seats[i];
-		bool valid = true;
-
-		if (result_count >= maximum_count)
-			break;
+		bool valid;
 
 		if (!function_211830(filter_range, seat->object_index, seat->seat_index))
 			continue;
@@ -196,6 +193,9 @@ long function_2116f0(long unit_index, long filter_range, long seat_type, long oc
 		case 3:
 			valid = TEST_FIELD_BIT(seat->definition->flags.bit2);
 			break;
+		default:
+			valid = true;
+			break;
 		}
 		if (!valid)
 			continue;
@@ -208,11 +208,14 @@ long function_2116f0(long unit_index, long filter_range, long seat_type, long oc
 		case 2:
 			valid = function_c8f60(seat->object_index, seat->seat_index) == NONE;
 			break;
+		default:
+			valid = true;
+			break;
 		}
 		if (!valid)
 			continue;
 
-		*results++ = *seat;
+		results[result_count] = *seat;
 		result_count++;
 	}
 

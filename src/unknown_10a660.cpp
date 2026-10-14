@@ -105,3 +105,14 @@ bool function_10a660(long object_index, long animation_name, short frame, long a
 
 	return result;
 }
+
+/* whether an animation graph has as many nodes as the model it animates; it
+   lives in this file (not inline) so that only link-time code generation
+   inlines it into s_animation_state::initialize (0x1cb0d0), as in retail */
+bool animation_graph_fits_model(long graph_tag_index, long model_tag_index)
+{
+	bool result = false;
+	if (graph_tag_index != NONE)
+		result = (short)graph_tag_get(graph_tag_index)->node_count == *(long *)((byte *)graph_tag_get(model_tag_index) + 0x78);
+	return result;
+}

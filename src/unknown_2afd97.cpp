@@ -70,7 +70,7 @@ c_class_2b01eb::c_class_2b01eb(s_bitmap_block *definition) :
 		}
 	}
 	memset(&bounds, 0, sizeof(bounds));
-	short bottom;
+	struct { short bottom; } edge;
 	struct scale_test
 	{
 		static __forceinline bool enabled(s_widget_view_2b0a *widget)
@@ -81,24 +81,25 @@ c_class_2b01eb::c_class_2b01eb(s_bitmap_block *definition) :
 		bounds.right = this->definition->x;
 		bounds.left = this->definition->x;
 		bounds.top = this->definition->y;
-		bottom = this->definition->height;
+		edge.bottom = this->definition->height;
 		goto set_bottom;
 	}
 	else if (shown)
 	{
 		bounds.top = this->definition->y;
 		bounds.left = this->definition->x;
-		bottom = this->definition->y - shown->height;
 		bounds.right = this->definition->x + shown->width;
+		edge.bottom = this->definition->y - shown->height;
 		goto set_bottom;
 	}
 	goto bounds_done;
 set_bottom:
-	bounds.bottom = bottom;
+	bounds.bottom = edge.bottom;
 bounds_done:
 	sequence = 0;
 	this->bounds = bounds;
-	if (group && this->definition->sequence >= 0 && this->definition->sequence < group->bitmap_count)
+	struct { s_bitmap_group_view *value; } checked_group = { group };
+	if (checked_group.value && this->definition->sequence >= 0 && this->definition->sequence < checked_group.value->bitmap_count)
 	{
 		sequence = this->definition->sequence;
 	}

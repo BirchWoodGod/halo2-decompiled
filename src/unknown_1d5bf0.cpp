@@ -129,7 +129,7 @@ PRIVATE __forceinline bool function_1d6d04(long arg_0)
 
 // @retail 0x1d6d00
 void __stdcall function_1d6d00(s_havok_component *arg_0, void *arg_1, byte *arg_2,
- long arg_3, long arg_4, long arg_5, bool arg_6)
+ long arg_3, long arg_4, bool arg_5, bool arg_6)
 {
  (void)&arg_0; (void)&arg_1; (void)&arg_2; (void)&arg_3; (void)&arg_4; (void)&arg_5; (void)&arg_6;
  if (!arg_6) arg_0->unknown04 |= 0x40000;

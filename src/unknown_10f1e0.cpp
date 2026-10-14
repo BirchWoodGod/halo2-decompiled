@@ -919,19 +919,24 @@ bool __stdcall function_113e90(long unit_index, long name, real blend, c_animati
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
 	s_animation_state *state = UNIT_ANIMATION_STATE(unit);
 	c_animation_channel *channel = mode == 3 ? &control->channel_bc : &control->channel_9c;
+	long weapon_type;
 	long weapon_class = 0x7000101;
-	long weapon_type = 0x7000101;
+	weapon_type = 0x7000101;
 	if (mode == 1 || mode == 3)
 	{
 		weapon_class = 0x400054b;
 		weapon_type = control->weapon_type;
 	}
 	else if (mode == 2 && state->unknown74 == 0x400054b)
+	{
 		weapon_class = control->weapon_class;
+		weapon_type = 0x7000101;
+	}
 	bool can_blend = true;
 	if (channel->graph_tag_index != NONE && channel->animation_id.index != NONE)
 	{
-		s_animation *animation = function_1daea0(GRAPH_GET(channel->graph_tag_index), channel->animation_id);
+		s_graph_tag *graph = GRAPH_GET(channel->graph_tag_index);
+		s_animation *animation = function_1daea0(graph, channel->animation_id);
 		can_blend = !TEST_FIELD_BIT(animation->flag1);
 	}
 	if (state->overlay_play(channel, 0x803f, name, weapon_class, weapon_type))
@@ -2056,9 +2061,9 @@ void function_114c60(long arg_0)
                 if (*(long *)(local_1 + 0x1c) == NONE)
                     sound_choose_permutation(local_6, (s_sound_permutation_reference *)(local_1 + 0x18), NULL);
                 s_114c60 local_8;
-                local_8.field_0 = local_7;
                 local_8.field_4 = *(long *)(local_1 + 0x10);
                 local_8.field_8 = 1.0f;
+                local_8.field_0 = local_7;
                 local_8.field_c = local_1 + 0x18;
                 *(long *)(local_1 + 0x54) = function_1891d0(arg_0, 0x4000095, (s_sound_label_play const *)&local_8);
             }
