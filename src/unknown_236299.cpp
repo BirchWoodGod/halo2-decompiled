@@ -425,9 +425,6 @@ long map_location_progress_get(char const *map_name);
 void function_138110(s_game_options *options);
 dword function_1462b0(void);
 void function_18e790(s_game_options const *options);
-extern long g_54e7c0;
-extern long g_54e7c4;
-extern long g_54e7c8;
 
 /* starts the chosen map with the signed in local players */
 // @retail 0x23643f

@@ -5226,6 +5226,15 @@ void __stdcall function_13f0e0(t_1f070_glyph callback, short_rectangle2d const *
     short *position, short_rectangle2d const *clip, short line_gap, real scale, dword const *text);
 void function_36560(void);
 
+/* moves a rectangle by (dx, dy) */
+static __forceinline void offset_rectangle_1f070(short_rectangle2d *rectangle, short dx, short dy)
+{
+    rectangle->top += dy;
+    rectangle->left += dx;
+    rectangle->bottom += dy;
+    rectangle->right += dx;
+}
+
 // @retail 0x1f070
 void function_1f070(short_rectangle2d const *bounds, short_rectangle2d const *clip,
     short *position, long line_gap, dword const *text, real scale,
@@ -5237,29 +5246,36 @@ void function_1f070(short_rectangle2d const *bounds, short_rectangle2d const *cl
     ++g_4670c0;
     s_bitmap_view *bitmap = g_4b62a0 ? g_4b62ac : 0;
     if (!bitmap || !*text) return;
+    /* the window rectangle: g_4b9dd0 .. g_4b9dd6 are one rectangle of the camera storage */
+    short_rectangle2d const *window = (short_rectangle2d const *)&g_4b9dd0;
     short_rectangle2d wanted_bounds;
-    if (bounds) wanted_bounds = *bounds;
-    else
+    if (!bounds)
     {
         wanted_bounds = g_4b9dd8;
-        wanted_bounds.top -= g_4b9dd0;
-        wanted_bounds.left -= g_4b9dd2;
-        wanted_bounds.bottom -= g_4b9dd0;
-        wanted_bounds.right -= g_4b9dd2;
+        offset_rectangle_1f070(&wanted_bounds, -window->left, -window->top);
+    }
+    else
+    {
+        wanted_bounds = *bounds;
     }
     short_rectangle2d wanted_clip;
-    if (!(clip)) {
-        wanted_clip.left = 0;
-        wanted_clip.top = 0;
-        wanted_clip.right = g_4b9dd6 - g_4b9dd2;
-        wanted_clip.bottom = g_4b9dd4 - g_4b9dd0;
-    } else {
-        long right = g_4b9dd6 - g_4b9dd2;
-        long bottom = g_4b9dd4 - g_4b9dd0;
-        wanted_clip.left = clip->left < 0 ? 0 : clip->left;
-        wanted_clip.top = clip->top < 0 ? 0 : clip->top;
-        wanted_clip.right = (short)(right > clip->right ? clip->right : right);
-        wanted_clip.bottom = (short)(bottom > clip->bottom ? clip->bottom : bottom);
+    if (!clip)
+    {
+        wanted_clip = *window;
+        offset_rectangle_1f070(&wanted_clip, -window->left, -window->top);
+    }
+    else
+    {
+        long bottom = window->bottom - window->top;
+        if (bottom > clip->bottom) bottom = clip->bottom;
+        long right = window->right - window->left;
+        if (right > clip->right) right = clip->right;
+        long top = clip->top < 0 ? 0 : clip->top;
+        long left = clip->left < 0 ? 0 : clip->left;
+        wanted_clip.left = (short)left;
+        wanted_clip.top = (short)top;
+        wanted_clip.right = (short)right;
+        wanted_clip.bottom = (short)bottom;
     }
     byte material[0x98];
     memset(material, 0, sizeof(material));
@@ -5276,6 +5292,9 @@ void function_1f070(short_rectangle2d const *bounds, short_rectangle2d const *cl
     *(s_bitmap_view **)(material + 0xc) = bitmap;
     *(real *)(material + 0x2c) = 1.0f;
     *(real *)(material + 0x28) = 1.0f;
+    *(long *)(material + 0) = 0;
+    material[0x96] = 0;
+    *(word *)(material + 0x94) = 0;
     material[0x97] = preserve;
     if (color) *(void const **)(material + 0x58) = color;
     if (shadow) *(void const **)(material + 0x5c) = shadow;
