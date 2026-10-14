@@ -2,6 +2,28 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8475 functions match
+
+```
+matched 8475 of 11318 game functions (1096078 of 2784283 bytes, 39.37%)
+```
+
+4 new matches, none lost:
+- Machine 1 key lane 1 round 2 (new functions in their own files): `0xb8a80` and `0xf8190`, with `0xb8a10` following
+- Machine 1 key lane 2 round 2 (new functions in their own files): `0xa9f20`
+
+## 2026-10-14: 8471 functions match
+
+```
+matched 8471 of 11318 game functions (1095650 of 2784283 bytes, 39.35%)
+```
+
+15 new matches, none lost:
+- Machine 3 batch 12 (#439): `0x128920`, `0x1c2a10`, `0x1cfe70`, `0x1d1260`, `0x1dacb0`, `0x1deed0`, `0x207c20`, `0x2081e0`, `0x209520`, `0x20adf0` and `0x256520`
+- Machine 3 Opus lane D upper round 22 (#438): `0x80660`, `0x824d0` and `0x8f170`
+- Machine 3 Codex lane F round 28 (#437): `0x18a430`
+- Restored a contributor function (`0xf8090`) to its author version until they answer on #9
+
 ## 2026-10-13: 8456 functions match
 
 ```
