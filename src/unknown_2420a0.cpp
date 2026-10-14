@@ -2753,8 +2753,8 @@ void c_game_engine_markers::v14(long arg_0)
 		local_0 = g_4e8c20->entries[arg_0];
 	s_player_view *local_1 = ctf_player_get(local_0);
 	bool local_2 = false;
-	bool local_3 = false;
 	bool local_4 = false;
+	bool local_3 = false;
 	if (ctf_options()->engine_type == 9)
 	{
 		if (function_19f3c0(local_0, 1) != NONE || function_241900(local_0))
@@ -2775,31 +2775,38 @@ void c_game_engine_markers::v14(long arg_0)
 			bool local_6 = !(bool)g_51ec80->flag_bits[8].bit0;
 			bool local_7 = local_5->lc != NONE;
 			bool local_8 = !local_6 && !local_7;
-			s_color_bits local_9 = *(s_color_bits *)g_468714;
 			bool local_10 = false;
 			bool local_11 = false;
+			s_color_bits local_9 = *(s_color_bits *)g_468714;
 			if (local_7 && ctf_player_get(local_5->lc)->team == local_1->team)
 				local_10 = true;
 			if (ctf_options()->engine_type == 9 && g_51ec80->flag_bits[8].bit3)
 				local_11 = true;
 			bool local_12 = false;
-			long local_13 = *(long *)((byte *)g_4e6948 + 0x23c);
 			if (!local_7 || !local_10)
 			{
-				if (local_6 || local_8)
-					local_12 = local_13 != 3;
-				else if (local_7 && !local_10)
+				if (ctf_options()->engine_type == 9)
 				{
-					if (ctf_options()->engine_type == 9)
+					if (local_6 || local_8)
+						local_12 = *(long *)((byte *)g_4e6948 + 0x23c) != 3;
+					else if (local_7 && !local_10)
 					{
-						switch (local_13)
+						switch (*(long *)((byte *)g_4e6948 + 0x23c))
 						{
 						case 0: local_12 = true; break;
 						case 2: local_12 = local_11; break;
 						}
 					}
-					else
-						local_12 = local_13 == 1 || local_13 == 2;
+				}
+				else if (local_6 || local_8)
+					local_12 = *(long *)((byte *)g_4e6948 + 0x23c) != 3;
+				else if (local_7 && !local_10)
+				{
+					switch (*(long *)((byte *)g_4e6948 + 0x23c))
+					{
+					case 1: local_12 = true; break;
+					case 2: local_12 = true; break;
+					}
 				}
 			}
 			if (local_12)
@@ -2844,12 +2851,11 @@ void c_game_engine_markers::v14(long arg_0)
 				bool local_26 = false;
 				color3f local_27;
 				s_color_bits local_28 = *(s_color_bits *)function_7f720(&local_27, (short)local_15);
-				if (local_23 && ctf_player_get(local_16->lc)->team == local_1->team)
-					local_25 = true;
+				if (local_23)
+					local_25 = ctf_player_get(local_16->lc)->team == local_1->team;
 				if (ctf_options()->engine_type == 9 && g_51ec80->flag_bits[local_15].bit3)
 					local_26 = true;
 				bool local_29 = false;
-				long local_30 = *(long *)((byte *)g_4e6948 + 0x23c);
 				if (!local_23 || !local_25)
 				{
 					if (ctf_options()->engine_type == 9)
@@ -2858,7 +2864,7 @@ void c_game_engine_markers::v14(long arg_0)
 							local_29 = true;
 						else
 						{
-							switch (local_30)
+							switch (*(long *)((byte *)g_4e6948 + 0x23c))
 							{
 							case 0: local_29 = true; break;
 							case 1: local_29 = local_24; break;
@@ -2870,7 +2876,7 @@ void c_game_engine_markers::v14(long arg_0)
 						local_29 = true;
 					else
 					{
-						switch (local_30)
+						switch (*(long *)((byte *)g_4e6948 + 0x23c))
 						{
 						case 0: local_29 = local_24; break;
 						case 1: local_29 = true; break;
@@ -2907,7 +2913,11 @@ void c_game_engine_markers::v14(long arg_0)
 							if (local_36 != NONE)
 							{
 								color3f local_37;
-								s_color_bits local_38 = *(s_color_bits *)(local_36 == 8 ? g_468714 : function_7f720(&local_37, (short)local_36));
+								s_color_bits local_38;
+								if (local_36 == 8)
+									local_38 = *(s_color_bits *)g_468714;
+								else
+									local_38 = *(s_color_bits *)function_7f720(&local_37, (short)local_36);
 								function_2440a0(&local_14, local_35, (point3f *)&local_38);
 							}
 						}

@@ -2508,7 +2508,7 @@ void function_202720(void)
         local_0.records.data = g_51e9dc;
         local_0.records.index = NONE;
     }
-    while ((local_0.group = (s_squad_group_datum *)function_202752(&local_0.records)) != NULL)
+    while (next_group_record_202370(&local_0) != NULL)
     {
         if (*(short *)((byte *)local_0.group + 0x1e) > 0)
         {
@@ -2546,7 +2546,7 @@ void function_202720(void)
         local_0.records.data = g_51e9dc;
         local_0.records.index = NONE;
     }
-    while ((local_0.group = (s_squad_group_datum *)function_202752(&local_0.records)) != NULL)
+    while (next_group_record_202370(&local_0) != NULL)
     {
         if (*(long *)((byte *)local_0.group + 0x10) == NONE)
             function_202a00(local_0.records.datum_index, NONE);

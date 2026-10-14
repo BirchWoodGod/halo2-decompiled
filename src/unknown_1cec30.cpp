@@ -2103,10 +2103,10 @@ void __stdcall function_1d87b0(s_havok_component_rigid_body *body, long body_ind
     (void)&body;
     (void)&body_index;
     (void)&component;
-    vector3f normal = *g_4687a4;
-    long materials[3];
     long material_count = 0;
     long other_contacts = 0;
+    vector3f normal = *g_4687a4;
+    long materials[3];
     long contact_count = component->unknown88.size;
     for (long i = 0; i < contact_count; ++i)
     {
@@ -2114,11 +2114,16 @@ void __stdcall function_1d87b0(s_havok_component_rigid_body *body, long body_ind
         if (contact->rigid_body_index_a == body_index && (((byte *)contact)[0x44] & 0x20) && material_count < 3)
         {
             s_component_surface *surface = &((s_component_surface_mesh *)g_4e0340)->surfaces[*(long *)((byte *)contact + 0xc)];
-            long j;
-            for (j = 0; j < material_count; ++j)
-                if (materials[j] == surface->material)
+            bool found = false;
+            for (long j = 0; j < material_count; ++j)
+            {
+                if (surface->material == materials[j])
+                {
+                    found = true;
                     break;
-            if (j == material_count)
+                }
+            }
+            if (!found)
             {
                 normal.i = contact->normal.i + normal.i;
                 normal.j = contact->normal.j + normal.j;
@@ -2163,10 +2168,10 @@ void __stdcall function_1d87b0(s_havok_component_rigid_body *body, long body_ind
         velocity.k = local_c7c2ff.k + velocity.k;
         speed_sum += component_surface_length(&local_c7c2ff);
     }
-    length = component_surface_length(&velocity);
-    if (!(fabs(length) < 0.0001f))
+    real velocity_length = component_surface_length(&velocity);
+    if (!(fabs(velocity_length) < 0.0001f))
     {
-        real inverse = 1.0f / length;
+        real inverse = 1.0f / velocity_length;
         velocity.i = inverse * velocity.i;
         velocity.j = velocity.j * inverse;
         velocity.k = velocity.k * inverse;
