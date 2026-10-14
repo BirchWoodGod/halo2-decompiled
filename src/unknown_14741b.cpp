@@ -835,8 +835,7 @@ extern bool g_54e7f8;
 void function_199a03(long mode);
 short player_slot_count_active(void);
 void function_148823();
-extern long g_54e7c0;
-extern long g_54e7c4;
+#include "unknown_234c64.h"
 
 // @retail 0x230b32
 void c_main_menu_screen::v19()

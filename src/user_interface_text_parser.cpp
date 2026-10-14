@@ -133,9 +133,8 @@ struct s_player_view
 	byte unknown028[0x21c - 0x28];
 };
 
-/* the session's last map and the strings the procedures keep */
-extern long g_54e7c0;
-extern long g_54e7c4;
+/* the strings the procedures keep (the session's last map, g_54e7c0 and
+   g_54e7c4, is in unknown_234c64.h) */
 wchar_t g_55c2e4[k_parse_buffer_length];
 wchar_t g_55c4e4[k_parse_buffer_length];
 wchar_t g_55c6e4[k_parse_buffer_length];
