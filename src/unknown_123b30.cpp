@@ -256,7 +256,7 @@ bool game_state_core_read(char const *name, void *buffer, dword size)
 	game_state_core_get_file(name, &reference);
 	if (function_136970(&reference, 1, &error))
 	{
-		result = function_136ca0(&reference, buffer, size, false);
+		result = function_136ca0(&reference, size, buffer, false);
 		function_136bb0(&reference);
 	}
 	return result;
@@ -401,31 +401,33 @@ void function_1241b0(s_saved_game_read *arg_0)
 	function_123f60(0);
 	long local_2 = 0;
 	__int64 local_3 = function_12421c();
+	long local_4 = 0;
 	if (g_4e6464->page_count > 0)
 	{
-		long local_4 = 0;
 		do
 		{
 			local_2 = function_12d2f0(0x3fe000, 0, 0, (long)game_state_cache_block_release);
 			if (!local_2)
 			{
-				if (local_4 < 90)
-				{
-					local_4++;
-					function_12c600();
-				}
-				else
+				if (local_4 >= 90)
 				{
 					__int64 local_5 = function_12421c() - local_3;
 					if (local_5 < 0) local_5 = 0;
-					if (!(timing_ticks_to_seconds(local_5) < 1.0)) break;
+					if (!((real)timing_ticks_to_seconds(local_5) < 1.0f))
+						goto local_6;
 					D3DDevice_KickPushBuffer();
 					D3DDevice_IsBusy();
 					SwitchToThread();
 				}
+				else
+				{
+					local_4++;
+					function_12c600();
+				}
 			}
 		} while (!local_2);
 	}
+local_6:
 	if (local_2)
 	{
 		memcpy((void *)local_2, game_state_globals.base_address, 0x3fe000);

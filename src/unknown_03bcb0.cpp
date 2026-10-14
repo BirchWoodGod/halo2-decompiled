@@ -307,8 +307,10 @@ bool __stdcall function_4dfa0(long tag, long context, long pass, long stage, lon
 		out->value10 = (dword)material;
 		out->value08 = 0;
 		out->unknown14 = 0;
-		bool ready = function_4cbb0(*(long *)((byte *)out->value10 + 0x100), 0) != 0;
-		return ready;
+		// The helper returns 0 or 1, so its low byte is the bool result.
+		union { long value; bool ready; } result;
+		result.value = function_4cbb0(*(long *)((byte *)out->value10 + 0x100), 0);
+		return result.ready;
 	}
 	return false;
 }
@@ -1538,8 +1540,9 @@ bool __stdcall function_3c3c0(bool render, bool clear)
         byte *shader = *(byte **)(*(byte **)(g_4e3b44[shader_tag & 0xffff].bytes + 0x20) + 4);
         long shader_index = *(long *)(shader + 0x100);
         dword flags = *(dword *)(shader + 0x118);
+        render = (bool)((flags >> 19) & 1);
         if (flags & 0x100000) function_3bea0();
-        if (flags & 0x80000) function_3bd00(*(real *)(state + 0x84), pack_color3f((color3f const *)(state + 0x58)));
+        if (render) function_3bd00(*(real *)(state + 0x84), pack_color3f((color3f const *)(state + 0x58)));
         if (clear) function_14b60(0x10, 0xffffff, 0.0f, 0);
         byte *geometry = *(byte **)(state + 0xc);
         function_1cbb0(1, 1, shader_index);

@@ -314,11 +314,9 @@ void function_1486b8(long error, bool keep)
 		if (keep)
 		{
 			second = NULL;
+			break;
 		}
-		else
-		{
-			leave = true;
-		}
+		leave = true;
 		break;
 	case 7:
 		dialog_id = 0x26;

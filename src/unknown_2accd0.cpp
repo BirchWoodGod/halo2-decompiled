@@ -134,7 +134,7 @@ inline bool function_xe8ca68(s_type_acf665 *file, dword size, const void *buffer
 
 inline bool function_xab2909(s_type_acf665 *file, dword size, bool silent, void *buffer)
 {
-	return function_136ca0(file, buffer, size, silent);
+	return function_136ca0(file, size, buffer, silent);
 }
 
 inline bool function_x8231f3(s_type_acf665 *file)
@@ -328,7 +328,7 @@ bool saved_game_file_copy_create(s_saved_game_file *file)
 // @retail 0x2ad380
 bool file_copy_read_chunk(s_saved_game_file *copy)
 {
-	bool result = false;
+	word result = 0;
 	dword offset = copy->read_offset;
 	dword size = copy->size - offset;
 	dword bytes;
@@ -342,10 +342,10 @@ bool file_copy_read_chunk(s_saved_game_file *copy)
 		if (ReadFile(copy->source, copy->buffer, size, &bytes, NULL) && size == bytes)
 		{
 			copy->read_offset += bytes;
-			result = true;
+			result = 1;
 		}
 	}
-	return result;
+	return result != 0;
 }
 
 // @retail 0x2ad400

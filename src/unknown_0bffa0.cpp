@@ -629,6 +629,20 @@ void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_li
     shape->ready = true;
 }
 
+/* in unknown_241620.cpp, so that only link-time code generation inlines it */
+bool lights_engine_enabled(bool respect_engine);
+
+/* whether a light's shape covers anything */
+static __forceinline bool light_shape_visible_c17f0(s_light_shape_ab const *shape)
+{
+    if ((short)shape->kind == 0)
+        return shape->sphere_render.radius > 0.0001f;
+    if (shape->cone_render.far_distance > 0.0001f &&
+        shape->cone_render.far_width * shape->cone_render.far_width + shape->cone_render.far_height * shape->cone_render.far_height > 0.0001f * 0.0001f)
+        return true;
+    return false;
+}
+
 // @retail 0xc17f0
 bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engine)
 {
@@ -636,25 +650,22 @@ bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engi
     s_light_ab *light = &((s_light_ab *)g_4e030c->data)[light_index & 0xffff];
     s_light_definition_ab *definition = (s_light_definition_ab *)g_4e3b44[light->tag_index & 0xffff].bytes;
     bool enabled = true;
-    if (!(definition->flags & 0x100) && respect_engine)
-    {
-        s_mp_globals *globals = g_4e9ae8;
-        if (g_55e4d0[globals->engine_index])
-            enabled = !(bool)((*(dword *)globals >> 1) & 1);
-    }
+    if (!(definition->flags & 0x100))
+        enabled = lights_engine_enabled(respect_engine);
     if (g_5107e8->flag8 && enabled && (light->flags & 2))
     {
         function_c19f0(light_index, shape);
         function_c1a80((s_light_frame_ab *)((byte *)light + 0x84), shape, definition);
-        if ((short)shape->kind == 0)
-        {
-            if (shape->sphere_render.radius > 0.0001f) result = true;
-        }
-        else if (shape->cone_render.far_distance > 0.0001f &&
-            shape->cone_render.far_width * shape->cone_render.far_width + shape->cone_render.far_height * shape->cone_render.far_height > 0.0001f * 0.0001f)
-            result = true;
+        result = light_shape_visible_c17f0(shape);
     }
     return result;
+}
+
+static __forceinline void point_add_scaled_c35a0(point3f const *point, vector3f const *vector, real scale, point3f *result)
+{
+    result->x = point->x + vector->i * scale;
+    result->y = point->y + vector->j * scale;
+    result->z = point->z + vector->k * scale;
 }
 
 // @retail 0xc35a0
@@ -666,10 +677,12 @@ bool function_c35a0(long light_index, point3f *corners)
     bool result = false;
     if (function_c17f0(light_index, &shape, true))
     {
-        real far_width = (real)(shape.cone_render.slope_x * shape.cone.values[4] * 2.0f) + shape.cone_render.width;
+        long order[4];
+        real far_width = (real)(shape.cone.values[4] * shape.cone_render.slope_x * 2.0f) + shape.cone_render.width;
         real far_height = shape.cone_render.aspect * far_width;
         vector3f direction = shape.cone_render.direction;
         function_30bf0(&direction);
+        order[0] = 0; order[1] = 1; order[2] = 3; order[3] = 2;
         point3f near_centre;
         real far_y_value, far_z_value, far_x_value;
         near_centre.x = frame->position.x + direction.i * 0.0f;
@@ -678,37 +691,28 @@ bool function_c35a0(long light_index, point3f *corners)
         far_x_value = frame->position.x + direction.i * shape.cone.values[4];
         far_y_value = frame->position.y + direction.j * shape.cone.values[4];
         far_z_value = frame->position.z + direction.k * shape.cone.values[4];
-        struct { point3f volatile far_points[4]; point3f volatile near_points[4]; long order[4]; } geometry;
-        geometry.order[0] = 0; geometry.order[1] = 1; geometry.order[2] = 3; geometry.order[3] = 2;
+        point3f far_points[4];
+        point3f near_points[4];
         for (long i = 0; i < 4; i++)
         {
-            real x = ((geometry.order[i] & 1) ? 1.0f : -1.0f) * 0.5f;
-            real y = ((geometry.order[i] & 2) ? 1.0f : -1.0f) * 0.5f;
-            geometry.far_points[i].x = far_x_value;
-            geometry.far_points[i].y = far_y_value;
-            geometry.far_points[i].z = far_z_value;
-            geometry.near_points[i].x = near_centre.x;
-            geometry.near_points[i].y = near_centre.y;
-            geometry.near_points[i].z = near_centre.z;
+            real x = ((order[i] & 1) ? 1.0f : -1.0f) * 0.5f;
+            real y = ((order[i] & 2) ? 1.0f : -1.0f) * 0.5f;
+            far_points[i].x = far_x_value;
+            far_points[i].y = far_y_value;
+            far_points[i].z = far_z_value;
+            near_points[i].x = near_centre.x;
+            near_points[i].y = near_centre.y;
+            near_points[i].z = near_centre.z;
             real near_x = x * shape.cone_render.width;
             real far_x = x * far_width;
-            geometry.near_points[i].x += shape.left.i * near_x;
-            geometry.near_points[i].y += shape.left.j * near_x;
-            geometry.near_points[i].z += shape.left.k * near_x;
-            geometry.far_points[i].x += shape.left.i * far_x;
-            geometry.far_points[i].y += shape.left.j * far_x;
-            geometry.far_points[i].z += shape.left.k * far_x;
-            real near_y = y * shape.cone_render.height;
-            real far_y = y * far_height;
-            geometry.near_points[i].x += frame->up.i * near_y;
-            geometry.near_points[i].y += frame->up.j * near_y;
-            geometry.near_points[i].z += frame->up.k * near_y;
-            geometry.far_points[i].x += frame->up.i * far_y;
-            geometry.far_points[i].y += frame->up.j * far_y;
-            geometry.far_points[i].z += frame->up.k * far_y;
+            point_add_scaled_c35a0(&near_points[i], &shape.left, near_x, &near_points[i]);
+            point_add_scaled_c35a0(&far_points[i], &shape.left, far_x, &far_points[i]);
+            point_add_scaled_c35a0(&near_points[i], &frame->up, (real)(y * shape.cone_render.height), &near_points[i]);
+            real far_y = (real)far_height * y;
+            point_add_scaled_c35a0(&far_points[i], &frame->up, far_y, &far_points[i]);
         }
-        memcpy(corners, (void const *)geometry.near_points, sizeof(geometry.near_points));
-        memcpy(corners + 4, (void const *)geometry.far_points, sizeof(geometry.far_points));
+        memcpy(corners, near_points, sizeof(near_points));
+        memcpy(corners + 4, far_points, sizeof(far_points));
         result = true;
     }
     return result;

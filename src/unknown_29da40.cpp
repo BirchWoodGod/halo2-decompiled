@@ -108,10 +108,11 @@ __forceinline void function_29dc62(dword *arg_0, short const &arg_1)
 // @retail 0x29db90
 void function_29db90(short arg_1, short arg_0, s_29db90 *arg_2)
 {
+	long selected_range = arg_1;
 	if (arg_2->field_b4 < 30 && arg_0 >= 0 && arg_0 < *(long *)((byte *)g_4e0350 + 0x168))
 	{
 		s_29db95 *local_0 = &(*(s_29db95 **)((byte *)g_4e0350 + 0x16c))[arg_0];
-		if (arg_1 >= 0 && arg_1 < local_0->field_30)
+		if ((short)selected_range >= 0 && (short)selected_range < local_0->field_30)
 		{
 			byte *local_1 = (byte *)function_1fa7f0();
 			if (local_1 && *(long *)(local_1 + 0x6c) > 0)
@@ -119,7 +120,7 @@ void function_29db90(short arg_1, short arg_0, s_29db90 *arg_2)
 				s_29db93 *local_2 = *(s_29db93 **)(local_1 + 0x70);
 				dword local_3[2];
 				memset(local_3, 0, sizeof(local_3));
-				s_29db94 *local_4 = &local_0->field_34[arg_1];
+				s_29db94 *local_4 = &local_0->field_34[(short)selected_range];
 				for (short local_5 = 0; local_5 < local_4->field_80; local_5++)
 				{
 					short *local_6 = local_4->field_84[local_5];

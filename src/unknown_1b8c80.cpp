@@ -4,6 +4,10 @@
 #include "unknown_26e370.h"
 #include "unknown_11cc90.h"
 #include "units.h"
+#include "unknown_26b230.h"
+#include "unknown_0259a0.h"
+#include "unknown_1f9240.h"
+#include <string.h>
 #include "unknown_0d0690.h"
 #include <float.h>
 
@@ -520,11 +524,14 @@ void __stdcall function_1ba3f0(long actor_index, s_slot *slot, s_slot_target_lis
 	}
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1ba8c0
 void __stdcall function_1ba8c0(long actor_index, s_slot *slot, s_slot_target_list *list)
 {
 	s_slot_4c *state = (s_slot_4c *)slot;
 	s_actor_view *actor = actor_get(actor_index);
+	_ReadWriteBarrier();
 
 	if (actor->unknown26c == NONE)
 	{
@@ -549,6 +556,7 @@ void __stdcall function_1ba8c0(long actor_index, s_slot *slot, s_slot_target_lis
 	}
 	actor->unknown450 = 0x6000086;
 }
+#pragma function(_ReadWriteBarrier)
 
 /* the unit fields function_1ba990 reads */
 struct s_unit_1ba990
@@ -632,6 +640,146 @@ s_object *function_badc0(long object_index, dword type_mask);
 
 /* slot test 0x4d: the actor boards the vehicle of a friendly player near
    enough to it */
+struct s_1b99d0_unit_flags
+{
+	byte bit0 : 1;
+	byte bit1 : 1;
+	byte bit2 : 1;
+	byte remaining : 5;
+};
+
+struct s_1b99d0_tag_flags
+{
+	dword lower : 18;
+	dword bit18 : 1;
+	dword upper : 13;
+};
+
+struct s_node_view;
+void function_26be00(long actor_index, s_iterator *iterator);
+s_node_view *function_26be30(s_iterator *iterator);
+bool function_26c120(long actor_index);
+long function_1e4a50(long character_index);
+void __stdcall function_26c2d0(long prop_index);
+void function_270590(s_path_source *source, s_type_c3b527 const *point, long node_index);
+
+// @retail 0x1b99d0
+short __stdcall function_1b99d0(long actor_index, s_slot *slot)
+{
+	s_actor_view *actor = actor_get(actor_index);
+	long result = g_46fbe4;
+	if (actor->unknown224 || actor->unknown225 || !actor->unknown040 || actor->unknown858 != NONE ||
+		!function_26c120(actor_index) || actor->prop_index == NONE)
+		return (short)result;
+
+	s_prop_node_view *base = prop_node_get(actor->prop_index);
+	long selected = NONE;
+	real best_score = 10.0f;
+	real range_low;
+	real range_high;
+	byte *properties = (byte *)function_1e4a50(actor->unknown054);
+	s_iterator iterator;
+	function_26be00(actor_index, &iterator);
+	function_26c180(actor_index);
+	if (properties && actor->unknown27c.unknown10 != NONE && actor->unknown278[0])
+	{
+		byte *buffer = ai_scratch_buffer_get();
+		bool prepared = false;
+		s_prop_node_view *node = (s_prop_node_view *)function_26be30(&iterator);
+		while (node)
+		{
+			if (node->type == 4 && node->unknown24 >= 1 && node->unknown24 <= 2)
+			{
+				s_slot_object_view *vehicle = object_get(node->object_index);
+				s_vehicle_tag_view *tag = (s_vehicle_tag_view *)g_4e3b44[vehicle->tag_index & 0xffff].bytes;
+				if (!TEST_FIELD_BIT(((s_1b99d0_unit_flags *)((byte *)vehicle + 0x10a))->bit2) &&
+					!TEST_FIELD_BIT(((s_1b99d0_tag_flags *)((byte *)tag + 0x1ec))->bit18) &&
+					vehicle->unknown3a0 != NONE && function_1b8f30(actor_index, node->object_index))
+				{
+					if (tag->unknown1f0 != 6 || function_1b9200(node->object_index, actor->prop_index))
+					{
+						real ownership_weight = vehicle->unknown3a0 == actor->unknown030 ? 0.75f : 1.2f;
+						real type_weight = tag->unknown1f0 == 6 ? 1.5f : 1.0f;
+						real state_weight = 1.0f;
+						if (actor->unknown086 >= 8)
+							state_weight = 1.5f;
+						else if (actor->unknown086 < 6)
+							state_weight = 0.75f;
+						real score = node->unknown28 * state_weight * type_weight * ownership_weight;
+						if (score < best_score)
+						{
+							s_prop_state_view *state = prop_node_state(node);
+							function_26c2d0(iterator.index);
+							if (*(long *)((byte *)state + 0x44) != NONE)
+							{
+								if (!prepared)
+								{
+									s_path_source source;
+									s_path_settings settings;
+									memset(&source, 0, sizeof(source));
+									source.radius = *(real *)(properties + 4);
+									source.unknown04 = 1;
+									source.object_index = NONE;
+									source.unknown0c = NONE;
+									source.unknown4c = 0.0f;
+									function_270590(&source, &actor->unknown27c.point, actor->unknown27c.unknown10);
+									source.unknown45 = true;
+									source.unknown48 = 15.0f;
+									source.unknown28[0] = 1;
+									*(point3f *)((byte *)&source + 0x2c) = prop_node_state(base)->position;
+									*(long *)((byte *)&source + 0x38) = base->object_index;
+									*(real *)((byte *)&source + 0x3c) = 1.0f;
+									*(real *)((byte *)&source + 0x40) = 0.0f;
+									source.unknown44 = false;
+									function_1f9240(actor_index, &settings);
+									function_271300((s_type_f17a25 *)buffer, NULL, &settings, &source, 0);
+									function_2715a0(buffer);
+									prepared = true;
+								}
+								real closest_distance;
+								real path_distance;
+								function_270750(buffer, *(long *)((byte *)state + 0x44), &state->unknown48,
+									&path_distance, (long)&closest_distance, 0);
+								if (path_distance < 15.0f && closest_distance > base->unknown28 * 0.5f)
+								{
+									best_score = score;
+									selected = node->object_index;
+									range_low = ownership_weight * 13.0f;
+									range_high = ownership_weight * 16.0f;
+								}
+							}
+						}
+					}
+				}
+			}
+			node = (s_prop_node_view *)function_26be30(&iterator);
+		}
+		if (selected != NONE)
+		{
+			if (function_f5dc0(selected))
+			{
+				byte *output = (byte *)slot;
+				*(word *)(output + 0x1c) |= 1;
+				*(long *)(output + 0x20) = selected;
+				result = 0x5d;
+			}
+			else
+			{
+				s_slot_4c *output = (s_slot_4c *)slot;
+				output->unknown28 = range_low;
+				output->unknown2c = range_high;
+				output->seat_index = NONE;
+				output->unknown1c = selected;
+				output->flags |= 0x29;
+				result = 0x4c;
+			}
+		}
+		ai_scratch_buffer_release(buffer);
+	}
+	return (short)result;
+}
+
+
 // @retail 0x1b9640
 short __stdcall function_1b9640(long actor_index, s_slot *slot)
 {
@@ -1290,7 +1438,7 @@ done:
 
 struct joint_state;
 long joint_count_invited_participants(joint_state const *arg_0);
-bool __stdcall function_1badc0(point3f const *arg_2, long arg_1, long arg_0,
+bool __stdcall function_1badc0(long arg_0, long arg_1, point3f const *arg_2,
     s_type_c3b527 *arg_3, long *arg_4, bool arg_5, bool *arg_6);
 real function_1f8940(long arg_0);
 bool function_1f8660(long arg_0);
@@ -1343,7 +1491,7 @@ bool __stdcall function_1ba5c0(long arg_0, s_slot *arg_1, long arg_2)
         s_type_c3b527 local_8;
         long local_9;
         bool local_10;
-        if (function_1badc0(&local_5.point, local_2->object_index, arg_0,
+        if (function_1badc0(arg_0, local_2->object_index, &local_5.point,
             &local_8, &local_9, false, &local_10))
         {
             bool local_14 = function_1f4460(arg_0, &local_8, local_9,
