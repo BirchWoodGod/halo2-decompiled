@@ -245,9 +245,9 @@ void function_11f4f0(
 
 // @retail 0x11f580
 void function_11f580(
+	real const *ranges,
 	long bits,
 	real *out,
-	real const *ranges,
 	long const *in)
 {
 	long i = 0;

@@ -310,6 +310,14 @@ byte *voice_get_world_player(long player_index);
 real function_30bf0(vector3f *vector);
 void function_192d40(point3f const *direction, real *gains, bool linear);
 
+static __forceinline real function_586f1(void)
+{
+ real result = 8.f;
+ if (g_510c94)
+  result = g_510c94->motion_sensor_range;
+ return result;
+}
+
 // @retail 0x586f0
 void function_586f0(long player, c_voice_observer *observer, long *count, DSMIXBINVOLUMEPAIR *bins, const point3f *position)
 {
@@ -319,25 +327,26 @@ void function_586f0(long player, c_voice_observer *observer, long *count, DSMIXB
   s_local_camera *camera = local_camera_get(*(short *)(world_player + 0x28));
   if (camera && camera->active)
   {
+   long smallest = 0;
+   long used = 0;
    point3f local;
    function_142700((const transform4x3f *)((const byte *)camera + 8), position, &local);
    point3f direction = local;
    real distance = sqrtf(direction.z * direction.z + direction.y * direction.y + direction.x * direction.x);
-   real range = g_510c94 ? g_510c94->motion_sensor_range : 8.f;
+   real range = function_586f1();
    real attenuation;
    if (distance > range)
    {
-    real beyond = distance - (g_510c94 ? g_510c94->motion_sensor_range : 8.f);
-    real divisor = g_510c94 ? g_510c94->motion_sensor_range : 8.f;
-    real extra_divisor = g_510c94 ? g_510c94->motion_sensor_range : 8.f;
+    real beyond = distance - (function_586f1());
+    real divisor = function_586f1();
+    real extra_divisor = function_586f1();
     attenuation = ((real)observer->distance_volume * distance) / (divisor + 1.5f) + ((real)observer->distance_volume / extra_divisor) * beyond * 150.f;
    }
    else
-    attenuation = ((real)observer->distance_volume * distance) / ((g_510c94 ? g_510c94->motion_sensor_range : 8.f) + 1.5f);
+    attenuation = ((real)observer->distance_volume * distance) / ((function_586f1()) + 1.5f);
    function_30bf0((vector3f *)&direction);
    real gains[5];
    function_192d40(&direction, gains, observer->linear_gain);
-   long smallest = 0;
    real minimum = gains[0];
    for (long i = 0; i < 5; i++)
    {
@@ -347,7 +356,6 @@ void function_586f0(long player, c_voice_observer *observer, long *count, DSMIXB
      smallest = i;
     }
    }
-   long used = 0;
    if (smallest != 0) { gains[used] = gains[0]; bins[used++].dwMixBin = 0; }
    if (smallest != 1) { gains[used] = gains[1]; bins[used++].dwMixBin = 1; }
    if (smallest != 2) { gains[used] = gains[2]; bins[used++].dwMixBin = 4; }

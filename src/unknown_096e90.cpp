@@ -425,7 +425,7 @@ void c_vtable_450d14::v1(long a1, long a2, real *a3, long *a4)
 	*a4 = 0;
 	long handle = function_699a0(a1, world->unknown0c);
 	if (handle != NONE)
-		function_82a40(handle, a2, a3);
+		function_82a40(handle, (s_relevance_observers const *)a2, a3, a4);
 }
 // @retail 0x979f0
 bool function_979f0(s_world_450cb8 *world, long handle)
