@@ -79,12 +79,15 @@ struct s_actor_event_request
 	long target_index;
 };
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1fc160
 bool function_1fc160(long actor_index, long source_index, s_actor_event_request const *request)
 {
-	bool result = false;
 	s_actor_view *actor = actor_get(actor_index);
 	short team = actor->unknown024;
+    _ReadWriteBarrier();
+    bool result = false;
 
 	if (!function_1df560(team, team))
 	{

@@ -31,7 +31,7 @@ void function_3dfe0(long cache_index, long object_index, real priority)
     if (elapsed < 0) elapsed = 1;
     if (force) update = true;
     else if (object[0xc1] & 1) return;
-    bool sample = true;
+    long sample = 1;
     if (cache->sample_time != (dword)NONE)
     {
         if (priority > 400.0f) sample = elapsed > 3;
