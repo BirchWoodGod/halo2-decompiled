@@ -8,7 +8,11 @@
 
 void __cdecl function_2d8910(long arg_0);
 void __cdecl function_2d8890();
-void __cdecl function_2d8ab0();
+class c_2d8ab0
+{
+public:
+ void function_2d8ab0();
+};
 void function_146bf0();
 void function_278f00();
 void function_1c4260();
@@ -67,7 +71,7 @@ struct s_1c3d31
 extern hkWorld *g_51e9a4;
 extern byte *g_51eca8;
 extern short g_51ecb0;
-long g_47f044;
+c_2d8ab0 *g_47f044;
 
 // @retail 0x1c3d30
 void function_1c3d30()
@@ -77,7 +81,8 @@ void function_1c3d30()
   real local_0 = g_510c54->rate;
   function_2e90a0(s_184251(false));
   ((s_1c3d30 *)g_51eca8)->field_18 = true;
-  if (g_47f044)
+  /* read through a pointer: retail stores field_18 before this load */
+  if (*(c_2d8ab0 *const *)&g_47f044)
   {
    function_2d8910(2000000);
    function_2d8890();
@@ -96,9 +101,8 @@ void function_1c3d30()
   function_1c4260();
   function_146bf0();
   if (g_47f044)
-   function_2d8ab0();
+   g_47f044->function_2d8ab0();
   s_1c3d30 *local_2 = (s_1c3d30 *)g_51eca8;
-  ++g_51ecb0;
   local_2->field_18 = false;
   s_2797a0_iterator local_3;
   local_3.groups = (s_2797a0_groups *)g_51e9a4;
@@ -107,10 +111,10 @@ void function_1c3d30()
   local_3.group = NONE;
   local_3.index = NONE;
   local_3.unknown00 = true;
+  ++g_51ecb0;
   while (function_2797a0(&local_3))
   {
-   s_2797a0_group **local_4 = local_3.second ? local_3.groups->second : local_3.groups->first;
-   s_1c3d31 *local_5 = (s_1c3d31 *)local_4[local_3.group];
+   s_1c3d31 *local_5 = (s_1c3d31 *)(!local_3.second ? local_3.groups->first[local_3.group] : local_3.groups->second[local_3.group]);
    function_1c4a20(local_5->field_3c[local_3.index]);
   }
   --g_51ecb0;

@@ -534,7 +534,7 @@ PRIVATE __forceinline void graph_resources_request(s_graph_tag *graph, long mode
 }
 
 // @retail 0x1dacb0
-void function_1dacb0(s_graph_tag *graph, c_type_709360 animation_id, real *distance, real *event_distance)
+void function_1dacb0(s_graph_tag *graph, c_type_709360 animation_id, real *event_distance, real *distance)
 {
 	real total = 0.0f;
 	real total_at_event = 0.0f;
@@ -556,7 +556,11 @@ void function_1dacb0(s_graph_tag *graph, c_type_709360 animation_id, real *dista
 			switch (animation->frame_info_type)
 			{
 			case 1:
+				total += *movement++;
+				break;
 			case 2:
+				total += *movement++;
+				break;
 			case 3:
 				total += *movement++;
 				break;
@@ -921,13 +925,20 @@ bool function_1dcfa0(s_graph_tag *graph, s_graph_pair_iterator *iterator)
 	return local_1;
 }
 
+static inline void cross_product3d_1dd290(vector3f const *a, vector3f const *b, vector3f *result)
+{
+	result->i = a->j * b->k - a->k * b->j;
+	result->j = a->k * b->i - a->i * b->k;
+	result->k = a->i * b->j - a->j * b->i;
+}
+
 // @retail 0x1dd290
 void function_1dd290(s_graph_tag *graph, transform4x3f *matrices, rigid_transform_scaled const *orientations,
 	transform4x3f const *root, short mirrored_node_index, short mirror_parent_index)
 {
 	long node_indices[255];
 	transform4x3f matrix;
-	volatile long count;
+	long count;
 	long i = 0;
 
 	if (graph->node_count > 0)
@@ -956,14 +967,13 @@ void function_1dd290(s_graph_tag *graph, transform4x3f *matrices, rigid_transfor
 				vector3f up = matrix.up;
 				point3f position = matrix.position;
 
-				matrix.scale = 1.0f;
 				position.y = 0.0f - position.y;
 				forward.j = 0.0f - forward.j;
+				matrix.scale = 1.0f;
 				up.j = 0.0f - up.j;
+				vector3f const *mirrored_forward = &forward;
 				matrix.forward = forward;
-				matrix.left.i = up.j * forward.k - up.k * forward.j;
-				matrix.left.j = up.k * forward.i - up.i * forward.k;
-				matrix.left.k = up.i * forward.j - up.j * forward.i;
+				cross_product3d_1dd290(&up, mirrored_forward, &matrix.left);
 				matrix.up = up;
 				matrix.position = position;
 			}
@@ -995,13 +1005,13 @@ c_type_709360 s_graph_tag::animation_find(long mode, long weapon_class, long wea
 		long iterator_weapon_type = NONE;
 		s_graph_weapon_type *weapon_type_entry;
 
-		iterator.graph = this;
-		iterator.mode = mode;
-		iterator.weapon_class = weapon_class;
 		iterator.weapon_type = weapon_type;
 		iterator.step = 0;
 		iterator.mode_entry = NULL;
 		iterator.class_entry = NULL;
+		iterator.weapon_class = weapon_class;
+		iterator.mode = mode;
+		iterator.graph = this;
 		weapon_type_entry = graph_weapon_type_iterate(&iterator, &iterator_mode, &iterator_weapon_class,
 			&iterator_weapon_type);
 		while (weapon_type_entry)

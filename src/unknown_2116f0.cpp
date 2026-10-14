@@ -21,6 +21,13 @@ struct s_scenario_seat_filters_view
 	s_seat_filter *seat_filters;
 };
 
+/* a seat definition's type (0 for none) */
+struct s_seat_definition_type_view
+{
+	byte unknown000[0x3c];
+	short type;
+};
+
 // @retail 0x200ee0
 short function_200ee0(long object_index, short mode, long *selected_object, short *occupied_count)
 {
@@ -28,48 +35,52 @@ short function_200ee0(long object_index, short mode, long *selected_object, shor
 	(void)&selected_object;
 	(void)&occupied_count;
 	s_object_seat seats[64];
-	long selected_seat = NONE;
+	short selected_seat = NONE;
 	short count = 0;
 	function_c8a40(object_index, seats, &count, 64);
 	for (short i = 0; i < count; i++)
 	{
 		s_object_seat *seat = &seats[i];
 		long unit_index = seat->object_index;
-		long seat_index = (word)seat->seat_index;
+		word seat_index = seat->seat_index;
 		if (function_c8f60(unit_index, (short)seat_index) != NONE)
 		{
 			if (occupied_count)
 				(*occupied_count)++;
 		}
-		else if ((short)selected_seat == NONE)
+		else if (selected_seat == NONE)
 		{
-			s_unit_seat_definition *seat_definition = seat->definition;
-			short type = *(short *)((byte *)seat_definition + 0x3c);
-			if (!type)
+			s_seat_definition_type_view *seat_definition = (s_seat_definition_type_view *)seat->definition;
+			if (!seat_definition->type)
 				continue;
 			switch (mode)
 			{
 			case 0:
-				if (type == 3 || type == 4) continue;
+				if (seat_definition->type == 3) continue;
+				if (seat_definition->type == 4) continue;
 				break;
 			case 1:
-				if (type != 1) continue;
+				if (seat_definition->type != 1) continue;
 				break;
 			case 2:
-				if (type != 2) continue;
+				if (seat_definition->type != 2) continue;
 				break;
 			case 3:
-				if (type != 5) continue;
+				if (seat_definition->type != 5) continue;
 				break;
 			case 4:
-				if (type != 3) continue;
+				if (seat_definition->type != 3) continue;
 				break;
 			case 5:
-				if (type != 4) continue;
+				if (seat_definition->type != 4) continue;
 				break;
-			case 6: continue;
-			case 7: continue;
-			default: continue;
+			case 6:
+			case 7:
+				/* only typeless seats, which the test above already skipped */
+				if (seat_definition->type != 0) continue;
+				break;
+			default:
+				continue;
 			}
 			selected_seat = seat_index;
 			if (selected_object)
@@ -78,7 +89,7 @@ short function_200ee0(long object_index, short mode, long *selected_object, shor
 				break;
 		}
 	}
-	return (short)selected_seat;
+	return selected_seat;
 }
 
 // @retail 0x201010

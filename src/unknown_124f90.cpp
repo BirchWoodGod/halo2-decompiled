@@ -1483,7 +1483,10 @@ short sound_voice_find(long sound_index, long *reason)
 		if (definition->type == voice->definition_type)
 		{
 			if (voice->sound_index == NONE)
-				return i;
+			{
+				result = i;
+				break;
+			}
 			if (function_128b90(sound_index, voice->sound_index, distance) &&
 				(result == NONE || function_128b90(result_sound_index, voice->sound_index, result_distance)))
 			{
@@ -1881,7 +1884,7 @@ void sound_system_update_time(void)
 	sound_system->field_14_2 = now;
 	sound_system->time += elapsed;
 	sound_system->ambience_fade += (real)elapsed * 0.001f;
-	sound_system->elapsed_time = (real)elapsed * 0.001f;
+	sound_system->elapsed_time = (real)elapsed / 1000.0f;
 	sound_system->previous_ambience_fade += (real)elapsed * 0.001f;
 	if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 1)
 	{

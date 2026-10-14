@@ -358,15 +358,18 @@ bool function_80660(void)
 		long index = g_4cf97c;
 		for (long j = 0; valid && j < g_4cf978; j++)
 		{
-			dword bit = 1 << (index & 31);
-			if (visited[index >> 5] & bit)
+			if (visited[index >> 5] & (1 << (index & 31)))
 				valid = false;
 			else
 			{
-				visited[index >> 5] |= bit;
+				visited[index >> 5] |= 1 << (index & 31);
 				s_player_configuration_cache_entry *entry = &g_4cf98c[index];
-				if (j == 0 ? entry->previous_other != NONE :
-					entry->previous_other < 0 || entry->previous_other >= g_4cf978)
+				if (j == 0)
+				{
+					if (entry->previous_other != NONE)
+						valid = false;
+				}
+				else if (entry->previous_other < 0 || entry->previous_other >= g_4cf978)
 					valid = false;
 				if (j + 1 == g_4cf978)
 				{
@@ -392,15 +395,18 @@ bool function_80660(void)
 		long index = g_4cf984;
 		for (long j = 0; valid && j < g_4cf978; j++)
 		{
-			dword bit = 1 << (index & 31);
-			if (visited[index >> 5] & bit)
+			if (visited[index >> 5] & (1 << (index & 31)))
 				valid = false;
 			else
 			{
-				visited[index >> 5] |= bit;
+				visited[index >> 5] |= 1 << (index & 31);
 				s_player_configuration_cache_entry *entry = &g_4cf98c[index];
-				if (j == 0 ? entry->unknown58 != NONE :
-					entry->unknown58 < 0 || entry->unknown58 >= g_4cf978)
+				if (j == 0)
+				{
+					if (entry->unknown58 != NONE)
+						valid = false;
+				}
+				else if (entry->unknown58 < 0 || entry->unknown58 >= g_4cf978)
 					valid = false;
 				if (j + 1 == g_4cf978)
 				{
