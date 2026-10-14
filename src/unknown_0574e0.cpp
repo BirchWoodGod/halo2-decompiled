@@ -318,6 +318,12 @@ static __forceinline real function_586f1(void)
  return result;
 }
 
+static __forceinline point3f function_586f3(const point3f *source)
+{
+ point3f result = *source;
+ return result;
+}
+
 // @retail 0x586f0
 void function_586f0(long player, c_voice_observer *observer, long *count, DSMIXBINVOLUMEPAIR *bins, const point3f *position)
 {
@@ -331,7 +337,7 @@ void function_586f0(long player, c_voice_observer *observer, long *count, DSMIXB
    long used = 0;
    point3f local;
    function_142700((const transform4x3f *)((const byte *)camera + 8), position, &local);
-   point3f direction = local;
+   point3f direction = function_586f3(&local);
    real distance = sqrtf(direction.z * direction.z + direction.y * direction.y + direction.x * direction.x);
    real range = function_586f1();
    real attenuation;
@@ -347,6 +353,7 @@ void function_586f0(long player, c_voice_observer *observer, long *count, DSMIXB
    function_30bf0((vector3f *)&direction);
    real gains[5];
    function_192d40(&direction, gains, observer->linear_gain);
+   real compact[4];
    real minimum = gains[0];
    for (long i = 0; i < 5; i++)
    {
@@ -356,17 +363,17 @@ void function_586f0(long player, c_voice_observer *observer, long *count, DSMIXB
      smallest = i;
     }
    }
-   if (smallest != 0) { gains[used] = gains[0]; bins[used++].dwMixBin = 0; }
-   if (smallest != 1) { gains[used] = gains[1]; bins[used++].dwMixBin = 1; }
-   if (smallest != 2) { gains[used] = gains[2]; bins[used++].dwMixBin = 4; }
-   if (smallest != 3) { gains[used] = gains[3]; bins[used++].dwMixBin = 5; }
-   if (smallest != 4) { gains[used] = gains[4]; bins[used++].dwMixBin = 2; }
+   if (smallest != 0) { compact[used] = gains[0]; bins[used++].dwMixBin = 0; }
+   if (smallest != 1) { compact[used] = gains[1]; bins[used++].dwMixBin = 1; }
+   if (smallest != 2) { compact[used] = gains[2]; bins[used++].dwMixBin = 4; }
+   if (smallest != 3) { compact[used] = gains[3]; bins[used++].dwMixBin = 5; }
+   if (smallest != 4) { compact[used] = gains[4]; bins[used++].dwMixBin = 2; }
    for (long j = 0; j < 4; j++)
    {
-    long directional = (long)((1.f - gains[j]) * (real)observer->directional_volume);
+    long directional = (long)((1.f - compact[j]) * (real)observer->directional_volume);
     long volume = (long)((real)directional + attenuation);
     if (volume < -10000) volume = -10000;
-    else if (volume > 0) volume = 0;
+    else volume &= (long)(volume > 0) - 1;
     bins[j].lVolume = volume;
    }
    *count = 4;

@@ -188,9 +188,9 @@ bool __stdcall function_1ac610(long actor_index, point3f const *point,
 short __stdcall function_272af0(s_match_globals *structure, point3f const *point);
 struct s_1f4a20_entry;
 struct s_1f4a20_source;
-bool function_1f4a20(long actor_index, s_reference reference, s_1f4a20_entry const *entries,
+bool function_1f4a20(s_1f4a20_entry const *entries, long actor_index, s_reference reference, s_1f4a20_source const *source,
     bool alternate, s_type_c3b527 *point, vector3f *facing,
-    signed char *type, bool *available, s_1f4a20_source const *source);
+    signed char *type, bool *available);
 
 // @retail 0x1b85a0
 bool __stdcall function_1b85a0(long actor_index, s_slot *slot)
@@ -282,9 +282,9 @@ bool __stdcall function_1b85a0(long actor_index, s_slot *slot)
             *(long *)((byte *)location + 0x14) != NONE &&
             *(long *)((byte *)location + 0x14) != 0xffff)
         {
-            success = function_1f4a20(actor_index, reference,
-                (s_1f4a20_entry const *)scratch, true, &state->point, &state->facing,
-                (signed char *)&state->unknown1d, &available, (s_1f4a20_source const *)&entry);
+            success = function_1f4a20((s_1f4a20_entry const *)&entry, actor_index, reference,
+                (s_1f4a20_source const *)scratch, true, &state->point, &state->facing,
+                (signed char *)&state->unknown1d, &available);
             if (success)
             {
                 state->unknown1b = true;
