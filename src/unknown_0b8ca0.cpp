@@ -694,7 +694,8 @@ bool function_bba80(long object_index)
                 offset.j = centre->y - position.y;
                 offset.k = centre->z - position.z;
                 vector3f *forward = (vector3f *)((byte *)OBJECT_GET(*(long *)(player + 0x2c)) + 0x15c);
-                double radius = *(real *)(object + 0x3c);
+                double radius_value = *(real *)(object + 0x3c);
+                double const &radius = radius_value;
                 real magnitude = function_30bf0(&offset);
                 if (offset.k * forward->k + offset.j * forward->j + offset.i * forward->i >
                     cos(atan2((double)magnitude, radius) + 0.7853981852531433f))
