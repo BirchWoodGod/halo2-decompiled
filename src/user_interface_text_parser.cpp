@@ -1274,12 +1274,13 @@ void __stdcall parse_live_ui_driver_clan_level(long string_handle, word *buffer)
 void __stdcall parse_hour(long string_handle, word *buffer)
 {
 	short hour = g_54e7ce.wHour;
+	short shown = hour;
 
 	if (string_handle == 0xe43e && (word)hour > 12)
 	{
-		hour -= 12;
+		shown = hour - 12;
 	}
-	function_1630e0(buffer, (const word *)L"%d", (word)hour);
+	function_1630e0(buffer, (const word *)L"%d", (word)shown);
 }
 
 // @retail 0x22e179

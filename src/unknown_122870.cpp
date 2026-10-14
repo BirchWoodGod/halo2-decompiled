@@ -444,7 +444,7 @@ done:
 }
 
 // @retail 0x122db0
-long function_122db0(char const *map_name, long type)
+long function_122db0(long type, char const *map_name)
 {
 	return ((long)function_122dd0((byte *)map_name, 1, type) / 4) * 1000;
 }

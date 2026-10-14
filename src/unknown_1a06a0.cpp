@@ -180,7 +180,7 @@ bool function_1a0850(long file_index, s_player_profile *profile)
 
 /* a player profile: the guest's (no file), or the one saved in the file */
 // @retail 0x1a0540
-bool function_1a0540(s_player_profile_settings *settings, long file_index)
+bool function_1a0540(long file_index, s_player_profile_settings *settings)
 {
 	s_player_profile *profile = (s_player_profile *)settings;
 
@@ -223,7 +223,7 @@ bool function_1a0560(wchar_t const *name, s_player_profile_settings *settings, l
 			{
 				result = true;
 				if (settings)
-					result = function_1a0540(settings, indices[index]);
+					result = function_1a0540(indices[index], settings);
 				if (result && file_index)
 					*file_index = indices[index];
 				break;
