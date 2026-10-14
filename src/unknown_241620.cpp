@@ -52,3 +52,19 @@ void __stdcall function_241620(long player_index, long unit_index)
 			function_2430a0(player_index, false);
 	}
 }
+
+/* whether the game engine lets lights draw: with respect_engine, a running
+   engine whose globals have bit 1 set turns them off; it lives here, not in
+   unknown_0bffa0.cpp, so that only link-time code generation inlines it into
+   function_c17f0 (0xc17f0), as in retail */
+bool lights_engine_enabled(bool respect_engine)
+{
+	bool enabled = true;
+	if (respect_engine)
+	{
+		s_mp_globals *globals = g_4e9ae8;
+		if (g_55e4d0[globals->engine_index])
+			enabled = !(bool)((*(dword *)globals >> 1) & 1);
+	}
+	return enabled;
+}
