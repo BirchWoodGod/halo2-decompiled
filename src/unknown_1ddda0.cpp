@@ -153,8 +153,7 @@ long function_1dea00(s_bsp3d const *arg_0, long arg_1, point3f const *arg_6,
    local_11.x = arg_7->i * arg_5 + arg_6->x;
    local_11.y = arg_7->j * arg_5 + arg_6->y;
    local_11.z = arg_7->k * arg_5 + arg_6->z;
-   short const *local_12 = g_440b94[local_9 * 2 + local_10];
-   point2f local_13 = { ((real *)&local_11)[local_12[0]], ((real *)&local_11)[local_12[1]] };
+   point2f local_13 = { ((real *)&local_11)[g_440b94[local_9 * 2 + local_10][0]], ((real *)&local_11)[g_440b94[local_9 * 2 + local_10][1]] };
    long local_14 = function_296520((s_296520_tree *)((byte *)arg_0 + 0x20), local_4->field_2, &local_13);
    if (!arg_8 || function_1debd0(arg_3, arg_0, arg_2, local_14, local_9, local_10, &local_13))
     return local_14;

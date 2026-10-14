@@ -319,7 +319,7 @@ inline real normalize2d(point2f *v)
 }
 
 // @retail 0x4efb0
-vector3f *function_4efb0(vector3f *v)
+inline vector3f *function_4efb0(vector3f *v)
 {
 	real length_squared = v->i * v->i + v->j * v->j + v->k * v->k;
 	if (length_squared != 0.0f)
