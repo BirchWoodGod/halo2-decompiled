@@ -4,7 +4,6 @@
 #include "unknown_0259d0.h"
 #include "unknown_146a20.h"
 
-
 // @stub 0x22c3e0
 hkPoolMemory::hkPoolMemory() { }
 
