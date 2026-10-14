@@ -26,15 +26,6 @@ void function_1ff360(long actor_index, point3f const *target, vector3f *velocity
 
 
 
-// @stub 0xe5930
-void function_e5930(long unit_index) { }
-
-
-
-
-
-// @stub 0xe5300
-void function_e5300(long unit_index, long a) { }
 
 
 
@@ -43,11 +34,18 @@ void function_e5300(long unit_index, long a) { }
 
 
 
-// @stub 0xe56f0
-void __stdcall function_e56f0(long unit_index, point3f const *point) { }
 
 
-// @stub 0xe5750
-void function_e5750(long unit_index) { }
+
+
+
+
+
+
+
+
+
+
+
 
 
