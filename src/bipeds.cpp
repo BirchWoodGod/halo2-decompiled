@@ -4365,7 +4365,7 @@ bool function_e63b0(vector3f const *aim, bool flag)
 	if (distance < range)
 	{
 		real t = distance * 0.8333333f;
-		real limit = (1.0f - t) * 0.8726646f + t * 0.2617994f;
+		real limit = (1.0f - t) * 0.87266463f + t * 0.2617994f;
 
 		result = PIN(aim->i, 0.0f - limit, limit) == aim->i &&
 			PIN(aim->j, -0.5235988f, 0.5235988f) == aim->j;
@@ -4393,7 +4393,8 @@ void __stdcall function_e5d50(long arg_159e6d, long target_index, vector3f *offs
 	function_df5f0(arg_159e6d, &center, &height, &radius);
 
 	/* biped_grab_eye, written out: the build keeps that helper out of line,
-	   and retail has it inline here */
+	   and retail has it inline here. Retail still calls function_e0dc0 here,
+	   where the build inlines it */
 	{
 		s_biped *self = BIPED_GET(arg_159e6d);
 		byte *self_definition = BIPED_DEFINITION_GET(self);
@@ -4402,6 +4403,7 @@ void __stdcall function_e5d50(long arg_159e6d, long target_index, vector3f *offs
 		vector3f forward;
 		vector3f up;
 		vector3f to_head;
+		s_biped_collision collision;
 
 		function_b9dd0(arg_159e6d, &eye);
 		crouch = function_e0dc0(arg_159e6d) ? 0.0f : self->crouch;
@@ -4409,6 +4411,7 @@ void __stdcall function_e5d50(long arg_159e6d, long target_index, vector3f *offs
 			self->scale;
 		head = eye;
 		forward = self->unknown168;
+		collision.unknown24 = NONE;
 		function_11d090(&forward, &up);
 		function_df380(arg_159e6d, &head, &forward, &up);
 		to_head.i = head.x - eye.x;
@@ -4416,11 +4419,9 @@ void __stdcall function_e5d50(long arg_159e6d, long target_index, vector3f *offs
 		to_head.k = head.z - eye.z;
 		if (function_30bf0(&to_head) > 0.0f)
 		{
-			s_biped_collision collision;
 			vector3f back;
 			point3f start;
 
-			collision.unknown24 = NONE;
 			back.i = to_head.i * -0.25f;
 			back.j = to_head.j * -0.25f;
 			back.k = to_head.k * -0.25f;
@@ -4520,4 +4521,76 @@ void __stdcall function_e5d50(long arg_159e6d, long target_index, vector3f *offs
 		point->x = (real)atan2(left_amount, forward_amount);
 		point->y = (real)atan2(up_amount, sqrt(left_amount * left_amount + forward_amount * forward_amount));
 	}
+}
+
+/* chooses the unit's grab target between a candidate and the current one
+   (NONE for none): the one inside the grab window (function_e63b0), and when
+   both are, the one with the smaller yaw when both are close, else the
+   nearer; NONE when neither is */
+// @retail 0xe5bc0
+long __stdcall function_e5bc0(long unit_index, long object_index, long previous_index)
+{
+	s_biped *unit = BIPED_GET(unit_index);
+	long result = NONE;
+	bool flag = function_1012c0(function_cbd50(unit_index, *((char *)unit + 0x212)));
+
+	if (previous_index == NONE)
+	{
+		vector3f measurement;
+
+		function_e5d50(unit_index, object_index, &unit->unknown168, (point3f *)&measurement);
+		if (function_e63b0(&measurement, flag))
+		{
+			result = object_index;
+		}
+	}
+	else
+	{
+		vector3f candidate;
+		vector3f current;
+		bool candidate_inside;
+		bool current_inside;
+
+		function_e5d50(unit_index, object_index, &unit->unknown168, (point3f *)&candidate);
+		function_e5d50(unit_index, previous_index, &unit->unknown168, (point3f *)&current);
+		candidate_inside = function_e63b0(&candidate, flag);
+		current_inside = function_e63b0(&current, flag);
+		if (candidate_inside)
+		{
+			if (current_inside)
+			{
+				if (candidate.k < 0.6f && current.k < 0.6f)
+				{
+					real candidate_yaw = candidate.i >= 0.0f ? candidate.i : 0.0f - candidate.i;
+					real current_yaw = current.i >= 0.0f ? current.i : 0.0f - current.i;
+
+					if (candidate_yaw < current_yaw)
+					{
+						result = object_index;
+					}
+					else
+					{
+						result = previous_index;
+					}
+				}
+				else if (candidate.k < current.k)
+				{
+					result = object_index;
+				}
+				else
+				{
+					result = previous_index;
+				}
+			}
+			else
+			{
+				result = object_index;
+			}
+		}
+		else if (current_inside)
+		{
+			result = previous_index;
+		}
+	}
+	return result;
 }
