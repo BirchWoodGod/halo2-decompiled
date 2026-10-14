@@ -773,9 +773,8 @@ c_child_transform *function_1ef070(dword key, void *storage)
   const transform4x3f *matrix = (const transform4x3f *)(object + *(short *)(object + 0x116));
   c_query_transform transform;
   query_transform(matrix, &transform);
-  result->transform.axes[0] = transform.axes[0];
-  result->transform.axes[1] = transform.axes[1];
-  result->transform.axes[2] = transform.axes[2];
+  for (long axis = 0; axis < 3; ++axis)
+   result->transform.axes[axis] = transform.axes[axis];
   result->transform.position = transform.position;
   result->user = key;
   return result;
@@ -789,16 +788,14 @@ c_child_transform *function_1ef070(dword key, void *storage)
   byte *entry = *(byte **)(group + 8) + *(signed char *)(choice + 6) * 12;
   long index = **(short **)(entry + 8);
   byte *body = *(byte **)(physics + 0x3c) + index * 0x90;
-  c_havok_reference_counted *child = *(c_havok_reference_counted **)(body + 0x38);
-  c_child_transform *result = new (storage) c_child_transform(child);
+  c_child_transform *result = new (storage) c_child_transform(*(c_havok_reference_counted **)(body + 0x38));
   havok_reference_remove(*(c_havok_reference_counted **)(body + 0x38));
   long node = *(short *)body;
   const transform4x3f *matrix = node == NONE ? &info.root_matrix : &info.field_50[node];
   c_query_transform transform;
   query_transform(matrix, &transform);
-  result->transform.axes[0] = transform.axes[0];
-  result->transform.axes[1] = transform.axes[1];
-  result->transform.axes[2] = transform.axes[2];
+  for (long axis = 0; axis < 3; ++axis)
+   result->transform.axes[axis] = transform.axes[axis];
   result->transform.position = transform.position;
   result->user = key;
   return result;
