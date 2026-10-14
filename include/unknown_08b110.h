@@ -478,7 +478,7 @@ struct s_match_450d14
 
 s_match_450d14 *__stdcall function_6a3b0(void *table, s_key_450d14 *key, long index);
 long function_699a0(long index, void *table);
-void __stdcall function_82a40(long handle, long a2, real *a3);
+void __stdcall function_82a40(long object_index, struct s_relevance_observers const *observers, real *relevance, long *value);
 
 
 
