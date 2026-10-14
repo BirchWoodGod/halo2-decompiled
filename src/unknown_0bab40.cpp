@@ -67,22 +67,23 @@ bool __stdcall function_bab40(volatile long object_index, long name, real *value
     real *saved_value = value;
     *saved_value = 0.0f;
     bool enabled = false;
-    s_object *object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
+    s_object_header const *headers = (s_object_header const *)g_4e0300->data;
+    s_object *object = headers[object_index & 0xffff].object;
     if ((bool)(((dword)object->flags_c0 >> 9) & 1))
     {
         long &index = *(long *)&value;
         if (function_10aac0(object_index, name, saved_value, &index))
             return true;
     }
-    if (!name || name == 0x030005a6)
-    {
-        *saved_value = 1.0f;
-        return true;
-    }
     if (name == 0x040005a7)
     {
         *saved_value = 0.0f;
         return false;
+    }
+    if (!name || name == 0x030005a6)
+    {
+        *saved_value = 1.0f;
+        return true;
     }
     if (object_index != NONE && !function_108d90(object_index, name, saved_value, &enabled))
     {

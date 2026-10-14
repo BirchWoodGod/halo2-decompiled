@@ -40,18 +40,23 @@ public:
  void function_311100(s_311100 const *arg_0);
 };
 
+PRIVATE __forceinline void havok_object_uncount_1c2b10(long object_index)
+{
+ s_havok_object *object = havok_object_get(object_index);
+ if (TEST_FIELD_BIT(object->havok_flag))
+ {
+  object->havok_flag = 0;
+  (*g_51e9a0)--;
+ }
+}
+
 PRIVATE __forceinline void function_1c2b13(long arg_0)
 {
  s_havok_component *local_0 = havok_component_get(arg_0);
  long local_1 = local_0->object_index;
  local_0->~s_havok_component();
  record_pool_release(g_51e9b8, arg_0);
- s_havok_object *local_2 = havok_object_get(local_1);
- if (TEST_FIELD_BIT(local_2->havok_flag))
- {
-  local_2->havok_flag = 0;
-  (*g_51e9a0)--;
- }
+ havok_object_uncount_1c2b10(local_1);
 }
 
 // @retail 0x1c2b10
@@ -84,12 +89,7 @@ void function_1c2b10()
      function_1c2b13(local_5->havok_component_index);
      local_5->havok_component_index = NONE;
     }
-    local_5 = havok_object_get(local_2);
-    if (TEST_FIELD_BIT(local_5->havok_flag))
-    {
-     local_5->havok_flag = 0;
-     (*g_51e9a0)--;
-    }
+    havok_object_uncount_1c2b10(local_2);
     if (local_4)
     {
      function_278f00();
@@ -102,15 +102,15 @@ void function_1c2b10()
    break;
   }
  }
- _control87(0x9001f, 0x8001f);
- _mm_setcsr(_mm_getcsr() | 0x1f80);
  {
   s_311100 local_7;
+  _control87(0x9001f, 0x8001f);
+  _mm_setcsr(_mm_getcsr() | 0x1f80);
   local_7.field_0 = 0.01f;
   local_7.field_4 = 100.0f;
   ((c_311100 *)g_51e9a4)->function_311100(&local_7);
+  _mm_setcsr(_mm_getcsr() & 0xffffffc0);
  }
- _mm_setcsr(_mm_getcsr() & 0xffffffc0);
  _clearfp();
  _control87(0x9001f, 0xfffff);
 }
