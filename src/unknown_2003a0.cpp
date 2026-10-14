@@ -674,6 +674,20 @@ PRIVATE inline short placement_priority(s_squad_placement_entry *entry)
 	return (*((byte *)entry + 0x1c) & 8) ? 100 : *(short *)((byte *)entry + 0x2a);
 }
 
+/* bit index of a placement in a squad's bit vector */
+static inline bool placement_bit_2039d0(dword const *bits, long index)
+{
+	return (bits[index >> 5] & (1 << (index & 31))) != 0;
+}
+
+/* a placement's priority, as an if/else */
+static inline short placement_priority_2039d0(s_squad_placement_entry *entry)
+{
+	if (*((byte *)entry + 0x1c) & 8)
+		return 100;
+	return *(short *)((byte *)entry + 0x2a);
+}
+
 // @retail 0x2039d0
 short function_2039d0(short squad_index, dword *available, dword const *blocked)
 {
@@ -691,9 +705,9 @@ short function_2039d0(short squad_index, dword *available, dword const *blocked)
 		short blocked_count = 0;
 		for (short i = 0; i < squad->count; i++)
 		{
-			if (placement_bit(blocked, i))
+			if (placement_bit_2039d0(blocked, i))
 				blocked_count++;
-			else if (placement_bit(available, i))
+			else if (placement_bit_2039d0(available, i))
 			{
 				short priority = placement_priority(&squad->entries[i]);
 				available_count++;
@@ -715,16 +729,18 @@ short function_2039d0(short squad_index, dword *available, dword const *blocked)
 	}
 	if (!maximum_count)
 		return NONE;
-	short choice = 0;
+	short choice;
 	if (maximum_count > 1)
 	{
 		g_4e7408->unknown0 = g_4e7408->unknown0 * 0x19660d + 0x3c6ef35f;
 		choice = (short)(((g_4e7408->unknown0 >> 16) * maximum_count) >> 16);
 	}
+	else
+		choice = 0;
 	short found = 0;
 	for (short i = 0; i < squad->count; i++)
 	{
-		if (placement_bit(available, i) && !placement_bit(blocked, i) && placement_priority(&squad->entries[i]) == maximum)
+		if (placement_bit_2039d0(available, i) && !placement_bit_2039d0(blocked, i) && placement_priority_2039d0(&squad->entries[i]) == maximum)
 		{
 			if (found == choice)
 			{
