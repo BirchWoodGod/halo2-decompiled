@@ -444,17 +444,23 @@ bool function_246360(
 	return true;
 }
 
-PRIVATE __forceinline bool function_2466b1(s_prism const *arg_4, vector3f const *arg_3, point3f const *arg_2, plane3f *arg_1, real *const &arg_0)
+// @retail 0x2466b0
+bool function_2466b0(
+	real *t,
+	plane3f *out,
+	point3f const *start,
+	vector3f const *direction,
+	s_prism const *prism)
 {
-	real a = shape_dot_reverse(&arg_4->plane.n, arg_3);
-	real b = plane_distance_to_point(&arg_4->plane, arg_2);
+	real b = plane_distance_to_point(&prism->plane, start);
+	real a = shape_dot_reverse(&prism->plane.n, direction);
 	real t0 = 0.f;
 	real t1 = 1.f;
 	if (!(fabs(a) < k_real_epsilon))
 	{
 		real inv = 1.f / a;
 		real s0 = 0.f - inv * b;
-		real s1 = 0.f - (b - arg_4->thickness) * inv;
+		real s1 = 0.f - (b - prism->thickness) * inv;
 		if (a > 0.f)
 		{
 			if (s0 > 0.f)
@@ -482,27 +488,27 @@ PRIVATE __forceinline bool function_2466b1(s_prism const *arg_4, vector3f const 
 			return false;
 		}
 	}
-	else if (0.f > b || b >= arg_4->thickness)
+	else if (0.f > b || b >= prism->thickness)
 	{
 		return false;
 	}
 	real nb = 0.f - b;
 	real q0[3];
-	q0[0] = arg_4->plane.i * nb + arg_2->x;
-	q0[1] = arg_4->plane.j * nb + arg_2->y;
-	q0[2] = arg_4->plane.k * nb + arg_2->z;
+	q0[0] = prism->plane.i * nb + start->x;
+	q0[1] = prism->plane.j * nb + start->y;
+	q0[2] = prism->plane.k * nb + start->z;
 	real na = 0.f - a;
 	real q1[3];
-	q1[0] = na * arg_4->plane.i + arg_3->i;
-	q1[1] = arg_4->plane.j * na + arg_3->j;
-	q1[2] = arg_4->plane.k * na + arg_3->k;
+	q1[0] = na * prism->plane.i + direction->i;
+	q1[1] = prism->plane.j * na + direction->j;
+	q1[2] = prism->plane.k * na + direction->k;
 	point2f s2;
-	prism_project(q0, arg_4->axis, arg_4->side, &s2);
+	prism_project(q0, prism->axis, prism->side, &s2);
 	point2f d2;
-	prism_project(q1, arg_4->axis, arg_4->side, &d2);
-	long count = arg_4->point_count;
+	prism_project(q1, prism->axis, prism->side, &d2);
+	long count = prism->point_count;
 	long i = 1;
-	point2f const *local_0 = arg_4->points;
+	point2f const *local_0 = prism->points;
 	if (count > 0)
 	{
 		do
@@ -513,8 +519,8 @@ PRIVATE __forceinline bool function_2466b1(s_prism const *arg_4, vector3f const 
 			offset.y = s2.y - cur->y;
 			offset.x = s2.x - cur->x;
 			point2f edge;
-			edge.y = arg_4->points[next].y - cur->y;
-			edge.x = arg_4->points[next].x - cur->x;
+			edge.y = prism->points[next].y - cur->y;
+			edge.x = prism->points[next].x - cur->x;
 			real denom = edge.y * d2.x - d2.y * edge.x;
 			real num = offset.y * edge.x - edge.y * offset.x;
 			if (!(fabs(denom) < k_real_epsilon))
@@ -547,21 +553,10 @@ PRIVATE __forceinline bool function_2466b1(s_prism const *arg_4, vector3f const 
 			local_0++;
 		} while (i - 1 < count);
 	}
-	*arg_0 = t0;
-	arg_1->n = arg_4->plane.n;
-	arg_1->d = arg_4->plane.d + arg_4->thickness;
+	*t = t0;
+	out->n = prism->plane.n;
+	out->d = prism->plane.d + prism->thickness;
 	return true;
-}
-
-// @retail 0x2466b0
-bool function_2466b0(
-	real *t,
-	plane3f *out,
-	point3f const *start,
-	vector3f const *direction,
-	s_prism const *prism)
-{
-	return function_2466b1(prism, direction, start, out, t);
 }
 
 struct s_ray_shape_result
