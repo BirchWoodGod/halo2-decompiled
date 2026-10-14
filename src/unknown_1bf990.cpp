@@ -274,7 +274,7 @@ struct s_1bff80
 struct s_seat_approach_result;
 bool function_1baae0(long arg_0, long arg_1, short arg_2, bool arg_3,
     bool arg_4, bool arg_5, s_seat_approach_result *arg_6);
-bool __stdcall function_1badc0(point3f const *arg_2, long arg_1, long arg_0,
+bool __stdcall function_1badc0(long arg_0, long arg_1, point3f const *arg_2,
     s_type_c3b527 *arg_3, long *arg_4, bool arg_5, bool *arg_6);
 bool function_1f45c0(long arg_0, s_type_c3b527 const *arg_1, long arg_2, bool arg_3);
 
@@ -339,7 +339,7 @@ bool __stdcall function_1bff80(long arg_0, s_slot *arg_1)
                 bool local_12;
                 s_type_c3b527 local_13;
                 long local_14;
-                bool local_15 = function_1badc0(&local_10.field_0, local_1->vehicle_index, arg_0,
+                bool local_15 = function_1badc0(arg_0, local_1->vehicle_index, &local_10.field_0,
                     &local_13, &local_14, local_1->unknown1a, &local_12);
                 if (local_15)
                 {

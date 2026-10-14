@@ -315,6 +315,7 @@ bool function_1ab950(long actor_index, long prop_index, s_tag_element_52 *elemen
 	{
 		real distance = prop->unknown28 - value;
 		real scale = strict ? 0.8f : 1.0f;
+		real half = scale * 0.5f;
 		real range = 15.0f;
 
 		if (element->unknown74 > 0.0f)
@@ -323,7 +324,7 @@ bool function_1ab950(long actor_index, long prop_index, s_tag_element_52 *elemen
 			range = element->unknown78;
 		result = true;
 		if (range * scale > distance &&
-			scale * 0.5f > dot3f(&actor->unknown290, &view->unknown2c))
+			half > dot3f(&actor->unknown290, &view->unknown2c))
 		{
 			result = false;
 		}

@@ -978,9 +978,10 @@ void function_2090a0(void)
             long slot = (i & 0x8000) ? (i & 0x7fff) : (i & 0x7fff) + 0x41d;
             long value_index = function_16b990(g_4f9380, slot);
             s_hs_global_value *value = &((s_hs_global_value *)g_4f9380->data)[value_index & 0xffff];
+            long expression_index = *(long *)(global + 0x24);
             thread->script_index = NONE;
             thread->frame->size = 0;
-            function_2099f0(thread_index, (long *)&value->value, *(long *)(global + 0x24));
+            function_2099f0(thread_index, (long *)&value->value, expression_index);
             if (thread->flags & 1)
             {
                 function_209850(thread_index);
@@ -991,7 +992,10 @@ void function_2090a0(void)
                     long value_slot = (index & 0x8000) ? (index & 0x7fff) : (index & 0x7fff) + 0x41d;
                     long list_index = ((s_hs_global_value *)g_4f9380->data)[value_slot].value.d;
                     if (list_index != NONE)
-                        (*(short *)(g_4f55d8->data + (list_index & 0xffff) * 12 + 4))++;
+                    {
+                        s_object_list_208070 *list = &((s_object_list_208070 *)g_4f55d8->data)[list_index & 0xffff];
+                        list->reference_count++;
+                    }
                 }
             }
             function_20a490((short)i);

@@ -333,9 +333,9 @@ long function_b4450(long kind, long controller, struct _XUID owner, wchar_t cons
             if (status >= 0)
             {
                 *task_out = task_index;
+                task->controller_index = controller;
                 task->flags = 1;
                 task->type = 0x2a;
-                task->controller_index = controller;
                 return 0;
             }
             result = storage_error_ab(status);
@@ -361,8 +361,7 @@ long function_b4670(long kind, long controller, struct _XUID owner, wchar_t cons
         if (task)
         {
             FILETIME expiration;
-            expiration.dwHighDateTime = 0;
-            expiration.dwLowDateTime = 0;
+            memset(&expiration, 0, sizeof(expiration));
             HRESULT status = XOnlineStorageUploadByServerPath(facility, controller, path, expiration, directory, 0, 0, (XONLINETASK_HANDLE *)&task->handle);
             if (status >= 0)
             {

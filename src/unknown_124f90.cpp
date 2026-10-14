@@ -1226,9 +1226,12 @@ long function_127010(short class_index)
 	s_sound_class_fade *fade = &g_502118[class_index];
 	long gain = fade->current;
 
-	if (!TEST_FIELD_BIT(fade->flags & 1))
+	if ((byte)~fade->flags & 1)
 	{
+/* retail calls the class lookup out of line here */
+#pragma inline_depth(0)
 		s_sound_promotion_view *sound_class = (s_sound_promotion_view *)function_221810(class_index);
+#pragma inline_depth(255)
 		s_sound_system_view *sound_system = SOUND_SYSTEM;
 
 		if (sound_system->previous_ambience_index != NONE && sound_system->ambience_index == sound_system->previous_ambience_index)
@@ -1240,22 +1243,21 @@ long function_127010(short class_index)
 			{
 				if (ducking->fade_in_time >= 0.001f)
 				{
-					real t;
-
 					if (ducking->fade_out_time >= 0.001f && ducking->fade_out_time + ducking->hold_time > elapsed)
 					{
 						real inverse = 1.0f / ducking->fade_in_time;
 						real time = sound_system->ambience_fade - elapsed + (elapsed - ducking->hold_time) * inverse * ducking->fade_out_time;
+						real t = 1.0f > time * inverse ? time / ducking->fade_in_time : 1.0f;
 
-						t = 1.0f > time * inverse ? time / ducking->fade_in_time : 1.0f;
+						return decibels_add(gain, decibels_interpolate(0, ducking->gain, t));
 					}
 					else
 					{
 						real time = (sound_system->ambience_fade - elapsed) / ducking->fade_in_time;
+						real t = 1.0f > time ? time : 1.0f;
 
-						t = 1.0f > time ? time : 1.0f;
+						return decibels_add(decibels_interpolate(0, ducking->gain, t), gain);
 					}
-					return decibels_add(gain, decibels_interpolate(0, ducking->gain, t));
 				}
 			}
 			else
@@ -1628,7 +1630,7 @@ long function_12a810(long sound_index)
 		t = function_12aff0((real)(start - latest), (real)(end - latest), (real)(sound_system->time - latest), start < end);
 		{
 			long lower = *(start < end ? &sound->fade_gain : &g_440c4c);
-			long upper = *(start < end ? &g_440c48 : &sound->fade_gain);
+			long upper = *(start >= end ? &sound->fade_gain : &g_440c48);
 
 			switch (sound->fade_curve)
 			{
@@ -1655,7 +1657,7 @@ long function_12a810(long sound_index)
 			}
 			}
 		}
-		return decibels_pin(result);
+		result = decibels_pin(result);
 	}
 	return result;
 }
@@ -1991,6 +1993,9 @@ void sound_update_locations(void)
 	}
 }
 
+/* clamps value to [lower, upper], testing the lower bound first */
+#define PIN_126660(value, lower, upper) ((value) < (lower) ? (lower) : (value) > (upper) ? (upper) : (value))
+
 /* moves the sound system's two environments toward the two requested:
    each request takes the slot already holding it or a faded-out one and
    fades it in over its transition time; slots no request takes fade out */
@@ -2037,29 +2042,32 @@ void sound_environments_update(s_sound_environment const *requests)
 				{
 					real maximum = step * k_pi;
 
-					environment->unknown0c += PIN(request->unknown0c - environment->unknown0c, 0.0f - maximum, maximum);
-					environment->unknown10 += PIN(request->unknown10 - environment->unknown10, 0.0f - maximum, maximum);
+					environment->unknown0c += PIN_126660(request->unknown0c - environment->unknown0c, 0.0f - maximum, maximum);
+					environment->unknown10 += PIN_126660(request->unknown10 - environment->unknown10, 0.0f - maximum, maximum);
 				}
-				environment->unknown18 += PIN(request->unknown18 - environment->unknown18, 0.0f - step, step);
-				environment->unknown14 += PIN(request->unknown14 - environment->unknown14, 0.0f - step, step);
-				environment->fade += PIN(1.0f - environment->fade, 0.0f - step, step);
+				environment->unknown18 += PIN_126660(request->unknown18 - environment->unknown18, 0.0f - step, step);
+				environment->unknown14 += PIN_126660(request->unknown14 - environment->unknown14, 0.0f - step, step);
+				environment->fade += PIN_126660(1.0f - environment->fade, 0.0f - step, step);
 				environment->transition_time = request->transition_time;
 				environment->index = request->index;
 				used[slot >> 5] |= 1 << (slot & 31);
 			}
 		}
 	}
-	for (i = 0; i < 2; i++)
+	s_sound_system_view *sound_system = SOUND_SYSTEM;
+
+	i = 0;
+	do
 	{
 		if (!(used[i >> 5] & (1 << (i & 31))))
 		{
-			s_sound_environment *environment = &SOUND_SYSTEM->environments[i];
+			s_sound_environment *environment = &sound_system->environments[i];
 			real transition_time = environment->transition_time > 0.001f ? environment->transition_time : 0.001f;
-			real step = SOUND_SYSTEM->elapsed_time / transition_time;
+			real step = sound_system->elapsed_time / transition_time;
 
-			environment->fade += PIN(0.0f - environment->fade, 0.0f - step, step);
+			environment->fade += PIN_126660(0.0f - environment->fade, 0.0f - step, step);
 		}
-	}
+	} while (++i < 2);
 }
 
 /* ---- starting a sound ---- */
@@ -2210,7 +2218,7 @@ bool function_126c30(s_sound_play_state *state, long tag_index, long *listener_i
 			if (random > local_cc7843 * function_xaa8231(definition->class_index)->skip_fraction_scale)
 			{
 				failure = 4;
-				if (function_126bd0(tag_index))
+				if ((byte)function_126bd0(tag_index))
 				{
 					real distance = sound_get_maximum_distance((s_sound const *)location, tag_index);
 
@@ -2220,11 +2228,12 @@ bool function_126c30(s_sound_play_state *state, long tag_index, long *listener_i
 						real distance_gain = sound_get_distance_gain(tag_index, (s_sound const *)location, distance);
 						long gain = function_1251e0(definition, location->unknown08, location->scale);
 						long distance_decibels = function_2197f0(distance_gain);
-						real decibels = *(real *)&function_xaa8231(definition->class_index)->gain_base + (*(real *)&gain + *(real *)&distance_decibels);
+						real inner = *(real *)&distance_decibels + *(real *)&gain;
+						real gain_base = *(real *)&function_xaa8231(definition->class_index)->gain_base;
 
 						bool forced = SOUND_FLAG(location->flags, 11) || SOUND_FLAG(location->flags, 8);
 
-						if (forced || decibels > -64.0f)
+						if (forced || gain_base + inner > -64.0f)
 						{
 							failure = 0;
 							result = true;
@@ -3262,7 +3271,8 @@ void function_1293f0(void)
 			continue;
 		s_sound_playback *local_4 = SOUND_PLAYBACK_GET(local_3->sound_index);
 		long local_5 = function_12a810(local_3->sound_index);
-		if (*(real *)&local_5 + *(real *)&local_4->location.unknown08 <= -64.0f)
+		long local_9 = local_5;
+		if (*(real *)&local_9 + *(real *)&local_4->location.unknown08 <= -64.0f)
 		{
 			s_sound_playback *local_6 = SOUND_PLAYBACK_GET(local_3->sound_index);
 			if (TEST_FIELD_BIT(local_6->fading) && local_6->fade_start_time > local_6->fade_end_time)
@@ -3274,12 +3284,12 @@ void function_1293f0(void)
 		}
 		s_sound_playback *local_7 = SOUND_PLAYBACK_GET(local_3->sound_index);
 		if (TEST_FIELD_BIT(local_7->fading) && local_7->fade_end_time > local_7->fade_start_time && SOUND_SYSTEM->time >= local_7->fade_end_time)
-			local_7->fading = false;
+			*(byte *)&local_7->flags &= ~0x80; /* the fading bit, in the low byte */
 		if (local_3->channel_index == NONE)
 			continue;
 		s_type_12a1b0_spatial local_8;
 		function_129aa0((short)local_2, &local_5, (s_looping_channel_spatialization *)&local_8);
-		*(real *)&local_5 = *(real *)&local_1 + *(real *)&local_5;
+		*(real *)&local_5 = *(real *)&local_5 + *(real *)&local_1;
 		if ((1 << SOUND_PLAYBACK_GET(local_3->sound_index)->state) & 0x1e)
 			function_21c400((short)local_2, *(real *)&local_5, (s_looping_channel_spatialization *)&local_8);
 		else

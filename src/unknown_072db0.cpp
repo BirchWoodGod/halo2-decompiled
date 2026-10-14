@@ -810,7 +810,17 @@ struct s_search_value_group
 	s_search_player_values players[16];
 };
 
-s_search_value_group g_509454[5];
+/* the search value globals (0x509450, 0x70f8 bytes): set by the network
+   initialize, cleared by the network dispose */
+struct s_search_value_globals
+{
+	bool initialized;
+	byte unknown01[3];
+	s_search_value_group groups[5];
+	byte unknown3010[0x70f8 - 0x3010];
+};
+s_search_value_globals g_509450;
+#define g_509454 g_509450.groups
 #pragma pack(push, 1)
 struct s_session_interface_user
 {

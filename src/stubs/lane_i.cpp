@@ -14,11 +14,6 @@ bool __stdcall function_25d020(long arg_0, long arg_1, long arg_2, long arg_3, l
 	return false;
 }
 
-// @stub 0x256bd0
-short __stdcall function_256bd0(long actor_index, s_slot *slot, bool active)
-{
-	return 0;
-}
 
 
 

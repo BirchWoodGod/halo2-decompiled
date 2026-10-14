@@ -25,7 +25,7 @@ struct s_system_link_globals
 	s_session_id session_id;
 };
 
-extern s_system_link_globals g_4d8eb4;
+#include "system_link_globals.h"
 long g_4d8ec4;
 void *g_4d8ec8;
 void *g_4d8eb0;
