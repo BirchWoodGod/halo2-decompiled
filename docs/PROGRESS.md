@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8637 functions match
+
+```
+matched 8637 of 11318 game functions (1147436 of 2784283 bytes, 41.21%)
+```
+
+3 new matches, none lost:
+- Machine 1's key lane 1 rounds 18-19: `0xbaff0` matches once its callee `0x183910` (handed over by machine 3) takes retail's convention, and `0x25edd0` matches; `0x183910` goes from 140 to 30.
+- Machine 1's key lane 2 round 17: `0x22af8d` is written and matches; `0x219070` is written at retail's length.
+
 ## 2026-10-14: 8634 functions match
 
 ```
