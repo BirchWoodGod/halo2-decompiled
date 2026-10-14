@@ -1,4 +1,5 @@
 #include "unknown_11c920.h"
+#include "globals.h"
 #include <xtl.h>
 #include <xonline.h>
 #include "screen_widgets.h"
@@ -337,7 +338,6 @@ void function_199c94(const void *target, long controller, bool flag);
 bool function_19a1bd(void);
 void function_199e2e(bool close);
 void function_148523();
-extern bool g_4ee4e0;
 c_class_1473c9 *function_149ef3(word user_flags, long load);
 c_class_1473c9 *__stdcall function_2b8536(s_screen_parameters *parameters);
 

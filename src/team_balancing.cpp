@@ -6,6 +6,7 @@
 
 #include "unknown_11c920.h"
 #include <string.h>
+#include <new>
 
 #define MAXIMUM_PLAYERS 16
 #define MAXIMUM_PARTIES 16
@@ -59,13 +60,26 @@ struct s_balance_team
 	void remove_largest_party(s_balance_party *party);
 };
 
+s_balance_team *__stdcall function_91620(s_balance_team *team);
+
+// The stored teams have trivial copy and destruction.
+union s_balance_team_array
+{
+	long alignment;
+	byte data[sizeof(s_balance_team) * MAXIMUM_TEAMS];
+	s_balance_team &operator[](long i) { return ((s_balance_team *)data)[i]; }
+	s_balance_team const &operator[](long i) const { return ((s_balance_team const *)data)[i]; }
+};
+
 struct s_balance_solution
 {
 	long team_count;
-	s_balance_team teams[MAXIMUM_TEAMS];
+	s_balance_team_array teams;
 
 	s_balance_solution()
 	{
+		for (long i = 0; i < MAXIMUM_TEAMS; ++i)
+			function_91620(&teams[i]);
 		team_count = 0;
 	}
 	void reset(long count);
@@ -146,10 +160,17 @@ void s_balance_party::remove_player(s_balance_player const *player)
 	total -= player->weight;
 }
 
-// @retail 0x91620
-s_balance_team::s_balance_team()
+__forceinline s_balance_team::s_balance_team()
 {
 	reset();
+}
+
+// @retail 0x91620
+s_balance_team *__stdcall function_91620(s_balance_team *team)
+{
+	__assume(team != 0);
+	s_balance_team *const *team_slot = &team;
+	return new (*team_slot) s_balance_team;
 }
 
 #pragma optimize("s", on)
@@ -426,8 +447,16 @@ static __forceinline void function_91fc1(s_balance_team *arg_0, s_balance_party 
 {
     arg_0->parties[arg_0->party_count] = *arg_1;
     arg_0->party_count++;
-    for (long local_0 = 0; local_0 < *(volatile long const *)&arg_1->count; ++local_0)
-        function_91fc2(&arg_0->players, &arg_1->players[local_0]);
+    long local_0 = 0;
+    s_balance_player const *local_2 = arg_1->players;
+    for (;;)
+    {
+        if (local_0 >= *(volatile long const *)&arg_1->count)
+            break;
+        function_91fc2(&arg_0->players, local_2);
+        ++local_0;
+        ++local_2;
+    }
     if (arg_1->flagged)
         arg_0->flagged_count++;
 }
@@ -447,7 +476,9 @@ bool balance_teams(long team_count, long maximum_team_size, bool flag_parties, l
 		parties[party_index].add_player(&player);
 	}
 
-	s_balance_team pool;
+	long pool_storage[sizeof(s_balance_team) / sizeof(long)];
+	s_balance_team &pool = *(s_balance_team *)pool_storage;
+	function_91620(&pool);
 	for (i = 0; i < MAXIMUM_PARTIES; i++)
 	{
 		if (*(volatile long *)&parties[i].count > 0)
