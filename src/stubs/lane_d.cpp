@@ -16,11 +16,6 @@ void __stdcall function_565c0(s_voice_routing *routing, unsigned long members, s
 class c_class_6a600;
 
 
-// @stub 0x137fe0
-void function_137fe0(void)
-{
-}
-
 // @stub 0x7a840
 void function_07a840(void)
 {
@@ -57,14 +52,6 @@ struct s_type_9df9da;
 bool __stdcall function_6bff0(s_type_9df9da *task)
 {
 	return false;
-}
-
-struct s_simulation_definition_registry;
-
-// @stub 0x82240
-void __stdcall function_82240(s_simulation_definition_registry *registry,
-	long *entity_count, long *event_count)
-{
 }
 
 // @stub 0x7fb50

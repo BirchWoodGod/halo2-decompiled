@@ -109,22 +109,20 @@ long c_vtable_450cb8::v0(long index, long a2, long a3, long *count, s_item_450cb
 		int error;
 		void * block;
 		block = function_96e90(size);
-		if (block == 0)
+		if (block != 0)
 		{
+			if (handler->v10(size, block, a6))
+			{
+				s_item_450cb8 * item = &items[(*count)++];
+				item->data = block;
+				item->size = (short)size;
+				item->type = 0xe;
+				goto local_0;
+			}
+			error = 3;
+		}
+		else
 			error = 2;
-			goto local_3;
-		}
-		if (handler->v10(size, block, a6))
-		{
-			s_item_450cb8 * item = &items[(*count)++];
-			item->data = block;
-			item->size = (short)size;
-			item->type = 0xe;
-			goto local_0;
-		}
-
-		error = 3;
-local_3:
 		if (0 != block)
 		{
 			s_allocator_globals * globals;

@@ -223,7 +223,7 @@ bool function_136c40(s_type_acf665 *file, dword position)
 }
 
 // @retail 0x136ca0
-bool function_136ca0(s_type_acf665 *file, void *buffer, dword size, bool silent)
+bool function_136ca0(s_type_acf665 *file, dword size, void *buffer, bool silent)
 {
 	dword bytes_read;
 	bool success = false;
