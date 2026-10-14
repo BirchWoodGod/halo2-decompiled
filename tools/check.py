@@ -177,12 +177,20 @@ def same_callee(ours, start, theirs, theirs_va, k, identity):
     return identity.ok(mine, target)
 
 
+def points_inside(ours, start, theirs, theirs_va, k, both=False):
+    """Whether the absolute field at offset k points inside its own function
+    on either side (on both, given both)."""
+    mine, value = _dword(ours, k), _dword(theirs, k)
+    inside = start <= mine < start + len(ours), theirs_va <= value < theirs_va + len(theirs)
+    return all(inside) if both else any(inside)
+
+
 def absolute_ok(ours, start, theirs, theirs_va, k, lo, hi):
     """Whether the absolute field at offset k agrees with retail. When either
     side points inside its own function (a jump table entry) both must point
     at the same offset; otherwise retail's must be an address inside [lo, hi)."""
     mine, value = _dword(ours, k), _dword(theirs, k)
-    if start <= mine < start + len(ours) or theirs_va <= value < theirs_va + len(theirs):
+    if points_inside(ours, start, theirs, theirs_va, k):
         return value - theirs_va == mine - start
     return lo <= value < hi
 
@@ -198,22 +206,49 @@ def _text(ins):
     return f'{ins.mnemonic} {ins.op_str}' if ins else ''
 
 
-def differing_instructions(ours, ours_va, theirs, theirs_va, masked, forced=frozenset()):
+def _decode(md, data, va, k):
+    """The instruction at offset k of data, or None past the end or where nothing decodes."""
+    return next(md.disasm(data[k:k + 16], va + k, count=1), None)
+
+
+def differing_instructions(ours, ours_va, theirs, theirs_va, masked, forced=frozenset(), entries=frozenset()):
     """Returns (count, lines, complete). complete is False when the
-    disassembly does not cover every byte of both sides."""
+    disassembly does not cover every byte of both sides. entries: the offsets
+    of absolute fields that point inside the function on both sides. No
+    instruction starts with its own address field, so where both sides reach
+    one of these at the same offset the bytes there are a jump table entry:
+    that dword is compared as one line, by the same rule as the instructions,
+    and decoding resumes after it. Entries that differ only by layout are
+    masked, so they do not count, and the instructions after a table line up
+    as they do in the image."""
     md = Cs(CS_ARCH_X86, CS_MODE_32)
-    a = list(md.disasm(ours, ours_va))
-    b = list(md.disasm(theirs, theirs_va))
-    complete = sum(i.size for i in a) == len(ours) and sum(i.size for i in b) == len(theirs)
     lines, count = [], 0
-    for k in range(max(len(a), len(b))):
-        x, y = (a[k] if k < len(a) else None), (b[k] if k < len(b) else None)
-        same = x is not None and y is not None and x.size == y.size and all(
-            (x.address - ours_va + i) not in forced and
-            ((x.address - ours_va + i) in masked or x.bytes[i] == y.bytes[i]) for i in range(x.size))
+    oa = ob = 0
+    stuck_a = stuck_b = False
+
+    def same_bytes(k, size, y_bytes):
+        return all((k + i) not in forced and ((k + i) in masked or ours[k + i] == y_bytes[i]) for i in range(size))
+
+    while True:
+        if not (stuck_a or stuck_b) and oa == ob and oa in entries and oa + 4 <= min(len(ours), len(theirs)):
+            same = same_bytes(oa, 4, theirs[ob:ob + 4])
+            x_text, y_text = f'dd {_dword(ours, oa):#x}', f'dd {_dword(theirs, ob):#x}'
+            oa += 4
+            ob += 4
+        else:
+            x = None if stuck_a else _decode(md, ours, ours_va, oa)
+            y = None if stuck_b else _decode(md, theirs, theirs_va, ob)
+            stuck_a, stuck_b = x is None, y is None
+            if x is None and y is None:
+                break
+            same = x is not None and y is not None and x.size == y.size and same_bytes(oa, x.size, y.bytes)
+            x_text, y_text = _text(x), _text(y)
+            oa += x.size if x else 0
+            ob += y.size if y else 0
         count += not same
         lines.append(f'  {"  " if same else "!!"} '
-                     f'{_text(x):<44} | {_text(y)}')
+                     f'{x_text:<44} | {y_text}')
+    complete = oa == len(ours) and ob == len(theirs)
     return count, lines, complete
 
 
@@ -289,7 +324,9 @@ def check_function(full, start, theirs, theirs_va, absolute, relative, lo, hi, i
         offsets.append(first)
     if not offsets:
         return 'matched', None, [], len(ours)
-    count, lines, complete = differing_instructions(ours, start, theirs, theirs_va, masked, forced)
+    # absolute fields that point inside the function on both sides: jump table entries, and a jmp's table address
+    entries = {k for k in field_starts(start, size, absolute) if points_inside(ours, start, theirs, theirs_va, k, True)}
+    count, lines, complete = differing_instructions(ours, start, theirs, theirs_va, masked, forced, entries)
     near = complete and len(ours) == len(theirs) and count <= NEAR
     return ('near' if near else 'todo'), min(offsets), lines, len(ours)
 

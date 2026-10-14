@@ -897,7 +897,7 @@ bool function_83220(s_simulation_world_owner *watcher)
   }
   else function_6b040(world);
  }
- goto done;
+ return result;
 failed:
  result = false;
 done:

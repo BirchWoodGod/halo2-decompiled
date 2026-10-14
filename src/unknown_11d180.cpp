@@ -144,31 +144,19 @@ void function_11d6a0(
 	vector3f const *b,
 	quaternionf *out)
 {
-	real const *local_10 = a->n;
-	real const *local_11 = b->n + 1;
-	real local_0 = local_10[1] * local_11[0];
-	real local_1 = local_10[0] * local_11[-1];
-	real s = (local_0 + local_1 + local_11[1] * local_10[2] + 1.f) * 2.f;
+	real s = (a->i * b->i + a->j * b->j + a->k * b->k + 1.f) * 2.f;
 	if (!(s > 0.f))
 		s = 0.f;
 	s = (real)sqrt(s);
 	if (s >= 0.001f)
 	{
-		real local_2 = local_10[0] * local_11[0];
-		real local_3 = local_10[1] * local_11[-1];
-		real local_4 = local_11[1] * local_10[0];
-		real local_5 = local_10[1] * local_11[1];
-		real local_6 = local_10[2] * local_11[0];
-		real local_7 = local_2 - local_3;
-		real local_8 = local_11[-1] * local_10[2] - local_4;
 		real inv = 1.f / s;
-		real local_9 = local_5 - local_6;
-		local_7 *= inv;
-		local_8 *= inv;
-		local_9 *= inv;
-		out->i = local_9;
-		out->j = local_8;
-		out->k = local_7;
+		real k = a->i * b->j - a->j * b->i;
+		real j = b->i * a->k - b->k * a->i;
+		real i = a->j * b->k - a->k * b->j;
+		out->i = i * inv;
+		out->j = j * inv;
+		out->k = k * inv;
 		out->w = s * 0.5f;
 	}
 	else

@@ -2811,7 +2811,7 @@ void __stdcall function_4e260(long, long, long, long, long, dword, byte *);
 void __stdcall function_4ebd0(long, long, long, long, long, dword, byte *);
 void __stdcall function_4ede0(long, long, long, long, long, dword, byte *);
 void __stdcall function_4efa0(long, long, long, long, long, dword, byte *);
-void function_40e30(short group, long tag, real distance, long level, word kind,
+void function_40e30(short group, long tag, real distance, long level, short kind,
     dword and_mask, dword or_mask, t_41640_fill fill, dword value, void *context);
 point3f *function_3f220(dword a, dword b, dword c, point3f *out);
 struct s_frustum_set_view;

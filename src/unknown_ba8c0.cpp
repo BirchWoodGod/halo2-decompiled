@@ -18,11 +18,12 @@ bool function_ba8c0(s_object_function_ab const *function, long object_index, rea
     bool enabled = false;
     real value = 0.0f;
     bool periodic = function->curve.address[0] == 3;
+    long input_name = function->input_name;
     s_object *object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
     if ((bool)(((dword)object->flags_c0 >> 9) & 1))
     {
         long index;
-        if (function_10aac0(object_index, function->input_name, out, &index))
+        if (function_10aac0(object_index, input_name, out, &index))
             return true;
     }
     function_108d90(object_index, function->input_name, &value, &enabled);

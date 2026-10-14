@@ -103,7 +103,7 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 				break;
 			}
 			g_4e6950.field_40 = *(color4f const *)arg_3;
-			function_22bcaf((s_widget_transform_block const *)(arg_2 + 0x58), &local_45.field_48, &local_45.field_30, &local_45.field_0);
+			function_22bcaf((s_widget_transform_block const *)(arg_2 + 0x58), &local_45.field_48, &local_45.field_0, &local_45.field_30);
 			long local_44 = local_45.field_50;
 			local_45.field_8 = (real)local_45.field_38;
 			local_45.field_38_1 = (real)local_45.field_50;
