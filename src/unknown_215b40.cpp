@@ -411,26 +411,33 @@ PRIVATE s_variant_preset_212f40 const g_445958[28] =
     { L"Land Grab", 27, 6 },
 };
 
+void function_0bfe20(dword *flags, long bit, bool value);
+
 // @retail 0x212f40
 void function_212f40(long preset, s_game_variant *variant)
 {
     s_variant_preset_212f40 const *entry = &g_445958[preset];
+    word const *source = entry->name;
     function_19d220(variant, entry->type);
-    wcsncpy(variant->name, entry->name, 31);
-    variant->name[31] = 0;
+    wchar_t *name = variant->name;
+    wcsncpy(name, source, 31);
+    name[31] = 0;
     variant->unknown78 = 16;
     variant->unknown74 = 16;
     switch (preset)
     {
     case 0: variant->unknown50 = 10; break;
-    case 1: variant->unknown54 = 360; break;
-    case 2: variant->flags48 |= 1; break;
+    case 2: function_0bfe20(&variant->flags48, 0, true); break;
+    case 7:
+        variant->unknown50 = 10; variant->unknownd4 = 11; variant->unknownd6 = 13; variant->unknownd7 = 4;
+        variant->unknowncf = 4; variant->unknownd0 = 4; variant->unknownd1 = 4;
+        break;
     case 3:
     case 4:
-        variant->teams_enabled = preset == 4;
+        function_0bfe20(&variant->flags48, 0, preset == 4);
         variant->unknown54 = 360;
         variant->unknownd4 = 2;
-        variant->motion_sensor_enabled = false;
+        variant->flags48 &= ~2;
         variant->unknown84 = 0;
         variant->unknownd6 = 8;
         variant->unknownd7 = 1;
@@ -440,25 +447,28 @@ void function_212f40(long preset, s_game_variant *variant)
         variant->unknown54 = 360; variant->unknownd4 = 3; variant->unknownd6 = 9; variant->unknownd7 = 1;
         variant->unknownd2 = 6; variant->unknownd3 = 6;
         break;
-    case 6: variant->unknownd4 = 14; variant->unknownd6 = 4; variant->unknownd7 = 1; break;
-    case 7:
-        variant->unknown50 = 10; variant->unknownd4 = 11; variant->unknownd6 = 13; variant->unknownd7 = 4;
-        variant->unknowncf = 4; variant->unknownd0 = 4; variant->unknownd1 = 4;
-        break;
-    case 8: variant->unknownd4 = 5; variant->unknownd6 = 11; variant->unknownd7 = 1; break;
     case 9:
         variant->unknownd4 = 4; variant->unknowncf = 4; variant->unknownd0 = 4; variant->unknownd1 = 4;
         variant->unknown50 = 10; variant->unknownd6 = 17; variant->unknownd7 = 1; variant->unknown88 = 2;
         variant->unknowncd = 7; variant->unknownce = 7; variant->unknownd2 = 6; variant->unknownd3 = 6;
         break;
+    case 6: variant->unknownd4 = 14; variant->unknownd6 = 4; variant->unknownd7 = 1; break;
+    case 8: variant->unknownd4 = 5; variant->unknownd6 = 11; variant->unknownd7 = 1; break;
     case 10:
-        variant->unknownd4 = 12; variant->flags48 &= ~2; variant->unknownd7 = 4;
+        variant->unknownd4 = 12; function_0bfe20(&variant->flags48, 1, false); variant->unknownd7 = 4;
         variant->unknowncf = 4; variant->unknownd0 = 4; variant->unknownd1 = 4;
         variant->unknownd6 = 10; variant->unknowncd = 7; variant->unknownce = 7;
         variant->unknownd2 = 6; variant->unknownd3 = 6;
         break;
     case 11: variant->unknown50 = 0; variant->unknown4c = 5; variant->unknown7c = 1; break;
-    case 12: variant->unknown54 = 720; break;
+    case 1: variant->unknown54 = 360; break;
+    case 24: variant->unknown54 = 360; break;
+    case 25: function_0bfe20(&variant->flags48, 0, true); variant->unknowna8 = 0; variant->unknown80 = 10; break;
+    case 22: variant->unknowna8 = 0; variant->unknown54 = 360; break;
+    case 23:
+        function_0bfe20(&variant->flags48, 0, true); variant->unknowna8 = 0; variant->unknown80 = 10;
+        variant->engine_flags |= 1; variant->unknown50 = 60;
+        break;
     case 13: variant->engine_flags |= 12; break;
     case 14:
         variant->engine_flags |= 12; variant->unknownd4 = 3; variant->unknownd6 = 9; variant->unknownd7 = 1;
@@ -471,7 +481,6 @@ void function_212f40(long preset, s_game_variant *variant)
         variant->unknown4c = 2; variant->unknown54 = 120; variant->unknown80 = 5; variant->unknown50 = 1;
         variant->unknown84 = 5; variant->flag.unknown104 = 1; variant->flag.unknownf4 = 15;
         break;
-    case 17: variant->unknown54 = 720; break;
     case 18:
         variant->unknown4c = 2; variant->unknown50 = 1; variant->unknown54 = 180; variant->flag.unknown104 = 1;
         break;
@@ -479,21 +488,16 @@ void function_212f40(long preset, s_game_variant *variant)
         variant->unknown4c = 2; variant->unknown80 = 5; variant->unknown54 = 120; variant->unknown50 = 1;
         variant->unknown84 = 5; variant->flag.unknown104 = 1; variant->flag.unknownf4 = 20;
         break;
-    case 20: variant->flag.unknown104 = 2; variant->flag.unknown108 = 10; variant->unknown54 = 720; break;
     case 21: variant->flag.unknown104 = 2; variant->flag.unknown108 = 10; break;
-    case 22: variant->unknowna8 = 0; variant->unknown54 = 360; break;
-    case 23:
-        variant->flags48 |= 1; variant->unknowna8 = 0; variant->unknown80 = 10;
-        variant->engine_flags |= 1; variant->unknown50 = 60;
-        break;
-    case 24: variant->unknown54 = 360; break;
-    case 25: variant->flags48 |= 1; variant->unknowna8 = 0; variant->unknown80 = 10; break;
+    case 12: variant->unknown54 = 720; break;
+    case 17: variant->unknown54 = 720; break;
+    case 20: variant->flag.unknown104 = 2; variant->flag.unknown108 = 10; variant->unknown54 = 720; break;
     case 26:
-        variant->flags48 |= 1; variant->unknowna8 = 0; variant->unknown84 = 5;
+        function_0bfe20(&variant->flags48, 0, true); variant->unknowna8 = 0; variant->unknown84 = 5;
         variant->territories.unknownf2 = 3; variant->unknown50 = 180;
         break;
     case 27:
-        variant->flags48 |= 1; variant->unknown54 = 720; variant->territories.unknownf0 = 5; variant->unknowna8 = 0;
+        function_0bfe20(&variant->flags48, 0, true); variant->unknown54 = 720; variant->territories.unknownf0 = 5; variant->unknowna8 = 0;
         break;
     }
 }

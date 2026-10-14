@@ -2825,6 +2825,24 @@ struct s_voice_position_batch
 	s_voice_position_entry entries[0x48];
 };
 
+/* the class flag 0x129100 reads (bit 6 of byte +0xa of a sound class) */
+struct s_sound_class_flags_129100
+{
+	byte unknown00[0xa];
+	word unknown0a : 6;
+	word flag6 : 1;
+	word unknown0a7 : 9;
+};
+
+/* the first flags of a playing sound's location, as a word */
+struct s_sound_location_flags_129100
+{
+	word flag0 : 1;
+	word unknown01 : 6;
+	word flag7 : 1;
+	word unknown08 : 8;
+};
+
 /* marks a voice buffer as seen */
 static inline void seen_set_129100(dword *seen, long index)
 {
@@ -2834,7 +2852,9 @@ static inline void seen_set_129100(dword *seen, long index)
 // @retail 0x129100
 void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f **channels)
 {
-	dword seen[3] = { 0, 0, 0 };
+	dword seen[3];
+
+	memset(seen, 0, sizeof(seen));
 	for (long i = 0; i < SOUND_SYSTEM->voice_count; i++)
 	{
 		if (batch->count == 0x48)
@@ -2845,8 +2865,9 @@ void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f
 		s_sound_playback *sound = SOUND_PLAYBACK_GET(voice->sound_index);
 		s_sound_location_source *source = (s_sound_location_source *)&sound->location;
 		byte *location = (byte *)&sound->location;
+		s_sound_location_flags_129100 *location_flags = (s_sound_location_flags_129100 *)&sound->location;
 		bool spatial = source->spatialization == 1 && !TEST_FIELD_BIT(sound->flag2) &&
-			!TEST_FIELD_BIT(sound->location.flag7) && !TEST_FIELD_BIT(sound->location.flag0);
+			!TEST_FIELD_BIT(location_flags->flag7) && !TEST_FIELD_BIT(sound->location.flag0);
 		bool local = source->spatialization == 0 && !TEST_FIELD_BIT(sound->flag2) &&
 			(bool)(((dword)*(word *)location >> 12) & 1) && *(short *)((byte *)sound + 0x46) == g_4686c4;
 		if (spatial)
@@ -2855,17 +2876,20 @@ void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f
 			if (buffer == NONE || (seen[buffer >> 5] & (1 << (buffer & 31))))
 				continue;
 			seen_set_129100(seen, buffer);
-			s_voice_position_entry *entry = &batch->entries[++batch->count - 1];
+			batch->count++;
 			s_sound_definition *definition = sound_definition_get(sound->definition_index);
+			s_voice_position_entry *entry = &batch->entries[batch->count - 1];
 			entry->listener = sound->listener_index;
 			entry->position = *(point3f *)((byte *)sound + 0x24);
 			entry->index = *(short *)((byte *)sound + 0x44);
 			entry->object = *(long *)((byte *)sound + 0x40);
 			entry->flag44 = false;
-			entry->flag46 = (bool)((location[0] >> 7) & 1);
+			entry->flag46 = TEST_FIELD_BIT(location_flags->flag7);
 			entry->flag45 = false;
-			entry->flag47 = (bool)((*((byte *)function_221810(definition->promotion_index) + 0xa) >> 6) & 1) || (definition->flags & 0x20);
-			entry->result.i = entry->result.j = entry->result.k = 0.0f;
+			entry->flag47 = TEST_FIELD_BIT(((s_sound_class_flags_129100 *)function_221810(definition->promotion_index))->flag6) || (definition->flags & 0x20);
+			entry->result.i = 0.0f;
+			entry->result.k = 0.0f;
+			entry->result.j = 0.0f;
 			buffers[voice->unknown0e] = &entry->result;
 		}
 		else if (local && voice->channel_index != NONE)
@@ -2879,7 +2903,9 @@ void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f
 			entry->flag46 = true;
 			entry->flag45 = false;
 			entry->flag47 = true;
-			entry->result.i = entry->result.j = entry->result.k = 0.0f;
+			entry->result.i = 0.0f;
+			entry->result.k = 0.0f;
+			entry->result.j = 0.0f;
 			channels[voice->channel_index] = &entry->result;
 		}
 	}
