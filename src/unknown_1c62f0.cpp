@@ -217,7 +217,10 @@ void c_animation_channel::update_events()
 
 			if (lower == frame_position)
 			{
-				if (frame > lower && upper >= frame)
+				bool local_724437 = false;
+				if (frame > lower)
+					local_724437 = upper >= frame;
+				if (local_724437)
 				{
 					unknown16 |= 1 << event->type;
 				}
