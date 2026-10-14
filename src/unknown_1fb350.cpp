@@ -236,7 +236,7 @@ inline void recorded_animation_object_set_flag(long object_index, long bit, bool
 // @retail 0x1fb360
 bool function_1fb360(long unit_index, short recording_index, long flags)
 {
-	volatile bool result = false;
+	bool result = false;
 
 	if (unit_index != NONE && recording_index != NONE)
 	{
@@ -270,16 +270,20 @@ bool function_1fb360(long unit_index, short recording_index, long flags)
 						(playback_unit_control_view *)animation->control, &animation->cursor, recording->control_version);
 					function_cbf60(unit_index, true);
 					SET_FLAG(animation->flags, 2, function_cbf40(unit_index));
-					recorded_animation_object_set_flag(unit_index, 0, false);
-					recorded_animation_object_set_flag(unit_index, 22, true);
+					long object_offset = (unit_index & 0xffff) * sizeof(s_recorded_animation_object_header);
+					dword *object_flags = &((s_recorded_animation_object_header *)(g_4e0300->data + object_offset))->object->flags;
+					*object_flags &= ~1;
+					object_flags = &((s_recorded_animation_object_header *)(g_4e0300->data + object_offset))->object->flags;
+					*object_flags |= 1 << 22;
 					animation->flags |= (word)flags;
 					result = true;
 				}
 			}
-			return result;
+			goto done;
 		}
 	}
 
+done:
 	return result;
 }
 

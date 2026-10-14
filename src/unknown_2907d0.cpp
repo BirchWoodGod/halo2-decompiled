@@ -37,15 +37,14 @@ struct s_actor_position_state
 
 __forceinline void function_290852(transform4x3f const *arg_0, vector3f const *arg_1, vector3f *arg_2)
 {
-	transform4x3f const volatile *local_3 = arg_0;
 	real local_0 = arg_1->i;
 	real local_1 = arg_1->j;
 	real local_2 = arg_1->k;
 	if (arg_0->scale != 1.0f)
 	{
 		local_0 = arg_0->scale * local_0;
-		local_1 = local_3->scale * local_1;
-		local_2 = local_3->scale * local_2;
+		local_1 = arg_0->scale * local_1;
+		local_2 = arg_0->scale * local_2;
 	}
 	arg_2->i = arg_0->up.i * local_2 + arg_0->left.i * local_1 + arg_0->forward.i * local_0;
 	arg_2->j = arg_0->up.j * local_2 + arg_0->left.j * local_1 + arg_0->forward.j * local_0;

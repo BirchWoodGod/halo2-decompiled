@@ -62,7 +62,7 @@ bool function_10aac0(long object_index, long name, real *value, long *index);
 bool function_ba8c0(s_object_function_ab const *function, long object_index, real *out);
 
 // @retail 0xbab40
-bool __stdcall function_bab40(long object_index, long name, real *value)
+bool __stdcall function_bab40(volatile long object_index, long name, real *value)
 {
     real *saved_value = value;
     *saved_value = 0.0f;

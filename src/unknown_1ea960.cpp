@@ -373,7 +373,8 @@ long function_1eb020(long tag_index, long body_index, short *material_index)
  long result = 0;
  if (shape->kind() == 0x13) shape = shape->child;
  long kind = shape->kind();
- if (kind == 2 || (kind > 9 && kind <= 11))
+ bool collection_kind = kind == 2 || (kind > 9 && kind <= 11);
+ if (collection_kind)
  {
   shape = shape->get_child(shape->first_key(buffer));
   if (shape->kind() == 0x11) shape = shape->child;

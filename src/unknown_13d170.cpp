@@ -345,7 +345,8 @@ long __stdcall function_13d370(s_physical_object *physical, long size, long type
 			}
 		}
 		if (type == limit_index)
-			physical->limits[limit_index] = physical->limits[limit_index] < pages ? physical->limits[limit_index] : pages;
+			physical->limits[limit_index] = physical->limits[limit_index] > pages ? pages : physical->limits[limit_index];
 	}
 	return result;
 }
+

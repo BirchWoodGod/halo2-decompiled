@@ -175,9 +175,9 @@ bool __stdcall function_1b36e0(long actor_index, s_slot *slot)
     local_3->field_8 = 2;
     local_3->field_10 = local_2->unknown48;
     long local_7 = *(long *)((byte *)local_2 + 0x44);
+    local_3->field_20 = local_7;
     local_3->field_a = false;
     local_3->field_b = false;
-    local_3->field_20 = local_7;
     return true;
 }
 

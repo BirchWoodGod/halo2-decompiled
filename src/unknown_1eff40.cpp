@@ -3,6 +3,7 @@
    SSE, apart from its neighbours in unknown_1efac0.cpp) */
 
 #include <string.h>
+#include <float.h>
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_1efac0.h"
@@ -79,15 +80,16 @@ bool function_1eff40(s_lookup *lookup, long flags, const point3f *point,
 {
  (void)&lookup; (void)&flags; (void)&point; (void)&direction; (void)&result;
  s_lookup_ray_result *const *result_reference = &result;
+ s_1de6d3 *hit = &(*result_reference)->hit;
  bool found = false;
  s_iterator iterator;
- (*result_reference)->hit.field_0 = 1.0f;
+ hit->field_0 = FLT_MAX;
  function_1efbd0((dword)lookup->tag_b, (s_mix_output *)&iterator,
   (s_mix_source *)lookup->tag_a, (signed char *)lookup->pointer_a);
  while (iterator.advance())
  {
   dword position = iterator.position;
-  long node = iterator.first;
+  long node = iterator.position & 0xff;
   transform4x3f inverse;
   function_141590((const transform4x3f *)lookup->pointer_b + node, &inverse);
   point3f local_point;
@@ -119,13 +121,13 @@ bool function_1eff40(s_lookup *lookup, long flags, const point3f *point,
   query.field_c = NULL;
   query.field_10 = &local_point;
   query.field_14 = &local_direction;
-  query.field_18 = &(*result_reference)->hit;
+  query.field_18 = hit;
   query.field_1c = NONE;
   query.field_20 = 0;
   query.field_24 = NONE;
-  real fraction = (*result_reference)->hit.field_0;
-  (*result_reference)->hit.field_0 = fraction < 0.0f ? 0.0f : fraction;
-  (*result_reference)->hit.field_18 = 0;
+  real fraction = hit->field_0;
+  hit->field_0 = fraction < 0.0f ? 0.0f : fraction;
+  hit->field_18 = 0;
   real bounded = fraction < 0.0f ? 0.0f : fraction > 1.0f ? 1.0f : fraction;
   if (function_1de6d0(&query, 0, 0.0f, bounded))
   {
