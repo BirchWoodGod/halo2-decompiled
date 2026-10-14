@@ -356,7 +356,9 @@ void function_1e6120(s_biped_physics_output *output, void *physics, real rate,
 	{
 		s_physics_movement_settings *settings = ((s_physics_movement_globals *)g_4e034c)->settings;
 		vector3f control = state->control;
-		real squared = length_sq3f(&control);
+		real squared = control.k * control.k;
+		squared += control.j * control.j;
+		squared += control.i * control.i;
 		if (squared > 1.0f)
 		{
 			real scale = 1.0f / (real)sqrt(squared);
