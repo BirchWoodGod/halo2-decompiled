@@ -2068,8 +2068,8 @@ bool function_39a80(byte *state)
 // @retail 0x3e5a0
 void function_3e5a0(vector3f *current, vector3f const *target, real step)
 {
-    real const &current_size = (real)sqrt((double)current->i * current->i + (double)current->j * current->j + (double)current->k * current->k);
-    real a = current_size < 0.0001f ? 0.0001f : current_size > 10.0f ? 10.0f : current_size;
+    real const &name_734d0c = (real)sqrt((double)current->i * current->i + (double)current->j * current->j + (double)current->k * current->k);
+    real a = name_734d0c < 0.0001f ? 0.0001f : name_734d0c > 10.0f ? 10.0f : name_734d0c;
     real target_size = (real)sqrt((double)target->i * target->i + (double)target->j * target->j + (double)target->k * target->k);
     real b = target_size < 0.0001f ? 0.0001f : target_size > 10.0f ? 10.0f : target_size;
     vector3f first, second;

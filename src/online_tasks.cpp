@@ -547,23 +547,9 @@ long g_467214 = NONE;
 long g_467218 = 10;
 bool g_50944f;
 
-// @retail 0x6cd50
-long online_task_get_logon_status(long task_index)
+static __forceinline long function_6cd53(s_type_9df9da *task, void *handle)
 {
-	long result;
-	s_type_9df9da *task;
-	if (task_index == NONE || (task = function_6b910(task_index)) == 0)
-	{
-		result = g_467218;
-		goto local_0;
-	}
-	if (task->type == 1 || task->flag_bits.failed)
-	{
-		result = task->result;
-		goto local_0;
-	}
-	{
-		void *handle = task->handle;
+ long result;
 		if (!handle || handle == (void *)NONE)
 		{
 			result = 10;
@@ -571,8 +557,8 @@ long online_task_get_logon_status(long task_index)
 		}
 		if (!function_8d7c0())
 		{
-			result = 5;
 			task->flag_bits.failed = true;
+			result = 5;
 			task->result = 5;
 			goto local_1;
 		}
@@ -592,6 +578,22 @@ long online_task_get_logon_status(long task_index)
 		}
 		task->flag_bits.failed = true;
 		task->result = result;
+local_1:
+ return result;
+}
+
+// @retail 0x6cd50
+long online_task_get_logon_status(long task_index)
+{
+	long result;
+	s_type_9df9da *task;
+	if (task_index == NONE || (task = function_6b910(task_index)) == 0)
+		return g_467218;
+	if (task->type == 1) return task->result;
+	if (task->flag_bits.failed) return task->result;
+	{
+		void *handle = task->handle;
+		result = function_6cd53(task, handle);
 	}
 local_1:
 	g_467218 = result;
