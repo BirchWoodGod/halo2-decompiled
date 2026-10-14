@@ -1800,7 +1800,19 @@ bool __stdcall function_2b220(long mode, real const *bounds,
     case 0:
         out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
         out[1] = (bounds[3] - bounds[2]) * t[1] + bounds[2];
-        clip_depth_terms(out, g_509400);
+        {
+            real depth_x = g_509400;
+            real depth_scale = g_485ad4.hi / (g_485ad4.hi - g_485ad4.lo);
+            real depth_value = (depth_scale * depth_x - g_485ad4.lo * depth_scale) / depth_x * 16777215.0f;
+            if (0.0f > depth_value) depth_value = 0.0f;
+            else if (depth_value > 16777215.0f) depth_value = 16777215.0f;
+            out[2] = depth_value;
+            real depth_weight = depth_x / g_485ad4.hi;
+            depth_weight = depth_weight * 16777215.0f;
+            if (0.0f > depth_weight) depth_weight = 0.0f;
+            else if (depth_weight > 16777215.0f) depth_weight = 16777215.0f;
+            out[3] = depth_weight;
+        }
         return true;
     case 1:
         {
