@@ -330,7 +330,7 @@ bool __stdcall function_4de20(long tag, long context, long pass, long stage, lon
 	s_geometry_block_info *block = (s_geometry_block_info *)(*(byte **)(table + 0x14) + *(short *)(record + 6) * 0x2c);
 	if (function_12de70((s_geometry_block_info *)(definition + 0x38), 3) && function_12de70(block, 3))
 	{
-		byte index = out->unknown04;
+		dword index = out->unknown04;
 		out->group = 1;
 		out->subkey = 0xffff;
 		out->value0c = handle;
@@ -338,7 +338,10 @@ bool __stdcall function_4de20(long tag, long context, long pass, long stage, lon
 		out->value10 = (dword)material;
 		out->value08 = 1;
 		out->unknown14 = 0;
-		{ final_value = function_4cbb0(*(long *)(material + 0x100), 1) != 0; goto complete; }
+		union { long value; bool ready; } availability;
+		availability.value = function_4cbb0(*(long *)((byte *)out->value10 + 0x100), 1);
+		final_value = availability.ready;
+		goto complete;
 	}
 	{ final_value = false; goto complete; }
 complete:
