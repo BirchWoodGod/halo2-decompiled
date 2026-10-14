@@ -11,8 +11,7 @@
 #include <string.h>
 #include <math.h>
 
-extern long g_4e7414;
-extern bool g_4e7411;
+#include "cluster_marks_storage.h"
 short __stdcall function_14a5b0(short cluster_index, point3f const *point, real radius, short maximum_count, short *clusters);
 
 struct s_decal_cluster_17e490
