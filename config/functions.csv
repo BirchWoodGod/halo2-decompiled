@@ -9199,7 +9199,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0025b120,799,game,speed,a16 pad,,,001fb7e0 0025af70 0025b440 0025d690 002675b0 00267680 0026b7a0,src/unknown_25d690.cpp,matched
 0025b440,473,game,speed,a16 pad,,,001a8220 001e4500 0025d020 0025d690 0026c2d0,src/unknown_25d690.cpp,todo
 0025b620,135,game,speed,a16 pad,,,001fb7e0,src/unknown_25d690.cpp,matched
-0025b6b0,593,game,speed,a16 pad,,,00030bf0 000b9dd0 000badc0 000baf80 001df560 001fa7f0 0020ba60 0025d020 0025d690 0025d740 0025d810 0026d0e0,src/unknown_25d690.cpp,todo
+0025b6b0,593,game,speed,a16 pad,,,00030bf0 000b9dd0 000badc0 000baf80 001df560 001fa7f0 0020ba60 0025d020 0025d690 0025d740 0025d810 0026d0e0,src/unknown_25d690.cpp,matched
 0025b910,212,game,speed,a16 pad,,,000259a0 001e4a50 0020ba60,src/unknown_25d690.cpp,matched
 0025b9f0,417,game,speed,a16 pad,,,0025ace0,src/unknown_25d690.cpp,matched
 0025bba0,115,game,speed,a16 pad,,,,src/unknown_25d690.cpp,matched
