@@ -51,8 +51,6 @@ bool __stdcall function_1b5700(long actor_index, s_slot *slot)
 	{
 		actor->unknown344 = state->unknown10;
 		type = state->unknown14;
-		if (type == NONE)
-			type = 0x3d;
 	}
 	else
 	{
@@ -60,6 +58,8 @@ bool __stdcall function_1b5700(long actor_index, s_slot *slot)
 		state->unknown10 = actor->prop_index;
 		type = 0x3d;
 	}
+	if (type == NONE)
+		type = 0x3d;
 	if (actor->unknown344 != NONE)
 		function_1fb7e0(type, actor_index, NULL, prop_node_get(actor->unknown344)->object_index, NONE);
 	return true;
