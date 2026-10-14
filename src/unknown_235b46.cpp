@@ -12,7 +12,7 @@ long function_147f4f();
 long function_18a5a0(long tag_index, long object_index, real value);
 word *function_18a5e0(long datum_index);
 long map_location_progress_get(char const *map_name);
-long function_122db0(long mode, char const *map_name);
+long function_122db0(char const *map_name, long mode);
 
 /* the user interface globals' music */
 struct s_user_interface_globals_music
@@ -159,7 +159,7 @@ void main_menu_music_check_campaign(s_main_menu_music *music)
 	case 1:
 	{
 		long volatile limit = function_235ca9();
-		if (function_122db0(0, map_name) <= limit)
+		if (function_122db0(map_name, 0) <= limit)
 		{
 			music->enabled = 0;
 		}
