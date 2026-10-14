@@ -170,7 +170,8 @@ bool function_1bd610(s_1bd610 *arg_0, long arg_1, s_1bd611 *arg_2)
             local_5.k = 0.0f;
             if (function_30bf0(&local_5) == 0.0f)
             {
-                local_5.i = local_4->j * local_1->forward.k - local_1->forward.j * local_4->k;
+                real const *forward_j = &local_1->forward.j;
+                local_5.i = local_4->j * local_1->forward.k - *forward_j * local_4->k;
                 local_5.j = local_1->forward.i * local_4->k - local_1->forward.k * local_4->i;
                 local_5.k = local_1->forward.j * local_4->i - local_1->forward.i * local_4->j;
             }

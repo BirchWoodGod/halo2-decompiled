@@ -184,6 +184,26 @@ local_9:
 	return (short)result;
 }
 
+struct s_actor_iterator_257870
+{
+	long index;
+	long next;
+};
+
+static __forceinline s_actor_view *actor_iterator_next_257870(s_actor_iterator_257870 *iterator)
+{
+	s_actor_view *result = NULL;
+	long index = iterator->next;
+
+	if (index != NONE)
+	{
+		result = actor_get(index);
+		iterator->index = index;
+		iterator->next = result->next_index;
+	}
+	return result;
+}
+
 // @retail 0x257870
 long __stdcall function_257870(long actor_index, s_slot *slot)
 {
@@ -197,25 +217,23 @@ long __stdcall function_257870(long actor_index, s_slot *slot)
 			s_502420_element *clump = element_502420_get(actor->unknown07c);
 			real best_distance = 3.4028235e38f;
 			long best_index = NONE;
-			long index = clump->first_actor_index;
+			s_actor_iterator_257870 iterator;
+			s_actor_view *other;
 
-			while (index != NONE)
+			iterator.next = clump->first_actor_index;
+			while ((other = actor_iterator_next_257870(&iterator)) != NULL)
 			{
-				s_actor_view *other = actor_get(index);
-				long other_index = index;
-
-				index = other->next_index;
 				if (other != actor && other->unknown004 == 0)
 				{
 					vector3f delta;
 					real distance;
 
 					vector3d_from_points3d(&actor->position, &other->position, &delta);
-					distance = (real)sqrt(length_sq3f(&delta));
+					distance = (real)sqrt(delta.j * delta.j + delta.i * delta.i + delta.k * delta.k);
 					if (distance < 1.f && distance < best_distance)
 					{
 						best_distance = distance;
-						best_index = other_index;
+						best_index = iterator.index;
 					}
 				}
 			}
@@ -236,9 +254,8 @@ long __stdcall function_257870(long actor_index, s_slot *slot)
 					joint->target.unknown0 = actor_index;
 					((s_clump_7f_view *)clump)->time = g_510c54->game_time;
 				}
-				return joint_index;
+				result = joint_index;
 			}
-			return NONE;
 		}
 	}
 	else if (actor->unknown004 == 0)
@@ -252,10 +269,10 @@ long __stdcall function_257870(long actor_index, s_slot *slot)
 		{
 			if (function_26ecc0(actor_index, iterator.reference.unknown0, (s_joint_behavior_state *)slot))
 			{
-				return entry->unknown4;
+				result = entry->unknown4;
+				break;
 			}
 		}
-		return NONE;
 	}
 	return result;
 }

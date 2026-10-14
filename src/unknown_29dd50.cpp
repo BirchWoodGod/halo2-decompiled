@@ -117,35 +117,31 @@ bool __stdcall function_29df30(point3f const *arg_0, long arg_1, s_reference arg
     bool local_0 = false;
     (void)&local_0;
     short local_1 = arg_2.unknown2;
-    if (!(local_1 & 0x8000))
+    if (local_1 & 0x8000)
+        return local_0;
+    s_262b40_result *local_2 = function_262b40(arg_2);
+    if (!local_2 || local_1 < 0)
+        return local_0;
+    s_29df33 *local_3 = (s_29df33 *)g_4e0350;
+    if (local_1 >= local_3->field_168)
+        return local_0;
+    short local_10 = local_2->unknown10;
+    s_29df32 *local_4 = &local_3->field_16c[(word)local_1];
+    if (local_10 < 0 || local_10 >= local_4->field_30)
+        return local_0;
+    s_29df31 *local_5 = &local_4->field_34[local_10];
+    dword local_6[2] = {0, 0};
+    dword volatile *local_9 = local_6;
+    for (short local_7 = 0; local_7 < local_5->field_80; ++local_7)
     {
-        s_262b40_result *local_2 = function_262b40(arg_2);
-        if (local_2 && local_1 >= 0)
+        long local_8 = local_5->field_84[local_7].field_0;
+        if (!(local_6[local_8 >> 5] & (1 << (local_8 & 31))))
         {
-            s_29df33 *local_3 = (s_29df33 *)g_4e0350;
-            if (local_1 < local_3->field_168)
+            local_9[local_8 >> 5] |= 1 << (local_8 & 31);
+            if (function_29de90(local_8, arg_0, arg_1, arg_3))
             {
-                short local_10 = local_2->unknown10;
-                s_29df32 *local_4 = &local_3->field_16c[(word)local_1];
-                if (local_10 >= 0 && local_10 < local_4->field_30)
-                {
-                    s_29df31 *local_5 = &local_4->field_34[local_10];
-                    dword local_6[2] = {0, 0};
-                    dword volatile *local_9 = local_6;
-                    for (short local_7 = 0; local_7 < local_5->field_80; ++local_7)
-                    {
-                        long local_8 = local_5->field_84[local_7].field_0;
-                        if (!(local_6[local_8 >> 5] & (1 << (local_8 & 31))))
-                        {
-                            local_9[local_8 >> 5] |= 1 << (local_8 & 31);
-                            if (function_29de90(local_8, arg_0, arg_1, arg_3))
-                            {
-                                local_0 = true;
-                                break;
-                            }
-                        }
-                    }
-                }
+                local_0 = true;
+                break;
             }
         }
     }
