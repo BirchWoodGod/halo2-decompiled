@@ -94,7 +94,8 @@ struct s_system_link_globals
 	byte unknown01[7];
 	s_session_id session_id;
 };
-s_system_link_globals g_4d8eb4;
+#include "system_link_globals.h"
+s_network_link_globals g_4d8ea8;
 
 /* a broadcast query about a session: identifier 2, then the session */
 struct s_network_message_session_query

@@ -977,14 +977,16 @@ bool s_animation_state::initialize(long graph_tag_index, long model_tag_index, b
 		unknown74 = NONE;
 		unknown78 = NONE;
 		this->graph_tag_index = graph_tag_index;
-		channels[0].clear();
-		channels[1].clear();
-		channels[2].clear();
+		for (long i = 0; i < 3; i++)
+		{
+			channels[i].clear();
+		}
 		animation_set(0x7000001, 0x7000001, 0x7000001, 0x7000001, 0x317, 0x3f);
-		unknown64.unknown1 = 0;
-		unknown64.unknown0 = 0;
-		unknown64.unknown3 = 0;
-		unknown64.unknown2 = 1;
+		s_animation_bits *bits = &unknown64;
+		bits->unknown1 = 0;
+		bits->unknown0 = 0;
+		bits->unknown3 = 0;
+		bits->unknown2 = 1;
 		unknown60.unknown1 = 0;
 		unknown60.unknown0 = 0;
 		unknown60.unknown3 = 0;
