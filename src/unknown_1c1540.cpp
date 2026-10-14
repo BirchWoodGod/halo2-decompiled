@@ -123,6 +123,19 @@ short __stdcall function_1c1670(long actor_index, s_slot *slot, bool active)
 	return result;
 }
 
+/* steps a prop index along its list (0x1c1730) */
+static inline s_prop_node_view *prop_next_1c1730(long *prop_index)
+{
+	s_prop_node_view *prop = 0;
+
+	if (*prop_index != NONE)
+	{
+		prop = prop_node_get(*prop_index);
+		*prop_index = prop->next_index;
+	}
+	return prop;
+}
+
 // @retail 0x1c1730
 bool __stdcall function_1c1730(long actor_index, s_slot *slot)
 {
@@ -152,11 +165,11 @@ bool __stdcall function_1c1730(long actor_index, s_slot *slot)
 
 			memset(&search, 0, sizeof(search));
 			search.type = 0;
-			for (prop_index = actor_get(actor_index)->first_prop_index; prop_index != NONE && search.point_count < 32; )
-			{
-				s_prop_node_view *prop = prop_node_get(prop_index);
+			s_prop_node_view *prop;
 
-				prop_index = prop->next_index;
+			prop_index = actor_get(actor_index)->first_prop_index;
+			while ((prop = prop_next_1c1730(&prop_index)) != 0 && search.point_count < 32)
+			{
 				if (prop->type == 1)
 				{
 					s_prop_state_point_15 *s_type_5cfb45 = (s_prop_state_point_15 *)prop_node_state(prop);
