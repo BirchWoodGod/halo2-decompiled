@@ -341,7 +341,7 @@ s_scenery_type_definition g_467ff0 =
 	function_10a390
 };
 
-bool function_10a660(long volatile object_index, long animation_name, short frame, long attached_object_index, bool volatile interpolate, bool loop, long animation_graph_index);
+bool function_10a660(long object_index, long animation_name, short frame, long attached_object_index, bool interpolate, bool loop, long animation_graph_index);
 
 /* starts a scenery's default looping animation; flag 0 says it plays */
 // @retail 0x10a3f0

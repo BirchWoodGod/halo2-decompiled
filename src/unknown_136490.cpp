@@ -444,6 +444,7 @@ union s_136141
 // @retail 0x136140
 dword __fastcall function_136140(long arg_1, long arg_2, s_136141 arg_3, long size, void const *pixels, short x, short height, short format, word flags)
 {
+	void const *const *pixels_reference = &pixels;
 	void const *base = arg_3.field_0;
 	short y = (short)arg_1;
 	short width = (short)arg_2;
@@ -455,7 +456,7 @@ dword __fastcall function_136140(long arg_1, long arg_2, s_136141 arg_3, long si
 		if (format != NONE)
 			bits = g_453550[format];
 		short block_bytes = (short)((short)bits * 16 / 8);
-		byte const *block = (byte const *)pixels + ((short)(y / 4) * width / 4 + (short)(x / 4)) * block_bytes;
+		byte const *block = (byte const *)*pixels_reference + ((short)(y / 4) * width / 4 + (short)(x / 4)) * block_bytes;
 		x &= 3;
 		y &= 3;
 		if (block < base || block >= (byte const *)base + size)

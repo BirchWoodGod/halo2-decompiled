@@ -13,8 +13,8 @@ bool function_216da0(wchar_t *name, long type, wchar_t const *display_name, long
 
 struct s_saved_game_drive
 {
-	byte utility_drive : 1;
-	byte unused : 7;
+	word utility_drive : 1;
+	word unused : 15;
 };
 
 extern s_saved_game_drive g_4e61c0;
@@ -29,7 +29,8 @@ bool __stdcall function_215f40(long type, byte *buffer)
 	(void)&buffer;
 	word *name = (word *)buffer;
 	name[0] = 0;
-	if (TEST_FIELD_BIT(g_4e61c0.utility_drive))
+	s_saved_game_drive drive = g_4e61c0;
+	if (TEST_FIELD_BIT(drive.utility_drive))
 	{
 		char root[8] = "";
 		char path[256] = "";
@@ -124,7 +125,7 @@ extern long g_55c158;
 word const *g_470054 = L": ";
 long function_216bd0(long type);
 bool unicode_string_list_has_string(long tag_index, long string_handle);
-void function_217a80(long language, long string_handle_2, word *buffer);
+void function_217a80(long string_handle_2, long language, word *buffer);
 word *unicode_string_append(word *destination, word const *source, long maximum_count);
 
 // @retail 0x216da0
@@ -140,7 +141,7 @@ bool function_216da0(wchar_t *name, long type, wchar_t const *display_name, long
 		long string_handle = function_216bd0(type);
 		if (unicode_string_list_has_string(g_55c158, string_handle))
 		{
-			function_217a80(language, string_handle, text);
+			function_217a80(string_handle, language, text);
 			wcsncpy(name, text, 127);
 			name[127] = 0;
 			unicode_string_append(name, g_470054, 128);
@@ -172,7 +173,7 @@ void __stdcall function_216e50(word const *display_name, long type, char *langua
 		long current_language = (first_language + i) % 9;
 		word prefix[256];
 		prefix[0] = 0;
-		function_217a80(current_language, string_handle, prefix);
+		function_217a80(string_handle, current_language, prefix);
 		unicode_string_append(prefix, g_470054, 256);
 		prefix[255] = 0;
 		long length = function_217b70(prefix);
