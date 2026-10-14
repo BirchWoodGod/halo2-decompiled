@@ -507,7 +507,9 @@ void __stdcall function_23cbb0(void *state, void *input, s_observer_command *out
     if (camera.camera)
     {
         byte *unit = (byte *)((s_camera_object_header_view *)g_4e0300->data)[camera.unit_index & 0xffff].object;
-        bool constrained = (*(dword *)(unit + 0x148) & 3) != 0;
+        bool constrained;
+        if (*(dword *)(unit + 0x148) & 3) constrained = true;
+        else constrained = false;
         if (constrained != values->constrained)
         {
             *((byte *)output + 0x8d) = 1;
@@ -515,10 +517,8 @@ void __stdcall function_23cbb0(void *state, void *input, s_observer_command *out
             *timer = 0.5f > *timer ? 0.5f : *timer;
             values->constrained = constrained;
         }
-        bool alternate = false;
         byte *object = (byte *)function_badc0(camera.unit_index, 3);
-        if (object)
-            alternate = (bool)((*(dword *)(object + 0x134) >> 17) & 1);
+        bool alternate = object && (bool)((*(dword *)(object + 0x134) >> 17) & 1);
         if (alternate != values->alternate)
         {
             command->timer = 0.5f > command->timer ? 0.5f : command->timer;

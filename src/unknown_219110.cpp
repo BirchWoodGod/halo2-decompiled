@@ -157,7 +157,7 @@ void function_2192b0(s_animation_state *state, s_animation_ref *ref, byte value)
 }
 
 // @retail 0x219310
-void function_219310(s_animation_state *state, s_animation_ref *ref, byte value)
+void function_219310(s_animation_state *state, s_animation_ref *ref, short value)
 {
 	if (!(TEST_FIELD_BIT(get_animation_entry(ref)->flag5)))
 	{
