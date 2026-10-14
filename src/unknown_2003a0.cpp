@@ -1583,7 +1583,7 @@ extern s_reference g_471004;
 point3f *function_b9dd0(long object_index, point3f *point);
 void __stdcall function_2628f0(long actor_index, s_reference reference);
 
-PRIVATE inline byte *squad_area_get(short palette_index, short area_index)
+PRIVATE __forceinline byte *squad_area_get(short palette_index, short area_index)
 {
     byte *scenario = (byte *)g_4e0350;
     if (palette_index >= 0 && palette_index < *(long *)(scenario + 0x168))
@@ -1595,7 +1595,7 @@ PRIVATE inline byte *squad_area_get(short palette_index, short area_index)
     return NULL;
 }
 
-PRIVATE inline void squad_area_consider(byte *squad, byte const *definition, byte *area,
+PRIVATE __forceinline void squad_area_consider(byte *squad, byte const *definition, byte *area,
     short palette_index, short area_index, point3f const *point, real *nearest, s_reference *best)
 {
     real distance = function_210ac0((s_type_c3b527 const *)(area + 0x24), point);
