@@ -1005,7 +1005,9 @@ c_type_709360 s_graph_tag::animation_find(long mode, long weapon_class, long wea
 		long iterator_weapon_type = NONE;
 		s_graph_weapon_type *weapon_type_entry;
 
-		iterator.weapon_type = weapon_type;
+		long const *weapon_type_argument = &weapon_type;
+
+		iterator.weapon_type = *weapon_type_argument;
 		iterator.step = 0;
 		iterator.mode_entry = NULL;
 		iterator.class_entry = NULL;
@@ -1014,9 +1016,14 @@ c_type_709360 s_graph_tag::animation_find(long mode, long weapon_class, long wea
 		iterator.graph = this;
 		weapon_type_entry = graph_weapon_type_iterate(&iterator, &iterator_mode, &iterator_weapon_class,
 			&iterator_weapon_type);
-		while (weapon_type_entry)
+		for (;;)
 		{
 			c_type_709360 animation_id;
+
+			if (!weapon_type_entry)
+			{
+				break;
+			}
 			s_graph_set_entry *set_entry = (s_graph_set_entry *)function_1dd560(
 				(s_sorted_array *)&weapon_type_entry->set_count, set, 0xc);
 
