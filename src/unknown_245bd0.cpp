@@ -711,12 +711,12 @@ PRIVATE __forceinline vector3f *function_2477b1(
 	local_1 += arg_1->up.i * arg_0->k;
 	local_1 += arg_1->forward.i * arg_0->i;
 	arg_2->i = local_1;
-	real local_2 = arg_1->forward.j * arg_0->i;
-	local_2 += arg_1->left.j * arg_0->j;
+	real local_2 = arg_1->left.j * arg_0->j;
+	local_2 += arg_1->forward.j * arg_0->i;
 	local_2 += arg_1->up.j * arg_0->k;
 	arg_2->j = local_2;
-	real local_3 = arg_1->forward.k * arg_0->i;
-	local_3 += arg_1->left.k * arg_0->j;
+	real local_3 = arg_1->left.k * arg_0->j;
+	local_3 += arg_1->forward.k * arg_0->i;
 	local_3 += arg_1->up.k * arg_0->k;
 	arg_2->k = local_3;
 	return arg_2;

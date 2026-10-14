@@ -17,11 +17,11 @@ enum
 
 #define SWAP_ELEMENTS(element_a, element_b, element_size, swap_dwords) \
 { \
-	char *a = (element_a); \
-	char *b = (element_b); \
 	if (swap_dwords) \
 	{ \
 		int n = (element_size) >> 2; \
+		char *a = (element_a); \
+		char *b = (element_b); \
 		do \
 		{ \
 			long t = *(long *)b; \
@@ -36,6 +36,8 @@ enum
 	else \
 	{ \
 		int n = (element_size); \
+		char *a = (element_a); \
+		char *b = (element_b); \
 		do \
 		{ \
 			char t = *b; \
@@ -54,9 +56,8 @@ void function_13dcd0(char *lo, char *hi, unsigned int element_size, bool swap_dw
 // @retail 0x13da70
 void function_13da70(void *elements, unsigned long count, unsigned long element_size, t_compare_function compare, const void *context)
 {
-	struct { char *field_0; char *field_4; char *field_8[k_sort_stack_size]; char *field_80[k_sort_stack_size]; } local_1;
-	char **lo_stack = local_1.field_8;
-	char **hi_stack = local_1.field_80;
+	char *lo_stack[k_sort_stack_size];
+	char *hi_stack[k_sort_stack_size];
 	long stack_index;
 
 	if (count < 2 || element_size == 0)
@@ -68,8 +69,6 @@ void function_13da70(void *elements, unsigned long count, unsigned long element_
 	bool swap_dwords = !(element_size & 3) && !((long)elements & 3);
 	char *lo = (char *)elements;
 	char *hi = (char *)elements + (count - 1) * element_size;
-	char *volatile *local_2 = &local_1.field_0;
-	*local_2 = lo;
 
 recurse:
 	unsigned long size = (unsigned long)(hi - lo) / element_size + 1;
