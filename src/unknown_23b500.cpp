@@ -69,11 +69,11 @@ void function_23aea0()
 	g_5022f0 = g_4709f0;
 	globals->value4 = *(real *)(definition + 0x154);
 	globals->value0 = *(real *)(definition + 0x150);
-	for (long i = 2; i < 14; i += 6)
+	for (long i = 0; i < 2; i++)
 	{
 		for (long j = 0; j < 6; j++)
 		{
-			long type = i + j;
+			long type = i * 6 + j + 2;
 			g_502258[type * 3 - 4] = *(dword *)(definition + 0x148 + type * 0x1c);
 			g_502258[type * 3 - 3] = *(dword *)(definition + 0x14c + type * 0x1c);
 			g_502258[type * 3 - 2] = *(dword *)(definition + 0x150 + type * 0x1c);
@@ -221,22 +221,24 @@ struct s_spawn_globals_tag_view
 void function_23b3f0(s_spawn_settings_view *settings, real *distance20, real *distance1c)
 {
 	s_spawn_scenario_view *scenario = (s_spawn_scenario_view *)g_4e0350;
-	s_spawn_tag_header_view *header = (s_spawn_tag_header_view *)g_4e034c;
-	s_tag_instance *tags = g_4e3b44;
 
 	if (settings->distance1c == 0.0f)
 	{
-		s_spawn_globals_tag_view *tag = (s_spawn_globals_tag_view *)tags[header->globals_index & 0xffff].flags;
+		long globals_index = ((s_spawn_tag_header_view *)g_4e034c)->globals_index;
+		s_spawn_globals_tag_view *tag = (s_spawn_globals_tag_view *)g_4e3b44[globals_index & 0xffff].flags;
 		long scenario_count = scenario->spawn_data_count;
 		byte *globals = tag->data;
 
-		if (scenario_count <= 0 || scenario->spawn_data[0] == 0.0f)
+		if (scenario_count > 0)
 		{
-			*distance1c = (real)fabs(*(real *)(globals + 0x154));
+			if (scenario->spawn_data[0] == 0.0f)
+				*distance1c = (real)fabs(*(real *)(globals + 0x154));
+			else
+				*distance1c = (real)fabs(scenario->spawn_data[0]);
 		}
 		else
 		{
-			*distance1c = (real)fabs(scenario->spawn_data[0]);
+			*distance1c = (real)fabs(*(real *)(globals + 0x154));
 		}
 	}
 	else
@@ -245,7 +247,8 @@ void function_23b3f0(s_spawn_settings_view *settings, real *distance20, real *di
 	}
 	if (settings->distance20 == 0.0f)
 	{
-		s_spawn_globals_tag_view *tag = (s_spawn_globals_tag_view *)tags[header->globals_index & 0xffff].flags;
+		long globals_index = ((s_spawn_tag_header_view *)g_4e034c)->globals_index;
+		s_spawn_globals_tag_view *tag = (s_spawn_globals_tag_view *)g_4e3b44[globals_index & 0xffff].flags;
 		long scenario_count = scenario->spawn_data_count;
 		byte *globals = tag->data;
 
@@ -460,13 +463,24 @@ struct s_spawn_engine_globals_view
 	s_spawn_player_state_view players[16];
 };
 
+/* the engine's test of two teams (false without an engine) */
+static inline bool spawn_teams_test_23b8e0(short team, short other_team)
+{
+	bool result = false;
+	c_engine_peer *engine = game_engine_get();
+
+	if (engine)
+	{
+		result = engine->p27(team, other_team);
+	}
+	return result;
+}
+
 /* adds the other players' influences: a living one as a friend or a foe, a
    dead one where it died */
 // @retail 0x23b8e0
 void function_23b8e0(long player_index, s_spawn_influence_list *list)
 {
-    /* Retail passes this parameter on the stack. */
-    long const volatile *player_reference = &player_index;
 	s_spawn_player_view *player = &((s_spawn_player_view *)g_4e8c24->data)[player_index & 0xffff];
 	s_spawn_player_iterator iterator;
 
@@ -479,21 +493,25 @@ void function_23b8e0(long player_index, s_spawn_influence_list *list)
 		long index = iterator.index;
 		long unit_index = other->unit_index;
 
-		if (unit_index != NONE && index != *player_reference)
+		if (unit_index != NONE && index != player_index)
 		{
 			s_spawn_unit_view *unit = ((s_spawn_object_header_view *)g_4e0300->data)[unit_index & 0xffff].object;
 
 			if (!TEST_FIELD_BIT(unit->dead))
 			{
-				long influence = other->team == player->team ? 1 : 0;
-				function_23ba10(influence, list, &unit->position);
+				if (other->team == player->team)
+				{
+					function_23ba10(1, list, &unit->position);
+				}
+				else
+				{
+					function_23ba10(0, list, &unit->position);
+				}
 			}
 		}
 		else
 		{
-			c_engine_peer *engine = game_engine_get();
-
-			if (!engine || !function_x340af0() || !engine->p27(player->team, other->team))
+			if (!game_engine_get() || !function_x340af0() || !spawn_teams_test_23b8e0(player->team, other->team))
 			{
 				s_spawn_player_state_view *state = &((s_spawn_engine_globals_view *)g_4e9ae8)->players[index & 0xffff];
 

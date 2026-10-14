@@ -47,6 +47,16 @@ void function_080de0(s_player_status_values *values, s_player_status_source cons
 void function_2b01a2(long value, s_widget_item *item);
 void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
 
+/* the screen's 0x40-byte records the loop matches by identifier: the
+   identifier first, a flag byte at 0x1d */
+struct s_blocked_record_2b3a9d
+{
+	XUID xuid;
+	byte unknown0c[0x1d - sizeof(XUID)];
+	byte flags;
+	byte unknown1e[0x40 - 0x1e];
+};
+
 // @retail 0x2b3a9d
 void c_y_menu_recent_players_list::v20(c_class_1a2c81 *item, long index)
 {
@@ -101,10 +111,14 @@ void c_y_menu_recent_players_list::v20(c_class_1a2c81 *item, long index)
         }
         byte *screen = (byte *)parent->parent->parent;
         long count = *(long *)(screen + 0x55a8);
-        byte *record = screen + 0x3668;
-        for (long i = 0; i < count; ++i, record += 0x40)
+        s_blocked_record_2b3a9d *records = (s_blocked_record_2b3a9d *)(screen + 0x3668);
+        for (long i = 0; i < count; ++i)
         {
-            if (xuid_equal(xuid, record ? (XUID const *)record : 0, false) && (record[0x1d] & 8))
+            s_blocked_record_2b3a9d *record = &records[i];
+            XUID const *other = 0;
+            if (record)
+                other = &record->xuid;
+            if (xuid_equal(xuid, other, false) && (record->flags & 8))
             {
                 blocked = true;
                 break;
@@ -181,11 +195,11 @@ void c_y_menu_recent_players_list::v20(c_class_1a2c81 *item, long index)
             dword values[4];
             function_080de0((s_player_status_values *)values, (s_player_status_source const *)xuid);
             function_2b01a2(*(signed char *)((byte *)datum + 0x5a), &layout);
+            word *name_text = (word *)((byte *)datum + 0x10);
             memcpy(layout.value48, values, sizeof(values));
             layout.flags |= 2;
-            word *name_text = (word *)((byte *)datum + 0x10);
-            layout.flags |= 1;
             layout.value4 = (long)name_text;
+            layout.flags |= 1;
         }
         else
         {
