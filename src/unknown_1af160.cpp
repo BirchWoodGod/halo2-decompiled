@@ -12,8 +12,8 @@ struct s_1f4a20_entry;
 struct s_1f4a20_source;
 void *function_1e4be0(long arg_0);
 bool __stdcall function_1ac610(long arg_0, point3f const *arg_1, s_object_marker *arg_2, short *arg_3);
-bool function_1f4a20(long arg_0, s_reference arg_1, s_1f4a20_entry const *arg_2,
-    bool arg_3, s_type_c3b527 *arg_4, vector3f *arg_5, signed char *arg_6, bool *arg_7, s_1f4a20_source const *arg_8);
+bool function_1f4a20(s_1f4a20_entry const *arg_2, long arg_0, s_reference arg_1, s_1f4a20_source const *arg_8,
+    bool arg_3, s_type_c3b527 *arg_4, vector3f *arg_5, signed char *arg_6, bool *arg_7);
 bool function_1af530(long arg_0, long *arg_1, long *arg_2);
 void function_265c30(long arg_0, long arg_1, bool arg_2);
 
@@ -72,8 +72,8 @@ bool function_1af160(long arg_0, s_1af160 *arg_1)
     if (*(short *)((byte *)&local_12 + 0x5c) != 0 &&
         *(long *)((byte *)local_16 + 0x14) != NONE && *(long *)((byte *)local_16 + 0x14) != 0xffff)
     {
-        local_18 = function_1f4a20(arg_0, local_15, (s_1f4a20_entry const *)&local_12,
-            true, &arg_1->field_c, &arg_1->field_1c, &arg_1->field_28, &local_17, (s_1f4a20_source const *)local_10);
+        local_18 = function_1f4a20((s_1f4a20_entry const *)&local_12, arg_0, local_15, (s_1f4a20_source const *)local_10,
+            true, &arg_1->field_c, &arg_1->field_1c, &arg_1->field_28, &local_17);
         if (local_18)
         {
             arg_1->field_a = true;
