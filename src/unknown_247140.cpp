@@ -213,8 +213,9 @@ public:
     virtual real function_248763() = 0;
 };
 
-PRIVATE __forceinline real function_248765(s_248751 const *arg_0)
+PRIVATE __forceinline real function_248765(byte const *arg_1)
 {
+    s_248751 const *arg_0 = *(s_248751 const *const *)(arg_1 + 4);
     real local_0;
     if (!(arg_0->field_1 >> 4))
         local_0 = arg_0->field_4;
@@ -223,8 +224,9 @@ PRIVATE __forceinline real function_248765(s_248751 const *arg_0)
     return local_0;
 }
 
-PRIVATE __forceinline real function_248766(s_248751 const *arg_0)
+PRIVATE __forceinline real function_248766(byte const *arg_1)
 {
+    s_248751 const *arg_0 = *(s_248751 const *const *)(arg_1 + 4);
     real local_0;
     if (!(arg_0->field_1 >> 4))
         local_0 = arg_0->field_8;
@@ -256,15 +258,13 @@ void c_248767::function_248750(s_particle_system_datum *arg_2, real arg_3, byte 
         if (local_2 < arg_0->unknown30)
         {
             s_247143 const *local_5 = &(*(s_247143 const **)arg_0->unknown34)[local_2];
-            s_248751 const *local_6 = *(s_248751 const **)((byte const *)local_5 + 0x54);
-            real local_8 = function_248765(local_6);
-            real local_9 = function_248766(local_6);
+            real local_8 = function_248765((byte const *)local_5 + 0x50);
+            real local_9 = function_248766((byte const *)local_5 + 0x50);
             real local_10 = local_8 > local_9 ? local_8 : local_9;
             if (local_10 > local_0)
                 local_0 = local_10;
         }
-        s_247143 const *local_16 = *(s_247143 const *const volatile *)arg_0->unknown34;
-        function_247140(&local_16[local_2], local_4, arg_2, arg_1, arg_0, arg_3, &local_1);
+        function_247140(&(*(s_247143 const **)arg_0->unknown34)[local_2], local_4, arg_2, arg_1, arg_0, arg_3, &local_1);
         local_3 = local_4->field_8;
         ++local_2;
     }

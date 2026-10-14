@@ -481,10 +481,7 @@ void function_b67c0()
     byte *state = (byte *)function_123d40(NULL, NULL, 0x84);
     g_4de2f0 = false;
     memset(state, 0, 0x84);
-    g_object_masks_storage.field_0 = false;
-    memset(g_object_masks_storage.unknown_1, 0, sizeof(g_object_masks_storage.unknown_1));
-    g_object_masks_storage.field_4 = 0;
-    memset(g_4de300, 0, sizeof(g_4de300));
+    memset(&g_object_masks_storage, 0, sizeof(g_object_masks_storage));
     g_4de2f4 = (s_object_list *)state;
     g_4de2d0 = (long *)function_123d40(NULL, NULL, 0xa00);
     s_cluster_partition colliding, noncolliding;
