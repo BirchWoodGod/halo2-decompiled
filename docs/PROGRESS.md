@@ -2,6 +2,18 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8517 functions match
+
+```
+matched 8517 of 11318 game functions (1105550 of 2784283 bytes, 39.71%)
+```
+
+9 new matches, none lost:
+- Machine 1 Opus lane round 20: `0x138110` and `0x10a660`
+- Machine 1 key lane 2 round 4: `0x20b450`, `0x217370` (with one struct global for the saved-game file lock) and `0xa58d0`
+- Machine 3 Codex lane J round 24 (#446): `0x90880` and `0x951c0`
+- Machine 3 Codex lane D lower round 27 (#447): `0x62fe0` and `0x6dc60`
+
 ## 2026-10-14: 8508 functions match
 
 ```
