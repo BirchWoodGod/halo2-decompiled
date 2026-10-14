@@ -478,13 +478,10 @@ void function_b67c0()
     function_bffa0();
     g_4e0300 = data_new("object", 0x800, 12, 0, g_510c2c);
     g_4de2ec = (s_data_header_40 *)game_state_loop_allocator_new(0x100000, "objects");
-    byte *state = (byte *)function_123d40(NULL, NULL, 0x84);
     g_4de2f0 = false;
+    byte *state = (byte *)function_123d40(NULL, NULL, 0x84);
     memset(state, 0, 0x84);
-    g_object_masks_storage.field_0 = false;
-    memset(g_object_masks_storage.unknown_1, 0, sizeof(g_object_masks_storage.unknown_1));
-    g_object_masks_storage.field_4 = 0;
-    memset(g_4de300, 0, sizeof(g_4de300));
+    memset(&g_object_masks_storage, 0, sizeof(g_object_masks_storage));
     g_4de2f4 = (s_object_list *)state;
     g_4de2d0 = (long *)function_123d40(NULL, NULL, 0xa00);
     s_cluster_partition colliding, noncolliding;

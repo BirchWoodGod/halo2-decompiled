@@ -496,7 +496,7 @@ bool game_variant_block_read(long index, s_game_variant_block *block)
 		if (function_136970(&file, 1, &error))
 		{
 			if (function_136bf0(&file, sizeof(g_551ae8) + index * sizeof(s_game_variant_block), true) &&
-				function_136ca0(&file, block, sizeof(*block), true))
+				function_136ca0(&file, sizeof(*block), block, true))
 			{
 				result = true;
 			}

@@ -284,9 +284,10 @@ void function_185630()
 	s_slot_entry_list *list = g_4e0340;
 	long count = 0;
 	bool used[8] = { false };
-	for (long i = 0; i < list->count; ++i)
+	struct { long i; long group_index; long j; } counters;  /* one stack block, as retail keeps them */
+	for (counters.i = 0; counters.i < list->count; ++counters.i)
 	{
-		s_slot_entry *entry = &list->entries[i];
+		s_slot_entry *entry = &list->entries[counters.i];
 		if ((entry->flags & 8) && slot_identifier(entry->slot, NONE) == NONE)
 		{
 			slot_assign(NONE, entry->slot, count, used);
@@ -294,16 +295,16 @@ void function_185630()
 		}
 	}
 	s_slot_groups_view *groups = (s_slot_groups_view *)globals;
-	for (long group_index = 0; group_index < groups->count; ++group_index)
+	for (counters.group_index = 0; counters.group_index < groups->count; ++counters.group_index)
 	{
-		s_slot_group *group = &groups->groups[group_index];
-		for (long i = 0; i < group->count; ++i)
+		s_slot_group *group = &groups->groups[counters.group_index];
+		for (counters.i = 0; counters.i < group->count; ++counters.i)
 		{
-			long owner = group->references[i];
+			long owner = group->references[counters.i];
 			s_slot_owner *definition = &globals->owners[globals->references[owner].owner_index];
-			for (long j = 0; j < definition->list.count; ++j)
+			for (counters.j = 0; counters.j < definition->list.count; ++counters.j)
 			{
-				s_slot_entry *entry = &definition->list.entries[j];
+				s_slot_entry *entry = &definition->list.entries[counters.j];
 				if ((entry->flags & 8) && slot_identifier(entry->slot, owner) == NONE)
 				{
 					slot_assign(owner, entry->slot, count, used);
@@ -315,7 +316,7 @@ void function_185630()
 	if (g_4e6948->mode == 4)
 	{
 		g_4ea95c = 0;
-		for (long i = 0; i < 8; ++i) g_4eca60[i] = NONE;
+		for (counters.i = 0; counters.i < 8; ++counters.i) g_4eca60[counters.i] = NONE;
 	}
 	g_4ea958 = count;
 }

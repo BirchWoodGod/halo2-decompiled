@@ -23,29 +23,16 @@ void function_203cc0(long squad_index);
 bool function_1e13f0(long actor_index);
 void function_203fb0(long actor_index);
 void function_203d70(long actor_index, short squad_index, bool keep_team);
-void function_295e60(long arg_0);
+void function_295e60(short arg_0);
 void function_210280();
 void function_292f10();
 
-PRIVATE __forceinline bool function_1c7bb1(s_data_datum_iterator *arg_0)
+PRIVATE __forceinline byte *function_1c7bb1(s_record_pool_iterator *arg_0)
 {
- arg_0->datum = NULL;
+ byte *result = NULL;
  if (g_4f55d0->active)
- {
-  long local_0 = function_16bc00(arg_0->data, arg_0->index + 1);
-  if (local_0 != NONE)
-  {
-   arg_0->datum = arg_0->data->data + arg_0->data->size * local_0;
-   arg_0->index = local_0;
-   arg_0->datum_index = (*(short *)arg_0->datum << 16) | local_0;
-  }
-  else
-  {
-   arg_0->index = arg_0->data->maximum_count;
-   arg_0->datum_index = NONE;
-  }
- }
- return arg_0->datum != NULL;
+  result = data_iterator_next_calling(arg_0);
+ return result;
 }
 
 // @retail 0x1c7bb0
@@ -53,11 +40,12 @@ void function_1c7bb0()
 {
  if (g_4f55d0->active)
  {
-  long local_0 = g_4686c4;
-  s_data_datum_iterator local_1;
+  short local_0 = g_4686c4;
+  s_record_pool_iterator local_1;
+  byte *datum;
   local_1.data = g_51e9d8;
   local_1.index = NONE;
-  while (function_1c7bb1(&local_1))
+  while ((datum = function_1c7bb1(&local_1)) != NULL)
   {
    long local_2 = local_1.datum_index & 0xffff;
    s_1c7bb0 *local_3 = &((s_1c7bb0 *)g_51e9d8->data)[local_2 & 0xffff];
@@ -90,7 +78,7 @@ void function_1c7bb0()
    }
    else
     local_3->field_7e = NONE;
-   if (((s_1c7bb0 *)local_1.datum)->field_2 < 0)
+   if (((s_1c7bb0 *)datum)->field_2 < 0)
    {
     ((s_1c7bb0 *)g_51e9d8->data)[local_2 & 0xffff].field_28 = 0;
     function_203cc0(local_2);

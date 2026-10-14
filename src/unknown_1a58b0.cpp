@@ -134,9 +134,7 @@ void function_1a6340(vector3f const *a, vector3f const *b, point3f *out, point3f
 	real ni = a->k * b->j - b->k * a->j;
 	real nj = b->k * a->i - b->i * a->k;
 	real nk = b->i * a->j - a->i * b->j;
-	real m = nj * nj;
-	m += nk * nk;
-	m += ni * ni;
+	real m = nj * nj + nk * nk + ni * ni;
 
 	if (m > 0.0f)
 	{
@@ -1603,8 +1601,8 @@ struct s_candidate_unit_definition
 };
 
 // @retail 0x1a5e40
-bool function_1a5e40(long object_index, long marker_index, s_target_marker const *marker,
-	transform4x3f const *first, transform4x3f const *second, bool alternate,
+bool function_1a5e40(long object_index, bool alternate, long marker_index, s_target_marker const *marker,
+	transform4x3f const *first, transform4x3f const *second,
 	point3f const *origin, vector3f const *direction, s_sort_candidate_view *candidate)
 {
 	s_candidate_object_view *object = (s_candidate_object_view *)OBJECT_HEADER(object_index)->object;
@@ -1751,7 +1749,7 @@ long function_1a5c00(s_sort_weight_view const *weights, long object_index, bool 
 	if (((1 << object->field_aa) & 3) &&
 		(bool)((function_1a5c01(object_index)->field_bc >> 19) & 1))
 		scale = ((s_candidate_scale_globals *)g_4e034c)->field_f4->field_8;
-	if (local_0 < 64 && function_1a5e40(object_index, NONE, NULL, NULL, NULL, alternate,
+	if (local_0 < 64 && function_1a5e40(object_index, alternate, NONE, NULL, NULL, NULL,
 		origin, direction, &candidates[local_0]) && function_1a60f0(&candidates[local_0], weights, scale))
 		local_0++;
 	long marker_tag = *(long *)(definition + 0x38);
@@ -1768,8 +1766,8 @@ long function_1a5c00(s_sort_weight_view const *weights, long object_index, bool 
 			if (marker_count != 0)
 			{
 				s_object_marker *second = marker_count == 2 ? &markers[1] : NULL;
-				if (local_1 < 64 && function_1a5e40(object_index, marker_index, marker,
-					&markers[0].matrix, second ? &second->matrix : NULL, alternate,
+				if (local_1 < 64 && function_1a5e40(object_index, alternate, marker_index, marker,
+					&markers[0].matrix, second ? &second->matrix : NULL,
 					origin, direction, candidate) &&
 					function_1a60f0(candidate, weights, marker->field_10 * scale))
 				{
@@ -2005,11 +2003,11 @@ bool function_1a6a80(s_object_marker_target const *target, point3f const *origin
 
 			if (function_1a5910(object_index, excluded_index, team, &has_hostile) && function_1a58b0(object_index))
 			{
-				if (function_1a5e40(object_index, marker_index,
+				if (function_1a5e40(object_index, has_hostile, marker_index,
 					marker_index != NONE ? definition : NULL,
 					marker_index != NONE ? &first : NULL,
 					marker_index != NONE && has_second ? &second : NULL,
-					has_hostile, origin, direction, candidate))
+					origin, direction, candidate))
 				{
 					if (!has_hostile)
 					{

@@ -533,14 +533,14 @@ long function_1af5c0(long arg_0, long arg_1, point3f const *arg_2, long arg_3)
 	s_1af5c6 local_9;
 	point3f &local_5 = local_9.field_10;
 
+	local_9.field_0 = NONE;
 	local_5 = *arg_2;
 
-	local_9.field_0 = NONE;
 	function_2640c0(local_19, (s_object_motion_view *)&local_7);
-	local_8 = local_1->object_index;
-	local_3 = &((s_1af5c2 *)g_4e0300->data)[local_8 & 0xffff];
-	if (local_3->field_3 == 0 && ((s_1af5c3 *)local_4)->field_14 != NONE)
-		local_8 = ((s_1af5c3 *)local_4)->field_14;
+	local_19 = local_1->object_index;
+	local_3 = &((s_1af5c2 *)g_4e0300->data)[local_19 & 0xffff];
+	if (local_3->field_3 != 0 || (local_8 = ((s_1af5c3 *)local_4)->field_14) == NONE)
+		local_8 = local_19;
 	local_8 = function_baf40(local_8);
 	if ((short)arg_3 == 0)
 	{
@@ -556,7 +556,7 @@ long function_1af5c0(long arg_0, long arg_1, point3f const *arg_2, long arg_3)
 		local_10 = local_9.field_0;
 	bool local_11 = local_0->unknown26c != NONE;
 	short local_15 = local_2->field_2c;
-	if ((short)local_10 != NONE && local_15 != NONE && !function_11c010(local_15, (short)local_10))
+	if ((short)local_10 != NONE && local_15 != NONE && !function_11c010((short)local_10, local_15))
 		return 4;
 	local_7.field_24 = NONE;
 	long local_12 = 0x15808c2f;

@@ -2,6 +2,65 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8592 functions match
+
+```
+matched 8592 of 11318 game functions (1132525 of 2784283 bytes, 40.68%)
+```
+
+6 new matches, none lost:
+- Machine 3's batch 20 (#461): `0x91620`, `0x91a00`, `0x91b30` and `0x12bbd0` match.
+- Machine 1's key lane 2 round 11: `0xbc820` matches, and so does machine 3's `0x1bbdf0`, through `0x1e0160` (86 to 15).
+- Machine 1's key lane 1 round 13: `0x209d50` 81 to 69, `0x8dd70` 57 to 55, `0x81780` 100 to 96.
+
+## 2026-10-14: 8586 functions match
+
+```
+matched 8586 of 11318 game functions (1131272 of 2784283 bytes, 40.63%)
+```
+
+4 new matches, none lost:
+- Machine 3's batch 19 (#460): `0x2411b0`, `0x241620` and `0x279740` match.
+- Machine 1's Opus lane round 24: `0x25d020` matches, in `src/actor_object_knowledge.cpp` (its file name sets where link-time code generation enters a call-graph cycle); `0x1d5ec0` from 437 to 22.
+
+## 2026-10-14: 8582 functions match
+
+```
+matched 8582 of 11318 game functions (1129424 of 2784283 bytes, 40.56%)
+```
+
+6 new matches, none lost:
+- Machine 1 Opus lane round 23: `0xc35a0`
+- Machine 3 batch 18 (#459): `0x1dc790`, `0x24a30e`, `0x4de20`, `0x1ce4f0` and `0x12a810`
+
+## 2026-10-14: 8576 functions match
+
+```
+matched 8576 of 11318 game functions (1126405 of 2784283 bytes, 40.46%)
+```
+
+8 new matches, none lost:
+- Machine 3 batch 17 (#458): `0x847d0`, `0x82240`, `0x1293f0`, `0x24de80`, `0x173ba0`, `0x2087e0`, `0x2b220` and `0x18f1c0`
+
+## 2026-10-14: 8568 functions match
+
+```
+matched 8568 of 11318 game functions (1123314 of 2784283 bytes, 40.34%)
+```
+
+7 new matches, none lost:
+- Machine 1 Opus lane round 22: `0x1cb0d0` and `0xc2c50`, and machine 3's `0x31590` that follows
+- Machine 1 key lanes, blockers handed over by machine 3: `0x22ae21`, `0x1dd0b0`, `0x1dcfa0` and `0x11d180`
+
+## 2026-10-14: 8561 functions match
+
+```
+matched 8561 of 11318 game functions (1121152 of 2784283 bytes, 40.27%)
+```
+
+3 new matches, none lost:
+- Machine 3 batch 16 (#457): `0x20f2d0`, `0x1d0400` and `0xac250`, with new bodies and closer versions
+
 ## 2026-10-14: 8558 functions match
 
 ```
