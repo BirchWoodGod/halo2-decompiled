@@ -8023,7 +8023,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0022d62b,42,game,size,packed,,,000649c0 0023620d,src/user_interface_text_parser.cpp,matched
 0022d655,39,game,size,packed,,,000649c0 0023620d,src/user_interface_text_parser.cpp,matched
 0022d67c,19,game,size,packed,,,0023620d,src/user_interface_text_parser.cpp,matched
-0022d68f,95,game,size,ebp packed,,,0008cc20 0018fc44,src/user_interface_text_parser.cpp,todo
+0022d68f,95,game,size,ebp packed,,,0008cc20 0018fc44,src/user_interface_text_parser.cpp,matched
 0022d6ee,66,game,size,ebp packed,,,0013fc90 0018ff47,src/user_interface_text_parser.cpp,matched
 0022d730,69,game,unknown,a16,,,0008cc20 001630e0 0019a8d0 0019a902,src/user_interface_text_parser.cpp,matched
 0022d775,44,game,size,packed,,,00059590 0008cc20 001630e0,src/user_interface_text_parser.cpp,matched
