@@ -579,30 +579,24 @@ const short g_445580[35] =
 // @retail 0x1e9720
 real function_1e9720(long kind, short team)
 {
-	short row = (short)kind;
-	short difficulty = 1;
-	switch (g_4e6948->state)
-	{
-	case 1:
+	short difficulty;
+	if (g_4e6948->state == 1)
 		difficulty = g_4e6948->difficulty;
-		if (team != NONE && team >= 0 && team < 16)
-		{
-			byte enemy = 1 - (byte)function_0bfe60(((s_allegiance_view *)g_4f55ec)->peace_bits, team + 16);
-			if (!enemy)
-			{
-				short alternate = g_445580[row];
-				if (alternate == NONE)
-					difficulty = 1;
-				else
-					row = alternate;
-			}
-		}
-		break;
-	case 2:
+	else
 		difficulty = 1;
-		break;
+	if (g_4e6948->state == 2)
+	{
+		difficulty = 1;
 	}
-	return function_1e96a0(difficulty, row);
+	else if (g_4e6948->state == 1 && !team_is_enemy(1, team))
+	{
+		short alternate = g_445580[(short)kind];
+		if (alternate == NONE)
+			difficulty = 1;
+		else
+			kind = alternate;
+	}
+	return function_1e96a0(difficulty, (short)kind);
 }
 
 void function_225910(long player_index);

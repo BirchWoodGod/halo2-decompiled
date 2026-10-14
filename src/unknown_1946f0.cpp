@@ -171,12 +171,8 @@ bool __fastcall function_195370(vector3f const *b, vector3f const *a, real lo, r
 	real magnitude_a = normalize3d(&direction_a);
 	bool short_b = lo > magnitude_b;
 	bool short_a = lo > magnitude_a;
-	bool near_b = false;
-	if (!short_b)
-		near_b = function_1952f0(magnitude_b, lo, lo, hi, bits);
-	bool near_a = false;
-	if (!short_a)
-		near_a = function_1952f0(magnitude_a, lo, lo, hi, bits);
+	bool near_b = !short_b && function_1952f0(magnitude_b, lo, lo, hi, bits);
+	bool near_a = !short_a && function_1952f0(magnitude_a, lo, lo, hi, bits);
 	if (short_b)
 	{
 		if (short_a)
@@ -189,7 +185,7 @@ bool __fastcall function_195370(vector3f const *b, vector3f const *a, real lo, r
 		if (!near_b)
 			return false;
 	}
-	if (!direction_b.quantized_equal(&direction_a))
-		return false;
-	return function_1952f0(magnitude_b, magnitude_a, lo, hi, bits);
+	if (direction_b.quantized_equal(&direction_a) && function_1952f0(magnitude_b, magnitude_a, lo, hi, bits))
+		return true;
+	return false;
 }

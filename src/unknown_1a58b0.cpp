@@ -1862,10 +1862,10 @@ long __stdcall function_1a54a0(s_sort_weight_view const *arg_0, short arg_1,
 		long local_7 = function_14a6d0(arg_1, local_6, arg_2, arg_3, local_3, local_5, 0x200, local_1, NULL);
 		long local_8 = function_bb430(1, local_7, local_1, 0x800, local_2);
 		s_record_pool_iterator local_9;
+		g_4de2f8 = true;
 		local_9.data = g_4e8c24;
 		local_9.datum_index = NONE;
 		local_9.index = NONE;
-		g_4de2f8 = true;
 		s_player_view *local_11;
 		while ((local_11 = (s_player_view *)data_iterator_next_calling(&local_9)) != 0)
 		{
