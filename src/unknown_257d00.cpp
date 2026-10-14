@@ -726,6 +726,8 @@ short function_209580(long thread_index); /* unknown_209520.cpp */
 /* runs the command script's thread for the actor, again while it ends in
    type 0x16: 0 when it is done, 1 while it sleeps, 2 while it waits, 3 when
    it has no thread */
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x258880
 short function_258880(long actor_index, long cs_index)
 {
@@ -733,13 +735,7 @@ short function_258880(long actor_index, long cs_index)
 	s_cs_datum *cs = cs_get(cs_index);
 	s_actor_cs_run_view *actor = actor_cs_run_get(actor_index);
 
-	if (cs->thread_index == NONE)
-	{
-		cs->state = 4;
-		result = 3;
-		goto local_9;
-	}
-	for (;;)
+	while (cs->thread_index != NONE)
 	{
 		if (cs->unknown44)
 		{
@@ -748,6 +744,7 @@ short function_258880(long actor_index, long cs_index)
 			goto local_9;
 		}
 		g_502428 = (actor_index & 0xffff) | 0x80000000;
+		_ReadWriteBarrier();
 		if (actor->unknown30 != NONE)
 		{
 			g_50242c = actor->unknown30 & 0xffff;
@@ -761,8 +758,10 @@ short function_258880(long actor_index, long cs_index)
 		cs->unknown28 = NONE;
 		cs->unknown2c = NONE;
 		g_502410 = cs_index;
+		_ReadWriteBarrier();
 		result = function_209580(cs->thread_index);
 		g_502428 = NONE;
+		_ReadWriteBarrier();
 		g_50240c = NONE;
 		g_502410 = NONE;
 		if (cs->unknown44)
@@ -773,38 +772,35 @@ short function_258880(long actor_index, long cs_index)
 		}
 		if (cs->type != 0x16)
 		{
-			break;
+			if (cs->type == 0x17)
+			{
+				cs->state = 2;
+				result = 0;
+			}
+			else if (result == 2)
+			{
+				cs->state = 1;
+			}
+			else if (result == 0)
+			{
+				cs->state = 2;
+			}
+			else if (result == 1)
+			{
+				cs->state = 0;
+			}
+			goto local_9;
 		}
 		cs = cs_get(cs_index);
 		actor = actor_cs_run_get(actor_index);
-		if (cs->thread_index == NONE)
-		{
-			cs->state = 4;
-			result = 3;
-			goto local_9;
-		}
 	}
-	if (cs->type == 0x17)
-	{
-		cs->state = 2;
-		result = 0;
-	}
-	else if (result == 2)
-	{
-		cs->state = 1;
-	}
-	else if (result == 0)
-	{
-		cs->state = 2;
-	}
-	else if (result == 1)
-	{
-		cs->state = 0;
-	}
+	cs->state = 4;
+	result = 3;
 	goto local_9;
 local_9:
 	return result;
 }
+#pragma function(_ReadWriteBarrier)
 
 /* the actor fields the command scripts' update reads */
 struct s_actor_cs_update_view
@@ -1169,11 +1165,11 @@ void function_259e70(long cs_index)
 // @retail 0x259ec0
 bool function_259ec0(long actor_index, long cs_index)
 {
-	volatile bool result = true;
 	s_record_pool *local_1 = g_502408;
 	s_record_pool *local_2 = g_4f55f0;
-	s_cs_datum *cs = (s_cs_datum *)(local_1->data + (cs_index & 0xffff) * sizeof(s_cs_datum));
 	s_actor_view *actor = (s_actor_view *)(local_2->data + (actor_index & 0xffff) * sizeof(s_actor_view));
+	s_cs_datum *cs = (s_cs_datum *)(local_1->data + (cs_index & 0xffff) * sizeof(s_cs_datum));
+	volatile bool result = true;
 	s_cs_point *point = cs_point_get(cs->unknown28);
 
 	if (actor->unknown018 == NONE)
@@ -1191,12 +1187,11 @@ bool function_259ec0(long actor_index, long cs_index)
 	case 17:
 		{
 			bool local_0 = function_1f4460(actor_index, &point->point, NONE, actor->unknown018, exact);
+			result = local_0;
 			if (!local_0)
 			{
-				result = local_0;
 				return result;
 			}
-			result = local_0;
 		}
 		actor->unknown4cc = cs->unknown08;
 		break;
@@ -1204,24 +1199,26 @@ bool function_259ec0(long actor_index, long cs_index)
 	case 2:
 	case 3:
 	case 19:
-		if (point->unknown30 == NONE)
+		if (point->unknown30 != NONE)
+		{
+			exact |= cs->unknown08 != 0.f;
+			{
+				bool local_0 = function_1f4460(actor_index, &point->point, point->unknown30, NONE, exact);
+				result = local_0;
+				if (!local_0)
+				{
+					return result;
+				}
+			}
+			if (exact)
+			{
+				actor->unknown4b0 = cs->unknown08;
+			}
+		}
+		else
 		{
 			result = false;
 			return result;
-		}
-		exact |= cs->unknown08 != 0.f;
-		{
-			bool local_0 = function_1f4460(actor_index, &point->point, point->unknown30, NONE, exact);
-			if (!local_0)
-			{
-				result = local_0;
-				return result;
-			}
-			result = local_0;
-		}
-		if (exact)
-		{
-			actor->unknown4b0 = cs->unknown08;
 		}
 		break;
 

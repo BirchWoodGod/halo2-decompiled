@@ -1969,13 +1969,6 @@ PRIVATE __forceinline s_physics_model_material *function_226a61(short arg_0, byt
 	return &local_0[arg_0];
 }
 
-PRIVATE __forceinline void function_226a62(s_impact_data *arg_0, bool arg_1, long arg_2, long arg_3, dword arg_4,
-	long arg_5, long arg_6, dword arg_7, point3f const *arg_8, vector3f const *arg_9, long arg_a, s_physics_model_shape_key const *arg_b)
-{
-	impact_data_set(arg_0, arg_1, arg_2, arg_3, *(c_type_47f957 *)&arg_4,
-		arg_5, arg_6, *(c_type_47f957 *)&arg_7, arg_8, arg_9, arg_a, arg_b);
-}
-
 // @retail 0x226a60
 void function_226a60(
 	long component_index)
@@ -2036,8 +2029,8 @@ void function_226a60(
 
 						havok_component_contact_properties_get(component, i, &rigid_body_index_a, &rigid_body_index_b);
 						havok_component_rigid_body_matrix_get(rigid_body_index_a, component, &matrix);
-						function_226a62(&data, false, component_index, rigid_body_index_a, (word)material->material_a,
-							rigid_body_index_b != NONE ? component_index : NONE, rigid_body_index_b, (word)material->material_b,
+						impact_data_set(&data, false, component_index, rigid_body_index_a, *(c_type_47f957 const *)&material->material_a,
+							rigid_body_index_b != NONE ? component_index : NONE, rigid_body_index_b, *(c_type_47f957 const *)&material->material_b,
 							&matrix.position, &matrix.forward, NONE, &shape);
 						impact_index = havok_component_impact_find(component, (s_havok_impact_contact const *)&data, false);
 						if (impact_index == NONE)

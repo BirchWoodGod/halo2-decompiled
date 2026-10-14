@@ -395,6 +395,8 @@ void node_mask_and(dword *mask, dword const *other);
 
 extern dword g_55e590[8];
 
+dword const *node_masks_combine(dword const *mask, dword const *other);
+
 // @retail 0x1c6f60
 void c_animation_channel::sample(real weight, dword const *node_mask, long node_count, real_quaternion_transform *transforms)
 {
@@ -426,20 +428,7 @@ void c_animation_channel::sample(real weight, dword const *node_mask, long node_
 	mask = NULL;
 	if (graph_mask || node_mask)
 	{
-		if (graph_mask && node_mask && graph_mask != node_mask)
-		{
-			memcpy(g_55e590, graph_mask, sizeof(g_55e590));
-			node_mask_and(g_55e590, node_mask);
-			mask = g_55e590;
-		}
-		else if (graph_mask)
-		{
-			mask = graph_mask;
-		}
-		else if (node_mask)
-		{
-			mask = node_mask;
-		}
+		mask = node_masks_combine(graph_mask, node_mask);
 	}
 	inheritance = NULL;
 	if (animation_id.index != NONE && animation_id.graph_index != NONE)

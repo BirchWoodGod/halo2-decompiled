@@ -80,7 +80,10 @@ void function_138110(s_game_options *options)
 	options->unknown128 = g_510c49;
 	options->unknown04 = 1;
 	options->unknown05 = 0;
-	ticks = g_485ac0 > 0 ? g_485ac0 : 60;
+	/* read through a const pointer: retail reads the tick rate after the stores above */
+	ticks = *(short const *)&g_485ac0;
+	if (ticks <= 0)
+		ticks = 60;
 	options->unknown12a = 1;
 	options->field_2_3 = (short)(ticks / 2);
 	options->unknown14 = NONE;
