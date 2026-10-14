@@ -22,6 +22,7 @@ __forceinline point3f *function_272af3(point3f const *arg_0, vector3f const *arg
 	return arg_3;
 }
 
+#pragma auto_inline(off)
 // @retail 0x272af0
 short __stdcall function_272af0(s_match_globals *arg_0, point3f const *arg_1)
 {
@@ -32,3 +33,4 @@ short __stdcall function_272af0(s_match_globals *arg_0, point3f const *arg_1)
 		local_1 = *(short *)(((s_272af0 *)arg_0)->field_30 + local_2 * 8);
 	return local_1;
 }
+#pragma auto_inline(on)
