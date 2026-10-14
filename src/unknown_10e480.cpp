@@ -125,9 +125,16 @@ void function_10ec00(long object_index, s_animation_state *state, long unused, d
 			}
 			if (sampled)
 			{
-				s_animation_data data;
+				struct s_output_10ec00 : s_animation_data
+				{
+					__forceinline void write_10ec00(byte *out)
+					{
+						function_20adf0((s_anim_data *)this, out);
+					}
+				};
+				s_output_10ec00 data;
 				function_1ddb40(&data, graph_tag_get(channel.graph_tag_index), channel.animation_id);
-				function_20adf0((s_anim_data *)&data, dest);
+				data.write_10ec00(dest);
 			}
 		}
 	}
