@@ -1082,14 +1082,38 @@ bool function_2613d0(long arg_0, s_reference arg_1, s_prop_search *arg_2);
 bool __stdcall function_1acb50(long arg_0, s_slot *arg_1);
 
 #pragma inline_depth(0)
+/* the slot state of 0x1acda0 seen past its header (the same layout as s_slot_2c from +0xc) */
+struct s_1acda0
+{
+    bool unknown0c;
+    bool unknown0d;
+    short ticks;
+    bool unknown10;
+    byte unknown11;
+    bool unknown12;
+    bool unknown13;
+    vector3f facing;
+    short unknown20;
+    short unknown22;
+    bool unknown24;
+    bool unknown25;
+    byte unknown26[2];
+    s_type_c3b527 point;
+    char unknown38;
+    bool unknown39;
+    bool unknown3a;
+    bool unknown3b;
+    byte unknown3c[0x40 - 0x3c];
+};
+
 // @retail 0x1acda0
 bool __stdcall function_1acda0(long arg_0, s_slot *arg_1)
 {
     s_actor_view *local_0 = (s_actor_view *)(g_4f55f0->data + (arg_0 & 0xffff) * sizeof(s_actor_view));
-    s_slot_2c *local_1 = (s_slot_2c *)arg_1;
     volatile bool local_2 = true;
     if (local_0->unknown007)
         return false;
+    s_1acda0 *local_1 = (s_1acda0 *)((byte *)arg_1 + sizeof(s_slot_header));
     if (local_1->unknown12)
     {
         local_2 = false;
@@ -1131,7 +1155,7 @@ bool __stdcall function_1acda0(long arg_0, s_slot *arg_1)
     {
         if (local_1->unknown0d)
         {
-            local_2 = function_1acb50(arg_0, (s_slot *)((byte *)arg_1 + 0xc));
+            local_2 = function_1acb50(arg_0, (s_slot *)local_1);
             return local_2;
         }
         if (function_1f8660(arg_0) && !REFERENCE_EQUAL(local_0->unknown418, g_470fa0))

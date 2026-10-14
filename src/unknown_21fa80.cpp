@@ -80,7 +80,7 @@ void function_21fa80(long channel_index, s_looping_channel_properties const *pro
 	s_channel_update_input const *input=(s_channel_update_input const *)properties;
 	s_sound_stream *stream=&SOUND_DRIVER_GLOBALS->channels[channel_index];
 	bool changed=!(stream->unknown03_0&1) || !SOUND_DRIVER_GLOBALS->unknown0000;
-	long gain_bits=*(long const *)(input->gain>-64.0f ? &input->gain : &g_44a23c);
+	volatile long gain_bits=*(long const *)(input->gain>-64.0f ? &input->gain : &g_44a23c);
 	real const &gain=*(real const *)&gain_bits;
 	long mode=stream->channel_count;
 	bool direct=(input->field_30&1)!=0;

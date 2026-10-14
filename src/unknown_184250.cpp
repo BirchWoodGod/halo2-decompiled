@@ -135,3 +135,140 @@ void __stdcall function_184250(s_type_1e6529 const *arg_0)
 		}
 	}
 }
+
+struct s_184061
+{
+	long definition_index;
+	dword flags;
+	byte unknown08[0x54 - 8];
+	real scale;
+};
+
+struct s_184062
+{
+	byte unknown00[6];
+	short material_index;
+};
+
+struct s_184063
+{
+	byte unknown00[0x2c];
+	s_184062 *references;
+};
+
+struct s_184064
+{
+	byte unknown00[0x70];
+	s_184063 surfaces;
+	byte unknowna0[0xc8 - 0xa0];
+};
+
+struct s_184065
+{
+	byte unknown00[0x34];
+	short owner_index;
+	byte unknown36[0x58 - 0x36];
+};
+
+struct s_184066
+{
+	byte unknown00[8];
+	word material_index;
+	byte unknown0a[0x14 - 0xa];
+};
+
+struct s_184067
+{
+	byte unknown00[0x10];
+	s_184066 *materials;
+	byte unknown14[4];
+	s_184063 *surfaces;
+	byte unknown1c[0x13c - 0x1c];
+	s_184064 *owners;
+	byte unknown140[4];
+	s_184065 *references;
+	byte unknown148[0x20c - 0x148];
+	long bounds_count;
+	s_184255 *bounds;
+};
+
+struct s_184068
+{
+	byte unknown00[0x10];
+	long group0;
+	long group1;
+	byte unknown18[0x34 - 0x18];
+	long definition_index;
+};
+
+struct s_184069
+{
+	byte unknown00[0x1c];
+	real base_scale;
+	real minimum;
+	real maximum;
+	byte unknown28[0x50 - 0x28];
+	long group0;
+	long group1;
+};
+
+struct s_globals_element;
+struct s_18444a;
+s_globals_element *function_188690(short index);
+byte *function_183fc0(long index);
+void __stdcall function_184440(long index, long bit_index, s_18444a const *input, long surface_index);
+real function_259a0(dword *seed);
+real function_d5bc0(long group0, long group1, long group2, long group3);
+void function_a87a0(long first, long second, long third, byte const *input);
+void function_a8ee0(long first, long second);
+void function_1c55e0(real const *bounds);
+
+// @retail 0x184060
+void function_184060(long index, byte bit_index, s_type_1e6529 *input_data, long surface_index)
+{
+	s_184061 const *input = (s_184061 const *)input_data;
+	if (!*g_4ed280 || input->definition_index == NONE || !((bool)(byte)function_184000(bit_index, index)))
+		return;
+
+	s_184067 *globals = (s_184067 *)g_4e0348;
+	s_184063 *surfaces = index == NONE ? globals->surfaces : &globals->owners[globals->references[index].owner_index].surfaces;
+	short material_index = surfaces->references[surface_index].material_index;
+	s_184068 *material = (s_184068 *)function_188690(globals->materials[material_index].material_index);
+	if (material->definition_index == NONE)
+		return;
+	real const *resistance = (real const *)g_4e3b44[material->definition_index & 0xffff].bytes;
+	if (!(*resistance > 0.0f))
+		return;
+
+	s_184069 const *definition = (s_184069 const *)g_4e3b44[input->definition_index & 0xffff].bytes;
+	real scale = (function_259d0((dword *)g_4e7408, NULL, 0, definition->minimum, definition->maximum) - definition->base_scale) * input->scale + definition->base_scale;
+	real probability = function_d5bc0(definition->group0, definition->group1, material->group0, material->group1);
+	probability *= scale;
+	probability /= *resistance;
+	if (TEST_FIELD_BIT((input->flags >> 8) & 1))
+	{
+		if (!(10.0f >= *resistance))
+			return;
+	}
+	else if (!(probability >= function_259a0((dword *)g_4e7408)))
+		return;
+
+	dword *bits = (dword *)function_183fc0(index);
+	bits[bit_index >> 5] &= ~(1 << (bit_index & 31));
+	function_184440(index, bit_index, (s_18444a const *)input_data, surface_index);
+	function_2e90a0(s_184251(false));
+	function_a87a0(index, bit_index, surface_index, (byte const *)input_data);
+	function_a8ee0(bit_index, index);
+
+	globals = (s_184067 *)g_4e0348;
+	long count = globals->bounds_count;
+	for (long i = 0; i < count; ++i)
+	{
+		s_184255 *bounds = &globals->bounds[i];
+		if (bounds->field_0 == index && bounds->field_2 == bit_index)
+		{
+			function_1c55e0((real const *)((byte *)bounds + 8));
+			break;
+		}
+	}
+}

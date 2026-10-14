@@ -94,7 +94,8 @@ struct s_system_link_globals
 	byte unknown01[7];
 	s_session_id session_id;
 };
-s_system_link_globals g_4d8eb4;
+#include "system_link_globals.h"
+s_network_link_globals g_4d8ea8;
 
 /* a broadcast query about a session: identifier 2, then the session */
 struct s_network_message_session_query
@@ -322,14 +323,10 @@ void network_message_handler_handle_leave_request(c_class_938e0 *handler, long a
 	}
 }
 
-/* 0x94220 (handle_join_abort), kept out of the build: it calls network_session_close
-   (0x5a520, lane D), and with it as a caller our LTCG passes that function's
-   session in ecx instead of eax, which breaks lane D's matched 0x593e0,
-   0x618d0 and 0x61910. Not matched itself: 0x5a520's convention differs. */
-#if 0
-void c_class_938e0::handle_join_abort(const s_session_id *message, const s_type_99af70 *address)
+// @retail 0x94220
+void __stdcall function_094220(c_class_938e0 *handler, const s_session_id *message, const s_type_99af70 *address)
 {
-	c_class_58d20 *session = network_session_manager_find_session(session_manager, message);
+	c_class_58d20 *session = network_session_manager_find_session(handler->session_manager, message);
 	if (session)
 	{
 		if (network_session_channel_is_host_address(session, address))
@@ -343,7 +340,6 @@ void c_class_938e0::handle_join_abort(const s_session_id *message, const s_type_
 		}
 	}
 }
-#endif
 
 // @retail 0x94270
 void c_class_938e0::function_94270(const s_session_id *message, const s_type_99af70 *address)
@@ -357,21 +353,16 @@ void c_class_938e0::function_94270(const s_session_id *message, const s_type_99a
 	}
 }
 
-/* 0x942d0 (function_x769765), kept out of the build: it calls network_session_close
-   (0x5a520, lane D), and with it as a caller our LTCG passes that function's
-   session in ecx instead of eax, which breaks lane D's matched 0x593e0,
-   0x618d0 and 0x61910. Not matched itself: 0x5a520's convention differs. */
-#if 0
-void c_class_938e0::function_x769765(const s_session_id *message, const s_type_99af70 *address)
+// @retail 0x942d0
+void __stdcall function_0942d0(c_class_938e0 *handler, const s_session_id *message, const s_type_99af70 *address)
 {
-	c_class_58d20 *session = network_session_manager_find_session(session_manager, message);
+	c_class_58d20 *session = network_session_manager_find_session(handler->session_manager, message);
 	if (session && function_058d90(session) && session->state == 4 &&
 		network_session_find_member_by_address(session, address) == session->member_index)
 	{
 		network_session_close(session);
 	}
 }
-#endif
 
 /* 0x94310 (handle_session_disband), kept out of the build: it matches, but
    as a caller of 0x5e150 it makes our LTCG pass network_session_close's
