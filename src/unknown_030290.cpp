@@ -340,7 +340,13 @@ long function_30d10(bool a, bool b, bool c)
 	if (c) return 2;
 	if (BIT(6)) return 6;
 	if (BIT(4)) return BIT(5) ? 3 : 4;
-	return (long)((byte)(g_4ba014 >> 3)) & 1;
+	dword bit;
+	switch ((byte)(g_4ba014 >> 3) & 1)
+	{
+	case 0: bit = 0; break;
+	default: bit = 1; break;
+	}
+	return (long)bit;
 }
 
 // @retail 0x30da0
