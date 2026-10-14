@@ -931,7 +931,7 @@ void function_1dd290(s_graph_tag *graph, transform4x3f *matrices, rigid_transfor
 {
 	long node_indices[255];
 	transform4x3f matrix;
-	volatile long count;
+	long count;
 	long i = 0;
 
 	if (graph->node_count > 0)
@@ -960,15 +960,15 @@ void function_1dd290(s_graph_tag *graph, transform4x3f *matrices, rigid_transfor
 				vector3f up = matrix.up;
 				point3f position = matrix.position;
 
-				matrix.scale = 1.0f;
 				position.y = 0.0f - position.y;
 				forward.j = 0.0f - forward.j;
+				matrix.scale = 1.0f;
 				up.j = 0.0f - up.j;
-				matrix.forward = forward;
 				matrix.left.i = up.j * forward.k - up.k * forward.j;
+				matrix.forward = forward;
 				matrix.left.j = up.k * forward.i - up.i * forward.k;
-				matrix.left.k = up.i * forward.j - up.j * forward.i;
 				matrix.up = up;
+				matrix.left.k = up.i * forward.j - up.j * forward.i;
 				matrix.position = position;
 			}
 			function_142a60(parent, &matrix, &matrices[node_index]);

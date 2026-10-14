@@ -952,8 +952,10 @@ bool c_game_engine_markers::v1()
 	long i;
 
 	memset(table, 0, sizeof(s_slot_table));
-	memset(table->c, 0xff, sizeof(table->c));
 	g_51ec80 = table;
+
+	for (i = 0; i < 9; i++)
+		table->c[i] = NONE;
 
 	for (i = 0; i < 9; i++)
 	{
@@ -967,7 +969,9 @@ bool c_game_engine_markers::v1()
 
 	table->l38 = function_243b10(true, NONE, NULL);
 	table->initialized = true;
-	memset(table->d, 0xff, sizeof(table->d));
+
+	for (i = 0; i < 9; i++)
+		table->d[i] = NONE;
 
 	for (i = 0; i < 9; i++)
 		table->objects[i] = NONE;
