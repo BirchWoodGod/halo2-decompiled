@@ -705,9 +705,7 @@ void function_11bed0(s_location *location, point3f const *point);
 extern short g_4686c4;
 extern short g_47d8e0;
 extern byte *g_4ed280;
-extern long g_4e7414;
-extern bool g_4e7411;
-extern long g_4e7418[0x200];
+#include "cluster_marks_storage.h"
 long g_4e7c1c;
 bool g_4e7c18;
 extern s_bsp3d *g_4e033c;

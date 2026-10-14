@@ -26,12 +26,32 @@ struct s_1c8560_iterator
 	long object_index;
 };
 
+/* steps the iterator while g_4f55d0 is active (an inline copy of the
+   record pool step, with the found datum kept apart until the end) */
 PRIVATE __forceinline bool function_1c8561(s_1c8560_iterator *arg_0)
 {
-    arg_0->datum = NULL;
-    if (g_4f55d0->active)
-        arg_0->datum = data_iterator_next_inlined(&arg_0->records);
-    return arg_0->datum != NULL;
+    byte *datum = NULL;
+    s_record_pool *data;
+    long index;
+
+    if (!g_4f55d0->active)
+        return false;
+    data = arg_0->records.data;
+    index = data_next_absolute_index_inlined(data, arg_0->records.index + 1);
+    if (index != NONE)
+    {
+        byte *result = data->data + data->size * index;
+        arg_0->records.index = index;
+        arg_0->records.datum_index = (*(short *)result << 16) | index;
+        datum = result;
+    }
+    else
+    {
+        arg_0->records.index = data->maximum_count;
+        arg_0->records.datum_index = NONE;
+    }
+    arg_0->datum = datum;
+    return datum != NULL;
 }
 
 // @retail 0x1c8560

@@ -77,12 +77,12 @@ bool function_1debd0(dword const *arg_1, s_bsp3d const *arg_0, short arg_2, long
  if (!arg_1 || !(local_1->field_4 & 8) || (short)local_1->field_5 >= arg_2 ||
   (arg_1[local_1->field_5 >> 5] & (1 << (local_1->field_5 & 31))))
  {
+  short const *local_6 = g_440b94[arg_4 * 2 + arg_5];
+  long local_7 = local_6[0] * sizeof(real), local_8 = local_6[1] * sizeof(real);
   s_1ddda2 const *local_2 = local_0->field_34;
   s_1ddda3 const *local_3 = local_0->field_3c;
   long local_4 = local_1->field_2;
   long local_5 = local_4;
-  short const *local_6 = g_440b94[arg_4 * 2 + arg_5];
-  long local_7 = local_6[0] * sizeof(real), local_8 = local_6[1] * sizeof(real);
   do
   {
    s_1ddda2 const *local_9 = &local_2[local_5];
