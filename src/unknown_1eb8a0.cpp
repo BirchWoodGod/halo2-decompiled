@@ -151,7 +151,6 @@ long function_1eb8a0(bool update, vector3f *a, point3f *b, s_ease_state *s,
 void function_1eb6f0(s_ease_input *input, s_ease_state *state, s_ease_output *output)
 {
 	s_ease_state *const *state_reference = &state;
-	s_ease_output *const *output_reference = &output;
 	vector3f velocity = input->velocity;
 	vector3f reference = input->reference_velocity;
 	vector3f object_velocity;
@@ -174,12 +173,12 @@ void function_1eb6f0(s_ease_input *input, s_ease_state *state, s_ease_output *ou
 		velocity.k = (real)(velocity.k * scale);
 	}
 	function_1eb8a0(input->update, &velocity, &input->target, *state_reference,
-		*output_reference, input->time, &input->direction, &reference, &input->position);
+		output, input->time, &input->direction, &reference, &input->position);
 	if (relative)
 	{
-		(*output_reference)->position.i += object_velocity.i;
-		(*output_reference)->position.j += object_velocity.j;
-		(*output_reference)->position.k += object_velocity.k;
+		(output)->position.i += object_velocity.i;
+		(output)->position.j += object_velocity.j;
+		(output)->position.k += object_velocity.k;
 	}
 }
 
