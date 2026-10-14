@@ -4,8 +4,6 @@
 #include "unknown_0259d0.h"
 #include "unknown_146a20.h"
 
-// @stub 0xe5470
-bool __stdcall function_e5470(long player_index, long object_index) { return false; }
 // @stub 0xe5bc0
 long __stdcall function_e5bc0(long unit_index, long object_index, long previous_index) { return -1; }
 

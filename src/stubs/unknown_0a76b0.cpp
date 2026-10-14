@@ -33,8 +33,6 @@ void function_e5930(long unit_index) { }
 
 
 
-// @stub 0xe5300
-void function_e5300(long unit_index, long a) { }
 
 
 
