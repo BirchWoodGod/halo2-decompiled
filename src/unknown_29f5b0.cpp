@@ -839,9 +839,9 @@ void function_2a0380(long object_index, long region_name, short state)
 	if (object_index != NONE)
 	{
 		s_object_definition_header_view *object = (s_object_definition_header_view *)object_get(object_index);
-		long model_index = ((s_object_definition_model_view *)g_4e3b44[object->definition_index & 0xffff].bytes)->model_index;
-		if (model_index != NONE)
-			function_ba6f0(object_index, function_16d1d0(model_index, (string_handle)region_name), state, true);
+		s_object_definition_model_view *definition = (s_object_definition_model_view *)g_4e3b44[object->definition_index & 0xffff].bytes;
+		if (definition->model_index != NONE)
+			function_ba6f0(object_index, function_16d1d0(definition->model_index, (string_handle)region_name), state, true);
 	}
 }
 
