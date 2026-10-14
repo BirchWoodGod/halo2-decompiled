@@ -698,12 +698,15 @@ void function_232d77()
 				entry->value10c = function_1969a0(player, 21, NONE);
 				entry->value110 = function_1969a0(player, 20, NONE);
 			}
-			entry->count = entry->value = entry->value2 = 0;
+			long *total_count = &entry->count;
+			long *total_value = &entry->value;
+			long *total_value2 = &entry->value2;
+			*total_count = *total_value = *total_value2 = 0;
 			for (long statistic = 5; statistic < 39; statistic++)
 			{
-				entry->count += function_1969d0(player, 4, statistic);
-				entry->value += function_1969d0(player, 5, statistic);
-				entry->value2 += function_1969d0(player, 6, statistic);
+				*total_count += function_1969d0(player, 4, statistic);
+				*total_value += function_1969d0(player, 5, statistic);
+				*total_value2 += function_1969d0(player, 6, statistic);
 			}
 		}
 	}

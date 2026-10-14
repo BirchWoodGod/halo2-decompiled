@@ -875,6 +875,7 @@ void function_14bc0(short index, short element, bool use_depth);
 void function_12d50(real const *projection, bool scaled, real *output);
 point3f g_4c1b08[4];
 
+#pragma inline_depth(0)
 // @retail 0x3bf20
 long __stdcall function_3bf20(s_slot *slot, byte *data)
 {
@@ -925,6 +926,7 @@ long __stdcall function_3bf20(s_slot *slot, byte *data)
     D3DDevice_SetRenderState(D3DRS_ZWRITEENABLE, 0);
     D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
     D3DDevice_SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+    #pragma inline_depth(0)
     D3DDevice_Begin(D3DPT_QUADLIST);
     D3DDevice_SetVertexDataColor(9, 0xffffffff);
     D3DDevice_SetVertexData4f(0, g_4c1b08[0].x, g_4c1b08[0].y, g_4c1b08[0].z, 1.0f);
@@ -935,11 +937,13 @@ long __stdcall function_3bf20(s_slot *slot, byte *data)
     D3DDevice_SetVertexDataColor(9, 0xffffffff);
     D3DDevice_SetVertexData4f(0, g_4c1b08[1].x, g_4c1b08[1].y, g_4c1b08[1].z, 1.0f);
     D3DDevice_End();
+    #pragma inline_depth()
     D3DDevice_SetRenderState(D3DRS_COLORWRITEENABLE, 0x1010101);
     D3DDevice_SetRenderState(D3DRS_CULLMODE, 0);
     D3DDevice_SetRenderState(D3DRS_STENCILENABLE, 0);
     return 0x4b000;
 }
+#pragma inline_depth()
 
 
 
