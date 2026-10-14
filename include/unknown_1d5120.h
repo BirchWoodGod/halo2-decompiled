@@ -104,6 +104,6 @@ public:
 class c_contact_query_world
 {
 public:
- void add(void *volume);
+ void *add(void *volume);
  void remove(void *volume);
 };

@@ -385,7 +385,7 @@ public:
 class c_contact_query_world
 {
 public:
-    void add(void *volume);
+    void *add(void *volume);
     void remove(void *volume);
 };
 
@@ -402,7 +402,7 @@ c_contact_query_bounds_volume::c_contact_query_bounds_volume(c_contact_query_bou
 c_contact_query_transform_volume::c_contact_query_transform_volume(c_contact_query_transform_info const *info) {}
 
 // @stub 0x30e4b0
-void c_contact_query_world::add(void *volume) {}
+void *c_contact_query_world::add(void *volume) { return 0; }
 
 // @stub 0x30e5e0
 void c_contact_query_world::remove(void *volume) {}
