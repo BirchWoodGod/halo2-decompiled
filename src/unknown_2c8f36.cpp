@@ -188,7 +188,29 @@ step:
 // @retail 0x2c8f56
 void c_button_widget_45d5d0::v8()
 {
-	c_class_1a2c81 *widget = widget_get_next_wrapped(this);
+	struct sibling_step
+	{
+		static __forceinline c_class_1a2c81 *get(c_class_1a2c81 *base)
+		{
+			c_class_1a2c81 *result;
+			c_class_1a2c81 *cursor = base->next;
+			if (cursor)
+			{
+				result = cursor;
+				goto done;
+			}
+			result = base;
+			cursor = base->previous;
+			while (cursor)
+			{
+				result = cursor;
+				cursor = cursor->previous;
+			}
+		done:
+			return result;
+		}
+	};
+	c_class_1a2c81 *widget = sibling_step::get(this);
 
 	while (widget)
 	{
@@ -198,14 +220,36 @@ void c_button_widget_45d5d0::v8()
 			widget->function_22ecb4_2(true);
 			return;
 		}
-		widget = widget_get_next_wrapped(widget);
+		widget = sibling_step::get(widget);
 	}
 }
 
 // @retail 0x2c8fb4
 void c_button_widget_45d5d0::v9()
 {
-	c_class_1a2c81 *widget = widget_get_previous_wrapped(this);
+	struct sibling_step
+	{
+		static __forceinline c_class_1a2c81 *get(c_class_1a2c81 *base)
+		{
+			c_class_1a2c81 *result;
+			c_class_1a2c81 *cursor = base->previous;
+			if (cursor)
+			{
+				result = cursor;
+				goto done;
+			}
+			result = base;
+			cursor = base->next;
+			while (cursor)
+			{
+				result = cursor;
+				cursor = cursor->next;
+			}
+		done:
+			return result;
+		}
+	};
+	c_class_1a2c81 *widget = sibling_step::get(this);
 
 	while (widget)
 	{
@@ -215,7 +259,7 @@ void c_button_widget_45d5d0::v9()
 			widget->function_22ecb4_2(true);
 			return;
 		}
-		widget = widget_get_previous_wrapped(widget);
+		widget = sibling_step::get(widget);
 	}
 }
 

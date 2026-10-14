@@ -18,7 +18,7 @@ bool __stdcall function_1697c0(long flags, point3f const *point, vector3f const 
  long ignore_object_index, long ignore_unit_index, s_collision_result_1697c0 *collision);
 bool function_16a040(long flags, point3f const *point0, point3f const *point1, long ignore_object_index,
  long ignore_unit_index, s_collision_result_1697c0 *result);
-long function_11c010(short row, short column);
+bool function_11c010(short row, short column);
 real function_30bf0(vector3f *v);
 extern vector3f *g_4687bc;
 

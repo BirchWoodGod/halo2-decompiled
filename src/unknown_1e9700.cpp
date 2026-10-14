@@ -63,10 +63,9 @@ void function_1ea770(byte code, long player_index, s_statborg *statistics, long 
 		function_196e60(other, 2, kind, 1);
 		function_162bf0(player_index, arg_1f407d_2);
 	}
-	byte *row = (byte *)statistics + index * 0x1c;
-	*(short *)(row + 0x16) = 0;
-	*(short *)(row + 0x18) = 0;
-	*(long *)(row + 0x1c) = NONE;
+	*(short *)((byte *)statistics + index * 0x1c + 0x16) = 0;
+	*(short *)((byte *)statistics + index * 0x1c + 0x18) = 0;
+	*(long *)((byte *)statistics + index * 0x1c + 0x1c) = NONE;
 	*(dword *)g_4e9ae8 |= 0x20;
 }
 

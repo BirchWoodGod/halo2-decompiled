@@ -282,10 +282,11 @@ void function_2363d4(short_rectangle2d const *bounds, short *x, short *y)
 	short left = bounds->left;
 	short top = bounds->top;
 	short right = bounds->right;
-	short width = right - left;
-	short height = bottom - top;
+	struct { short width, height; } dimensions;
+	dimensions.width = right - left;
+	dimensions.height = bottom - top;
 
-	if (width == 320)
+	if (dimensions.width == 320)
 	{
 		if (top == 0)
 		{
@@ -317,7 +318,7 @@ void function_2363d4(short_rectangle2d const *bounds, short *x, short *y)
 	else
 	{
 		*x = 0;
-		if (height == 240)
+		if (dimensions.height == 240)
 		{
 			if (top == 0)
 			{
@@ -425,9 +426,6 @@ long map_location_progress_get(char const *map_name);
 void function_138110(s_game_options *options);
 dword function_1462b0(void);
 void function_18e790(s_game_options const *options);
-extern long g_54e7c0;
-extern long g_54e7c4;
-extern long g_54e7c8;
 
 /* starts the chosen map with the signed in local players */
 // @retail 0x23643f
