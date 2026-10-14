@@ -961,13 +961,13 @@ void function_2735c0(long ai_index, long squad_ai_index)
 {
 	if (ai_index != NONE && squad_ai_index != NONE && !(squad_ai_index & 0xc0000000))
 	{
-		long squad_index = squad_ai_index & 0xffff;
-		s_ai_squad_iterator iterator;
-		ai_squad_iterator_new(&iterator, ai_index);
-		while (ai_squad_iterator_next(&iterator))
+		struct { s_ai_squad_iterator cursor; word target; } work;
+		work.target = squad_ai_index & 0xffff;
+		ai_squad_iterator_new(&work.cursor, ai_index);
+		while (ai_squad_iterator_next(&work.cursor))
 		{
-			function_201520(NONE, (word)iterator.squad_index, NONE, 0, 1);
-			function_204010(squad_index, iterator.squad_index);
+			function_201520(NONE, (word)work.cursor.squad_index, NONE, 0, 1);
+			function_204010(work.target, *(long const volatile *)&work.cursor.squad_index);
 		}
 		g_4f55d0->unknown364 = ai_index;
 	}
@@ -1367,8 +1367,8 @@ void function_2742f0(short team_a, short team_b)
 	{
 		long difficulty = 1;
 		short ai_team = NONE;
-		short incident_decay_ticks = NONE;
 		short incident_threshold = NONE;
+		short incident_decay_ticks = NONE;
 		bool player_alliance = false;
 
 		if (team_a == 1)
@@ -1381,8 +1381,8 @@ void function_2742f0(short team_a, short team_b)
 
 			if (g_4e6948->state == 1)
 				difficulty = g_4e6948->difficulty;
-			incident_threshold = 5;
 			player_alliance = true;
+			incident_threshold = 5;
 			incident_decay_ticks = (short)ai_seconds_to_ticks_round(decay_seconds[(short)difficulty]);
 		}
 		function_1df6c0(team_a, team_b, player_alliance && team_a == ai_team, player_alliance && team_b == ai_team,
@@ -2767,15 +2767,18 @@ void function_2773d0(long facing_point_reference, long point_reference)
 		local_0.field_0 = actor->unit_index;
 
 		function_210850(scenario_point_get(point_reference), &local_0.field_1c);
-		function_118e80(local_0.field_0, &local_0.field_4);
+		long unit_index = local_0.field_0;
+		function_118e80(unit_index, &local_0.field_4);
 		if (function_25ab50(facing_point_reference))
 		{
-			function_210850(scenario_point_get(facing_point_reference), &local_0.field_10.field_0);
+			s_scenario_scripting_view *scenario = (s_scenario_scripting_view *)g_4e0350;
+			s_type_c3b527 *facing = &scenario->scripting_data->point_sets[(facing_point_reference >> 16) & 0xffff].points[facing_point_reference & 0xffff].position;
+			function_210850(facing, &local_0.field_10.field_0);
 			vector3d_from_points3d(&local_0.field_1c, &local_0.field_10.field_0, &local_0.field_4);
 			if (actor->flying)
 			{
 				if (function_30bf0(&local_0.field_4) == g_45dbd8)
-					function_118e80(local_0.field_0, &local_0.field_4);
+					function_118e80(unit_index, &local_0.field_4);
 				function_11d090(&local_0.field_4, &local_0.field_10.field_1);
 			}
 			else
@@ -2783,7 +2786,7 @@ void function_2773d0(long facing_point_reference, long point_reference)
 				local_0.field_4.k = 0.0f;
 				if (normalize2d((point2f *)&local_0.field_4) == 0.0f)
 				{
-					function_118e80(local_0.field_0, &local_0.field_4);
+					function_118e80(unit_index, &local_0.field_4);
 					local_0.field_4.k = 0.0f;
 					if (normalize2d((point2f *)&local_0.field_4) == g_45dbd8)
 						local_0.field_4 = *g_4687a8;
@@ -2791,7 +2794,7 @@ void function_2773d0(long facing_point_reference, long point_reference)
 				local_0.field_10.field_1 = *g_4687b0;
 			}
 
-			long object_index = function_baf80(local_0.field_0);
+			long object_index = function_baf80(unit_index);
 			function_b75a0(object_index, &local_0.field_1c, &local_0.field_4, &local_0.field_10.field_1, NULL, false);
 			function_b73b0(object_index);
 			function_1f4280(g_50240c);

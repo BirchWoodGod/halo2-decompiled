@@ -46,14 +46,15 @@ bool c_weapon_fire_event::v11(long a, long const *entities, long c, void const *
     if (entity == NONE) return result;
     s_z_event_header *headers = (s_z_event_header *)g_4e0300->data;
     s_z_event_header *header = headers + (entity & 0xffff);
+    long type = header->type;
     byte const *event = (byte const *)data;
     long unit = NONE;
     volatile long weapon = c;
-    if (header->type == 2) weapon = entity;
+    if (type == 2) weapon = entity;
     else
     {
         long slot = *(long const *)event;
-        if (!((1 << header->type) & 3) || slot < 0 || slot >= 4 || (header->object[0x10a] & 4)) return result;
+        if (!((1 << type) & 3) || slot < 0 || slot >= 4 || (header->object[0x10a] & 4)) return result;
         weapon = *(long *)(header->object + 0x218 + slot * 4);
         unit = *(long *)(header->object + 0x24c);
         if (unit == NONE) unit = entity;
@@ -106,7 +107,8 @@ bool c_weapon_fire_event::v11(long a, long const *entities, long c, void const *
     function_102fb0(weapon, (short)barrel);
     function_103e60(weapon, (short)barrel);
     function_fd980(weapon);
-    if (unit != NONE && event[0xc]) headers[unit & 0xffff].object[0x1e0] &= ~2;
+    if (unit != NONE && event[0xc])
+        ((s_z_event_header *)g_4e0300->data)[unit & 0xffff].object[0x1e0] &= ~2;
     result = true;
     return result;
 }

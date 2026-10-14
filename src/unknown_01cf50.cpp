@@ -2602,9 +2602,10 @@ extern "C" void _ReadWriteBarrier(void);
 // @retail 0x42760
 void function_42760(long flags)
 {
-    volatile long count = g_4c19ac;
+    long initial_count = g_4c19ac;
+    volatile long count = initial_count;
     long i = 0;
-    if (count > 0)
+    if (initial_count > 0)
     {
       do
       {
@@ -3013,14 +3014,15 @@ void function_13d80()
         if (description.Size == description.Width * description.Height * 4)
         {
             D3DLOCKED_RECT locked;
-            D3DSurface_LockRect(surface, &locked, NULL, 0);
-            locked.pBits = (void *)((dword)locked.pBits | 0xf0000000);
-            if (locked.pBits)
+            D3DLOCKED_RECT *locked_result = &locked;
+            D3DSurface_LockRect(surface, locked_result, NULL, 0);
+            locked_result->pBits = (void *)((dword)locked_result->pBits | 0xf0000000);
+            if (locked_result->pBits)
             {
                 long width = (short)(g_5093c0.second >> 16) - (short)(g_5093c0.first >> 16);
                 long height = (short)g_5093c0.second - (short)g_5093c0.first;
                 byte const *source = (byte const *)g_5093c8;
-                byte *row = (byte *)locked.pBits + (short)g_5093c0.first * locked.Pitch;
+                byte *row = (byte *)locked_result->pBits + (short)g_5093c0.first * locked_result->Pitch;
                 for (long y = 0; y < height; ++y)
                 {
                     dword *pixel = (dword *)row + (short)(g_5093c0.first >> 16);
@@ -3030,7 +3032,7 @@ void function_13d80()
                         byte level = (byte)(value < 0 ? 0 : value > 255 ? 255 : value);
                         *pixel++ = (((((dword)level << 8) | level) << 8 | level) << 8) | level;
                     }
-                    row += locked.Pitch;
+                    row += locked_result->Pitch;
                     source += width;
                 }
             }
