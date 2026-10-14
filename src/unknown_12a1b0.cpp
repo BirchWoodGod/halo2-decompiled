@@ -1563,11 +1563,17 @@ struct s_channel_class_flags
 	char mode;
 };
 
+static inline void flag_set_12a1b0(dword *flags, dword mask, bool value)
+{
+	if (value) *flags |= mask;
+	else *flags &= ~mask;
+}
+
 // @retail 0x12a1b0
 void function_12a1b0(short voice_index, s_looping_track_sound *sound, s_looping_channel_spatialization const *spatialization, s_looping_channel_properties *properties)
 {
-	s_looping_voice_view *voice = &((s_looping_voice_view *)g_4e6378)[voice_index];
 	long definition_index = sound->definition_index;
+	s_looping_voice_view *voice = &((s_looping_voice_view *)g_4e6378)[voice_index];
 	s_sound_definition *definition = sound_definition_get(definition_index);
 	s_channel_class_flags *sound_class = (s_channel_class_flags *)sound_class_definition_get(definition->promotion_index);
 	byte *output = (byte *)properties;
@@ -1581,16 +1587,14 @@ void function_12a1b0(short voice_index, s_looping_track_sound *sound, s_looping_
 	*(long *)(output + 0x28) = *(long const *)(spatial + 4);
 	*(long *)(output + 0x1c) = *(long const *)(spatial + 0xc);
 	*(long *)(output + 0x20) = *(long const *)(spatial + 0x10);
-	bool flag = (bool)((sound->sound_class >> 3) & 1);
+	bool flag = (bool)(((byte)sound->sound_class >> 3) & 1);
 	if (TEST_FIELD_BIT(sound_class->bit3)) properties->effects.flags |= 2;
 	else properties->effects.flags &= ~2;
 	if (TEST_FIELD_BIT(sound_class->bit1)) properties->effects.flags |= 8;
 	else properties->effects.flags &= ~8;
 	if (sound_class->mode == 1) properties->effects.flags |= 0x10;
 	else properties->effects.flags &= ~0x10;
-	if (TEST_FIELD_BIT(sound_class->bit1) || flag) flag = true;
-	if (flag) properties->effects.flags |= 4;
-	else properties->effects.flags &= ~4;
+	flag_set_12a1b0(&properties->effects.flags, 4, TEST_FIELD_BIT(sound_class->bit1) || flag);
 	if (TEST_FIELD_BIT(sound_class->bit9)) properties->effects.flags |= 0x40;
 	else properties->effects.flags &= ~0x40;
 	if (*spatial & 0x10)
@@ -1609,10 +1613,12 @@ void function_12a1b0(short voice_index, s_looping_track_sound *sound, s_looping_
 	function_222770(definition_index, *(long *)sound->unknown08, &inputs, (s_sound_playback_effects *)&properties->effects.playback);
 	function_222930(definition_index, *(long *)sound->unknown08, &properties->effects.impulse);
 	*(dword *)(output + 0x48) = sound->field_8_4;
+	real scale;
 	if (*((byte *)sound + 0x19) & 1)
-		*(real *)(output + 0x4c) = (real)(sqrt(1.0f - *(real const *)(spatial + 0x18)) * *(real *)((byte *)sound + 0x1c));
+		scale = (real)(sqrt(1.0f - *(real const *)(spatial + 0x18)) * *(real *)((byte *)sound + 0x1c));
 	else
-		*(real *)(output + 0x4c) = *(real *)((byte *)sound + 0x1c);
+		scale = *(real *)((byte *)sound + 0x1c);
+	*(real *)(output + 0x4c) = scale;
 }
 
 struct s_looping_driver_channel

@@ -261,13 +261,13 @@ void function_24ffc9(c_screen_24fd74 *arg_0, bool arg_1)
 			break;
 		default:
 			local_4 = function_19a50f(local_3);
-			if (local_3 == 9)
-			{
-				long local_5 = function_63ec0();
-				if (function_199ebc() > local_5)
-					local_4 = (*local_0)->get_definition_value(0, 3);
-			}
 			break;
+		}
+		if (local_3 == 9)
+		{
+			long local_5 = function_63ec0();
+			if (function_199ebc() > local_5)
+				local_4 = (*local_0)->get_definition_value(0, 3);
 		}
 		local_2->function_253b1a(local_4);
 		c_class_22cc8e *local_5 = local_2->function_22f52e();
