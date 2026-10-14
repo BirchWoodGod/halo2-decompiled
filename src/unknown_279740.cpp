@@ -5,19 +5,18 @@
 
 #define PIN(value, lower, upper) ((value) < (lower) ? (lower) : (value) > (upper) ? (upper) : (value))
 
+PRIVATE inline long loaded_size_279740()
+{
+    if (cache_file_globals.loaded)
+        return cache_file_globals.header.unknown1c;
+    return 0;
+}
+
 // @retail 0x279740
 bool __cdecl function_279740(long value)
 {
-    long local_0 = value;
-    if (value < (long)0x80061000)
-        local_0 = (long)0x80061000;
-    else
-    {
-        bool local_1 = cache_file_globals.loaded;
-        long local_2 = cache_file_globals.header.unknown1c;
-        bool const volatile *local_3 = &local_1;
-        if (value > (long)0x80061000 + (local_1 ? local_2 : 0))
-            local_0 = (long)0x80061000 + (*local_3 ? local_2 : 0);
-    }
-    return local_0 == value;
+    long bounded = value < (long)0x80061000 ? (long)0x80061000 :
+        value > (long)0x80061000 + loaded_size_279740() ?
+        (long)0x80061000 + loaded_size_279740() : value;
+    return bounded == value;
 }

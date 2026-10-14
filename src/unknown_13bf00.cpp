@@ -336,11 +336,12 @@ static inline long controller_next(long index)
 // @retail 0x13cbf0
 bool function_13cbf0(void)
 {
-	bool result = false;
-	long map_language = 0;
+	long map_language;
 	long index;
 
 	get_current_language();
+	bool result = false;
+	map_language = 0;
 	if (g_4e0350)
 	{
 		long language = ((s_language_globals_view *)g_4e034c)->language;

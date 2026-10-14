@@ -47,7 +47,8 @@ PRIVATE __forceinline long texture_floor(real value)
 // @retail 0x1b0a0
 void __stdcall function_1b0a0(byte *state)
 {
-    (void)&state;
+    byte *const *state_reference = &state;
+    state = *state_reference;
     dword remaining = *(dword *)(state + 0x1420);
     while (remaining)
     {
@@ -1371,7 +1372,9 @@ long function_21360(long source, real radius, real low, real high, long target,
     long alternate, long passes, long unused, bool configure, bool full_surface, real scale)
 {
     (void)&unused;
-    radius *= 0.01666f;
+    bool const *configure_reference = &configure;
+    configure = *configure_reference;
+    real current_radius = radius * 0.01666f;
     if (alternate == NONE)
         alternate = source;
     if (configure)
@@ -1379,17 +1382,17 @@ long function_21360(long source, real radius, real low, real high, long target,
     for (long pass = 0; pass < passes; ++pass)
     {
         real weights[4];
-        weights[0] = radius;
-        weights[1] = radius * 0.33f;
-        weights[2] = radius * -0.33f;
-        weights[3] = 0.0f - radius;
+        weights[0] = current_radius;
+        weights[1] = current_radius * 0.33f;
+        weights[2] = current_radius * -0.33f;
+        weights[3] = 0.0f - current_radius;
         configure_filter_textures(source);
         function_34d90(target, weights, 10, 0x1010101, false, false,
             1.0f, low, high, full_surface, NULL);
         source = target;
         target = alternate;
         alternate = source;
-        radius *= 2.0f;
+        current_radius *= 2.0f;
     }
     if (alternate != NONE && alternate != source)
     {

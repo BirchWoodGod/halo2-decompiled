@@ -85,7 +85,7 @@ bool __stdcall function_2551f0(long actor_index, s_slot *slot)
 
 	state->timer = g_510c54->field_2_3 * 10;
 	*(vector3f *)&state->point = actor->unknown290;
-	state->unknown1c = 0.f;
+	state->point.z = 0.f;
 	if (function_30bf0((vector3f *)&state->point) > 0.f)
 	{
 		if (function_26bf10(actor->unknown018))

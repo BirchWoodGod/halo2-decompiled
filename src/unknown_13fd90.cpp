@@ -204,33 +204,3 @@ long utf8_encode_character(dword value, byte *buffer, long buffer_size)
 
 	return length;
 }
-
-void utf16_string_to_utf8_string(const word *source, char *destination, long destination_size);
-
-static __forceinline void utf16_string_write_utf8(const word *source, char *destination, long destination_size)
-{
-	long destination_index = 0;
-
-	for (; *source; source++)
-	{
-		long remaining = destination_size - destination_index;
-		long length = utf8_encode_character(*source, (byte *)destination + destination_index, remaining);
-
-		destination_index += length <= remaining ? length : remaining;
-	}
-
-	if (destination_index < destination_size)
-	{
-		destination[destination_index] = 0;
-	}
-	else if (destination_index > 0)
-	{
-		destination[destination_index - 1] = 0;
-	}
-}
-
-// @retail 0x140650
-void utf16_string_to_utf8_string(const word *source, char *destination, long destination_size)
-{
-	utf16_string_write_utf8(source, destination, destination_size);
-}

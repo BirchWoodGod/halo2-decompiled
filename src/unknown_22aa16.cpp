@@ -56,8 +56,9 @@ struct s_22aa17
 };
 
 #pragma optimize("y", off)
-// @retail 0x22aa16
-void function_22aa16(long arg_0, byte const *arg_1, byte const *arg_2, real const *arg_3)
+// retail keeps all four arguments on the stack (ret 0x10); without the marker LTCG passes the first in a register
+// @retail 0x22aa16 standard
+void __stdcall function_22aa16(long arg_0, byte const *arg_1, byte const *arg_2, real const *arg_3)
 {
 	(void)&arg_0; (void)&arg_1; (void)&arg_2; (void)&arg_3;
 	if (*(long const *)(arg_2 + 0x28) && *(long const *)(arg_2 + 0x24) != NONE)
@@ -82,10 +83,10 @@ void function_22aa16(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 			g_4e73a0.unknown5e = 0;
 			g_4e73a0.unknown60 = 0;
 			
-			local_10.field_20c.x = 0.0f;
-			local_10.field_20c.y = 1.0f;
 			local_10.field_214.x = 1.0f;
 			local_10.field_214.y = 0.0f;
+			local_10.field_20c.x = 0.0f;
+			local_10.field_20c.y = 1.0f;
 			function_1396c7(*(word const *)(arg_2 + 0x1c), &local_10.field_21c);
 			switch (local_2)
 			{
@@ -102,17 +103,17 @@ void function_22aa16(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 				local_10.field_21c.y += *(short const *)(arg_2 + 0x4a);
 				break;
 			}
-			function_22bcaf((s_widget_transform_block const *)(arg_2 + 0x4c), &local_10.field_21c, &local_10.field_20c, &local_10.field_214);
+			function_22bcaf((s_widget_transform_block const *)(arg_2 + 0x4c), &local_10.field_21c, &local_10.field_214, &local_10.field_20c);
 			local_10.field_21c.x -= g_4b9dd2;
 			local_10.field_21c.y -= g_4b9dd0;
-			local_10.field_0214.top = 0;
 			local_10.field_0214.left = 0;
-			local_10.field_0214.bottom = 1000;
+			local_10.field_0214.top = 0;
 			local_10.field_0214.right = 1000;
+			local_10.field_0214.bottom = 1000;
 			
 			function_13e9c0(local_10.field_0, &local_10.field_0214, &local_10.field_200, (short_rectangle2d *)&local_10.field_20c, 1.0f);
-			short local_8 = (short)(*(dword const *)(local_10.field_0200 + 6) - *(dword const *)(local_10.field_0200 + 2));
-			short local_9 = (short)(*(dword const *)(local_10.field_0200 + 4) - *(dword const *)local_10.field_0200);
+			long local_8 = (short)(*(dword const *)(local_10.field_0200 + 6) - *(dword const *)(local_10.field_0200 + 2));
+			long local_9 = (short)(*(dword const *)(local_10.field_0200 + 4) - *(dword const *)local_10.field_0200);
 			function_13eb60(g_4686cc);
 			function_13ed50((color4f const *)g_4686d4);
 			switch (*(word const *)(arg_2 + 0x2c))

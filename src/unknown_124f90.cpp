@@ -1226,9 +1226,12 @@ long function_127010(short class_index)
 	s_sound_class_fade *fade = &g_502118[class_index];
 	long gain = fade->current;
 
-	if (!TEST_FIELD_BIT(fade->flags & 1))
+	if ((byte)~fade->flags & 1)
 	{
+/* retail calls the class lookup out of line here */
+#pragma inline_depth(0)
 		s_sound_promotion_view *sound_class = (s_sound_promotion_view *)function_221810(class_index);
+#pragma inline_depth(255)
 		s_sound_system_view *sound_system = SOUND_SYSTEM;
 
 		if (sound_system->previous_ambience_index != NONE && sound_system->ambience_index == sound_system->previous_ambience_index)
@@ -1240,22 +1243,21 @@ long function_127010(short class_index)
 			{
 				if (ducking->fade_in_time >= 0.001f)
 				{
-					real t;
-
 					if (ducking->fade_out_time >= 0.001f && ducking->fade_out_time + ducking->hold_time > elapsed)
 					{
 						real inverse = 1.0f / ducking->fade_in_time;
 						real time = sound_system->ambience_fade - elapsed + (elapsed - ducking->hold_time) * inverse * ducking->fade_out_time;
+						real t = 1.0f > time * inverse ? time / ducking->fade_in_time : 1.0f;
 
-						t = 1.0f > time * inverse ? time / ducking->fade_in_time : 1.0f;
+						return decibels_add(gain, decibels_interpolate(0, ducking->gain, t));
 					}
 					else
 					{
 						real time = (sound_system->ambience_fade - elapsed) / ducking->fade_in_time;
+						real t = 1.0f > time ? time : 1.0f;
 
-						t = 1.0f > time ? time : 1.0f;
+						return decibels_add(decibels_interpolate(0, ducking->gain, t), gain);
 					}
-					return decibels_add(gain, decibels_interpolate(0, ducking->gain, t));
 				}
 			}
 			else
@@ -1994,6 +1996,12 @@ void sound_update_locations(void)
 /* clamps value to [lower, upper], testing the lower bound first */
 #define PIN_126660(value, lower, upper) ((value) < (lower) ? (lower) : (value) > (upper) ? (upper) : (value))
 
+/* adds delta to value, kept within [lower, upper] */
+static inline void approach_126660(real *value, real delta, real lower, real upper)
+{
+	*value += PIN_126660(delta, lower, upper);
+}
+
 /* moves the sound system's two environments toward the two requested:
    each request takes the slot already holding it or a faded-out one and
    fades it in over its transition time; slots no request takes fade out */
@@ -2040,10 +2048,10 @@ void sound_environments_update(s_sound_environment const *requests)
 				{
 					real maximum = step * k_pi;
 
-					environment->unknown0c += PIN_126660(request->unknown0c - environment->unknown0c, 0.0f - maximum, maximum);
-					environment->unknown10 += PIN_126660(request->unknown10 - environment->unknown10, 0.0f - maximum, maximum);
+					approach_126660(&environment->unknown0c, request->unknown0c - environment->unknown0c, 0.0f - maximum, maximum);
+					approach_126660(&environment->unknown10, request->unknown10 - environment->unknown10, 0.0f - maximum, maximum);
 				}
-				environment->unknown18 += PIN_126660(request->unknown18 - environment->unknown18, 0.0f - step, step);
+				approach_126660(&environment->unknown18, request->unknown18 - environment->unknown18, 0.0f - step, step);
 				environment->unknown14 += PIN_126660(request->unknown14 - environment->unknown14, 0.0f - step, step);
 				environment->fade += PIN_126660(1.0f - environment->fade, 0.0f - step, step);
 				environment->transition_time = request->transition_time;
@@ -2817,6 +2825,12 @@ struct s_voice_position_batch
 	s_voice_position_entry entries[0x48];
 };
 
+/* marks a voice buffer as seen */
+static inline void seen_set_129100(dword *seen, long index)
+{
+	seen[index >> 5] |= 1 << (index & 31);
+}
+
 // @retail 0x129100
 void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f **channels)
 {
@@ -2832,7 +2846,7 @@ void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f
 		s_sound_location_source *source = (s_sound_location_source *)&sound->location;
 		byte *location = (byte *)&sound->location;
 		bool spatial = source->spatialization == 1 && !TEST_FIELD_BIT(sound->flag2) &&
-			!(bool)((location[0] >> 7) & 1) && !(location[0] & 1);
+			!TEST_FIELD_BIT(sound->location.flag7) && !TEST_FIELD_BIT(sound->location.flag0);
 		bool local = source->spatialization == 0 && !TEST_FIELD_BIT(sound->flag2) &&
 			(bool)(((dword)*(word *)location >> 12) & 1) && *(short *)((byte *)sound + 0x46) == g_4686c4;
 		if (spatial)
@@ -2840,8 +2854,8 @@ void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f
 			short buffer = voice->unknown0e;
 			if (buffer == NONE || (seen[buffer >> 5] & (1 << (buffer & 31))))
 				continue;
-			seen[buffer >> 5] |= 1 << (buffer & 31);
-			s_voice_position_entry *entry = &batch->entries[batch->count++];
+			seen_set_129100(seen, buffer);
+			s_voice_position_entry *entry = &batch->entries[++batch->count - 1];
 			s_sound_definition *definition = sound_definition_get(sound->definition_index);
 			entry->listener = sound->listener_index;
 			entry->position = *(point3f *)((byte *)sound + 0x24);
@@ -2856,7 +2870,7 @@ void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f
 		}
 		else if (local && voice->channel_index != NONE)
 		{
-			s_voice_position_entry *entry = &batch->entries[batch->count++];
+			s_voice_position_entry *entry = &batch->entries[++batch->count - 1];
 			entry->listener = sound->listener_index;
 			entry->position = *g_468788;
 			entry->index = *(short *)((byte *)sound + 0x44);
@@ -2873,7 +2887,7 @@ void function_129100(s_voice_position_batch *batch, vector3f **buffers, vector3f
 
 struct s_animation_state;
 struct s_animation_ref;
-void function_219310(s_animation_state *state, s_animation_ref *ref, byte value);
+void function_219310(s_animation_state *state, s_animation_ref *ref, short value);
 long function_2193d0(s_animation_state *state, s_animation_ref *ref);
 
 // @retail 0x1282d0
@@ -2881,55 +2895,59 @@ void function_1282d0(void)
 {
 	s_record_pool *sounds = g_4e637c;
 	long sound_index = data_datum_index(sounds, function_16bc00(sounds, 0));
-	while (sound_index != NONE)
+	if (sound_index != NONE)
 	{
-		s_sound_playback *sound = (s_sound_playback *)sounds->data + (sound_index & 0xffff);
-		if (sound->start_time <= SOUND_SYSTEM->time)
+		do
 		{
-			if ((byte)function_125e60((s_looping_track_sound *)sound))
+			s_sound_playback *sound = SOUND_PLAYBACK_GET(sound_index);
+			if (sound->start_time <= SOUND_SYSTEM->time)
 			{
-				long reason;
-				short voice_index = sound_voice_acquire(sound_index, &reason);
-				if (voice_index != NONE)
+				if ((byte)function_125e60((s_looping_track_sound *)sound))
 				{
-					s_sound_voice *voice = &g_4e6378[voice_index];
-					if (voice->sound_index != sound_index)
+					long reason;
+					short voice_index = sound_voice_acquire(sound_index, &reason);
+					if (voice_index != NONE)
 					{
-						if (voice->sound_index != NONE)
+						s_sound_voice *voice = &g_4e6378[voice_index];
+						if (voice->sound_index != sound_index)
 						{
-							function_127320(voice->sound_index, reason);
-							sound_voice_free(voice_index);
+							if (voice->sound_index != NONE)
+							{
+								function_127320(voice->sound_index, reason);
+								sound_voice_free(voice_index);
+							}
+							voice->sound_index = sound_index;
+							sound->start_time = SOUND_SYSTEM->time;
+							sound->value_ac = voice_index;
 						}
-						voice->sound_index = sound_index;
-						sound->start_time = SOUND_SYSTEM->time;
-						sound->value_ac = voice_index;
+						if (!TEST_FIELD_BIT(sound->source_updated) && sound->source && sound->source->proc1)
+							sound->source->proc1(sound->object_index, sound->definition_index, sound_index, (long)&sound->marker);
 					}
-					if (!TEST_FIELD_BIT(sound->source_updated) && sound->source && sound->source->proc1)
-						sound->source->proc1(sound->object_index, sound->definition_index, sound_index, (long)&sound->marker);
+					else
+						function_127320(sound_index, 7);
 				}
-				else
-					function_127320(sound_index, 7);
-			}
-			else if (sound->value_ac == NONE)
-			{
-				s_sound_definition *definition = sound_definition_get(sound->definition_index);
-				short mode = TEST_FIELD_BIT(sound->flag4) ? 1 : *(short *)((byte *)function_221810(definition->promotion_index) + 0xe);
-				switch (mode)
+				else if (sound->value_ac == NONE)
 				{
-				case 0:
+					s_sound_definition *definition = sound_definition_get(sound->definition_index);
+					short mode = TEST_FIELD_BIT(sound->flag4) ? 1 : *(short *)((byte *)function_221810(definition->promotion_index) + 0xe);
+					switch (mode)
 					{
-						s_sound_pitch_range *range = &SOUND_GLOBALS_DEFINITIONS->pitch_ranges[definition->pitch_range_base + sound->pitch_range_index];
-						if (!(bool)((*(word *)((byte *)function_221810(definition->promotion_index) + 0xa) >> 5) & 1) &&
-							(short)function_2193d0((s_animation_state *)range, (s_animation_ref *)definition) == NONE)
-							function_219310((s_animation_state *)range, (s_animation_ref *)definition, sound->permutation_index);
-						function_127320(sound_index, 0xe);
+					case 0:
+						{
+							s_sound_pitch_range *range = &SOUND_GLOBALS_DEFINITIONS->pitch_ranges[definition->pitch_range_base + sound->pitch_range_index];
+							if (!(bool)((*(word *)((byte *)function_221810(definition->promotion_index) + 0xa) >> 5) & 1) &&
+								(short)function_2193d0((s_animation_state *)range, (s_animation_ref *)definition) == NONE)
+								function_219310((s_animation_state *)range, (s_animation_ref *)definition, sound->permutation_index);
+							function_127320(sound_index, 0xe);
+						}
+						break;
 					}
-					break;
 				}
 			}
+			sounds = g_4e637c;
+			sound_index = data_datum_index(sounds, data_find_index(sounds, sound_index == NONE ? 0 : (sound_index & 0xffff) + 1));
 		}
-		sounds = g_4e637c;
-		sound_index = data_datum_index(sounds, data_find_index(sounds, sound_index == NONE ? 0 : (sound_index & 0xffff) + 1));
+		while (sound_index != NONE);
 	}
 }
 
@@ -3188,7 +3206,10 @@ void function_128ca0(short arg_0, long arg_1, s_looping_channel_spatialization c
 	local_3.field_8 = local_5 - (real)SOUND_GLOBALS_DEFINITIONS->pitch_bounds[local_7->bounds_index].unknown00;
 	if (local_1->priority & 2)
 	{
+		/* retail calls the promotion lookup here */
+#pragma inline_depth(0)
 		s_unknown_5c *local_9 = function_221810(local_2->promotion_index);
+#pragma inline_depth()
 		real local_10;
 		if (local_1->effect_index != NONE)
 		{

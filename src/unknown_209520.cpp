@@ -613,8 +613,10 @@ s_type_f4462a const g_44b1c8 = { _hs_type_void, 2, function_2087e0, "<short> [<s
 
 PRIVATE inline long hs_delay_ticks(long delay)
 {
-	real seconds = (real)delay * 0.03333333507180214f * (real)g_510c54->field_2_3;
+	real seconds = (real)delay * 0.03333333507180214f;
 	long ticks;
+
+	seconds *= (real)g_510c54->field_2_3;
 	__asm
 	{
 		fld seconds
@@ -666,7 +668,9 @@ void __stdcall function_2089b0(short function_index, long thread_index, bool ini
 	}
 	else if (*state != 1)
 		return;
-	long duration = *timeout == NONE ? NONE : hs_delay_ticks(*timeout);
+	long duration = NONE;
+	if (*timeout != NONE)
+		duration = hs_delay_ticks(*timeout);
 	if (*(bool *)condition || (duration != NONE && g_510c54->game_time >= *start + duration))
 		function_209ae0(thread_index, 0);
 	else
@@ -675,11 +679,9 @@ void __stdcall function_2089b0(short function_index, long thread_index, bool ini
 		name = hs_expression_get(expression->value);
 		function_2099f0(thread_index, condition, *(long *)((byte *)name + 8));
 		long ticks = hs_delay_ticks(*(short *)interval);
-		if (ticks < 1)
-			ticks = 1;
-		thread->sleep_until = g_510c54->game_time + ticks;
+		thread->sleep_until = g_510c54->game_time + (ticks < 1 ? 1 : ticks);
 		if (duration != NONE)
-			thread->sleep_until = thread->sleep_until < *start + duration ? thread->sleep_until : *start + duration;
+			thread->sleep_until = *start + duration > thread->sleep_until ? thread->sleep_until : *start + duration;
 	}
 }
 
@@ -963,13 +965,14 @@ long function_16b990(s_record_pool *data, long index);
 // @retail 0x2090a0
 void function_2090a0(void)
 {
+    byte *scenario = (byte *)g_4e0350;
+
     g_4f9384->valid = true;
     record_pool_release_all(g_4f9384);
     g_4f9388 = true;
     g_4f938c = NONE;
     if (g_4686c0 != NONE && g_4e6948->mode != 4)
     {
-        byte *scenario = (byte *)g_4e0350;
         long thread_index = function_2097c0(NONE, 1);
         s_hs_thread *thread = hs_thread_get(thread_index);
         for (long i = 0; i < *(long *)(scenario + 0x1c0); i++)

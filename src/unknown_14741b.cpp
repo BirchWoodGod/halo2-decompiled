@@ -3,6 +3,7 @@
    screens, which the window manager loads itself */
 
 #include "unknown_11c920.h"
+#include "globals.h"
 #include "screen_widgets.h"
 #include "user_interface_lists.h"
 #include "unknown_24b5bc.h"
@@ -477,8 +478,6 @@ c_class_1473c9 *__stdcall function_23252e(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2323c3(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_23246a(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2325fb(s_screen_parameters *parameters);
-
-bool g_4ee4e0;
 
 /* quits the game: the player leaves, or the whole game ends */
 // @retail 0x232c9e

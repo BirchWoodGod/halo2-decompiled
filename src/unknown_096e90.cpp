@@ -69,7 +69,7 @@ long c_vtable_450d1c::v1(long a1, long max_count, void *entries)
 					if (node->active_mask == 0)
 					{
 						current_owner->manager->v3(node);
-						function_89e70(node, current_owner);
+						function_89e70(current_owner, node);
 					}
 				}
 				else
@@ -338,7 +338,7 @@ void c_vtable_450d1c::function_976f0(long key, bool flag)
 			if (node->active_mask == 0)
 			{
 				current_owner->manager->v3(node);
-				function_89e70(node, current_owner);
+				function_89e70(current_owner, node);
 			}
 		}
 
