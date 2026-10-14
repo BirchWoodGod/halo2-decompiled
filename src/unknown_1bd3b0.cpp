@@ -3,6 +3,8 @@
 #include "slot_handler.h"
 #include "unknown_26e370.h"
 #include "unknown_26c380.h"
+#include "unit_requests.h"
+#include "unknown_1f4460.h"
 #include <math.h>
 
 /* slot type 0x5d */
@@ -26,7 +28,7 @@ struct s_slot_5d
 short __stdcall function_1bd850(long actor_index);
 short __stdcall function_1bda60(long actor_index, s_slot *slot, bool active);
 long __stdcall function_1bd890(long actor_index, s_slot *slot);
-void __stdcall function_1bdad0(long actor_index, s_slot *slot, long index);
+bool __stdcall function_1bdad0(long actor_index, s_slot *slot, long index);
 short __stdcall function_1bde80(long actor_index, long joint_index, long a, long b);
 point3f *function_b9dd0(long object_index, point3f *result);
 
@@ -293,6 +295,126 @@ short __stdcall function_1bda60(long actor_index, s_slot *slot, bool active)
 	return result;
 }
 
+void function_1f86a0(long actor_index);
+bool function_1f86f0(long actor_index);
+bool __stdcall function_1badc0(long actor_index, long object_index, point3f const *point,
+    s_type_c3b527 *out_point, long *out_node, bool create, bool *alternate);
+
+struct s_1bdad0_target
+{
+	long object_index;
+	short count;
+	short required_count;
+	vector3f direction;
+	short next_id;
+};
+
+// @retail 0x1bdad0
+bool __stdcall function_1bdad0(long actor_index, s_slot *slot, long index)
+{
+	s_actor_view *actor = actor_get(actor_index);
+	s_5d_element *element = (s_5d_element *)index;
+	s_1bdad0_target *target = (s_1bdad0_target *)&element->object_index;
+	bool result = true;
+	long object_index = target->object_index;
+
+	if (object_index == NONE || ((s_slot_5d *)slot)->unknown20 == NONE)
+	{
+		result = false;
+		goto done;
+	}
+	{
+	s_1bd610 *movement = (s_1bd610 *)((byte *)slot + 0x1c);
+	if ((short)movement->field_8 == NONE)
+	{
+		if (element->unknown02 == 1)
+			movement->field_8 = target->next_id++;
+		if ((short)movement->field_8 == NONE)
+			goto done;
+	}
+	{
+		object_index = target->object_index;
+		bool stationary = function_1bd3b0(object_index);
+		if (stationary)
+		{
+			if ((*(word *)movement) & 0x10)
+			{
+				if (!((*(word *)movement) & 2))
+				{
+					long prop_index = function_25d810(object_index, actor_index, false);
+					real distance = function_210970((s_type_c3b527 const *)&actor->unknown27c,
+						&movement->field_c);
+					if (prop_index != NONE && *(short *)((byte *)prop_node_get(prop_index) + 0x1c) == 0 && distance < 0.4f)
+						(*(word *)movement) |= 0xa;
+					if (!((*(word *)movement) & 2) && ((*(word *)movement) & 8) && distance < 0.4f)
+					{
+						(*(word *)movement) |= 2;
+						function_1f86a0(actor_index);
+					}
+					if (function_1f86f0(actor_index))
+						(*(word *)movement) |= 0xa;
+				}
+				vector3f const *direction = &target->direction;
+				if (((*(word *)movement) & 2) && actor->unknown290.k * direction->k +
+					actor->unknown290.j * direction->j + actor->unknown290.i * direction->i > 0.95f && !((*(word *)movement) & 4))
+				{
+					target->count++;
+					(*(word *)movement) |= 4;
+				}
+			}
+			else
+			{
+				(*(word *)movement) &= ~2;
+				if ((*(word *)movement) & 4)
+				{
+					target->count--;
+					(*(word *)movement) &= ~4;
+				}
+			}
+			if (target->count == element->unknown7c)
+			{
+				s_unit_request request;
+				request.type = 0x21;
+				*(long *)request.arguments = actor->unknown018;
+				function_e6900(movement->field_4, &request);
+			}
+		}
+		else
+		{
+			if ((*(word *)movement) & 4)
+			{
+				target->count--;
+				(*(word *)movement) &= ~4;
+			}
+			(*(word *)movement) &= ~0x12;
+		}
+		if (actor->unknown040 && stationary && !((*(word *)movement) & 2))
+		{
+			if (!function_1bd610(movement, actor_index,
+				(s_1bd611 *)target))
+			{
+				result = false;
+				goto done;
+			}
+			point3f world;
+			s_type_c3b527 destination;
+			long node_index;
+			bool alternate = false;
+			function_210850(&movement->field_c, &world);
+			if (function_1badc0(actor_index, movement->field_4, &world, &destination, &node_index, false, &alternate))
+			{
+				result = function_1f4460(actor_index, &movement->field_c, movement->field_1c,
+					alternate ? NONE : movement->field_4, false);
+				if (!result)
+					actor_get(actor_index)->unknown040 = false;
+			}
+		}
+	}	}
+done:
+	return result;
+}
+
+
 // @retail 0x1bdd70
 void __stdcall function_1bdd70(long actor_index, s_slot *slot, s_slot_target_list *list)
 {
@@ -405,6 +527,6 @@ s_slot_handler_2x g_47ec48 =
 		},
 		(t_slot_proc)joint_update, joint_activate, joint_deactivate
 	},
-	(t_slot_proc)function_1bd890, 0, function_1bdad0, slot_release_nothing, function_1bdd70, (t_slot_proc4)function_1bde80,
+	(t_slot_proc)function_1bd890, 0, (t_slot_release)function_1bdad0, slot_release_nothing, function_1bdd70, (t_slot_proc4)function_1bde80,
 	1, 3, 0.2f, 0
 };

@@ -10,6 +10,7 @@
 #include "unknown_0a58d0.h"
 #include "unknown_xa19f52.h"
 #include "entity_relevance.h"
+#include "unknown_0662e0.h"
 #include <float.h>
 #include <xtl.h>
 
@@ -33,11 +34,8 @@ struct s_relevance_observers
 	s_relevance_observer observers[1];
 };
 
-/* the facing thresholds and relevances of the two observer types */
-real g_4cece8;
-real g_4cecec;
-real g_4cecf0;
-real g_4cecf4;
+/* the facing thresholds and relevances of the two observer types are
+   g_network_configuration.realca8 to realcb4 */
 
 /* the object an entity stands for (0xa58d0, inlined) */
 static inline long simulation_entity_get_object_index(long entity_index)
@@ -126,12 +124,12 @@ real function_aa4d0(long count, long const *entity_indices, real maximum_distanc
 						switch (observer->type)
 						{
 						case 0:
-							threshold = g_4cece8;
-							facing_relevance = g_4cecf0;
+							threshold = g_network_configuration.realca8;
+							facing_relevance = g_network_configuration.realcb0;
 							break;
 						case 1:
-							threshold = g_4cecec;
-							facing_relevance = g_4cecf4;
+							threshold = g_network_configuration.realcac;
+							facing_relevance = g_network_configuration.realcb4;
 							break;
 						}
 						if (dot3f(&observer->forward, &direction) >= threshold)

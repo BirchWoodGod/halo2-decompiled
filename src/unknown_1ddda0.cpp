@@ -77,12 +77,12 @@ bool function_1debd0(dword const *arg_1, s_bsp3d const *arg_0, short arg_2, long
  if (!arg_1 || !(local_1->field_4 & 8) || (short)local_1->field_5 >= arg_2 ||
   (arg_1[local_1->field_5 >> 5] & (1 << (local_1->field_5 & 31))))
  {
+  short const *local_6 = g_440b94[arg_4 * 2 + arg_5];
+  long local_7 = local_6[0] * sizeof(real), local_8 = local_6[1] * sizeof(real);
   s_1ddda2 const *local_2 = local_0->field_34;
   s_1ddda3 const *local_3 = local_0->field_3c;
   long local_4 = local_1->field_2;
   long local_5 = local_4;
-  short const *local_6 = g_440b94[arg_4 * 2 + arg_5];
-  long local_7 = local_6[0] * sizeof(real), local_8 = local_6[1] * sizeof(real);
   do
   {
    s_1ddda2 const *local_9 = &local_2[local_5];
@@ -146,7 +146,9 @@ long function_1dea00(s_bsp3d const *arg_0, long arg_1, point3f const *arg_6,
    if (local_8 >= local_7 && local_8 >= local_6) local_9 = 2;
    else if (local_7 >= local_6) local_9 = 1;
    else local_9 = 0;
-   bool local_10 = (((real const *)local_5)[local_9] > 0.0f) != (bool)((local_15 >> 15) & 1);
+   bool local_16 = ((real const *)local_5)[local_9] > 0.0f;
+   bool local_17 = (bool)(((dword)local_15 >> 15) & 1);
+   bool local_10 = local_16 != local_17;
    point3f local_11;
    local_11.x = arg_7->i * arg_5 + arg_6->x;
    local_11.y = arg_7->j * arg_5 + arg_6->y;
