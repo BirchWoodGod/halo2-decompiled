@@ -60,16 +60,17 @@ bool function_221da0(long listener_index, s_sound_transmission_view const *sound
 		byte type = sound->type;
 		if (type == 1)
 		{
+			result = type;
 			s_local_camera *camera = local_camera_get(listener_index);
 			short cluster_index = sound->cluster_index;
-			if (cluster_index == NONE)
-				return true;
-			short camera_cluster = camera->index;
-			if (camera_cluster != NONE &&
-				(*(long *)camera->unknown00 == sound->bsp_index || camera_cluster == cluster_index ||
-				 function_249d60((s_structure_bsp_view *)g_4e0348, camera_cluster, cluster_index) * scale < 256.0f))
-				return false;
-			return true;
+			if (cluster_index != NONE)
+			{
+				short camera_cluster = camera->index;
+				if (camera_cluster != NONE &&
+					(*(long *)camera->unknown00 == sound->bsp_index || camera_cluster == cluster_index ||
+					 function_249d60((s_structure_bsp_view *)g_4e0348, camera_cluster, cluster_index) * scale < 256.0f))
+					result = false;
+			}
 		}
 	}
 	return result;
