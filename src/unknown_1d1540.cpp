@@ -102,7 +102,7 @@ void function_1d1540(s_havok_component *arg_0)
    byte *local_7 = g_4e3b44[*(long *)(local_6 + 0x24) & 0xffff].bytes;
    if (*(real *)(local_7 + 8) != 1.0f || *(real *)(local_7 + 0xc) != 1.0f)
    {
-    s_314320 local_8;
+    __declspec(align(16)) s_314320 local_8;
     ((s_314450 *)local_3)->function_314450(&local_8);
     local_8.field_4 *= *(real *)(local_7 + 8);
     local_8.field_8 *= *(real *)(local_7 + 8);

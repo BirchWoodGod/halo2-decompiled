@@ -580,7 +580,7 @@ void function_24cf66(long local_player_index)
 			top -= 0x19;
 
 		s_hud_player *player = hud_player_get(local_player_index);
-		short count = 4 - split_screen;
+		short count = 4 - (split_screen != 0);
 		s_hud_state *hud = g_5023f4;
 		bool timer_message = hud->element_1390 && hud->value_1394;
 		bool tutorial_message = g_510c98->flag && hud->element_138c;

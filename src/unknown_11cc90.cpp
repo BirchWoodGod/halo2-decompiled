@@ -17,7 +17,7 @@ real function_11cc90(
 	real d = a->i * b->i + a->j * b->j;
 	real c = d < -1.f ? -1.f : d > 1.f ? 1.f : d;
 	real angle = function_11cd21(c);
-	if (a->i * b->j - a->j * b->i > 0.f)
+	if (a->i * b->j - a->j * b->i < 0.f)
 		return 0.f - angle;
 	return angle;
 }

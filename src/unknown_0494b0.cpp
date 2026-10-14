@@ -257,6 +257,8 @@ real g_485a0c[8];
 // @retail 0x48ee0
 void function_48ee0(byte const *state, byte const *matrix, byte const *tag)
 {
+    byte const *const *state_reference = &state;
+    state = *state_reference;
     real aspect = (real)sqrt(*(real const *)(state + 8));
     real distance = *(real const *)(state + 0x64);
     real offset = *(short const *)(tag + 0x8e) == 1 ? *(real const *)(state + 0x28) : 0.0f;

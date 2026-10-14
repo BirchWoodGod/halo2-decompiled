@@ -473,19 +473,19 @@ short __stdcall function_255740(long arg_0, s_slot *arg_1)
 		long local_1 = local_0->unknown5ac;
 		s_slot_object_view *local_2 = object_get(local_1);
 		vector3f local_3 = local_0->unknown5ec;
-		vector3f local_4 = local_0->unknown290;
 		local_3.k = 0.f;
+		vector3f local_4 = local_0->unknown290;
 		local_4.k = 0.f;
 		real local_5 = function_30bf0(&local_3);
 		if (local_5 > 0.f && function_30bf0(&local_4) > 0.f)
 		{
 			real local_6 = *(real *)((byte *)function_1e4a50(local_0->unknown054) + 4);
+			real local_9 = local_2->unknown03c + local_6;
 			vector3f local_7;
 			vector3d_from_points3d(&local_0->position, &local_2->unknown030, &local_7);
 			real local_8 = function_255741(&local_7, &local_3);
 			if (local_8 > 0.f)
 			{
-				real local_9 = local_2->unknown03c + local_6;
 				if (local_9 + local_5 > local_8)
 				{
 					vector3f local_10;
@@ -501,23 +501,26 @@ short __stdcall function_255740(long arg_0, s_slot *arg_1)
 						local_8 -= local_2->unknown03c;
 						if (local_4.i * local_3.i + local_4.j * local_3.j + local_4.k * local_3.k > 0.95f)
 						{
-							real local_13 = 0.f;
-							real local_14 = 0.f;
-							long local_15;
-							s_location_view local_16;
-							function_26bfa0(local_1, &local_15, &local_16);
-							local_4.i = local_10.i * -1.f;
-							local_4.j = local_10.j * -1.f;
-							local_4.k = -0.f;
-							volatile short local_17;
-							if (function_2556b0(&local_16.point.point, &local_10, local_15, &local_13) && local_11 > 0.f)
-								local_17 = 1;
-							else if (function_2556b0(&local_16.point.point, &local_4, local_15, &local_14) && local_11 < 0.f)
-								local_17 = 2;
-							else if ((local_13 > local_14 ? local_13 : local_14) > 0.5f)
-								local_17 = local_13 + local_11 > local_14 - local_11 ? 1 : 2;
-							else
-								local_17 = 0;
+							short local_17;
+							{
+								real local_13 = 0.f;
+								real local_14 = 0.f;
+								long local_15;
+								s_location_view local_16;
+								function_26bfa0(local_1, &local_15, &local_16);
+								vector3f local_25;
+								local_25.i = local_10.i * -1.f;
+								local_25.j = local_10.j * -1.f;
+								local_25.k = local_10.k * -1.f;
+								if (function_2556b0(&local_16.point.point, &local_10, local_15, &local_13) && local_11 > 0.f)
+									local_17 = 1;
+								else if (function_2556b0(&local_16.point.point, &local_25, local_15, &local_14) && local_11 < 0.f)
+									local_17 = 2;
+								else if ((local_13 > local_14 ? local_13 : local_14) > 0.5f)
+									local_17 = local_13 + local_11 > local_14 - local_11 ? 1 : 2;
+								else
+									local_17 = 0;
+							}
 							long local_18;
 							switch (local_17)
 							{
@@ -532,7 +535,7 @@ short __stdcall function_255740(long arg_0, s_slot *arg_1)
 							short local_19, local_21;
 							real local_20, local_22;
 							real local_23;
-							if (function_10fa80(local_0->unknown018, local_18, 0x7000101, &local_19, &local_20, &local_21, &local_22))
+							if (function_10fa80(local_0->unknown018, 0x7000101, local_18, &local_19, &local_20, &local_21, &local_22))
 								local_23 = local_20 * 1.33f;
 							else
 								local_23 = 0.4f;

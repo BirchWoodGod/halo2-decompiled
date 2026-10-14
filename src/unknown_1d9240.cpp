@@ -237,10 +237,11 @@ void function_1d9470(s_1d9240 const *p, long count, dword const *mask, s_blend_o
 				}
 				else
 				{
-					orientations->quaternion[0] = 0.0f;
-					orientations->quaternion[1] = 0.0f;
-					orientations->quaternion[3] = 1.0f;
-					orientations->quaternion[2] = 0.0f;
+					real zero = 0.0f;
+					orientations->quaternion[0] = zero;
+					orientations->quaternion[1] = zero;
+					orientations->quaternion[2] = zero;
+					orientations->quaternion[3] = zero + 1.0f;
 				}
 				orientations->translation[0] = (orientations->translation[0] - targets->translation[0]) * t + targets->translation[0];
 				orientations->translation[1] = (orientations->translation[1] - targets->translation[1]) * t + targets->translation[1];
