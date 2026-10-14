@@ -450,10 +450,14 @@ void function_1239d0(void)
 		iterator.datum_index = NONE;
 		while ((request = (s_cache_request *)data_iterator_next_calling(&iterator)) != NULL && loads < 8)
 		{
-			if (request->priority == 1 && g_510c21)
+			if (request->priority == 1)
 			{
 				s_cache_resource *resource = request->resource;
 
+				if (!g_510c21)
+				{
+					continue;
+				}
 				if (resource->block_index == NONE)
 				{
 					s_cache_load *load = function_123550(1, resource);
@@ -474,11 +478,11 @@ void function_1239d0(void)
 		next_iterator.datum_index = NONE;
 		while ((request = (s_cache_request *)data_iterator_next_calling(&next_iterator)) != NULL && loads < 8)
 		{
+			long priority = request->priority;
+			s_cache_resource *resource = request->resource;
+
 			if (g_510c21)
 			{
-				long priority = request->priority;
-				s_cache_resource *resource = request->resource;
-
 				if (resource->block_index == NONE)
 				{
 					s_cache_load *load = function_123550(priority, resource);
