@@ -32,16 +32,13 @@ struct s_22a664
 
 PRIVATE __forceinline real function_22a665(byte const *arg_0, long arg_1)
 {
-    real local_0;
     if (*(word const *)(arg_0 + 0xe) & 0x10)
-        local_0 = (real)*(short const *)(arg_0 + arg_1);
-    else
-        local_0 = 1.0f;
-    return local_0;
+        return (real)*(short const *)(arg_0 + arg_1);
+    return 1.0f;
 }
 
 // @retail 0x22a664
-void function_22a664(s_widget_quad_2b11 const *arg_0, s_float_rect const *arg_1,
+void function_22a664(s_float_rect const *arg_1, s_widget_quad_2b11 const *arg_0,
 	long arg_2, long arg_3, long arg_4)
 {
 	s_22a664 local_0[4];
@@ -65,12 +62,13 @@ void function_22a664(s_widget_quad_2b11 const *arg_0, s_float_rect const *arg_1,
 		local_0[3].field_4 = local_5[3].y;
 		local_0[0].field_8 = local_0[1].field_8 = local_0[2].field_8 = local_0[3].field_8 = 16777215.0f;
 		local_0[0].field_c = local_0[1].field_c = local_0[2].field_c = local_0[3].field_c = 16777215.0f;
-		local_0[0].field_10 = local_4[0] * local_2;
-		local_0[0].field_14 = local_0[1].field_14 = local_4[2] * local_3;
-		local_0[1].field_10 = local_0[2].field_10 = local_9 * local_2;
-		local_0[2].field_14 = local_0[3].field_14 = local_4[3] * local_3;
-		local_0[3].field_10 = local_0[0].field_10;
 		local_0[0].field_18 = local_0[1].field_18 = local_0[2].field_18 = local_0[3].field_18 = 0xffffffff;
+		local_0[0].field_10 = local_4[0] * local_2;
+		local_0[1].field_14 = local_0[0].field_14 = local_4[2] * local_3;
+		local_0[2].field_10 = local_0[1].field_10 = local_9 * local_2;
+		local_0[2].field_14 = local_4[3] * local_3;
+		local_0[3].field_10 = local_0[0].field_10;
+		local_0[3].field_14 = local_0[2].field_14;
 		g_4e6950.field_28 = arg_2;
 		g_4e6950.field_2c = arg_3;
 		function_1be50();

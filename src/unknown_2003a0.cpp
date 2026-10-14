@@ -277,15 +277,10 @@ void __stdcall function_202570(long group_index)
 	group->active = active;
 }
 
-PRIVATE __forceinline s_squad_group_datum *next_group_record(s_group_record_iterator *iterator)
+/* the group walk of 0x202370 and 0x2024c0 */
+PRIVATE __forceinline s_squad_group_datum *next_group_record_202370(s_group_record_iterator *iterator)
 {
-	s_squad_group_datum *result = NULL;
-	if (g_4f55d0->active)
-	{
-		result = (s_squad_group_datum *)data_iterator_next_inlined(&iterator->records);
-		iterator->group = result;
-	}
-	return result;
+	return iterator->group = g_4f55d0->active ? (s_squad_group_datum *)data_iterator_next_inlined(&iterator->records) : NULL;
 }
 
 // @retail 0x202370
@@ -298,7 +293,7 @@ void function_202370(void)
 		iterator.records.index = NONE;
 	}
 	s_squad_group_datum *group;
-	while ((group = next_group_record(&iterator)) != NULL)
+	while ((group = next_group_record_202370(&iterator)) != NULL)
 	{
 		if (group->parent_index == NONE)
 			function_202420(iterator.records.datum_index);
@@ -315,7 +310,7 @@ void function_2024c0(void)
 		iterator.records.index = NONE;
 	}
 	s_squad_group_datum *group;
-	while ((group = next_group_record(&iterator)) != NULL)
+	while ((group = next_group_record_202370(&iterator)) != NULL)
 	{
 		if (group->parent_index == NONE)
 			function_202570(iterator.records.datum_index);
@@ -836,7 +831,7 @@ short function_205010(s_squad_iterator *iterator)
 	return result;
 }
 
-long function_257ed0(long thread_index, long actor_index, short script_index);
+long function_257ed0(long actor_index, short script_index, long thread_index);
 
 PRIVATE __forceinline short squad_valid_command_script(s_squad_placement_table *scenario, short index, char const *name)
 {
@@ -862,7 +857,7 @@ void function_201b70(long squad_index, short entry_index, long actor_index)
 	if (script_index == NONE)
 		script_index = squad_valid_command_script(scenario, squad->command_script_index, squad->command_script_name);
 	if (script_index != NONE)
-		function_257ed0(NONE, actor_index, script_index);
+		function_257ed0(actor_index, script_index, NONE);
 }
 
 PRIVATE __forceinline s_squad_placement_entry *squad_placement_entry(s_squad_placement_definition *squad, long index)
@@ -2223,20 +2218,14 @@ void __stdcall function_203120(long arg_0, long arg_1, long arg_2);
 // @retail 0x201100
 void __stdcall function_201100(long arg_0, dword *arg_1)
 {
-    long local_0 = arg_0;
-    (void)&arg_0;
-    dword *local_1;
-    (void)&arg_1;
-    byte *local_2 = *(byte **)((byte *)g_4e0350 + 0x15c) + (local_0 & 0xffff) * 0x24;
+    byte *local_2 = *(byte **)((byte *)g_4e0350 + 0x15c) + (arg_0 & 0xffff) * 0x24;
     s_record_pool *local_10 = g_51e9dc;
-    byte *local_3 = local_10->data + (local_0 & 0xffff) * 0x38;
+    byte *local_3 = local_10->data + (arg_0 & 0xffff) * 0x38;
     if (!local_3[0x23])
     {
-        arg_0 = 1 << (local_0 & 0x1f);
-        volatile long const *local_4 = &arg_0;
-        local_1 = arg_1;
-        arg_1 += local_0 >> 5;
-        if (!(*arg_1 & *local_4))
+        dword mask = 1 << (arg_0 & 0x1f);
+        dword *bits = &arg_1[arg_0 >> 5];
+        if (!(*bits & mask))
         {
             long local_6 = *(short *)(local_2 + 0x20);
             byte *local_7 = NULL;
@@ -2245,18 +2234,18 @@ void __stdcall function_201100(long arg_0, dword *arg_1)
             {
                 local_7 = local_10->data + (local_6 & 0xffff) * 0x38;
                 if (!local_7[0x23])
-                    function_201100(local_6, local_1);
+                    function_201100(local_6, arg_1);
             }
             short local_8 = *(short *)(local_2 + 0x22);
             if (local_8 >= 0 && local_8 < *(long *)((byte *)g_4e0350 + 0x240))
-                function_203120(local_0, local_8, true);
+                function_203120(arg_0, local_8, true);
             else if (*(short *)(local_3 + 0x14) != NONE && local_7 && local_7[0x23])
             {
                 long local_9 = *(short *)(local_7 + 0x14);
                 if ((short)local_9 != NONE)
-                    function_203120(local_0, local_9, false);
+                    function_203120(arg_0, local_9, false);
             }
-            *arg_1 |= *local_4;
+            *bits |= mask;
         }
     }
 }

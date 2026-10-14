@@ -745,7 +745,7 @@ static inline long pin(long value, long lo, long hi)
 	else
 	{
 		result = hi;
-		if (value <= hi)
+		if (value <= 3)
 			result = value;
 	}
 	return result;
@@ -756,14 +756,14 @@ bool function_f47d0(long unit_index, long trick);
 
 static __forceinline short function_9fdb1(long arg_0, long arg_1, long arg_2)
 {
-    long local_0 = arg_1;
-    if (arg_0 >= arg_1)
-    {
-        local_0 = arg_2;
-        if (arg_0 <= local_0)
-            local_0 = arg_0;
-    }
-    return (short)local_0;
+	long local_0 = arg_1;
+	if (arg_0 >= arg_1)
+	{
+		local_0 = arg_2;
+		if (arg_0 <= local_0)
+			local_0 = arg_0;
+	}
+	return (short)local_0;
 }
 
 // @retail 0x9fdb0
@@ -1096,20 +1096,12 @@ bool c_vehicle_flip_event_definition::v11(long a, long const *entities, long c, 
 		s_typed_object_header *headers = (s_typed_object_header *)g_4e0300->data;
 		if ((1 << headers[vehicle_index & 0xffff].type) & 2)
 		{
-			if (!((1 << headers[unit_index & 0xffff].type) & 3))
-			{
-			}
-			else
+			if ((1 << headers[unit_index & 0xffff].type) & 3)
 			{
 				_ReadWriteBarrier();
 				s_typed_object_header *current_headers = (s_typed_object_header *)g_4e0300->data;
-				if (TEST_FIELD_BIT(((s_object_view *)current_headers[unit_index & 0xffff].object)->flag2))
-				{
-				}
-				else if (TEST_FIELD_BIT(((s_object_view *)current_headers[vehicle_index & 0xffff].object)->flag2))
-				{
-				}
-				else
+				if (!TEST_FIELD_BIT(((s_object_view *)current_headers[unit_index & 0xffff].object)->flag2) &&
+					!TEST_FIELD_BIT(((s_object_view *)current_headers[vehicle_index & 0xffff].object)->flag2))
 				{
 					s_unit_flip_request request;
 					request.type = 0x21;

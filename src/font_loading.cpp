@@ -471,25 +471,26 @@ short function_122570(s_font_header const *header, dword first_character, dword 
 		do
 		{
 			if (header->kerning_pairs[index].first_character >= first_character)
+			{
+				if (header->kerning_pairs[index].first_character == first_character)
+				{
+					do
+					{
+						if (header->kerning_pairs[index].second_character >= second_character)
+						{
+							if (header->kerning_pairs[index].second_character == second_character)
+								result = header->kerning_pairs[index].offset;
+							break;
+						}
+						index++;
+					}
+					while (index < header->kerning_pair_count && header->kerning_pairs[index].first_character == first_character);
+				}
 				break;
+			}
 			index++;
 		}
 		while (index < header->kerning_pair_count);
-		if (index < header->kerning_pair_count && header->kerning_pairs[index].first_character == first_character)
-		{
-			do
-			{
-				if (header->kerning_pairs[index].second_character >= second_character)
-					break;
-				index++;
-			}
-			while (index < header->kerning_pair_count && header->kerning_pairs[index].first_character == first_character);
-			if (index < header->kerning_pair_count && header->kerning_pairs[index].first_character == first_character &&
-				header->kerning_pairs[index].second_character == second_character)
-			{
-				result = header->kerning_pairs[index].offset;
-			}
-		}
 	}
 	return result;
 }

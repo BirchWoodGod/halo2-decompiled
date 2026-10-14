@@ -369,6 +369,7 @@ void function_18c720(long tag_index, long object_index, long set_index, long per
 }
 #pragma inline_depth(255)
 
+#pragma optimize("s", on)
 // @retail 0x18c6a0
 void __stdcall function_18c6a0(long object_index, long unused, long tag_index, long set_index, long permutation, long scale)
 {
@@ -381,6 +382,7 @@ void __stdcall function_18c6a0(long object_index, long unused, long tag_index, l
 		function_18c720(tag_index, object_index, set_index, (s_sound_permutation *)permutation - first, *(real *)&scale);
 	}
 }
+#pragma optimize("", on)
 
 real sound_permutation_reference_duration(long definition_index, s_sound_permutation_reference const *reference); /* unknown_20b3c0.cpp */
 

@@ -352,15 +352,17 @@ long function_257e70(long script_index)
 }
 
 // @retail 0x257ed0
-long function_257ed0(long thread_index, long actor_index, short script_index)
+long function_257ed0(long actor_index, short script_index, long thread_index)
 {
 	s_actor_cs_view *actor = actor_cs_get(actor_index);
 
-	if (g_502428 != NONE && function_272b70(g_502428) == actor_index)
+	if (g_502428 != NONE && actor_index == function_272b70(g_502428))
 	{
-		for (long cs_index = actor->first_cs_index; cs_index != NONE; cs_index = cs_get(cs_index)->next_index)
+		for (long cs_index = actor->first_cs_index; cs_index != NONE; )
 		{
-			cs_get(cs_index)->unknown7e = true;
+			s_cs_datum *cs = cs_get(cs_index);
+			cs->unknown7e = true;
+			cs_index = cs->next_index;
 		}
 		return function_258040(actor_index, script_index, thread_index);
 	}
@@ -514,7 +516,7 @@ bool function_258230(long cs_index, short mode, long actor_index, long new_actor
 	switch (mode)
 	{
 	case 0:
-		new_cs_index = function_257ed0(cs->thread_index, new_actor_index, (short)cs->script_index);
+		new_cs_index = function_257ed0(new_actor_index, (short)cs->script_index, cs->thread_index);
 		break;
 	case 1:
 		new_cs_index = function_257fa0(new_actor_index, (short)cs->script_index, cs->thread_index);

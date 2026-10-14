@@ -686,9 +686,10 @@ void __stdcall function_1c35f0(long object_index)
 	if (((1 << header->type) & 0x1883) && !(header->flags & 0x10))
 	{
 		long root_index = function_baf80(object_index);
+		s_physics_object_header *root = physics_object_header_get(root_index);
 
-		header->object->bit12 = false;
-		if (physics_object_header_get(root_index)->cluster_index != NONE)
+		function_0bfe40(&header->object->flags, 0xc, false);
+		if (root->cluster_index != NONE)
 		{
 			s_physics_object *object = header->object;
 
@@ -703,8 +704,10 @@ void __stdcall function_1c35f0(long object_index)
 				{
 					function_1d1540((s_havok_component *)component);
 				}
+#pragma inline_depth(0)
 				function_0bfe40(&header->object->flags, 0xc,
 					TEST_FIELD_BIT(component->bit14) || TEST_FIELD_BIT(component->bit20));
+#pragma inline_depth()
 			}
 			havok_object_count(object_index);
 		}
@@ -845,17 +848,21 @@ void function_1c50c0(void)
 // @retail 0x1c2a10
 void function_1c2a10(void)
 {
-	s_type_f1af8e iterator;
+	struct
+	{
+		s_object *object;
+		s_type_f1af8e iterator;
+	} state;
 
-	function_bae80(&iterator, 0, 0);
-	while (function_baeb0(&iterator))
+	function_bae80(&state.iterator, 0, 0);
+	while ((state.object = function_baeb0(&state.iterator)) != NULL)
 	{
-		physics_object_get(iterator.object_index)->havok_component_index = NONE;
+		physics_object_get(state.iterator.object_index)->havok_component_index = NONE;
 	}
-	function_bae80(&iterator, 0, 0);
-	while (function_baeb0(&iterator))
+	function_bae80(&state.iterator, 0, 0);
+	while ((state.object = function_baeb0(&state.iterator)) != NULL)
 	{
-		long object_index = iterator.object_index;
+		long object_index = state.iterator.object_index;
 
 		if (physics_object_get(object_index)->havok_component_index == NONE)
 		{

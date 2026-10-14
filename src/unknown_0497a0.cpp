@@ -520,7 +520,7 @@ struct D3DTexture;
 struct s_bitmap_view;
 D3DTexture *function_12360(s_bitmap_view *bitmap, real priority);
 void function_52d40(long bitmap_index, byte *shader, long tag, dword flags);
-bool function_1e5e0(point3f const *position, long size, long a, long b, long c,
+bool function_1e5e0(long size, point3f const *position, long a, long b, long c,
     long d, long e, long f, long g, void const *data);
 
 struct s_43740_input
@@ -559,7 +559,7 @@ void function_43740(s_ribbon_source *source, s_ribbon_definition *definition, sh
             input.tag = tag;
             input.bitmap = bitmap;
             point3f const *position = (point3f *)(g_4ea940->data + (source->point_index[slot] & 0xffff) * 0x38 + 0x1c);
-            function_1e5e0(position, 0x20, (long)function_43720, (long)function_42cf0,
+            function_1e5e0(0x20, position, (long)function_43720, (long)function_42cf0,
                 0, 4, 0x28, 0x18, input.vertices.vertex_count, &input);
         }
     }
