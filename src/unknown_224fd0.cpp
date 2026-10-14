@@ -85,19 +85,16 @@ void __stdcall function_224fd0(s_draw_mesh_seed const *seed, s_draw_value_cache 
 	point3f const *position, vector3f const *direction, real scale, color4f const *color,
 	s_draw_mesh_context const *context)
 {
-	s_draw_mesh_seed const *const *seed_reference=&seed;
-	s_draw_value_cache *const *values_reference=&values;
 	s_draw_mesh_definition const *definition=context->definition;
-	s_draw_index_span const *span=&definition->spans[(*seed_reference)->field_1a%definition->span_count];
+	s_draw_index_span const *span=&definition->spans[seed->field_1a%definition->span_count];
 	dword mask=definition->field_d8&0xf80f;
-	function_173ba0(~values->field_44&mask,values->field_48,values->field_4c,values->field_50,(*values_reference)->values);
+	function_173ba0(~values->field_44&mask,values->field_48,values->field_4c,values->field_50,values->values);
 	values->field_44|=mask;
 	real angle=function_246cd0(&definition->angle,values->values)*6.2831854820251465f;
 	real sine=(real)sin(angle), cosine=(real)cos(angle);
-	vector3f scaling;
-	scaling.i=function_246cd0(&definition->scale_x,values->values)*scale;
-	scaling.j=function_246cd0(&definition->scale_y,values->values)*scale;
-	scaling.k=function_246cd0(&definition->scale_z,values->values)*scale;
+	real scale_i=function_246cd0(&definition->scale_x,values->values)*scale;
+	real scale_j=function_246cd0(&definition->scale_y,values->values)*scale;
+	real scale_k=function_246cd0(&definition->scale_z,values->values)*scale;
 	matrix3x3 rotation, basis;
 	switch(definition->orientation)
 	{
@@ -108,9 +105,9 @@ void __stdcall function_224fd0(s_draw_mesh_seed const *seed, s_draw_value_cache 
 	case 4: draw_rotation(g_4687b0,sine,cosine,&rotation); break;
 	default: __assume(0);
 	}
-	rotation.forward.i*=scaling.i; rotation.forward.j*=scaling.i; rotation.forward.k*=scaling.i;
-	rotation.left.i*=scaling.j; rotation.left.j*=scaling.j; rotation.left.k*=scaling.j;
-	rotation.up.i*=scaling.k; rotation.up.j*=scaling.k; rotation.up.k*=scaling.k;
+	rotation.forward.i*=scale_i; rotation.forward.j*=scale_i; rotation.forward.k*=scale_i;
+	rotation.left.i*=scale_j; rotation.left.j*=scale_j; rotation.left.k*=scale_j;
+	rotation.up.i*=scale_k; rotation.up.j*=scale_k; rotation.up.k*=scale_k;
 	switch(definition->orientation)
 	{
 	case 0:

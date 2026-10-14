@@ -93,18 +93,30 @@ struct s_247145
     byte : 1;
 };
 
+/* the same flags read as a word */
+struct s_247146
+{
+    word field_0 : 1;
+    word : 2;
+    word field_3 : 1;
+    word : 2;
+    word field_6 : 1;
+    word : 9;
+};
+
 // @retail 0x247140
 void function_247140(s_247143 const *arg_0, s_247141 *arg_1,
     s_particle_system_datum *arg_2, byte *arg_3,
     s_effect_particle_system_definition const *arg_4, real arg_5, s_247144 *arg_6)
 {
     s_247145 const *local_20 = (s_247145 const *)((byte const *)arg_2 + 0xc);
+    s_247146 const *local_21 = (s_247146 const *)((byte const *)arg_2 + 0xc);
     byte *local_0 = arg_0->field_4 != NONE ? g_4e3b44[arg_0->field_4 & 0xffff].bytes : 0;
     c_247140 *local_1 = (c_247140 *)function_137bd0(arg_4->tag_index);
-    if (TEST_FIELD_BIT(local_20->field_3))
+    if (TEST_FIELD_BIT(local_21->field_3))
     {
         long local_2 = arg_1->field_4;
-        s_247142 *volatile local_3 = 0;
+        s_247142 *local_3 = 0;
         bool local_4 = false;
         while (local_2 != NONE)
         {
@@ -113,7 +125,7 @@ void function_247140(s_247143 const *arg_0, s_247141 *arg_1,
             local_5->field_8 += local_5->field_c * arg_5;
             if (local_5->field_8 > 1.0f)
             {
-                if (TEST_FIELD_BIT(local_20->field_6) && local_20->field_0)
+                if (TEST_FIELD_BIT(local_21->field_6) && local_20->field_0)
                 {
                     local_5->field_8 -= (real)real_truncate(local_5->field_8);
                 }
