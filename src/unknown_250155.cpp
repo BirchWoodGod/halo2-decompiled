@@ -2710,7 +2710,7 @@ wchar_t *localized_short_name_get(s_localized_short_name *definition);
 void c_network_squad_browser_screen::v3()
 {
 	s_network_squad *squad = (s_network_squad *)function_2530a4(&list);
-	bool has_game = squad && squad->category;
+	long has_game = squad && squad->category;
 	c_class_1a2c81 *text;
 	c_class_1a2c81 *bitmap;
 	long i;
