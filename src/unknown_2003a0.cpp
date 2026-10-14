@@ -277,15 +277,10 @@ void __stdcall function_202570(long group_index)
 	group->active = active;
 }
 
-PRIVATE __forceinline s_squad_group_datum *next_group_record(s_group_record_iterator *iterator)
+/* the group walk of 0x202370 and 0x2024c0 */
+PRIVATE __forceinline s_squad_group_datum *next_group_record_202370(s_group_record_iterator *iterator)
 {
-	s_squad_group_datum *result = NULL;
-	if (g_4f55d0->active)
-	{
-		result = (s_squad_group_datum *)data_iterator_next_inlined(&iterator->records);
-		iterator->group = result;
-	}
-	return result;
+	return iterator->group = g_4f55d0->active ? (s_squad_group_datum *)data_iterator_next_inlined(&iterator->records) : NULL;
 }
 
 // @retail 0x202370
@@ -298,7 +293,7 @@ void function_202370(void)
 		iterator.records.index = NONE;
 	}
 	s_squad_group_datum *group;
-	while ((group = next_group_record(&iterator)) != NULL)
+	while ((group = next_group_record_202370(&iterator)) != NULL)
 	{
 		if (group->parent_index == NONE)
 			function_202420(iterator.records.datum_index);
@@ -315,7 +310,7 @@ void function_2024c0(void)
 		iterator.records.index = NONE;
 	}
 	s_squad_group_datum *group;
-	while ((group = next_group_record(&iterator)) != NULL)
+	while ((group = next_group_record_202370(&iterator)) != NULL)
 	{
 		if (group->parent_index == NONE)
 			function_202570(iterator.records.datum_index);

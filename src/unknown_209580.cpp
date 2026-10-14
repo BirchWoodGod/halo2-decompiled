@@ -140,10 +140,9 @@ long __stdcall function_209f00(char const *name)
 	while (index != NONE)
 	{
 		s_named_thread *thread = &((s_named_thread *)records->data)[index & 0xffff];
-		long script_index = thread->script_index;
-		if (script_index != NONE)
+		if (thread->script_index != NONE)
 		{
-			char const *script_name = ((s_script_name_table *)g_4e0350)->entries[script_index].name;
+			char const *script_name = ((s_script_name_table *)g_4e0350)->entries[thread->script_index].name;
 			if (!function_11c920(script_name, name))
 				return index;
 			records = g_4f9384;
