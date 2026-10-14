@@ -83,8 +83,9 @@ void function_0bfe40(word *flags, long bit, bool value)
 		*flags &= (word)~(1 << bit);
 }
 
+// retail never inlines this bit test
 // @retail 0xbfe60
-bool function_0bfe60(const dword *flags, long bit)
+__declspec(noinline) bool function_0bfe60(const dword *flags, long bit)
 {
 	return (flags[bit >> 5] & (1 << (bit & 31))) != 0;
 }
