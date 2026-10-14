@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8535 functions match
+
+```
+matched 8535 of 11318 game functions (1109957 of 2784283 bytes, 39.87%)
+```
+
+3 new matches, none lost:
+- Machine 1 Opus lane round 21: `0x86f50`, and `0xa2a80` that follows it
+- Machine 1 key lane 2 round 6: `0x138c10` (a new function)
+
 ## 2026-10-14: 8532 functions match
 
 ```
