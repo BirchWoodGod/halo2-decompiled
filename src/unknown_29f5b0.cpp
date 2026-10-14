@@ -4707,7 +4707,7 @@ void __stdcall function_2a4fd0(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44c734 = { _hs_type_void, 0, function_2a4fd0, NULL, 1, { _hs_type_ai } };
 
-void function_201520(short value, word type, long a, long b, long c);
+void function_201520(short value, long type, long a, long b, long c);
 
 /* 291: void (ai, short_integer) */
 // @retail 0x2a5010
@@ -4722,7 +4722,7 @@ void __stdcall function_2a5010(short function_index, long thread_index, bool ini
 		if (ai_index != NONE)
 		{
 			if (!(ai_index & 0xc0000000) && value > 0)
-				function_201520(value, (word)(short)ai_index, NONE, 0, 1);
+				function_201520(value, (short)ai_index, NONE, 0, 1);
 			g_4f55d0->unknown364 = ai_index;
 		}
 		function_209ae0(thread_index, 0);

@@ -2150,7 +2150,7 @@ void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
     }
 }
 
-void function_201520(short arg_0, word arg_1, long arg_2, long arg_3, long arg_4);
+void function_201520(short arg_0, long arg_1, long arg_2, long arg_3, long arg_4);
 
 struct s_200d80
 {
@@ -2209,7 +2209,7 @@ void function_200d80(void)
         long local_1 = local_0.squad_index;
         dword local_2 = *(dword *)(*(byte **)((byte *)g_4e0350 + 0x164) + (local_1 & 0xffff) * 0x74 + 0x20);
         if ((bool)((local_2 >> 12) & 1))
-            function_201520(NONE, (word)local_1, NONE, 0, 0);
+            function_201520(NONE, local_1, NONE, 0, 0);
     }
 }
 
@@ -2619,9 +2619,9 @@ long function_201010(long arg_0, short arg_1, short arg_2, short *arg_3);
 void function_2011f0(long arg_0);
 
 // @retail 0x201520
-void function_201520(short arg_0, word arg_1, long arg_2, long arg_3, long arg_4)
+void function_201520(short arg_0, long arg_1, long arg_2, long arg_3, long arg_4)
 {
-    word const *local_0 = &arg_1;
+    word const *local_0 = (word const *)&arg_1;
     long const *local_1 = &arg_2;
     long const *local_2 = &arg_3;
     long const *local_3 = &arg_4;
