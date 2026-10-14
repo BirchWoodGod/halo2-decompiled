@@ -1367,7 +1367,8 @@ bool function_1e35f0(long actor_index)
 	if (actor_active && *(long *)((byte *)actor + 0x1c) == NONE)
 	{
 		long object_index = actor->unknown018;
-		volatile long other_index = *(long *)((byte *)actor + 0x1c);
+		long const *other_field = (long *)((byte *)actor + 0x1c);
+		volatile long other_index = *other_field;
 		function_1e2a90(actor_index);
 		if (object_index != NONE)
 			function_b8540(object_index);

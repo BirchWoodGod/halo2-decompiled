@@ -106,7 +106,7 @@ struct s_network_message_session_query
 
 /* not decompiled yet (src/stubs/lane_j.cpp) */
 void __stdcall function_0b2fc0(const s_network_message_session_query *message);
-void __stdcall function_063080(c_class_58d20 *session, const s_network_message_session_query *message, const s_type_99af70 *address);
+bool __stdcall function_063080(c_class_58d20 *session, const s_network_message_session_query *message, const s_type_99af70 *address);
 bool __stdcall network_session_handle_time_synchronize(const s_session_id *message, c_class_58d20 *session, const s_type_99af70 *address);
 void __stdcall function_0785d0(void *unknown10, const s_type_99af70 *address, const void *message);
 class c_class_938e0;
@@ -226,8 +226,10 @@ void network_message_handler_refuse_connect(const s_connect_request *request, c_
 }
 
 // @retail 0x940b0
-void network_message_handler_handle_session_query(const s_network_message_session_query *message, const s_type_99af70 *address)
+void __stdcall network_message_handler_handle_session_query(const s_network_message_session_query *message, const s_type_99af70 *address)
 {
+	const s_type_99af70 *const *address_reference = &address;
+	(void)*address_reference;
 	if (message->identifier == 2 && g_4d8eb4.active)
 	{
 		s_session_id id = g_4d8eb4.session_id;

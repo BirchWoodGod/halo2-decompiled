@@ -202,7 +202,7 @@ word const *c_list_24a64d::function_24a691(long index, bool append)
 }
 
 void function_1630b0(long *values, long value);
-bool function_1a0540(s_player_profile_settings *settings, long file_index);
+bool function_1a0540(long file_index, s_player_profile_settings *settings);
 word *function_215b50(long file_index, word *name);
 
 // @retail 0x24a52b
@@ -255,7 +255,7 @@ void c_list_24a64d::v24()
 				s_player_profile_settings *settings = (s_player_profile_settings *)((byte *)entry + 4);
 				if (index == g_54e5d0.profile_index)
 					*settings = g_54e5d0.settings;
-				else if (!function_1a0540(settings, index))
+				else if (!function_1a0540(index, settings))
 				{
 					memset(settings, 0, sizeof(*settings));
 					function_215b50(entry->index, entry->field_0c);
@@ -350,7 +350,7 @@ void c_list_24a64d::function_24a30e(s_controller_reference **arg_0, long *arg_1)
 		else
 		{
 			s_player_profile_settings local_1;
-			if (function_1a0540(&local_1, local_0->index))
+			if (function_1a0540(local_0->index, &local_1))
 			{
 				if (field_89)
 				{

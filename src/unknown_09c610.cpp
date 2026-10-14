@@ -111,7 +111,7 @@ bool c_breakable_surface_damage_event_definition::v11(long arg_0, long const *ar
         if (*g_4ed280 && local_1.field_0 != NONE)
             function_184440(*(long const *)local_0, *(long const *)(local_0 + 4), (s_18444a const *)&local_1, *(long const *)(local_0 + 8));
     }
-    return local_2;
+    return false;
 }
 #pragma inline_depth(255)
 
