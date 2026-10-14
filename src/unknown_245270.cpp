@@ -113,9 +113,10 @@ PRIVATE __forceinline void function_244de2(real thickness, short count, point3f 
 		prism->field_0c = field_0c;
 		prism->field_0d = field_0d;
 		prism->field_0e = field_0e;
-		prism->field_10.i = arg_0;
-		prism->field_10.j = arg_1;
-		prism->field_10.k = arg_2;
+		vector3f *normal = &prism->field_10.n;
+		normal->i = arg_0;
+		normal->j = arg_1;
+		normal->k = arg_2;
 		prism->field_10.d = arg_3;
 		prism->field_20 = thickness;
 		prism->field_24 = function_120850(&prism->field_10.n);
@@ -153,7 +154,6 @@ void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 	real arg_3, long arg_4, long arg_5, long arg_6, byte arg_7,
 	byte arg_8, short arg_9, s_collection_245270 *arg_10)
 {
-	real const volatile *local_7 = &arg_3;
 	if (arg_10->field_02 < 256)
 	{
 		s_244de0 *local_0 = &((s_244de0 *)((byte *)arg_10 + 0x2008))[arg_10->field_02++];
@@ -165,7 +165,7 @@ void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 		local_0->field_0e = arg_9;
 		local_0->field_10 = *arg_0;
 		local_0->field_1c = *arg_1;
-		local_0->field_28 = (*local_7);
+		local_0->field_28 = arg_3;
 	}
 	if (arg_2 > 0.f)
 	{
@@ -180,22 +180,21 @@ void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 			local_0->field_0e = arg_9;
 			function_244de4(arg_0, arg_2, &local_0->field_10);
 			local_0->field_1c = *arg_1;
-			local_0->field_28 = (*local_7);
+			local_0->field_28 = arg_3;
 		}
 		point2f local_1 = { -arg_1->j, arg_1->i };
-		real local_2 = (real)sqrt(*(real const volatile *)&local_1.x * local_1.x + local_1.y * local_1.y);
+		real local_2 = (real)sqrt(local_1.x * local_1.x + local_1.y * local_1.y);
 		if (!(fabs(local_2) < 0.0001f))
 		{
 			real local_3 = 1.f / local_2;
-			*(real volatile *)&local_1.x = local_3 * local_1.x;
-			*(real volatile *)&local_1.y = local_3 * local_1.y;
+			local_1.x = local_3 * local_1.x;
+			local_1.y = local_3 * local_1.y;
 		}
 		else
 			local_2 = 0.f;
 		if (local_2 != 0.f)
 		{
-			plane3f local_4 = { local_1.x, local_1.y, 0.f,
-				arg_0->y * local_1.y + arg_0->x * local_1.x };
+			real local_4 = arg_0->y * local_1.y + arg_0->x * local_1.x;
 			point3f local_5[4];
 			local_5[0] = *arg_0;
 			local_5[1].x = arg_0->x + arg_1->i;
@@ -205,14 +204,11 @@ void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 			local_5[2].z -= arg_2;
 			local_5[3] = *arg_0;
 			local_5[3].z -= arg_2;
-			function_244de2((*local_7), 4, local_5, local_4.i, local_4.j, local_4.k, local_4.d, 0.f, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9, arg_10);
+			function_244de2(arg_3, 4, local_5, local_1.x, local_1.y, 0.f, local_4, 0.f, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9, arg_10);
 			point3f local_6 = local_5[1];
 			local_5[1] = local_5[3];
 			local_5[3] = local_6;
-			local_4.i = 0.f - local_4.i;
-			local_4.j = 0.f - local_4.j;
-			local_4.d = 0.f - local_4.d;
-			function_244de2((*local_7), 4, local_5, local_4.i, local_4.j, local_4.k, local_4.d, 0.f, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9, arg_10);
+			function_244de2(arg_3, 4, local_5, 0.f - local_1.x, 0.f - local_1.y, 0.f, 0.f - local_4, 0.f, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9, arg_10);
 		}
 	}
 }

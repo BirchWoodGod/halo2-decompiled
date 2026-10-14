@@ -825,8 +825,13 @@ void __stdcall function_1a7cc0(long actor_index)
 	if (owner->unknown222)
 		g_46eeb8[0x38]->unknown8 = g_46f348;
 
-	while (level >= 0)
+	for (;;)
 	{
+		bool valid = false;
+		if (level >= 0)
+			valid = true;
+		if (!valid)
+			break;
 		s_slot *slot = &owner->slots[level];
 		short type = slot->type;
 
@@ -1053,8 +1058,8 @@ short function_1a78a0(long actor_index, long argument, short level)
 	short result = function_1a7030(local_0, level, argument, (short *)&actor_index);
 
 	if (result == g_46fbec)
-		return g_46fbe4;
-	if (result == g_46fbe4)
+		result = g_46fbe4;
+	else if (result == g_46fbe4)
 	{
 		bool valid;
 		short score;
@@ -1854,19 +1859,16 @@ long __stdcall function_1a54a0(s_sort_weight_view const *arg_0, short arg_1,
 	{
 		real local_5 = sin(local_4);
 		real local_6 = cos(local_4);
-		short local_7 = function_14a6d0(arg_1, local_6, arg_2, arg_3, local_3, local_5, 0x200, local_1, NULL);
+		long local_7 = function_14a6d0(arg_1, local_6, arg_2, arg_3, local_3, local_5, 0x200, local_1, NULL);
 		long local_8 = function_bb430(1, local_7, local_1, 0x800, local_2);
-		s_record_pool *local_9 = g_4e8c24;
+		s_record_pool_iterator local_9;
+		local_9.data = g_4e8c24;
+		local_9.datum_index = NONE;
+		local_9.index = NONE;
 		g_4de2f8 = true;
-		long local_10 = NONE;
-		for (;;)
+		s_player_view *local_11;
+		while ((local_11 = (s_player_view *)data_iterator_next_calling(&local_9)) != 0)
 		{
-			local_10 = function_16bc00(local_9, local_10 + 1);
-			if (local_10 == NONE)
-				break;
-			s_player_view *local_11 = (s_player_view *)(local_9->data + local_10 * local_9->size);
-			if (!local_11)
-				break;
 			long local_12 = local_11->unit_index;
 			if (local_12 != NONE)
 			{
@@ -1877,9 +1879,10 @@ long __stdcall function_1a54a0(s_sort_weight_view const *arg_0, short arg_1,
 					local_12 = ((s_target_link_view *)OBJECT_HEADER(local_12)->object)->field_14;
 				}
 				while (local_12 != NONE);
-				if (g_4de300[local_13 & 0xffff] != g_4de2fc)
+				long local_16 = local_13 & 0xffff;
+				if (g_4de300[local_16] != g_4de2fc)
 				{
-					g_4de300[local_13 & 0xffff] = g_4de2fc;
+					g_4de300[local_16] = g_4de2fc;
 					local_2[local_8++] = local_13;
 				}
 			}
