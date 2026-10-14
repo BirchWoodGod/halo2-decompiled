@@ -268,6 +268,34 @@ struct s_game_options
 	byte unknown268[0x1118 - 0x268];
 };
 
+struct s_session_options;
+void function_138110(s_game_options *options);
+void __stdcall function_138640(long count, s_session_options *options);
+void __stdcall function_1483c3(long value);
+void function_18e790(s_game_options const *options);
+
+#pragma inline_depth(0)
+// @retail 0x18f1c0
+void __stdcall function_18f1c0(long reason)
+{
+	s_game_options options;
+	if (!g_4e6948 || !g_4e6948->flag1120 || g_4e6948->state != 3)
+	{
+		function_138110(&options);
+		options.field_0_2 = 3;
+		strncpy(options.field_1c_2, "scenarios\\ui\\mainmenu\\mainmenu", sizeof(options.field_1c_2));
+		options.field_1c_2[sizeof(options.field_1c_2) - 1] = 0;
+		options.difficulty = reason;
+		function_138640(1, (s_session_options *)&options);
+		function_18e790(&options);
+	}
+	else
+	{
+		function_1483c3(reason);
+	}
+}
+#pragma inline_depth(255)
+
 /* unknown_12be90.cpp */
 extern bool g_4ed39d;
 extern bool g_4ed39e;
@@ -351,3 +379,4 @@ void function_18ec60(bool keep, char const *map_name)
 	g_4ed294 = 2;
 	function_x91aa57(g_4ed298, map_name, sizeof(g_4ed298));
 }
+

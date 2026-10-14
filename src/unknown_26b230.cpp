@@ -1457,8 +1457,11 @@ long function_269040(point3f const *center, short team)
 		bool active = g_4f55d0->active;
   long volatile oldest_time = 0x7fffffff;
 		long volatile oldest = NONE;
-		while (active && (iterator.current = (s_clump *)data_iterator_next_calling(&iterator.pool)) != NULL)
+		for (;;)
 		{
+			iterator.current = NULL;
+			if (active) iterator.current = (s_clump *)data_iterator_next_calling(&iterator.pool);
+			if (!iterator.current) break;
 			long time = ((s_clump_activity_view *)iterator.current)->active_time;
 			if (time < oldest_time)
 			{

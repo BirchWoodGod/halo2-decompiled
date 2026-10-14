@@ -125,12 +125,10 @@ void function_12e5e0(long arg_1, byte *arg_6, point3f const *arg_2, vector3f con
 			}
 			else if (arg_0->field_28 == 1.0f || arg_0->field_40 == 1.0f)
 			{
-				real local_2 = arg_0->field_40;
 				real local_3 = arg_0->field_28;
-				real local_6 = arg_0->field_11c;
-				real local_7 = 1.0f - local_6;
-				local_7 *= local_2;
-				local_6 *= local_3;
+				real local_2 = arg_0->field_40;
+				real local_7 = (1.0f - arg_0->field_11c) * local_2;
+				real local_6 = arg_0->field_11c * local_3;
 				real local_4 = (1.0f - local_7) * local_3;
 				real local_5 = (1.0f - local_6) * local_2;
 				arg_0->field_4.red = function_12e5e1(local_4 * arg_0->field_1c.red + arg_0->field_34.red * local_5);

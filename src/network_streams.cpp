@@ -1014,6 +1014,27 @@ long c_network_reliable_stream::allocate_sequence(long time)
 void sequence_window_advance_1a4840(s_sequence_window *window, long sequence);
 long function_75890(long time);
 
+static __forceinline bool function_96ce1(c_network_reliable_stream *stream, bool force, long *oldest)
+{
+	bool result = false;
+	if (sequence_window_count(&stream->m_message_window))
+	{
+		long first = stream->m_message_window.oldest + 1;
+		if (first <= stream->m_next_sequence)
+		{
+			s_reliable_message *message = reliable_stream_get_message(stream, first);
+			word flags = message->flags;
+			if ((flags & 4) || force || (flags & 1) ||
+				function_75890(message->time) >= stream->m_timeout + g_network_configuration.value16b4)
+			{
+				*oldest = first;
+				result = true;
+			}
+		}
+	}
+	return result;
+}
+
 // @retail 0x96ce0
 bool __stdcall function_096ce0(c_network_reliable_stream *stream, bool force, long *type, long *sequence)
 {
@@ -1022,22 +1043,13 @@ bool __stdcall function_096ce0(c_network_reliable_stream *stream, bool force, lo
 	bool result = false;
 	**type_reference = 0;
 	s_sequence_window *window = &(*stream_reference)->m_message_window;
-	if (sequence_window_count(window))
+	long oldest;
+	if (function_96ce1(stream, force, &oldest))
 	{
-		long oldest = stream->m_message_window.oldest + 1;
-		if (oldest <= stream->m_next_sequence)
-		{
-			s_reliable_message *message = reliable_stream_get_message(stream, oldest);
-			word flags = message->flags;
-			if ((flags & 4) || force || (flags & 1) ||
-				function_75890(message->time) >= stream->m_timeout + g_network_configuration.value16b4)
-			{
-				**type_reference = 6;
-				result = true;
-				*sequence = oldest;
-				sequence_window_advance_1a4840(window, oldest);
-			}
-		}
+		**type_reference = 6;
+		result = true;
+		*sequence = oldest;
+		sequence_window_advance_1a4840(window, oldest);
 	}
 	return result;
 }

@@ -129,10 +129,11 @@ void tangent_directions(point2f const *direction, point2f *left, point2f *right,
 	}
 	cosine = (real)sqrt(1.0f - sine * sine);
 	negative_sine = 0.0f - sine;
-	left->y = direction->x * negative_sine + cosine * direction->y;
-	left->x = direction->x * cosine - negative_sine * direction->y;
-	right->y = direction->x * sine + cosine * direction->y;
-	right->x = cosine * direction->x - sine * direction->y;
+	point2f const *input = direction;
+	left->y = input->x * negative_sine + cosine * input->y;
+	left->x = input->x * cosine - negative_sine * input->y;
+	right->y = input->x * sine + cosine * input->y;
+	right->x = cosine * input->x - sine * input->y;
 	*tangent_length = cosine * distance;
 }
 
