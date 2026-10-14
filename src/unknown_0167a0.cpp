@@ -650,7 +650,8 @@ bool function_1b580(byte const *definition, long component, long unused, long mo
 void __stdcall function_17960(byte *state, word const *range)
 {
     dword initial_range = *range;
-    if (initial_range & 0xfe00)
+    s_packed_shader_range const *range_view = (s_packed_shader_range const *)range;
+    if (range_view->count() > 0)
     {
         byte const *definition = *(byte **)(state + 0xc);
         byte const *entry = *(byte **)(definition + 0x58) + (initial_range & 0x1ff) * 4;
@@ -669,7 +670,8 @@ void __stdcall function_17960(byte *state, word const *range)
             if (mode < 5)
             {
                 s_1b230_function const *volatile curve = (s_1b230_function const *)(parameter + 12);
-                real value = function_1b230(curve, *(long const *)parameter,
+                s_1b230_function const *input_curve = curve;
+                real value = function_1b230(input_curve, *(long const *)parameter,
                     *(long const *)(parameter + 4), *(real const *)(parameter + 8));
                 if (mode != 4)
                 {
@@ -835,6 +837,7 @@ bool function_1b2c0(byte const *state, long index, long component, long texture,
             break;
         }
         out[component] = value;
+        return true;
     }
     else if (component == 4)
         *(color3f *)out = ((color3f const *)(state + 0x108))[index];
@@ -1042,17 +1045,19 @@ void __stdcall function_1ab50(byte *state, s_packed_shader_range const *range)
 }
 
 
-// @retail 0x19be0
+// @retail 0x19be0 standard
 void __stdcall function_19be0(byte *state, word const *range)
 {
     real *values[2] = { (real *)(state + 0x1530), (real *)(state + 0x1630) };
     dword *masks[2] = { (dword *)(state + 0x1730), (dword *)(state + 0x1734) };
     byte const *entry = *(byte **)(*(byte **)(state + 0x20) + 0x3c) + (*range & 0x1ff) * 4;
-    for (long i = 0; i < (*range >> 9); ++i, entry += 4)
+    for (unsigned long i = 0; i < (*range >> 9); ++i, entry += 4)
     {
         word packed = *(word const *)entry;
+#pragma inline_depth(0)
         function_1b2c0(state, entry[3], (packed >> 5) & 31, packed >> 13, 0,
             values[(packed >> 4) & 1] + (packed & 15) * 4);
+#pragma inline_depth()
         packed = *(word const *)entry;
         *masks[(packed >> 4) & 1] |= 1 << (packed & 15);
     }

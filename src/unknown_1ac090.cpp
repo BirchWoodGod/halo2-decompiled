@@ -855,7 +855,7 @@ bool __stdcall function_1ac610(long arg_0, point3f const *arg_1,
 		short local_6 = function_bb050(1, 0x8c3, local_3, &local_4, 4.0f, local_5, 20);
 		long local_7 = NONE;
 		real local_8 = 3.402823466e38f;
-		for (long local_9 = 0; local_9 < local_6; ++local_9)
+		for (short local_9 = 0; local_9 < local_6; ++local_9)
 		{
 			long local_10 = local_5[local_9];
 			if (local_10 != local_0->unknown018)

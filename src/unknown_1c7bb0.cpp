@@ -1,6 +1,7 @@
 #include "unknown_11c920.h"
 #include "slot_handler.h"
 #include "globals.h"
+#include "squads.h"
 // @flags /O2 /Gr
 
 struct s_1c7bb0
@@ -9,9 +10,7 @@ struct s_1c7bb0
  char field_2;
  byte field_3[0x28 - 3];
  short field_28;
- byte field_2a[0x68 - 0x2a];
- long field_68;
- byte field_6c[0x7e - 0x6c];
+ byte field_2a[0x7e - 0x2a];
  short field_7e;
  byte field_80[0x98 - 0x80];
 };
@@ -25,14 +24,25 @@ void function_203fb0(long actor_index);
 void function_203d70(long actor_index, short squad_index, bool keep_team);
 void function_295e60(short arg_0);
 void function_210280();
+void function_203f60(long actor_index);
 void function_292f10();
 
-PRIVATE __forceinline byte *function_1c7bb1(s_record_pool_iterator *arg_0)
+struct s_squad_iterator_1c7bb0
 {
- byte *result = NULL;
+ byte *squad;
+ s_record_pool_iterator records;
+ long squad_index;
+};
+
+PRIVATE __forceinline bool function_1c7bb1(s_squad_iterator_1c7bb0 *arg_0)
+{
+ arg_0->squad = NULL;
  if (g_4f55d0->active)
-  result = data_iterator_next_calling(arg_0);
- return result;
+ {
+  arg_0->squad = data_iterator_next_calling(&arg_0->records);
+  arg_0->squad_index = arg_0->records.datum_index & 0xffff;
+ }
+ return arg_0->squad != NULL;
 }
 
 // @retail 0x1c7bb0
@@ -41,43 +51,32 @@ void function_1c7bb0()
  if (g_4f55d0->active)
  {
   short local_0 = g_4686c4;
-  s_record_pool_iterator local_1;
+  s_squad_iterator_1c7bb0 local_1;
   byte *datum;
-  local_1.data = g_51e9d8;
-  local_1.index = NONE;
-  while ((datum = function_1c7bb1(&local_1)) != NULL)
+  local_1.records.data = g_51e9d8;
+  local_1.records.index = NONE;
+  while (function_1c7bb1(&local_1))
   {
-   long local_2 = local_1.datum_index & 0xffff;
-   s_1c7bb0 *local_3 = &((s_1c7bb0 *)g_51e9d8->data)[local_2 & 0xffff];
+   datum = local_1.squad;
+   long local_2 = local_1.squad_index;
    if (function_204390(local_2))
    {
-    local_3->field_7e = (short)local_0;
-    long local_4 = NONE;
-    if (g_4f55d0->active)
-     local_4 = local_2 == NONE ? g_4f55d0->unknown14 : local_3->field_68;
-    while (g_4f55d0->active && local_4 != NONE)
+    ((s_1c7bb0 *)g_51e9d8->data)[local_2 & 0xffff].field_7e = (short)local_0;
+    s_squad_actor_iterator local_4;
+    squad_actors_begin(&local_4, local_2);
+    s_actor_datum *local_6;
+    while ((local_6 = squad_actors_next(&local_4)) != NULL)
     {
-     long local_5 = local_4;
-     s_actor_view *local_6 = actor_get(local_5);
-     local_4 = local_6->unknown020;
-     if (!function_1e1500(local_5))
+     if (!function_1e1500(local_4.actor_index))
      {
-      *(long *)((byte *)local_6 + 0x34) = local_6->unknown030;
-      function_203ed0(local_5, false);
-      if (g_4f55d0->active)
-      {
-       local_6 = actor_get(local_5);
-       local_6->unknown020 = g_4f55d0->unknown14;
-       g_4f55d0->unknown14 = local_5;
-       *((bool *)local_6 + 0xa) = true;
-       *(long *)((byte *)local_6 + 0x14) = g_510c54->game_time;
-       function_1e22d0(local_5, false);
-      }
+      *(long *)((byte *)local_6 + 0x34) = local_6->squad_index;
+      function_203ed0(local_4.actor_index, false);
+      function_203f60(local_4.actor_index);
      }
     }
    }
    else
-    local_3->field_7e = NONE;
+    ((s_1c7bb0 *)g_51e9d8->data)[local_2 & 0xffff].field_7e = NONE;
    if (((s_1c7bb0 *)datum)->field_2 < 0)
    {
     ((s_1c7bb0 *)g_51e9d8->data)[local_2 & 0xffff].field_28 = 0;

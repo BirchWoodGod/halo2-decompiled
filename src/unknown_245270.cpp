@@ -113,9 +113,10 @@ PRIVATE __forceinline void function_244de2(real thickness, short count, point3f 
 		prism->field_0c = field_0c;
 		prism->field_0d = field_0d;
 		prism->field_0e = field_0e;
-		prism->field_10.i = arg_0;
-		prism->field_10.j = arg_1;
-		prism->field_10.k = arg_2;
+		vector3f *normal = &prism->field_10.n;
+		normal->i = arg_0;
+		normal->j = arg_1;
+		normal->k = arg_2;
 		prism->field_10.d = arg_3;
 		prism->field_20 = thickness;
 		prism->field_24 = function_120850(&prism->field_10.n);
@@ -153,7 +154,6 @@ void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 	real arg_3, long arg_4, long arg_5, long arg_6, byte arg_7,
 	byte arg_8, short arg_9, s_collection_245270 *arg_10)
 {
-	real const volatile *local_7 = &arg_3;
 	if (arg_10->field_02 < 256)
 	{
 		s_244de0 *local_0 = &((s_244de0 *)((byte *)arg_10 + 0x2008))[arg_10->field_02++];
@@ -165,7 +165,7 @@ void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 		local_0->field_0e = arg_9;
 		local_0->field_10 = *arg_0;
 		local_0->field_1c = *arg_1;
-		local_0->field_28 = (*local_7);
+		local_0->field_28 = arg_3;
 	}
 	if (arg_2 > 0.f)
 	{
@@ -180,22 +180,21 @@ void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 			local_0->field_0e = arg_9;
 			function_244de4(arg_0, arg_2, &local_0->field_10);
 			local_0->field_1c = *arg_1;
-			local_0->field_28 = (*local_7);
+			local_0->field_28 = arg_3;
 		}
 		point2f local_1 = { -arg_1->j, arg_1->i };
-		real local_2 = (real)sqrt(*(real const volatile *)&local_1.x * local_1.x + local_1.y * local_1.y);
+		real local_2 = (real)sqrt(local_1.x * local_1.x + local_1.y * local_1.y);
 		if (!(fabs(local_2) < 0.0001f))
 		{
 			real local_3 = 1.f / local_2;
-			*(real volatile *)&local_1.x = local_3 * local_1.x;
-			*(real volatile *)&local_1.y = local_3 * local_1.y;
+			local_1.x = local_3 * local_1.x;
+			local_1.y = local_3 * local_1.y;
 		}
 		else
 			local_2 = 0.f;
 		if (local_2 != 0.f)
 		{
-			plane3f local_4 = { local_1.x, local_1.y, 0.f,
-				arg_0->y * local_1.y + arg_0->x * local_1.x };
+			real local_4 = arg_0->y * local_1.y + arg_0->x * local_1.x;
 			point3f local_5[4];
 			local_5[0] = *arg_0;
 			local_5[1].x = arg_0->x + arg_1->i;
@@ -205,14 +204,11 @@ void function_244de0(point3f const *arg_0, vector3f const *arg_1, real arg_2,
 			local_5[2].z -= arg_2;
 			local_5[3] = *arg_0;
 			local_5[3].z -= arg_2;
-			function_244de2((*local_7), 4, local_5, local_4.i, local_4.j, local_4.k, local_4.d, 0.f, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9, arg_10);
+			function_244de2(arg_3, 4, local_5, local_1.x, local_1.y, 0.f, local_4, 0.f, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9, arg_10);
 			point3f local_6 = local_5[1];
 			local_5[1] = local_5[3];
 			local_5[3] = local_6;
-			local_4.i = 0.f - local_4.i;
-			local_4.j = 0.f - local_4.j;
-			local_4.d = 0.f - local_4.d;
-			function_244de2((*local_7), 4, local_5, local_4.i, local_4.j, local_4.k, local_4.d, 0.f, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9, arg_10);
+			function_244de2(arg_3, 4, local_5, 0.f - local_1.x, 0.f - local_1.y, 0.f, 0.f - local_4, 0.f, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9, arg_10);
 		}
 	}
 }
@@ -286,16 +282,19 @@ void function_245400(long index, s_source_245400 const *source,
 	function_244ca0(height, radius, list, field_00, field_04, material_index,
 		material->field_04, material->field_05, point, material->field_06);
 }
-PRIVATE __forceinline void function_245545(long arg_0, s_source_245400 const *arg_1,
-	transform4x3f const *const &arg_2, real arg_3, real arg_4,
+
+// @retail 0x245540
+void function_245540(long arg_0, s_source_245400 const *arg_1,
+	transform4x3f const *arg_2, real arg_3, real arg_4,
 	long arg_5, long arg_6, s_collection_245270 *arg_7)
 {
-	(void)&arg_2;
+	transform4x3f const *const *matrix_reference = &arg_2;
 	s_surface_245400 const *local_0 = &arg_1->field_34[arg_0];
 	long local_1 = local_0->field_08;
-	short local_2 = (short)arg_1->field_2c[local_1].field_00;
-	short local_3 = (short)arg_1->field_2c[*(short *)local_0->field_0a].field_00;
-	if (local_2 != local_3)
+	s_material_245400 const *materials = arg_1->field_2c;
+	long local_2 = (short)materials[local_1].field_00;
+	long local_3 = (short)materials[*(short *)local_0->field_0a].field_00;
+	if ((short)local_2 != (short)local_3)
 	{
 		point3f const *local_4 = &arg_1->field_3c[((word const *)local_0)[0]].field_00;
 		point3f const *local_5 = &arg_1->field_3c[((word const *)local_0)[1]].field_00;
@@ -324,44 +323,36 @@ PRIVATE __forceinline void function_245545(long arg_0, s_source_245400 const *ar
 				return;
 		}
 		point3f local_14;
-		if (arg_2)
+		if (*matrix_reference)
 		{
 			real local_15 = local_6.i;
 			real local_16 = local_6.j;
 			real local_17 = local_6.k;
-			if (arg_2->scale != 1.f)
+			if ((*matrix_reference)->scale != 1.f)
 			{
-				local_15 = arg_2->scale * local_15;
-				local_16 = arg_2->scale * local_16;
-				local_17 = arg_2->scale * local_17;
+				local_15 = (*matrix_reference)->scale * local_15;
+				local_16 = (*matrix_reference)->scale * local_16;
+				local_17 = (*matrix_reference)->scale * local_17;
 			}
-			local_6.i = arg_2->forward.i * local_15 + arg_2->left.i * local_16 + arg_2->up.i * local_17;
-			local_6.j = arg_2->up.j * local_17 + local_15 * arg_2->forward.j + arg_2->left.j * local_16;
-			local_6.k = arg_2->forward.k * local_15 + arg_2->left.k * local_16 + arg_2->up.k * local_17;
+			local_6.i = (*matrix_reference)->forward.i * local_15 + (*matrix_reference)->left.i * local_16 + (*matrix_reference)->up.i * local_17;
+			local_6.j = (*matrix_reference)->up.j * local_17 + local_15 * (*matrix_reference)->forward.j + (*matrix_reference)->left.j * local_16;
+			local_6.k = (*matrix_reference)->forward.k * local_15 + (*matrix_reference)->left.k * local_16 + (*matrix_reference)->up.k * local_17;
 			local_15 = local_4->x;
 			local_16 = local_4->y;
 			local_17 = local_4->z;
-			if (arg_2->scale != 1.f)
+			if ((*matrix_reference)->scale != 1.f)
 			{
-				local_15 = arg_2->scale * local_15;
-				local_16 = arg_2->scale * local_16;
-				local_17 = arg_2->scale * local_17;
+				local_15 = (*matrix_reference)->scale * local_15;
+				local_16 = (*matrix_reference)->scale * local_16;
+				local_17 = (*matrix_reference)->scale * local_17;
 			}
-			local_14.x = arg_2->forward.i * local_15 + arg_2->up.i * local_17 + arg_2->left.i * local_16 + arg_2->position.x;
-			local_14.y = local_15 * arg_2->forward.j + arg_2->up.j * local_17 + arg_2->left.j * local_16 + arg_2->position.y;
-			local_14.z = arg_2->forward.k * local_15 + arg_2->up.k * local_17 + arg_2->left.k * local_16 + arg_2->position.z;
+			local_14.x = (*matrix_reference)->forward.i * local_15 + (*matrix_reference)->up.i * local_17 + (*matrix_reference)->left.i * local_16 + (*matrix_reference)->position.x;
+			local_14.y = local_15 * (*matrix_reference)->forward.j + (*matrix_reference)->up.j * local_17 + (*matrix_reference)->left.j * local_16 + (*matrix_reference)->position.y;
+			local_14.z = (*matrix_reference)->forward.k * local_15 + (*matrix_reference)->up.k * local_17 + (*matrix_reference)->left.k * local_16 + (*matrix_reference)->position.z;
 			local_4 = &local_14;
 		}
 		function_244de0(local_4, &local_6, arg_3, arg_4, arg_5, arg_6, local_1,
-			arg_1->field_2c[local_1].field_04, arg_1->field_2c[local_1].field_05,
-			arg_1->field_2c[local_1].field_06, arg_7);
+			materials[local_1].field_04, materials[local_1].field_05,
+			materials[local_1].field_06, arg_7);
 	}
-}
-
-// @retail 0x245540
-void function_245540(long arg_0, s_source_245400 const *arg_1,
-	transform4x3f const *arg_2, real arg_3, real arg_4,
-	long arg_5, long arg_6, s_collection_245270 *arg_7)
-{
-	function_245545(arg_0, arg_1, arg_2, arg_3, arg_4, arg_5, arg_6, arg_7);
 }
