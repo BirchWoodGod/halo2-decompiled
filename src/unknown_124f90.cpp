@@ -615,13 +615,12 @@ bool function_21e4b0(s_sound_driver_counts const *counts);
 
 static __forceinline void *sound_static_allocate(long size)
 {
-	byte *top = (byte *)(g_510800_pool_base + g_510804_pool_size);
+	byte *top = (byte *)(g_510804_pool_size + g_510800_pool_base);
 	byte *memory = (byte *)(((dword)top + 3) & ~3);
-	long allocated_size = memory - top + size;
-	g_510804_pool_size += allocated_size;
-	dword checksum = g_510808_pool_checksum;
-	function_163ba0(&checksum, &allocated_size, sizeof(allocated_size));
-	g_510808_pool_checksum = checksum;
+	long aligned_size = (memory - top) + size;
+
+	g_510804_pool_size += aligned_size;
+	function_163ba0(&g_510808_pool_checksum, &aligned_size, sizeof(aligned_size));
 	return memory;
 }
 
@@ -655,14 +654,13 @@ void function_1253d0(void)
 				function_21e4b0(&counts))
 			{
 				system = SOUND_SYSTEM;
+				short voice_index = 0;
 				bit_vector_fill((dword *)((byte *)system + 0x60), 0x80, 0);
 				bit_vector_fill(system->channel_bits, 0x40, 0);
-				short voice_index = 0;
 				for (short type = 0; type < 3; type++)
 				{
-					short count = ((short const *)counts.unknown06)[type];
-					SOUND_SYSTEM->voice_count += count;
-					for (short i = 0; i < count; i++)
+					SOUND_SYSTEM->voice_count += ((short const *)counts.unknown06)[type];
+					for (short i = 0; i < ((short const *)counts.unknown06)[type]; i++)
 					{
 						s_sound_voice *voice = &g_4e6378[voice_index++];
 						voice->sound_index = NONE;
@@ -1898,8 +1896,8 @@ void sound_system_update_time(void)
 	long elapsed = now - sound_system->field_14_2;
 
 	sound_system->field_14_2 = now;
-	sound_system->time += elapsed;
 	real seconds = (real)elapsed * 0.001f;
+	sound_system->time += elapsed;
 	sound_system->ambience_fade += seconds;
 	sound_system->elapsed_time = (real)elapsed / 1000.0f;
 	sound_system->previous_ambience_fade += seconds;
