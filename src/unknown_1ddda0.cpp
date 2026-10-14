@@ -146,7 +146,9 @@ long function_1dea00(s_bsp3d const *arg_0, long arg_1, point3f const *arg_6,
    if (local_8 >= local_7 && local_8 >= local_6) local_9 = 2;
    else if (local_7 >= local_6) local_9 = 1;
    else local_9 = 0;
-   bool local_10 = (((real const *)local_5)[local_9] > 0.0f) != (bool)((local_15 >> 15) & 1);
+   bool local_16 = ((real const *)local_5)[local_9] > 0.0f;
+   bool local_17 = (bool)(((dword)local_15 >> 15) & 1);
+   bool local_10 = local_16 != local_17;
    point3f local_11;
    local_11.x = arg_7->i * arg_5 + arg_6->x;
    local_11.y = arg_7->j * arg_5 + arg_6->y;
