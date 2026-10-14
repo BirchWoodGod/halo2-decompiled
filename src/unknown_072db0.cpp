@@ -1132,15 +1132,15 @@ s_query_batch *function_73e00(long lower, s_query_batch *batch, const s_query_id
 		long player = players[i];
 		if (player != NONE)
 		{
+			long first_reference = operation_count + 1;
+			long second_reference = operation_count + 2;
+			long third_reference = operation_count + 3;
 			query_compare_set(local_0++, identity, player, 7, first);
 			operation_count++;
-			long first_reference = operation_count;
 			query_compare_set(local_0++, identity, player, 6, upper_first);
 			operation_count++;
-			long second_reference = operation_count;
 			query_compare_set(local_0++, identity, player, 4, upper_second);
 			operation_count++;
-			long third_reference = operation_count;
 			query_reference_set(local_0++, identity, player, 0x8001, first_reference, 7, first);
 			operation_count++;
 			query_reference_set(local_0++, identity, player, 0x8001, second_reference, 1, upper_first);
@@ -1825,14 +1825,16 @@ void function_755d0(void)
             case 1:
                 g_510518 = 2;
                 g_510534 = function_75870();
+                function_6b640(g_510530);
+                g_510530 = NONE;
                 break;
             case 3:
                 g_510518 = 0;
                 g_510514 = 0;
+                function_6b640(g_510530);
+                g_510530 = NONE;
                 break;
             }
-            function_6b640(g_510530);
-            g_510530 = NONE;
         }
         else if (status < 0 || status > 1)
         {

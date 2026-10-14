@@ -204,23 +204,3 @@ long utf8_encode_character(dword value, byte *buffer, long buffer_size)
 
 	return length;
 }
-
-// @retail 0x140650
-void utf16_string_to_utf8_string(const word *source, char *destination, long destination_size)
-{
-	long destination_index = 0;
-
-	for (long i = 0; source[i]; i++)
-	{
-		dword character = source[i];
-		long remaining = destination_size - destination_index;
-		long length = utf8_encode_character(character, (byte *)destination + destination_index, remaining);
-
-		destination_index += length <= remaining ? length : remaining;
-	}
-
-	if (destination_index < destination_size)
-		destination[destination_index] = 0;
-	else if (destination_index > 0)
-		destination[destination_index - 1] = 0;
-}

@@ -1507,7 +1507,14 @@ void function_25b6b0(long arg_0, long arg_1)
 			{
 				s_prop_datum *local_6 = prop_ref_get(local_5);
 				s_type_f95cd3 *local_7 = function_25d740((s_prop_node *)local_6);
-				if (local_6->state < 1 || (local_7 && *(long *)((byte *)local_7 + 0xc) + 3 * g_510c54->field_2_3 < g_510c54->game_time))
+				bool local_12;
+				if (local_6->state < 1)
+					local_12 = true;
+				else if (!local_7)
+					local_12 = false;
+				else
+					local_12 = *(long *)((byte *)local_7 + 0xc) + 3 * g_510c54->field_2_3 < g_510c54->game_time;
+				if (local_12)
 				{
 					if (function_25d020(arg_0, local_4, 0, local_5, NONE, NONE))
 					{

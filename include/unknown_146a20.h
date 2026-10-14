@@ -107,7 +107,7 @@ public:
 	{
 	}
 
-	void *function_22c330(long alignment, long limit, long offset, long size, s_fixed_memory_entry *entry);
+	__declspec(noinline) void *function_22c330(long alignment, long limit, long offset, long size, s_fixed_memory_entry *entry);
 
 	/* unknown_22c0a0.cpp */
 	virtual void *allocate(long size, long memory_class);
