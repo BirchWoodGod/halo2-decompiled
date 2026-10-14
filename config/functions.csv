@@ -713,7 +713,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00057d60,332,game,speed,a16 pad,,,00054c20 00054d00 00054d20 00054f90,src/network_voice.cpp,todo
 00057eb0,1287,game,speed,a16 pad,,,000583c0 00058590 00332e34 00332e58,src/network_voice.cpp,todo
 000583c0,461,game,speed,a16 pad,,,00053de0 00054d20 00332e34 00332e58,src/network_voice.cpp,todo
-00058590,339,game,speed,a16 pad,,,00054df0 00054e60 00055250 000586f0 000caf90 00332e58,src/network_voice.cpp,todo
+00058590,339,game,speed,a16 pad,,,00054df0 00054e60 00055250 000586f0 000caf90 00332e58,src/network_voice.cpp,matched
 000586f0,737,game,speed,a16 pad,,,00030bf0 00054e60 00142700 00192d40,src/unknown_0574e0.cpp,todo
 000589e0,107,game,speed,a16 pad,,,00054df0 00054e60,src/network_voice.cpp,matched
 00058a50,58,game,speed,a16 pad,,,,src/unknown_058cb0.cpp,matched
