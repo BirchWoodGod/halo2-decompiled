@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8554 functions match
+
+```
+matched 8554 of 11318 game functions (1119080 of 2784283 bytes, 40.19%)
+```
+
+2 new matches, none lost:
+- Machine 3 Codex lane AC rounds 31 to 33 (#454): `0x2784c0` and `0x1c2d40`
+
 ## 2026-10-14: 8552 functions match
 
 ```
