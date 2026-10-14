@@ -734,13 +734,7 @@ short function_258880(long actor_index, long cs_index)
 	s_cs_datum *cs = cs_get(cs_index);
 	s_actor_cs_run_view *actor = actor_cs_run_get(actor_index);
 
-	if (cs->thread_index == NONE)
-	{
-		cs->state = 4;
-		result = 3;
-		goto local_9;
-	}
-	for (;;)
+	while (cs->thread_index != NONE)
 	{
 		if (cs->unknown44)
 		{
@@ -774,34 +768,30 @@ short function_258880(long actor_index, long cs_index)
 		}
 		if (cs->type != 0x16)
 		{
-			break;
+			if (cs->type == 0x17)
+			{
+				cs->state = 2;
+				result = 0;
+			}
+			else if (result == 2)
+			{
+				cs->state = 1;
+			}
+			else if (result == 0)
+			{
+				cs->state = 2;
+			}
+			else if (result == 1)
+			{
+				cs->state = 0;
+			}
+			goto local_9;
 		}
 		cs = cs_get(cs_index);
 		actor = actor_cs_run_get(actor_index);
-		if (cs->thread_index == NONE)
-		{
-			cs->state = 4;
-			result = 3;
-			goto local_9;
-		}
 	}
-	if (cs->type == 0x17)
-	{
-		cs->state = 2;
-		result = 0;
-	}
-	else if (result == 2)
-	{
-		cs->state = 1;
-	}
-	else if (result == 0)
-	{
-		cs->state = 2;
-	}
-	else if (result == 1)
-	{
-		cs->state = 0;
-	}
+	cs->state = 4;
+	result = 3;
 	goto local_9;
 local_9:
 	return result;
