@@ -222,12 +222,11 @@ void function_20a2e0(short global_index)
 void function_20a490(short global_index)
 {
 	long index = global_index;
-	long slot = (word)global_index & 0x7fff;
+	long slot = index & 0x7fff;
 	short type = (index & 0x8000) ? g_473468[slot]->type : *(short *)(*(byte **)((byte *)g_4e0350 + 0x1c4) + slot * 0x28 + 0x20);
-	long runtime_index = (index & 0x8000) ? (index & 0x7fff) : (index & 0x7fff) + 0x41d;
+	long runtime_index = (index & 0x8000) ? slot : slot + 0x41d;
 	s_hs_global_value *value = &((s_hs_global_value *)g_4f9380->data)[runtime_index];
-	word external = global_index & 0x8000;
-	if (external)
+	if (index & 0x8000)
 	{
 		s_hs_external_global *global = g_473468[slot];
 		switch (type)
@@ -448,8 +447,8 @@ void function_20a490(short global_index)
 		long object_index = value->value.d;
 		if (object_index != NONE)
 		{
-			dword *flags = (dword *)(*(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8) + 4);
-			*flags |= 0x10000000;
+			byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
+			*(dword *)(object + 4) |= 0x10000000;
 		}
 	}
 	else if (type == _hs_type_object_list)
@@ -457,8 +456,8 @@ void function_20a490(short global_index)
 		long reference_index;
 		for (long object_index = object_list_get_first_inlined(value->value.d, &reference_index); object_index != NONE; object_index = function_x457076(&reference_index))
 		{
-			dword *flags = (dword *)(*(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8) + 4);
-			*flags |= 0x10000000;
+			byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
+			*(dword *)(object + 4) |= 0x10000000;
 		}
 	}
 }
