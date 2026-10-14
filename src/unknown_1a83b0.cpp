@@ -29,9 +29,9 @@ real function_11e130(point3f const *a0, vector3f const *a, point3f const *b0, ve
 #pragma optimize("g", off)
 PRIVATE __forceinline real function_1a8fa1(vector3f const *arg_0)
 {
-    real local_0 = arg_0->i;
-    real local_1 = arg_0->j;
     real local_2 = arg_0->k;
+    real local_1 = arg_0->j;
+    real local_0 = arg_0->i;
     return (real)sqrt(local_0 * local_0 + local_1 * local_1 + local_2 * local_2);
 }
 #pragma optimize("", on)
@@ -68,13 +68,13 @@ void function_1a8fa0(long actor_index, real distance, bool *near_point, bool *ne
 		line.k = (actor->unknown37c.k * 1.5f + start->z) - start->z;
 		point3f *position = &actor->position;
 		distance += actor->unknown36c;
-		within = distance * distance > function_11e000(position, start, &line);
+		within = function_11e000(position, start, &line) < distance * distance;
 		if (actor->unknown50c && (near_point || near_segment))
 		{
 			point3f other;
 			function_210850(&actor->unknown510, &other);
 			real reach = actor->unknown36c;
-			point = reach * reach > function_11e000(&other, start, &line);
+			point = function_11e000(&other, start, &line) < reach * reach;
 			if (near_segment && actor->unknown5d0 && !within && !point)
 			{
 				vector3f segment_vector;
@@ -82,7 +82,7 @@ void function_1a8fa0(long actor_index, real distance, bool *near_point, bool *ne
 				segment_vector.j = actor->unknown5ec.j * 3.0f;
 				segment_vector.k = actor->unknown5ec.k * 3.0f;
 				reach = actor->unknown36c;
-				if (reach * reach > function_11e130(start, &line, position, &segment_vector))
+				if (function_11e130(start, &line, position, &segment_vector) < reach * reach)
 					segment = true;
 				else
 					segment = false;
@@ -358,19 +358,22 @@ bool function_1ae820(long arg_0)
             goto local_10;
         point3f const *local_4 = (point3f const *)((byte *)local_3 + 0x2c);
         point2f local_5;
+        real local_11;
         if (*(byte *)function_1e4990(local_1->unknown054) & 2)
         {
-            if (!(local_4->z * local_1->unknown290.k + local_4->y * local_1->unknown290.j +
-                local_4->x * local_1->unknown290.i > 0.4f))
-                goto local_10;
+            local_11 = local_4->z * local_1->unknown290.k + local_4->y * local_1->unknown290.j +
+                local_4->x * local_1->unknown290.i;
         }
         else
         {
             local_5 = *(point2f const *)local_4;
-            if (normalize2d(&local_5) > g_45dbd8 &&
-                !(local_1->unknown290.j * local_5.y + local_1->unknown290.i * local_5.x > 0.4f))
-                goto local_10;
+            if (!(normalize2d(&local_5) > g_45dbd8))
+                goto local_12;
+            local_11 = local_1->unknown290.j * local_5.y + local_1->unknown290.i * local_5.x;
         }
+        if (!(local_11 > 0.4f))
+            goto local_10;
+local_12:
         local_5 = *(point2f const *)local_4;
         long local_6 = 4;
         if (normalize2d(&local_5) == g_45dbd8)
