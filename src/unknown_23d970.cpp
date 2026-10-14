@@ -185,9 +185,13 @@ void function_23cea0(s_view_state *state, long temporary)
 		}
 		else
 		{
-			point3f const zero = {0.f, 0.f, 0.f};
-			g_51ec14 = zero;
-			g_51ec20 = g_51ec24 = 0.f;
+			union { point3f point; dword words[3]; } zero;
+			zero.words[0] = 0;
+			zero.words[1] = 0;
+			zero.words[2] = 0;
+			g_51ec14 = zero.point;
+			g_51ec20 = zero.point.x;
+			g_51ec24 = zero.point.x;
 		}
 	}
 	g_51ec13 = 1;

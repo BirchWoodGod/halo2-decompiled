@@ -184,7 +184,7 @@ bool __stdcall function_19bfd0(s_content_item *item)
 		result = function_136970(&file, 1, &error);
 		if (!result)
 			return result;
-		result = function_136ca0(&file, &package, 0x2d3fc, false);
+		result = function_136ca0(&file, 0x2d3fc, &package, false);
 		function_136bb0(&file);
 		if (result)
 			return function_19be00(item, &package);
