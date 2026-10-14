@@ -139,6 +139,9 @@ long render_model_find_named_entry(long render_model_index, long name)
 	return result;
 }
 
+/* retail keeps this out of line where it is called */
+__declspec(noinline) void *render_model_get_model_definition(long render_model_index);
+
 // @retail 0x16ddf0
 void *render_model_get_model_definition(long render_model_index)
 {
