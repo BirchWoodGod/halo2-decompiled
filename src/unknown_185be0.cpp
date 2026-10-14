@@ -285,12 +285,17 @@ void __stdcall function_185be0(long arg_0, long arg_1, real arg_2, real arg_3, s
         dword local_8 = local_1->field_e & local_1->field_c;
         if (local_8)
         {
-            for (long local_9 = 0; local_9 < 16; local_9++)
-                if ((local_8 & (1 << local_9)) && !local_2.field_0[local_9])
+            long local_9 = 0;
+            dword mask = 1;
+            do
+            {
+                if ((local_8 & mask) && !local_2.field_0[local_9])
                 {
-                    local_1->field_c &= ~(1 << local_9);
-                    local_1->field_e &= ~(1 << local_9);
+                    local_1->field_c &= ~mask;
+                    local_1->field_e &= ~mask;
                 }
+                mask <<= 1;
+            } while (++local_9 < 16);
         }
         local_8 = local_1->field_c;
         for (long local_24 = 0; local_24 < 16; local_24++)

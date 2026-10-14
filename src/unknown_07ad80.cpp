@@ -17,13 +17,12 @@ void function_07ad80(long count, byte *buffer)
 		return;
 	}
 
-	time_t now = time(0);
-	long r = rand();
-	dword ticks = GetTickCount();
-	dword seed = r ^ ticks ^ (dword)now;
+	dword now = (dword)time(0);
+	dword seed = rand() ^ GetTickCount() ^ now;
 	for (long i = 0; i < count; i++)
 	{
 		seed = seed * 0x19660d + 0x3c6ef35f;
-		buffer[i] = (byte)(seed >> 24);
+		/* the high word scaled to a byte range */
+		buffer[i] = (byte)(((seed >> 16) * 256) >> 16);
 	}
 }
