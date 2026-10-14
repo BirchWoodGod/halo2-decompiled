@@ -146,7 +146,7 @@ bool function_10ee20(s_animation_state *state)
 	return result;
 }
 
-void function_1dacb0(s_graph_tag *graph, c_type_709360 animation_id, real *distance, real *event_distance);
+void function_1dacb0(s_graph_tag *graph, c_type_709360 animation_id, real *event_distance, real *distance);
 
 bool function_10fa80(long unit_index, long mode, long set, short *event_ticks, real *distance, short *duration_ticks, real *event_distance);
 

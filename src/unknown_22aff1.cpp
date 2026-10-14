@@ -24,7 +24,7 @@ void function_1396c7(long, point2f *);
 void function_22bcaf(s_widget_transform_block const *, point2f *, point2f *, point2f *);
 double __stdcall function_1d6d0(real);
 double __cdecl function_2b460(real);
-void function_22a664(s_widget_quad_2b11 const *, s_float_rect const *, long, long, long);
+void function_22a664(s_float_rect const *, s_widget_quad_2b11 const *, long, long, long);
 color3f *unpack_color3f(dword, color3f *);
 bool function_22acb4(long);
 void function_1392c5(long);
@@ -193,7 +193,7 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 						unpack_color3f(*local_45.field_50_2, &g_4e6950.field_5c);
 						unpack_color3f(*local_45.field_50_2, &g_4e6950.field_68);
 					}
-					function_22a664((s_widget_quad_2b11 const *)&local_45.field_54, (s_float_rect const *)local_45.field_c,
+					function_22a664((s_float_rect const *)local_45.field_c, (s_widget_quad_2b11 const *)&local_45.field_54,
 						*(long const *)(arg_2 + 0x24), local_45.field_44, *(long const *)(arg_2 + 0x2c));
 				}
 				break;
@@ -213,7 +213,7 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 					{
 						unpack_color3f(*(dword const *)(arg_1 + 0x230 + local_33 * 4), &g_4e6950.field_50);
 						g_4e6950.field_40.alpha = *(real const *)(arg_1 + 0x250 + local_33 * 4);
-						function_22a664((s_widget_quad_2b11 const *)&local_45.field_54, (s_float_rect const *)local_45.field_c,
+						function_22a664((s_float_rect const *)local_45.field_c, (s_widget_quad_2b11 const *)&local_45.field_54,
 							*(long const *)(arg_2 + 0x24), local_45.field_44, *(long const *)(arg_2 + 0x2c));
 						for (long local_34 = 0; local_34 < 4; ++local_34)
 							local_45.field_c[local_34].x += local_30;
@@ -239,7 +239,7 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 			}
 			if (!local_45.field_67)
 			{
-				function_22a664((s_widget_quad_2b11 const *)&local_45.field_54, (s_float_rect const *)local_45.field_c,
+				function_22a664((s_float_rect const *)local_45.field_c, (s_widget_quad_2b11 const *)&local_45.field_54,
 					*(long const *)(arg_2 + 0x24), local_45.field_44, *(long const *)(arg_2 + 0x2c));
 				real local_38 = local_45.field_c[1].x - local_45.field_c[0].x;
 				real local_39 = local_45.field_c[2].y - local_45.field_c[1].y;
@@ -250,7 +250,7 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 					for (long local_41 = 0; local_41 < 4; ++local_41)
 						if (local_41 != 1 && local_41 != 2)
 							local_45.field_c[local_41].x += local_38 * 2.0f;
-					function_22a664((s_widget_quad_2b11 const *)&local_45.field_54, (s_float_rect const *)local_45.field_c,
+					function_22a664((s_float_rect const *)local_45.field_c, (s_widget_quad_2b11 const *)&local_45.field_54,
 						*(long const *)(arg_2 + 0x24), local_45.field_44, *(long const *)(arg_2 + 0x2c));
 				}
 				memcpy(local_45.field_c, local_40, sizeof(local_40));
@@ -259,7 +259,7 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 					for (long local_42 = 0; local_42 < 4; ++local_42)
 						if (local_42 <= 1)
 							local_45.field_c[local_42].y += local_39 * 2.0f;
-					function_22a664((s_widget_quad_2b11 const *)&local_45.field_54, (s_float_rect const *)local_45.field_c,
+					function_22a664((s_float_rect const *)local_45.field_c, (s_widget_quad_2b11 const *)&local_45.field_54,
 						*(long const *)(arg_2 + 0x24), local_45.field_44, *(long const *)(arg_2 + 0x2c));
 				}
 				memcpy(local_45.field_c, local_40, sizeof(local_40));
@@ -273,7 +273,7 @@ void function_22aff1(long arg_0, byte const *arg_1, byte const *arg_2, real cons
 						if (!local_46)
 							local_45.field_c[local_43].y += local_39 * 2.0f;
 					}
-					function_22a664((s_widget_quad_2b11 const *)&local_45.field_54, (s_float_rect const *)local_45.field_c,
+					function_22a664((s_float_rect const *)local_45.field_c, (s_widget_quad_2b11 const *)&local_45.field_54,
 						*(long const *)(arg_2 + 0x24), local_45.field_44, *(long const *)(arg_2 + 0x2c));
 				}
 			}
