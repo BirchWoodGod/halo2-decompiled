@@ -351,6 +351,8 @@ bool file_copy_read_chunk(s_saved_game_file *copy)
 // @retail 0x2ad400
 bool file_copy_write_chunk(s_saved_game_file *copy)
 {
+	s_saved_game_file *const *copy_reference = &copy;
+	copy = *copy_reference;
 	bool result = false;
 	dword offset = copy->write_offset;
 	dword size = copy->size - offset;
