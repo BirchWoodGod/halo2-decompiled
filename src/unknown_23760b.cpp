@@ -657,8 +657,8 @@ labels_done:
 		{
 			key = move_focus(event->type);
 		}
-		v7(&keys[key]);
 		result = true;
+		v7(&keys[key]);
 		goto done;
 	}
 	else if (event->type == 5)
@@ -702,8 +702,7 @@ labels_done:
 		}
 		goto fallback;
 action_done:
-		result = true;
-		goto done;
+		return true;
 	}
 fallback:
 	result = c_class_1473c9::v10(event);
@@ -716,11 +715,11 @@ done:
 // @retail 0x238114
 long c_virtual_keyboard_screen::check_string()
 {
-	long result = 0;
 	bool empty = string[0] == 0;
+	s_keyboard_type const *keyboard_type = &g_44a9f8[type];
 	bool has_alphanumeric = false;
 	bool characters_valid = true;
-	s_keyboard_type const *keyboard_type = &g_44a9f8[type];
+	long result = 0;
 
 	for (long i = 0; string[i]; i++)
 	{
@@ -733,10 +732,11 @@ long c_virtual_keyboard_screen::check_string()
 			characters_valid = false;
 		}
 	}
-	if ((!(keyboard_type->flags & 1) || has_alphanumeric) &&
+	bool valid = (!(keyboard_type->flags & 1) || has_alphanumeric) &&
 		(!(keyboard_type->flags & 2) || characters_valid) &&
 		((keyboard_type->flags & 4) || !empty) &&
-		(!(keyboard_type->flags & 8) || gamertag_valid(string)))
+		(!(keyboard_type->flags & 8) || gamertag_valid(string));
+	if (valid)
 	{
 		if (keyboard_type->check && !keyboard_type->check(this))
 			result = 2;
