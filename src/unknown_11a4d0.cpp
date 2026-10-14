@@ -581,7 +581,9 @@ short function_11b0c0(long vehicle_index, long filter_range, long volatile list_
 		if (seat_count > 0)
 		{
 			long reference_index;
+#pragma inline_depth(0)
 			long object_index = function_1dee50(list_index, &reference_index);
+#pragma inline_depth()
 			while (object_index != NONE)
 			{
 				s_unit_11a4d0 *unit = unit_get_11a4d0(object_index);
@@ -602,8 +604,8 @@ short function_11b0c0(long vehicle_index, long filter_range, long volatile list_
 							request.type1c.unknownb = false;
 							if (function_e6900(object_index, &request))
 							{
-								result++;
 								seat->object_index = NONE;
+								result++;
 								break;
 							}
 						}
@@ -869,6 +871,14 @@ transform4x3f *function_b8bd0(long object_index, short node_index);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 bool function_cd660(long unit_index);
 
+/* the unit's flags word at +0xc0, seen as bits */
+struct s_unit_flags_c0_11b710
+{
+	byte unknown000[0xc0];
+	word : 7;
+	word flag7 : 1;
+};
+
 /* ends a unit's scripted animation: back to its weapons' idle states, and
    placed at its root node when the animation was attached */
 // @retail 0x11b710
@@ -889,7 +899,7 @@ void function_11b710(long unit_index, long field_7c)
 
 			s_unit_flags_11a4d0 *flags = (s_unit_flags_11a4d0 *)unit_get_11a4d0(unit_index);
 			if (TEST_FIELD_BIT(flags->flag1))
-				flags->flag1 = false;
+				((s_unit_flags_11a4d0 *)unit_get_11a4d0(unit_index))->flag1 = false;
 			function_10f1e0(unit_index);
 			if (field_7c == 0x7000101)
 				field_7c = 0x6000085;
@@ -907,7 +917,8 @@ void function_11b710(long unit_index, long field_7c)
 					weapon_name = *(long *)(definition + 0x28c);
 				}
 			}
-			((s_unit_animation_11a4d0 *)((byte *)unit + unit->animation_offset))->flags6c &= ~1;
+			s_unit_animation_11a4d0 *animation_state = (s_unit_animation_11a4d0 *)((byte *)unit + unit->animation_offset);
+			animation_state->flags6c &= ~1;
 			function_10f430(unit_index, field_7c, state_name, weapon_name, 0x400000c, 0.0f, true, 2);
 
 			if (unit->weapon_index_b != NONE)
@@ -928,7 +939,7 @@ void function_11b710(long unit_index, long field_7c)
 				byte *model = (byte *)render_model_get_model_definition(
 					*(long *)(g_4e3b44[unit->definition_index & 0xffff].bytes + 0x38));
 				function_142a60(function_b8bd0(unit_index, 0), (transform4x3f *)(*(byte **)(model + 0x4c) + 0x28), &matrix);
-				((s_unit_c0_11a4d0 *)unit)->flag_c0_7 = false;
+				((s_unit_flags_c0_11b710 *)unit)->flag7 = false;
 				if (unit->parent_index == NONE)
 				{
 					function_b75a0(unit_index, &matrix.position, &matrix.forward, &matrix.up, NULL, false);

@@ -373,15 +373,21 @@ void c_list_24a64d::function_24a30e(s_controller_reference **arg_0, long *arg_1)
 					function_120df0((*arg_0)->controller_index, (wchar_t const *)local_1.name);
 					if (field_88)
 					{
-						if (!function_8d7c0())
+						if (function_8d7c0())
 						{
-							function_14800c(v11(), v12());
-							return;
-						}
-						XONLINE_USER local_5 = {0};
-						if (function_24ab0c((*arg_0)->controller_index, &local_5, (char const *)&local_1 + 0x48))
-						{
-							local_4->user = local_5;
+							XONLINE_USER local_5 = {0};
+							if (function_24ab0c((*arg_0)->controller_index, &local_5, (char const *)&local_1 + 0x48))
+							{
+								local_4->user = local_5;
+							}
+							else
+							{
+								s_screen_parameters local_6;
+								local_6.field_c = 0;
+								function_149f49((s_message *)&local_6, 6, 0, 1 << (*arg_0)->controller_index, 3, 4, (long)function_24b4a9);
+								local_6.load(&local_6);
+								return;
+							}
 							if (online_user_requires_passcode(&local_5))
 							{
 								s_screen_parameters local_6;
@@ -393,10 +399,7 @@ void c_list_24a64d::function_24a30e(s_controller_reference **arg_0, long *arg_1)
 						}
 						else
 						{
-							s_screen_parameters local_6;
-							local_6.field_c = 0;
-							function_149f49((s_message *)&local_6, 6, 0, 1 << (*arg_0)->controller_index, 3, 4, (long)function_24b4a9);
-							local_6.load(&local_6);
+							function_14800c(v11(), v12());
 							return;
 						}
 					}
