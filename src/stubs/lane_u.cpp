@@ -5,11 +5,6 @@ struct s_203780;
 struct s_player_profile;
 struct s_20d0c0;
 
-// @stub 0x20b450
-void function_20b450(long arg_0, real arg_1)
-{
-}
-
 
 
 // @stub 0x217370
