@@ -995,7 +995,7 @@ bool __stdcall function_236973(long controller);
 
 /* tells the controllers why a game variant could not be loaded */
 // @retail 0x148ca8
-void function_148ca8(long error, dword controller_flags)
+void function_148ca8(long error, short controller_flags)
 {
 	switch (error)
 	{
