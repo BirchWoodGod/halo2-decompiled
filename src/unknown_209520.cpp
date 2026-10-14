@@ -262,6 +262,9 @@ void __stdcall function_2084c0(short function_index, long thread_index, bool ini
 s_type_f4462a const g_44b168 = { _hs_type_boolean, 2, function_2084c0, "<expression> <expression>", 0, { 0 } };
 s_type_f4462a const g_44b178 = { _hs_type_boolean, 2, function_2084c0, "<expression> <expression>", 0, { 0 } };
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x209520
 long function_209520(short script_index)
 {
@@ -273,11 +276,14 @@ long function_209520(short script_index)
 		thread_index = function_2097c0(script_index, 4);
 		if (thread_index != NONE)
 		{
-			function_2099f0(thread_index, &hs_thread_get(thread_index)->result, script->root_expression_index);
+			long *result = &hs_thread_get(thread_index)->result;
+			_ReadWriteBarrier();
+			function_2099f0(thread_index, result, script->root_expression_index);
 		}
 	}
 	return thread_index;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x2097c0
 long function_2097c0(long script_index, byte type)
@@ -716,11 +722,12 @@ s_type_f4462a const g_44b0a8 = { _hs_type_passthrough, 2, function_207cf0, "<exp
 // @retail 0x207c20
 void __stdcall function_207c20(short function_index, long thread_index, bool initialize)
 {
+	s_hs_thread *thread = hs_thread_get(thread_index);
 	long *next = hs_frame_allocate_value(thread_index);
 	long *result = hs_frame_allocate_value(thread_index);
 	if (initialize)
 	{
-		s_hs_expression *expression = hs_expression_get(hs_thread_get(thread_index)->frame->expression_index);
+		s_hs_expression *expression = hs_expression_get(thread->frame->expression_index);
 		s_hs_expression *name = hs_expression_get(expression->value);
 		*next = *(long *)((byte *)name + 8);
 		*result = 0;
