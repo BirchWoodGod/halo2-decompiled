@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8392 functions match
+
+```
+matched 8392 of 11318 game functions (1076158 of 2784283 bytes, 38.65%)
+```
+
+2 new matches, none lost:
+- Claude lane 1 round 16 (Opus): `0x24c024` (machine 3's form, checked path by path against retail) and `0x11b520` (handed over by machine 3)
+
 ## 2026-10-13: 8390 functions match
 
 ```
