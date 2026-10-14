@@ -26,7 +26,7 @@ extern vector3f *g_4687bc;
 short __stdcall function_1c8df0(long arg_0, point3f const *arg_4, short arg_3, short arg_2,
  void const *arg_1, long arg_5, bool arg_6, bool arg_7, bool arg_8, long *arg_9)
 {
- long local_0;
+ short local_0;
  (void)&arg_1;
  real local_1;
  long local_2 = NONE;
@@ -40,33 +40,37 @@ short __stdcall function_1c8df0(long arg_0, point3f const *arg_4, short arg_3, s
  }
  else
  {
+  s_collision_result_1697c0 local_6;
+  local_6.field_24 = NONE;
   long local_4 = *(volatile bool *)&arg_7 ? 0x15808c2f : 0x5808c2f;
   if (arg_6)
    local_4 |= 0x8000000;
   if (*(volatile bool *)&arg_7)
    local_4 &= ~0x20;
-  vector3f local_5;
-  vector3d_from_points3d(local_3, arg_4, &local_5);
-  s_collision_result_1697c0 local_6;
-  local_6.field_24 = NONE;
   bool local_7;
-  if (function_1697c0(local_4, local_3, &local_5, arg_0, NONE, &local_6))
   {
-   local_7 = false;
-   local_1 = local_6.field_4;
-   local_2 = local_6.field_40;
+   vector3f local_5;
+   vector3d_from_points3d(local_3, arg_4, &local_5);
+   if (!function_1697c0(local_4, local_3, &local_5, arg_0, NONE, &local_6))
+    local_7 = true;
+   else
+   {
+    local_7 = false;
+    local_1 = local_6.field_4;
+    local_2 = local_6.field_40;
+   }
   }
-  else
-   local_7 = true;
   if ((short)arg_5 != 0)
   {
    vector3f local_8;
    local_8.i = local_3->y - arg_4->y;
    local_8.j = arg_4->x - local_3->x;
    local_8.k = 0.0f;
-   if (function_30bf0(&local_8) < 0.0001f)
+   if (function_30bf0(&local_8) == 0.0f)
     local_8 = *g_4687a8;
    local_4 |= 0x10000000;
+   /* retail calls the probe test at each of these */
+#pragma inline_depth(0)
    if ((short)arg_5 == 1)
    {
     point3f local_9;
@@ -109,9 +113,9 @@ short __stdcall function_1c8df0(long arg_0, point3f const *arg_4, short arg_3, s
     local_11.x = arg_4->x + g_4687bc->i * 0.1f;
     local_11.y = arg_4->y + g_4687bc->j * 0.1f;
     local_11.z = arg_4->z + g_4687bc->k * 0.1f;
-    if (function_16a040(local_4, local_3, &local_9, arg_0, NONE, &local_6) ||
-        function_16a040(local_4, local_3, &local_10, arg_0, NONE, &local_6) ||
-        function_16a040(local_4, local_3, &local_11, arg_0, NONE, &local_6))
+    if (function_16a040(local_4, &local_9, local_3, arg_0, NONE, &local_6) ||
+        function_16a040(local_4, &local_10, local_3, arg_0, NONE, &local_6) ||
+        function_16a040(local_4, &local_11, local_3, arg_0, NONE, &local_6))
     {
      local_1 = local_6.field_4;
      local_2 = local_6.field_40;
@@ -119,6 +123,7 @@ short __stdcall function_1c8df0(long arg_0, point3f const *arg_4, short arg_3, s
      goto local_14;
     }
    }
+#pragma inline_depth()
   }
   if (local_7)
    local_0 = 0;

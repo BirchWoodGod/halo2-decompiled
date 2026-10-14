@@ -1045,17 +1045,19 @@ void __stdcall function_1ab50(byte *state, s_packed_shader_range const *range)
 }
 
 
-// @retail 0x19be0
+// @retail 0x19be0 standard
 void __stdcall function_19be0(byte *state, word const *range)
 {
     real *values[2] = { (real *)(state + 0x1530), (real *)(state + 0x1630) };
     dword *masks[2] = { (dword *)(state + 0x1730), (dword *)(state + 0x1734) };
     byte const *entry = *(byte **)(*(byte **)(state + 0x20) + 0x3c) + (*range & 0x1ff) * 4;
-    for (long i = 0; i < (*range >> 9); ++i, entry += 4)
+    for (unsigned long i = 0; i < (*range >> 9); ++i, entry += 4)
     {
         word packed = *(word const *)entry;
+#pragma inline_depth(0)
         function_1b2c0(state, entry[3], (packed >> 5) & 31, packed >> 13, 0,
             values[(packed >> 4) & 1] + (packed & 15) * 4);
+#pragma inline_depth()
         packed = *(word const *)entry;
         *masks[(packed >> 4) & 1] |= 1 << (packed & 15);
     }

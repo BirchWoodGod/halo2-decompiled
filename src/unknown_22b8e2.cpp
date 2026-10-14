@@ -66,8 +66,7 @@ void function_22b8e2(s_22b8e2 const *arg_0, long arg_1, color4f const *arg_2)
 		byte const *local_5 = g_4e3b44[arg_0->field_24 & 0xffff].bytes;
 		if (local_3 >= 0)
 		{
-			long local_6 = *(long const *)(local_5 + 0x3c);
-			if (local_3 < local_6)
+			if (local_3 < *(long const *)(local_5 + 0x3c))
 			{
 				byte const *local_7 = *(byte const *const *)(local_5 + 0x40) + local_3 * 0x3c;
 				long local_8 = *(long const *)(local_7 + 0x34);
@@ -89,7 +88,7 @@ void function_22b8e2(s_22b8e2 const *arg_0, long arg_1, color4f const *arg_2)
 					}
 				}
 			}
-			else if (local_3 == 0 && local_6 == 0 && *(long const *)(local_5 + 0x44) > 0)
+			else if (local_3 == 0 && *(long const *)(local_5 + 0x3c) == 0 && *(long const *)(local_5 + 0x44) > 0)
 				local_2 = 0;
 		}
 	}
@@ -125,18 +124,31 @@ void function_22b8e2(s_22b8e2 const *arg_0, long arg_1, color4f const *arg_2)
 	real local_18 = 1.0f - (local_13 - local_26) * local_15;
 	real local_19 = 1.0f - (local_27 - local_12) * local_16;
 	real local_20 = 1.0f - (local_14 - local_27) * local_16;
-	real local_21[9][4] =
-	{
-		{ local_11, local_12, local_17, local_19 },
-		{ local_26, local_12, 1.0f, local_19 },
-		{ local_13, local_12, local_18, local_19 },
-		{ local_11, local_27, local_17, 1.0f },
-		{ local_26, local_27, 1.0f, 1.0f },
-		{ local_13, local_27, local_18, 1.0f },
-		{ local_11, local_14, local_17, local_20 },
-		{ local_26, local_14, 1.0f, local_20 },
-		{ local_13, local_14, local_18, local_20 }
-	};
+	real local_21[9][4];
+	local_21[8][0] = local_21[5][0] = local_21[2][0] = local_13;
+	local_21[6][0] = local_21[3][0] = local_21[0][0] = local_11;
+	local_21[7][0] = local_21[4][0] = local_21[1][0] = local_26;
+	local_21[8][1] = local_21[7][1] = local_21[6][1] = local_14;
+	local_21[2][1] = local_21[1][1] = local_21[0][1] = local_12;
+	local_21[5][1] = local_21[4][1] = local_21[3][1] = local_27;
+	local_21[0][2] = local_17;
+	local_21[0][3] = local_19;
+	local_21[1][2] = 1.0f;
+	local_21[1][3] = local_19;
+	local_21[2][2] = local_18;
+	local_21[2][3] = local_19;
+	local_21[3][2] = local_17;
+	local_21[3][3] = 1.0f;
+	local_21[4][2] = 1.0f;
+	local_21[4][3] = 1.0f;
+	local_21[5][2] = local_18;
+	local_21[5][3] = 1.0f;
+	local_21[6][2] = local_17;
+	local_21[6][3] = local_20;
+	local_21[7][2] = 1.0f;
+	local_21[7][3] = local_20;
+	local_21[8][2] = local_18;
+	local_21[8][3] = local_20;
 	g_4e6950.field_28 = arg_0->field_24;
 	g_4e6950.field_2c = local_2;
 	g_4e6950.field_30 = *arg_2;
