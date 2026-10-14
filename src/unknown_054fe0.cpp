@@ -1541,9 +1541,7 @@ void function_065340(void)
 	long variant_index = NONE;
 	c_class_58d20 *session = 0;
 	bool found = false;
-	long state = 0;
-	if (g_527330.initialized)
-		state = g_527330.state;
+	long state = g_527330.initialized ? g_527330.state : 0;
 	switch (state)
 	{
 	case 1:
