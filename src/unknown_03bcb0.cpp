@@ -747,7 +747,7 @@ long function_4daa0(bool filtered, bool strip, s_4daa0_geometry const *geometry,
     return result;
 }
 
-void function_40e30(short group, long tag, real distance, long level, word kind,
+void function_40e30(short group, long tag, real distance, long level, short kind,
     dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context);
 
 struct s_cache_record;
@@ -1332,7 +1332,7 @@ bool __stdcall function_3bd00(real height, dword color)
 // Disabled: passing the shared source-list address violates the shared-global rule.
 #if 0
 // Retail 0x40e30
-void function_40e30(short group, long tag, real distance, long level, word kind,
+void function_40e30(short group, long tag, real distance, long level, short kind,
     dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context)
 {
     if (group != NONE && function_1bf50(level, tag, distance, &level))
@@ -1583,11 +1583,11 @@ bool __stdcall function_3c3c0(bool render, bool clear)
 
 
 // @retail 0x40e30
-void function_40e30(short group, long tag, real distance, long level, word kind,
+void function_40e30(short group, long tag, real distance, long level, short kind,
     dword and_mask, dword or_mask, t_record_fill fill, dword value, void *context)
 {
     long const *level_reference = &level;
-    word const *kind_reference = &kind;
+    short const *kind_reference = &kind;
     (void)*kind_reference;
     if (group != NONE && function_1bf50(*level_reference, tag, distance, (long *)&distance))
         function_3b9d0(&g_4c1a48[group], tag, *(long *)&distance, and_mask, or_mask, fill, value, context, 0);
