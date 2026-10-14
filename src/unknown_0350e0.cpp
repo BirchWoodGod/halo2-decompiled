@@ -2901,7 +2901,13 @@ void function_0497a0(s_view_source *source, s_view_result *result, s_view_camera
 bool function_1650a0(s_view const *view, point3f const *point, s_bounds3d *bounds, real radius);
 struct short_rect { short v0, v1, v2, v3; };
 struct short_rect_pair { short_rect a, b; };
-extern short_rect_pair g_485a8a;
+struct s_unknown_485a88
+{
+    byte flag;
+    short_rect_pair rects;
+};
+extern s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 
 PRIVATE __forceinline real clamp_4a1e0(real value, real lower, real upper)
 {
