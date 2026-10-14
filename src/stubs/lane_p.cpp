@@ -15,16 +15,7 @@ public:
 };
 
 
-// @stub 0xf8190
-void function_f8190(void)
-{
-}
 
-// @stub 0x22b7dd
-bool function_22b7dd(byte const *arg_1, long arg_2)
-{
-    return false;
-}
 
 // @stub 0x22af8d
 bool function_22af8d(long arg_1, byte const *arg_2)
