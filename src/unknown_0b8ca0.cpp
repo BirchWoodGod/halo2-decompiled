@@ -1149,6 +1149,7 @@ void __stdcall function_b8600(long object_index, volatile long supplied_location
 {
     s_object_header_view *header = OBJECT_HEADER_GET(object_index);
     byte *object = (byte *)header->object;
+    struct s_flags_b8600 { unsigned long : 17; unsigned long field_17 : 1; };
     bool unplaced = *(short *)((byte *)header + 4) == NONE;
     s_location local_location;
     s_location const *location = (s_location const *)supplied_location;
@@ -1176,21 +1177,11 @@ void __stdcall function_b8600(long object_index, volatile long supplied_location
     }
     s_object_partition_record_ab record;
     function_b88e0(object_index, &record);
-    s_cluster_partition partition;
-    if (*(dword *)(object + 4) & 0x200)
-    {
-        partition.cluster_first_data_references = (long *)g_4de2e0;
-        partition.data_references = (s_record_pool *)g_4de2e4;
-        partition.cluster_references = (s_record_pool *)g_4de2e8;
-    }
-    else
-    {
-        partition.cluster_first_data_references = (long *)g_4de2d4;
-        partition.data_references = (s_record_pool *)g_4de2d8;
-        partition.cluster_references = (s_record_pool *)g_4de2dc;
-    }
+    s_cluster_partition *partition = TEST_FIELD_BIT(((s_object_view *)object)->flag9) ?
+        (s_cluster_partition *)&g_partition_colliding_storage :
+        (s_cluster_partition *)&g_partition_noncolliding_storage;
     bool overflow;
-    function_1cac60(bits, &partition, object_index, (long *)(object + 0x60),
+    function_1cac60(bits, partition, object_index, (long *)(object + 0x60),
         (point3f *)(object + 0x40), *(real *)(object + 0x4c), (s_partition_location *)(object + 0x28),
         sizeof(record), &record, &overflow);
     *(dword *)(object + 4) |= 0x100;
@@ -1198,7 +1189,7 @@ void __stdcall function_b8600(long object_index, volatile long supplied_location
     function_bef30(object_index, 0, 1, 0, false);
     if (function_b6d60(object_index, (dword *)((byte *)g_4e6948 + 0x11b8)))
         function_b7290(object_index);
-    else if ((*(dword *)(object + 4) & 0x20000) && !function_a7670(object_index))
+    else if (TEST_FIELD_BIT(((s_flags_b8600 *)(object + 4))->field_17) && !function_a7670(object_index))
         function_b8540(object_index);
     else function_b7300(object_index);
     if (unplaced && *(short *)((byte *)header + 4) != NONE)

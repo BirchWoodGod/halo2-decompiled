@@ -1779,7 +1779,7 @@ void function_22c390(hkMemory *memory, s_fixed_memory_statistics_16 *statistics)
 void function_22cb00(hkMemory *memory, s_physics_pool_statistics *statistics);
 long function_1d3880(s_havok_component const *component, long *constraints, long *contacts, long *other, long *bodies);
 
-// @retail 0x1c4590
+// @retail 0x1c4590 standard
 void __stdcall function_1c4590(long flags)
 {
     byte *world = (byte *)g_51e9a4;
