@@ -79,14 +79,17 @@ bool function_18f000(s_18e700 const *arg_0)
     function_d5560(false);
     function_c09c0(g_4e6948->state);
     function_137e40();
-    if (function_11c1b0(arg_0->field_120, true))
+    long local_1 = arg_0->field_120;
+    if (function_11c1b0((short)local_1, true))
     {
         g_4e6948->flag1120 = true;
         if (g_4cf770 && !((s_18e701 *)g_4cf77c)->field_2f)
             ((s_18e701 *)g_4cf77c)->field_2f = true;
         function_158530();
         function_138f10();
-        if (g_4e6948->mode != 4 && (g_4e6948->state == 1 || g_4e6948->state == 2))
+        long local_2 = g_4e6948->mode;
+        long local_3 = g_4e6948->state;
+        if (local_2 != 4 && (local_3 == 1 || local_3 == 2))
             function_200d80();
         local_0 = true;
     }

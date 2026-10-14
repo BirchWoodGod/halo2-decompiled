@@ -144,7 +144,9 @@ return_exit:
 short function_b8d30(long object_index, long marker_name, s_object_marker *markers, short count, bool flag)
 {
     long marker_object_index = object_index;
-    short volatile result = 0;
+    struct { volatile long node_count; short result; } scratch;
+    short &result = scratch.result;
+    result = 0;
 
     if (!flag)
         marker_object_index = function_b8ca0(object_index);
@@ -158,7 +160,8 @@ short function_b8d30(long object_index, long marker_name, s_object_marker *marke
             byte const *region_permutations = (byte *)object + object->region_permutations_offset;
             bool mirrored = TEST_FIELD_BIT(object->mirrored);
             transform4x3f const *field_50 = (transform4x3f *)((byte *)object + object->node_matrices_offset);
-            volatile long node_count = object->node_matrices_size / sizeof(transform4x3f);
+            volatile long &node_count = scratch.node_count;
+            node_count = object->node_matrices_size / sizeof(transform4x3f);
             long render_model_index = TAG_DATA(s_model_definition_view, model_index)->render_model_index;
 
             result = function_1d8f50(function_1d8f00(render_model_index, marker_name), render_model_index,

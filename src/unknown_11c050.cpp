@@ -86,9 +86,11 @@ struct s_name_table_11c0b0
 // @retail 0x11c0b0
 short function_11c0b0(char const *name, s_name_table_11c0b0 *table)
 {
+	s_named_entry_11c0b0 *entries;
 	for (short i = 0; i < table->count; i++)
 	{
-		if (!strcmp(table->entries[i].name, name))
+		entries = table->entries;
+		if (!strcmp(entries[i].name, name))
 			return i;
 	}
 	return NONE;

@@ -1731,8 +1731,10 @@ void c_game_engine_45c948::v14(long local_player)
 			long position_bits[3];
 			position_bits[1] = ((long const *)position)[1];
 			position_bits[0] = ((long const *)position)[0];
+			*(long *)&list.position.x = position_bits[0];
 			position_bits[2] = ((long const *)position)[2];
-			list.position = *(point3f const *)position_bits;
+			*(long *)&list.position.y = position_bits[1];
+			*(long *)&list.position.z = position_bits[2];
 			list.b0 = 0;
 			list.b1 = 0;
 			list.l4 = 1;

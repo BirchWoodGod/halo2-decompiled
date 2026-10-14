@@ -9,7 +9,7 @@ real function_1f8940(long arg_0);
 void function_1f86a0(long arg_0);
 long function_2003a0(long arg_0);
 void __stdcall function_26c2d0(long arg_0);
-long function_1af5c0(long arg_0, long arg_1, point3f const *arg_2, short arg_3);
+long function_1af5c0(long arg_0, long arg_1, point3f const *arg_2, long arg_3);
 
 #pragma inline_depth(0)
 // @retail 0x1af810
@@ -104,7 +104,7 @@ bool __stdcall function_1af810(long arg_0, s_slot *arg_1)
         else if (!function_1f8660(arg_0) && local_3->unknown24 >= 1 && local_3->unknown24 <= 2 &&
             !local_0->unknown229 && !local_0->unknown5d0)
         {
-            short local_15 = 0;
+            long local_15 = 0;
             byte *local_16 = (byte *)function_1e5240(arg_0);
             if (local_16 && (*local_16 & 2))
                 local_15 = 2;
