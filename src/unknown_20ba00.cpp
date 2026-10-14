@@ -78,13 +78,10 @@ PRIVATE inline byte *audio_condition_object(long index)
     return (byte *)((s_audio_object_header *)g_4e0300->data)[index & 0xffff].object;
 }
 
-PRIVATE inline byte *audio_condition_parent(byte *unit)
+PRIVATE __forceinline bool audio_condition_parent(byte *unit)
 {
-    if (*(short *)(unit + 0x1fc) == NONE)
-        return NULL;
-    long parent = *(long *)(unit + 0x14);
-    byte *header = g_4e0300->data + (parent & 0xffff) * 12;
-    return header[3] == 1 ? *(byte **)(header + 8) : NULL;
+    return *(short *)(unit + 0x1fc) != NONE &&
+        (g_4e0300->data + (*(long *)(unit + 0x14) & 0xffff) * 12)[3] == 1;
 }
 
 // @retail 0x20bbb0
@@ -149,25 +146,31 @@ bool __stdcall function_20bbb0(short condition, long object_index, real *weight)
         case 11:
             if (unit)
             {
-                byte *parent = audio_condition_parent(unit);
-                if (parent)
+                if (audio_condition_parent(unit))
+                {
+                    byte *parent = audio_condition_object(*(long *)(unit + 0x14));
                     result = *(long *)(parent + 0x248) == object_index;
+                }
             }
             break;
         case 12:
             if (unit)
             {
-                byte *parent = audio_condition_parent(unit);
-                if (parent)
+                if (audio_condition_parent(unit))
+                {
+                    byte *parent = audio_condition_object(*(long *)(unit + 0x14));
                     result = *(long *)(parent + 0x24c) == object_index;
+                }
             }
             break;
         case 13:
             if (unit)
             {
-                byte *parent = audio_condition_parent(unit);
-                if (parent)
+                if (audio_condition_parent(unit))
+                {
+                    byte *parent = audio_condition_object(*(long *)(unit + 0x14));
                     result = *(long *)(parent + 0x248) != object_index && *(long *)(parent + 0x24c) != object_index;
+                }
             }
             break;
         case 14:
@@ -221,8 +224,10 @@ bool __stdcall function_20bbb0(short condition, long object_index, real *weight)
         case 21:
             if (unit)
             {
-                byte *parent = audio_condition_parent(unit);
-                if (parent && (*(long *)(parent + 0x24c) == object_index || *(long *)(parent + 0x248) == object_index))
+                byte *parent;
+                if (audio_condition_parent(unit) &&
+                    (parent = audio_condition_object(*(long *)(unit + 0x14)),
+                    *(long *)(parent + 0x24c) == object_index || *(long *)(parent + 0x248) == object_index))
                 {
                     s_object_seat seats[64];
                     result = true;

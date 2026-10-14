@@ -473,19 +473,19 @@ short __stdcall function_255740(long arg_0, s_slot *arg_1)
 		long local_1 = local_0->unknown5ac;
 		s_slot_object_view *local_2 = object_get(local_1);
 		vector3f local_3 = local_0->unknown5ec;
-		vector3f local_4 = local_0->unknown290;
 		local_3.k = 0.f;
+		vector3f local_4 = local_0->unknown290;
 		local_4.k = 0.f;
 		real local_5 = function_30bf0(&local_3);
 		if (local_5 > 0.f && function_30bf0(&local_4) > 0.f)
 		{
 			real local_6 = *(real *)((byte *)function_1e4a50(local_0->unknown054) + 4);
+			real local_9 = local_2->unknown03c + local_6;
 			vector3f local_7;
 			vector3d_from_points3d(&local_0->position, &local_2->unknown030, &local_7);
 			real local_8 = function_255741(&local_7, &local_3);
 			if (local_8 > 0.f)
 			{
-				real local_9 = local_2->unknown03c + local_6;
 				if (local_9 + local_5 > local_8)
 				{
 					vector3f local_10;
