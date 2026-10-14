@@ -1733,6 +1733,9 @@ long g_55e6fc;
 long online_get_nat_type(void);
 long function_75890(long time);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+
 // @retail 0x70d60
 bool function_70d60(c_session_state_matchmaking *state)
 {
@@ -1754,7 +1757,10 @@ bool function_70d60(c_session_state_matchmaking *state)
 			{
 				bool host = false;
 				if (!state->unknowna7c || function_75890(state->unknowna7c) >= function_75890(state->unknowna68))
+				{
 					host = true;
+					_ReadWriteBarrier();
+				}
 				else
 				{
 					bool restricted = g_network_configuration.flag1ac;
@@ -1786,6 +1792,7 @@ bool function_70d60(c_session_state_matchmaking *state)
 	}
 	return result;
 }
+#pragma function(_ReadWriteBarrier)
 
 struct s_match_player_list
 {

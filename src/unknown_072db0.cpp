@@ -1753,8 +1753,8 @@ long online_round_report(XNKID const *session_id, ULONGLONG const *round_key,
 void function_73ca0(byte *results)
 {
     byte storage[0xc090];
-    bool local_host = false;
     bool valid = true;
+    bool local_host = false;
     if (results)
     {
         s_surface_description *variant = function_192e60(*(long *)(results + 4));
