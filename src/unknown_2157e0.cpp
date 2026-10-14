@@ -42,9 +42,18 @@ struct s_55c160
 	s_55c164 entries[16];
 };
 s_55c160 g_55c160_table;
-bool g_55c274;
-long g_55c278;
-dword g_55c27c;
+/* a saved-game file lock: free flag, the locked file's index and the owning
+   thread (handed out by address in src/unknown_217370.cpp) */
+struct s_saved_game_file_lock
+{
+	bool free;
+	long file_index;
+	dword thread;
+};
+s_saved_game_file_lock g_saved_game_file_lock;
+#define g_55c274 g_saved_game_file_lock.free
+#define g_55c278 g_saved_game_file_lock.file_index
+#define g_55c27c g_saved_game_file_lock.thread
 
 void function_215880(void *ref);
 bool function_216800(long b, void *a);

@@ -76,11 +76,12 @@ void function_138110(s_game_options *options)
 	long ticks;
 
 	memset(options, 0, sizeof(*options));
-	options->unknown128 = g_510c49;
-	options->unknown05 = 0;
 	options->state = 1;
+	options->unknown128 = g_510c49;
 	options->unknown04 = 1;
-	ticks = g_485ac0;
+	options->unknown05 = 0;
+	/* read through a const pointer: retail reads the tick rate after the stores above */
+	ticks = *(short const *)&g_485ac0;
 	if (ticks <= 0)
 		ticks = 60;
 	options->unknown12a = 1;
