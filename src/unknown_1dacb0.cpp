@@ -677,28 +677,19 @@ c_type_709360 function_1dd0b0(s_graph_tag *graph, long name)
 			}
 			if (animation_id.index == NONE)
 			{
-				s_graph_inheritance *inheritance;
-
 				graph_index++;
 				if (graph_index >= graph->inheritance_count)
 				{
 					break;
 				}
-				inheritance = &graph->inheritance[graph_index];
-				current = NULL;
-				if (inheritance->graph_tag_index != NONE)
-				{
-					current = graph_tag_get(inheritance->graph_tag_index);
-				}
+				current = graph_inherited_get(graph, graph_index);
 			}
 		}
 		while (current);
 		if (animation_id.index != NONE)
 		{
 			function_1dd9d0(graph, animation_id);
-			return animation_id;
 		}
-		return animation_id;
 	}
 	return animation_id;
 }
@@ -884,8 +875,7 @@ bool function_1dcfa0(s_graph_tag *graph, s_graph_pair_iterator *iterator)
 
 		while (iterator->step < 4 && !entry)
 		{
-			short local_0 = *(volatile short const *)&iterator->step;
-			switch (local_0)
+			switch (iterator->step)
 			{
 			case 0:
 				entry = graph_weapon_class_get(graph, iterator->mode, iterator->weapon_class);
@@ -902,7 +892,7 @@ bool function_1dcfa0(s_graph_tag *graph, s_graph_pair_iterator *iterator)
 			}
 			if (!entry)
 			{
-				iterator->step = local_0 + 1;
+				iterator->step++;
 				index = 0;
 			}
 		}
