@@ -776,8 +776,8 @@ long __stdcall function_1e0160(long squad_index, long entry_index, long unit_ind
 			}
 			if (team == 0)
 			{
-				static short const initial_teams[20] = { 3, 7, 3, 3, 3, 3, 1, 2, 2, 4, 4, 4, 5, 5, -1, 3, 7, 7, 7, 4 };
-				team = initial_teams[actor->unknown004];
+				static short const local_e57a51[20] = { 3, 7, 3, 3, 3, 3, 1, 2, 2, 4, 4, 4, 5, 5, -1, 3, 7, 7, 7, 4 };
+				team = local_e57a51[actor->unknown004];
 			}
 			function_1e1150(actor_index, team);
 			if (squad && !squad[0x76] && actor->unknown024 != 0)
