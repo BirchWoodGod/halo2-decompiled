@@ -584,7 +584,7 @@ void function_b9a90(long object_index)
 {
     s_object_view *object = OBJECT_GET(object_index);
     s_object_view *parent = OBJECT_GET(object->parent_index);
-    bool connected = function_b9d20(object->parent_index);
+    long connected = function_b9d20(object->parent_index);
     s_object_view *node_parent = OBJECT_GET(*(long volatile *)&object->parent_index);
     transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + *(short const volatile *)&node_parent->node_matrices_offset) + *(char *)((byte *)object + 0x18);
     if (connected)
