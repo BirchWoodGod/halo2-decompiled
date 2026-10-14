@@ -654,15 +654,16 @@ bool function_2938c0(long arg_0)
 {
 	bool local_0 = false;
 	s_flock *local_1 = &((s_flock *)g_51ecb4->data)[arg_0 & 0xffff];
+	s_record_pool *objects = g_4e0300;
 	long local_2 = local_1->unknown04;
 	while (local_2 != NONE)
 	{
 		long local_3 = local_2;
-		s_flock_object_header *local_4 = &((s_flock_object_header *)g_4e0300->data)[local_3 & 0xffff];
-		s_flock_object *local_5 = local_4->object;
+		s_flock_object *local_5 = ((s_flock_object_header *)objects->data)[local_3 & 0xffff].object;
 		s_flock_member *local_6 = flock_object_get_member(local_5);
 		local_2 = local_6 ? local_6->next_object_index : NONE;
 		local_6 = flock_object_get_member(local_5);
+		s_flock_object_header *local_4 = &((s_flock_object_header *)objects->data)[local_3 & 0xffff];
 		bool local_7 = (*((byte *)local_4 + 2) & 1) != 0;
 		local_0 |= local_7;
 		if (local_6)
@@ -675,11 +676,12 @@ bool function_2938c0(long arg_0)
 		if (local_1->definition_index >= 0 && local_1->definition_index < local_8->flock_count)
 		{
 			s_scenario_flock *local_9 = &local_8->flocks[local_1->definition_index];
+			byte *mask_base = (byte *)g_4e6948;
 			for (short local_10 = 0; local_10 < *(long *)((byte *)local_9 + 0xc); local_10++)
 			{
 				point3f const *local_11 = (point3f const *)(*(byte **)((byte *)local_9 + 0x10) + local_10 * 0x1c);
 				short local_12 = function_272af0(g_4e0348, local_11);
-				if (((dword *)((byte *)g_4e6948 + 0x11b8))[local_12 >> 5] & (1 << (local_12 & 0x1f)))
+				if (((dword *)(mask_base + 0x11b8))[local_12 >> 5] & (1 << (local_12 & 0x1f)))
 				{
 					local_0 = true;
 					*(word *)((byte *)local_1 + 0x10) |= 1 << local_10;

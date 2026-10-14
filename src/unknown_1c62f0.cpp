@@ -405,25 +405,29 @@ void c_animation_channel::sample(real weight, dword const *node_mask, long node_
 	dword const *graph_mask;
 	dword const *mask;
 	s_graph_inheritance *inheritance;
+	s_tag_instance *tags;
+	word channel_flags;
 
 	if (unknown10 && animation->type)
 	{
 		function_1dd9d0(graph_tag_get(graph_tag_index), animation_id);
 		return;
 	}
-	interpolate = (flags >> 6) & 1;
-	if ((flags & 1) && rate != 0.0f && (rate != 1.0f || g_510c54->field_2_3 != 30))
+	channel_flags = flags;
+	interpolate = (channel_flags >> 6) & 1;
+	if ((channel_flags & 1) && rate != 0.0f && (rate != 1.0f || g_510c54->field_2_3 != 30))
 	{
 		interpolate = true;
 	}
+	tags = g_4e3b44;
 	graph_mask = NULL;
-	if (flags & 0x800)
+	if (channel_flags & 0x800)
 	{
-		graph_mask = graph_tag_get(graph_tag_index)->node_mask5c;
+		graph_mask = ((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes)->node_mask5c;
 	}
-	else if (flags & 0x400)
+	else if (channel_flags & 0x400)
 	{
-		graph_mask = graph_tag_get(graph_tag_index)->node_mask7c;
+		graph_mask = ((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes)->node_mask7c;
 	}
 	mask = NULL;
 	if (graph_mask || node_mask)
@@ -433,9 +437,12 @@ void c_animation_channel::sample(real weight, dword const *node_mask, long node_
 	inheritance = NULL;
 	if (animation_id.index != NONE && animation_id.graph_index != NONE)
 	{
-		inheritance = function_1daff0(graph_tag_get(graph_tag_index), animation_id);
+		s_graph_tag *graph = (s_graph_tag *)tags[graph_tag_index & 0xffff].bytes;
+
+		inheritance = function_1daff0(graph, animation_id);
+		tags = g_4e3b44;
 	}
-	function_279d80(graph_tag_get(graph_tag_index), animation_id, node_count, frame_position, weight, inheritance, mask, transforms,
+	function_279d80((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes, animation_id, node_count, frame_position, weight, inheritance, mask, transforms,
 		interpolate);
 }
 /* the graph's sound or effect an animation's event names, or NULL */

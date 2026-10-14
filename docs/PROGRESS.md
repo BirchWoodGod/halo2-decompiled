@@ -2,6 +2,26 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8586 functions match
+
+```
+matched 8586 of 11318 game functions (1131272 of 2784283 bytes, 40.63%)
+```
+
+4 new matches, none lost:
+- Machine 3's batch 19 (#460): `0x2411b0`, `0x241620` and `0x279740` match.
+- Machine 1's Opus lane round 24: `0x25d020` matches, in `src/actor_object_knowledge.cpp` (its file name sets where link-time code generation enters a call-graph cycle); `0x1d5ec0` from 437 to 22.
+
+## 2026-10-14: 8582 functions match
+
+```
+matched 8582 of 11318 game functions (1129424 of 2784283 bytes, 40.56%)
+```
+
+6 new matches, none lost:
+- Machine 1 Opus lane round 23: `0xc35a0`
+- Machine 3 batch 18 (#459): `0x1dc790`, `0x24a30e`, `0x4de20`, `0x1ce4f0` and `0x12a810`
+
 ## 2026-10-14: 8576 functions match
 
 ```

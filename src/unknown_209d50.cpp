@@ -58,27 +58,28 @@ static inline s_hs_macro_expression *hs_macro_expression_get(long expression_ind
 static inline void *function_xc5914d(long thread_index, short size)
 {
 	s_hs_macro_frame *frame = hs_macro_thread_get(thread_index)->frame;
-	unsigned short previous_size = (unsigned short)frame->size;
-	void *result = frame->data + (short)previous_size;
+	short *frame_size = &frame->size;
+	void *result = frame->data + *frame_size;
 
-	frame->size = (short)(previous_size + size);
+	*frame_size += size;
 	return result;
 }
 
 // @retail 0x209d50
 long *__stdcall function_209d50(long thread_index, short parameter_count, short const *parameter_types, bool initialize)
 {
-	s_hs_macro_thread *thread;
-	long *arguments = (long *)function_xc5914d(thread_index, parameter_count * sizeof(long));
+	s_hs_macro_frame **frame = &hs_macro_thread_get(thread_index)->frame;
+	unsigned short previous_size = (unsigned short)(*frame)->size;
+	long *arguments = (long *)((*frame)->data + (short)previous_size);
+	long *volatile result = arguments;
+	(*frame)->size = (short)(previous_size + parameter_count * sizeof(long));
 	short &argument_index = *(short *)function_xc5914d(thread_index, sizeof(short));
 	long &expression_index = *(long *)function_xc5914d(thread_index, sizeof(long));
-	long *volatile result = arguments;
 
 	if (initialize)
 	{
-		thread = hs_macro_thread_get(thread_index);
 		argument_index = 0;
-		expression_index = hs_macro_expression_get(hs_macro_expression_get(thread->frame->expression_index)->value)->next_index;
+		expression_index = hs_macro_expression_get(hs_macro_expression_get((*frame)->expression_index)->value)->next_index;
 	}
 	if (argument_index < parameter_count &&
 		hs_macro_expression_get(expression_index)->type == parameter_types[argument_index])

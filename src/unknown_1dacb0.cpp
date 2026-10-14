@@ -800,19 +800,6 @@ bool function_1dd8f0(s_graph_tag *graph, c_type_709360 animation_id, real_quater
 	return result;
 }
 
-/* the weapon class entry of a mode (inlined copies) */
-inline s_graph_mode_entry *graph_weapon_class_get(s_graph_tag *graph, long mode, long weapon_class)
-{
-	s_graph_mode_entry *result = NULL;
-	s_graph_mode_entry *mode_entry = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&graph->mode_count, mode, 0x14);
-
-	if (mode_entry)
-	{
-		result = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&mode_entry->child_count, weapon_class, 0x14);
-	}
-	return result;
-}
-
 // @retail 0x1dcf20
 bool function_1dcf20(s_graph_tag *graph, s_graph_pair_iterator *iterator)
 {
@@ -1022,6 +1009,21 @@ void function_1dd290(s_graph_tag *graph, transform4x3f *matrices, rigid_transfor
 	}
 }
 
+/* the animation at (item, index) of a weapon type's set, or none */
+static inline c_type_709360 animation_find_in_type_1dc790(s_graph_weapon_type *weapon_type_entry, long set,
+	long item_index, long animation_index)
+{
+	c_type_709360 animation_id;
+	s_graph_set_entry *set_entry = (s_graph_set_entry *)function_1dd560(
+		(s_sorted_array *)&weapon_type_entry->set_count, set, 0xc);
+
+	if (set_entry)
+	{
+		animation_id = set_entry->items[item_index].animation_ids[animation_index];
+	}
+	return animation_id;
+}
+
 // @retail 0x1dc790
 c_type_709360 s_graph_tag::animation_find(long mode, long weapon_class, long weapon_type, long set, long item_index,
 	long animation_index, long *found_mode, long *found_weapon_class, long *found_weapon_type)
@@ -1036,39 +1038,28 @@ c_type_709360 s_graph_tag::animation_find(long mode, long weapon_class, long wea
 		long iterator_weapon_type = NONE;
 		s_graph_weapon_type *weapon_type_entry;
 
-		long const *weapon_type_argument = &weapon_type;
-
-		iterator.weapon_type = *weapon_type_argument;
+		iterator.graph = this;
 		iterator.step = 0;
 		iterator.mode_entry = NULL;
 		iterator.class_entry = NULL;
-		iterator.weapon_class = weapon_class;
 		iterator.mode = mode;
-		iterator.graph = this;
+		iterator.weapon_class = weapon_class;
+		iterator.weapon_type = weapon_type;
 		weapon_type_entry = graph_weapon_type_iterate(&iterator, &iterator_mode, &iterator_weapon_class,
 			&iterator_weapon_type);
-		for (;;)
+		bool found = false;
+		while (!found && weapon_type_entry)
 		{
-			c_type_709360 animation_id;
-
-			if (!weapon_type_entry)
-			{
-				break;
-			}
-			s_graph_set_entry *set_entry = (s_graph_set_entry *)function_1dd560(
-				(s_sorted_array *)&weapon_type_entry->set_count, set, 0xc);
-
-			if (set_entry)
-			{
-				animation_id = set_entry->items[item_index].animation_ids[animation_index];
-			}
-			result = animation_id;
+			result = animation_find_in_type_1dc790(weapon_type_entry, set, item_index, animation_index);
 			if (result.index != NONE)
 			{
-				break;
+				found = true;
 			}
-			weapon_type_entry = graph_weapon_type_iterate(&iterator, &iterator_mode, &iterator_weapon_class,
-				&iterator_weapon_type);
+			else
+			{
+				weapon_type_entry = graph_weapon_type_iterate(&iterator, &iterator_mode, &iterator_weapon_class,
+					&iterator_weapon_type);
+			}
 		}
 		if (found_mode)
 		{

@@ -8,11 +8,6 @@
 #include "unknown_1fa590.h"
 #include "slot_handler.h"
 
-// @stub 0x25d020
-bool __stdcall function_25d020(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4, long arg_5)
-{
-	return false;
-}
 
 
 
