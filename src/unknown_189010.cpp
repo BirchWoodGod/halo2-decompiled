@@ -119,6 +119,8 @@ struct s_sound_class_play_flags
 	word flag13 : 1;
 	word flag14 : 1;
 	word flag15 : 1;
+	byte unknown0a : 7;
+	byte flag23 : 1;
 };
 
 struct s_sound_play_tag
@@ -182,9 +184,9 @@ long function_189fe0(s_sound_request const *request, long tag_index)
 		state.source = request->source;
 		state.platform_playback = request->platform_playback;
 
-		if (TEST_FIELD_BIT(((s_sound_class_play_flags *)function_221810(sound->class_index))->flag15) && !(sound->flags & 1))
+		if (TEST_FIELD_BIT(((s_sound_class_play_flags *)function_221810(sound->class_index))->flag23) && !(sound->flags & 1))
 		{
-			state.location.flag11 = true;
+			state.location.flags |= 0x800;
 		}
 
 		if (request->marker)
