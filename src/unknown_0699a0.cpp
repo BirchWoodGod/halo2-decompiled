@@ -220,14 +220,14 @@ s_node_450d1c *function_89df0(s_owner_450d1c *owner)
 // @retail 0x8b0a0
 bool function_8b0a0(s_node_450d1c *node, long size, const void *source)
 {
-	bool result = false;
 	void *block = handle_allocate(size);
+	bool result = false;
 	if (block)
 	{
 		node->size = size;
 		node->data = block;
 		memcpy(block, source, size);
-		return true;
+		result = true;
 	}
 	return result;
 }
@@ -254,7 +254,7 @@ void function_8b4d0(s_event_distribution *distribution, long type, long entity_c
 {
 	dword mask = 0;
 	s_view_iterator iterator = { (dword)NONE, 0 };
-	c_simulation_view *view = 0;
+	c_simulation_view *view;
 	while (world_next_view(distribution->world, &iterator, &view))
 	{
 		if (view->established() && view->unknown1c >= 0 && view->unknown1c < 16 &&
@@ -286,7 +286,10 @@ void function_8b4d0(s_event_distribution *distribution, long type, long entity_c
 				for (long i = 0; i < entity_count; i++)
 				{
 					if (entities[i] != NONE)
-						distribution->entities->data[entities[i] & 0x3ff].counter++;
+					{
+						s_datum_450cb8 *datum = &distribution->entities->data[entities[i] & 0x3ff];
+						datum->counter++;
+					}
 				}
 			}
 			replication_node_start(node, distribution->owner, mask);

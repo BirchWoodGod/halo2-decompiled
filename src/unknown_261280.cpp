@@ -541,6 +541,7 @@ struct s_candidate_range_list
 bool __stdcall function_261ec0(long actor_index, long squad_index, s_261d20_entry *entries,
     short *count, long maximum_count, s_prop_search *search)
 {
+    bool volatile result = false;
     long const *actor_reference = &actor_index;
     long const *squad_reference = &squad_index;
     s_261d20_entry *const *entries_reference = &entries;
@@ -548,7 +549,6 @@ bool __stdcall function_261ec0(long actor_index, long squad_index, s_261d20_entr
     long const *maximum_reference = &maximum_count;
     s_prop_search *const *search_reference = &search;
     byte *squad = g_51e9d8->data + (*squad_reference & 0xffff) * 0x98;
-    bool volatile result = false;
     if (*(long *)(squad + 0x80) != NONE)
     {
         if (*(char *)(squad + 0x30) >= 0)
@@ -565,10 +565,12 @@ bool __stdcall function_261ec0(long actor_index, long squad_index, s_261d20_entr
         byte *definition = *(byte **)((byte *)g_4e0350 + 0x244) + *(short *)(squad + 0x2a) * 0x7c;
         if ((*(byte *)(definition + 0x24) & 0x20) && *(short *)(definition + 0x4e) != NONE)
         {
-            result = function_261ec0(*actor_reference, *(short *)(definition + 0x4e),
+            bool recursive_result = function_261ec0(*actor_reference, *(short *)(definition + 0x4e),
                 *entries_reference, *count_reference, *maximum_reference, *search_reference);
-            return result;
+            result = recursive_result;
+            return recursive_result;
         }
+        result = true;
         s_actor_view *actor = actor_get(*actor_reference);
         s_candidate_range_list *list = *(volatile byte *)(squad + 0x60) ? (s_candidate_range_list *)(definition + 0x5c) : (s_candidate_range_list *)(definition + 0x54);
         short flags = *((bool *)actor + 0x3f2) ? 6 : 4;
@@ -584,7 +586,6 @@ bool __stdcall function_261ec0(long actor_index, long squad_index, s_261d20_entr
             }
             if (index >= list->count) flags |= 1;
         }
-        result = true;
         if (*search_reference) *(short *)((byte *)*search_reference + 0x69e) = flags;
         for (short index = 0; index < list->count; ++index)
         {
