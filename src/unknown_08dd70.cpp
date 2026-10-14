@@ -33,8 +33,6 @@ extern long g_510518;
 extern long g_510530;
 extern s_search_value_globals g_509450;
 extern s_session_interface_globals g_4cd868;
-extern long g_4d8ec4;
-extern void *g_4d8ec8;
 extern c_class_93590 *g_510560;
 extern s_network_message_gateway *g_510568;
 extern s_network_observer *g_510570;
@@ -126,8 +124,6 @@ void function_8dd70(void)
 		function_b3670();
 		function_b31b0();
 		memset(&g_4d8ea8, 0, sizeof(g_4d8ea8));
-		g_4d8ec4 = 0;
-		g_4d8ec8 = 0;
 		for (long offset = 0; offset < 3 * 0x78b8; offset += 0x78b8)
 		{
 			s_session_slot *session = (s_session_slot *)((byte *)g_510574 + offset);
