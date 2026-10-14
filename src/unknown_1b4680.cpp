@@ -371,11 +371,11 @@ short __stdcall function_1b52a0(long actor_index, s_slot *slot)
 		s_actor_view *other = actor_get(index);
 
 		index = other->next_index;
-		if (other->unknown004 == *(short const volatile *)&type->leader_type)
-		{
-			result = g_46fbe4;
-			goto done;
-		}
+		short other_type = other->unknown004;
+		if (other_type != *(short const volatile *)&type->leader_type)
+			continue;
+		result = g_46fbe4;
+		goto done;
 	}
 
 	if (result != g_46fbe4)
