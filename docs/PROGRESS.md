@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8558 functions match
+
+```
+matched 8558 of 11318 game functions (1119712 of 2784283 bytes, 40.22%)
+```
+
+4 new matches, none lost:
+- Machine 3 Codex lane J round 25 (#456): `0x94220`, `0x942d0` and `0x96ce0`
+- Machine 3 Codex lane DL round 28 (#455): `0x58590`
+
 ## 2026-10-14: 8554 functions match
 
 ```
