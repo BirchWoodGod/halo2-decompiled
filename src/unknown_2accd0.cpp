@@ -134,7 +134,7 @@ inline bool function_xe8ca68(s_type_acf665 *file, dword size, const void *buffer
 
 inline bool function_xab2909(s_type_acf665 *file, dword size, bool silent, void *buffer)
 {
-	return function_136ca0(file, buffer, size, silent);
+	return function_136ca0(file, size, buffer, silent);
 }
 
 inline bool function_x8231f3(s_type_acf665 *file)

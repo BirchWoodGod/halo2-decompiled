@@ -57,6 +57,9 @@ void function_1d6ad0(s_havok_component *arg_0, s_physics_model_owner *arg_1);
 signed char __stdcall function_1d5940(s_havok_component *arg_0, long arg_1, long arg_2, long arg_3)
 {
  (void)&arg_0; (void)&arg_1; (void)&arg_2; (void)&arg_3;
+ /* keeps the component on the stack, as retail passes it */
+ s_havok_component *const *component_reference = &arg_0;
+ (void)component_reference;
  long local_0 = 0;
  long local_1;
  dword local_2[8];
@@ -93,9 +96,10 @@ signed char __stdcall function_1d5940(s_havok_component *arg_0, long arg_1, long
     local_11 = 6;
    local_4[local_9] = (char)local_11;
   }
-  long local_12 = 0;
   local_1 = 0;
-  if (function_1d5bf0(arg_0, (s_physics_model_owner *)&local_3, local_4, (byte)arg_3 != 0,
+  long local_12 = 0;
+  /* arg_3 is a flag byte: retail forwards the argument as it is */
+  if (function_1d5bf0(arg_0, (s_physics_model_owner *)&local_3, local_4, *(bool *)&arg_3,
        NONE, &local_1, local_2, (s_physics_body_groups *)&local_6, &local_5[local_12]))
    local_12 = 1;
   if (local_1 >= 0)
@@ -105,7 +109,7 @@ signed char __stdcall function_1d5940(s_havok_component *arg_0, long arg_1, long
    if (!(local_2[local_13 >> 5] & (1 << (local_13 & 31))))
    {
     local_1 = 0;
-    if (function_1d5bf0(arg_0, (s_physics_model_owner *)&local_3, local_4, (byte)arg_3 != 0,
+    if (function_1d5bf0(arg_0, (s_physics_model_owner *)&local_3, local_4, *(bool *)&arg_3,
          local_13, &local_1, local_2, (s_physics_body_groups *)&local_6, &local_5[local_12]))
      ++local_12;
     if (local_0 <= local_1)
@@ -114,8 +118,9 @@ signed char __stdcall function_1d5940(s_havok_component *arg_0, long arg_1, long
   }
   if (local_12 > 0)
   {
-   if ((arg_0->rigid_bodies.capacity_and_flags & 0x7fffffff) < local_12)
-    function_2d9160(&arg_0->rigid_bodies, local_12, 0x60);
+   s_havok_array60 *local_15 = &arg_0->rigid_bodies;
+   if ((local_15->capacity_and_flags & 0x7fffffff) < local_12)
+    function_2d9160(local_15, local_12, 0x60);
    for (long local_14 = 0; local_14 < local_12; ++local_14)
     function_1d0080((hkRigidBody *)local_5[local_14].field_0, arg_0,
      (byte const *)local_5[local_14].field_4, local_5[local_14].field_44, local_5[local_14].field_48);

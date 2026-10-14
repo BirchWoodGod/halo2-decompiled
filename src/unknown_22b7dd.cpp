@@ -89,7 +89,8 @@ bool function_22b7dd(byte const *arg_1, long arg_2)
         if (sequence_index >= 0)
         {
             byte *bitmap;
-            if (sequence_index < tag->sequence_count)
+            /* retail compares the count in memory and does not keep it for the else-branch */
+            if (sequence_index < ((s_bitmap_tag_22b7dd volatile *)tag)->sequence_count)
             {
                 s_bitmap_sequence_22b7dd *sequence = &tag->sequences[sequence_index];
                 long bitmap_index;

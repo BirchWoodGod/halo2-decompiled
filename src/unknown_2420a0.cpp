@@ -148,7 +148,7 @@ bool function_19f240(long *iterator);
 void function_1967d0(long a, long c, long b, long delta);
 void function_1970a0(long b, long a, long delta);
 void function_197210(long player_index, long value14, long value10);
-s_event *game_engine_event_initialize(s_event *event, long type, long subtype);
+s_event *game_engine_event_initialize(long type, long subtype, s_event *event);
 void game_engine_event_set_cause_player(s_event *event, long player_index);
 point3f *function_b9dd0(long object_index, point3f *result);
 s_team_entry *function_15e410(short team);
@@ -1159,8 +1159,8 @@ void c_game_engine_markers::v23(long object_index, long unit_index)
 				{
 					s_event event;
 
-					game_engine_event_initialize(&event, ctf_options()->engine_type == 9 ? 10 : 3, 1);
-					game_engine_event_set_cause_player(&event, player_index);
+					game_engine_event_set_cause_player(
+						game_engine_event_initialize(ctf_options()->engine_type == 9 ? 10 : 3, 1, &event), player_index);
 					event.effect_team = (short)((short)slot == 8 ? NONE : (short)slot);
 					function_19eb90(&event);
 				}
@@ -1220,7 +1220,7 @@ void c_game_engine_markers::v24(long object_index, long unit_index)
 				{
 					s_event event;
 
-					game_engine_event_set_cause_player(game_engine_event_initialize(&event, ctf_options()->engine_type == 9 ? 10 : 3, 2),
+					game_engine_event_set_cause_player(game_engine_event_initialize(ctf_options()->engine_type == 9 ? 10 : 3, 2, &event),
 						player_index);
 					event.effect_team = (short)((short)slot == 8 ? NONE : (short)slot);
 					function_19eb90(&event);
@@ -1659,7 +1659,6 @@ void function_242660(long object_index, bool arg_1)
 		{
 			long effect_index;
 			long value;
-			point3f position;
 
 			if (!arg_1 && (g_51ec80->flags[slot] & 2))
 			{
@@ -1685,6 +1684,7 @@ void function_242660(long object_index, bool arg_1)
 			if (effect_index != NONE)
 			{
 				vector3f local_0 = *g_4687b0;
+				point3f position;
 				s_effect_marker markers[5];
 				s_damage_owner owner;
 
@@ -1698,10 +1698,10 @@ void function_242660(long object_index, bool arg_1)
 				markers[0].forward = *g_4687b0;
 				markers[1].forward = *g_4687bc;
 				markers[2].forward = *g_4687b0;
+				markers[4].forward = *g_4687b0;
 				markers[3].forward.i = 0.0f - local_0.i;
 				markers[3].forward.j = 0.0f - local_0.j;
 				markers[3].forward.k = 0.0f - local_0.k;
-				markers[4].forward = *g_4687b0;
 				markers[0].name = 0x700054c;
 				markers[1].name = 0x70000c0;
 				markers[2].name = 0x20000ca;
@@ -1714,6 +1714,7 @@ void function_242660(long object_index, bool arg_1)
 			if (damage_index != NONE)
 			{
 				s_type_1e6529 data;
+				point3f position;
 
 				data.field_7c = NONE;
 				function_b9dd0(object_index, &position);
@@ -1732,7 +1733,10 @@ void function_242660(long object_index, bool arg_1)
 
 	if (object->slot != NONE)
 	{
+		/* retail calls the marker lookup here */
+#pragma inline_depth(0)
 		long marker_index = function_2421d0(object->slot);
+#pragma inline_depth()
 
 		g_51ec80->d[object->slot] = NONE;
 		g_51ec80->times[object->slot] = g_510c54->field_2_3;
@@ -2258,7 +2262,7 @@ void __stdcall function_240820(long arg_0)
 		{
 			if (!(g_51ec80->flags[local_2] & 4) && ((short *)g_51ec80->unknown138)[local_2] > 4 * g_510c54->field_2_3)
 			{
-				game_engine_event_initialize(&local_3, ctf_options()->engine_type == 9 ? 10 : 3, ctf_options()->engine_type == 9 ? 0x10 : 0xc);
+				game_engine_event_initialize(ctf_options()->engine_type == 9 ? 10 : 3, ctf_options()->engine_type == 9 ? 0x10 : 0xc, &local_3);
 				local_3.effect_team = function_244301((short)local_2);
 				game_engine_event_set_cause_player(&local_3, local_10);
 				function_19eb90(&local_3);
@@ -2298,7 +2302,7 @@ void __stdcall function_240820(long arg_0)
 					{
 						if (!(ctf_options()->engine_type == 9 && (g_51ec80->flags[local_2] & 2)) && (g_51ec80->flags[local_2] & 1))
 						{
-							game_engine_event_initialize(&local_3, ctf_options()->engine_type == 9 ? 10 : 3, 4);
+							game_engine_event_initialize(ctf_options()->engine_type == 9 ? 10 : 3, 4, &local_3);
 							local_3.effect_team = function_244301((short)local_2);
 							function_19eb90(&local_3);
 						}
@@ -2318,7 +2322,7 @@ void __stdcall function_240820(long arg_0)
 
 		if (function_162b90(arg_0))
 		{
-			game_engine_event_initialize(&local_3, ctf_options()->engine_type == 9 ? 10 : 3, 4);
+			game_engine_event_initialize(ctf_options()->engine_type == 9 ? 10 : 3, 4, &local_3);
 			local_3.effect_team = function_244301((short)local_2);
 			function_19eb90(&local_3);
 			function_242660(arg_0, false);
@@ -2569,6 +2573,7 @@ void function_15e360(point3f const *point, long object_index);
 // @retail 0x242ba0
 void function_242ba0(long marker_index, long object_index, long player_index)
 {
+	long const *player_reference = &player_index;
 	long slot = slot_object_get(object_index)->slot;
 
 	if (slot != NONE)
@@ -2604,10 +2609,11 @@ void function_242ba0(long marker_index, long object_index, long player_index)
 			g->flags[slot] |= 2;
 			ctf_globals_changed(0x200);
 
-			game_engine_event_initialize(&event, 10, 13);
-			game_engine_event_set_cause_player(&event, player_index);
+			game_engine_event_initialize_inline(&event, 10, 13);
+			event.cause_player_index = *player_reference;
+			event.cause_team = event_player_get(*player_reference)->team;
 			event.effect_team = marker_team;
-			function_19eb90(&event);
+			game_engine_event_send_inline(&event);
 
 			object = slot_object_get(object_index);
 			object->lc8 = NONE;
