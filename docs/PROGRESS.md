@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8655 functions match
+
+```
+matched 8655 of 11318 game functions (1151254 of 2784283 bytes, 41.35%)
+```
+
+8 new matches, none lost:
+- Machine 3's batch 31 (#473): `0x7acc0`, `0x7acf0`, `0x784a0`, `0x924e0`, `0xb8600`, `0x238114`, `0x22c280` and `0x22cbd0` match.
+- Machine 1's key lane round 19: `0x146bf0` goes from 115 to 5 at retail's length.
+
 ## 2026-10-14: 8647 functions match
 
 ```
