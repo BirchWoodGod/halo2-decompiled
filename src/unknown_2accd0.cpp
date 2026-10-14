@@ -422,7 +422,7 @@ done:
 // @retail 0x2ad480
 void saved_game_file_copy_finish(s_saved_game_file *file, bool succeeded)
 {
-	long type = file->flags & 0xf;
+	byte type = file->flags & 0xf;
 	char root[8];
 	wchar_t name[0x80];
 

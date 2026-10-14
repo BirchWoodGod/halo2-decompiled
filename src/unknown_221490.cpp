@@ -483,6 +483,7 @@ short sound_driver_voice_new(
 	dword flags,
 	dword input_mixbin)
 {
+	short result = NONE;
 	s_sound_driver_globals *globals = SOUND_DRIVER_GLOBALS;
 	short voice_index = globals->voice_count;
 
@@ -491,7 +492,15 @@ short sound_driver_voice_new(
 		bool three_d = flags & 1;
 		bool play = (flags >> 1) & 1;
 		s_sound_driver_voice *voice;
-		DSBUFFERDESC description = {0};
+		struct
+		{
+			DSMIXBINS mixbins;
+			union { DSBUFFERDESC first; DSMIXBINVOLUMEPAIR pairs_second[5]; };
+			DSBUFFERDESC second;
+			DSMIXBINVOLUMEPAIR pairs_first[6];
+		} storage;
+		DSBUFFERDESC &description = storage.first;
+		memset(&description, 0, sizeof(description));
 
 		globals->voice_count = voice_index + 1;
 		voice = &globals->voices[voice_index];
@@ -500,8 +509,8 @@ short sound_driver_voice_new(
 		description.dwInputMixBin = input_mixbin;
 		if (SUCCEEDED(IDirectSound_CreateSoundBuffer(globals->direct_sound, &description, &voice->submix, NULL)))
 		{
-			DSMIXBINVOLUMEPAIR pairs[6];
-			DSMIXBINS mixbins;
+			DSMIXBINVOLUMEPAIR (&pairs)[6] = storage.pairs_first;
+			DSMIXBINS &mixbins = storage.mixbins;
 
 			IDirectSoundBuffer_SetVolume(voice->submix, 0);
 			pairs[0].dwMixBin = 0;
@@ -523,7 +532,8 @@ short sound_driver_voice_new(
 		}
 		if (three_d)
 		{
-			DSBUFFERDESC buffer_description = {0};
+			DSBUFFERDESC &buffer_description = storage.second;
+			memset(&buffer_description, 0, sizeof(buffer_description));
 
 			buffer_description.dwSize = sizeof(buffer_description);
 			buffer_description.dwFlags = (play ? DSBCAPS_FXIN2 : 0) + DSBCAPS_FXIN | DSBCAPS_CTRL3D;
@@ -531,12 +541,12 @@ short sound_driver_voice_new(
 			if (FAILED(IDirectSound_CreateSoundBuffer(SOUND_DRIVER_GLOBALS->direct_sound, &buffer_description, &voice->buffer, NULL)))
 			{
 				SOUND_DRIVER_GLOBALS->voice_count--;
-				return NONE;
+				return result;
 			}
 			else
 			{
-				DSMIXBINVOLUMEPAIR pairs[5];
-				DSMIXBINS mixbins;
+				DSMIXBINVOLUMEPAIR (&pairs)[5] = storage.pairs_second;
+				DSMIXBINS &mixbins = storage.mixbins;
 
 				pairs[0].dwMixBin = 6;
 				pairs[0].lVolume = 0;
@@ -562,12 +572,9 @@ short sound_driver_voice_new(
 		{
 			voice->buffer = NULL;
 		}
+		result = voice_index;
 	}
-	else
-	{
-		voice_index = NONE;
-	}
-	return voice_index;
+	return result;
 }
 
 // @retail 0x220fd0
