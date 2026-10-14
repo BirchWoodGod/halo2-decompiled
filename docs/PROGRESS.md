@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8631 functions match
+
+```
+matched 8631 of 11318 game functions (1146492 of 2784283 bytes, 41.18%)
+```
+
+7 new matches, none lost:
+- Machine 3's batch 28 (#470): `0x2a7df0`, `0x15d00`, `0x2363d4`, `0x2651e0`, `0x2bd0b0`, `0x44720` and `0x2b81cb` match.
+
 ## 2026-10-14: 8624 functions match
 
 ```
