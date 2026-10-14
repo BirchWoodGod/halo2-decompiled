@@ -42,7 +42,8 @@ long function_201330(short placement_index)
 extern s_flag_bits g_557c74;
 
 long function_1e4990(long index);
-PRIVATE short const g_44aee8[20] =
+/* external linkage: machine 1's 0x1e0160 reads this table too */
+extern short const g_44aee8[20] =
 {
 	3, 7, 3, 3, 3, 3, 1, 2, 2, 4, 4, 4, 5, 5, -1, 3, 7, 7, 7, 4
 };
