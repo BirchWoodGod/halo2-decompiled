@@ -74,28 +74,30 @@ bool function_1debd0(dword const *arg_1, s_bsp3d const *arg_0, short arg_2, long
  point2f const *const *local_18 = &arg_6;
  s_1ddda0 const *local_0 = (s_1ddda0 const *)arg_0;
  s_1debd0 const *local_1 = &((s_1debd0 const *)local_0->field_2c)[arg_3];
- if (arg_1 && (local_1->field_4 & 8) && (short)local_1->field_5 < arg_2 &&
-  !(arg_1[local_1->field_5 >> 5] & (1 << (local_1->field_5 & 31))))
-  return false;
- s_1ddda2 const *local_2 = local_0->field_34;
- s_1ddda3 const *local_3 = local_0->field_3c;
- long local_4 = local_1->field_2;
- long local_5 = local_4;
- short const *local_6 = g_440b94[arg_4 * 2 + arg_5];
- long local_7 = local_6[0] * sizeof(real), local_8 = local_6[1] * sizeof(real);
- do
+ if (!arg_1 || !(local_1->field_4 & 8) || (short)local_1->field_5 >= arg_2 ||
+  (arg_1[local_1->field_5 >> 5] & (1 << (local_1->field_5 & 31))))
  {
-  s_1ddda2 const *local_9 = &local_2[local_5];
-  bool local_10 = local_9->field_a == arg_3;
-  real const *local_11 = (real const *)&local_3[local_9->field_0[local_10]].field_0;
-  point2f local_12 = { *(real const *)((byte const *)local_11 + local_7), *(real const *)((byte const *)local_11 + local_8) };
-  point2f local_14 = { (*local_18)->x - local_12.x, (*local_18)->y - local_12.y };
-  real const *local_16 = (real const *)&local_3[local_9->field_0[!local_10]].field_0;
-  point2f local_17 = { *(real const *)((byte const *)local_16 + local_7) - local_12.x, *(real const *)((byte const *)local_16 + local_8) - local_12.y };
-  if (local_17.y * local_14.x - local_14.y * local_17.x > 0.0f) return false;
-  local_5 = local_9->field_4[local_10];
- } while (local_5 != local_4);
- return true;
+  s_1ddda2 const *local_2 = local_0->field_34;
+  s_1ddda3 const *local_3 = local_0->field_3c;
+  long local_4 = local_1->field_2;
+  long local_5 = local_4;
+  short const *local_6 = g_440b94[arg_4 * 2 + arg_5];
+  long local_7 = local_6[0] * sizeof(real), local_8 = local_6[1] * sizeof(real);
+  do
+  {
+   s_1ddda2 const *local_9 = &local_2[local_5];
+   bool local_10 = local_9->field_a == arg_3;
+   real const *local_11 = (real const *)&local_3[local_9->field_0[local_10]].field_0;
+   point2f local_12 = { *(real const *)((byte const *)local_11 + local_7), *(real const *)((byte const *)local_11 + local_8) };
+   point2f local_14 = { (*local_18)->x - local_12.x, (*local_18)->y - local_12.y };
+   real const *local_16 = (real const *)&local_3[local_9->field_0[!local_10]].field_0;
+   point2f local_17 = { *(real const *)((byte const *)local_16 + local_7) - local_12.x, *(real const *)((byte const *)local_16 + local_8) - local_12.y };
+   if (local_17.y * local_14.x - local_14.y * local_17.x > 0.0f) return false;
+   local_5 = local_9->field_4[local_10];
+  } while (local_5 != local_4);
+  return true;
+ }
+ return false;
 }
 
 struct s_1dea01
