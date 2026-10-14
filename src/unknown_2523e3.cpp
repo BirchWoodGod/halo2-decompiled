@@ -54,11 +54,12 @@ void c_4way_signin_screen::v3()
         long profile_index;
         if (signed_in)
         {
-            s_widget_item *item = &items[controller];
             player_slot_get_profile(controller, &profile, &profile_index);
+            s_widget_item *item = &items[controller];
             appearance = &profile.data[0x46];
             item->flags |= 2;
-            memcpy(item->value48, appearance, 16);
+            for (long word_index = 0; word_index < 4; ++word_index)
+                item->value48[word_index] = appearance[word_index];
             item->flags |= 1;
             item->value4 = (long)&profile.data[2];
         }

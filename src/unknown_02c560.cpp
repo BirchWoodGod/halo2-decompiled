@@ -161,18 +161,15 @@ void function_2ca00(point3f const *position, t_aux_view_callback callback, void 
 void __stdcall function_2c8a0(byte const *source)
 {
     s_frame_parameters_12a50 parameters;
-    parameters.identifier = 0;
-    memset(&parameters.time, 0, sizeof(parameters.time));
-    parameters.unknown10 = 0;
-    parameters.unknown14 = 0;
-    parameters.mode = 1;
     g_4ba030 = 1;
     ++g_4ba034;
+    memset(&parameters, 0, sizeof(parameters));
+    parameters.mode = 1;
     function_12a50(&parameters);
     s_frame_view_2c560 frame;
     memset(&frame, 0, sizeof(frame));
     memcpy(&g_camera_storage, source + 0xc, sizeof(g_camera_storage));
-    function_2fd90((s_2f800_view const *)(source + 0xc), 0, (byte *)&g_projection_storage);
+    function_2fd90((s_2f800_view const *)&g_camera_storage, 0, (byte *)&g_projection_storage);
     memcpy(frame.view, source + 0x80, sizeof(frame.view));
     function_2fd90((s_2f800_view const *)frame.view, 0, frame.projection);
     frame.position = *g_468718;
