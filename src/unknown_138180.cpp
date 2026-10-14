@@ -49,7 +49,7 @@ bool __stdcall function_138180(const s_session_options *options)
 			local_1 = false;
 			goto local_2;
 		}
-		if (string_length_bounded(options->name, sizeof(options->name)) == 0)
+		if (string_length_bounded(options->name, sizeof(options->name)) <= 0)
 		{
 			local_1 = false;
 			goto local_2;

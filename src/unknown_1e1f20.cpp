@@ -448,7 +448,12 @@ void function_1e23c0(long actor_index)
  {
   s_slot *slot = &actor->slots[i];
   t_slot_proc callback = g_46eeb8[slot->type]->proc30;
-  if (callback) callback(*index_reference, i < 4 ? slot : NULL);
+  if (callback)
+  {
+   s_slot *selected = slot;
+   if (i >= 4) selected = NULL;
+   callback(*index_reference, selected);
+  }
  }
  long prop_index = actor_get(*index_reference)->first_prop_index;
  while (prop_index != NONE)

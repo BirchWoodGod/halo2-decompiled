@@ -1233,9 +1233,10 @@ void function_1ae70(byte *state)
     dword pending[5];
     for (long mask = 0; mask < 5; ++mask)
         pending[mask] = ((dword *)(state + 0x30))[mask] & ((dword *)(state + 0x44))[mask];
+    dword *scalar_masks = pending;
     for (long base = 0; base < 64; base += 32)
     {
-        dword remaining = pending[base >> 5];
+        dword remaining = *scalar_masks++;
         while (remaining)
         {
             long bit;
@@ -1248,9 +1249,10 @@ void function_1ae70(byte *state)
             ((dword *)(state + 0x30))[index >> 5] &= ~(1 << (index & 31));
         }
     }
+    dword *vector_masks = pending + 2;
     for (long base = 0; base < 64; base += 32)
     {
-        dword remaining = pending[2 + (base >> 5)];
+        dword remaining = *vector_masks++;
         while (remaining)
         {
             long bit;

@@ -755,18 +755,16 @@ void c_sound_effects::add_source_mixbins(s_sound_mixbin_source *source, bool rea
 	long rear_left = alternate ? 4 : 8;
 	long rear_right = alternate ? 5 : 9;
 
-	switch (source->speaker_mode)
+	if (source->speaker_mode == 1)
 	{
-	case 0:
-		break;
-	case 1:
 		if (remaining >= 2)
 		{
 			sound_mixbins_add(mixbins, left, gain);
 			sound_mixbins_add(mixbins, right, gain);
 		}
-		break;
-	case 2:
+	}
+	else if (source->speaker_mode == 2)
+	{
 		if (remaining >= 2)
 		{
 			if (rear)
@@ -780,8 +778,9 @@ void c_sound_effects::add_source_mixbins(s_sound_mixbin_source *source, bool rea
 				sound_mixbins_add(mixbins, right, gain);
 			}
 		}
-		break;
-	case 3:
+	}
+	else if (source->speaker_mode == 3)
+	{
 		if (rear)
 		{
 			if (remaining >= 2)
@@ -797,9 +796,6 @@ void c_sound_effects::add_source_mixbins(s_sound_mixbin_source *source, bool rea
 			sound_mixbins_add(mixbins, right, gain - 6.0206f);
 			sound_mixbins_add(mixbins, right, g_44f710);
 		}
-		break;
-	default:
-		break;
 	}
 
 	if (source->mixbin != NONE)
