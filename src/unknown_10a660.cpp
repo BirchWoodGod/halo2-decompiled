@@ -20,6 +20,20 @@ struct s_object_10a660
 	long attached_object_index;
 };
 
+/* the word of flags at 0xc0 (a local view) */
+struct s_object_flags_c0_10a660
+{
+	byte unknown000[0xc0];
+	word flag0 : 1;
+	word flag1 : 1;
+	word flag2 : 1;
+	word flag3 : 1;
+	word flag4 : 1;
+	word flag5 : 1;
+	word flag6 : 1;
+	word remaining : 9;
+};
+
 struct s_object_definition_10a660
 {
 	byte unknown00[0x38];
@@ -69,7 +83,7 @@ bool function_10a660(long object_index, long animation_name, short frame, long a
 						if (attached_object_index != NONE)
 						{
 							function_b9a50(object_index);
-							if (TEST_FIELD_BIT(((s_object_default_placement_view *)object)->flag_c0_6))
+							if (TEST_FIELD_BIT(((s_object_flags_c0_10a660 *)object)->flag6))
 								function_b8840(object_index);
 							function_b75a0(object_index, g_468788, g_4687a8, g_4687b0, NULL, false);
 							function_b7360(object_index);
@@ -89,5 +103,16 @@ bool function_10a660(long object_index, long animation_name, short frame, long a
 		}
 	}
 
+	return result;
+}
+
+/* whether an animation graph has as many nodes as the model it animates; it
+   lives in this file (not inline) so that only link-time code generation
+   inlines it into s_animation_state::initialize (0x1cb0d0), as in retail */
+bool animation_graph_fits_model(long graph_tag_index, long model_tag_index)
+{
+	bool result = false;
+	if (graph_tag_index != NONE)
+		result = (short)graph_tag_get(graph_tag_index)->node_count == *(long *)((byte *)graph_tag_get(model_tag_index) + 0x78);
 	return result;
 }

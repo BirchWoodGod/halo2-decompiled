@@ -25,8 +25,9 @@ extern byte *g_51e9ec;
 #pragma inline_depth(0)
 /* stores the time, in ticks up to 1800, in 31 steps */
 // @retail 0x20b450
-void function_20b450(long definition_index, real ticks)
+bool function_20b450(long definition_index, real ticks)
 {
+	bool result = false;
 	if (ticks < 0.0f)
 		ticks = 0.0f;
 	else if (ticks > 1800.0f)
@@ -48,8 +49,10 @@ void function_20b450(long definition_index, real ticks)
 					long bit = offset + i;
 					TIMER_BIT_SET(g_51e9ec, bit, timer & (1 << i));
 				}
+				result = true;
 			}
 		}
 	}
+	return result;
 }
 #pragma inline_depth(255)

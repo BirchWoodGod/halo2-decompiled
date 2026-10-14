@@ -131,10 +131,14 @@ short __stdcall function_1bc420(long actor_index)
 	return result;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1bc4f0
 bool __stdcall function_1bc4f0(long actor_index, s_slot *slot)
 {
-	short team = actor_get(actor_index)->unknown024;
+	s_actor_view *actor = actor_get(actor_index);
+	_ReadWriteBarrier();
+	short team = actor->unknown024;
 	bool result = false;
 
 	if (team == 1 || !team_is_enemy(team, 1))
@@ -144,6 +148,7 @@ bool __stdcall function_1bc4f0(long actor_index, s_slot *slot)
 	}
 	return result;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x1bc580
 short __stdcall function_1bc580(long actor_index, s_slot *slot, bool active)
