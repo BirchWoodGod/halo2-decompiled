@@ -94,7 +94,7 @@ struct s_2f970_view;
 bool function_2f970(s_2f970_view const *view, real *out);
 bool function_2b720(point3f *point, long *cluster, long *leaf);
 bool cluster_get_sky(long cluster_index, long *sky_index, bool *found, vector3f *vector);
-void function_12e5e0(byte *out, long cluster_index, point3f const *position,
+void function_12e5e0(long cluster_index, byte *out, point3f const *position,
 	vector3f const *forward, byte kind, bool enabled);
 struct s_speed_result
 {
@@ -141,7 +141,7 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	long sky_index;
 	byte kind = cluster_get_sky(location.cluster, &sky_index, &found, &sky.color);
 	byte geometry[0x120];
-	function_12e5e0(geometry, location.cluster, &view->position, &view->forward, kind, true);
+	function_12e5e0(location.cluster, geometry, &view->position, &view->forward, kind, true);
 	if (found) *(vector3f *)(geometry + 4) = sky.color;
 	if (geometry[0x18])
 	{

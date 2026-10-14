@@ -7,7 +7,7 @@ bool function_e0dc0(long unit_index);
 signed char __stdcall function_1d5940(s_havok_component *component, long a, long b, long c);
 void __stdcall function_1d01c0(s_havok_component *component);
 void __stdcall function_1d6d00(s_havok_component *arg_0, void *arg_1, byte *arg_2,
- long arg_3, long arg_4, long arg_5, bool arg_6);
+ long arg_3, long arg_4, bool arg_5, bool arg_6);
 
 // @retail 0x1d6b80
 void function_1d6b80(s_havok_component *arg_0)

@@ -42,8 +42,7 @@ void __stdcall function_241620(long player_index, long unit_index)
 					function_1967d0(absolute_index, player->team, 0x11, 1);
 				function_1970a0(absolute_index, 0x14, 1);
 				s_event event;
-				game_engine_event_initialize(&event, options->mode_180 == 9 ? 10 : 3, 3);
-				game_engine_event_set_cause_player(&event, player_index);
+				game_engine_event_set_cause_player(game_engine_event_initialize(&event, options->mode_180 == 9 ? 10 : 3, 3), player_index);
 				event.effect_team = (short)event_team((short)team);
 				function_19eb90(&event);
 				function_242660(unit_index, false);

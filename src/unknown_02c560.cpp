@@ -140,7 +140,9 @@ void function_2ca00(point3f const *position, t_aux_view_callback callback, void 
     s_frame_view_2c560 frame;
     memset(&frame, 0, sizeof(frame));
     frame.mode = 0;
-    frame.position = position ? *position : *g_468718;
+    point3f const *source = g_468718;
+    if (position) source = position;
+    frame.position = *source;
     frame.location = 1;
     function_2f800(0, 0, 0, (s_2f800_view *)frame.view);
     memcpy(frame.view + 0x30, &g_485a8a, sizeof(g_485a8a));
