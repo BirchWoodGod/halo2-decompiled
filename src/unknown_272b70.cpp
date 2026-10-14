@@ -1177,7 +1177,8 @@ void function_273040(long unit_index, long squad_index)
 			s_scenario_squad_273040 *squad = &scenario->squads[index & 0xffff];
 			if (squad->entry_index != NONE)
 			{
-				long const &entry_index = scenario->entries[squad->entry_index].index;
+				s_scenario_entry_273040 const *const &entry = &scenario->entries[squad->entry_index];
+				long entry_index = entry->index;
 				if (entry_index != NONE)
 				{
 					function_1e0160(index, entry_index, unit_index, (bool)((squad->flags >> 10) & 1));

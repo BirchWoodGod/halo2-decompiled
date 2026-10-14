@@ -1065,7 +1065,7 @@ void __stdcall function_2c2060(s_type_f17a25 *query, short count, s_path_step_vi
     long sector = points[0].node_index;
     short used = 0;
     bool copied_last = false;
-    for (short index = 0; index < count; )
+    for (long index = 0; index < count; )
     {
         s_path_step_view const *entry = &points[index];
         short next = NONE;
