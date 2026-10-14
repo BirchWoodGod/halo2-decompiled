@@ -41,11 +41,11 @@ void function_e5930(long unit_index) { }
 
 
 
-// @stub 0xe56f0
-void __stdcall function_e56f0(long unit_index, point3f const *point) { }
 
 
-// @stub 0xe5750
-void function_e5750(long unit_index) { }
+
+
+
+
 
 
