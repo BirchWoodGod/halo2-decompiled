@@ -2055,9 +2055,9 @@ void function_114c60(long arg_0)
                 if (*(long *)(local_1 + 0x1c) == NONE)
                     sound_choose_permutation(local_6, (s_sound_permutation_reference *)(local_1 + 0x18), NULL);
                 s_114c60 local_8;
-                local_8.field_0 = local_7;
                 local_8.field_4 = *(long *)(local_1 + 0x10);
                 local_8.field_8 = 1.0f;
+                local_8.field_0 = local_7;
                 local_8.field_c = local_1 + 0x18;
                 *(long *)(local_1 + 0x54) = function_1891d0(arg_0, 0x4000095, (s_sound_label_play const *)&local_8);
             }

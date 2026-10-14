@@ -614,9 +614,10 @@ void function_19eb90(s_event *event)
 }
 
 // @retail 0x19ebb0
-void game_engine_event_initialize(s_event *event, long type, long subtype)
+s_event *game_engine_event_initialize(s_event *event, long type, long subtype)
 {
 	game_engine_event_initialize_inline(event, type, subtype);
+	return event;
 }
 
 // @retail 0x19ebe0
