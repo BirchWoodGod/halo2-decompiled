@@ -718,7 +718,6 @@ PRIVATE inline short animation_event_next(s_animation const *animation, long typ
 // @retail 0x1ccda0
 c_type_709360 *s_animation_state::transition_find(c_type_709360 *result, long mode, long set, bool *blend)
 {
-	c_type_709360 none;
 	c_type_709360 local_0;
 
 	*blend = false;
@@ -779,13 +778,8 @@ c_type_709360 *s_animation_state::transition_find(c_type_709360 *result, long mo
 		else if (event_transition.index != NONE)
 			local_0 = event_transition;
 		else
-		{
 			*blend = found;
-			local_0 = none;
-		}
 	}
-	else
-		local_0 = none;
 	*result = local_0;
 	return result;
 }
