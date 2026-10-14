@@ -195,8 +195,7 @@ void function_1beb0(void)
 // @retail 0x47ea0
 void function_47ea0(short stage, byte flags)
 {
-	byte const *flags_reference = &flags;
-	if (*flags_reference & 1)
+	if (flags & 1)
 	{
 		D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, D3DTADDRESS_BORDER);
 		D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, D3DTADDRESS_BORDER);
@@ -206,7 +205,7 @@ void function_47ea0(short stage, byte flags)
 		D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
 		D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
 	}
-	if (*flags_reference & 2)
+	if (flags & 2)
 	{
 		D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, D3DTEXF_POINT);
 		D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, D3DTEXF_POINT);

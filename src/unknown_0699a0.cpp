@@ -407,7 +407,7 @@ void function_847d0(s_simulation_controller *controller, s_player_action *input)
   function_86f90(&stream, input);
   long size = (stream.bit_position + 7) / 8;
   stream.size_in_bytes = size;
-  long remainder = size % stream.unknown08;
+  long remainder = stream.size_in_bytes % stream.unknown08;
   if (remainder) stream.size_in_bytes += stream.unknown08 - remainder;
   stream.mode = 2;
   function_1947a0(&stream);
@@ -416,8 +416,8 @@ void function_847d0(s_simulation_controller *controller, s_player_action *input)
  }
  else
  {
-  c_simulation_view *view = 0;
   c_vtable_450c94 *destination = 0;
+  c_simulation_view *view = 0;
   s_view_iterator iterator = { 0xa, 0 };
   world_next_view(controller->world, &iterator, &view);
   if (view) destination = (c_vtable_450c94 *)((byte *)view->data + 0x5098);

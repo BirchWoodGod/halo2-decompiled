@@ -56,26 +56,22 @@ bool player_configuration_cache_next_recent_player(s_recent_player *player, long
 {
 	bool result = false;
 	long index = *iterator;
- long local_0;
-	if (index != NONE)
+	while (index != NONE)
 	{
-		do
-		{
-			s_player_configuration_cache_entry *entry = &g_4cf98c[index];
-			local_0 = entry->next;
-			*iterator = local_0;
-			if (!(entry->flags & 4) && (entry->flags & 0x10) &&
+		s_player_configuration_cache_entry *entry = &g_4cf98c[index];
+		index = entry->next;
+		*iterator = index;
+		if (!(entry->flags & 4) && (entry->flags & 0x10) &&
 			*(unsigned __int64 *)entry->player.xuid != 0 &&
 			!xuid_is_offline(*(unsigned __int64 *)entry->player.xuid) &&
 			!player_configuration_is_excluded(&entry->player) &&
 			*(word *)&entry->player.unknown08[4] != 0)
-			{
-				if (player)
-					memcpy(player, &entry->player, sizeof(s_recent_player));
-				return true;
-			}
-			index = local_0;
-		} while (index != NONE);
+		{
+			if (player)
+				memcpy(player, &entry->player, sizeof(s_recent_player));
+			result = true;
+			break;
+		}
 	}
 	return result;
 }

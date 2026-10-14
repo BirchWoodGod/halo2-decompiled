@@ -108,14 +108,14 @@ void function_b5920(long identifier)
 		s_world_pool *pool = &world->data->pool;
 		s_world_state *saved_state = pool->state;
 		long index = identifier & 0x3ff;
-		byte flags = *(byte *)&saved_state->entries[index];
+		byte flags = *(byte *)&saved_state->entries[identifier & 0x3ff];
 		s_world_slot *slot = &pool->slots[index];
 		*((byte *)slot + 6) = 0;
 		*(long *)((byte *)slot + 8) = NONE;
 		if (flags & 4)
 		{
 			s_world_state *peers = saved_state;
-			byte current_flags = *(byte *)&peers->entries[index];
+			byte current_flags = *(byte *)&peers->entries[identifier & 0x3ff];
 			if (current_flags & 8)
 				replication_table_update_chain((s_handle_peers *)peers, identifier);
 			else if (!(current_flags & 0x10))

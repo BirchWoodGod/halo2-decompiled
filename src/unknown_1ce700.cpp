@@ -121,9 +121,9 @@ void s_1ce4f0::function_1ce4f0(hkRigidBody *arg_1, hkRigidBody *arg_2,
  field_30 = *arg_6;
  function_1ce701(&local_1);
  function_1ce701(&field_30);
- real local_2 = (real)fabs(((real *)&local_1)[0]);
- real local_3 = (real)fabs(((real *)&local_1)[1]);
- real local_4 = (real)fabs(((real *)&local_1)[2]);
+ real local_2 = fabsf(((real *)&local_1)[0]);
+ real local_3 = fabsf(((real *)&local_1)[1]);
+ real local_4 = fabsf(((real *)&local_1)[2]);
  long local_5 = 0, local_6 = 1, local_7 = 2;
 
  if (local_2 > local_3)
@@ -138,10 +138,9 @@ void s_1ce4f0::function_1ce4f0(hkRigidBody *arg_1, hkRigidBody *arg_2,
   local_5 = 2;
  }
  real *local_9 = (real *)&field_40;
- real const *local_10 = (real const *)&local_1;
  local_9[local_5] = 0.0f;
- local_9[local_6] = local_10[local_7];
- local_9[local_7] = -local_10[local_6];
+ local_9[local_6] = ((real *)&local_1)[local_7];
+ local_9[local_7] = -((real *)&local_1)[local_6];
  function_1ce701(&field_40);
  field_50 = function_1ce2f1(local_1, field_40);
 }

@@ -2,6 +2,63 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8582 functions match
+
+```
+matched 8582 of 11318 game functions (1129424 of 2784283 bytes, 40.56%)
+```
+
+6 new matches, none lost:
+- Machine 1 Opus lane round 23: `0xc35a0`
+- Machine 3 batch 18 (#459): `0x1dc790`, `0x24a30e`, `0x4de20`, `0x1ce4f0` and `0x12a810`
+
+## 2026-10-14: 8576 functions match
+
+```
+matched 8576 of 11318 game functions (1126405 of 2784283 bytes, 40.46%)
+```
+
+8 new matches, none lost:
+- Machine 3 batch 17 (#458): `0x847d0`, `0x82240`, `0x1293f0`, `0x24de80`, `0x173ba0`, `0x2087e0`, `0x2b220` and `0x18f1c0`
+
+## 2026-10-14: 8568 functions match
+
+```
+matched 8568 of 11318 game functions (1123314 of 2784283 bytes, 40.34%)
+```
+
+7 new matches, none lost:
+- Machine 1 Opus lane round 22: `0x1cb0d0` and `0xc2c50`, and machine 3's `0x31590` that follows
+- Machine 1 key lanes, blockers handed over by machine 3: `0x22ae21`, `0x1dd0b0`, `0x1dcfa0` and `0x11d180`
+
+## 2026-10-14: 8561 functions match
+
+```
+matched 8561 of 11318 game functions (1121152 of 2784283 bytes, 40.27%)
+```
+
+3 new matches, none lost:
+- Machine 3 batch 16 (#457): `0x20f2d0`, `0x1d0400` and `0xac250`, with new bodies and closer versions
+
+## 2026-10-14: 8558 functions match
+
+```
+matched 8558 of 11318 game functions (1119712 of 2784283 bytes, 40.22%)
+```
+
+4 new matches, none lost:
+- Machine 3 Codex lane J round 25 (#456): `0x94220`, `0x942d0` and `0x96ce0`
+- Machine 3 Codex lane DL round 28 (#455): `0x58590`
+
+## 2026-10-14: 8554 functions match
+
+```
+matched 8554 of 11318 game functions (1119080 of 2784283 bytes, 40.19%)
+```
+
+2 new matches, none lost:
+- Machine 3 Codex lane AC rounds 31 to 33 (#454): `0x2784c0` and `0x1c2d40`
+
 ## 2026-10-14: 8552 functions match
 
 ```

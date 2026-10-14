@@ -2667,8 +2667,8 @@ void function_58590(long mode, long talker, c_voice_observer *observer, long pla
 			if (world_player && *(long *)(world_player + 0x2c) != NONE)
 			{
 				function_caf90(*(long *)(world_player + 0x2c), &position);
-				DSMIXBINVOLUMEPAIR pairs[4] = {0};
 				DSMIXBINS bins = {0};
+				DSMIXBINVOLUMEPAIR pairs[4] = {0};
 				bins.lpMixBinVolumePairs = pairs;
 				function_586f0(player, observer, (long *)&bins.dwMixBinCount, pairs, &position);
 				voice_xhv_set_mix_bins(&g_476fc8, talker, 4, &bins);
