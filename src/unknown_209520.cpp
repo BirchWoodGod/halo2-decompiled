@@ -868,6 +868,15 @@ long function_209490(long expression_index)
 extern s_record_pool *g_4f55d8;
 void function_20a490(short global_index);
 
+/* an object list header (12 bytes) as 0x208070 counts its references */
+struct s_object_list_208070
+{
+    long unknown0;
+    short reference_count;
+    short unknown6;
+    long unknown8;
+};
+
 // @retail 0x208070
 void __stdcall function_208070(short function_index, long thread_index, bool initialize)
 {
@@ -889,7 +898,10 @@ void __stdcall function_208070(short function_index, long thread_index, bool ini
         {
             long list_index = function_209bc0(*global_index);
             if (list_index != NONE)
-                (*(short *)(g_4f55d8->data + (list_index & 0xffff) * 12 + 4))--;
+            {
+                s_object_list_208070 *list = &((s_object_list_208070 *)g_4f55d8->data)[list_index & 0xffff];
+                list->reference_count--;
+            }
         }
         long index = variable->value;
         long slot = (index & 0x8000) ? (index & 0x7fff) : (index & 0x7fff) + 0x41d;
@@ -903,11 +915,15 @@ void __stdcall function_208070(short function_index, long thread_index, bool ini
         {
             long list_index = function_209bc0(*global_index);
             if (list_index != NONE)
-                (*(short *)(g_4f55d8->data + (list_index & 0xffff) * 12 + 4))++;
+            {
+                s_object_list_208070 *list = &((s_object_list_208070 *)g_4f55d8->data)[list_index & 0xffff];
+                list->reference_count++;
+            }
         }
         short index = *global_index;
         function_20a2e0(index);
-        long slot = (index & 0x8000) ? (index & 0x7fff) : (index & 0x7fff) + 0x41d;
+        long index_long = index;
+        long slot = (index_long & 0x8000) ? (index_long & 0x7fff) : (index_long & 0x7fff) + 0x41d;
         function_209ae0(thread_index, ((s_hs_global_value *)g_4f9380->data)[slot].value.d);
     }
 }
