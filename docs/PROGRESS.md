@@ -2,6 +2,16 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8659 functions match
+
+```
+matched 8659 of 11318 game functions (1152199 of 2784283 bytes, 41.38%)
+```
+
+4 new matches, none lost:
+- Machine 3's batch 32 (#477): `0x3d2c0`, `0xb2fc0`, `0x273040` and `0x28cb70` match.
+- A GitHub Actions workflow now runs the Python tests on pull requests and on main (#476).
+
 ## 2026-10-14: 8655 functions match
 
 ```
