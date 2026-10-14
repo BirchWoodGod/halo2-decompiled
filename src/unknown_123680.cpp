@@ -318,7 +318,7 @@ long function_1234a0(long type, s_cache_resource *resource, bool flush)
 }
 
 // @retail 0x123550
-s_cache_load *function_123550(long priority, s_cache_resource *resource)
+s_cache_load *function_123550(s_cache_resource *resource, long priority)
 {
 	long local_0 = resource->size;
 	s_physical_object *local_1 = g_4e3b54;
@@ -433,6 +433,29 @@ long function_123970(void)
 	return count;
 }
 
+/* steps a datum iterator, keeping the current datum */
+static __forceinline byte *datum_iterator_next_1239d0(s_data_datum_iterator *iterator)
+{
+	s_record_pool *data = iterator->data;
+	long index = function_16bc00(data, iterator->index + 1);
+	byte *result;
+
+	if (index != NONE)
+	{
+		result = data->data + data->size * index;
+		iterator->index = index;
+		iterator->datum_index = (*(short *)result << 16) | index;
+	}
+	else
+	{
+		iterator->index = data->maximum_count;
+		iterator->datum_index = NONE;
+		result = 0;
+	}
+	iterator->datum = result;
+	return result;
+}
+
 // @retail 0x1239d0
 void function_1239d0(void)
 {
@@ -442,7 +465,7 @@ void function_1239d0(void)
 	{
 		long loads = function_123970();
 		s_record_pool_iterator iterator;
-		s_record_pool_iterator next_iterator;
+		s_data_datum_iterator next_iterator;
 		s_cache_request *request;
 
 		iterator.data = requests;
@@ -450,13 +473,17 @@ void function_1239d0(void)
 		iterator.datum_index = NONE;
 		while ((request = (s_cache_request *)data_iterator_next_calling(&iterator)) != NULL && loads < 8)
 		{
-			if (request->priority == 1 && g_510c21)
+			if (request->priority == 1)
 			{
 				s_cache_resource *resource = request->resource;
 
+				if (!g_510c21)
+				{
+					continue;
+				}
 				if (resource->block_index == NONE)
 				{
-					s_cache_load *load = function_123550(1, resource);
+					s_cache_load *load = function_123550(resource, 1);
 
 					if (!load)
 					{
@@ -472,16 +499,16 @@ void function_1239d0(void)
 		next_iterator.data = g_4e3b4c;
 		next_iterator.index = NONE;
 		next_iterator.datum_index = NONE;
-		while ((request = (s_cache_request *)data_iterator_next_calling(&next_iterator)) != NULL && loads < 8)
+		while ((request = (s_cache_request *)datum_iterator_next_1239d0(&next_iterator)) != NULL && loads < 8)
 		{
+			long priority = request->priority;
+			s_cache_resource *resource = request->resource;
+
 			if (g_510c21)
 			{
-				long priority = request->priority;
-				s_cache_resource *resource = request->resource;
-
 				if (resource->block_index == NONE)
 				{
-					s_cache_load *load = function_123550(priority, resource);
+					s_cache_load *load = function_123550(resource, priority);
 
 					if (!load)
 					{

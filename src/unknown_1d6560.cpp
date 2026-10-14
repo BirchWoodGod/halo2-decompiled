@@ -123,11 +123,21 @@ long function_1d69d0(s_havok_component *component, long kind, s_physics_model_ow
 	}
 	switch (type)
 	{
-	case 0:
-		result = (bool)(((dword)header->object[0x10a] >> 2) & 1) ? 11 : 9;
+	case 11:
+		if (level <= 1)
+		{
+			result = 4;
+		}
+		else
+		{
+			result = level >= 5 ? 5 : 3;
+		}
 		break;
 	case 1:
 		result = (rigid_body->flags & 8) ? 14 : 12;
+		break;
+	case 0:
+		result = (bool)(((dword)header->object[0x10a] >> 2) & 1) ? 11 : 9;
 		break;
 	case 7:
 		if (kind == 6)
@@ -137,16 +147,6 @@ long function_1d69d0(s_havok_component *component, long kind, s_physics_model_ow
 		else
 		{
 			result = (rigid_body->flags & 8) ? 7 : 6;
-		}
-		break;
-	case 11:
-		if (level <= 1)
-		{
-			result = 4;
-		}
-		else
-		{
-			result = level >= 5 ? 5 : 3;
 		}
 		break;
 	default:

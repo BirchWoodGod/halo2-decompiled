@@ -119,8 +119,13 @@ void c_278370::function_a9ef0(void *arg_0) {}
 void __cdecl function_2d8910(long arg_0) {}
 // @stub 0x2d8890
 void __cdecl function_2d8890() {}
+class c_2d8ab0
+{
+public:
+ void function_2d8ab0();
+};
 // @stub 0x2d8ab0
-void __cdecl function_2d8ab0() {}
+void c_2d8ab0::function_2d8ab0() {}
 
 class c_library_30c470
 {

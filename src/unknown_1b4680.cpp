@@ -372,7 +372,10 @@ short __stdcall function_1b52a0(long actor_index, s_slot *slot)
 
 		index = other->next_index;
 		if (other->unknown004 == *(short const volatile *)&type->leader_type)
-			return g_46fbe4;
+		{
+			result = g_46fbe4;
+			goto done;
+		}
 	}
 
 	if (result != g_46fbe4)
@@ -392,6 +395,7 @@ short __stdcall function_1b52a0(long actor_index, s_slot *slot)
 			result = g_46fbe4;
 		}
 	}
+done:
 	return result;
 }
 

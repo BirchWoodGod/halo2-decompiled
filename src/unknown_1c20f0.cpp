@@ -41,6 +41,7 @@ void __stdcall function_1c22c0(long object_index, long unused);
 // @retail 0x1c19b0
 bool __stdcall function_1c19b0(long actor_index, vector3f const *direction, s_type_f17a25 *path)
 {
+	vector3f const *const *direction_slot = &direction;
 	s_actor_view *actor = actor_get(actor_index);
 	s_structure_bsp_pathfinding_view *bsp = (s_structure_bsp_pathfinding_view *)g_4e0348;
 	s_pathfinding_data *pathfinding = NULL;
@@ -63,7 +64,7 @@ bool __stdcall function_1c19b0(long actor_index, vector3f const *direction, s_ty
 	{
 		s_path_trace_result trace;
 
-		function_26c590(pathfinding, &actor->position, actor->unknown27c.unknown10, NONE, direction, 5.0f, NULL, &trace);
+		function_26c590(pathfinding, &actor->position, actor->unknown27c.unknown10, NONE, *direction_slot, 5.0f, NULL, &trace);
 		origin = trace.point;
 		distance = trace.distance;
 		if (function_1697c0(0x1808c2d, &origin, g_4687bc, actor->unknown018, NONE, &collision))

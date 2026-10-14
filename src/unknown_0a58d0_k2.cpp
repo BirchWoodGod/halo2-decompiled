@@ -11,9 +11,8 @@
 static __forceinline s_simulation_entity *entity_try_get(s_simulation_entity_table *table, long entity_index)
 {
 	s_simulation_entity *result = 0;
-	long absolute_index = entity_index & 0x3ff;
-	if (table->entities[absolute_index].identifier == entity_index)
-		result = table->entities + absolute_index;
+	if (table->entities[entity_index & 0x3ff].identifier == entity_index)
+		result = &table->entities[entity_index & 0x3ff];
 	return result;
 }
 
@@ -32,7 +31,8 @@ long function_a58d0(long entity_index)
 		{
 			long type = entity->type;
 			s_entity_definitions *definitions = (s_entity_definitions *)g_4cf784;
-			if (definitions->definitions[type]->v7((s_entity *)entity) && entity->object_index != NONE)
+			c_object_type_definition *definition = definitions->definitions[type];
+			if (definition->v7((s_entity *)entity) && entity->object_index != NONE)
 				object_index = entity->object_index;
 		}
 	}

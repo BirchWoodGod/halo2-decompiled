@@ -19,24 +19,51 @@ void __stdcall function_b83b0(long object_index, bool unused);
 void __stdcall function_b8460(long object_index, bool detach);
 void __stdcall function_28e200(long arg_0);
 
-PRIVATE __forceinline bool function_1c8561(s_data_datum_iterator *arg_0)
+struct s_1c8560_iterator
 {
-    arg_0->datum = NULL;
-    if (g_4f55d0->active)
-        arg_0->datum = data_iterator_next_inlined((s_record_pool_iterator *)&arg_0->data);
-    return arg_0->datum != NULL;
+	byte *datum;
+	s_record_pool_iterator records;
+	long object_index;
+};
+
+/* steps the iterator while g_4f55d0 is active (an inline copy of the
+   record pool step, with the found datum kept apart until the end) */
+PRIVATE __forceinline bool function_1c8561(s_1c8560_iterator *arg_0)
+{
+    byte *datum = NULL;
+    s_record_pool *data;
+    long index;
+
+    if (!g_4f55d0->active)
+        return false;
+    data = arg_0->records.data;
+    index = data_next_absolute_index_inlined(data, arg_0->records.index + 1);
+    if (index != NONE)
+    {
+        byte *result = data->data + data->size * index;
+        arg_0->records.index = index;
+        arg_0->records.datum_index = (*(short *)result << 16) | index;
+        datum = result;
+    }
+    else
+    {
+        arg_0->records.index = data->maximum_count;
+        arg_0->records.datum_index = NONE;
+    }
+    arg_0->datum = datum;
+    return datum != NULL;
 }
 
 // @retail 0x1c8560
 long __stdcall function_1c8560(long arg_0, void *arg_1, long arg_2, bool *arg_3, void *arg_4, long arg_5)
 {
 	s_1c8560 *local_2;
-	s_data_datum_iterator local_1;
+	s_1c8560_iterator local_1;
 	long local_0 = 0;
 	if (g_4f55d0->active)
 	{
-		local_1.data = g_5044c8;
-		local_1.index = NONE;
+		local_1.records.data = g_5044c8;
+		local_1.records.index = NONE;
 	}
 	while (function_1c8561(&local_1))
 	{
@@ -64,7 +91,7 @@ long __stdcall function_1c8560(long arg_0, void *arg_1, long arg_2, bool *arg_3,
 				function_28e200(local_6);
 		}
 		else
-			function_28e200(local_1.datum_index);
+			function_28e200(local_1.records.datum_index);
 	}
 	*arg_3 = false;
 	return local_0;
