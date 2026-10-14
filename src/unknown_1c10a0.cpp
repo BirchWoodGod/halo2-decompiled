@@ -52,7 +52,7 @@ struct s_vehicle_tag_view
 /* the farthest a firing position may be from the actor */
 real g_46fbdc = 25.0f;
 
-PRIVATE inline s_vehicle_tag_view *vehicle_tag_get(long object_index)
+PRIVATE __forceinline s_vehicle_tag_view *vehicle_tag_get(long object_index)
 {
 	return (s_vehicle_tag_view *)g_4e3b44[object_get(object_index)->tag_index & 0xffff].bytes;
 }
@@ -230,9 +230,11 @@ short __stdcall function_1c1160(long actor_index, s_slot *slot, bool active)
 
 	if (actor->unknown504 == 2)
 	{
+		long unit_index = actor->unknown018;
+
 		if (actor->unknown22a)
 		{
-			if (!function_110ab0(actor->unknown018) &&
+			if (!function_110ab0(unit_index) &&
 				(!state->unknown20 || dot3f((vector3f *)&state->unknown14, &actor->unknown290) > 0.9f))
 			{
 				s_unit_request action;
@@ -246,7 +248,7 @@ short __stdcall function_1c1160(long actor_index, s_slot *slot, bool active)
 				state->unknown0c = function_e6900(actor->unknown018, &action);
 			}
 		}
-		else if (!function_110ab0(actor->unknown018))
+		else if (!function_110ab0(unit_index))
 		{
 			long vehicle_index = state->unknown10;
 

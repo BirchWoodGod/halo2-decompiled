@@ -1087,7 +1087,11 @@ void function_2009d0(void)
 	{
 		long parent = *(long *)(&((s_squad_datum *)squads->data)[(word)i])->unknown6c;
 		if (parent != NONE)
+		{
+			#pragma inline_depth(0)
 			function_205280(parent, i);
+			#pragma inline_depth()
+		}
 	}
 }
 
@@ -1839,14 +1843,15 @@ void function_203d70(long actor_index, short squad_index, bool keep_team)
             {
                 s_squad_actor_iterator iterator;
                 function_204d30(&iterator, squad_index);
-                while (g_4f55d0->active && iterator.next_actor_index != NONE)
+                s_actor_datum *previous;
+                while ((previous = squad_actor_next_inline(&iterator)) != NULL)
                 {
-                    long previous_index = iterator.next_actor_index;
-                    s_actor_datum *previous = actor_datum_get(previous_index);
-                    iterator.next_actor_index = previous->next_actor_index;
+                    long previous_index = iterator.actor_index;
                     *(long *)((byte *)previous + 0x34) = squad_index;
                     function_203ed0(previous_index, false);
+                    #pragma inline_depth(0)
                     function_203f60(previous_index);
+                    #pragma inline_depth()
                 }
                 *(short *)((byte *)squad_get((word)squad_index) + 0x7e) = g_4686c4;
             }
@@ -1857,12 +1862,12 @@ void function_203d70(long actor_index, short squad_index, bool keep_team)
         actor->next_actor_index = squad->first_actor_index;
         squad->first_actor_index = actor_index;
         actor->squad_index = squad_index;
-        function_1e11b0(actor_index, (bool)((((dword)((byte *)squad)[2]) >> 7) & 1));
+        function_1e11b0(actor_index, (bool)((((dword)*(short *)((byte *)squad + 2)) >> 7) & 1));
         short team = (signed char)((byte *)squad)[0x76];
         if (*(short *)((byte *)actor + 0x24) != team && !keep_team)
             function_1e1150(actor_index, team);
         squad->actor_count++;
-        ((byte *)squad)[3] |= 1;
+        *(word *)((byte *)squad + 2) |= 0x100;
     }
 }
 
