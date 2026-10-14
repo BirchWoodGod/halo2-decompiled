@@ -479,7 +479,7 @@ bool function_1faf80(vector3f *facing, long object_index, void const *settings_p
     vector3f *forward = &object->forward;
     vector3f const *up = (vector3f const *)((byte *)object + 0x7c);
     vector3f left;
-    left.i = object->forward.j * up->k - up->j * object->forward.k;
+    left.i = object->forward.j * up->k - *(real const *)((byte *)object + 0x80) * object->forward.k;
     left.j = up->i * object->forward.k - up->k * object->forward.i;
     left.k = up->j * object->forward.i - up->i * forward->j;
     real value = (facing->k * left.k + facing->j * left.j + facing->i * left.i) * 3.3333332538604736f;

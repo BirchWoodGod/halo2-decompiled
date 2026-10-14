@@ -962,7 +962,7 @@ real function_288e0(real value)
 }
 
 // @retail 0x36a40
-real function_36a40(real mean, real spread, real minimum, real maximum)
+inline real function_36a40(real mean, real spread, real minimum, real maximum)
 {
     real const *mean_reference = &mean;
     real const *spread_reference = &spread;
@@ -1031,18 +1031,20 @@ void function_4b160(long first, s_4b160_entry *entries, long mode, long last)
         {
 		for (long j = begin; j <= *last_reference; ++j)
 		{
+			s_4b160_entry *previous = &entries[j - 1];
+			s_4b160_entry *current = &entries[j];
 			bool swap;
 			switch (mode)
 			{
-			case 0: swap = entries[j].distance > entries[j - 1].distance; break;
-			case 1: swap = entries[j - 1].key < entries[j].key; break;
-			default: swap = entries[j].depth > entries[j - 1].depth; break;
+			case 0: swap = current->distance > previous->distance; break;
+			case 1: swap = previous->key < current->key; break;
+			default: swap = current->depth > previous->depth; break;
 			}
 			if (swap)
 			{
-				s_4b160_entry temporary = entries[j - 1];
-				entries[j - 1] = entries[j];
-				entries[j] = temporary;
+				s_4b160_entry temporary = *previous;
+				*previous = *current;
+				*current = temporary;
 			}
 		}
 	
@@ -1088,7 +1090,6 @@ __declspec(noinline)
 void function_4b3d0(s_vector_perturbation *state)
 {
 	state->speed_fraction = function_36a40(state->speed_fraction, state->speed_spread * g_509418, 0.0f, 1.0f);
-	_ReadWriteBarrier();
 	real speed = (state->speed_maximum - state->speed_minimum) * state->speed_fraction + state->speed_minimum;
 	state->velocity.i = state->direction.i * speed;
 	state->velocity.j = state->direction.j * speed;

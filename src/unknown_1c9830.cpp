@@ -204,8 +204,8 @@ void function_1df6c0(short team_a, short team_b, bool team_b_provokes, bool team
 		allegiance->team_a = team_a;
 		allegiance->team_b = team_b;
 		allegiance->incident_threshold = incident_threshold;
-		allegiance->incident_decay_ticks = incident_decay_ticks;
 		allegiance->incidents = 0;
+		allegiance->incident_decay_ticks = incident_decay_ticks;
 		allegiance->decay_timer = 0;
 		allegiance->broken = true;
 		function_1df9c0(allegiance, false, false);
