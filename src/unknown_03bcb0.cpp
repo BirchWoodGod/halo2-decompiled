@@ -307,8 +307,10 @@ bool __stdcall function_4dfa0(long tag, long context, long pass, long stage, lon
 		out->value10 = (dword)material;
 		out->value08 = 0;
 		out->unknown14 = 0;
-		bool ready = function_4cbb0(*(long *)((byte *)out->value10 + 0x100), 0) != 0;
-		return ready;
+		// The helper returns 0 or 1, so its low byte is the bool result.
+		union { long value; bool ready; } result;
+		result.value = function_4cbb0(*(long *)((byte *)out->value10 + 0x100), 0);
+		return result.ready;
 	}
 	return false;
 }

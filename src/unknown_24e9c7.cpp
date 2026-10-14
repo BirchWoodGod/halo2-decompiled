@@ -145,7 +145,7 @@ real function_24e9c7(s_24e9c7_marker const *marker, s_24e9c7_placement const *pl
 			}
 			else
 			{
-				if (sequence_index != 0 || group->sequence_count != 0 || group->bitmap_count <= 0)
+				if (sequence_index != 0 || ((s_24e9c7_bitmap_group volatile *)group)->sequence_count != 0 || group->bitmap_count <= 0)
 					return result;
 				first_bitmap = 0;
 			}

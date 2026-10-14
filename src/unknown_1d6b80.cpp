@@ -16,7 +16,10 @@ void function_1d6b80(s_havok_component *arg_0)
  byte *local_1 = (byte *)havok_object_get(local_0);
  byte *local_2 = g_4e3b44[*(long *)local_1 & 0xffff].bytes;
  byte *local_3 = g_4e3b44[*(long *)(local_2 + 0x38) & 0xffff].bytes;
- bool local_4 = (bool)((*(dword *)(local_1 + 0x134) >> 23) & 1) || function_e0dc0(local_0);
+ bool local_4;
+#pragma inline_depth(0)
+ local_4 = (bool)((*(dword *)(local_1 + 0x134) >> 23) & 1) || function_e0dc0(local_0);
+#pragma inline_depth()
  byte *local_5 = local_1 + 0x3dc;
  bool local_6 = *local_5 == 3;
  if (local_6 && *(long *)(local_3 + 0x24) != NONE &&

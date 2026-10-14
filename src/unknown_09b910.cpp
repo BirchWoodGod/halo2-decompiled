@@ -1133,7 +1133,7 @@ struct s_z_fire_payload
  long attachment;
 };
 void simulation_write_relative_position(s_bitstream *stream, long bits, real const *position);
-void simulation_read_relative_position(long bits, real *position, s_bitstream *stream);
+void simulation_read_relative_position(s_bitstream *stream, long bits, real *position);
 void function_ab5e0(s_z_blend_state const *state, s_bitstream *stream);
 bool function_ab700(s_bitstream *stream, s_z_blend_state *state);
 void function_b5650(long identifier, s_bitstream *stream);
@@ -1175,7 +1175,7 @@ bool c_weapon_fire_event::v10(long a, void *data, s_bitstream *stream)
  if (event->relative)
  {
   event->node = (short)function_1959c0(stream, 8);
-  simulation_read_relative_position(12, event->position, stream);
+  simulation_read_relative_position(stream, 12, event->position);
  }
  bool blend_valid = function_ab700(stream, &event->blend);
  result = result && blend_valid;
