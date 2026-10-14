@@ -2,6 +2,25 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8615 functions match
+
+```
+matched 8615 of 11318 game functions (1142699 of 2784283 bytes, 41.04%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 26 (#468): `0x11a770`, `0x11b4a0` and `0x194870` match.
+- `tools/check.py` now compares jump-table entries as data in its differing-line count, so near-miss counts no longer move with the layout. The match decision is unchanged: the matched set was identical before and after.
+
+## 2026-10-14: 8612 functions match
+
+```
+matched 8612 of 11318 game functions (1142139 of 2784283 bytes, 41.02%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 25 (#467): `0x10ec00`, `0x129100` and `0x19cb90` match.
+
 ## 2026-10-14: 8609 functions match
 
 ```
