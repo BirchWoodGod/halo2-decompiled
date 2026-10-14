@@ -87,12 +87,13 @@ void __stdcall function_16b90(byte *state, long tag, long first, long second,
     byte *pass_definition = g_4e3b44[*(long *)(pass + 4) & 0xffff].bytes;
     byte *records = *(byte **)(pass_definition + 0x20);
     byte *record = *(byte **)(records + 4) + fourth * 0x132;
-    bool changed = record != *(byte **)(state + 0x24) || records != *(byte **)(state + 0x20);
+    long changed = record != *(byte **)(state + 0x24) || records != *(byte **)(state + 0x20);
     long previous = *(long *)state;
     bool different_tag = tag != previous;
     *(long *)(state + 4) = previous;
     *(long *)state = tag;
-    real inverse = scale > 0.0f ? 1.0f / scale : 100000.0f;
+    real inverse = 100000.0f;
+    if (scale > 0.0f) inverse = 1.0f / scale;
     *(real *)(state + 0x28) = inverse;
     *(real *)(state + 0x2c) = (real)(log((double)inverse) * 0.6931471824645996f);
     *(dword *)(state + 0x58) = 0;

@@ -2520,7 +2520,7 @@ bool __stdcall function_23690(s_coefficient_layout const *layout, short order, l
         transform4x3f matrix;
         function_0235a0(source, &matrix);
         long samples = available > 1 ? 2 : 1;
-        for (long sample = 0; sample < samples; ++sample)
+        for (short sample = 0; sample < samples; ++sample)
         {
             if (sample) function_0235a0(source + 12, &matrix);
             real determinant = matrix.left.k * matrix.forward.j * matrix.up.i;

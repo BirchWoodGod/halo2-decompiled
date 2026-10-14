@@ -144,7 +144,8 @@ bool __stdcall function_07b140(void *object, long destination, long type, long s
 		long local_0 = stream->bit_position;
 		_ReadWriteBarrier();
 		long local_1 = stream->size_in_bytes << 3;
-		if (++local_0 <= local_1)
+		long *position = &local_0;
+		if (++*position <= local_1)
 		{
 			stream->checkpoint_count--;
 			result = true;

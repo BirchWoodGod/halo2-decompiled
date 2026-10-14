@@ -25,11 +25,6 @@
 
 /* callees of the screen widget code */
 
-// @stub 0x219070
-byte __stdcall function_219070(long set_index)
-{
-	return 0;
-}
 
 
 struct s_bitmap_view;

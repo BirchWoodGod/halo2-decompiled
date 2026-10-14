@@ -376,9 +376,9 @@ void function_a91c0(long index, long value, point3f const *origin, vector3f cons
         signed char selected = *(signed char *)(EVENT_OBJECT(current) + 0x23c);
         if (selected >= 0 && selected < 2)
         {
-            data.value = (short)value;
-            data.origin = *origin;
             data.direction = *direction;
+            data.origin = *origin;
+            data.value = (short)value;
             function_b5a70(NONE, 0x16, 1, (long)&index, sizeof(data), &data, g_4cef1c);
         }
     }

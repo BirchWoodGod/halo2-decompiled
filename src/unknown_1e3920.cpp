@@ -937,7 +937,7 @@ long __stdcall function_1e0850(long character_index, long squad_index, s_203780 
 			flags = (byte *)function_1e4990(character_index);
 		}
 	if (!flags) return NONE;
-	bool flag = squad && (*(dword *)(squad + 0x20) & 0x400) != 0;
+	long flag = squad && (*(dword *)(squad + 0x20) & 0x400) != 0;
 	byte const *data = (byte const *)placement;
 	long actor_index;
 	if (*flags & 1)

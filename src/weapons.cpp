@@ -2516,23 +2516,22 @@ bool __stdcall function_fdad0(long weapon_index, void *placement, bool *flag)
     *(real *)((byte *)weapon + 0x190) = 0.0f;
     *(real *)((byte *)weapon + 0x18c) = 0.0f;
     function_1058b0(weapon_index, 0, true);
-    *(long volatile *)&weapon->object_index_194 = NONE;
+    weapon->object_index_194 = NONE;
     *(char volatile *)&weapon->entry_177 = -1;
     weapon->time_24c = 0;
     weapon->value_173 = 0;
     weapon->value_174 = 0;
     weapon->value_172 = 0;
     weapon->value_171 = 0;
-    long volatile magazine_index;
+    short magazine_index;
     short i;
-    for (magazine_index = 0; (short)magazine_index < definition->magazine_count; magazine_index++)
+    for (magazine_index = 0; magazine_index < definition->magazine_count; magazine_index++)
     {
         s_weapon_magazine *magazine = &weapon->magazines[magazine_index];
         s_weapon_magazine_definition *magazine_definition = &definition->magazines[magazine_index];
-        short initial = *(short *)((byte *)magazine_definition + 6);
-        magazine->rounds_loaded = initial < magazine_definition->rounds_loaded_maximum ? initial : magazine_definition->rounds_loaded_maximum;
-        long remaining = initial - magazine->rounds_loaded;
-        magazine->rounds_unloaded = remaining < magazine_definition->rounds_total_maximum ? remaining : magazine_definition->rounds_total_maximum;
+        magazine->rounds_loaded = *(short *)((byte *)magazine_definition + 6) > magazine_definition->rounds_loaded_maximum ? magazine_definition->rounds_loaded_maximum : *(short *)((byte *)magazine_definition + 6);
+        long remaining = *(short *)((byte *)magazine_definition + 6) - magazine->rounds_loaded;
+        magazine->rounds_unloaded = remaining > magazine_definition->rounds_total_maximum ? magazine_definition->rounds_total_maximum : remaining;
     }
     for (i = 0; i < definition->trigger_count; i++)
         weapon->triggers[i].effect_index = NONE;
