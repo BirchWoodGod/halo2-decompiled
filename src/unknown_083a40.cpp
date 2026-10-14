@@ -255,12 +255,13 @@ bool simulation_player_changed(const s_machine_address *machines, dword player_m
 // @retail 0x83c90
 void simulation_player_collection_find_slot(const s_type_c67652 *collection, long player_index, const t_player_key *key, long *slot, bool *occupied)
 {
-	long local_2 = 0;
+	long local_2;
 	long found = NONE;
 	dword bit = 1 << player_index;
 	*occupied = (collection->player_mask & bit) != 0;
 	*slot = NONE;
 
+	local_2 = 0;
 	dword player_mask = collection->player_mask;
 	for (; local_2 < 16; local_2++)
 	{
@@ -563,7 +564,7 @@ void __stdcall function_83610(s_simulation_world_owner *watcher, long *count, s_
    if ((watcher->players.player_mask & (1 << i)) && !player->flag0c &&
     simulation_player_changed(machines, session->player_mask, (const s_simulation_session_player *)session->players, i, player))
    {
-    s_simulation_player_update *update = &updates[(*count)++];
+    s_simulation_player_update *update = &updates[++*count - 1];
     update->type = 0;
     update->player_index = i;
     memcpy(update->key, player->key, sizeof(update->key));
@@ -575,18 +576,21 @@ void __stdcall function_83610(s_simulation_world_owner *watcher, long *count, s_
   {
    if (!(session->player_mask & (1 << i)))
     continue;
+   s_type_c67652 *collection = &watcher->players;
    const s_simulation_session_player *source = (const s_simulation_session_player *)&session->players[i];
    const void *configuration = (const byte *)source + 0xa8;
    s_simulation_owner_player *player = &watcher->players.players[i];
    s_simulation_player_update *update;
    if ((watcher->players.player_mask & (1 << i)) && !player->flag0c)
    {
-    if (!memcmp(player->configuration, configuration, sizeof(player->configuration)))
+    if (!memcmp(configuration, player->configuration, sizeof(player->configuration)))
      continue;
-    update = &updates[(*count)++];
+    update = &updates[++*count - 1];
     update->player_index = i;
     update->type = 4;
     memcpy(update->key, source->key, sizeof(update->key));
+    memcpy(update->configuration, configuration, sizeof(update->configuration));
+    simulation_player_collection_apply_update(collection, update);
    }
    else
    {
@@ -609,28 +613,30 @@ void __stdcall function_83610(s_simulation_world_owner *watcher, long *count, s_
      continue;
     long slot;
     bool occupied;
-    simulation_player_collection_find_slot(&watcher->players, i, &source->key, &slot, &occupied);
+    simulation_player_collection_find_slot(collection, i, &source->key, &slot, &occupied);
     if (slot != NONE && slot != i)
-     simulation_player_collection_swap(&watcher->players, i, slot, &updates[(*count)++]);
+     simulation_player_collection_swap(collection, i, slot, &updates[++*count - 1]);
     if (occupied)
     {
-     update = &updates[(*count)++];
+     update = &updates[++*count - 1];
      update->type = 2;
      update->player_index = i;
-     memcpy(update->key, watcher->players.players[i].key, sizeof(update->key));
-     simulation_player_collection_apply_update(&watcher->players, update);
+     memcpy(update->key, collection->players[i].key, sizeof(update->key));
+     simulation_player_collection_apply_update(collection, update);
     }
-    update = &updates[(*count)++];
+    update = &updates[++*count - 1];
+    long unknown14 = source->unknown14;
+    long controller_index = source->controller_index;
     update->player_index = i;
     update->type = 3;
     memcpy(update->key, source->key, sizeof(update->key));
     update->machine = *machine;
-    update->controller_index = source->controller_index;
-    update->unknown20 = source->unknown14;
     update->field_2_2 = false;
+    update->controller_index = controller_index;
+    update->unknown20 = unknown14;
+    memcpy(update->configuration, (const byte *)source + 0xa8, sizeof(update->configuration));
+    simulation_player_collection_apply_update(collection, update);
    }
-   memcpy(update->configuration, configuration, sizeof(update->configuration));
-   simulation_player_collection_apply_update(&watcher->players, update);
   }
   watcher->unknown18 = watcher->session->update7618;
   watcher->unknownc30 = *count > initial_count;

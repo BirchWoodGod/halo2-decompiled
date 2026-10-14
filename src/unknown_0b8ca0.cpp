@@ -1015,44 +1015,55 @@ void __stdcall function_a9260(long unit_index, s_unit_melee_hit const *hit, long
 // Disabled: protected 0x142a60 uses implicit registers without binding its formal inputs.
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 
-// Disabled: the closest opaque-call draft changes matched b75a0 when active.
-#if 0
-// Retail 0xb98e0
+static __forceinline void b98e0_basis(transform4x3f *out, vector3f const *forward, vector3f const *up)
+{
+    out->scale = 1.0f;
+    out->forward = *forward;
+    vector3f left;
+    left.k = up->i * forward->j;
+    left.k -= up->j * forward->i;
+    left.j = up->k * forward->i - up->i * forward->k;
+    left.i = up->j * forward->k;
+    left.i -= up->k * forward->j;
+    out->left.k = left.k;
+    out->left.j = left.j;
+    out->left.i = left.i;
+    out->up = *up;
+    out->position.x = 0.0f;
+    out->position.y = 0.0f;
+    out->position.z = 0.0f;
+}
+
+static __forceinline void b98e0_translation(transform4x3f *out, point3f const *position)
+{
+    out->scale = 1.0f;
+    out->forward.i = 1.0f;
+    out->forward.j = 0.0f;
+    out->forward.k = 0.0f;
+    out->left.i = 0.0f;
+    out->left.j = 1.0f;
+    out->left.k = 0.0f;
+    out->up.i = 0.0f;
+    out->up.j = 0.0f;
+    out->up.k = 1.0f;
+    out->position = *position;
+}
+
+// @retail 0xb98e0
 void __stdcall function_b98e0(long object_index, transform4x3f const *matrix)
 {
     s_object_view *object = OBJECT_GET(object_index);
     transform4x3f translation;
-    translation.scale = 1.0f;
-    translation.forward.i = 1.0f;
-    translation.forward.j = 0.0f;
-    translation.forward.k = 0.0f;
-    translation.left.i = 0.0f;
-    translation.left.j = 1.0f;
-    translation.left.k = 0.0f;
-    translation.up.i = 0.0f;
-    translation.up.j = 0.0f;
-    translation.up.k = 1.0f;
-    translation.position = *(point3f *)((byte *)object + 0x64);
-    transform4x3f orientation;
-    orientation.scale = 1.0f;
-    orientation.forward = *(vector3f *)((byte *)object + 0x70);
+    b98e0_translation(&translation, (point3f *)((byte *)object + 0x64));
     vector3f const *forward = (vector3f *)((byte *)object + 0x70);
     vector3f const *up = (vector3f *)((byte *)object + 0x7c);
-    orientation.left.i = up->j * forward->k - up->k * forward->j;
-    orientation.left.j = up->k * forward->i - up->i * forward->k;
-    orientation.left.k = up->i * forward->j - up->j * forward->i;
-    orientation.up = *up;
-    orientation.position.x = 0.0f;
-    orientation.position.y = 0.0f;
-    orientation.position.z = 0.0f;
+    transform4x3f orientation;
+    b98e0_basis(&orientation, forward, up);
     transform4x3f result;
-    typedef int (__fastcall *compose_proc)(transform4x3f const *, transform4x3f const *, transform4x3f *);
-    compose_proc volatile compose = function_142a60;
-    compose(matrix, &translation, &result);
-    compose(&result, &orientation, &result);
+    function_142a60(matrix, &translation, &result);
+    function_142a60(&result, &orientation, &result);
     function_b75a0(object_index, &result.position, &result.forward, &result.up, 0, false);
 }
-#endif
 
 
 

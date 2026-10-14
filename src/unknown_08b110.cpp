@@ -398,7 +398,12 @@ long c_vtable_450c94::v5(dword a1, s_bitstream *stream, long max_blocks, s_block
  while (stream_read_bit(stream))
  {
   long index = function_1959c0(stream, 5);
-  if (index < 0 || index >= 32 || used >= max_blocks)
+  if (index < 0 || index >= 32)
+  {
+   result = 3;
+   break;
+  }
+  if (used >= max_blocks)
   {
    result = 3;
    break;
@@ -427,23 +432,27 @@ long c_vtable_450c94::v5(dword a1, s_bitstream *stream, long max_blocks, s_block
   }
   if (!result && !has_input && !has_transform)
    result = 3;
-  if (result)
+  if (!result)
+  {
+   s_block_450c94 *block = &blocks[used++];
+   block->index = index;
+   s_item_450cb8 *items = (s_item_450cb8 *)block->data;
+   items[0].size = input ? 0x34 : 0;
+   items[1].size = transform ? 0x40 : 0;
+   items[0].data = input;
+   block->unknown00 = NONE;
+   block->count = 2;
+   items[0].type = 9;
+   items[1].type = 10;
+   items[1].data = transform;
+  }
+  else
   {
    if (input) { long size; release_input_block(input, &size); }
    if (transform) { long size; release_input_block(transform, &size); }
-   break;
   }
-  s_block_450c94 *block = &blocks[used++];
-  block->unknown00 = NONE;
-  block->index = index;
-  block->count = 2;
-  s_item_450cb8 *items = (s_item_450cb8 *)block->data;
-  items[0].size = input ? 0x34 : 0;
-  items[0].type = 9;
-  items[0].data = input;
-  items[1].size = transform ? 0x40 : 0;
-  items[1].type = 10;
-  items[1].data = transform;
+  if (result)
+   break;
  }
  *count = used;
  return result;

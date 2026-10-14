@@ -1060,11 +1060,11 @@ void function_bee60(long object_index)
 {
     byte *object = (byte *)((s_object_header_0bbf40 *)g_4e0300->data)[object_index & 0xffff].object;
     long count = (dword)(long)*(short *)(object + 0x11c) / sizeof(s_object_attachment_ab);
-    s_object_attachment_ab *attachment = (s_object_attachment_ab *)(object + *(short *)(object + 0x11e));
+    s_object_attachment_ab *attachment = (s_object_attachment_ab *)(object + *(volatile short *)(object + 0x11e));
     if (count > 0)
     {
-        volatile long remaining = count;
         long *index = &attachment->index;
+        volatile long remaining = count;
         do
         {
             if (*(char *)(index - 1) != NONE && *index != NONE)

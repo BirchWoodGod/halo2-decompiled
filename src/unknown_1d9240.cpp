@@ -202,7 +202,7 @@ void function_1d9470(s_1d9240 const *p, long count, dword const *mask, s_blend_o
 		real t = function_1d9370(p);
 		short i;
 
-		for (i = 0; i < count; i++, orientations++, targets++)
+		for (i = 0; i < count; targets++, orientations++, i++)
 		{
 			if (!mask || (mask[i >> 5] & (1 << (i & 0x1f))))
 			{
@@ -228,19 +228,19 @@ void function_1d9470(s_1d9240 const *p, long count, dword const *mask, s_blend_o
 					orientations->quaternion[3] * orientations->quaternion[3];
 				if (length_squared > 0.0f)
 				{
-					double inverse = 1.0f / sqrt(length_squared);
+					real inverse = (real)(1.0f / sqrt(length_squared));
 
-					orientations->quaternion[0] = (real)(inverse * orientations->quaternion[0]);
-					orientations->quaternion[1] = (real)(inverse * orientations->quaternion[1]);
-					orientations->quaternion[2] = (real)(inverse * orientations->quaternion[2]);
-					orientations->quaternion[3] = (real)(inverse * orientations->quaternion[3]);
+					orientations->quaternion[0] *= inverse;
+					orientations->quaternion[1] *= inverse;
+					orientations->quaternion[2] *= inverse;
+					orientations->quaternion[3] *= inverse;
 				}
 				else
 				{
 					orientations->quaternion[0] = 0.0f;
 					orientations->quaternion[1] = 0.0f;
-					orientations->quaternion[2] = 0.0f;
 					orientations->quaternion[3] = 1.0f;
+					orientations->quaternion[2] = 0.0f;
 				}
 				orientations->translation[0] = (orientations->translation[0] - targets->translation[0]) * t + targets->translation[0];
 				orientations->translation[1] = (orientations->translation[1] - targets->translation[1]) * t + targets->translation[1];
