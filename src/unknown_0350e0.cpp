@@ -67,7 +67,11 @@ PRIVATE __forceinline vector3f rotate_axis_vector(matrix3x3 const *matrix, vecto
 // @retail 0x39e50
 void __stdcall function_39e50(real step)
 {
-    vector3f axis0 = g_485618.forward;
+    real axis0_i = g_485618.forward.i, axis0_j = g_485618.forward.j, axis0_k = g_485618.forward.k;
+    vector3f axis0;
+    axis0.i = axis0_i;
+    axis0.j = axis0_j;
+    axis0.k = axis0_k;
     vector3f axis1 = g_485618.up;
     matrix3x3 first, second;
     rotation_from_axis(&axis0, (double)step * 0.5f, &first);
@@ -2294,9 +2298,9 @@ long __stdcall function_4ac30(s_cached_input_list *state, s_cached_input *output
 	{
 		long requested = limit;
 		if (limit > state->count) limit = state->count;
+		bool found = false;
 		long first = 0;
 		long last = state->count - 1;
-		bool found = false;
 		long i;
 		for (i = 0; i <= last; ++i)
 		{
@@ -2922,8 +2926,8 @@ void function_32ce0(long object_index, real opacity)
 {
     (void)&opacity;
     s_collision_result_1697c0 collision;
-    collision.unknown24 = NONE;
     byte const *object = ((s_scalar_object_header *)g_4e0300->data)[object_index & 0xffff].object;
+    collision.unknown24 = NONE;
     if (opacity > 0.05f && function_1697c0(0x4800001, (point3f const *)(object + 0x30),
             g_4687bc, NONE, NONE, &collision))
     {
