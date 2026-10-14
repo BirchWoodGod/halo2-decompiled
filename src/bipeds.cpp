@@ -4345,3 +4345,179 @@ void function_e59e0(long arg_159e6d, vector3f *velocity, point3f *position)
 		*velocity = *g_4687a4;
 	}
 }
+
+/* whether a grab measurement (yaw, pitch, distance; function_e5d50) is
+   inside the grab window: closer than 2.0 (flag) or 1.2, the yaw within a
+   limit that narrows from 50 to 15 degrees with the distance, the pitch
+   within 30 degrees */
+// @retail 0xe63b0
+bool function_e63b0(vector3f const *aim, bool flag)
+{
+	real distance = aim->k < 0.0f ? 0.0f : aim->k;
+	real range = 2.0f;
+	bool result = false;
+
+	if (!flag)
+	{
+		range = 1.2f;
+	}
+
+	if (distance < range)
+	{
+		real t = distance * 0.8333333f;
+		real limit = (1.0f - t) * 0.8726646f + t * 0.2617994f;
+
+		result = PIN(aim->i, 0.0f - limit, limit) == aim->i &&
+			PIN(aim->j, -0.5235988f, 0.5235988f) == aim->j;
+	}
+	return result;
+}
+
+/* measures a target from the biped's grab eye, against a reference
+   direction: the yaw and pitch (radians) of the direction to the target, and
+   the gap between the two bodies, not less than 0 */
+// @retail 0xe5d50
+void __stdcall function_e5d50(long arg_159e6d, long target_index, vector3f *offset, point3f *point)
+{
+	point3f center;
+	real height;
+	real radius;
+	point3f eye;
+	point3f target;
+	real target_height;
+	real target_radius;
+	vector3f direction;
+	real distance;
+	s_biped_header *header;
+
+	function_df5f0(arg_159e6d, &center, &height, &radius);
+
+	/* biped_grab_eye, written out: the build keeps that helper out of line,
+	   and retail has it inline here */
+	{
+		s_biped *self = BIPED_GET(arg_159e6d);
+		byte *self_definition = BIPED_DEFINITION_GET(self);
+		real crouch;
+		point3f head;
+		vector3f forward;
+		vector3f up;
+		vector3f to_head;
+
+		function_b9dd0(arg_159e6d, &eye);
+		crouch = function_e0dc0(arg_159e6d) ? 0.0f : self->crouch;
+		eye.z += ((1.0f - crouch) * *(real *)(self_definition + 0x218) + *(real *)(self_definition + 0x21c) * crouch) *
+			self->scale;
+		head = eye;
+		forward = self->unknown168;
+		function_11d090(&forward, &up);
+		function_df380(arg_159e6d, &head, &forward, &up);
+		to_head.i = head.x - eye.x;
+		to_head.j = head.y - eye.y;
+		to_head.k = head.z - eye.z;
+		if (function_30bf0(&to_head) > 0.0f)
+		{
+			s_biped_collision collision;
+			vector3f back;
+			point3f start;
+
+			collision.unknown24 = NONE;
+			back.i = to_head.i * -0.25f;
+			back.j = to_head.j * -0.25f;
+			back.k = to_head.k * -0.25f;
+			if (function_1697c0(0x4808c2d, &eye, &back, NONE, NONE, (s_collision_result_1697c0 *)&collision))
+			{
+				real t = collision.t * 0.9f;
+
+				start.x = back.i * t + eye.x;
+				start.y = back.j * t + eye.y;
+				start.z = back.k * t + eye.z;
+			}
+			else
+			{
+				start = collision.point;
+			}
+			if (function_1697c0(0x4808c2d, &start, &to_head, NONE, NONE, (s_collision_result_1697c0 *)&collision) &&
+				(head.z - start.z) * to_head.k + (head.y - start.y) * to_head.j + (head.x - start.x) * to_head.i +
+				0.05f > (collision.point.z - start.z) * to_head.k + (collision.point.y - start.y) * to_head.j +
+				(collision.point.x - start.x) * to_head.i)
+			{
+				eye.x = collision.point.x - to_head.i * 0.05f;
+				eye.y = collision.point.y - to_head.j * 0.05f;
+				eye.z = collision.point.z - to_head.k * 0.05f;
+			}
+			else
+			{
+				eye = head;
+			}
+		}
+	}
+
+	header = &((s_biped_header *)g_4e0300->data)[target_index & 0xffff];
+	if ((1 << ((byte *)header)[3]) & 1)
+	{
+		function_df5f0(target_index, &target, &target_height, &target_radius);
+	}
+	else
+	{
+		point3f nearest_a;
+		point3f nearest_b;
+		real gap;
+
+		if (function_183670(BIPED_GET(arg_159e6d)->havok_component_index, header->biped->havok_component_index,
+			&nearest_a, &nearest_b, &gap))
+		{
+			target = nearest_b;
+		}
+		else
+		{
+			function_b9dd0(target_index, &target);
+		}
+		target_height = 0.0f;
+		target_radius = 0.0f;
+	}
+	target.z = PIN(eye.z, target.z, target.z + target_height);
+	direction.i = target.x - eye.x;
+	direction.j = target.y - eye.y;
+	direction.k = target.z - eye.z;
+	distance = (real)sqrt(direction.k * direction.k + direction.j * direction.j + direction.i * direction.i);
+	if (!(fabs(distance) < 0.0001f))
+	{
+		real inverse = 1.0f / distance;
+
+		direction.i = inverse * direction.i;
+		direction.j = direction.j * inverse;
+		direction.k = direction.k * inverse;
+	}
+	else
+	{
+		distance = 0.0f;
+	}
+	point->z = distance;
+	if (distance == 0.0f)
+	{
+		point->y = 0.0f;
+		point->x = 3.1415927f;
+	}
+	else
+	{
+		vector3f forward;
+		vector3f up;
+		vector3f left;
+		real forward_amount;
+		real up_amount;
+		real left_amount;
+
+		point->z = distance - (target_radius + radius);
+		point->z = point->z < 0.0f ? 0.0f : point->z;
+		forward = *offset;
+		function_11d090(&forward, &up);
+		left.i = up.j * forward.k - up.k * forward.j;
+		left.j = up.k * forward.i - up.i * forward.k;
+		left.k = up.i * forward.j - up.j * forward.i;
+		forward_amount = direction.k * forward.k + direction.j * forward.j + direction.i * forward.i;
+		up_amount = direction.k * up.k + direction.j * up.j + direction.i * up.i;
+		left_amount = direction.k * left.k + direction.j * left.j + direction.i * left.i;
+		point->x = (real)atan2(left_amount, forward_amount);
+		point->y = (real)atan2(up_amount, sqrt(left_amount * left_amount + forward_amount * forward_amount));
+	}
+}

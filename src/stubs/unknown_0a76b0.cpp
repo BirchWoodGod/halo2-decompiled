@@ -26,8 +26,8 @@ void function_1ff360(long actor_index, point3f const *target, vector3f *velocity
 
 
 
-// @stub 0xe5930
-void function_e5930(long unit_index) { }
+
+
 
 
 
