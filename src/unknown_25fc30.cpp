@@ -740,6 +740,18 @@ void __stdcall function_25eb00(
 	}
 }
 
+static inline real range_score_25eb70(s_type_967e20 const *context, s_type_b36ac5 const *position)
+{
+	real value = 0.f;
+	if (context->range08 > position->unknown18)
+		return value;
+	if (context->range08 * 2.f > position->unknown18)
+		value = (position->unknown18 - context->range08) / context->range08 * 8.f;
+	else if (context->range18 > position->unknown18)
+		value = (context->range18 - position->unknown18) * 8.f / (context->range18 - context->range08 * 2.f);
+	return value;
+}
+
 // @retail 0x25eb70
 void __stdcall function_25eb70(
 	long actor_index,
@@ -753,24 +765,7 @@ void __stdcall function_25eb70(
 
 		if (position->unknown4c)
 		{
-			real value = 0.f;
-
-			if (context->range08 > position->unknown18)
-			{
-			}
-			else if (context->range08 * 2.f > position->unknown18)
-			{
-				value = (position->unknown18 - context->range08) / context->range08 * 8.f;
-			}
-			else if (context->range18 > position->unknown18)
-			{
-				value = (context->range18 - position->unknown18) * 8.f / (context->range18 - context->range08 * 2.f);
-			}
-			else
-			{
-				value = 0.f;
-			}
-			position->score += value;
+			position->score += range_score_25eb70(context, position);
 
 			if (context->unknown618)
 			{

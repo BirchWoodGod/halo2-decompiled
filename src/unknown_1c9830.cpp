@@ -197,15 +197,15 @@ void function_1df6c0(short team_a, short team_b, bool team_b_provokes, bool team
 
 	if (i < globals->allegiance_count)
 	{
-		allegiance = &globals->allegiances[i];
+		allegiance = &g_4f55ec->allegiances[i];
 
-		allegiance->team_a_provokes = team_a_provokes;
 		allegiance->team_b_provokes = team_b_provokes;
+		allegiance->team_a_provokes = team_a_provokes;
 		allegiance->team_a = team_a;
 		allegiance->team_b = team_b;
 		allegiance->incident_threshold = incident_threshold;
-		allegiance->incidents = 0;
 		allegiance->incident_decay_ticks = incident_decay_ticks;
+		allegiance->incidents = 0;
 		allegiance->decay_timer = 0;
 		allegiance->broken = true;
 		function_1df9c0(allegiance, false, false);
