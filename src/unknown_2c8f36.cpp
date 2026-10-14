@@ -188,31 +188,19 @@ step:
 // @retail 0x2c8f56
 void c_button_widget_45d5d0::v8()
 {
-	struct sibling_step
+	c_class_1a2c81 *candidate = next;
+	if (!candidate)
 	{
-		static __forceinline c_class_1a2c81 *get(c_class_1a2c81 *base)
+		c_class_1a2c81 *cursor = previous;
+		candidate = this;
+		while (cursor)
 		{
-			c_class_1a2c81 *result;
-			c_class_1a2c81 *cursor = base->next;
-			if (cursor)
-			{
-				result = cursor;
-				goto done;
-			}
-			result = base;
-			cursor = base->previous;
-			while (cursor)
-			{
-				result = cursor;
-				cursor = cursor->previous;
-			}
-		done:
-			return result;
+			candidate = cursor;
+			cursor = candidate->previous;
 		}
-	};
-	c_class_1a2c81 *widget = sibling_step::get(this);
-
-	while (widget)
+	}
+	c_class_1a2c81 *widget;
+	while ((widget = candidate) != 0)
 	{
 		if (widget->has_valid_type() && widget->value6e)
 		{
@@ -220,38 +208,36 @@ void c_button_widget_45d5d0::v8()
 			widget->function_22ecb4_2(true);
 			return;
 		}
-		widget = sibling_step::get(widget);
+		candidate = widget->next;
+		if (!candidate)
+		{
+			c_class_1a2c81 *cursor = widget->previous;
+			candidate = widget;
+			while (cursor)
+			{
+				candidate = cursor;
+				cursor = candidate->previous;
+			}
+		}
 	}
 }
 
 // @retail 0x2c8fb4
 void c_button_widget_45d5d0::v9()
 {
-	struct sibling_step
+	c_class_1a2c81 *candidate = previous;
+	if (!candidate)
 	{
-		static __forceinline c_class_1a2c81 *get(c_class_1a2c81 *base)
+		c_class_1a2c81 *cursor = next;
+		candidate = this;
+		while (cursor)
 		{
-			c_class_1a2c81 *result;
-			c_class_1a2c81 *cursor = base->previous;
-			if (cursor)
-			{
-				result = cursor;
-				goto done;
-			}
-			result = base;
-			cursor = base->next;
-			while (cursor)
-			{
-				result = cursor;
-				cursor = cursor->next;
-			}
-		done:
-			return result;
+			candidate = cursor;
+			cursor = candidate->next;
 		}
-	};
-	c_class_1a2c81 *widget = sibling_step::get(this);
-
-	while (widget)
+	}
+	c_class_1a2c81 *widget;
+	while ((widget = candidate) != 0)
 	{
 		if (widget->has_valid_type() && widget->value6e)
 		{
@@ -259,7 +245,17 @@ void c_button_widget_45d5d0::v9()
 			widget->function_22ecb4_2(true);
 			return;
 		}
-		widget = sibling_step::get(widget);
+		candidate = widget->previous;
+		if (!candidate)
+		{
+			c_class_1a2c81 *cursor = widget->next;
+			candidate = widget;
+			while (cursor)
+			{
+				candidate = cursor;
+				cursor = candidate->next;
+			}
+		}
 	}
 }
 

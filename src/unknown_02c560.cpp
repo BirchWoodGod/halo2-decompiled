@@ -162,7 +162,7 @@ void __stdcall function_2c8a0(byte const *source)
 {
     s_frame_parameters_12a50 parameters;
     parameters.identifier = 0;
-    parameters.time = 0.0;
+    memset(&parameters.time, 0, sizeof(parameters.time));
     parameters.unknown10 = 0;
     parameters.unknown14 = 0;
     parameters.mode = 1;

@@ -1485,7 +1485,8 @@ void __stdcall function_21a80(real first, real second, real depth)
             configure_filter_copy();
             function_34a90(5, 10, 0x1010101, false, false, 1.0f, 0.0f, 1.0f, 1, false, false);
             long filtered = function_211a0(5, first, 1.0f, 0.0f, 6, NONE, NONE, 1, 0, 0.0f, 0.0f);
-            first = (real)PIN(pow((double)(first > 1.0f ? 1.0f : first), 0.33000001311302185), 0.0, 1.0);
+            depth = first > 1.0f ? 1.0f : first;
+            first = (real)PIN(pow((double)depth, 0.33000001311302185), 0.0, 1.0);
             function_14f60(0, (short)filtered);
             function_15780(0, 4);
             if (first < 1.0f)
@@ -1507,7 +1508,8 @@ void __stdcall function_21a80(real first, real second, real depth)
             configure_filter_copy();
             function_34a90(5, 10, 0x1010101, false, false, 1.0f, 0.0f, 1.0f, 1, false, false);
             long filtered = function_211a0(5, second, 1.0f, 0.0f, 6, NONE, NONE, 1, 0, 0.0f, 0.0f);
-            first = (real)PIN(pow((double)(second > 1.0f ? 1.0f : second), 0.33000001311302185), 0.0, 1.0);
+            depth = second > 1.0f ? 1.0f : second;
+            first = (real)PIN(pow((double)depth, 0.33000001311302185), 0.0, 1.0);
             function_14f60(0, (short)filtered);
             function_15780(0, 4);
             if (first < 1.0f)

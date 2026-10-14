@@ -3,6 +3,7 @@
    (vtable 0x4576a4; unknown_146a20.h): allocations grow up from the buffer's
    start and their table (an offset and a size each) down from its end */
 
+#include <string.h>
 #include "unknown_11c920.h"
 #include "unknown_146a20.h"
 
@@ -62,8 +63,7 @@ void c_havok_fixed_memory::deallocate_aligned(void *address)
 		{
 			for (long j = i; j < m_count - 1; j++)
 			{
-				((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - j].offset = ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-2 - j].offset;
-				((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - j].size = ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-2 - j].size;
+				((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-1 - j] = ((s_fixed_memory_entry *)((byte *)m_buffer + m_size))[-2 - j];
 			}
 			m_count--;
 			return;
@@ -120,11 +120,7 @@ void fixed_memory_get_statistics(c_havok_fixed_memory *memory, s_fixed_memory_st
 	}
 	else
 	{
-		statistics->header_size = 0;
-		statistics->allocated_size = 0;
-		statistics->unknown08 = 0;
-		statistics->allocation_count = 0;
-		statistics->unknown10 = 0;
+		memset(statistics, 0, sizeof(*statistics));
 	}
 }
 
@@ -147,8 +143,7 @@ void fixed_memory_get_statistics_16(c_havok_fixed_memory *memory, s_fixed_memory
 	}
 	else
 	{
-		s_fixed_memory_statistics_16 empty = {0};
-		*statistics = empty;
+		memset(statistics, 0, sizeof(*statistics));
 	}
 }
 

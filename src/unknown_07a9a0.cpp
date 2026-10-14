@@ -142,6 +142,8 @@ bool function_07ab60(const s_type_99af70 *address, long local, long *index_out, 
 	return result;
 }
 
+__declspec(noinline) bool function_07acc0(const s_type_99af70 *address);
+
 // @retail 0x7acc0
 bool function_07acc0(const s_type_99af70 *address)
 {
@@ -153,7 +155,8 @@ bool function_07acc0(const s_type_99af70 *address)
 		IN_ADDR in_addr;
 
 		in_addr.s_addr = ina;
-		result = XNetConnect(in_addr) == 0;
+		if (XNetConnect(in_addr) == 0)
+			result = true;
 	}
 
 	return result;
