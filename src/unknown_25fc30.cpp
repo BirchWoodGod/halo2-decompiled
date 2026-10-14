@@ -882,31 +882,22 @@ void __stdcall function_25edd0(
 				real value;
 
 				if (position->unknown2c < 3.4028235e38f)
-				{
 					value = position->unknown2c / (context->unknown61c * 0.8f);
-					if (0.5f > value)
-					{
-						position->unknown4d = true;
-						if (!context->unknown14)
-						{
-							position->unknown4c = false;
-							continue;
-						}
-					}
-
-					if (0.f > value)
-					{
-						value = 0.f;
-					}
-					else if (value > 1.f)
-					{
-						value = 1.f;
-					}
-				}
 				else
-				{
 					value = 1.f;
+				if (0.5f > value)
+				{
+					position->unknown4d = true;
+					if (!context->unknown14)
+					{
+						position->unknown4c = false;
+						continue;
+					}
 				}
+				if (0.f > value)
+					value = 0.f;
+				else if (value > 1.f)
+					value = 1.f;
 				position->score += value * 8.f;
 			}
 		}

@@ -155,6 +155,7 @@ void function_146bf0(void)
 	if (!g_47f05b)
 	{
 		long level = function_146fd0();
+		long last_time = g_479884;
 		long attempt;
 
 		g_47f05b = true;
@@ -166,29 +167,35 @@ void function_146bf0(void)
 			if (level >= 3)
 			{
 				function_1c4590(1);
+				last_time = g_479884;
 			}
 			level = function_146fd0();
 			for (pass = 0; pass < 3 && level >= 2; pass++)
 			{
+				bool active = pass == 2;
+				bool any_object = pass > 1;
 				long tries = 0;
 
 				do
 				{
-					bool recent = g_479884 != NONE && g_510c54->game_time - g_479884 < 10;
+					bool recent = last_time != NONE && g_510c54->game_time - last_time < 10;
 
-					if (!function_1c4040(attempt, pass == 2, pass > 1, recent, NONE))
+					if (!function_1c4040(attempt, active, any_object, recent, NONE))
 					{
 						if (!attempt && !recent)
 						{
 							function_146da0();
 							level = function_146fd0();
-							g_479884 = g_510c54->game_time;
+							g_479884 = last_time = g_510c54->game_time;
+							break;
 						}
+						last_time = g_479884;
 						break;
 					}
 					level = function_146fd0();
 					if (level < 2)
 					{
+						last_time = g_479884;
 						break;
 					}
 					tries++;
@@ -196,7 +203,11 @@ void function_146bf0(void)
 					{
 						function_146da0();
 						level = function_146fd0();
-						g_479884 = g_510c54->game_time;
+						g_479884 = last_time = g_510c54->game_time;
+					}
+					else
+					{
+						last_time = g_479884;
 					}
 				}
 				while (tries <= 50);

@@ -25,13 +25,9 @@ bool function_015d00(long count, dword **out)
 	{
 		((D3D::CDevice *)D3D__pDevice)->LazySetStateVB(0);
 		dword *const *fields = (dword *const *)D3D__pDevice;
-		dword *push = fields[0];
-		dword *requested_end = push + count + 1;
-		dword *threshold_end = fields[1] + 0x80;
-		if (requested_end < threshold_end)
-		{
-			*out = push;
-		}
+		dword *push;
+		if (fields[0] + count + 1 < fields[1] + 0x80)
+			push = fields[0];
 		else
 		{
 			dword fallback_size = D3D::CDevice::m_PushSegmentSize;
@@ -41,8 +37,8 @@ bool function_015d00(long count, dword **out)
 			fallback_size = requested_size > fallback_size ? requested_size : fallback_size;
 			full_size = requested_size > full_size ? requested_size : full_size;
 			push = (dword *)D3D::MakeRequestedSpace(fallback_size, full_size);
-			*out = push;
 		}
+		*out = push;
 	}
 	else
 	{

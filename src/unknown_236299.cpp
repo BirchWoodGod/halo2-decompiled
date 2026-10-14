@@ -79,7 +79,8 @@ struct s_bitmap_group_view
 struct D3DTexture;
 D3DTexture *function_12360(s_bitmap_view *bitmap, real priority);
 long function_11cae0(void);
-byte __stdcall function_219070(long set_index);
+struct s_sound_definition;
+short function_219070(long set_index, s_sound_definition const *definition);
 /* unknown_189010.cpp */
 struct s_sound_label_play;
 long function_189760(s_sound_label_play const *play);
@@ -121,6 +122,8 @@ void function_23625d(long tag_index)
 // @retail 0x236299
 void function_236299(long sound)
 {
+	s_sound_play play;
+	byte set[2];
 	s_interface_sound_globals *globals = (s_interface_sound_globals *)function_148350();
 	if (globals)
 	{
@@ -169,10 +172,8 @@ void function_236299(long sound)
 					s_sound_globals_view *sound_globals = (s_sound_globals_view *)g_51ebd4;
 					if (sound_globals->names[sound_globals->sets[tag->first_set + i].name] == name)
 					{
-						byte set[2];
-						s_sound_play play;
 						set[0] = (byte)i;
-						set[1] = function_219070(i);
+						set[1] = (byte)function_219070(i, (s_sound_definition const *)tag);
 						play.object_index = NONE;
 						play.tag_index = tag_index;
 						play.scale = 1.f;
@@ -282,23 +283,22 @@ void function_2363d4(short_rectangle2d const *bounds, short *x, short *y)
 	short left = bounds->left;
 	short top = bounds->top;
 	short right = bounds->right;
-	struct { short width, height; } dimensions;
-	dimensions.width = right - left;
-	dimensions.height = bottom - top;
+	short width = right - left;
+	short height = bottom - top;
 
-	if (dimensions.width == 320)
+	if (width == 320)
 	{
 		if (top == 0)
 		{
 			if (left == 0)
 			{
 				*x = 20;
-				goto negative_y;
+				*y = -16;
 			}
 			else
 			{
 				*x = -20;
-				goto negative_y;
+				*y = -16;
 			}
 		}
 		else
@@ -306,40 +306,33 @@ void function_2363d4(short_rectangle2d const *bounds, short *x, short *y)
 			if (left == 0)
 			{
 				*x = 20;
-				goto positive_y;
+				*y = 16;
 			}
 			else
 			{
 				*x = -20;
-				goto positive_y;
+				*y = 16;
 			}
+		}
+	}
+	else if (height == 240)
+	{
+		if (top == 0)
+		{
+			*x = 0;
+			*y = -16;
+		}
+		else
+		{
+			*x = 0;
+			*y = 16;
 		}
 	}
 	else
 	{
 		*x = 0;
-		if (dimensions.height == 240)
-		{
-			if (top == 0)
-			{
-				goto negative_y;
-			}
-			else
-			{
-				goto positive_y;
-			}
-		}
-		else
-		{
-			*y = 0;
-		}
+		*y = 0;
 	}
-	return;
-negative_y:
-	*y = -16;
-	return;
-positive_y:
-	*y = 16;
 }
 
 /* a machine address */

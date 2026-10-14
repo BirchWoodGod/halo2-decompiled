@@ -5888,6 +5888,7 @@ void c_widget_45adf0::v4(long frame)
         function_1392f8((s_player_appearance const *)value74);
         state->sequence = *(short *)unknown86;
         s_widget_quad_2b11 quad;
+        g_4e696c = scale;
         quad.points[0] = rectangle.x0;
         quad.points[1] = rectangle.y0;
         quad.points[2] = rectangle.x1;
@@ -5896,7 +5897,6 @@ void c_widget_45adf0::v4(long frame)
         quad.points[5] = rectangle.y1;
         quad.points[6] = rectangle.x0;
         quad.points[7] = rectangle.y1;
-        g_4e696c = scale;
         function_22a664(&coordinates, &quad, definition->tag_index,
             *(short *)((byte *)definition + 0xa), *(long *)((byte *)definition + 0x18));
     }
@@ -5947,10 +5947,14 @@ void c_class_2b01eb::v3()
   }
   value7c += *(real *)((byte *)definition + 0x10) * seconds;
   value80 += *(real *)((byte *)definition + 0x14) * seconds;
-  if (value7c > 1.0f) { volatile real value = value7c; do { value = value - 1.0f; } while (value > 1.0f); value7c = value; }
-  if (value80 > 1.0f) { volatile real value = value80; do { value = value - 1.0f; } while (value > 1.0f); value80 = value; }
-  if (value7c < 0.0f) { real value = value7c; do { value += 1.0f; } while (value < 0.0f); value7c = value; }
-  if (value80 < 0.0f) { real value = value80; do { value += 1.0f; } while (value < 0.0f); value80 = value; }
+  while (value7c > 1.0f)
+   value7c -= 1.0f;
+  while (value80 > 1.0f)
+   value80 -= 1.0f;
+  while (value7c < 0.0f)
+   value7c += 1.0f;
+  while (value80 < 0.0f)
+   value80 += 1.0f;
  }
  value78 = now;
 }
