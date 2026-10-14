@@ -8,6 +8,7 @@
 
 class c_entry_list;
 struct s_masked_list;
+struct s_133f70;
 struct s_bit_vector_pool_sizes
 {
 	short unknown0;
@@ -40,6 +41,8 @@ struct s_bit_vector_pool
 	byte *records;
 	void *filter;
 	s_bit_vector_pool_sizes sizes;
+
+	void function_133ab0(s_133f70 *entry, bool arg_3, bool arg_4, bool arg_5);
 };
 
 struct s_visibility_pool_storage
