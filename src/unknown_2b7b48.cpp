@@ -252,18 +252,25 @@ void c_xbox_live_message_send_screen::v3()
 	}
 	if (length_text)
 	{
-		length_text->function_253b1a(g_5092e4 > 0 ? 0x120002e1 : 0x110002e2);
+		if (g_5092e4 > 0)
+			length_text->function_253b1a(0x120002e1);
+		else
+			length_text->function_253b1a(0x110002e2);
 	}
 	c_class_1a2c81::v3();
 	if (sent && !ANIMATION_FLAG(animation, 1))
 	{
 		if (list.task_index != NONE)
 		{
-			long status = online_task_poll(list.task_index);
-			if (status == 0)
+			switch (online_task_poll(list.task_index))
+			{
+			case 0:
 				return;
-			if (status == 1)
+			case 1:
 				return;
+			default:
+				break;
+			}
 		}
 		start_animation(3);
 	}
