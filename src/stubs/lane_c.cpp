@@ -112,7 +112,6 @@ class c_278370
 public:
  virtual void function_a9ef0(void *arg_0);
 };
-// @stub 0xa9ef0
 void c_278370::function_a9ef0(void *arg_0) {}
 
 // @stub 0x2d8910

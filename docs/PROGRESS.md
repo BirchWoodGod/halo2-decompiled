@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8678 functions match
+
+```
+matched 8678 of 11318 game functions (1156097 of 2784283 bytes, 41.52%)
+```
+
+4 new matches, none lost:
+- Machine 1's key lane round 22: `0x94310`, `0x94330`, `0xa9ef0` and `0x2789b0` are written and match; `0x2c8a0` goes from 64 to 26.
+
+## 2026-10-14: 8674 functions match
+
+```
+matched 8674 of 11318 game functions (1155938 of 2784283 bytes, 41.52%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 34 (#480): `0x23b8e0`, `0x23b3f0` and `0x2b3a9d` match, plus two Havok library functions; `0x2ca284` gets its first body.
+
 ## 2026-10-14: 8671 functions match
 
 ```
