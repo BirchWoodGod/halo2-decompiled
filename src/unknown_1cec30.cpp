@@ -562,7 +562,7 @@ struct s_havok_component_owner_header
 
 void function_1d56a0(s_havok_component *component);
 void function_1d56f0(s_havok_component *component);
-signed char __stdcall function_1d5940(s_havok_component *component, long a, long b, long c);
+long __stdcall function_1d5940(s_havok_component *component, bool a, bool b, bool c);
 void function_1d6b80(s_havok_component *component);
 void function_1d6ca0(s_havok_component *component);
 void function_1c4b00(long object_index, void *a, void *b, long c);
@@ -1668,24 +1668,18 @@ PRIVATE inline transform4x3f *component_node_matrices(long object_index)
 void function_1d3d20(s_havok_component *component, long node_index, dword *updated, dword const *restore,
  rigid_transform_scaled *orientations, long unknown)
 {
- (void)&node_index;
- long current_node = node_index;
- (void)&updated;
- (void)&restore;
- (void)&orientations;
- (void)&unknown;
  s_component_node_object *object = (s_component_node_object *)havok_object_get(component->object_index);
  s_component_transform_definition *definition = (s_component_transform_definition *)g_4e3b44[object->definition_index & 0xffff].bytes;
  s_component_transform_model *model = (s_component_transform_model *)g_4e3b44[definition->model_index & 0xffff].bytes;
  long physics_index = ((s_component_collision_model_link *)model)->physics_model_index;
  s_component_node_physics *physics = (s_component_node_physics *)g_4e3b44[physics_index & 0xffff].bytes;
  s_component_node_render_model *render_model = (s_component_node_render_model *)g_4e3b44[model->render_model_index & 0xffff].bytes;
- s_component_node_link *node = &physics->nodes[current_node];
+ s_component_node_link *node = &physics->nodes[node_index];
  short parent = node->parent;
  if (parent != NONE)
  {
-  dword mask = 1 << (current_node & 31);
-  if (updated[current_node >> 5] & mask)
+  dword mask = 1 << (node_index & 31);
+  if (updated[node_index >> 5] & mask)
   {
    if (orientations)
    {
@@ -1693,15 +1687,15 @@ void function_1d3d20(s_havok_component *component, long node_index, dword *updat
     transform4x3f inverse;
     transform4x3f relative;
     function_141590(&matrices[parent], &inverse);
-    function_142a60(&inverse, &matrices[(short)current_node], &relative);
-    orientation_from_matrix4x3(&relative, &orientations[current_node]);
+    function_142a60(&inverse, &matrices[(short)node_index], &relative);
+    orientation_from_matrix4x3(&relative, &orientations[node_index]);
    }
   }
-  else if (restore[current_node >> 5] & mask)
+  else if (restore[node_index >> 5] & mask)
   {
-   s_component_node_default *initial = &render_model->nodes[current_node];
+   s_component_node_default *initial = &render_model->nodes[node_index];
    transform4x3f *matrices = component_node_matrices(component->object_index);
-   transform4x3f *matrix = &matrices[(short)current_node];
+   transform4x3f *matrix = &matrices[(short)node_index];
    function_141e10(&matrix->rotation, &initial->rotation);
    matrix->position.x = 0.0f;
    matrix->position.y = 0.0f;
@@ -1709,12 +1703,12 @@ void function_1d3d20(s_havok_component *component, long node_index, dword *updat
    matrix->scale = 1.0f;
    matrix->position = initial->position;
    function_142a60(&matrices[parent], matrix, matrix);
-   updated[current_node >> 5] |= mask;
+   updated[node_index >> 5] |= mask;
    if (orientations)
    {
-    orientations[current_node].rotation = initial->rotation;
-    orientations[current_node].position = initial->position;
-    orientations[current_node].scale = 1.0f;
+    orientations[node_index].rotation = initial->rotation;
+    orientations[node_index].position = initial->position;
+    orientations[node_index].scale = 1.0f;
    }
   }
  }
