@@ -106,7 +106,7 @@ s_lighting_record *function_3db00(long object_index, real priority)
     (void)&priority;
     byte *object = ((s_3dd10_object_header *)g_4e0300->data)[object_index & 0xffff].object;
     if (object[7] & 1) return (s_lighting_record *)((byte *)g_4de2f4 + 0x1c);
-    short cluster = *(short *)(object + 0xd0);
+    long cluster = *(short *)(object + 0xd0);
     if (cluster != NONE)
         return (s_lighting_record *)(*(byte **)((byte *)g_4e0348 + 0x230) + cluster * 0x5c + 8);
     long parent_index = function_baf80(object_index);

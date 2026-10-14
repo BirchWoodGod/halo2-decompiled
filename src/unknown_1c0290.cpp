@@ -3,6 +3,7 @@
 #include "slot_handler.h"
 #include "unknown_0259a0.h"
 #include <math.h>
+#include "unknown_1f4460.h"
 
 /* slot handler 0x7c (g_47ef08) */
 
@@ -242,7 +243,6 @@ bool __stdcall function_1c0670(long actor_index, s_slot *slot)
 		{
 			long object_index = function_baf80(node->object_index);
 			s_actor_point_target target;
-			bool result = true;
 
 			point3f point;
 
@@ -251,46 +251,7 @@ bool __stdcall function_1c0670(long actor_index, s_slot *slot)
 			point.z = g_4687b0->k * 2.5f + collision.point.z;
 			target.point = point;
 			target.output_index = NONE;
-			actor = actor_get(actor_index);
-			if (!actor->unknown229)
-			{
-				function_1f86a0(actor_index);
-				result = false;
-			}
-			else
-			{
-				function_2628f0(actor_index, g_470fa0);
-				if (actor->unknown4ac != 2 || actor->unknown4c8 != NONE ||
-					function_210a30(&target, &actor->unknown4b8) > 0.1f * 0.1f)
-				{
-					function_1f86a0(actor_index);
-					actor->unknown4ac = 0;
-					actor->unknown4ae = false;
-					actor->unknown4b0 = 0.0f;
-					actor->unknown4b4 = 0.0f;
-					actor->unknown4cc = 0.0f;
-					actor->unknown4d0 = 0.0f;
-					actor->unknown4d4 = false;
-					actor->unknown4d5 = false;
-					actor->unknown4e8 = false;
-					actor->unknown4e4 = NONE;
-					actor->unknown4b8 = target;
-					actor->unknown4c8 = NONE;
-					actor->unknown4ac = 2;
-					actor->unknown4ae = true;
-					actor->unknown4e4 = object_index;
-					if (actor->unknown229)
-					{
-						actor->unknown656 = 0;
-					}
-					result = function_1f8a70(actor_index, false);
-				}
-				else if (actor->unknown040 && !actor->unknown506)
-				{
-					result = function_1f8a70(actor_index, false);
-				}
-			}
-			return result;
+			return function_1f4460(actor_index, &target, NONE, object_index, true);
 		}
 		return false;
 	}

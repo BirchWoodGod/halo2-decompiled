@@ -368,8 +368,11 @@ void function_23b170(long player_index, s_spawn_influence_list *list)
 	s_spawn_player_view *player = &((s_spawn_player_view *)g_4e8c24->data)[player_index & 0xffff];
 	if (scenario->count > 0)
 	{
-		s_spawn_zone_block_23b170 *block = (s_spawn_zone_block_23b170 *)((byte *)scenario->settings +
-			((player->unknown000[2] & 8) ? 0x58 : 0x50));
+		s_spawn_zone_block_23b170 *block;
+		if (player->unknown000[2] & 8)
+			block = (s_spawn_zone_block_23b170 *)((byte *)scenario->settings + 0x58);
+		else
+			block = (s_spawn_zone_block_23b170 *)((byte *)scenario->settings + 0x50);
 		for (long i = 0; i < block->count; i++)
 		{
 			s_spawn_zone_23b170 *zone = &block->zones[i];

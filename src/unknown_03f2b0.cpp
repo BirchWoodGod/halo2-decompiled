@@ -456,6 +456,7 @@ long g_4c8790;
 void function_144f0(long tag, short stage, long fallback, short fallback_index, short index, real priority);
 void function_1cf50(void);
 
+#pragma inline_depth(0)
 // @retail 0x44040
 void __stdcall function_44040(long cell, short mask)
 {
@@ -499,6 +500,7 @@ void __stdcall function_44040(long cell, short mask)
         while (handle != NONE);
     }
 }
+#pragma inline_depth()
 
 extern byte *g_4858c4;
 long g_485a2c, g_485a64, g_485a68;
