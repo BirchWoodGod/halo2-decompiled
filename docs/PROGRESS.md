@@ -2,6 +2,26 @@
 
 The newest entry comes first.
 
+## 2026-10-13: 8416 functions match
+
+```
+matched 8416 of 11318 game functions (1082400 of 2784283 bytes, 38.88%)
+```
+
+24 new matches, none lost:
+- @BrassMonkey71 (#321): `0x2099f0`; giving `0x20a290` (machine 3) the retail parameters also matched seven more script functions of machine 3
+- Machine 3 batch 10 (#432): 15 functions, among them `0x1c5400`, `0x203cc0`, `0x218d70` and `0x25b120` (with a behaviour fix)
+- Machine 3 Codex lane F round 27 (#431): `0x188130`
+
+## 2026-10-13: 8392 functions match
+
+```
+matched 8392 of 11318 game functions (1076158 of 2784283 bytes, 38.65%)
+```
+
+2 new matches, none lost:
+- Claude lane 1 round 16 (Opus): `0x24c024` (machine 3's form, checked path by path against retail) and `0x11b520` (handed over by machine 3)
+
 ## 2026-10-13: 8390 functions match
 
 ```
