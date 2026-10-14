@@ -56,9 +56,9 @@ bool __stdcall function_1c19b0(long actor_index, vector3f const *direction, s_ty
 	{
 		pathfinding = bsp->pathfinding;
 	}
+	height = actor->position.z;
 	collision.unknown24 = NONE;
 	origin = actor->position;
-	height = actor->position.z;
 	distance = 0.0f;
 	if (actor->unknown27c.unknown10 != NONE)
 	{

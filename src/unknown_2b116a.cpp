@@ -224,7 +224,11 @@ void __stdcall function_2b07e2(c_class_2b01eb *widget, long frame)
     dword color = (((alpha << 8) | red) << 8 | green) << 8 | blue;
     short y, x;
     function_2363d4((short_rectangle2d const *)frame, &x, &y);
-    bool volatile show_label = g_54d59f && widget->has_screen() && widget->v11() != 6;
+    bool volatile show_label;
+    if (g_54d59f && widget->has_screen())
+        show_label = widget->v11() != 6;
+    else
+        show_label = false;
     s_float_rect rectangle;
  s_float_rect *volatile rectangle_reference = &rectangle;
     function_22ea81(widget, rectangle_reference, (short_rectangle2d const *)frame);
@@ -290,7 +294,7 @@ void __stdcall function_2b0565(c_class_2b01eb *widget, long frame)
     bool show_label = g_54d59f && widget->has_screen() && widget->v11() != 6;
     if (*(long *)((byte *)widget->definition + 0x1c) != NONE)
     {
-        long mode = 0;
+        short mode = 0;
         dword color = bitmap_channel_round_2b(alpha * 255.0f);
         color = (color << 8) | bitmap_channel_round_2b(widget->color.red * 255.0f);
         color = (color << 8) | bitmap_channel_round_2b(widget->color.green * 255.0f);
@@ -325,7 +329,11 @@ void __stdcall function_2b0565(c_class_2b01eb *widget, long frame)
         word label[16];
         unicode_string_snprintf(label, 16, (word const *)L"%d", widget->value0a);
         text.setup(label, 0, g_46873c, 0, NONE, 0, NONE);
-        s_widget_bounds outline = widget->bounds;
+        s_widget_bounds outline;
+        outline.left = widget->bounds.left;
+        outline.right = widget->bounds.right;
+        outline.top = widget->bounds.top;
+        outline.bottom = widget->bounds.bottom;
         function_22cd48(&text, (short_rectangle2d const *)&outline, (short_rectangle2d const *)&outline,
             depth, alpha, (short_rectangle2d const *)frame);
         outline.left += x;
@@ -4583,11 +4591,6 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 
 	if (datum)
 	{
-		s_screen_parameters parameters;
-		s_list_item_iterator iterator;
-		long count;
-  long entry_offset;
-
 		switch (datum->item)
 		{
 		case 0:
@@ -4599,6 +4602,11 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 			}
 			break;
 		case 2:
+		{
+			s_screen_parameters parameters;
+			s_list_item_iterator iterator;
+			long count;
+			long entry_offset;
 			parameters.field_c = 0;
 			if (source && source->actual_count > 0)
 			{
@@ -4610,7 +4618,7 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 				iterator.iterator.index = NONE;
 				iterator.iterator.datum_index = NONE;
 				count = 0;
-    entry_offset = 0;
+				entry_offset = 0;
 				while (count < entry_count)
 				{
 					s_online_member *member;
@@ -4622,9 +4630,9 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 					member = (s_online_member *)iterator.item;
 					if (member->recipient.xuid && !function_19acc6((_XUID const *)&member->recipient.xuid) && !(member->flags & 0x30) && (member->flags & 1))
 					{
+						++count;
 						*(s_message_recipient *)((byte *)entries + entry_offset) = member->recipient;
-      ++count;
-      entry_offset += sizeof(s_message_recipient);
+						entry_offset += sizeof(s_message_recipient);
 					}
 				}
 				if (count > 0)
@@ -4646,14 +4654,20 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 			}
 			function_236299(2);
 			break;
+		}
 		case 1:
+		{
+			s_screen_parameters parameters;
+			s_list_item_iterator iterator;
+			long count;
+			long entry_offset;
 			parameters.field_c = 0;
 			if (source && source->actual_count > 0)
 			{
 				iterator.iterator.index = NONE;
 				iterator.iterator.datum_index = NONE;
 				count = 0;
-    entry_offset = 0;
+				entry_offset = 0;
 				iterator.iterator.data = source;
 				while (count < entry_count)
 				{
@@ -4666,9 +4680,9 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 					member = (s_online_member *)iterator.item;
 					if (member->recipient.xuid && !(member->flags & 0x30))
 					{
+						++count;
 						*(s_message_recipient *)((byte *)entries + entry_offset) = member->recipient;
-      ++count;
-      entry_offset += sizeof(s_message_recipient);
+						entry_offset += sizeof(s_message_recipient);
 					}
 				}
 				if (count > 0)
@@ -4690,6 +4704,7 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 			}
 			function_236299(2);
 			break;
+		}
 		case 3:
 		{
 			s_screen_parameters screen_parameters;

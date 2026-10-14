@@ -738,7 +738,7 @@ PRIVATE inline short actor_initial_team(short type)
 // @retail 0x1e0160
 long __stdcall function_1e0160(long squad_index, long entry_index, long unit_index, bool flag)
 {
-	long result = NONE;
+	long actor_index = NONE;
 	long resolved_squad = squad_index;
 	long const *unit_reference = &unit_index;
 	bool const *flag_reference = &flag;
@@ -747,7 +747,7 @@ long __stdcall function_1e0160(long squad_index, long entry_index, long unit_ind
 		squad = g_51e9d8->data + (squad_index & 0xffff) * 0x98;
 	if (*unit_reference != NONE && entry_index != NONE)
 	{
-		long actor_index = function_1dfb90(entry_index);
+		actor_index = function_1dfb90(entry_index);
 		if (actor_index != NONE)
 		{
 			s_actor_view *actor = actor_get(actor_index);
@@ -775,7 +775,10 @@ long __stdcall function_1e0160(long squad_index, long entry_index, long unit_ind
 					team = unit_team;
 			}
 			if (team == 0)
-				team = actor_initial_team(actor->unknown004);
+			{
+				extern short const g_44aee8[20];
+				team = g_44aee8[actor->unknown004];
+			}
 			function_1e1150(actor_index, team);
 			if (squad && !squad[0x76] && actor->unknown024 != 0)
 				squad[0x76] = (byte)actor->unknown024;
@@ -786,12 +789,11 @@ long __stdcall function_1e0160(long squad_index, long entry_index, long unit_ind
 				if (*(long *)((byte *)actor + 0x1c) != NONE)
 					function_28e160(actor_index);
 				function_1e1a00(actor_index, 0);
+				actor_index = NONE;
 			}
-			else
-				result = actor_index;
 		}
 	}
-	return result;
+	return actor_index;
 }
 
 void __stdcall function_28e090(long actor_index, long perception_index);

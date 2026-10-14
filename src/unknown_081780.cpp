@@ -259,8 +259,8 @@ static __forceinline void network_data_array_new(s_record_pool *data, const char
 	data->size = size;
 	data->alignment_bits = 0;
 	data->data = 0;
-	data->valid = 0;
 	data->signature = DATA_ARRAY_SIGNATURE;
+	data->valid = 0;
 	data->bitmap = (dword *)(elements + maximum_count * size);
 	data->allocator = allocator;
 	data->flag0 = 0;

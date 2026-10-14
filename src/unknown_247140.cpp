@@ -98,7 +98,6 @@ void function_247140(s_247143 const *arg_0, s_247141 *arg_1,
     s_particle_system_datum *arg_2, byte *arg_3,
     s_effect_particle_system_definition const *arg_4, real arg_5, s_247144 *arg_6)
 {
-    s_247144 *const *local_15 = &arg_6;
     s_247145 const *local_20 = (s_247145 const *)((byte const *)arg_2 + 0xc);
     byte *local_0 = arg_0->field_4 != NONE ? g_4e3b44[arg_0->field_4 & 0xffff].bytes : 0;
     c_247140 *local_1 = (c_247140 *)function_137bd0(arg_4->tag_index);
@@ -131,30 +130,30 @@ void function_247140(s_247143 const *arg_0, s_247141 *arg_1,
             if (!(local_5->field_2 & 9) && local_5->field_8 <= 1.0f)
             {
                 if ((local_5->field_2 & 0x10) &&
-                    local_5->field_28.i * local_5->field_28.i +
+                    !(local_5->field_28.i * local_5->field_28.i +
                     local_5->field_28.j * local_5->field_28.j +
-                    local_5->field_28.k * local_5->field_28.k <= 0.0625f)
+                    local_5->field_28.k * local_5->field_28.k > 0.0625f))
                     local_5->field_2 |= 8;
                 else
                 {
                     local_5->field_1c.x += local_5->field_28.i * arg_5;
                     local_5->field_1c.y += local_5->field_28.j * arg_5;
                     local_5->field_1c.z += local_5->field_28.k * arg_5;
-                    local_5->field_38 += local_5->field_34 * arg_5;
                     local_5->field_2 &= ~0x10;
+                    local_5->field_38 += local_5->field_34 * arg_5;
                 }
             }
             else if ((bool)((local_5->field_2 >> 3) & 1) && local_1->function_247157())
                 local_5->field_2 |= 1;
             if (!(local_5->field_2 & 1))
             {
-                (*local_15)->field_0 = (*local_15)->field_0 > local_5->field_1c.x ? local_5->field_1c.x : (*local_15)->field_0;
-                (*local_15)->field_8 = (*local_15)->field_8 > local_5->field_1c.y ? local_5->field_1c.y : (*local_15)->field_8;
-                (*local_15)->field_10 = (*local_15)->field_10 > local_5->field_1c.z ? local_5->field_1c.z : (*local_15)->field_10;
-                (*local_15)->field_4 = (*local_15)->field_4 > local_5->field_1c.x ? (*local_15)->field_4 : local_5->field_1c.x;
-                (*local_15)->field_c = (*local_15)->field_c > local_5->field_1c.y ? (*local_15)->field_c : local_5->field_1c.y;
-                (*local_15)->field_14 = (*local_15)->field_14 > local_5->field_1c.z ? (*local_15)->field_14 : local_5->field_1c.z;
                 local_3 = local_5;
+                arg_6->field_0 = arg_6->field_0 > local_5->field_1c.x ? local_5->field_1c.x : arg_6->field_0;
+                arg_6->field_8 = arg_6->field_8 > local_5->field_1c.y ? local_5->field_1c.y : arg_6->field_8;
+                arg_6->field_10 = arg_6->field_10 > local_5->field_1c.z ? local_5->field_1c.z : arg_6->field_10;
+                arg_6->field_4 = arg_6->field_4 > local_5->field_1c.x ? arg_6->field_4 : local_5->field_1c.x;
+                arg_6->field_c = arg_6->field_c > local_5->field_1c.y ? arg_6->field_c : local_5->field_1c.y;
+                arg_6->field_14 = arg_6->field_14 > local_5->field_1c.z ? arg_6->field_14 : local_5->field_1c.z;
             }
             else
             {
