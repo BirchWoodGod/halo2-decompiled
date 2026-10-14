@@ -719,7 +719,7 @@ void __stdcall function_b8600(long object_index, long unknown);
 bool __stdcall function_bdef0(long object_index)
 {
     byte *object = (byte *)OBJECT_GET(object_index);
-    byte const *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+    byte const *definition = g_4e3b44[(word)*(long *)object].bytes;
     bool active = (*(dword *)(object + 4) & 0x100) != 0;
     bool from_physics = false;
     long component_index = *(long *)(object + 0xb4);
@@ -1870,7 +1870,7 @@ void __stdcall function_b8ee0(long parent_index, long parent_marker_name, long i
 {
     byte *object = (byte *)OBJECT_GET(index);
     function_b7300(index);
-    if (*(dword *)(object + 4) & 0x100) function_b87b0(index);
+    if ((bool)((*(dword *)(object + 4) >> 8) & 1)) function_b87b0(index);
     s_object_marker parent_marker, name_9ae4a2;
     function_b8d30(parent_index, parent_marker_name, &parent_marker, 1, false);
     function_b8d30(index, child_marker_name, &name_9ae4a2, 1, false);
@@ -1880,9 +1880,10 @@ void __stdcall function_b8ee0(long parent_index, long parent_marker_name, long i
     {
         transform4x3f inverse;
         function_141590(&name_9ae4a2.node_matrix, &inverse);
-        point3f position = object_attachment_point_r18(inverse, parent_marker.matrix.position);
-        vector3f forward = object_attachment_vector_r18(inverse, parent_marker.matrix.forward);
-        vector3f up = object_attachment_vector_r18(inverse, parent_marker.matrix.up);
+        transform4x3f const &source_matrix = inverse;
+        point3f position = object_attachment_point_r18(source_matrix, parent_marker.matrix.position);
+        vector3f forward = object_attachment_vector_r18(source_matrix, parent_marker.matrix.forward);
+        vector3f up = object_attachment_vector_r18(source_matrix, parent_marker.matrix.up);
         function_b91d0(index, &forward, &up);
         function_b7430(index, &position, &forward, &up, 0, true, true, false, false);
     }

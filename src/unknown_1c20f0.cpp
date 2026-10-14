@@ -56,10 +56,10 @@ bool __stdcall function_1c19b0(long actor_index, vector3f const *direction, s_ty
 	{
 		pathfinding = bsp->pathfinding;
 	}
-	collision.unknown24 = NONE;
-	origin = actor->position;
 	height = actor->position.z;
+	collision.unknown24 = NONE;
 	distance = 0.0f;
+	origin = actor->position;
 	if (actor->unknown27c.unknown10 != NONE)
 	{
 		s_path_trace_result trace;
@@ -81,7 +81,7 @@ bool __stdcall function_1c19b0(long actor_index, vector3f const *direction, s_ty
 		point3f end;
 		vector3f delta;
 		long node_index;
-		long unknown;
+		s_type_c3b527 location;
 
 		end.x = g_4687b0->i * 0.4f + (direction->i * scale + origin.x);
 		end.y = g_4687b0->j * 0.4f + (direction->j * scale + origin.y);
@@ -93,7 +93,7 @@ bool __stdcall function_1c19b0(long actor_index, vector3f const *direction, s_ty
 		{
 			break;
 		}
-		node_index = function_26d100(g_4687b0, &unknown, &collision, &end);
+		node_index = function_26d100(g_4687b0, (long *)&location, &collision, &end);
 		if (!(height + 0.1f > collision.point.z) || !(2.0f > origin.z - collision.point.z))
 		{
 			break;

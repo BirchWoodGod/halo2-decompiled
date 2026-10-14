@@ -196,11 +196,20 @@ struct s_physics_body_groups
 
 bool function_db4c0(long object_index, long key_a, long key_b);
 
+/* 0x1d6630 is a method of the component: retail passes it in ecx, the rest on the stack */
+struct s_physics_component_walk : s_havok_component
+{
+    void function_1d6630(s_physics_model_owner *owner, char const *kinds,
+        dword const *entry_mask, s_physics_body_groups *groups, void *context, long parent, long current,
+        char *output, long *output_count, void *other_context, dword *visited, bool *active);
+};
+
 // @retail 0x1d6630
-void function_1d6630(s_havok_component *component, s_physics_model_owner *owner, char const *kinds,
+void s_physics_component_walk::function_1d6630(s_physics_model_owner *owner, char const *kinds,
     dword const *entry_mask, s_physics_body_groups *groups, void *context, long parent, long current,
     char *output, long *output_count, void *other_context, dword *visited, bool *active)
 {
+    s_havok_component *component = this;
     (void)&owner;
     (void)&kinds;
     (void)&entry_mask;
@@ -214,18 +223,18 @@ void function_1d6630(s_havok_component *component, s_physics_model_owner *owner,
     (void)&visited;
     (void)&active;
     bool replace = !(bool)((component->unknown04 >> 13) & 1);
-    if (groups->groups[current == NONE ? 256 : current].count > 0)
+    if ((current == NONE ? groups->groups[256].count : groups->groups[current].count) > 0)
     {
-        for (long i = 0; i < groups->groups[current == NONE ? 256 : current].count; ++i)
+        for (long i = 0; i < (current == NONE ? groups->groups[256].count : groups->groups[current].count); ++i)
         {
-            long body_index = groups->groups[current == NONE ? 256 : current].bodies[i];
+            long body_index = (current == NONE ? groups->groups[256].bodies[i] : groups->groups[current].bodies[i]);
             s_physics_graph_model *model = (s_physics_graph_model *)owner->model;
             s_physics_graph_body *body = &model->bodies[body_index];
             bool replaced = false;
             bool available = false;
             if (body->flags & 0x20)
             {
-                long replacement = body->replacement;
+                short replacement = body->replacement;
                 long bounded = replacement < 0 ? 0 : replacement > model->body_count - 1 ? model->body_count - 1 : replacement;
                 if (bounded == replacement)
                 {
@@ -276,7 +285,7 @@ void function_1d6630(s_havok_component *component, s_physics_model_owner *owner,
                     {
                         if (entry->section_count == 0)
                         {
-                            long this_body = groups->groups[current == NONE ? 256 : current].bodies[0];
+                            long this_body = (current == NONE ? groups->groups[256].bodies[0] : groups->groups[current].bodies[0]);
                             long next_body = groups->groups[next].bodies[0];
                             if (kinds[this_body] == 7 || kinds[next_body] == 7)
                                 continue;
@@ -296,7 +305,7 @@ void function_1d6630(s_havok_component *component, s_physics_model_owner *owner,
                         }
                     }
                     if (first_body != NONE)
-                        function_1d6630(component, owner, kinds, entry_mask, groups, context, current, next,
+                        static_cast<s_physics_component_walk *>(component)->function_1d6630(owner, kinds, entry_mask, groups, context, current, next,
                             output, output_count, other_context, visited, active);
                 }
             }
@@ -413,7 +422,7 @@ c_havok_reference_counted *__stdcall function_1d5ec0(s_havok_component *componen
     *active = false;
     *mixed = false;
     function_1d6560(component, owner, entry_mask);
-    function_1d6630(component, owner, kinds, entry_mask, groups, (void *)current, NONE,
+    static_cast<s_physics_component_walk *>(component)->function_1d6630(owner, kinds, entry_mask, groups, (void *)current, NONE,
         current, output, output_count, (void *)64, visited, active);
     long count = *output_count;
     if (count > 0)

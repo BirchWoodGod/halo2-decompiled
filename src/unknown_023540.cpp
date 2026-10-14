@@ -1246,7 +1246,7 @@ scaled:
 }
 
 
-// @retail 0x298f0
+// @retail 0x298f0 standard
 bool __stdcall function_298f0(long mode, real const *bounds, real const *t, real *out, long unused)
 {
     (void)&mode; (void)&bounds; (void)&t; (void)&out; (void)&unused;
@@ -1293,9 +1293,11 @@ bool __stdcall function_298f0(long mode, real const *bounds, real const *t, real
                 out[1] = (bounds[3] - bounds[2]) * (1.0f - inverse_y) * 0.5f + out[1] * inverse_y;
                 return true;
             }
-            return mode == 1;
+            if (mode != 1) goto failed;
+            return true;
         }
     default:
+    failed:
         return false;
     }
 }
@@ -1381,7 +1383,7 @@ bool __stdcall function_2b000(void *context)
     return true;
 }
 
-// @retail 0x296c0
+// @retail 0x296c0 standard
 bool __stdcall function_296c0(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1])
@@ -1503,7 +1505,7 @@ bool __stdcall function_29080(long context)
     function_0222d0(D3DRS_ALPHABLENDENABLE, g_4b99b0[0]);
     function_0222d0(D3DRS_SRCBLEND, D3DBLEND_ONE);
     function_0222d0(D3DRS_DESTBLEND, D3DBLEND_CONSTANTCOLOR);
-    color3f blend = *(color3f *)(g_4b99b0 + 0x10);
+    color3f const &blend = *(color3f const *)(g_4b99b0 + 0x10);
     function_0222d0(D3DRS_BLENDCOLOR, pack_color3f(&blend));
     function_0222d0(D3DRS_BLENDOP, D3DBLENDOP_ADD);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
@@ -1511,24 +1513,22 @@ bool __stdcall function_29080(long context)
     function_0222d0(D3DRS_STENCILENABLE, 0);
     function_0222d0(D3DRS_ZENABLE, 0);
     function_0222d0(D3DRS_ZBIAS, 0);
-    color3f color = *(color3f *)(g_4b99b0 + 4);
+    color3f const &color = *(color3f const *)(g_4b99b0 + 4);
+    memset(&g_484f68, 0, sizeof(g_484f68));
     if (g_4b99b0[1])
     {
-        memset(&g_484f68, 0, sizeof(g_484f68));
         g_484f68.PSTextureModes = 0x2621;
         g_484f68.PSDotMapping = 0x11;
         g_484f68.PSCombinerCount = 0x11001;
-        g_484f68.PSFinalCombinerConstant0 = pack_color3f(&color);
         g_484f68.PSFinalCombinerInputsABCD = 0xa010000;
     }
     else
     {
-        memset(&g_484f68, 0, sizeof(g_484f68));
         g_484f68.PSTextureModes = 1;
         g_484f68.PSCombinerCount = 0x11001;
-        g_484f68.PSFinalCombinerConstant0 = pack_color3f(&color);
         g_484f68.PSFinalCombinerInputsABCD = 0x8010000;
     }
+    g_484f68.PSFinalCombinerConstant0 = pack_color3f(&color);
     g_484f68.PSFinalCombinerInputsEFG = 0;
     function_1ccf0(&g_484f68);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
@@ -1612,7 +1612,7 @@ bool __stdcall function_251b0(void *context)
 }
 
 
-// @retail 0x29370
+// @retail 0x29370 standard
 bool __stdcall function_29370(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1]) return false;

@@ -811,7 +811,7 @@ void c_game_engine_statborg_entity_definition::v21(s_entity_slot *entity)
 bool c_game_engine_statborg_entity_definition::v22(s_entity_slot *entity, long b, long c, long d, long e, long f)
 {
 	s_mp_globals *globals = g_4e9ae8;
-	if (g_55e4d0[globals->engine_index] && globals->value28 != NONE)
+	if (g_55e4d0[globals->engine_index] && (dword)globals->value28 + 1 != 0)
 		memset((byte *)globals + 0x28, 0xff, sizeof(globals->value28));
 	globals->value28 = entity->id;
 	return true;

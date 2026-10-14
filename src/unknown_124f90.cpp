@@ -2265,7 +2265,7 @@ long function_126000(long tag_index, long listener_index, s_sound_play_state *st
 	long gain = sound_definition_random_gain(definition);
 	*(real *)&gain = *base_gain + *(real *)&gain;
 	long definition_gain = function_1251e0(definition, state->location.unknown08, state->location.scale);
-	long decibels = decibels_add(definition_gain, gain);
+	long decibels = decibels_add(gain, definition_gain);
 	long result = NONE;
 
 	if (*(real *)&decibels > -64.0f)
@@ -2282,8 +2282,10 @@ long function_126000(long tag_index, long listener_index, s_sound_play_state *st
 			sound->value_ac = NONE;
 			sound->priority = state->priority;
 			sound->listener_index = (char)listener_index;
+#pragma inline_depth(0)
 			sound->pitch = sound_definition_random_pitch(definition, &g_4e7408->seed);
-			sound->gain = *(real *)&gain;
+#pragma inline_depth()
+			*(long *)&sound->gain = gain;
 			sound->seed = g_4e7408->seed;
 			sound->flags = (state->flags & 0x2) ? state->playback_flags : 0;
 			sound->object_index = (state->flags & 0x8) ? state->object_index : NONE;
@@ -2322,7 +2324,7 @@ long function_126000(long tag_index, long listener_index, s_sound_play_state *st
 			}
 			else
 			{
-				short arg_58ecd0;
+				long arg_58ecd0;
 
 				if (rate_limit_stage != NONE)
 				{
@@ -2330,10 +2332,10 @@ long function_126000(long tag_index, long listener_index, s_sound_play_state *st
 				}
 				else
 				{
-					s_sound_playback_parameters *playback = &SOUND_GLOBALS_DEFINITIONS->playback_parameters[definition->playback_index];
-					real lower = (real)playback->pitch_lower;
+					short const *pitch_bounds = &SOUND_GLOBALS_DEFINITIONS->playback_parameters[definition->playback_index].pitch_lower;
+					real lower = (real)pitch_bounds[0];
 
-					arg_58ecd0 = function_218f50((s_looping_playback_definition *)definition, NONE, ((real)playback->pitch_upper - lower) * state->location.scale + sound->pitch + lower);
+					arg_58ecd0 = function_218f50((s_looping_playback_definition *)definition, NONE, ((real)pitch_bounds[1] - lower) * state->location.scale + sound->pitch + lower);
 				}
 				sound_playback_set_chunk(result, tag_index, (char)arg_58ecd0, (char)function_219070(arg_58ecd0), (short)chunk_index);
 			}
@@ -3230,7 +3232,10 @@ void function_128ca0(short arg_0, long arg_1, s_looping_channel_spatialization c
 	local_3.field_8 = local_5 - (real)SOUND_GLOBALS_DEFINITIONS->pitch_bounds[local_7->bounds_index].unknown00;
 	if (local_1->priority & 2)
 	{
+		/* retail calls the promotion lookup here */
+#pragma inline_depth(0)
 		s_unknown_5c *local_9 = function_221810(local_2->promotion_index);
+#pragma inline_depth()
 		real local_10;
 		if (local_1->effect_index != NONE)
 		{

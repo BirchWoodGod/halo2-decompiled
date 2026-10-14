@@ -220,14 +220,13 @@ void __stdcall function_25dd50(
 		{
 			vector3f segment;
 			vector3f offset;
-			real reach = actor->unknown39c + 2.5f;
+			real reach;
 
-			vector3d_from_points3d(&actor->unknown370, &actor->unknown388, &segment);
 			vector3d_from_points3d(&actor->unknown3a0, &position->position, &offset);
-			if (reach * reach > length_sq3f(&offset))
+			vector3d_from_points3d(&actor->unknown370, &actor->unknown388, &segment);
+			if ((actor->unknown39c + 2.5f) * (actor->unknown39c + 2.5f) > length_sq3f(&offset))
 			{
 				real distance;
-				real bonus = 0.f;
 
 				if ((real)sqrt(length_sq3f(&segment)) > 0.f)
 				{
@@ -241,6 +240,7 @@ void __stdcall function_25dd50(
 					distance = (real)sqrt(length_sq3f(&delta));
 				}
 
+				real bonus = 0.f;
 				if (actor->unknown36c * actor->unknown36c > distance)
 				{
 					position->unknown4d = true;
@@ -1738,10 +1738,12 @@ short __stdcall function_1c8df0(long arg_0, point3f const *arg_4, short arg_3, s
 	void const *arg_1, long arg_5, bool arg_6, bool arg_7, bool arg_8, long *arg_9);
 real normalize2d(point2f *v);
 
-#pragma optimize("s", on)
 // @retail 0x25f7b0
 void __stdcall function_25f7b0(long arg_0, s_type_967e20 *arg_1, s_type_b36ac5 *arg_2)
 {
+	/* keeps the context on the stack, as retail passes it */
+	s_type_967e20 *const *context_reference = &arg_1;
+	(void)context_reference;
 	s_actor_view *local_0 = actor_get(arg_0);
 	short local_1 = *(short *)arg_1;
 	if (local_1 == 5 && !arg_1->unknown11)
@@ -1750,7 +1752,7 @@ void __stdcall function_25f7b0(long arg_0, s_type_967e20 *arg_1, s_type_b36ac5 *
 		{
 			point3f local_2;
 			function_1e3b00(local_0->unknown018, 1, &arg_2->position, NULL, NULL, &local_2);
-			short local_3;
+			long local_3;
 			if (arg_2->definition->flags & 8)
 				local_3 = function_272af0(g_4e0348, &arg_2->position);
 			else
@@ -1758,11 +1760,13 @@ void __stdcall function_25f7b0(long arg_0, s_type_967e20 *arg_1, s_type_b36ac5 *
 			bool local_4 = local_0->unknown26c != NONE;
 			short local_5 = *(short *)((byte *)local_0 + 0x254);
 			point3f const *local_6 = (point3f *)((byte *)local_0 + 0x22c);
-			if (local_5 == NONE || local_3 == NONE || function_11c010(local_3, local_5))
+			if (local_5 == NONE || local_3 == NONE || function_11c010(local_5, local_3))
 			{
 				s_collision_result_1697c0 local_7;
 				local_7.unknown24 = NONE;
-				long local_8 = local_4 ? 0x15808c0f : 0x15808c2f;
+				long local_8 = 0x15808c2f;
+				if (local_4)
+					local_8 = 0x15808c0f;
 				vector3f local_9;
 				vector3d_from_points3d(local_6, &local_2, &local_9);
 				if (!function_1697c0(local_8, local_6, &local_9, NONE, NONE, &local_7))
@@ -1774,25 +1778,23 @@ void __stdcall function_25f7b0(long arg_0, s_type_967e20 *arg_1, s_type_b36ac5 *
 				double local_11 = (double)local_2.y - local_6->y;
 				double local_12 = (double)local_2.z - local_6->z;
 				real local_13 = (real)sqrt(local_12 * local_12 + local_11 * local_11 + local_10 * local_10);
-				if (local_13 >= 1.f && local_13 * *(real *)((byte *)&local_7 + 4) < 1.f)
-				{
-					arg_2->type = 2;
-					return;
-				}
+				arg_2->type = local_13 >= 1.f && local_13 * *(real *)((byte *)&local_7 + 4) < 1.f ? 2 : 4;
+				return;
 			}
 		}
 		arg_2->type = 4;
 		return;
 	}
-	long local_14 = 0;
-	void const *local_15 = NULL;
+	long local_14;
+	void const *local_15;
 	vector3f const *local_16;
 	vector3f local_17;
-	short local_18;
+	long local_18;
 	if (local_1 == 1 || local_1 == 2)
 	{
 		local_18 = 2;
 		local_16 = NULL;
+		local_15 = NULL;
 	}
 	else if (*((byte *)arg_1 + 0x5fc))
 	{
@@ -1811,6 +1813,7 @@ void __stdcall function_25f7b0(long arg_0, s_type_967e20 *arg_1, s_type_b36ac5 *
 	{
 		local_18 = 1;
 		local_16 = NULL;
+		local_15 = NULL;
 	}
 	long local_19 = function_1e1f20(arg_0);
 	if (local_19 != NONE)
@@ -1823,6 +1826,7 @@ void __stdcall function_25f7b0(long arg_0, s_type_967e20 *arg_1, s_type_b36ac5 *
 	function_1e3b00(local_0->unknown018, local_18, &arg_2->position, local_16, local_15, &local_21);
 	if (local_18 == 2 && arg_2->unknown5c == 3)
 		local_21.z -= 0.1f;
+	local_14 = 0;
 	switch (*(short *)arg_1)
 	{
 	case 1:
@@ -1830,10 +1834,13 @@ void __stdcall function_25f7b0(long arg_0, s_type_967e20 *arg_1, s_type_b36ac5 *
 		local_14 = 1;
 		break;
 	case 2:
-		local_14 = !(arg_2->definition->flags & 0x10);
+		if (!(arg_2->definition->flags & 0x10))
+			local_14 = 1;
 		break;
 	}
-	bool local_22 = *(short *)arg_1 != 1 && *(short *)arg_1 != 2;
+	bool local_22 = true;
+	if (*(short *)arg_1 == 2 || *(short *)arg_1 == 1)
+		local_22 = false;
 	short local_23;
 	if (arg_2->definition->flags & 8)
 		local_23 = function_272af0(g_4e0348, &local_21);
@@ -1843,4 +1850,3 @@ void __stdcall function_25f7b0(long arg_0, s_type_967e20 *arg_1, s_type_b36ac5 *
 		*(short *)((byte *)arg_1 + 0x660), local_23, &local_21, local_14, true,
 		local_0->unknown26c != NONE, local_22, NULL);
 }
-#pragma optimize("", on)

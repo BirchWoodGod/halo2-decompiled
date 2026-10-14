@@ -312,11 +312,12 @@ struct s_1bdad0_target
 // @retail 0x1bdad0
 bool __stdcall function_1bdad0(long actor_index, s_slot *slot, long index)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	s_5d_element *element = (s_5d_element *)index;
 	s_1bdad0_target *target = (s_1bdad0_target *)&element->object_index;
 	bool result = true;
+	s_1bd610 *movement = (s_1bd610 *)((byte *)slot + 0x1c);
 	long object_index = target->object_index;
+	s_actor_view *actor = actor_get(actor_index);
 
 	if (object_index == NONE || ((s_slot_5d *)slot)->unknown20 == NONE)
 	{
@@ -324,7 +325,6 @@ bool __stdcall function_1bdad0(long actor_index, s_slot *slot, long index)
 		goto done;
 	}
 	{
-	s_1bd610 *movement = (s_1bd610 *)((byte *)slot + 0x1c);
 	if ((short)movement->field_8 == NONE)
 	{
 		if (element->unknown02 == 1)
@@ -337,38 +337,38 @@ bool __stdcall function_1bdad0(long actor_index, s_slot *slot, long index)
 		bool stationary = function_1bd3b0(object_index);
 		if (stationary)
 		{
-			if ((*(word *)movement) & 0x10)
+			if ((*(short *)movement) & 0x10)
 			{
-				if (!((*(word *)movement) & 2))
+				if (!((*(short *)movement) & 2))
 				{
 					long prop_index = function_25d810(object_index, actor_index, false);
 					real distance = function_210970((s_type_c3b527 const *)&actor->unknown27c,
 						&movement->field_c);
 					if (prop_index != NONE && *(short *)((byte *)prop_node_get(prop_index) + 0x1c) == 0 && distance < 0.4f)
-						(*(word *)movement) |= 0xa;
-					if (!((*(word *)movement) & 2) && ((*(word *)movement) & 8) && distance < 0.4f)
+						(*(short *)movement) |= 0xa;
+					if (!((*(short *)movement) & 2) && ((*(short *)movement) & 8) && distance < 0.4f)
 					{
-						(*(word *)movement) |= 2;
+						(*(short *)movement) |= 2;
 						function_1f86a0(actor_index);
 					}
 					if (function_1f86f0(actor_index))
-						(*(word *)movement) |= 0xa;
+						(*(short *)movement) |= 0xa;
 				}
 				vector3f const *direction = &target->direction;
-				if (((*(word *)movement) & 2) && actor->unknown290.k * direction->k +
-					actor->unknown290.j * direction->j + actor->unknown290.i * direction->i > 0.95f && !((*(word *)movement) & 4))
+				if (((*(short *)movement) & 2) && actor->unknown290.k * direction->k +
+					actor->unknown290.j * direction->j + actor->unknown290.i * direction->i > 0.95f && !((*(short *)movement) & 4))
 				{
 					target->count++;
-					(*(word *)movement) |= 4;
+					(*(short *)movement) |= 4;
 				}
 			}
 			else
 			{
-				(*(word *)movement) &= ~2;
-				if ((*(word *)movement) & 4)
+				(*(short *)movement) &= ~2;
+				if ((*(short *)movement) & 4)
 				{
 					target->count--;
-					(*(word *)movement) &= ~4;
+					(*(short *)movement) &= ~4;
 				}
 			}
 			if (target->count == element->unknown7c)
@@ -381,14 +381,14 @@ bool __stdcall function_1bdad0(long actor_index, s_slot *slot, long index)
 		}
 		else
 		{
-			if ((*(word *)movement) & 4)
+			if ((*(short *)movement) & 4)
 			{
 				target->count--;
-				(*(word *)movement) &= ~4;
+				(*(short *)movement) &= ~4;
 			}
-			(*(word *)movement) &= ~0x12;
+			(*(short *)movement) &= ~0x12;
 		}
-		if (actor->unknown040 && stationary && !((*(word *)movement) & 2))
+		if (actor->unknown040 && stationary && !((*(short *)movement) & 2))
 		{
 			if (!function_1bd610(movement, actor_index,
 				(s_1bd611 *)target))

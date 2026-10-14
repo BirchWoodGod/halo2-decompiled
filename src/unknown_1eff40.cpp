@@ -126,9 +126,10 @@ bool function_1eff40(s_lookup *lookup, long flags, const point3f *point,
   query.field_20 = 0;
   query.field_24 = NONE;
   real fraction = hit->field_0;
-  hit->field_0 = fraction < 0.0f ? 0.0f : fraction;
+  real bounded = fraction < 0.0f ? 0.0f : fraction;
+  hit->field_0 = bounded;
   hit->field_18 = 0;
-  real bounded = fraction < 0.0f ? 0.0f : fraction > 1.0f ? 1.0f : fraction;
+  bounded = bounded > 1.0f ? 1.0f : bounded;
   if (function_1de6d0(&query, 0, 0.0f, bounded))
   {
    (*result_reference)->position = position;
