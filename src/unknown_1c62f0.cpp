@@ -735,22 +735,6 @@ void function_27a060(s_graph_tag *graph, c_type_709360 animation_id, long node_c
 	s_graph_inheritance *inheritance, dword const *node_mask, real_quaternion_transform *transforms);
 dword const *node_masks_combine(dword const *mask, dword const *other);
 
-/* the node mask the channel's flags select in its graph, or NULL */
-inline dword const *c_animation_channel_graph_mask(c_animation_channel const *channel)
-{
-	dword const *mask = NULL;
-
-	if (channel->flags & 0x800)
-	{
-		mask = graph_tag_get(channel->graph_tag_index)->node_mask5c;
-	}
-	else if (channel->flags & 0x400)
-	{
-		mask = graph_tag_get(channel->graph_tag_index)->node_mask7c;
-	}
-	return mask;
-}
-
 PRIVATE __forceinline dword const *function_1c7101(c_animation_channel const *arg_0)
 {
 	dword const *local_0 = NULL;
@@ -795,10 +779,20 @@ void c_animation_channel::sample_aiming(real yaw, real pitch, real weight, dword
 void c_animation_channel::sample_ratio(real ratio, real weight, long node_count, real_quaternion_transform *transforms,
 	dword const *node_mask)
 {
-	dword const *graph_mask = c_animation_channel_graph_mask(this);
-	dword const *mask = NULL;
+	s_tag_instance *tags = g_4e3b44;
+	dword const *graph_mask = NULL;
+	dword const *mask;
 	s_graph_inheritance *inheritance;
 
+	if (flags & 0x800)
+	{
+		graph_mask = ((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes)->node_mask5c;
+	}
+	else if (flags & 0x400)
+	{
+		graph_mask = ((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes)->node_mask7c;
+	}
+	mask = NULL;
 	if (graph_mask || node_mask)
 	{
 		mask = node_masks_combine(graph_mask, node_mask);
@@ -806,8 +800,9 @@ void c_animation_channel::sample_ratio(real ratio, real weight, long node_count,
 	inheritance = NULL;
 	if (animation_id.index != NONE && animation_id.graph_index != NONE)
 	{
-		inheritance = function_1daff0(graph_tag_get(graph_tag_index), animation_id);
+		inheritance = function_1daff0((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes, animation_id);
+		tags = g_4e3b44;
 	}
-	function_27a060(graph_tag_get(graph_tag_index), animation_id, node_count, ratio, weight, inheritance, mask,
+	function_27a060((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes, animation_id, node_count, ratio, weight, inheritance, mask,
 		transforms);
 }

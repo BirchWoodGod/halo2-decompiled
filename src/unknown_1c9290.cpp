@@ -56,9 +56,8 @@ bool function_1c9290(long arg_0, point3f const *arg_1, vector3f const *arg_2,
  bool local_7;
  do
  {
-  real local_8 = local_5 - local_6;
   point3f local_9;
-  function_1c9291(&local_3, &local_4, local_8, arg_4, &local_9);
+  function_1c9291(&local_3, &local_4, local_5 - local_6, arg_4, &local_9);
   vector3f local_10;
   vector3d_from_points3d(&local_3, &local_9, &local_10);
   s_collision_result_1697c0 local_11;
@@ -72,7 +71,7 @@ bool function_1c9290(long arg_0, point3f const *arg_1, vector3f const *arg_2,
    if ((char)function_11ea30(&local_3, &local_13, &local_0[local_12].center,
        (vector3f *)&local_0[local_12].value10, local_0[local_12].radius))
     return false;
-  local_4.k += local_8 * arg_4;
+  local_4.k += (local_5 - local_6) * arg_4;
   local_3 = local_9;
   local_6 = local_5;
   local_5 += 0.2f;
