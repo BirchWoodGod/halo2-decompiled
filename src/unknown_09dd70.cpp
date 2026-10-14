@@ -290,9 +290,21 @@ bool c_unit_type::v15(long arg_0, long arg_1, long arg_2, long arg_3, s_bitstrea
             ++local_6;
         } while (local_6 < 2);
     }
-    if (stream_read_bit(arg_4))
+    long capacity = arg_4->size_in_bytes;
+    capacity <<= 3;
+    long position = arg_4->bit_position;
+    bool present = false;
+    if (position <= capacity)
+        present = (arg_4->data[position / 8] & (1 << (position % 8))) != 0;
+    arg_4->bit_position = position + 1;
+    if (present)
     {
-        local_2->field_ec[2] = stream_read_bit(arg_4);
+        long next_position = arg_4->bit_position;
+        bool bit = false;
+        if (next_position <= capacity)
+            bit = (arg_4->data[next_position / 8] & (1 << (next_position % 8))) != 0;
+        arg_4->bit_position = next_position + 1;
+        local_2->field_ec[2] = bit;
         local_2->field_f0 = function_9e522(function_1959c0(arg_4, 6), 62, 0.0f, 1.0f);
         local_2->field_f4 = function_9e522(function_1959c0(arg_4, 6), 62, 0.0f, 1.0f);
         *local_1 |= 0x800000;
