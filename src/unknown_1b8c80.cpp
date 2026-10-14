@@ -520,11 +520,14 @@ void __stdcall function_1ba3f0(long actor_index, s_slot *slot, s_slot_target_lis
 	}
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1ba8c0
 void __stdcall function_1ba8c0(long actor_index, s_slot *slot, s_slot_target_list *list)
 {
 	s_slot_4c *state = (s_slot_4c *)slot;
 	s_actor_view *actor = actor_get(actor_index);
+	_ReadWriteBarrier();
 
 	if (actor->unknown26c == NONE)
 	{
@@ -549,6 +552,7 @@ void __stdcall function_1ba8c0(long actor_index, s_slot *slot, s_slot_target_lis
 	}
 	actor->unknown450 = 0x6000086;
 }
+#pragma function(_ReadWriteBarrier)
 
 /* the unit fields function_1ba990 reads */
 struct s_unit_1ba990

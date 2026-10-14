@@ -899,6 +899,11 @@ PRIVATE inline void *function_90891(long arg_0)
 	return local_1;
 }
 
+static __forceinline long function_90882(s_surface_description *description, long limit)
+{
+	return function_1931a0(limit, description);
+}
+
 #pragma intrinsic(_ReadWriteBarrier)
 #pragma inline_depth(0)
 // @retail 0x90880
@@ -962,7 +967,7 @@ bool function_90880(s_session_search *arg_0, long arg_1, long arg_2, long arg_3,
 		arg_0->flag14 = local_1->field_0 == 5 || local_1->field_0 == 2 || local_1->field_0 == 4;
 		SEARCH_FLAG(arg_0, 0x15) = local_1->field_0 == 5;
 		SEARCH_LONG(arg_0, 0x18) = function_193250(local_0);
-		long local_2 = function_1931a0(arg_4, local_0);
+		long local_2 = function_90882(local_0, arg_4);
 		long highest = local_2;
 		if (arg_5 >= local_2)
 			highest = arg_5;

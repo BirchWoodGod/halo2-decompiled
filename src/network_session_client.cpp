@@ -666,7 +666,7 @@ void function_6d270(void)
 
 struct s_session_join_request;
 long network_session_evaluate_join_request(c_class_58d20 *session, const s_session_join_request *request);
-bool function_630f0(c_class_58d20 *session, const s_session_join_request *request, long address, long reason);
+bool function_630f0(c_class_58d20 *session, long address, const s_session_join_request *request, long reason);
 
 // @retail 0x6dc60 standard
 void __stdcall function_06dc60(c_session_client *client, long reason)
@@ -679,8 +679,8 @@ void __stdcall function_06dc60(c_session_client *client, long reason)
   if (!rejection)
    rejection = network_session_evaluate_join_request(client->session,
     (const s_session_join_request *)&request->remote);
-  function_630f0(client->session, (const s_session_join_request *)&request->remote,
-   (long)request->key04, rejection);
+  function_630f0(client->session, (long)request->key04,
+   (const s_session_join_request *)&request->remote, rejection);
   session_client_remove_request(client, request);
   request = next;
  }
@@ -1033,7 +1033,7 @@ void function_6d4c0(c_session_client *client)
     if (!reason)
      reason = network_session_evaluate_join_request(client->session, (s_session_join_request *)(data + 0x18));
    }
-   function_630f0(client->session, (s_session_join_request *)(data + 0x18), (long)request->key04, reason);
+   function_630f0(client->session, (long)request->key04, (s_session_join_request *)(data + 0x18), reason);
    session_client_remove_request(client, request);
   }
   request = next;
@@ -1096,7 +1096,7 @@ void function_6d4c0(c_session_client *client)
    else reason = network_session_evaluate_join_request(client->session, (s_session_join_request *)(data + 0x18));
    if (reason)
    {
-    function_630f0(client->session, (s_session_join_request *)(data + 0x18), (long)request->key04, reason);
+    function_630f0(client->session, (long)request->key04, (s_session_join_request *)(data + 0x18), reason);
     session_client_remove_request(client, request);
    }
    else

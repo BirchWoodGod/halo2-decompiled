@@ -365,15 +365,25 @@ bool function_1b1970(long actor_index, short mode, vector2f const *forward,
 				real left_dot = left->i * direction.x + left->j * direction.y;
 
 				if (index % 2 == 0)
-					result = left_dot <= 0.0f;
-				else
-					result = left_dot >= 0.0f;
-				if (!result)
-					result = forward_dot >= 0.9f;
+				{
+					if (left_dot <= 0.0f)
+					{
+						result = true;
+						goto done;
+					}
+				}
+				else if (left_dot >= 0.0f)
+				{
+					result = true;
+					goto done;
+				}
+				if (forward_dot >= 0.9f)
+					result = true;
 			}
 		}
 		break;
 	}
+done:
 	return result;
 }
 

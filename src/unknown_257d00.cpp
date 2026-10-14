@@ -445,64 +445,63 @@ bool function_2580c0(short squad_index, short script_index, long *actor_indices,
 	s_cs_squad *squad;
 	long joint_index = function_257e70(script_index);
 
-	if (joint_index == NONE)
+	if (joint_index != NONE)
 	{
-		result = false;
-		goto local_9;
-	}
+		joint = joint_cs_get(joint_index);
+		first = true;
+		squad = NULL;
 
-	joint = joint_cs_get(joint_index);
-	first = true;
-	squad = NULL;
-
-	if (squad_index != NONE)
-	{
-		squad = &((s_cs_squad_scenario_view *)g_4e0350)->squads[squad_index];
-	}
-
-	joint->participant_count = count > 10 ? 10 : count;
-	joint->unknown08 = squad_index;
-	joint->unknown8a = false;
-	for (short i = 0; i < joint->participant_count; i++)
-	{
-		long cs_index = function_257fa0(actor_indices[i], script_index, joint->thread_index);
-
-		if (cs_index != NONE)
+		if (squad_index != NONE)
 		{
-			s_cs_datum *cs = cs_get(cs_index);
+			squad = &((s_cs_squad_scenario_view *)g_4e0350)->squads[squad_index];
+		}
 
-			cs->joint_index = joint_index;
-			if (squad)
+		joint->participant_count = count > 10 ? (short)10 : count;
+		joint->unknown08 = squad_index;
+		joint->unknown8a = false;
+		for (short i = 0; i < joint->participant_count; i++)
+		{
+			long cs_index = function_257fa0(actor_indices[i], script_index, joint->thread_index);
+
+			if (cs_index != NONE)
 			{
-				cs->unknown83 = !TEST_FIELD_BIT(squad->flags.flag1);
-			}
-			if (first)
-			{
-				first = false;
-				joint->leader = i;
+				s_cs_datum *cs = cs_get(cs_index);
+
+				cs->joint_index = joint_index;
+				if (squad)
+				{
+					cs->unknown83 = !TEST_FIELD_BIT(squad->flags.flag1);
+				}
+				if (first)
+				{
+					first = false;
+					joint->leader = i;
+				}
+				else
+				{
+					cs->unknown44 = true;
+				}
+				joint->participants[i].actor_index = actor_indices[i];
+				joint->participants[i].cs_index = cs_index;
+				joint->participants[i].unknown8 = i;
 			}
 			else
 			{
-				cs->unknown44 = true;
+				actor_indices[i] = NONE;
 			}
-			s_joint_cs_participant *local_0 = &joint->participants[i];
-			local_0->cs_index = cs_index;
-			local_0->actor_index = actor_indices[i];
-			local_0->unknown8 = i;
 		}
-		else
+
+		result = joint->leader != NONE;
+
+		if (!result)
 		{
-			actor_indices[i] = NONE;
+			function_2583e0(joint_index);
 		}
 	}
-
-	result = joint->leader != NONE;
-
-	if (!result)
+	else
 	{
-		function_2583e0(joint_index);
+		result = false;
 	}
-	local_9:
 	return result;
 }
 
@@ -727,6 +726,8 @@ short function_209580(long thread_index); /* unknown_209520.cpp */
 /* runs the command script's thread for the actor, again while it ends in
    type 0x16: 0 when it is done, 1 while it sleeps, 2 while it waits, 3 when
    it has no thread */
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x258880
 short function_258880(long actor_index, long cs_index)
 {
@@ -734,13 +735,7 @@ short function_258880(long actor_index, long cs_index)
 	s_cs_datum *cs = cs_get(cs_index);
 	s_actor_cs_run_view *actor = actor_cs_run_get(actor_index);
 
-	if (cs->thread_index == NONE)
-	{
-		cs->state = 4;
-		result = 3;
-		goto local_9;
-	}
-	for (;;)
+	while (cs->thread_index != NONE)
 	{
 		if (cs->unknown44)
 		{
@@ -749,6 +744,7 @@ short function_258880(long actor_index, long cs_index)
 			goto local_9;
 		}
 		g_502428 = (actor_index & 0xffff) | 0x80000000;
+		_ReadWriteBarrier();
 		if (actor->unknown30 != NONE)
 		{
 			g_50242c = actor->unknown30 & 0xffff;
@@ -762,8 +758,10 @@ short function_258880(long actor_index, long cs_index)
 		cs->unknown28 = NONE;
 		cs->unknown2c = NONE;
 		g_502410 = cs_index;
+		_ReadWriteBarrier();
 		result = function_209580(cs->thread_index);
 		g_502428 = NONE;
+		_ReadWriteBarrier();
 		g_50240c = NONE;
 		g_502410 = NONE;
 		if (cs->unknown44)
@@ -774,38 +772,35 @@ short function_258880(long actor_index, long cs_index)
 		}
 		if (cs->type != 0x16)
 		{
-			break;
+			if (cs->type == 0x17)
+			{
+				cs->state = 2;
+				result = 0;
+			}
+			else if (result == 2)
+			{
+				cs->state = 1;
+			}
+			else if (result == 0)
+			{
+				cs->state = 2;
+			}
+			else if (result == 1)
+			{
+				cs->state = 0;
+			}
+			goto local_9;
 		}
 		cs = cs_get(cs_index);
 		actor = actor_cs_run_get(actor_index);
-		if (cs->thread_index == NONE)
-		{
-			cs->state = 4;
-			result = 3;
-			goto local_9;
-		}
 	}
-	if (cs->type == 0x17)
-	{
-		cs->state = 2;
-		result = 0;
-	}
-	else if (result == 2)
-	{
-		cs->state = 1;
-	}
-	else if (result == 0)
-	{
-		cs->state = 2;
-	}
-	else if (result == 1)
-	{
-		cs->state = 0;
-	}
+	cs->state = 4;
+	result = 3;
 	goto local_9;
 local_9:
 	return result;
 }
+#pragma function(_ReadWriteBarrier)
 
 /* the actor fields the command scripts' update reads */
 struct s_actor_cs_update_view
@@ -1178,11 +1173,11 @@ void function_259e70(long cs_index)
 // @retail 0x259ec0
 bool function_259ec0(long actor_index, long cs_index)
 {
-	volatile bool result = true;
 	s_record_pool *local_1 = g_502408;
 	s_record_pool *local_2 = g_4f55f0;
-	s_cs_datum *cs = (s_cs_datum *)(local_1->data + (cs_index & 0xffff) * sizeof(s_cs_datum));
 	s_actor_view *actor = (s_actor_view *)(local_2->data + (actor_index & 0xffff) * sizeof(s_actor_view));
+	s_cs_datum *cs = (s_cs_datum *)(local_1->data + (cs_index & 0xffff) * sizeof(s_cs_datum));
+	volatile bool result = true;
 	s_cs_point *point = cs_point_get(cs->unknown28);
 
 	if (actor->unknown018 == NONE)
@@ -1200,12 +1195,11 @@ bool function_259ec0(long actor_index, long cs_index)
 	case 17:
 		{
 			bool local_0 = function_1f4460(actor_index, &point->point, NONE, actor->unknown018, exact);
+			result = local_0;
 			if (!local_0)
 			{
-				result = local_0;
 				return result;
 			}
-			result = local_0;
 		}
 		actor->unknown4cc = cs->unknown08;
 		break;
@@ -1213,24 +1207,26 @@ bool function_259ec0(long actor_index, long cs_index)
 	case 2:
 	case 3:
 	case 19:
-		if (point->unknown30 == NONE)
+		if (point->unknown30 != NONE)
+		{
+			exact |= cs->unknown08 != 0.f;
+			{
+				bool local_0 = function_1f4460(actor_index, &point->point, point->unknown30, NONE, exact);
+				result = local_0;
+				if (!local_0)
+				{
+					return result;
+				}
+			}
+			if (exact)
+			{
+				actor->unknown4b0 = cs->unknown08;
+			}
+		}
+		else
 		{
 			result = false;
 			return result;
-		}
-		exact |= cs->unknown08 != 0.f;
-		{
-			bool local_0 = function_1f4460(actor_index, &point->point, point->unknown30, NONE, exact);
-			if (!local_0)
-			{
-				result = local_0;
-				return result;
-			}
-			result = local_0;
-		}
-		if (exact)
-		{
-			actor->unknown4b0 = cs->unknown08;
 		}
 		break;
 
