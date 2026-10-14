@@ -366,9 +366,8 @@ real *function_143600(real const *rotation, unsigned long order, real const *coe
 // @retail 0x22850
 void function_22850(void)
 {
-    for (long i = 0; i < 24; ++i)
+    for (s_table_entry *entry = g_4b89b0; entry != g_4b89b0 + 24; ++entry)
     {
-        s_table_entry *entry = &g_4b89b0[i];
         entry->key = NONE;
         *(short *)&entry->unknown4 = NONE;
         entry->data_handle = NONE;
@@ -2521,7 +2520,7 @@ bool __stdcall function_23690(s_coefficient_layout const *layout, short order, l
         transform4x3f matrix;
         function_0235a0(source, &matrix);
         long samples = available > 1 ? 2 : 1;
-        for (long sample = 0; sample < samples; ++sample)
+        for (short sample = 0; sample < samples; ++sample)
         {
             if (sample) function_0235a0(source + 12, &matrix);
             real determinant = matrix.left.k * matrix.forward.j * matrix.up.i;

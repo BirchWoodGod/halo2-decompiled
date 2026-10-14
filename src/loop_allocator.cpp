@@ -69,7 +69,7 @@ void function_18e250(s_loop_allocator *loop, long size, const char *name, c_memo
 }
 
 // @retail 0x18e1f0
-s_loop_allocator *function_18e1f0(c_memory_source *source, long size, const char *name)
+s_loop_allocator *function_18e1f0(long size, c_memory_source *source, const char *name)
 {
 
 	if (!source)

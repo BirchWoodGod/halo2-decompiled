@@ -49,7 +49,7 @@ class c_online_task_screen;
 void __stdcall function_1a2cb7(c_online_task_screen *screen);
 struct s_friend_request;
 bool friend_request_get(s_friend_request *request);
-void function_148ca8(long error, dword controller_flags);
+void function_148ca8(long error, short controller_flags);
 bool gamertag_valid(word *string);
 extern long g_55c154;
 
@@ -657,8 +657,8 @@ labels_done:
 		{
 			key = move_focus(event->type);
 		}
-		v7(&keys[key]);
 		result = true;
+		v7(&keys[key]);
 		goto done;
 	}
 	else if (event->type == 5)
@@ -702,8 +702,7 @@ labels_done:
 		}
 		goto fallback;
 action_done:
-		result = true;
-		goto done;
+		return true;
 	}
 fallback:
 	result = c_class_1473c9::v10(event);
@@ -716,11 +715,11 @@ done:
 // @retail 0x238114
 long c_virtual_keyboard_screen::check_string()
 {
-	long result = 0;
 	bool empty = string[0] == 0;
+	s_keyboard_type const *keyboard_type = &g_44a9f8[type];
 	bool has_alphanumeric = false;
 	bool characters_valid = true;
-	s_keyboard_type const *keyboard_type = &g_44a9f8[type];
+	long result = 0;
 
 	for (long i = 0; string[i]; i++)
 	{
@@ -733,10 +732,11 @@ long c_virtual_keyboard_screen::check_string()
 			characters_valid = false;
 		}
 	}
-	if ((!(keyboard_type->flags & 1) || has_alphanumeric) &&
+	bool valid = (!(keyboard_type->flags & 1) || has_alphanumeric) &&
 		(!(keyboard_type->flags & 2) || characters_valid) &&
 		((keyboard_type->flags & 4) || !empty) &&
-		(!(keyboard_type->flags & 8) || gamertag_valid(string)))
+		(!(keyboard_type->flags & 8) || gamertag_valid(string));
+	if (valid)
 	{
 		if (keyboard_type->check && !keyboard_type->check(this))
 			result = 2;
@@ -1293,9 +1293,7 @@ bool finish_profile_create(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
-		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
-		function_148ca8(g_55c154, controller_flags);
+		function_148ca8(g_55c154, keyboard->user_flags);
 	}
 	return true;
 }
@@ -1314,9 +1312,7 @@ bool finish_profile_create_1(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
-		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
-		function_148ca8(g_55c154, controller_flags);
+		function_148ca8(g_55c154, keyboard->user_flags);
 	}
 	return true;
 }
@@ -1359,9 +1355,7 @@ bool finish_profile_create_3(c_virtual_keyboard_screen *keyboard)
 	}
 	else
 	{
-		byte const *controller_bytes = (byte const *)&keyboard->user_flags;
-		dword controller_flags = (dword)controller_bytes[0] | ((dword)controller_bytes[1] << 8);
-		function_148ca8(g_55c154, controller_flags);
+		function_148ca8(g_55c154, keyboard->user_flags);
 	}
 	return true;
 }

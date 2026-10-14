@@ -544,7 +544,7 @@ void function_43740(s_ribbon_source *source, s_ribbon_definition *definition, sh
     long tag = *(long *)(bytes + 0x34);
     if (tag != NONE)
     {
-        long bitmap = function_137590(tag, *(short *)((byte *)source + 0x18), *(short *)((byte *)source + 0x1a));
+        long bitmap = function_137590(tag, *(short *)((byte *)source + 0x1a), *(short *)((byte *)source + 0x18));
         byte *group = g_4e3b44[tag & 0xffff].bytes;
         s_bitmap_view *image = (s_bitmap_view *)(*(byte **)(group + 0x48) + bitmap * 0x74);
         if (function_12360(image, 0.0f))
