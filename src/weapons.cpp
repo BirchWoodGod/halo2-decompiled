@@ -2717,10 +2717,10 @@ bool __stdcall function_ff5f0(long weapon_index, long name, real *value, bool *a
 				(1.0f - *(real *)((byte *)definition + 0x150));
 		break;
 	case 0x0b0005a9: result = (real)((byte *)weapon)[0x175] * (1.0f / 255.0f); break;
-	case 0x0c000569: result = weapon_activity_value(weapon_index, weapon, definition); break;
 	case 0x1d0007ba:
-		if (!((byte *)g_4de2f4)[0x82])
-			result = weapon_activity_value(weapon_index, weapon, definition);
+		if (((byte *)g_4de2f4)[0x82]) break;
+	case 0x0c000569:
+		result = weapon_activity_value(weapon_index, weapon, definition);
 		break;
 	case 0x0d0006e7:
 	case 0x0e0006e6:
