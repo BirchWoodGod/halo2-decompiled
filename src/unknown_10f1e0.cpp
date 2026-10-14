@@ -715,24 +715,24 @@ void function_113410(long unit_index)
 			break;
 		}
 
-		control->animation_fc = animation_state_overlay_or_animation_get(state, weapon_class, first_set, weapon_type);
-		control->animation_100 = animation_state_overlay_or_animation_get(state, weapon_class, second_set, weapon_type);
-		control->animation_114 = animation_state_overlay_or_animation_get(state, weapon_class, 0x400004b, weapon_type);
+		control->animation_fc = state->overlay_or_animation_get(weapon_class, first_set, weapon_type);
+		control->animation_100 = state->overlay_or_animation_get(weapon_class, second_set, weapon_type);
+		control->animation_114 = state->overlay_or_animation_get(weapon_class, 0x400004b, weapon_type);
 		if (weapon_class == 0x400054b)
 		{
-			control->animation_104 = animation_state_overlay_or_animation_get(state, weapon_class, 0xb00054a, weapon_type);
-			control->animation_108 = animation_state_overlay_or_animation_get(state, weapon_class, 0xb00054a,
+			control->animation_104 = state->overlay_or_animation_get(weapon_class, 0xb00054a, weapon_type);
+			control->animation_108 = state->overlay_or_animation_get(weapon_class, 0xb00054a,
 				other_weapon_type);
-			control->animation_10c = animation_state_overlay_or_animation_get(state, weapon_class, 0x400060b, weapon_type);
-			control->animation_110 = animation_state_overlay_or_animation_get(state, weapon_class, 0x400060b,
+			control->animation_10c = state->overlay_or_animation_get(weapon_class, 0x400060b, weapon_type);
+			control->animation_110 = state->overlay_or_animation_get(weapon_class, 0x400060b,
 				other_weapon_type);
 		}
 		else
 		{
 			control->animation_104 = c_type_709360();
 			control->animation_108 = c_type_709360();
-			control->animation_10c = animation_state_overlay_or_animation_get(state, weapon_class, 0x400060b, weapon_type);
-			control->animation_110 = animation_state_overlay_or_animation_get(state, weapon_class, 0x400060b, weapon_type);
+			control->animation_10c = state->overlay_or_animation_get(weapon_class, 0x400060b, weapon_type);
+			control->animation_110 = state->overlay_or_animation_get(weapon_class, 0x400060b, weapon_type);
 		}
 		function_114330(unit_index);
 
@@ -1218,9 +1218,9 @@ bool __stdcall function_110ab0(long unit_index)
 	long overlay = control->channel_9c.unknown08;
 	long name = state->unknown7c;
 	long controlling = unit->field_13c;
-	bool result = false;
+	volatile bool result = false;
 	bool depleted = false;
-	bool interruptible = false;
+	volatile bool interruptible = false;
 	if (controlling != NONE)
 	{
 		long first = held_object_110ab0(unit_index, *(char *)((byte *)UNIT_ANIMATION_OBJECT(unit_index) + 0x212));
@@ -1232,7 +1232,7 @@ bool __stdcall function_110ab0(long unit_index)
 		if (*(byte *)((byte *)state + 0x14) & 0x10)
 			interruptible = true;
 	}
-	if (function_c70b0(unit_index))
+	if (function_c70b0(*(long const volatile *)unit_reference))
 		result = true;
 	else
 	{

@@ -15,7 +15,7 @@ void function_1f86a0(long index);
 bool __stdcall function_1f8a70(long actor_index, long unknown);
 void __stdcall function_2628f0(long actor_index, s_reference reference);
 
-struct s_1f4a20_source
+struct s_1f4a20_entry
 {
     byte field_0[0x5c];
     short type;
@@ -23,7 +23,7 @@ struct s_1f4a20_source
     point3f point;
     vector3f direction;
 };
-struct s_1f4a20_entry
+struct s_1f4a20_source
 {
     byte field_0[0x54];
     point2f direction;
@@ -51,9 +51,9 @@ point3f *function_b9dd0(long object_index, point3f *point);
 real function_30bf0(vector3f *vector);
 
 // @retail 0x1f4a20
-bool function_1f4a20(long actor_index, s_reference reference, s_1f4a20_entry const *entries,
+bool function_1f4a20(s_1f4a20_entry const *entries, long actor_index, s_reference reference, s_1f4a20_source const *source,
     bool alternate, s_type_c3b527 *arg_26ef00, vector3f *direction_out,
-    signed char *type_out, bool *available_out, s_1f4a20_source const *source)
+    signed char *type_out, bool *available_out)
 {
     bool result = false;
     s_actor_view *actor = actor_get(actor_index);
@@ -66,34 +66,34 @@ bool function_1f4a20(long actor_index, s_reference reference, s_1f4a20_entry con
     signed char type;
     if (reference.unknown2 >= 0)
     {
-        if (!source->type)
+        if (!entries->type)
             goto done;
         if (!function_29da40(actor_index, (s_type_c3b527 *)target, *(long *)((byte *)target + 0x14),
-            source->type, alternate, &source->point, &source->direction, &destination, &sector))
+            entries->type, alternate, &entries->point, &entries->direction, &destination, &sector))
             goto done;
-        origin.point = source->point;
+        origin.point = entries->point;
         origin.output_index = ((s_type_c3b527 *)target)->output_index;
-        type = (signed char)source->type;
-        if (!function_2105b0(origin.output_index, &source->direction, &direction))
+        type = (signed char)entries->type;
+        if (!function_2105b0(origin.output_index, &entries->direction, &direction))
             goto done;
     }
     else
     {
-        if (!entries)
+        if (!source)
             goto done;
         s_1f4a20_record *record = (s_1f4a20_record *)(g_51eca4->data + (reference.unknown2 & 0x7fff) * sizeof(s_1f4a20_record));
         if (record->type != 1)
             goto done;
-        s_1f4a20_entry const *entry = entries + reference.unknown0;
+        s_1f4a20_source const *entry = source + reference.unknown0;
         point3f const *point = &entry->point;
         function_210690(record->point.output_index, point, &origin.point);
         origin.output_index = record->point.output_index;
-        if (source->type != 1 && source->type != 2 && source->type != 3)
+        if (entries->type != 1 && entries->type != 2 && entries->type != 3)
             goto done;
         direction.i = -1.0f * entry->direction.x;
         direction.j = -1.0f * entry->direction.y;
         direction.k = 0.0f;
-        type = (signed char)source->type;
+        type = (signed char)entries->type;
         if (!(function_30bf0(&direction) > 0.0f))
             goto done;
         long mode = NONE;

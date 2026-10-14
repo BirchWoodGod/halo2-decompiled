@@ -42,7 +42,8 @@ long function_201330(short placement_index)
 extern s_flag_bits g_557c74;
 
 long function_1e4990(long index);
-PRIVATE short const g_44aee8[20] =
+/* external linkage: machine 1's 0x1e0160 reads this table too */
+extern short const g_44aee8[20] =
 {
 	3, 7, 3, 3, 3, 3, 1, 2, 2, 4, 4, 4, 5, 5, -1, 3, 7, 7, 7, 4
 };
@@ -689,16 +690,17 @@ static inline short placement_priority_2039d0(s_squad_placement_entry *entry)
 }
 
 // @retail 0x2039d0
-short function_2039d0(short squad_index, dword *available, dword const *blocked)
+short function_2039d0(long squad_index, dword *available, dword const *blocked)
 {
 	(void)&available;
 	(void)&blocked;
 	s_squad_placement_definition *squad;
 	short maximum;
 	short maximum_count;
+	long index = squad_index & 0xffff;
 	for (;;)
 	{
-		squad = &((s_squad_placement_table *)g_4e0350)->squads[(word)squad_index];
+		squad = &((s_squad_placement_table *)g_4e0350)->squads[index];
 		maximum = NONE;
 		maximum_count = 0;
 		short available_count = 0;
@@ -785,7 +787,7 @@ short function_205010(s_squad_iterator *iterator)
 		else if (iterator->definition)
 		{
 			byte *definition = iterator->definition->data;
-			long *block = (long *)(definition + (squad[0x60] ? 0x5c : 0x54));
+			long *block = squad[0x60] ? (long *)(definition + 0x5c) : (long *)(definition + 0x54);
 			if (*block > 0)
 			{
 				do
@@ -1516,11 +1518,28 @@ PRIVATE __forceinline bool squad_transfer_request(long unit_index, long object_i
         {
             short controller = *(short *)(g_4e8c24->data + (player_index & 0xffff) * 0x21c + 0x28);
             if (controller != NONE)
+            {
+/* retail calls the controller update out of line */
+#pragma inline_depth(0)
                 function_1e6980((s_time_entry *)((byte *)g_51e9c0 + controller * 0x1b0 + 0x150),
                     (short)request.type, result);
+#pragma inline_depth(255)
+            }
         }
     }
     return result;
+}
+
+/* the next actor of a squad walk (the walk's current index is not kept) */
+PRIVATE inline s_actor_datum *next_actor_204010(s_squad_actor_iterator *iterator)
+{
+    s_actor_datum *actor = NULL;
+    if (g_4f55d0->active && iterator->next_actor_index != NONE)
+    {
+        actor = actor_datum_get(iterator->next_actor_index);
+        iterator->next_actor_index = actor->next_actor_index;
+    }
+    return actor;
 }
 
 // @retail 0x204010
@@ -1537,8 +1556,9 @@ void function_204010(long squad_index, long other_squad_index)
             for (long target = squad->first_vehicle_index; target != NONE; )
             {
                 byte *target_vehicle = squad_transfer_object(target);
+                short mode = 4 + (*(short *)(definition + 0x244) != 0);
                 long selected = NONE;
-                short seat = function_200ee0(target, 4 + (*(short *)(definition + 0x244) != 0), &selected, NULL);
+                short seat = function_200ee0(target, mode, &selected, NULL);
                 if (seat != NONE && squad_transfer_request(vehicle_index, selected, seat))
                     break;
                 target = *(long *)(target_vehicle + 0x3a4);
@@ -1547,10 +1567,9 @@ void function_204010(long squad_index, long other_squad_index)
         }
         s_squad_actor_iterator iterator;
         function_204d30(&iterator, other_squad_index);
-        while (g_4f55d0->active && iterator.next_actor_index != NONE)
+        s_actor_datum *actor;
+        while ((actor = next_actor_204010(&iterator)) != NULL)
         {
-            s_actor_datum *actor = actor_datum_get(iterator.next_actor_index);
-            iterator.next_actor_index = actor->next_actor_index;
             long unit_index = actor->unit_index;
             byte *unit = squad_transfer_object(unit_index);
             long parent_index = *(long *)(unit + 0x14);
@@ -1790,7 +1809,10 @@ void function_203360(long squad_index)
         *(short *)(squad + 0xa) += count;
         *(real *)(squad + 0x10) += health;
         *(short *)(squad + 0xc) += *((byte *)actor + 7) * count;
+        /* retail calls the actor test here */
+#pragma inline_depth(0)
         *(short *)(squad + 0x16) += function_1e1de0(iterator.actor_index) * count;
+#pragma inline_depth()
         long tracking_index = *(long *)((byte *)actor + 0x338);
         if (tracking_index != NONE)
         {

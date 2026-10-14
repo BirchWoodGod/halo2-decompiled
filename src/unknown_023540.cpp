@@ -1246,7 +1246,7 @@ scaled:
 }
 
 
-// @retail 0x298f0
+// @retail 0x298f0 standard
 bool __stdcall function_298f0(long mode, real const *bounds, real const *t, real *out, long unused)
 {
     (void)&mode; (void)&bounds; (void)&t; (void)&out; (void)&unused;
@@ -1503,7 +1503,7 @@ bool __stdcall function_29080(long context)
     function_0222d0(D3DRS_ALPHABLENDENABLE, g_4b99b0[0]);
     function_0222d0(D3DRS_SRCBLEND, D3DBLEND_ONE);
     function_0222d0(D3DRS_DESTBLEND, D3DBLEND_CONSTANTCOLOR);
-    color3f blend = *(color3f *)(g_4b99b0 + 0x10);
+    color3f const &blend = *(color3f const *)(g_4b99b0 + 0x10);
     function_0222d0(D3DRS_BLENDCOLOR, pack_color3f(&blend));
     function_0222d0(D3DRS_BLENDOP, D3DBLENDOP_ADD);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
@@ -1511,24 +1511,22 @@ bool __stdcall function_29080(long context)
     function_0222d0(D3DRS_STENCILENABLE, 0);
     function_0222d0(D3DRS_ZENABLE, 0);
     function_0222d0(D3DRS_ZBIAS, 0);
-    color3f color = *(color3f *)(g_4b99b0 + 4);
+    color3f const &color = *(color3f const *)(g_4b99b0 + 4);
+    memset(&g_484f68, 0, sizeof(g_484f68));
     if (g_4b99b0[1])
     {
-        memset(&g_484f68, 0, sizeof(g_484f68));
         g_484f68.PSTextureModes = 0x2621;
         g_484f68.PSDotMapping = 0x11;
         g_484f68.PSCombinerCount = 0x11001;
-        g_484f68.PSFinalCombinerConstant0 = pack_color3f(&color);
         g_484f68.PSFinalCombinerInputsABCD = 0xa010000;
     }
     else
     {
-        memset(&g_484f68, 0, sizeof(g_484f68));
         g_484f68.PSTextureModes = 1;
         g_484f68.PSCombinerCount = 0x11001;
-        g_484f68.PSFinalCombinerConstant0 = pack_color3f(&color);
         g_484f68.PSFinalCombinerInputsABCD = 0x8010000;
     }
+    g_484f68.PSFinalCombinerConstant0 = pack_color3f(&color);
     g_484f68.PSFinalCombinerInputsEFG = 0;
     function_1ccf0(&g_484f68);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
@@ -2163,15 +2161,15 @@ void function_34d90(long target, real const *weights, short blend, dword color_w
     if (!(full_surface))
     {
         bounds[0] = (real)g_4b9dd2;
-        bounds[1] = (real)g_4b9dd6;
         bounds[2] = (real)g_4b9dd0;
+        bounds[1] = (real)g_4b9dd6;
         bounds[3] = (real)g_4b9dd4;
     }
     else
     {
         bounds[0] = 0.0f;
-        bounds[1] = (real)width;
         bounds[2] = 0.0f;
+        bounds[1] = (real)width;
         bounds[3] = (real)height;
     }
     real inverse_x = 1.0f / width;
@@ -2179,12 +2177,36 @@ void function_34d90(long target, real const *weights, short blend, dword color_w
     s_34a90_parameters parameters;
     parameters.depth = depth >= 0.0f ? depth : 0.0f - depth;
     parameters.distortion = 0.0f;
-    for (long i = 0; i < 4; ++i)
     {
-        parameters.offsets[i].x = 0.0f;
-        parameters.offsets[i].y = 0.0f;
+        long i = 0;
         parameters.scales[i].x = g_485af4[i] * inverse_x;
         parameters.scales[i].y = g_485b04[i] * inverse_y;
+        parameters.offsets[i].x = 0.0f;
+        parameters.offsets[i].y = 0.0f;
+        parameters.weights[i] = weights[i];
+    }
+    {
+        long i = 1;
+        parameters.scales[i].x = g_485af4[i] * inverse_x;
+        parameters.scales[i].y = g_485b04[i] * inverse_y;
+        parameters.offsets[i].x = 0.0f;
+        parameters.offsets[i].y = 0.0f;
+        parameters.weights[i] = weights[i];
+    }
+    {
+        long i = 2;
+        parameters.scales[i].x = g_485af4[i] * inverse_x;
+        parameters.scales[i].y = g_485b04[i] * inverse_y;
+        parameters.offsets[i].x = 0.0f;
+        parameters.offsets[i].y = 0.0f;
+        parameters.weights[i] = weights[i];
+    }
+    {
+        long i = 3;
+        parameters.scales[i].x = g_485af4[i] * inverse_x;
+        parameters.scales[i].y = g_485b04[i] * inverse_y;
+        parameters.offsets[i].x = 0.0f;
+        parameters.offsets[i].y = 0.0f;
         parameters.weights[i] = weights[i];
     }
     parameters.low = low;
@@ -2192,8 +2214,8 @@ void function_34d90(long target, real const *weights, short blend, dword color_w
     parameters.scale = 1.0f;
     parameters.count = 4;
     configure_34a90_state(target, blend, color_write, use_depth, depth_write, depth);
-    if (!vertex) vertex = (t_34770_vertex)function_34100;
-    function_34770(NULL, bounds, vertex, NULL, 20, 30, (long)&parameters);
+    t_34770_vertex chosen = vertex ? vertex : (t_34770_vertex)function_34100;
+    function_34770(NULL, bounds, chosen, NULL, 20, 30, (long)&parameters);
 }
 
 struct s_245c0_state

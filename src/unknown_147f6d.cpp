@@ -1693,7 +1693,6 @@ struct s_ui_initial_screen
 void function_2157c0(long selection);
 void __stdcall function_149f88(void *screen);
 void function_14a08f();
-extern bool g_4ee4e0;
 
 // @retail 0x14784e
 void function_14784e()
