@@ -769,7 +769,7 @@ short function_205010(s_squad_iterator *iterator)
 		else if (iterator->definition)
 		{
 			byte *definition = iterator->definition->data;
-			long *block = (long *)(definition + (squad[0x60] ? 0x5c : 0x54));
+			long *block = squad[0x60] ? (long *)(definition + 0x5c) : (long *)(definition + 0x54);
 			if (*block > 0)
 			{
 				do
