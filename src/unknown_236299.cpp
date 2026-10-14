@@ -121,6 +121,8 @@ void function_23625d(long tag_index)
 // @retail 0x236299
 void function_236299(long sound)
 {
+	s_sound_play play;
+	byte set[2];
 	s_interface_sound_globals *globals = (s_interface_sound_globals *)function_148350();
 	if (globals)
 	{
@@ -169,8 +171,6 @@ void function_236299(long sound)
 					s_sound_globals_view *sound_globals = (s_sound_globals_view *)g_51ebd4;
 					if (sound_globals->names[sound_globals->sets[tag->first_set + i].name] == name)
 					{
-						byte set[2];
-						s_sound_play play;
 						set[0] = (byte)i;
 						set[1] = function_219070(i);
 						play.object_index = NONE;
