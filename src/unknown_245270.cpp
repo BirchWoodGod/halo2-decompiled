@@ -282,16 +282,19 @@ void function_245400(long index, s_source_245400 const *source,
 	function_244ca0(height, radius, list, field_00, field_04, material_index,
 		material->field_04, material->field_05, point, material->field_06);
 }
-PRIVATE __forceinline void function_245545(long arg_0, s_source_245400 const *arg_1,
-	transform4x3f const *const &arg_2, real arg_3, real arg_4,
+
+// @retail 0x245540
+void function_245540(long arg_0, s_source_245400 const *arg_1,
+	transform4x3f const *arg_2, real arg_3, real arg_4,
 	long arg_5, long arg_6, s_collection_245270 *arg_7)
 {
-	(void)&arg_2;
+	transform4x3f const *const *matrix_reference = &arg_2;
 	s_surface_245400 const *local_0 = &arg_1->field_34[arg_0];
 	long local_1 = local_0->field_08;
-	short local_2 = (short)arg_1->field_2c[local_1].field_00;
-	short local_3 = (short)arg_1->field_2c[*(short *)local_0->field_0a].field_00;
-	if (local_2 != local_3)
+	s_material_245400 const *materials = arg_1->field_2c;
+	long local_2 = (short)materials[local_1].field_00;
+	long local_3 = (short)materials[*(short *)local_0->field_0a].field_00;
+	if ((short)local_2 != (short)local_3)
 	{
 		point3f const *local_4 = &arg_1->field_3c[((word const *)local_0)[0]].field_00;
 		point3f const *local_5 = &arg_1->field_3c[((word const *)local_0)[1]].field_00;
@@ -320,44 +323,36 @@ PRIVATE __forceinline void function_245545(long arg_0, s_source_245400 const *ar
 				return;
 		}
 		point3f local_14;
-		if (arg_2)
+		if (*matrix_reference)
 		{
 			real local_15 = local_6.i;
 			real local_16 = local_6.j;
 			real local_17 = local_6.k;
-			if (arg_2->scale != 1.f)
+			if ((*matrix_reference)->scale != 1.f)
 			{
-				local_15 = arg_2->scale * local_15;
-				local_16 = arg_2->scale * local_16;
-				local_17 = arg_2->scale * local_17;
+				local_15 = (*matrix_reference)->scale * local_15;
+				local_16 = (*matrix_reference)->scale * local_16;
+				local_17 = (*matrix_reference)->scale * local_17;
 			}
-			local_6.i = arg_2->forward.i * local_15 + arg_2->left.i * local_16 + arg_2->up.i * local_17;
-			local_6.j = arg_2->up.j * local_17 + local_15 * arg_2->forward.j + arg_2->left.j * local_16;
-			local_6.k = arg_2->forward.k * local_15 + arg_2->left.k * local_16 + arg_2->up.k * local_17;
+			local_6.i = (*matrix_reference)->forward.i * local_15 + (*matrix_reference)->left.i * local_16 + (*matrix_reference)->up.i * local_17;
+			local_6.j = (*matrix_reference)->up.j * local_17 + local_15 * (*matrix_reference)->forward.j + (*matrix_reference)->left.j * local_16;
+			local_6.k = (*matrix_reference)->forward.k * local_15 + (*matrix_reference)->left.k * local_16 + (*matrix_reference)->up.k * local_17;
 			local_15 = local_4->x;
 			local_16 = local_4->y;
 			local_17 = local_4->z;
-			if (arg_2->scale != 1.f)
+			if ((*matrix_reference)->scale != 1.f)
 			{
-				local_15 = arg_2->scale * local_15;
-				local_16 = arg_2->scale * local_16;
-				local_17 = arg_2->scale * local_17;
+				local_15 = (*matrix_reference)->scale * local_15;
+				local_16 = (*matrix_reference)->scale * local_16;
+				local_17 = (*matrix_reference)->scale * local_17;
 			}
-			local_14.x = arg_2->forward.i * local_15 + arg_2->up.i * local_17 + arg_2->left.i * local_16 + arg_2->position.x;
-			local_14.y = local_15 * arg_2->forward.j + arg_2->up.j * local_17 + arg_2->left.j * local_16 + arg_2->position.y;
-			local_14.z = arg_2->forward.k * local_15 + arg_2->up.k * local_17 + arg_2->left.k * local_16 + arg_2->position.z;
+			local_14.x = (*matrix_reference)->forward.i * local_15 + (*matrix_reference)->up.i * local_17 + (*matrix_reference)->left.i * local_16 + (*matrix_reference)->position.x;
+			local_14.y = local_15 * (*matrix_reference)->forward.j + (*matrix_reference)->up.j * local_17 + (*matrix_reference)->left.j * local_16 + (*matrix_reference)->position.y;
+			local_14.z = (*matrix_reference)->forward.k * local_15 + (*matrix_reference)->up.k * local_17 + (*matrix_reference)->left.k * local_16 + (*matrix_reference)->position.z;
 			local_4 = &local_14;
 		}
 		function_244de0(local_4, &local_6, arg_3, arg_4, arg_5, arg_6, local_1,
-			arg_1->field_2c[local_1].field_04, arg_1->field_2c[local_1].field_05,
-			arg_1->field_2c[local_1].field_06, arg_7);
+			materials[local_1].field_04, materials[local_1].field_05,
+			materials[local_1].field_06, arg_7);
 	}
-}
-
-// @retail 0x245540
-void function_245540(long arg_0, s_source_245400 const *arg_1,
-	transform4x3f const *arg_2, real arg_3, real arg_4,
-	long arg_5, long arg_6, s_collection_245270 *arg_7)
-{
-	function_245545(arg_0, arg_1, arg_2, arg_3, arg_4, arg_5, arg_6, arg_7);
 }

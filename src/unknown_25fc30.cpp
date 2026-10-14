@@ -220,14 +220,13 @@ void __stdcall function_25dd50(
 		{
 			vector3f segment;
 			vector3f offset;
-			real reach = actor->unknown39c + 2.5f;
+			real reach;
 
-			vector3d_from_points3d(&actor->unknown370, &actor->unknown388, &segment);
 			vector3d_from_points3d(&actor->unknown3a0, &position->position, &offset);
-			if (reach * reach > length_sq3f(&offset))
+			vector3d_from_points3d(&actor->unknown370, &actor->unknown388, &segment);
+			if ((actor->unknown39c + 2.5f) * (actor->unknown39c + 2.5f) > length_sq3f(&offset))
 			{
 				real distance;
-				real bonus = 0.f;
 
 				if ((real)sqrt(length_sq3f(&segment)) > 0.f)
 				{
@@ -241,6 +240,7 @@ void __stdcall function_25dd50(
 					distance = (real)sqrt(length_sq3f(&delta));
 				}
 
+				real bonus = 0.f;
 				if (actor->unknown36c * actor->unknown36c > distance)
 				{
 					position->unknown4d = true;

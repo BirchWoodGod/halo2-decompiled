@@ -15,7 +15,7 @@ struct s_29b2e0
     real field_38;
 };
 
-PRIVATE __forceinline real function_29b32b(vector3f *arg_0)
+PRIVATE __forceinline real function_29b32b(vector3f *arg_0, real *length = NULL)
 {
     real local_0 = (real)sqrt(arg_0->i * arg_0->i + arg_0->j * arg_0->j);
     arg_0->k = 0.0f;
@@ -25,8 +25,10 @@ PRIVATE __forceinline real function_29b32b(vector3f *arg_0)
         real local_1 = 1.0f / local_0;
         arg_0->j *= local_1;
         arg_0->k *= local_1;
+        if (length) *length = local_0;
         return local_0;
     }
+    if (length) *length = 0.0f;
     return 0.0f;
 }
 
@@ -45,8 +47,12 @@ PRIVATE __forceinline real function_29b45d(point2f *arg_0)
 
 PRIVATE __forceinline real function_29b4c0(real arg_0, real arg_1, real arg_2)
 {
-    if (arg_1 > arg_0) return arg_1;
-    return arg_0 > arg_2 ? arg_2 : arg_0;
+    real result = arg_0;
+    if (arg_1 > arg_0)
+        result = arg_1;
+    else if (arg_0 > arg_2)
+        result = arg_2;
+    return result;
 }
 
 PRIVATE __forceinline void function_29b6c0(vector3f const *arg_0,
@@ -75,7 +81,8 @@ void function_29b2e0(long arg_0, long arg_1, vector3f const *arg_2,
     s_slot_object_view *local_1 = object_get(arg_1);
     s_29b2e0 const *local_2 = (s_29b2e0 const *)function_1e5450(arg_0, *(long *)local_1);
     vector3f local_3 = *arg_3;
-    real local_4 = function_29b32b(&local_3);
+    real local_4;
+    function_29b32b(&local_3, &local_4);
     vector3f local_5 = *arg_2;
     point2f local_6 = { arg_2->i, arg_2->j };
     if (function_29b32b(&local_5) == 0.0f) local_5 = *arg_2;

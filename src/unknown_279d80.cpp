@@ -2049,7 +2049,7 @@ void function_2806e0(void)
 // @retail 0x280ac0
 void function_280ac0(void)
 {
-	compute_orientations(2, 0, true, true);
+	compute_orientations_split_flags(2, 0, true, true);
 }
 
 // @retail 0x281090
