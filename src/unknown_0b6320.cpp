@@ -88,14 +88,14 @@ bool function_b6320(s_upload_ab *upload, byte *buffer, long maximum, long *writt
                     if (success)
                     {
                         dword received;
-                        bool read_success = false;
+                        bool all_received = false;
                         if (ReadFile(file->handle, out, count, &received, 0))
                         {
-                            if (received == count) read_success = true;
+                            if (received == count) all_received = true;
                             else SetLastError(0x26);
                         }
                         file->position += received;
-                        success = read_success;
+                        success = all_received;
                     }
                     if (!success)
                     {
