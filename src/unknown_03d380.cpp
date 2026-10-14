@@ -312,19 +312,18 @@ void __stdcall function_124750(dword flags)
 		*(dword *)g_510c2c = (dword)g_453498;
 }
 
+void function_125a90(long value);
+
 // @retail 0x1264c0
 void __stdcall function_1264c0(dword flags)
 {
-	bool a = (flags >> 6) & 1;
 	bool b = (flags >> 5) & 1;
+	bool a = (flags >> 6) & 1;
 	s_4e6380 *globals = g_4e6380;
 
-	if (!b && globals->flag7b)
-	{
-		globals->flag7d = 1;
-		globals->flag7b = 0;
-		globals->flag7d = 0;
-	}
+	/* neither pause (0) nor resume (1): only clears the paused flag */
+	if (!b)
+		function_125a90(2);
 
 	if (globals->flag78)
 	{
@@ -335,20 +334,24 @@ void __stdcall function_1264c0(dword flags)
 		datum = data_datum_index(array, function_16bc00(array, 0));
 		while (datum != NONE)
 		{
-			s_element_bc *element = ELEMENT(array, s_element_bc, datum);
+			long index = datum & 0xffff;
+			s_element_bc *element = (s_element_bc *)array->data + index;
 			bool remove = true;
 
 			if (b)
 			{
-				short type = *((char *)g_4e3b44[element->object_index & 0xffff].flags + 2);
+				long type = *((char *)g_4e3b44[element->object_index & 0xffff].flags + 2);
 
 				if (type == 0x20 || type == 0x26)
 				{
-					remove = (type == 0x26 && !a);
+					remove = false;
+					if (type == 0x26)
+						remove = !a;
 				}
 				else if ((1 << element->kind) & 0x1e)
 				{
-					remove = (((byte *)function_221810(type))[0x4c] != 1);
+					if (((byte *)function_221810(type))[0x4c] == 1)
+						remove = false;
 				}
 			}
 
@@ -360,17 +363,18 @@ void __stdcall function_1264c0(dword flags)
 			else
 				element->unknown8c = NONE;
 
-			datum = data_datum_index(array, function_16bc00(array, datum == NONE ? 0 : (datum & 0xffff) + 1));
+			datum = data_datum_index(array, function_16bc00(array, datum == NONE ? 0 : index + 1));
 		}
 
-		if (a)
-			function_125d60();
-		else
+		if (!b)
 			function_21f290();
+		else
+			function_125d60();
 	}
 
+	dword ticks = GetTickCount();
 	globals = g_4e6380;
-	globals->unknown80 = GetTickCount();
+	globals->unknown80 = ticks;
 	globals->unknown1f8 = NONE;
 	globals->unknown200 = NONE;
 	globals->unknown84 = 0;
