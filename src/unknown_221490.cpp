@@ -483,6 +483,7 @@ short sound_driver_voice_new(
 	dword flags,
 	dword input_mixbin)
 {
+	short result = NONE;
 	s_sound_driver_globals *globals = SOUND_DRIVER_GLOBALS;
 	short voice_index = globals->voice_count;
 
@@ -491,7 +492,15 @@ short sound_driver_voice_new(
 		bool three_d = flags & 1;
 		bool play = (flags >> 1) & 1;
 		s_sound_driver_voice *voice;
-		DSBUFFERDESC description = {0};
+		struct
+		{
+			DSMIXBINS mixbins;
+			union { DSBUFFERDESC first; DSMIXBINVOLUMEPAIR pairs_second[5]; };
+			DSBUFFERDESC second;
+			DSMIXBINVOLUMEPAIR pairs_first[6];
+		} storage;
+		DSBUFFERDESC &description = storage.first;
+		memset(&description, 0, sizeof(description));
 
 		globals->voice_count = voice_index + 1;
 		voice = &globals->voices[voice_index];
@@ -500,8 +509,8 @@ short sound_driver_voice_new(
 		description.dwInputMixBin = input_mixbin;
 		if (SUCCEEDED(IDirectSound_CreateSoundBuffer(globals->direct_sound, &description, &voice->submix, NULL)))
 		{
-			DSMIXBINVOLUMEPAIR pairs[6];
-			DSMIXBINS mixbins;
+			DSMIXBINVOLUMEPAIR (&pairs)[6] = storage.pairs_first;
+			DSMIXBINS &mixbins = storage.mixbins;
 
 			IDirectSoundBuffer_SetVolume(voice->submix, 0);
 			pairs[0].dwMixBin = 0;
@@ -523,7 +532,8 @@ short sound_driver_voice_new(
 		}
 		if (three_d)
 		{
-			DSBUFFERDESC buffer_description = {0};
+			DSBUFFERDESC &buffer_description = storage.second;
+			memset(&buffer_description, 0, sizeof(buffer_description));
 
 			buffer_description.dwSize = sizeof(buffer_description);
 			buffer_description.dwFlags = (play ? DSBCAPS_FXIN2 : 0) + DSBCAPS_FXIN | DSBCAPS_CTRL3D;
@@ -531,12 +541,12 @@ short sound_driver_voice_new(
 			if (FAILED(IDirectSound_CreateSoundBuffer(SOUND_DRIVER_GLOBALS->direct_sound, &buffer_description, &voice->buffer, NULL)))
 			{
 				SOUND_DRIVER_GLOBALS->voice_count--;
-				return NONE;
+				return result;
 			}
 			else
 			{
-				DSMIXBINVOLUMEPAIR pairs[5];
-				DSMIXBINS mixbins;
+				DSMIXBINVOLUMEPAIR (&pairs)[5] = storage.pairs_second;
+				DSMIXBINS &mixbins = storage.mixbins;
 
 				pairs[0].dwMixBin = 6;
 				pairs[0].lVolume = 0;
@@ -562,12 +572,9 @@ short sound_driver_voice_new(
 		{
 			voice->buffer = NULL;
 		}
+		result = voice_index;
 	}
-	else
-	{
-		voice_index = NONE;
-	}
-	return voice_index;
+	return result;
 }
 
 // @retail 0x220fd0
@@ -644,6 +651,19 @@ struct s_sound_driver_voice_parameters
 	real obstruction_rate;
 };
 
+/* the voice's flag byte as 0x220e00 writes it */
+struct s_voice_flags_220e00
+{
+	byte bit0 : 1;
+	byte unknown_1 : 7;
+};
+
+/* a change limited to plus or minus a rate (0x220e00) */
+static __forceinline real pin_rate_220e00(real delta, real rate)
+{
+	return PIN(delta, -rate, rate);
+}
+
 // @retail 0x220e00
 void sound_driver_voice_update(
 	long voice_index,
@@ -661,7 +681,8 @@ void sound_driver_voice_update(
 		!(fabs(parameters->position.y - voice->position.y) < 0.05f) ||
 		!(fabs(parameters->position.z - voice->position.z) < 0.05f))
 	{
-		IDirectSoundBuffer_SetPosition(voice->buffer, parameters->position.x, parameters->position.y, parameters->position.z, DS3D_DEFERRED);
+		/* DirectSound's y axis is up */
+		IDirectSoundBuffer_SetPosition(voice->buffer, parameters->position.x, parameters->position.z, parameters->position.y, DS3D_DEFERRED);
 		voice->position = parameters->position;
 	}
 	if (!force && fabs(occlusion - voice->unknown2c) < 0.001f &&
@@ -672,7 +693,9 @@ void sound_driver_voice_update(
 	}
 	if (!force && (voice->flags & 1) == flag && !(0.0f >= parameters->obstruction_rate))
 	{
-		voice->unknown30 += PIN(obstruction - voice->unknown30, -parameters->obstruction_rate, parameters->obstruction_rate);
+		real rate = parameters->obstruction_rate;
+		real *value = &voice->unknown30;
+		*value += PIN(obstruction - *value, -rate, rate);
 	}
 	else
 	{
@@ -680,13 +703,13 @@ void sound_driver_voice_update(
 	}
 	if (!force && (voice->flags & 1) == flag && !(0.0f >= parameters->occlusion_rate))
 	{
-		voice->unknown2c += PIN(occlusion - voice->unknown2c, -parameters->occlusion_rate, parameters->occlusion_rate);
+		voice->unknown2c += pin_rate_220e00(occlusion - voice->unknown2c, parameters->occlusion_rate);
 	}
 	else
 	{
 		voice->unknown2c = occlusion;
 	}
-	voice->flags ^= (voice->flags ^ flag) & 1;
+	((s_voice_flags_220e00 *)&voice->flags)->bit0 = flag;
 	sound_driver_voice_environment_set(voice_index, parameters->decibels);
 local_0:
 	voice->flags |= 2;

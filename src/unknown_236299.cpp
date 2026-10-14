@@ -282,10 +282,11 @@ void function_2363d4(short_rectangle2d const *bounds, short *x, short *y)
 	short left = bounds->left;
 	short top = bounds->top;
 	short right = bounds->right;
-	short width = right - left;
-	short height = bottom - top;
+	struct { short width, height; } dimensions;
+	dimensions.width = right - left;
+	dimensions.height = bottom - top;
 
-	if (width == 320)
+	if (dimensions.width == 320)
 	{
 		if (top == 0)
 		{
@@ -317,7 +318,7 @@ void function_2363d4(short_rectangle2d const *bounds, short *x, short *y)
 	else
 	{
 		*x = 0;
-		if (height == 240)
+		if (dimensions.height == 240)
 		{
 			if (top == 0)
 			{

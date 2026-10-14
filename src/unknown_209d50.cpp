@@ -58,9 +58,10 @@ static inline s_hs_macro_expression *hs_macro_expression_get(long expression_ind
 static inline void *function_xc5914d(long thread_index, short size)
 {
 	s_hs_macro_frame *frame = hs_macro_thread_get(thread_index)->frame;
-	void *result = frame->data + frame->size;
+	unsigned short previous_size = (unsigned short)frame->size;
+	void *result = frame->data + (short)previous_size;
 
-	frame->size += size;
+	frame->size = (short)(previous_size + size);
 	return result;
 }
 

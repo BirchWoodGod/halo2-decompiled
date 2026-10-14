@@ -1438,7 +1438,7 @@ static inline short sound_definition_priority(s_sound_definition const *definiti
    a higher priority, or the same sound plays it louder, or this one is
    farther than a distance */
 // @retail 0x128b90
-bool function_128b90(long sound_index, long other_index, real distance)
+bool function_128b90(long other_index, long sound_index, real distance)
 {
 	s_sound_playback *sound = SOUND_PLAYBACK_GET(sound_index);
 	s_sound_playback *other = SOUND_PLAYBACK_GET(other_index);
@@ -1470,10 +1470,10 @@ short sound_voice_find(long sound_index, long *reason)
 {
 	s_sound_playback *sound = SOUND_PLAYBACK_GET(sound_index);
 	s_sound_definition *definition = sound_definition_get(sound->definition_index);
-	real distance = sound_source_get_listener_distance((s_sound_location_source const *)&sound->location, sound->listener_index);
 	short result = NONE;
 	long result_sound_index = NONE;
 	real result_distance;
+	real distance = sound_source_get_listener_distance((s_sound_location_source const *)&sound->location, sound->listener_index);
 
 	*reason = 0;
 	for (short i = 0; i < SOUND_SYSTEM->voice_count; i++)
@@ -1483,9 +1483,12 @@ short sound_voice_find(long sound_index, long *reason)
 		if (definition->type == voice->definition_type)
 		{
 			if (voice->sound_index == NONE)
-				return i;
-			if (function_128b90(voice->sound_index, sound_index, distance) &&
-				(result == NONE || function_128b90(voice->sound_index, result_sound_index, result_distance)))
+			{
+				result = i;
+				break;
+			}
+			if (function_128b90(sound_index, voice->sound_index, distance) &&
+				(result == NONE || function_128b90(result_sound_index, voice->sound_index, result_distance)))
 			{
 				s_sound_playback *other = SOUND_PLAYBACK_GET(voice->sound_index);
 
@@ -1645,6 +1648,8 @@ long function_12a810(long sound_index)
 
 /* fades a playing sound out over 300 ms from where its fade is, after
    telling its source it is going */
+void function_0bfe40(word *flags, long bit, bool value);
+
 // @retail 0x126360
 void function_126360(long sound_index)
 {
@@ -1661,7 +1666,7 @@ void function_126360(long sound_index)
 			sound->fade_curve = 0;
 			sound->fade_start_time = 300;
 			sound->fade_end_time = NONE;
-			sound->fading = true;
+			function_0bfe40(&sound->flags, 7, true);
 		}
 	}
 }
@@ -1671,7 +1676,6 @@ void function_126360(long sound_index)
 // @retail 0x126df0
 void function_126df0(long fade_in_index, long fade_out_index, short curve, real duration)
 {
-	real const volatile *local_0 = &duration;
 	if (fade_in_index != NONE)
 	{
 		s_sound_playback *sound = SOUND_PLAYBACK_GET(fade_in_index);
@@ -1682,8 +1686,8 @@ void function_126df0(long fade_in_index, long fade_out_index, short curve, real 
 			sound->fade_gain = 0xc2800000;
 		sound->fade_curve = curve;
 		sound->fade_start_time = NONE;
-		sound->fade_end_time = (long)(*local_0 * 1000.0f);
-		sound->fading = true;
+		sound->fade_end_time = (long)(duration * 1000.0f);
+		function_0bfe40(&sound->flags, 7, true);
 	}
 	if (fade_out_index != NONE)
 	{
@@ -1691,9 +1695,9 @@ void function_126df0(long fade_in_index, long fade_out_index, short curve, real 
 
 		sound->fade_gain = function_12a810(fade_out_index);
 		sound->fade_curve = curve;
-		sound->fade_start_time = (long)(*local_0 * 1000.0f);
+		sound->fade_start_time = (long)(duration * 1000.0f);
 		sound->fade_end_time = NONE;
-		sound->fading = true;
+		function_0bfe40(&sound->flags, 7, true);
 	}
 }
 
@@ -1880,7 +1884,7 @@ void sound_system_update_time(void)
 	sound_system->field_14_2 = now;
 	sound_system->time += elapsed;
 	sound_system->ambience_fade += (real)elapsed * 0.001f;
-	sound_system->elapsed_time = (real)elapsed * 0.001f;
+	sound_system->elapsed_time = (real)elapsed / 1000.0f;
 	sound_system->previous_ambience_fade += (real)elapsed * 0.001f;
 	if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 1)
 	{

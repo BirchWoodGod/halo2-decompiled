@@ -352,15 +352,17 @@ long function_257e70(long script_index)
 }
 
 // @retail 0x257ed0
-long function_257ed0(long thread_index, long actor_index, short script_index)
+long function_257ed0(long actor_index, short script_index, long thread_index)
 {
 	s_actor_cs_view *actor = actor_cs_get(actor_index);
 
-	if (g_502428 != NONE && function_272b70(g_502428) == actor_index)
+	if (g_502428 != NONE && actor_index == function_272b70(g_502428))
 	{
-		for (long cs_index = actor->first_cs_index; cs_index != NONE; cs_index = cs_get(cs_index)->next_index)
+		for (long cs_index = actor->first_cs_index; cs_index != NONE; )
 		{
-			cs_get(cs_index)->unknown7e = true;
+			s_cs_datum *cs = cs_get(cs_index);
+			cs->unknown7e = true;
+			cs_index = cs->next_index;
 		}
 		return function_258040(actor_index, script_index, thread_index);
 	}
@@ -443,64 +445,63 @@ bool function_2580c0(short squad_index, short script_index, long *actor_indices,
 	s_cs_squad *squad;
 	long joint_index = function_257e70(script_index);
 
-	if (joint_index == NONE)
+	if (joint_index != NONE)
 	{
-		result = false;
-		goto local_9;
-	}
+		joint = joint_cs_get(joint_index);
+		first = true;
+		squad = NULL;
 
-	joint = joint_cs_get(joint_index);
-	first = true;
-	squad = NULL;
-
-	if (squad_index != NONE)
-	{
-		squad = &((s_cs_squad_scenario_view *)g_4e0350)->squads[squad_index];
-	}
-
-	joint->participant_count = count > 10 ? 10 : count;
-	joint->unknown08 = squad_index;
-	joint->unknown8a = false;
-	for (short i = 0; i < joint->participant_count; i++)
-	{
-		long cs_index = function_257fa0(actor_indices[i], script_index, joint->thread_index);
-
-		if (cs_index != NONE)
+		if (squad_index != NONE)
 		{
-			s_cs_datum *cs = cs_get(cs_index);
+			squad = &((s_cs_squad_scenario_view *)g_4e0350)->squads[squad_index];
+		}
 
-			cs->joint_index = joint_index;
-			if (squad)
+		joint->participant_count = count > 10 ? (short)10 : count;
+		joint->unknown08 = squad_index;
+		joint->unknown8a = false;
+		for (short i = 0; i < joint->participant_count; i++)
+		{
+			long cs_index = function_257fa0(actor_indices[i], script_index, joint->thread_index);
+
+			if (cs_index != NONE)
 			{
-				cs->unknown83 = !TEST_FIELD_BIT(squad->flags.flag1);
-			}
-			if (first)
-			{
-				first = false;
-				joint->leader = i;
+				s_cs_datum *cs = cs_get(cs_index);
+
+				cs->joint_index = joint_index;
+				if (squad)
+				{
+					cs->unknown83 = !TEST_FIELD_BIT(squad->flags.flag1);
+				}
+				if (first)
+				{
+					first = false;
+					joint->leader = i;
+				}
+				else
+				{
+					cs->unknown44 = true;
+				}
+				joint->participants[i].actor_index = actor_indices[i];
+				joint->participants[i].cs_index = cs_index;
+				joint->participants[i].unknown8 = i;
 			}
 			else
 			{
-				cs->unknown44 = true;
+				actor_indices[i] = NONE;
 			}
-			s_joint_cs_participant *local_0 = &joint->participants[i];
-			local_0->cs_index = cs_index;
-			local_0->actor_index = actor_indices[i];
-			local_0->unknown8 = i;
 		}
-		else
+
+		result = joint->leader != NONE;
+
+		if (!result)
 		{
-			actor_indices[i] = NONE;
+			function_2583e0(joint_index);
 		}
 	}
-
-	result = joint->leader != NONE;
-
-	if (!result)
+	else
 	{
-		function_2583e0(joint_index);
+		result = false;
 	}
-	local_9:
 	return result;
 }
 
@@ -515,7 +516,7 @@ bool function_258230(long cs_index, short mode, long actor_index, long new_actor
 	switch (mode)
 	{
 	case 0:
-		new_cs_index = function_257ed0(cs->thread_index, new_actor_index, (short)cs->script_index);
+		new_cs_index = function_257ed0(new_actor_index, (short)cs->script_index, cs->thread_index);
 		break;
 	case 1:
 		new_cs_index = function_257fa0(new_actor_index, (short)cs->script_index, cs->thread_index);
@@ -732,13 +733,7 @@ short function_258880(long actor_index, long cs_index)
 	s_cs_datum *cs = cs_get(cs_index);
 	s_actor_cs_run_view *actor = actor_cs_run_get(actor_index);
 
-	if (cs->thread_index == NONE)
-	{
-		cs->state = 4;
-		result = 3;
-		goto local_9;
-	}
-	for (;;)
+	while (cs->thread_index != NONE)
 	{
 		if (cs->unknown44)
 		{
@@ -772,34 +767,30 @@ short function_258880(long actor_index, long cs_index)
 		}
 		if (cs->type != 0x16)
 		{
-			break;
+			if (cs->type == 0x17)
+			{
+				cs->state = 2;
+				result = 0;
+			}
+			else if (result == 2)
+			{
+				cs->state = 1;
+			}
+			else if (result == 0)
+			{
+				cs->state = 2;
+			}
+			else if (result == 1)
+			{
+				cs->state = 0;
+			}
+			goto local_9;
 		}
 		cs = cs_get(cs_index);
 		actor = actor_cs_run_get(actor_index);
-		if (cs->thread_index == NONE)
-		{
-			cs->state = 4;
-			result = 3;
-			goto local_9;
-		}
 	}
-	if (cs->type == 0x17)
-	{
-		cs->state = 2;
-		result = 0;
-	}
-	else if (result == 2)
-	{
-		cs->state = 1;
-	}
-	else if (result == 0)
-	{
-		cs->state = 2;
-	}
-	else if (result == 1)
-	{
-		cs->state = 0;
-	}
+	cs->state = 4;
+	result = 3;
 	goto local_9;
 local_9:
 	return result;

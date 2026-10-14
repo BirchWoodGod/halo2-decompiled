@@ -45,7 +45,7 @@ const word *function_217960(int language);
 const word *function_2179c0(int language);
 
 // @retail 0x217a80
-void function_217a80(long language, long string_handle_2, word *buffer)
+void function_217a80(long string_handle_2, long language, word *buffer)
 {
 	const word *text = L"";
 	switch (string_handle_2)
