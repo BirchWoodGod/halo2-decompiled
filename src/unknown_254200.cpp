@@ -125,7 +125,7 @@ void __stdcall function_2548f0(point2f const *arg_0, real arg_1)
 			g_4b82ec = 0;
 			D3DDevice_SetRenderState(D3DRS_ALPHATESTENABLE, 0);
 			g_4b82e0 = 0x207;
-			D3DDevice_SetRenderState(D3DRS_ALPHAFUNC, 0x207);
+			D3DDevice_SetRenderState(D3DRS_ZFUNC, 0x207);
 			g_4b8450 = 0;
 			D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
 			function_14390(0, (s_type_7ba8e9 *)local_0, 0.f);

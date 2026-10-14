@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8532 functions match
+
+```
+matched 8532 of 11318 game functions (1109206 of 2784283 bytes, 39.84%)
+```
+
+5 new matches, none lost:
+- Machine 3 batch 14 (#451): `0x12ac20`, `0x12d5a0`, `0x1c59a0`, `0x257870` and `0x259ec0`; `0x19ebb0` now returns the event it fills; and a render-state fix in `0x2548f0` (it sets the depth-test function, not the alpha-test one), found by machine 1's key lane 2
+
 ## 2026-10-14: 8527 functions match
 
 ```

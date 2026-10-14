@@ -75,49 +75,44 @@ bool __stdcall function_20d0c0(s_audio_priority_table *arg_0, long arg_1, short 
     s_audio_selection const *arg_3, s_1fb7e0_data const *arg_4, long arg_5, long *arg_6)
 {
     bool local_7 = false;
-    s_audio_priority_table *const volatile *local_11 = &arg_0;
-    long const volatile *local_12 = &arg_1;
-    short const volatile *local_13 = &arg_2;
-    s_audio_selection const *const volatile *local_14 = &arg_3;
-    s_1fb7e0_data const *const volatile *local_15 = &arg_4;
-    long const volatile *local_16 = &arg_5;
-    long *const volatile *local_17 = &arg_6;
+    s_audio_selection const *const volatile *local_12 = &arg_3;
+    long *const volatile *local_13 = &arg_6;
     long local_0 = g_510c54->game_time;
-    s_audio_selection const *local_18 = *local_14;
+    s_audio_selection const *local_18 = *local_12;
     long local_1 = local_18->object_index;
     byte *local_2 = *(byte **)(g_4e0300->data + (local_1 & 0xffff) * 12 + 8);
-    short local_3 = (short)function_20f040(*(short *)(local_2 + 0x138));
+    short local_11 = *(short *)(local_2 + 0x138);
+    short local_3 = (short)function_20f040(local_11);
     byte *local_4 = (byte *)g_4f939c + local_3 * 0x7dc;
-    s_audio_priority_definition *local_5 = &(*local_11)->entries[local_18->type];
-    long *local_19 = *local_17;
+    s_audio_priority_definition *local_5 = &arg_0->entries[local_18->type];
+    long *local_19 = *local_13;
     if (local_19)
         *local_19 = NONE;
     s_20d0c0 local_6;
-    local_6.field_0 = *local_13;
+    local_6.field_0 = arg_2;
     local_6.field_4 = local_18->target_index;
-    s_1fb7e0_data const *local_20 = *local_15;
-    if (local_20)
-        local_6.field_8 = *local_20;
+    if (arg_4)
+        local_6.field_8 = *arg_4;
     else
         local_6.field_8.unknown00 = 0;
     if (*(short *)((byte *)local_5 + 0xa) >= 13)
     {
-        local_7 = function_114b60(local_18->type, NONE, local_1, 13, &local_6);
-        if (!local_7)
-            goto local_21;
+        short local_14 = local_18->type;
+        local_7 = function_114b60(local_14, NONE, local_1, 13, &local_6);
     }
     else
     {
-        long local_8 = function_20f2d0(local_18->type, local_18->tag_index, local_1, *local_12, *local_16, &local_6);
-        if (local_8 == NONE)
-            goto local_21;
-        if (local_19)
-            *local_19 = local_8;
-        local_7 = true;
+        long local_8 = function_20f2d0(local_18->type, local_18->tag_index, local_1, arg_1, arg_5, &local_6);
+        if (local_8 != NONE)
+        {
+            if (local_19)
+                *local_19 = local_8;
+            local_7 = true;
+        }
     }
     if (local_7)
     {
-        real local_9 = g_510c54->field_2_3 * *(real *)((byte *)&(*local_11)->entries[local_18->type] + 0x30);
+        real local_9 = g_510c54->field_2_3 * *(real *)((byte *)&arg_0->entries[local_18->type] + 0x30);
         long local_10;
         __asm
         {
@@ -126,7 +121,6 @@ bool __stdcall function_20d0c0(s_audio_priority_table *arg_0, long arg_1, short 
         }
         *(long *)(local_4 + local_18->type * 4) = local_0 + local_10;
     }
-local_21:
     return local_7;
 }
 #pragma inline_depth(255)
