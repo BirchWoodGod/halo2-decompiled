@@ -632,6 +632,7 @@ void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_li
 // @retail 0xc17f0
 bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engine)
 {
+    bool result = false;
     s_light_ab *light = &((s_light_ab *)g_4e030c->data)[light_index & 0xffff];
     s_light_definition_ab *definition = (s_light_definition_ab *)g_4e3b44[light->tag_index & 0xffff].bytes;
     bool enabled = true;
@@ -647,13 +648,13 @@ bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engi
         function_c1a80((s_light_frame_ab *)((byte *)light + 0x84), shape, definition);
         if ((short)shape->kind == 0)
         {
-            if (shape->sphere_render.radius > 0.0001f) return true;
+            if (shape->sphere_render.radius > 0.0001f) result = true;
         }
         else if (shape->cone_render.far_distance > 0.0001f &&
             shape->cone_render.far_width * shape->cone_render.far_width + shape->cone_render.far_height * shape->cone_render.far_height > 0.0001f * 0.0001f)
-            return true;
+            result = true;
     }
-    return false;
+    return result;
 }
 
 // @retail 0xc35a0

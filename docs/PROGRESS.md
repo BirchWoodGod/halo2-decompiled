@@ -2,6 +2,17 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8494 functions match
+
+```
+matched 8494 of 11318 game functions (1098574 of 2784283 bytes, 39.46%)
+```
+
+19 new matches, none lost:
+- Machine 1 Opus lane round 19 (blockers handed over between the machines): `0x7ad80` and `0x6c8b0`, their callers `0x23643f`, `0x24b824` and `0x10a3f0`, and twelve functions that follow with no change to their bodies: `0x6e620`, `0x7ad50`, `0x105e80`, `0x10f1e0`, `0x10a1b0`, `0x18f170` and `0x2a2fd0` through `0x2a3170` (six)
+- Machine 3 Codex deep lane 2 round 45 (#440): `0x2a5010`
+- Machine 3 Codex deep lane 3 round 60 (#441): `0x40e30`
+
 ## 2026-10-14: 8475 functions match
 
 ```
