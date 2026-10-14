@@ -1814,7 +1814,7 @@ void function_1786f0(s_effect_marker_source const *source, s_effect_object_marke
 // @retail 0x178bc0
 transform4x3f *function_178bc0(s_effect_location_datum *location, s_effect_datum *effect, transform4x3f *matrix, bool field_b4)
 {
-	if ((word)location->node_index != 0xffff && effect->object_index != NONE)
+	if (location->node_index != NONE && effect->object_index != NONE)
 	{
 		transform4x3f node_matrix;
 

@@ -53,7 +53,7 @@ struct s_loop_allocator
 	bool debug_headers;
 };
 
-s_loop_allocator *function_18e1f0(c_memory_source *source, long size, const char *name);
+s_loop_allocator *function_18e1f0(long size, c_memory_source *source, const char *name);
 void function_18e250(s_loop_allocator *loop, long size, const char *name, c_memory_source *source);
 void function_18e230(s_loop_allocator *loop);
 bool function_18eea0(long stage);

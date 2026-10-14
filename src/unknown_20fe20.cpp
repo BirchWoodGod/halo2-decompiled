@@ -2423,8 +2423,8 @@ long function_20e720(bool same_team, long ai_index, s_audio_priority_table *tabl
                 real x = position.x - *(real *)(candidate_actor + 0x238);
                 real y = position.y - *(real *)(candidate_actor + 0x23c);
                 real z = position.z - *(real *)(candidate_actor + 0x240);
-                real squared = z * z + x * x + y * y;
                 real score = distance * candidate_weight;
+                real squared = z * z + x * x + y * y;
                 if (squared < 0.0f)
                     squared = 0.0f;
                 else if (squared > 64.0f)
@@ -2712,7 +2712,7 @@ void function_20fec0(long arg_0, long arg_1)
     if (arg_1 != NONE)
     {
         byte *local_0 = *(byte **)(g_4e0300->data + (arg_0 & 0xffff) * 12 + 8);
-        long local_1 = (short)function_20f040(*(short *)(local_0 + 0x138));
+        short local_1 = (short)function_20f040(*(short *)(local_0 + 0x138));
         s_node_owner *local_2 = (s_node_owner *)((byte *)g_4f939c + local_1 * 0x7dc);
         byte *local_3 = g_4f9398->data + (arg_1 & 0xffff) * 0x54;
         if (!local_3[0x41])
