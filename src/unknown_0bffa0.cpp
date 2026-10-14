@@ -629,6 +629,20 @@ void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_li
     shape->ready = true;
 }
 
+/* in unknown_241620.cpp, so that only link-time code generation inlines it */
+bool lights_engine_enabled(bool respect_engine);
+
+/* whether a light's shape covers anything */
+static __forceinline bool light_shape_visible_c17f0(s_light_shape_ab const *shape)
+{
+    if ((short)shape->kind == 0)
+        return shape->sphere_render.radius > 0.0001f;
+    if (shape->cone_render.far_distance > 0.0001f &&
+        shape->cone_render.far_width * shape->cone_render.far_width + shape->cone_render.far_height * shape->cone_render.far_height > 0.0001f * 0.0001f)
+        return true;
+    return false;
+}
+
 // @retail 0xc17f0
 bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engine)
 {
@@ -636,23 +650,13 @@ bool function_c17f0(long light_index, s_light_shape_ab *shape, bool respect_engi
     s_light_ab *light = &((s_light_ab *)g_4e030c->data)[light_index & 0xffff];
     s_light_definition_ab *definition = (s_light_definition_ab *)g_4e3b44[light->tag_index & 0xffff].bytes;
     bool enabled = true;
-    if (!(definition->flags & 0x100) && respect_engine)
-    {
-        s_mp_globals *globals = g_4e9ae8;
-        if (g_55e4d0[globals->engine_index])
-            enabled = !(bool)((*(dword *)globals >> 1) & 1);
-    }
+    if (!(definition->flags & 0x100))
+        enabled = lights_engine_enabled(respect_engine);
     if (g_5107e8->flag8 && enabled && (light->flags & 2))
     {
         function_c19f0(light_index, shape);
         function_c1a80((s_light_frame_ab *)((byte *)light + 0x84), shape, definition);
-        if ((short)shape->kind == 0)
-        {
-            if (shape->sphere_render.radius > 0.0001f) result = true;
-        }
-        else if (shape->cone_render.far_distance > 0.0001f &&
-            shape->cone_render.far_width * shape->cone_render.far_width + shape->cone_render.far_height * shape->cone_render.far_height > 0.0001f * 0.0001f)
-            result = true;
+        result = light_shape_visible_c17f0(shape);
     }
     return result;
 }

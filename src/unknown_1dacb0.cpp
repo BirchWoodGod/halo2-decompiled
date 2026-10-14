@@ -677,28 +677,19 @@ c_type_709360 function_1dd0b0(s_graph_tag *graph, long name)
 			}
 			if (animation_id.index == NONE)
 			{
-				s_graph_inheritance *inheritance;
-
 				graph_index++;
 				if (graph_index >= graph->inheritance_count)
 				{
 					break;
 				}
-				inheritance = &graph->inheritance[graph_index];
-				current = NULL;
-				if (inheritance->graph_tag_index != NONE)
-				{
-					current = graph_tag_get(inheritance->graph_tag_index);
-				}
+				current = graph_inherited_get(graph, graph_index);
 			}
 		}
 		while (current);
 		if (animation_id.index != NONE)
 		{
 			function_1dd9d0(graph, animation_id);
-			return animation_id;
 		}
-		return animation_id;
 	}
 	return animation_id;
 }
@@ -875,7 +866,6 @@ bool function_1dcf20(s_graph_tag *graph, s_graph_pair_iterator *iterator)
 // @retail 0x1dcfa0
 bool function_1dcfa0(s_graph_tag *graph, s_graph_pair_iterator *iterator)
 {
-	bool local_1 = false;
 	long index = iterator->index + 1;
 
 	for (;;)
@@ -884,21 +874,60 @@ bool function_1dcfa0(s_graph_tag *graph, s_graph_pair_iterator *iterator)
 
 		while (iterator->step < 4 && !entry)
 		{
-			short local_0 = *(volatile short const *)&iterator->step;
+			/* the weapon class lookup is written out in each case: retail rereads
+			   the weapon class after the first lookup */
+			short local_0 = iterator->step;
+			s_graph_mode_entry *mode_entry;
 			switch (local_0)
 			{
 			case 0:
-				entry = graph_weapon_class_get(graph, iterator->mode, iterator->weapon_class);
+			{
+				s_graph_mode_entry *result = NULL;
+
+				mode_entry = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&graph->mode_count, iterator->mode, 0x14);
+				if (mode_entry)
+				{
+					result = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&mode_entry->child_count, iterator->weapon_class, 0x14);
+				}
+				entry = result;
 				break;
+			}
 			case 1:
-				entry = graph_weapon_class_get(graph, iterator->mode, 0x30000d9);
+			{
+				s_graph_mode_entry *result = NULL;
+
+				mode_entry = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&graph->mode_count, iterator->mode, 0x14);
+				if (mode_entry)
+				{
+					result = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&mode_entry->child_count, 0x30000d9, 0x14);
+				}
+				entry = result;
 				break;
+			}
 			case 2:
-				entry = graph_weapon_class_get(graph, 0x30000d9, iterator->weapon_class);
+			{
+				s_graph_mode_entry *result = NULL;
+
+				mode_entry = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&graph->mode_count, 0x30000d9, 0x14);
+				if (mode_entry)
+				{
+					result = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&mode_entry->child_count, iterator->weapon_class, 0x14);
+				}
+				entry = result;
 				break;
+			}
 			case 3:
-				entry = graph_weapon_class_get(graph, 0x30000d9, 0x30000d9);
+			{
+				s_graph_mode_entry *result = NULL;
+
+				mode_entry = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&graph->mode_count, 0x30000d9, 0x14);
+				if (mode_entry)
+				{
+					result = (s_graph_mode_entry *)function_1dd560((s_sorted_array *)&mode_entry->child_count, 0x30000d9, 0x14);
+				}
+				entry = result;
 				break;
+			}
 			}
 			if (!entry)
 			{
@@ -906,23 +935,25 @@ bool function_1dcfa0(s_graph_tag *graph, s_graph_pair_iterator *iterator)
 				index = 0;
 			}
 		}
-		if (!entry)
+		if (entry)
 		{
-			break;
-		}
-		if (index < entry->pair_count)
-		{
-			s_graph_pair *pair = &entry->pairs[index];
+			if (index < entry->pair_count)
+			{
+				s_graph_pair *pair = &entry->pairs[index];
 
-			iterator->a = pair->a;
-			iterator->b = pair->b;
-			iterator->index = (short)index;
-			local_1 = true;
+				iterator->a = pair->a;
+				iterator->b = pair->b;
+				iterator->index = (short)index;
+				return true;
+			}
+			iterator->step++;
+		}
+		else
+		{
 			break;
 		}
-		iterator->step++;
 	}
-	return local_1;
+	return false;
 }
 
 static inline void cross_product3d_1dd290(vector3f const *a, vector3f const *b, vector3f *result)

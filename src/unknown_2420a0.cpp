@@ -2569,6 +2569,7 @@ void function_15e360(point3f const *point, long object_index);
 // @retail 0x242ba0
 void function_242ba0(long marker_index, long object_index, long player_index)
 {
+	long const *player_reference = &player_index;
 	long slot = slot_object_get(object_index)->slot;
 
 	if (slot != NONE)
@@ -2604,10 +2605,11 @@ void function_242ba0(long marker_index, long object_index, long player_index)
 			g->flags[slot] |= 2;
 			ctf_globals_changed(0x200);
 
-			game_engine_event_initialize(&event, 10, 13);
-			game_engine_event_set_cause_player(&event, player_index);
+			game_engine_event_initialize_inline(&event, 10, 13);
+			event.cause_player_index = *player_reference;
+			event.cause_team = event_player_get(*player_reference)->team;
 			event.effect_team = marker_team;
-			function_19eb90(&event);
+			game_engine_event_send_inline(&event);
 
 			object = slot_object_get(object_index);
 			object->lc8 = NONE;
