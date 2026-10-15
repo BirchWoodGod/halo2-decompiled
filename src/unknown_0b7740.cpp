@@ -38,6 +38,8 @@ __declspec(noinline) void function_1420f0(transform4x3f *out, point3f const *pos
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b,
 	transform4x3f *result);
 
+inline transform4x3f *function_ba160(long object_index, transform4x3f *matrix);
+
 // @retail 0xba160
 transform4x3f *function_ba160(long object_index, transform4x3f *matrix)
 {

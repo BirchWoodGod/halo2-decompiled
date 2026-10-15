@@ -10,7 +10,7 @@
 #include <string.h>
 
 /* src/unknown_11eed0.cpp */
-void function_11f4f0(long bits, real const *in, real_bounds const *ranges, long *out);
+void function_11f4f0(real const *in, real_bounds const *ranges, long bits, long *out);
 void function_11f580(real const *ranges, long bits, real *out, long const *in);
 
 /* src/unknown_195720.cpp */
@@ -82,7 +82,7 @@ void simulation_write_position(long bits, s_bitstream *stream, real const *posit
 {
 	real_bounds const *ranges = world_bounds();
 	long quantized[3];
-	function_11f4f0(bits, position, ranges, quantized);
+	function_11f4f0(position, ranges, bits, quantized);
 	if (keep_inside)
 	{
 		real dequantized[3];
@@ -128,8 +128,8 @@ byte simulation_positions_close(long bits, real const *a, real const *b)
 	s_world_bounds_view *local_0 = (s_world_bounds_view *)g_4e0348;
 	long quantized_a[3];
 	long quantized_b[3];
-	function_11f4f0(bits, a, local_0->bounds, quantized_a);
-	function_11f4f0(bits, b, local_0->bounds, quantized_b);
+	function_11f4f0(a, local_0->bounds, bits, quantized_a);
+	function_11f4f0(b, local_0->bounds, bits, quantized_b);
 	if (abs(quantized_a[0] - quantized_b[0]) > 1 || abs(quantized_a[1] - quantized_b[1]) > 1 || abs(quantized_a[2] - quantized_b[2]) > 1)
 		return false;
 	return true;
@@ -140,7 +140,7 @@ byte simulation_positions_close(long bits, real const *a, real const *b)
 void simulation_write_relative_position(s_bitstream *stream, long bits, real const *position)
 {
 	long quantized[3];
-	function_11f4f0(bits, position, g_440214, quantized);
+	function_11f4f0(position, g_440214, bits, quantized);
 	for (long i = 0; i < 3; i++)
 		function_195720(stream, quantized[i], bits);
 }
