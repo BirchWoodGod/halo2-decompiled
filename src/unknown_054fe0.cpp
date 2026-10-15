@@ -1692,7 +1692,7 @@ long function_66050(c_class_58d20 *session, long variant_index)
    result = 15;
    return result;
   }
- long type = variant->type;
+ const long &type = variant->type;
  if (type == 5 && !compatible)
  {
   long outcome = missing ? 8 : 9;

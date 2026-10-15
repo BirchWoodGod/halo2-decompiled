@@ -2170,7 +2170,7 @@ local_18:
 			long local_9 = NONE;
 			short local_10 = NONE;
 			long local_11 = 0;
-			long local_12 = 0;
+			short local_12 = 0;
 			real local_13 = 0.0f;
 			if (local_8 != NONE)
 			{
