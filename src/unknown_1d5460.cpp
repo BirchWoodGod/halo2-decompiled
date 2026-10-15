@@ -77,40 +77,31 @@ long havok_component_impact_find(s_havok_component *component, s_havok_impact_co
 // @retail 0x1d5500
 bool havok_component_impact_make_room(long rigid_body_index, s_havok_component *component, real strength)
 {
-	long weakest = NONE;
 	bool result = false;
 
 	if (rigid_body_index == NONE || (component->rigid_bodies.data[rigid_body_index].flags45 & 1))
 	{
-		long list_index = component->unknown20;
+		long weakest = NONE;
 
-		if (list_index != NONE)
+		if (havok_component_impact_count(component) == MAXIMUM_IMPACTS_PER_COMPONENT)
 		{
-			s_havok_impact_list *list = havok_impact_list_get(list_index);
+			long i;
 
-			if (list->count == MAXIMUM_IMPACTS_PER_COMPONENT)
+			for (i = 0; i < havok_component_impact_count(component); i++)
 			{
-				long i;
-
-				i = 0;
-				while (i < list->count)
+				if (havok_impact_get(havok_impact_list_get(component->unknown20)->impact_indices[i])->unknown04 > strength)
 				{
-					if (havok_impact_get(list->impact_indices[i])->unknown04 > strength)
-					{
-						weakest = i++;
-						continue;
-					}
-					++i;
+					weakest = i;
 				}
 			}
 		}
-		if (list_index != NONE && havok_impact_list_get(list_index)->count >= MAXIMUM_IMPACTS_PER_COMPONENT && weakest == NONE)
+		if (havok_component_impact_count(component) >= MAXIMUM_IMPACTS_PER_COMPONENT && weakest == NONE)
 		{
 			return false;
 		}
 		if (weakest != NONE)
 		{
-			function_2266a0(havok_impact_list_get(list_index)->impact_indices[weakest]);
+			function_2266a0(havok_impact_list_get(component->unknown20)->impact_indices[weakest]);
 		}
 		else if (g_51ebfc->actual_count == MAXIMUM_IMPACTS)
 		{
@@ -133,11 +124,11 @@ bool havok_component_impact_make_room(long rigid_body_index, s_havok_component *
 		{
 			return false;
 		}
-		if (component->unknown20 != NONE && havok_impact_list_get(component->unknown20)->count >= MAXIMUM_IMPACTS_PER_COMPONENT)
+		if (havok_component_impact_count(component) >= MAXIMUM_IMPACTS_PER_COMPONENT)
 		{
 			return false;
 		}
-		return true;
+		result = true;
 	}
 	return result;
 }
