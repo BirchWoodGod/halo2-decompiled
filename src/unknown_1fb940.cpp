@@ -85,11 +85,9 @@ extern "C" void _ReadWriteBarrier(void);
 bool function_1fc160(long actor_index, long source_index, s_actor_event_request const *request)
 {
 	s_actor_view *actor = actor_get(actor_index);
-	short team = actor->unknown024;
-    _ReadWriteBarrier();
-    bool result = false;
+	bool result = false;
 
-	if (!function_1df560(team, team))
+	if (!function_1df560(actor_get(actor_index)->unknown024, actor->unknown024))
 	{
 		switch (request->type)
 		{
@@ -173,10 +171,10 @@ void function_1fbff0(long actor_index, long source_index, long object_index, lon
 	long const *prop_reference = &prop_index;
 	s_actor_view *actor = actor_get(actor_index);
 	s_prop_node_view *node = NULL;
-	bool blocked = false;
 
 	if (*prop_reference != NONE)
 		node = prop_node_get(*prop_reference);
+	bool blocked = false;
 	if (actor->unknown030 != NONE)
 	{
 		s_event_squad *squad = (s_event_squad *)(g_51e9d8->data +
@@ -275,12 +273,24 @@ void __stdcall function_1fbe00(long clump_index, long source_index, long object_
 	}
 	else
 	{
-		long actor_index = clump->first_actor_index;
-		while (actor_index != NONE)
+		struct actor_step
 		{
-			s_actor_view *actor = actor_get(actor_index);
-			long current_index = actor_index;
-			actor_index = actor->next_index;
+			static inline s_actor_view *next(long *next_index, long *current_index)
+			{
+				long index = *next_index;
+				if (index == NONE)
+					return NULL;
+				s_actor_view *actor = actor_get(index);
+				*current_index = index;
+				*next_index = actor->next_index;
+				return actor;
+			}
+		};
+		long next_index = clump->first_actor_index;
+		long current_index;
+		s_actor_view *actor;
+		while ((actor = actor_step::next(&next_index, &current_index)) != NULL)
+		{
 			if (actor->unknown009 &&
 				(!filter || function_1fba10(current_index, source_index, location, event, clusters, &position)))
 				function_1fbff0(current_index, source_index, object_index, NONE, event);

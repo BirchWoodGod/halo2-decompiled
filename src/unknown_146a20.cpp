@@ -307,39 +307,41 @@ hkMemory *function_146e30(void)
 long function_146fd0(void)
 {
 	long physical_level = 0;
-	long scratch_level = 0;
 	long pool_level;
 
 	if (g_4798a0 && g_4798a0->m_count > 0)
 	{
 		physical_level = 3;
 	}
+	long scratch_level = 0;
 	if (g_47989c && g_47989c->m_count > 0)
 	{
 		scratch_level = 3;
 	}
 	if (g_479898)
 	{
+		long level;
 		hkPoolMemory *pool = (hkPoolMemory *)g_479898;
 
-		pool_level = 3;
+		level = 3;
 		if ((real)pool->page_count * (1.0f / 118.0f) < 0.8f)
 		{
 			real used = pool->get_used_fraction();
 
 			if (used < 0.85f)
 			{
-				pool_level = 2;
+				level = 2;
 				if (used < 0.75f)
 				{
-					pool_level = 1;
+					level = 1;
 					if (used < 0.65f)
 					{
-						pool_level = 0;
+						level = 0;
 					}
 				}
 			}
 		}
+		pool_level = level;
 	}
 	else
 	{

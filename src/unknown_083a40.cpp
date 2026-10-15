@@ -148,20 +148,22 @@ long function_83db0(s_simulation_world_owner *watcher)
 			{
 				switch (world->unknown18)
 				{
-				case 3: result = 4; goto done;
-				case 5: result = 5; goto done;
-				case 6: result = 6; goto done;
-				case 4: result = 3; goto done;
+				case 3: result = 4; break;
+				case 5: result = 5; break;
+				case 6: result = 6; break;
+				case 4: result = 3; break;
 				}
+				if (result) goto done;
 			}
 			else
 			{
 				switch (world->unknown18)
 				{
-				case 6: result = 13; goto done;
-				case 4: result = 3; goto done;
-				case 3: result = 10; goto done;
+				case 6: result = 13; break;
+				case 4: result = 3; break;
+				case 3: result = 10; break;
 				}
+				if (result) goto done;
 			}
 			if (watcher->session)
 			{
@@ -177,6 +179,7 @@ long function_83db0(s_simulation_world_owner *watcher)
 				case 8: result = 7; break;
 				case 9: result = 8; break;
 				}
+				if (result) goto done;
 			}
 		}
 	}
