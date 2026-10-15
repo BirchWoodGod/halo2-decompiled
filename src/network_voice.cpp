@@ -2049,8 +2049,10 @@ real function_57a80(long player, long other)
 		byte *datum = voice_get_world_player(player);
 		if (datum)
 		{
-			long unit = *(long *)(datum + 0x2c);
-			if (unit == NONE)
+			long unit = NONE;
+			if (*(long *)(datum + 0x2c) != NONE)
+				unit = *(long *)(datum + 0x2c);
+			else if (*(long *)(datum + 0x30) != NONE)
 				unit = *(long *)(datum + 0x30);
 			if (unit != NONE)
 			{
@@ -2064,7 +2066,10 @@ real function_57a80(long player, long other)
 						double x = (double)second.x - first.x;
 						double y = (double)second.y - first.y;
 						double z = (double)second.z - first.z;
-						result = (real)sqrt(z * z + x * x + y * y);
+						double sum = z * z + x * x;
+						sum += y * y;
+						double const &distance = sqrt(sum);
+						result = (real)distance;
 					}
 				}
 			}
