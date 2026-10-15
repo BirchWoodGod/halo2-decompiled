@@ -3404,7 +3404,11 @@ void __stdcall function_2a3520(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_11b520(arguments[0], arguments[1], arguments[2], *(bool *)&arguments[3], NONE, false);
+		long name = arguments[2];
+		long graph = arguments[1];
+		bool interpolate = *(bool *)&arguments[3];
+		long unit_index = arguments[0];
+		*(bool *)&result = function_11b520(unit_index, graph, name, interpolate, NONE, false);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -3420,7 +3424,11 @@ void __stdcall function_2a3590(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(bool *)&result = function_11b520(arguments[0], arguments[1], arguments[2], *(bool *)&arguments[3], NONE, true);
+		long name = arguments[2];
+		long graph = arguments[1];
+		bool interpolate = *(bool *)&arguments[3];
+		long unit_index = arguments[0];
+		*(bool *)&result = function_11b520(unit_index, graph, name, interpolate, NONE, true);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -6922,10 +6930,9 @@ void __stdcall function_2a7cf0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		long script_index = g_502410;
-		if (script_index != NONE && g_50240c != NONE)
+		if (g_502410 != NONE && g_50240c != NONE)
 		{
-			function_291ea0(arguments[0], g_50240c, script_index, NULL);
+			function_291ea0(arguments[0], g_50240c, g_502410, NULL);
 		}
 		function_209ae0(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
