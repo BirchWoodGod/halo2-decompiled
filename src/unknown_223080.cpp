@@ -119,7 +119,13 @@ struct s_223081
 };
 
 extern vector3f *g_4687bc;
-extern short_rect_pair g_485a8a;
+struct s_unknown_485a88
+{
+    byte flag;
+    short_rect_pair rects;
+};
+extern s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 extern long g_4e64a0;
 
 long function_14a250(void);

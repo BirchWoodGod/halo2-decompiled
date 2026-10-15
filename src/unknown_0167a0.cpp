@@ -236,7 +236,14 @@ struct short_rect_pair
 	short_rect a, b;
 };
 
-short_rect_pair g_485a8a;
+// One object: the display setup's done flag, then the two screen rectangles.
+struct s_unknown_485a88
+{
+	byte flag;
+	short_rect_pair rects;
+};
+s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 
 // @retail 0x17000
 void function_17000(byte *context, word const *range)
@@ -332,12 +339,12 @@ void function_016a30(real scale, short y, short x)
 {
 	g_485a8a.a.v1 = 0;
 	g_485a8a.a.v0 = 0;
-	g_485a8a.a.v2 = (short)(scale * g_45dd7c);
 	g_485a8a.a.v3 = (short)(scale * g_45dd80);
-	g_485a8a.b.v2 = g_485a8a.a.v2 - x;
+	g_485a8a.a.v2 = (short)(scale * g_45dd7c);
+	g_485a8a.b.v3 = g_485a8a.a.v3 - y;
 	g_485a8a.b.v1 = y;
 	g_485a8a.b.v0 = x;
-	g_485a8a.b.v3 = g_485a8a.a.v3 - y;
+	g_485a8a.b.v2 = g_485a8a.a.v2 - x;
 }
 
 byte g_485ac2;

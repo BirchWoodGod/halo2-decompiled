@@ -31,7 +31,13 @@ extern bool g_4ba019;
 extern long g_4ba038;
 extern dword g_4ba034, g_467014, g_467018;
 extern point3f *g_468718;
-extern short_rect_pair g_485a8a;
+struct s_unknown_485a88
+{
+    byte flag;
+    short_rect_pair rects;
+};
+extern s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 extern char const *g_4e9bb8;
 bool g_4ba010;
 long g_4ba030;

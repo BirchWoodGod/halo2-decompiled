@@ -36,7 +36,13 @@ struct s_223241
 };
 s_223241 g_4e9c8c[4];
 extern s_unknown_13bf00 *g_510c50;
-extern short_rect_pair g_485a8a;
+struct s_unknown_485a88
+{
+    byte flag;
+    short_rect_pair rects;
+};
+extern s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 extern long g_4e6470, g_4e64a0;
 extern byte g_485ac2;
 extern real g_5234dc;
