@@ -263,9 +263,13 @@ struct s_actor_variant_definition
 // @retail 0x1e06b0
 long function_1e06b0(long tag_index)
 {
+	long result = 0;
 	s_actor_variant_definition *definition = (s_actor_variant_definition *)g_4e3b44[tag_index & 0xffff].bytes;
-		if (definition->count == 1)
-		return definition->entries[0].value;
+	if (definition->count == 1)
+	{
+		result = definition->entries[0].value;
+		goto done;
+	}
 	if (definition->count > 1)
 	{
 		signed char counts[64];
@@ -306,10 +310,11 @@ long function_1e06b0(long tag_index)
 			dword seed = g_4e7408->unknown0 * 0x19660d + 0x3c6ef35f;
 			g_4e7408->unknown0 = seed;
 			short choice = (short)(((seed >> 16) * choice_count) >> 16);
-			return definition->entries[choices[choice]].value;
+			result = definition->entries[choices[choice]].value;
 		}
 	}
-	return 0;
+done:
+	return result;
 }
 
 void function_290bf0(long perception_index, short team);
