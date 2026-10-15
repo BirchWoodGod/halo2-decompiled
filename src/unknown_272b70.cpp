@@ -703,12 +703,12 @@ void function_273d30(long ai_index, long object_index)
 {
 	if (!(ai_index & 0xc0000000))
 	{
-		long squad_index = ai_index & 0xffff;
 		dword clump_bits[1];
 		s_squad_actor_iterator iterator;
 		s_actor_datum *actor;
 
 		clump_bits[0] = 0;
+		long squad_index = ai_index & 0xffff;
 		function_204d30(&iterator, squad_index);
 		while ((actor = squad_actor_iterator_next_inlined(&iterator)) != NULL)
 		{

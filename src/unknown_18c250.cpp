@@ -339,7 +339,7 @@ static __forceinline long float_to_int_nearest(real value)
 
 #pragma inline_depth(0)
 // @retail 0x18c720
-void function_18c720(long tag_index, long object_index, long set_index, long permutation_index, real scale)
+void function_18c720(real scale, long tag_index, long object_index, long set_index, long permutation_index)
 {
 	long const *local_3 = &permutation_index;
 	s_sound_promotion_tag *sound = (s_sound_promotion_tag *)g_4e3b44[tag_index & 0xffff].bytes;
@@ -379,7 +379,7 @@ void __stdcall function_18c6a0(long object_index, long unused, long tag_index, l
 		s_sound_globals_promotion_view *globals = (s_sound_globals_promotion_view *)g_51ebd4;
 		s_sound_permutation *first = &globals->permutations[globals->sets[sound->permutation_base + set_index].first_permutation];
 
-		function_18c720(tag_index, object_index, set_index, (s_sound_permutation *)permutation - first, *(real *)&scale);
+		function_18c720(*(real *)&scale, tag_index, object_index, set_index, (s_sound_permutation *)permutation - first);
 	}
 }
 #pragma optimize("", on)
@@ -403,7 +403,7 @@ void function_18bf90(void)
 				real elapsed = (real)(g_510c54->game_time - slot->end_time) * g_510c54->rate;
 				real duration = sound_permutation_reference_duration(slot->datum_index, &slot->permutation);
 
-				function_18c720(slot->datum_index, slot->source_index, slot->permutation.pitch_range_index, slot->permutation.permutation_index, elapsed);
+				function_18c720(elapsed, slot->datum_index, slot->source_index, slot->permutation.pitch_range_index, slot->permutation.permutation_index);
 				if (!(elapsed > g_510c54->rate * 10.0f + duration))
 				{
 					continue;

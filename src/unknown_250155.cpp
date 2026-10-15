@@ -2299,7 +2299,7 @@ void c_screen_24fd74::function_2508a8()
 		text->value6e = show;
 		if (show)
 		{
-			long value;
+			long value = 2;
 
 			switch (function_19a161())
 			{
@@ -2310,7 +2310,8 @@ void c_screen_24fd74::function_2508a8()
 				value = 1;
 				break;
 			default:
-				value = function_19989d() == 6 ? 3 : 2;
+				if (function_19989d() == 6)
+					value = 3;
 				break;
 			}
 			function_253c3a(1, value, text);

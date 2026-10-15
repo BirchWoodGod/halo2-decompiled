@@ -127,10 +127,13 @@ long __stdcall function_b8ca0(long object_index)
     long result_value = 0;
 	s_object_view *object = OBJECT_GET(object_index);
 
-	if (object->parent_index != NONE &&
-		TEST_FIELD_BIT(TAG_DATA(s_object_definition_view, object->definition_index)->flag4))
+	if (object->parent_index != NONE)
+	{
+		byte const &parent_flag = TAG_DATA(s_object_definition_view, object->definition_index)->flag4;
+		if (TEST_FIELD_BIT(parent_flag))
 	{
 		{ result_value = function_b8ca0(object->parent_index); goto return_exit; }
+	}
 	}
 	if (TEST_FIELD_BIT(object->flag0) && ((byte)(1u << object->type) & 0x1c) && function_10cf50(object_index))
 		{ result_value = object->unit_index; goto return_exit; }
