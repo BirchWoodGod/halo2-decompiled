@@ -192,9 +192,7 @@ real __stdcall function_265d30(long actor_index, long prop_index)
 			if (view) delta = *(vector3f *)((byte *)view + 0x2c);
 			else
 			{
-				delta.i = state->position.x - *(real *)((byte *)actor + 0x238);
-				delta.j = state->position.y - *(real *)((byte *)actor + 0x23c);
-				delta.k = state->position.z - *(real *)((byte *)actor + 0x240);
+				vector3d_from_points3d((point3f const *)((byte *)actor + 0x238), &state->position, &delta);
 			}
 			vector3f const volatile *velocity = (vector3f const volatile *)((byte *)rider + 0x150);
 			direction_bonus = 0.0f > (velocity->k * delta.k + velocity->j * delta.j + velocity->i * delta.i) * 6.0f ? 0.0f : (velocity->k * delta.k + velocity->j * delta.j + velocity->i * delta.i) * 6.0f;

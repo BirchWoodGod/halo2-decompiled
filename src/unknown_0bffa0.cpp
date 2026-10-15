@@ -1,4 +1,5 @@
 #include "unknown_11c920.h"
+#include "unknown_0259d0.h"
 #include "camera_storage.h"
 #include "globals.h"
 #include <string.h>
@@ -418,19 +419,23 @@ real function_30bf0(vector3f *vector);
 // @retail 0xc0840
 bool function_c0840(point3f const *start, point3f const *end, point3f *out, real *distance)
 {
-    vector3f direction;
-    direction.i = (real)((double)end->x - start->x);
-    direction.j = (real)((double)end->y - start->y);
-    direction.k = (real)((double)end->z - start->z);
     bool result = false;
+    real length;
+    real x, y, z;
     real travelled = 0.0f;
     real step = 0.001f;
-    real length = function_30bf0(&direction);
+    {
+        vector3f direction;
+        direction.i = (real)((double)end->x - start->x);
+        direction.j = (real)((double)end->y - start->y);
+        direction.k = (real)((double)end->z - start->z);
+        length = normalize_inline(&direction);
+        x = direction.i;
+        y = direction.j;
+        z = direction.k;
+    }
     if (length > 0.0f)
     {
-        real x = direction.i;
-        real y = direction.j;
-        real z = direction.k;
         s_bsp3d *bsp = g_4e033c;
         short bsp_index = g_4686c4;
         s_match_globals *structure = g_4e0348;
@@ -447,7 +452,8 @@ bool function_c0840(point3f const *start, point3f const *end, point3f *out, real
                 {
                     *distance = travelled;
                     *out = point;
-                    return true;
+                    result = true;
+                    goto done;
                 }
             }
             travelled += step;
@@ -455,6 +461,7 @@ bool function_c0840(point3f const *start, point3f const *end, point3f *out, real
             if (step > 0.1f) step = 0.1f;
         }
     }
+done:
     return result;
 }
 
