@@ -142,7 +142,9 @@ point3f *function_b9ef0(long object_index, point3f *result)
 	long root_index = root_object_index_b9ef0(object_index);
 	long attachment_index;
 
-	attachment_index = EYE_OBJECT(root_index)->attachment_index;
+	s_unit_eye_object *root_object = EYE_OBJECT(root_index);
+	s_unit_eye_object *const *root_reference = &root_object;
+	attachment_index = (*root_reference)->attachment_index;
 	if (attachment_index != NONE)
 	{
 		s_unit_eye_attachment *attachment = &((s_unit_eye_attachment *)g_51e9b8->data)[attachment_index & 0xffff];
