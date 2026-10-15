@@ -7540,7 +7540,7 @@ void function_2fd90(s_2f800_view const *view, box2f const *clip, byte *out);
 // @retail 0x13c20
 void function_13c20()
 {
-    if (g_4ba04c > 1) D3DDevice_Clear(0, 0, 0x80, 0, 1.0f, 0);
+    if (g_4ba04c > 1) IDirect3DDevice8_Clear(NULL, 0, 0, 0x80, 0, 1.0f, 0);
     --g_46701c;
     if (g_46701c >= 0)
     {
