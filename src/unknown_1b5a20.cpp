@@ -86,7 +86,7 @@ short __stdcall function_1b5aa0(long actor_index, s_slot *slot, bool active)
 			}
 			if (view->unknown69 && g_46eeb8[0x27]->unknown8 != g_46f348 &&
 				(g_46eeb8[0x27]->mask & g_4ee4ec) == g_4ee4ec &&
-				((g_557c40[0x27 >> 5] >> (0x27 & 31)) & 1))
+				(bool)((g_557c40[0x27 >> 5] >> (0x27 & 31)) & 1))
 				result = 0x27;
 		}
 	}
