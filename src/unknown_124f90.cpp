@@ -624,6 +624,13 @@ static __forceinline void *sound_static_allocate(long size)
 	return memory;
 }
 
+static __forceinline void sound_environment_reset_1253d0(s_sound_environment *environment, real angle)
+{
+	environment->index = NONE;
+	environment->unknown0c = 0.0f;
+	environment->unknown10 = angle;
+}
+
 // @retail 0x1253d0
 void function_1253d0(void)
 {
@@ -636,12 +643,8 @@ void function_1253d0(void)
 		system->hardware_available = true;
 		system->changing_pause = false;
 		sound_cache_initialize();
-		SOUND_SYSTEM->environments[0].index = NONE;
-		SOUND_SYSTEM->environments[0].unknown0c = 0.0f;
-		SOUND_SYSTEM->environments[0].unknown10 = 2.0f * k_pi;
-		SOUND_SYSTEM->environments[1].index = NONE;
-		SOUND_SYSTEM->environments[1].unknown0c = 0.0f;
-		SOUND_SYSTEM->environments[1].unknown10 = 0.0f;
+		sound_environment_reset_1253d0(&SOUND_SYSTEM->environments[0], 2.0f * k_pi);
+		sound_environment_reset_1253d0(&SOUND_SYSTEM->environments[1], 0.0f);
 		g_4e637c = function_11cc20(0x180, "sound sources", 0xbc);
 		g_4e6378 = (s_sound_voice *)sound_static_allocate(0x1200);
 		if (g_4e637c && g_4e6378)
@@ -1369,7 +1372,7 @@ real function_30bf0(vector3f *vector);
 real function_11cf50(vector3f const *a, vector3f const *b);
 
 // @retail 0x12ad30
-real function_12ad30(vector3f const *offset, s_sound const *sound, long definition_index, vector3f const *direction)
+real function_12ad30(s_sound const *sound, vector3f const *offset, long definition_index, vector3f const *direction)
 {
 	real distance_gain = sound_get_distance_gain(definition_index, sound, (real)sqrt(length_sq3f(offset)));
 	real cone_gain = 1.0f;
@@ -1385,7 +1388,8 @@ real function_12ad30(vector3f const *offset, s_sound const *sound, long definiti
 		if (function_30bf0(&reverse) > 0.0f)
 		{
 			long gain = sound_get_outer_cone_gain(sound, definition_index);
-			real angle = function_11cf50(&reverse, direction);
+			/* the angle between the two is symmetric; the direction goes first */
+			real angle = function_11cf50(direction, &reverse);
 			real outer = sound_get_outer_cone_angle(sound, definition_index);
 			real inner = sound_get_inner_cone_angle(sound, definition_index);
 			real fraction = function_12aff0(inner, outer, angle, true);
@@ -3043,12 +3047,12 @@ void function_129aa0(short arg_0, long *arg_1, s_looping_channel_spatialization 
 			}
 			if (local_1->priority & 2)
 			{
-				local_2->field_18 = function_12ad30((vector3f const *)&local_5, (s_sound const *)&local_1->location, local_1->definition_index, &local_4);
+				local_2->field_18 = function_12ad30((s_sound const *)&local_1->location, (vector3f const *)&local_5, local_1->definition_index, &local_4);
 				local_0->unknown0a |= 2;
 			}
 			else
 			{
-				local_2->field_18 = function_12ad30((vector3f const *)&local_5, (s_sound const *)&local_1->location, local_1->definition_index, &local_4);
+				local_2->field_18 = function_12ad30((s_sound const *)&local_1->location, (vector3f const *)&local_5, local_1->definition_index, &local_4);
 				*arg_1 = decibels_add(*arg_1, function_2197f0(local_2->field_18));
 				local_0->unknown0a |= 1;
 			}
