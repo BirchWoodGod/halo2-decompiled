@@ -321,8 +321,8 @@ PRIVATE __forceinline void polygon_difference_23a220(point2f const *a, point2f c
 // @retail 0x23a160
 bool function_23a160(point2f const *point, real radius, short volatile count, point2f const *points)
 {
-	bool result = true;
 	real radius_squared = radius * radius;
+	bool result = true;
 	for (short i = 0; i < count; i++)
 	{
 		vector2f offset;

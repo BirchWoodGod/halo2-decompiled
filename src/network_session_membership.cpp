@@ -720,7 +720,7 @@ void __stdcall function_60400(c_class_58d20 *session, const byte *current, const
  memset(update, 0, 0x489c);
  memcpy(update, &session->unknown1c, 8);
  *(long *)(update + 8) = *(const long *)current;
- *(long *)(update + 0xc) = previous ? *(const long *)previous : NONE;
+ *(long *)(update + 0xc) = !previous ? NONE : *(const long *)previous;
  long old_to_new[16];
  long new_to_old[16];
  memset(old_to_new, NONE, sizeof(old_to_new));
