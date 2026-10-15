@@ -1208,7 +1208,7 @@ void voice_channels_reset(s_voice_channels *channels)
 }
 
 // @retail 0x56160
-inline bool voice_channels_have_player(s_voice_channels *channels, long player)
+bool voice_channels_have_player(s_voice_channels *channels, long player)
 {
 	bool result = false;
 	if (channels->initialized)

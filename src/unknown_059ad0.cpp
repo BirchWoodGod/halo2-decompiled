@@ -3808,7 +3808,9 @@ void __stdcall function_61ac0(c_class_58d20 *session)
    long elapsed = network_session_time_now() - local_0;
    if (choice->acknowledged == (1u << session->member_count) - 1 || elapsed >= g_network_configuration.value1474)
    {
-    if (choice->acknowledged & (1 << choice->selected))
+    if (!(choice->acknowledged & (1 << choice->selected)))
+     network_session_clear_peer(session, choice->selected);
+    else
     {
      s_session_id id = *(s_session_id *)&session->unknown1c;
      s_network_session_member_state *member = &session->member_states[choice->selected];
@@ -3818,8 +3820,6 @@ void __stdcall function_61ac0(c_class_58d20 *session)
      choice->commit_time = network_session_time_now();
      session->value44 = choice->selected;
     }
-    else
-     network_session_clear_peer(session, choice->selected);
    }
   }
   long local_1 = choice->commit_time;
