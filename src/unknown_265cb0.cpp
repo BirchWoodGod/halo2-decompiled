@@ -99,8 +99,8 @@ real __stdcall function_265d30(long actor_index, long prop_index)
 {
 	long const *actor_reference = &actor_index;
 	long const *prop_reference = &prop_index;
-	s_prop_datum *node = prop_ref_get(prop_index);
 	s_actor_view *actor = actor_get(actor_index);
+	s_prop_datum *node = prop_ref_get(prop_index);
 	s_type_76cf92 *prop = prop_get(node->prop_index);
 	s_type_5cfb45 *state = function_25d690(node);
 	s_type_f95cd3 *view = NULL;
@@ -934,6 +934,9 @@ bool function_1e1e50(long actor_index, vector3f *direction);
 void function_26be00(long actor_index, s_iterator *iterator);
 real function_30bf0(vector3f *vector);
 
+struct s_node_view;
+s_node_view *function_26be30(s_iterator *iterator);
+
 // @retail 0x267840
 bool function_267840(long actor_index, long prop_index, vector3f *direction)
 {
@@ -954,31 +957,28 @@ bool function_267840(long actor_index, long prop_index, vector3f *direction)
 					result = true;
 				else
 				{
+					long now = g_510c54->game_time;
 					real ticks = (real)g_510c54->field_2_3 * 2.5f;
 					long rounded;
 					__asm { fld ticks }
 					__asm { fistp rounded }
-					long elapsed = g_510c54->game_time - player->unknown0c;
-     result = false;
-     if (elapsed < rounded) result = true;
+					long elapsed = now - player->unknown0c;
+					result = false;
+					if (elapsed < rounded) result = true;
 				}
 				function_cb7e0(node->object_index, direction);
 				if (!result && *(char *)((byte *)actor + 0x324) > 0)
 				{
 					s_iterator iterator;
 					function_26be00(actor_index, &iterator);
-					long index = iterator.next;
-					while (index != NONE)
+					s_prop_datum *other;
+					while ((other = (s_prop_datum *)function_26be30(&iterator)) != NULL)
 					{
-						s_prop_datum *other = prop_ref_get(index);
-						index = other->next_index;
 						if (other->state >= 1 && prop_get(other->prop_index)->unknown23)
 						{
 							s_type_5cfb45 *other_state = function_25d690(other);
 							vector3f delta;
-							delta.i = other_state->position.x - state->position.x;
-							delta.j = other_state->position.y - state->position.y;
-							delta.k = other_state->position.z - state->position.z;
+							vector3d_from_points3d(&state->position, &other_state->position, &delta);
 							if (function_30bf0(&delta) > 0.0f &&
 								direction->i * delta.i + direction->j * delta.j + direction->k * delta.k > 0.5f)
 							{
@@ -993,6 +993,8 @@ bool function_267840(long actor_index, long prop_index, vector3f *direction)
 		else if (prop->actor_index != NONE)
 			result = function_1e1e50(prop->actor_index, direction);
 	}
+	else
+		result = false;
 	return result;
 }
 
