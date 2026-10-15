@@ -45,8 +45,8 @@ void __stdcall function_265680(long volatile actor_index)
 	byte *object = (byte *)function_badc0(*(long *)(actor + 0x360), NONE);
 	if (!object) { *(short *)(actor + 0x358) = 0; return; }
 	point3f &position = *(point3f *)(actor + 0x370);
-	vector3f &velocity = *(vector3f *)(actor + 0x37c);
 	function_b9dd0(*(long *)(actor + 0x360), &position);
+	vector3f &velocity = *(vector3f *)(actor + 0x37c);
 	velocity = *(vector3f *)(object + 0x88);
 	s_2641c0 context;
 	if (function_2641c0(actor_index, &context, &position))

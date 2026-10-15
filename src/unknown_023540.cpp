@@ -1036,56 +1036,59 @@ void function_023ca0(
 	long block_size = layout->size * layout->size;
 	long group_size = block_size * 3;
 	long stride = (layout->columns + 1) * group_size;
-	real const *block0 = data;
-	real const *block1 = data + block_size;
-	real const *block2 = data + block_size * 2;
-	real const *first_cell0 = data + group_size;
-	real const *first_cell1 = data + group_size + block_size;
-	real const *first_cell2 = data + group_size + block_size * 2;
-	for (long i = 0; i < layout->groups; i++)
+	if (layout->groups > 0)
 	{
-		real const *cell0 = first_cell0;
-		real const *cell1 = first_cell1;
-		real const *cell2 = first_cell2;
-		real const *block;
-		real dot0;
-		real dot1;
-		real dot2;
-		block = block0;
-		DOT_PRODUCT9(dot0, block, vector0);
-		block = block1;
-		DOT_PRODUCT9(dot1, block, vector1);
-		block = block2;
-		DOT_PRODUCT9(dot2, block, vector2);
-		out[(layout->columns * 3 + 4) * i] = dot0;
-		out[(layout->columns * 3 + 4) * i + 1] = dot1;
-		out[(layout->columns * 3 + 4) * i + 2] = dot2;
-		real *row = out + (layout->columns * 3 + 4) * i + 4;
-		for (long j = 0; j < layout->columns; j++)
+		real const *block0 = data;
+		real const *first_cell0 = block0 + group_size;
+		real const *block1 = data + block_size;
+		real const *first_cell1 = block1 + group_size;
+		real const *block2 = data + block_size * 2;
+		real const *first_cell2 = block2 + group_size;
+		for (long i = 0; i < layout->groups; i++)
 		{
-			real const *cell_block;
-			real cell_dot0;
-			real cell_dot1;
-			real cell_dot2;
-			cell_block = cell0;
-			DOT_PRODUCT9(cell_dot0, cell_block, vector0);
-			cell_block = cell1;
-			DOT_PRODUCT9(cell_dot1, cell_block, vector1);
-			cell_block = cell2;
-			DOT_PRODUCT9(cell_dot2, cell_block, vector2);
-			row[j] = cell_dot0;
-			row[layout->columns + j] = cell_dot1;
-			row[layout->columns * 2 + j] = cell_dot2;
-			cell0 += group_size;
-			cell1 += group_size;
-			cell2 += group_size;
+			real const *cell0 = first_cell0;
+			real const *cell1 = first_cell1;
+			real const *cell2 = first_cell2;
+			real const *block;
+			real dot0;
+			real dot1;
+			real dot2;
+			block = block0;
+			DOT_PRODUCT9(dot0, block, vector0);
+			block = block1;
+			DOT_PRODUCT9(dot1, block, vector1);
+			block = block2;
+			DOT_PRODUCT9(dot2, block, vector2);
+			out[(layout->columns * 3 + 4) * i] = dot0;
+			out[(layout->columns * 3 + 4) * i + 1] = dot1;
+			out[(layout->columns * 3 + 4) * i + 2] = dot2;
+			real *row = out + (layout->columns * 3 + 4) * i + 4;
+			for (long j = 0; j < layout->columns; j++)
+			{
+				real const *cell_block;
+				real cell_dot0;
+				real cell_dot1;
+				real cell_dot2;
+				cell_block = cell0;
+				DOT_PRODUCT9(cell_dot0, cell_block, vector0);
+				cell_block = cell1;
+				DOT_PRODUCT9(cell_dot1, cell_block, vector1);
+				cell_block = cell2;
+				DOT_PRODUCT9(cell_dot2, cell_block, vector2);
+				row[j] = cell_dot0;
+				row[layout->columns + j] = cell_dot1;
+				row[layout->columns * 2 + j] = cell_dot2;
+				cell0 += group_size;
+				cell1 += group_size;
+				cell2 += group_size;
+			}
+			block0 += stride;
+			block1 += stride;
+			block2 += stride;
+			first_cell0 += stride;
+			first_cell1 += stride;
+			first_cell2 += stride;
 		}
-		block0 += stride;
-		block1 += stride;
-		block2 += stride;
-		first_cell0 += stride;
-		first_cell1 += stride;
-		first_cell2 += stride;
 	}
 }
 

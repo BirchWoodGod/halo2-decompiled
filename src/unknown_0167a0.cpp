@@ -1139,7 +1139,7 @@ void function_19ca0(byte *state, word const *range)
     {
         for (long i = 0; i < (*range >> 9); ++i, entry += 4)
         {
-            dword mask = g_467068[entry[2] & 7];
+            long component = entry[2] & 7;
             function_1b2c0(state, entry[3], entry[2] & 7, 0, (entry[2] >> 3) & 7, values);
             if (*(word const *)entry & 0x800)
                 for (long j = 0; j < 4; ++j) values[j] = (values[j] + 1.0f) * 0.5f;
@@ -1150,6 +1150,7 @@ void function_19ca0(byte *state, word const *range)
             color4f color;
             color.red = values[0]; color.green = values[1]; color.blue = values[2]; color.alpha = values[3];
             dword value = pack_color4f(&color);
+            dword mask = g_467068[component];
             word packed = *(word const *)entry;
             store_shader_mask(state, packed, (packed >> 6) & 15, mask, value);
         }
@@ -1163,7 +1164,7 @@ void function_19ca0(byte *state, word const *range)
             long slot = packed & 7;
             short source = *(short const *)(mapping + slot * 4);
             if (source != NONE && ((packed >> 3) & 7) != *(long *)(state + 0x300 + source * 4)) continue;
-            dword mask = g_467068[entry[2] & 7];
+            long component = entry[2] & 7;
             function_1b2c0(state, entry[3], entry[2] & 7, 0, (entry[2] >> 3) & 7, values);
             if (*(word const *)entry & 0x800)
                 for (long j = 0; j < 4; ++j) values[j] = (values[j] + 1.0f) * 0.5f;
@@ -1174,6 +1175,7 @@ void function_19ca0(byte *state, word const *range)
             color4f color;
             color.red = values[0]; color.green = values[1]; color.blue = values[2]; color.alpha = values[3];
             dword value = pack_color4f(&color);
+            dword mask = g_467068[component];
             packed = *(word const *)entry;
             long index = (packed >> 6) & 15;
             if ((packed & 0x3c0) != 0x200) index += *(signed char *)(state + 0x1520 + (packed & 7));
