@@ -812,10 +812,10 @@ bool function_23ea80(long tag, transform4x3f const *matrix, long variant, long s
 	constants[10] = matrix->up.k;
 	constants[11] = matrix->position.z;
 	D3DDevice_SetVertexShaderConstant(78, constants, 3);
-	function_1bbf0(tag, 0, pass, variant, 0, 10000.0f);
+	function_1bbf0(tag, 0, stage, pass, 0, 10000.0f);
 	function_1cf50();
+	long entry = variant + 7;
 	long binding_tag = *(long *)(shader + 0x100);
-	long entry = stage + 7;
 	if (binding_tag != NONE &&
 		(dword)entry < *(dword *)(g_4e3b44[binding_tag & 0xffff].bytes + 4) &&
 		(dword)(*(long *)(*(byte **)(g_4e3b44[binding_tag & 0xffff].bytes + 8) + entry * 0x1c + 0xc) >> 4) > 0)
