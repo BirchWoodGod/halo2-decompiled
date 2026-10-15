@@ -213,17 +213,18 @@ void function_24c93f(bool flag)
 	short ticks = g_5023f4->ticks_139c;
 	if (ticks > 0)
 	{
-		long delta;
-
 		if (flag)
 		{
-			delta = (word)(g_5023f4->time_1398 - g_510c54->game_time);
+			word delta = (word)g_5023f4->time_1398;
+			delta -= (word)g_510c54->game_time;
+			g_5023f4->ticks_139c = delta + ticks;
 		}
 		else
 		{
-			delta = (short)(g_510c54->game_time - g_5023f4->time_1398);
+			short delta = (short)g_510c54->game_time;
+			delta -= (short)g_5023f4->time_1398;
+			g_5023f4->ticks_139c = delta + ticks;
 		}
-		g_5023f4->ticks_139c = delta + ticks;
 	}
 }
 
@@ -482,10 +483,11 @@ bool __stdcall function_24cedf(real *vertices, long parameter)
 			real *vertex = vertices + i * 5;
 
 			real local_0 = *(real const volatile *)vertex - center_x;
-			real local_1 = *(real const volatile *)(vertex + 1) - center_y;
+			real local_1 = *(real const volatile *)(vertex + 1);
 			real local_2 = *(real const volatile *)vertex;
 			local_0 *= scale;
 			local_0 *= 0.5f;
+			local_1 -= center_y;
 			local_2 += local_0;
 			vertex[0] = local_2;
 			real local_3 = *(real const volatile *)(vertex + 1);
