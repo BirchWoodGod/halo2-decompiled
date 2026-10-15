@@ -72,7 +72,8 @@ void function_2483b0(s_particle_emitter_datum *emitter)
 
 PRIVATE __forceinline void function_2483f1(s_particle_emitter_datum *arg_0, long *arg_1, long *arg_2, s_record_pool *arg_3, long arg_4)
 {
-	long local_0 = (arg_4 << 16) | (arg_0 - (s_particle_emitter_datum *)arg_3->data);
+	long const &ordinal = (arg_0 - (s_particle_emitter_datum *)arg_3->data);
+	long local_0 = (arg_4 << 16) | ordinal;
 	arg_0->next_index = NONE;
 	if (*arg_1 == NONE)
 		*arg_1 = local_0;
@@ -83,7 +84,8 @@ PRIVATE __forceinline void function_2483f1(s_particle_emitter_datum *arg_0, long
 
 PRIVATE __forceinline void function_248d91(s_particle_location_datum *arg_0, long *arg_1, long *arg_2, s_record_pool *arg_3, long arg_4)
 {
-	long local_0 = (arg_4 << 16) | (arg_0 - (s_particle_location_datum *)arg_3->data);
+	long const &ordinal = (arg_0 - (s_particle_location_datum *)arg_3->data);
+	long local_0 = (arg_4 << 16) | ordinal;
 	arg_0->next_index = NONE;
 	if (*arg_1 == NONE)
 		*arg_1 = local_0;
