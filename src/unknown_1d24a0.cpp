@@ -18,8 +18,8 @@ quaternionf *function_141f60(matrix3x3 const *arg_0, quaternionf *arg_1);
 matrix3x3 *function_142eb0(matrix3x3 const *right, matrix3x3 const *left, matrix3x3 *out);
 void function_11d790(quaternionf const *arg_0, vector3f *arg_1, real *arg_2);
 void havok_component_rigid_body_matrix_get(long arg_0, s_havok_component *arg_1, transform4x3f *arg_2);
-void havok_component_rigid_body_angular_velocity_get(long arg_0, s_havok_component *arg_1, vector3f *arg_2);
-void havok_component_rigid_body_linear_velocity_get(long arg_0, s_havok_component *arg_1, vector3f *arg_2);
+void havok_component_rigid_body_angular_velocity_get(s_havok_component *arg_1, long arg_0, vector3f *arg_2);
+void havok_component_rigid_body_linear_velocity_get(s_havok_component *arg_1, long arg_0, vector3f *arg_2);
 real havok_component_rigid_body_mass_get(long arg_0, s_havok_component *arg_1);
 void havok_component_rigid_body_linear_velocity_change(long arg_0, s_havok_component *arg_1, vector3f const *arg_2);
 void havok_component_rigid_body_angular_velocity_set(long arg_0, s_havok_component *arg_1, vector3f const *arg_2);
@@ -166,8 +166,8 @@ void __stdcall function_1d24a0(s_havok_component *arg_0, float arg_1)
    local_28.z = local_76->z;
    vector3f local_29;
    vector3f local_30;
-   havok_component_rigid_body_angular_velocity_get(local_15, local_14, &local_29);
-   havok_component_rigid_body_linear_velocity_get(local_15, local_14, &local_30);
+   havok_component_rigid_body_angular_velocity_get(local_14, local_15, &local_29);
+   havok_component_rigid_body_linear_velocity_get(local_14, local_15, &local_30);
    if (local_12->field_20 != 0.0f && local_12->field_24 != 0.0f)
    {
     vector3f local_75;

@@ -9,7 +9,7 @@ from capstone import CS_ARCH_X86, CS_MODE_32, Cs
 
 
 from inventory import COLUMNS, apply_owners, load_owners, check_retail, function_name, check_unique, fill_from_neighbours, is_eh_stub, library_hits, merge, owner, read_rows, write_rows
-from inventory import NOT_STARTS, OWNERS_JSON
+from inventory import KNOWN_STARTS, NOT_STARTS, OWNERS_JSON
 from xbe import FUNCTIONS_CSV
 
 
@@ -235,3 +235,12 @@ def test_bungie_code_ends_where_zlibs_compress2_begins():
 
 def test_no_inventory_row_starts_at_a_not_start():
     assert not NOT_STARTS & read_rows(FUNCTIONS_CSV).keys()
+
+
+def test_every_known_start_has_its_own_row():
+    rows = read_rows(FUNCTIONS_CSV)
+    starts = sorted(rows)
+    for va in KNOWN_STARTS:
+        assert va in rows
+        before = starts[starts.index(va) - 1]
+        assert before + int(rows[before]['size']) <= va
