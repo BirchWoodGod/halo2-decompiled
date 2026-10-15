@@ -64,6 +64,77 @@ PRIVATE __forceinline void function_254491(real arg_0, color3f const *arg_1)
 	D3DDevice_SetVertexData4f(5, local_2, local_1, local_0, 1.f);
 }
 
+#include "frame_storage.h"
+#include "reset_storage.h"
+extern byte g_4670bc;
+struct s_render_reset_state;
+void function_16b10(s_render_reset_state *state);
+void function_14ac0(void);
+void __stdcall function_15720(real x, real y);
+
+#include <stddef.h>
+typedef char assert_254200_offset[(offsetof(D3DPIXELSHADERDEF, PSAlphaInputs) == 0) ? 1 : -1];
+#define program_words_254200 (&g_484f68.PSAlphaInputs)
+
+__declspec(noinline) void function_254200(void);
+
+// @retail 0x254200
+void function_254200(void)
+{
+    s_bitmap_view *first = function_254202(*(long *)(function_254201() + 0x64));
+    s_bitmap_view *second = function_254202(*(long *)(function_254201() + 0x6c));
+    g_4670bc = true;
+    function_16b10((s_render_reset_state *)g_485b48);
+    g_51ec9a = false;
+    if (function_12360(first, 0.0f) && function_12360(second, 0.0f))
+    {
+        g_51ec9a = true;
+        function_14bc0(0x1d, 0, false);
+        if (g_485607 && !g_4858b8)
+            function_14ac0();
+        D3DDevice::Clear(0, 0, 0xf0, 0, 1.0f, 0);
+        function_15720(0.0f, 0.0f);
+        function_14390(0, (s_type_7ba8e9 *)first, 0.0f);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_ADDRESSU, 4);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_ADDRESSV, 4);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MAGFILTER, 2);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MINFILTER, 2);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MIPFILTER, 1);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MAXANISOTROPY, 0);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MIPMAPLODBIAS, 0);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MAXMIPLEVEL, 0);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_COLORSIGN, 0);
+        D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_ALPHAKILL, 0);
+        g_4b8448 = 0x901;
+        D3DDevice::SetRenderState(D3DRS_CULLMODE, 0x901);
+        g_4b8308 = 0x10101;
+        D3DDevice::SetRenderState(D3DRS_COLORWRITEENABLE, 0x10101);
+        g_4b82e8 = 1;
+        D3DDevice::SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
+        g_4b82f4 = 1;
+        D3DDevice::SetRenderState(D3DRS_SRCBLEND, 1);
+        g_4b82f8 = 1;
+        D3DDevice::SetRenderState(D3DRS_DESTBLEND, 1);
+        g_4b8324 = 0x8006;
+        D3DDevice::SetRenderState(D3DRS_BLENDOP, 0x8006);
+        g_4b82ec = 0;
+        D3DDevice::SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+        g_4b82e0 = 0x207;
+        D3DDevice::SetRenderState(D3DRS_ZFUNC, 0x207);
+        g_4b8450 = 0;
+        D3DDevice::SetRenderState(D3DRS_ZBIAS, 0);
+        function_1cc30(12);
+        function_1c710(g_51f0f0);
+        memset((D3DPIXELSHADERDEF *)program_words_254200, 0, sizeof(g_484f68));
+        g_484f68.PSTextureModes = 1;
+        g_484f68.PSCombinerCount = 1;
+        g_484f68.PSRGBInputs[0] = 0x8040000;
+        function_15180((D3DPIXELSHADERDEF *)program_words_254200);
+    }
+}
+
+#undef program_words_254200
+
 // @retail 0x254490
 void __stdcall function_254490(point2f const *arg_0, real arg_1, real arg_2, color3f const *arg_3, bool arg_4)
 {
