@@ -274,3 +274,16 @@ void function_22cb00(hkMemory *memory, s_physics_pool_statistics *statistics)
     statistics->metadata_size = 0;
     memset(statistics->entries, 0, sizeof(statistics->entries));
 }
+
+/* the fraction of the pool's blocks in use */
+// @retail 0x22cb90
+real hkPoolMemory::get_used_fraction(void)
+{
+    s_22cb00_memory *storage = (s_22cb00_memory *)this;
+    long used = 0;
+    for (long i = 15; i >= 0; --i)
+    {
+        used += (storage->field_f0348[i] - storage->field_f038c[i]) * storage->field_6c[i];
+    }
+    return (real)used * (1.0f / 966656.0f);
+}
