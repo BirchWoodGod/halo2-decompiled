@@ -257,13 +257,14 @@ long __stdcall function_1bd890(long actor_index, s_slot *slot)
 		if (result == NONE)
 		{
 			if (object_index == NONE)
-				return result;
-			result = function_26e940(actor_index);
-			if (result != NONE)
+				goto done;
+			long created = function_26e940(actor_index);
+			if (created != NONE)
 			{
 				state->active = true;
-				state->element_index = result;
+				state->element_index = created;
 			}
+			result = created;
 		}
 		if (result != NONE)
 		{
@@ -281,6 +282,7 @@ long __stdcall function_1bd890(long actor_index, s_slot *slot)
 			state->unknown24 = NONE;
 		}
 	}
+done:
 	return result;
 }
 // @retail 0x1bda60

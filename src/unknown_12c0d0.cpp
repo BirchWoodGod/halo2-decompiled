@@ -1062,6 +1062,8 @@ bool function_12d5a0(s_bitmap_data *arg_0, long arg_1, bool arg_2, bool arg_3, l
 bool function_120ce0(long arg_0, long arg_1);
 void function_125d60(void);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x12c990
 D3DTexture *function_12c990(s_bitmap_data *arg_0, long arg_1, bool arg_2, bool arg_3, bool arg_4, long arg_5, bool *arg_6, bool *arg_7)
 {
@@ -1078,6 +1080,7 @@ D3DTexture *function_12c990(s_bitmap_data *arg_0, long arg_1, bool arg_2, bool a
 			}
 			if (arg_0->block_indices[arg_1] != NONE)
 			{
+				_ReadWriteBarrier();
 				long local_2 = arg_0->block_indices[arg_1];
 				s_texture_cache_entry *local_3 = texture_cache_entry_get(local_2);
 				((s_physical_block *)g_4e6464->blocks->data)[local_2 & 0xffff].time = g_4e6464->time;
@@ -1110,6 +1113,7 @@ D3DTexture *function_12c990(s_bitmap_data *arg_0, long arg_1, bool arg_2, bool a
 	}
 	return local_0;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x12cb80
 bool function_12cb80(s_bitmap_data *arg_0)

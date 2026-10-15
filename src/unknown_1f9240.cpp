@@ -71,6 +71,10 @@ inline s_path_squad_definition *path_squad_definition_get(short index)
 	{
 		result = &((s_path_scenario_view *)g_4e0350)->squad_definitions[index];
 	}
+	else
+	{
+		result = NULL;
+	}
 	return result;
 }
 

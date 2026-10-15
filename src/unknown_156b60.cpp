@@ -54,7 +54,7 @@ void function_1c6b0(void *state);
 void __stdcall function_1c710(void *state);
 void function_23e460();
 void function_23ecd0();
-void function_23ed30(point3f *a, point3f *b, real c, real d, dword color, real e, real *f, real *g, real *h);
+void function_23ed30(point3f *a, point3f *b, real c, real d, dword color, real e, real *f, real *h, real *g);
 s_cache_record *function_1e2d0();
 matrix3x3 *function_142da0(real yaw, real pitch, real roll, matrix3x3 *out);
 vector3f *function_143070(matrix3x3 const *m, vector3f const *v, vector3f *out);
@@ -134,9 +134,8 @@ void __stdcall function_156e10(long const *entry)
 			render->value, 0, 15, i, *entry);
 }
 
-PRIVATE real render_curve_156b60(s_tag_data const *curve, real input)
+PRIVATE real render_range_156b60(s_tag_data const *curve, real value)
 {
-	real value = function_13b390(curve, input, 0.0f);
 	byte *data = curve->address;
 	if (!(data[1] & 0xf0))
 	{
@@ -149,11 +148,15 @@ PRIVATE real render_curve_156b60(s_tag_data const *curve, real input)
 	return value;
 }
 
-PRIVATE real render_clamp_156b60(real value)
+PRIVATE real render_curve_156b60(s_tag_data const *curve, real input)
 {
-	if (value < 0.0f) value = 0.0f;
-	else if (value > 1.0f) value = 1.0f;
-	return value;
+	return render_range_156b60(curve, function_13b390(curve, input, 0.0f));
+}
+
+PRIVATE void render_clamp_156b60(real *value)
+{
+	if (*value < 0.0f) *value = 0.0f;
+	else if (*value > 1.0f) *value = 1.0f;
 }
 
 // @retail 0x157020
@@ -161,19 +164,24 @@ void __stdcall function_157020(byte *definition, point3f const *position, vector
 	real value, long row, long column, long element, long entry)
 {
 	byte *const *definition_reference = &definition;
+	long const *row_reference = &row;
 	long model = *material_reference_156b60(*(long *)((*definition_reference) + 4));
 	byte *local_0f244f = *(byte **)((byte *)g_4e3b44 + (model & 0xffff) * 16 + 8);
 	byte *tables = *(byte **)(local_0f244f + 0x5c);
 	word *rows = *(word **)(tables + 4);
 	word *columns = *(word **)(tables + 0xc);
 	byte *elements = *(byte **)(tables + 0x14);
-	long column_index = (rows[row * 5] & 0x1ff) + column;
+	long column_index = (rows[*row_reference * 5] & 0x1ff) + column;
 	long element_index = (columns[column_index] & 0x1ff) + element;
 	long selected = *(long *)(elements + element_index * 10 + 4);
 	byte *selected_definition = *(byte **)((byte *)g_4e3b44 + (selected & 0xffff) * 16 + 8);
 	byte *material = *(byte **)(*(byte **)(selected_definition + 0x20) + 4);
-	real width = render_curve_156b60((s_tag_data *)((*definition_reference) + 0x1c), value);
-	real length = render_curve_156b60((s_tag_data *)((*definition_reference) + 0x24), value);
+	s_tag_data const *width_curve = (s_tag_data *)((*definition_reference) + 0x1c);
+	real width = function_13b390(width_curve, value, 0.0f);
+	s_tag_data const *length_curve = (s_tag_data *)((*definition_reference) + 0x24);
+	real length = function_13b390(length_curve, value, 0.0f);
+	width = render_range_156b60(width_curve, width);
+	length = render_range_156b60(length_curve, length);
 	s_tag_data *color_curve = (s_tag_data *)((*definition_reference) + 0xc);
 	real color_value = function_13b390(color_curve, value, 0.0f);
 	color4f color;
@@ -181,14 +189,15 @@ void __stdcall function_157020(byte *definition, point3f const *position, vector
 		unpack_color3f(function_13bc00(color_curve, color_value), (color3f *)&color.red);
 	else
 		*(color3f *)&color.red = *(color3f const *)&g_4686cc->red;
-	color.alpha = render_clamp_156b60(render_curve_156b60((s_tag_data *)((*definition_reference) + 0x14), value));
-	color.red = render_clamp_156b60(color.red);
-	color.green = render_clamp_156b60(color.green);
-	color.blue = render_clamp_156b60(color.blue);
+	color.alpha = render_curve_156b60((s_tag_data *)((*definition_reference) + 0x14), value);
+	render_clamp_156b60(&color.alpha);
+	render_clamp_156b60(&color.red);
+	render_clamp_156b60(&color.green);
+	render_clamp_156b60(&color.blue);
 	real attributes[8] = {0.0f, 0.0f, 1.0f, 1.0f, 0.0f, width * -0.5f, length, width};
-	real matrix[12] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f};
 	g_4b8348 = 0;
 	D3DDevice_SetRenderState(D3DRS_STIPPLEENABLE, 0);
+	real matrix[12] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f};
 	D3DDevice_SetVertexShaderConstant(0x4e, matrix, 3);
 	g_4e9268 = entry;
 	function_1bd50(&g_4e9268);
@@ -203,7 +212,7 @@ void __stdcall function_157020(byte *definition, point3f const *position, vector
 	function_23e460();
 	function_23ecd0();
 	function_23ed30((point3f *)position, (point3f *)forward, 1.0f, 0.0f, pack_color4f(&color), 0.0f,
-		attributes, attributes, matrix);
+		attributes, attributes, attributes + 4);
 }
 
 // @retail 0x156b60
