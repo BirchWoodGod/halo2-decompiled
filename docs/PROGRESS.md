@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8726 functions match
+
+```
+matched 8726 of 11318 game functions (1166209 of 2784283 bytes, 41.89%)
+```
+
+8 new matches, none lost:
+- Machine 3's batch 37 (#483): `0x59570` (machine 1's key lane body, in its own file), `0x1d3880`, `0x87e90`, `0x1f4280`, `0x295e60`, `0x1b5c00`, `0x235c4a` and `0x242ef0` match.
+
+## 2026-10-15: 8718 functions match
+
+```
+matched 8718 of 11318 game functions (1163488 of 2784283 bytes, 41.79%)
+```
+
+6 new matches, none lost:
+- Machine 1's key lane round 27: machine 3's `0xb9a90` (lent for the round) takes retail's `ebx` convention, and with it `0x13c5a0`, `0x2ac1a0`, `0x10cd50` and `0x2a1cc0` match; `0xb9a50` and `0xb83b0` match too.
+
 ## 2026-10-15: 8712 functions match
 
 ```

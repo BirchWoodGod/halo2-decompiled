@@ -27,7 +27,7 @@ bool __stdcall function_1bcee0(long actor_index, s_slot *slot);
 bool __stdcall function_1bcfd0(long actor_index, s_slot *slot);
 bool __stdcall function_1bd230(long actor_index, s_slot *slot);
 short __stdcall function_1bd350(long actor_index, short level, bool active);
-void __stdcall function_1f4280(long actor_index);
+bool __stdcall function_1f4280(long actor_index);
 
 extern "C" void _ReadWriteBarrier(void);
 #pragma intrinsic(_ReadWriteBarrier)

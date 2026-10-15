@@ -488,10 +488,10 @@ void __stdcall function_b9a50(long object_index)
     s_object_view *object = OBJECT_GET(object_index);
     if (object->parent_index != NONE)
     {
-        if (!((1 << object->type) & 3))
-            function_b9a90(object_index);
-        else
+        if ((1 << object->type) & 3)
             function_cc590(object_index);
+        else
+            function_b9a90(object_index);
     }
 }
 
@@ -517,10 +517,10 @@ void __stdcall function_b83b0(long object_index, bool unused)
             {
                 if (local_f86fb0->parent_index != NONE)
                 {
-                    if (!((1 << local_f86fb0->type) & 3))
-                        function_b9a90(child);
-                    else
+                    if ((1 << local_f86fb0->type) & 3)
                         function_cc590(child);
+                    else
+                        function_b9a90(child);
                 }
             }
         else
@@ -584,10 +584,10 @@ void function_b9a90(long object_index)
 {
     s_object_view *object = OBJECT_GET(object_index);
     s_object_view *parent = OBJECT_GET(object->parent_index);
-    long connected = function_b9d20(object->parent_index);
+    bool connected = function_b9d20(object->parent_index);
     s_object_view *node_parent = OBJECT_GET(*(long volatile *)&object->parent_index);
     long node_offset = *(char *)((byte *)object + 0x18) * sizeof(transform4x3f);
-    transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + node_offset + *(short const volatile *)&node_parent->node_matrices_offset);
+    transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + node_offset + node_parent->node_matrices_offset);
     if (connected)
         function_bef30(object_index, 1, 0, 0, false);
     function_b9890(object_index);
