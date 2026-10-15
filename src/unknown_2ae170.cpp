@@ -511,7 +511,17 @@ struct s_sound_i3dl2_parameters
 
 struct s_sound_send_parameters
 {
-	dword flags;
+	union
+	{
+		dword flags;
+		struct
+		{
+			dword flag0 : 1;
+			dword : 3;
+			dword flag4 : 1;
+			dword : 27;
+		};
+	};
 	real level;
 	real level_offset;
 	real gain0c;
@@ -690,9 +700,9 @@ void c_sound_effects::add_effect_sends_split(s_sound_send_parameters *parameters
 // @retail 0x2af7b0
 void c_sound_effects::add_effect_sends(s_sound_send_parameters *parameters, bool rear, long mode, s_mixbin_settings *mixbins)
 {
-	if (TEST_FLAG(parameters->flags, 0))
+	if (TEST_FIELD_BIT(parameters->flag0))
 	{
-		if (!TEST_FLAG(parameters->flags, 4))
+		if (!TEST_FIELD_BIT(parameters->flag4))
 			add_effect_sends_direct(parameters, rear, mode, mixbins);
 		else
 			add_effect_sends_split(parameters, rear, mode, mixbins);
