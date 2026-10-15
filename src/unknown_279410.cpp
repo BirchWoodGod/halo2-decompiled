@@ -1,7 +1,8 @@
 // @flags /O2 /Gr /arch:SSE
 // BLOCKED-BY 0x182b90: enabling this body loses matched 0x1cfd10 and 0x277ec0 in the full image: once this
 // self-aligning (16-byte frame) caller reaches 0x1cfd10, our 0x182b90 takes its fourth argument on the stack
-// instead of in ebx (build/codex-report.md, round 26).
+// instead of in ebx; any 16-aligned caller does it, and 0x182b90's own frame is not the cause (it is retail's
+// since round 27; build/codex-report.md, rounds 26 and 27).
 #if 0
 #include "unknown_1cec30.h"
 
