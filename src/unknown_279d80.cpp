@@ -457,9 +457,11 @@ void function_11dd80(real_quaternion_transform *out, real_quaternion_transform c
 bool __stdcall function_27a100(s_graph_tag *graph, s_animation *animation, s_graph_inheritance *inheritance,
 	long node_count, real_quaternion_transform *transforms)
 {
-	long i;
 	bool result = false;
+	long i;
 
+	if (animation->object_space_parent_node_count <= 0)
+		goto done;
 	for (i = 0; i < animation->object_space_parent_node_count; i++)
 	{
 		s_object_space_parent_node *entry = &animation->object_space_parent_nodes[i];
@@ -505,6 +507,7 @@ bool __stdcall function_27a100(s_graph_tag *graph, s_animation *animation, s_gra
 			}
 		}
 	}
+	done:
 	return result;
 }
 
