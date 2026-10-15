@@ -542,7 +542,8 @@ void function_a9a70(long index, s_z_copy_state *state)
 	if (sqrt(difference.i * difference.i + (difference.j * difference.j + difference.k * difference.k)) > 0.05000000074505806f)
 	{
 		saved->i = ((real volatile *)saved)[0] * 0.550000011920929f + ((real const volatile *)position)[0] * 0.44999998807907104f;
-		saved->j = state->position.j * 0.550000011920929f + position->j * 0.44999998807907104f;
+		real const *component = &saved->j;
+		saved->j = *component * 0.550000011920929f + position->j * 0.44999998807907104f;
 		saved->k = saved->k * 0.550000011920929f + position->k * 0.44999998807907104f;
 	}
 	else
