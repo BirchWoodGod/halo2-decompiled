@@ -70,9 +70,9 @@ long *__stdcall function_209d50(long thread_index, short parameter_count, short 
 {
 	s_hs_macro_frame **frame = &hs_macro_thread_get(thread_index)->frame;
 	unsigned short previous_size = (unsigned short)(*frame)->size;
+	(*frame)->size = (short)(previous_size + parameter_count * sizeof(long));
 	long *result = (long *)((*frame)->data + (short)previous_size);
 	long *volatile arguments = result;
-	(*frame)->size = (short)(previous_size + parameter_count * sizeof(long));
 	short &argument_index = *(short *)function_xc5914d(thread_index, sizeof(short));
 	long &expression_index = *(long *)function_xc5914d(thread_index, sizeof(long));
 

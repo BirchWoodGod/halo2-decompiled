@@ -334,10 +334,14 @@ void session_state_matchmaking_initialize(c_session_state_matchmaking *state_, s
 {
 	s_session_state_matchmaking_view *state = (s_session_state_matchmaking_view *)state_;
 	session_state_initialize((s_session_state_view *)state, (s_session_owner_view *)owner, 6, true, false);
-	state->unknown97c = false;
-	state->unknowna08 = 0;
-	state->unknowna0c = 0;
-	state->unknowna1c = 0;
+	bool &initial_flag = state->unknown97c;
+	initial_flag = false;
+	long &first_zero = state->unknowna08;
+	first_zero = 0;
+	long &second_zero = state->unknowna0c;
+	second_zero = 0;
+	long &third_zero = state->unknowna1c;
+	third_zero = 0;
 	state->unknown9ec = NONE;
 	state->unknown9f0 = NONE;
 	state->unknown9f4 = NONE;

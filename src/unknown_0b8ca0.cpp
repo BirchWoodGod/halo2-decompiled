@@ -1,4 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
+#include "unknown_0b68c0.h"
 #include "partition_colliding_storage.h"
 #include "partition_noncolliding_storage.h"
 /* object markers and object physics state (0xb8ca0-0xb9c60) */
@@ -823,12 +824,7 @@ void function_b73b0(long object_index)
 }
 
 
-struct s_cluster_partition
-{
-    long *cluster_first_data_references;
-    s_record_pool *data_references;
-    s_record_pool *cluster_references;
-};
+
 void function_1cae40(s_cluster_partition *partition, long data_index, long *first_cluster_reference);
 
 // @retail 0xb87b0
@@ -1305,47 +1301,6 @@ void function_b6bb0()
 bool __stdcall function_b7430(long object_index, point3f const *position, vector3f const *forward,
     vector3f const *up, s_location const *location, bool update, bool physics, bool force, bool keep_partition);
 
-// Disabled: this exact 360-byte draft still changes matched b75a0 and 14e970
-// when b8540 is stubbed, so retain the complete body with its original stub.
-#if 0
-// Retail 0xb7430
-bool __stdcall function_b7430(long object_index, point3f const *position, vector3f const *forward,
-    vector3f const *up, s_location const *location, bool update, bool physics, bool force, bool keep_partition)
-{
-    byte *object = (byte *)OBJECT_GET(object_index);
-    bool placed = (*(dword *)(object + 4) & 0x100) != 0;
-    bool result = true;
-    if (placed && !keep_partition) function_b87b0(object_index);
-    if (position)
-    {
-        if (*(long *)(object + 0x14) == NONE &&
-            !(position->x >= -32768.0f && 32768.0f >= position->x && position->y >= -32768.0f &&
-                32768.0f >= position->y && position->z >= -32768.0f && 32768.0f >= position->z)) result = false;
-        else
-        {
-            *(point3f *)(object + 0x64) = *position;
-            long component = *(long *)((byte *)OBJECT_GET(object_index) + 0xd4);
-            if (component != NONE) function_b58c0(component, 2);
-        }
-    }
-    if (forward)
-    {
-        *(vector3f *)(object + 0x70) = *forward;
-        *(vector3f *)(object + 0x7c) = *up;
-        object = (byte *)OBJECT_GET(object_index);
-        if (*(long *)(object + 0xd4) != NONE)
-            function_b58c0(*(long *)(object + 0xd4), 4);
-    }
-    if (physics)
-    {
-        bool no_position = position == 0;
-        function_1c4a80(object_index, no_position, force);
-    }
-    if (update) function_bd020(object_index);
-    if (placed && !keep_partition) function_b8600(object_index, (long)location);
-    return result;
-}
-#endif
 
 
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
@@ -1399,188 +1354,6 @@ void function_109390(long index);
 long function_b8820();
 bool havok_object_type_can_have_component(long tag);
 
-// Disabled: activation changes matched b8890, 1c3770 and 1c39c0 through the protected 1d1540 register convention.
-#if 0
-// @retail 0xb7b40 disabled
-long __stdcall function_b7b40(void *creation)
-{
-    byte *placement = (byte *)creation;
-    long result = NONE;
-    bool failed = false;
-    if (!(placement[0x18] & 0x10))
-    {
-        if (*(long *)placement == NONE) return result;
-        function_108a40((long *)placement);
-    }
-    long tag = *(long *)placement;
-    if (tag == NONE) return result;
-    byte *definition = g_4e3b44[tag & 0xffff].bytes;
-    short type = *(short *)definition;
-    byte *local_33f9fd = (byte *)g_468630[type];
-    byte *model = 0;
-    long model_tag = *(long *)(definition + 0x38);
-    if (model_tag != NONE) model = g_4e3b44[model_tag & 0xffff].bytes;
-    if ((1 << type) & 0x1883) function_146bf0();
-    result = function_bc280(*(word *)(local_33f9fd + 8));
-    if (result == NONE) return result;
-    s_object_header_view *header = OBJECT_HEADER_GET(result);
-    byte *object = (byte *)header->object;
-    header->flags |= 8;
-    header->type = (byte)type;
-    *(long *)object = tag;
-    if (placement[0xb] == 0xff)
-    {
-        *(long *)((byte *)g_4de2f4 + 0x18) += 1;
-        object[0xaa] = (byte)type;
-        object[0xab] = 2;
-        *(short *)(object + 0xa8) = NONE;
-        *(long *)(object + 0xa4) = *(long *)((byte *)g_4de2f4 + 0x18);
-        *(short *)(object + 0x1a) = NONE;
-        object[0xae] = (byte)g_4686c4;
-    }
-    else
-    {
-        *(long *)(object + 0xa4) = *(long *)(placement + 4);
-        *(long *)(object + 0xa8) = *(long *)(placement + 8);
-        *(short *)(object + 0x1a) = *(short *)(placement + 0x10);
-        object[0xae] = placement[8];
-    }
-    *(point3f *)(object + 0x64) = *(point3f *)(placement + 0x1c);
-    *(vector3f *)(object + 0x70) = *(vector3f *)(placement + 0x28);
-    *(vector3f *)(object + 0x7c) = *(vector3f *)(placement + 0x34);
-    *(vector3f *)(object + 0x88) = *(vector3f *)(placement + 0x40);
-    *(vector3f *)(object + 0x94) = *(vector3f *)(placement + 0x4c);
-    *(real *)(object + 0xa0) = *(real *)(placement + 0x58);
-    if (placement[0x18] & 1) *(dword *)(object + 4) |= 0x400;
-    else *(dword *)(object + 4) &= ~0x400;
-    if (model && *(long *)(model + 0xc) != NONE) *(dword *)(object + 4) |= 0x200;
-    else *(dword *)(object + 4) &= ~0x200;
-    long render_model, arg_0e6cbc_2;
-    if (function_bf9a0(result, &render_model, &arg_0e6cbc_2)) *(dword *)(object + 4) |= 0x80000000;
-    else *(dword *)(object + 4) &= 0x7fffffff;
-    header->unknown04 = NONE;
-    *(long *)(object + 0x28) = NONE;
-    *(short *)(object + 0x2c) = NONE;
-    *(short *)(object + 0x2e) = g_4686c4;
-    *(long *)(object + 0x60) = NONE;
-    object[0xb0] = placement[0x14];
-    *(long *)(object + 0x14) = *(long *)(object + 0xc) = *(long *)(object + 0x10) = NONE;
-    *(short *)(object + 0xac) = NONE;
-    object[0xaf] = object[0x108] = object[0x109] = 0xff;
-    if (definition[2] & 1) *(dword *)(object + 4) |= 0x10000;
-    if (*(dword *)(object + 4) & 1)
-    {
-        *(dword *)(object + 4) &= ~1;
-        if (function_b9d20(result)) function_bef30(result, 0, 1, 0, false);
-        function_b8b70(result);
-    }
-    *(short *)(object + 0xc2) = *(short *)(placement + 0x70);
-    *(long *)(object + 0xc4) = *(long *)(placement + 0x68);
-    *(long *)(object + 0xc8) = *(long *)(placement + 0x6c);
-    object[0xb1] = 0xff;
-    *(long *)(object + 0xcc) = NONE;
-    *(short *)(object + 0xd0) = NONE;
-    *(word *)(object + 0xc0) = 0;
-    if (placement[0x18] & 8) object[0xc1] |= 1;
-    else object[0xc1] &= ~1;
-    *(long *)(object + 0xb4) = *(long *)(object + 0xd4) = NONE;
-    object[0xd8] = 0;
-    *(short *)(object + 0xe0) = *(short *)(placement + 0xb0);
-    *(short *)(object + 0xe2) = *(short *)(placement + 0xb2);
-    object[0xb3] = !((1 << header->type) & 0x80) && g_510c54->game_time >= 6 ? 6 : 0;
-    long node_count = 1, region_count = 1, collision_count = 0;
-    bool animated = false, orientations = false;
-    if (model)
-    {
-        if (*(long *)(model + 0x78) >= 1) node_count = *(long *)(model + 0x78);
-        if (*(long *)(model + 0x70) >= 1) region_count = *(long *)(model + 0x70);
-        if (*(long *)(model + 0x60) > 0) collision_count = *(long *)(*(byte **)(model + 0x64) + 0xbc);
-        if (*(long *)(model + 0x14) != NONE)
-        {
-            s_animation_state temporary;
-            if (temporary.initialize(*(long *)(model + 0x14), model_tag, true))
-            {
-                animated = true;
-                orientations = !((1 << type) & 0x7e0);
-                if (((1 << type) & 0x380) && (definition[0xbc] & 4)) orientations = true;
-            }
-            temporary.channels_clear_partial();
-        }
-    }
-    bool allocated = function_bc380(result, 0x11c, (word)(*(word *)(definition + 0x94) * 8), 0) &&
-        function_bc380(result, 0x120, collision_count * 8, 0) &&
-        function_bc380(result, 0x124, (word)(*(word *)(definition + 0xac) * 0x18), 0) &&
-        function_bc380(result, 0x114, node_count * 0x34, 0) &&
-        function_bc380(result, 0x118, region_count * 10, 0) &&
-        function_bc380(result, 0x110, orientations ? node_count * 0x20 : 0, 4) &&
-        function_bc380(result, 0x10c, orientations ? node_count * 0x20 : 0, 4) &&
-        function_bc380(result, 0x128, animated ? 0x90 : 0, 0) &&
-        havok_object_type_can_have_component(tag);
-    if (!allocated) failed = true;
-    object = (byte *)OBJECT_GET(result);
-    if (!allocated) goto fail_allocation;
-    if (animated)
-    {
-        s_animation_state *state = (s_animation_state *)(object + *(short *)(object + 0x12a));
-        state->reset();
-        if (state->initialize(*(long *)(model + 0x14), model_tag, true)) *(dword *)(object + 4) |= 0x800;
-        else *(dword *)(object + 4) &= ~0x800;
-    }
-    else object[0xb3] = 0;
-    if (*(long *)(definition + 0x94) > 0)
-        memset(object + *(short *)(object + 0x11e), 0xff, (*(short *)(object + 0x11c) >> 3) << 3);
-    if (!function_108a90(result, (long)placement, (long)&failed))
-    {
-        function_108bf0(result);
-        goto fail_allocation;
-    }
-    object = (byte *)OBJECT_GET(result);
-    {
-        bool hidden = (*(dword *)(object + 4) & 0x20000) != 0;
-        if (placement[0x18] & 6) *(dword *)(object + 4) &= ~0x20000;
-        function_ba540(result, *(string_handle *)(placement + 0xc));
-        function_ba590(result, *(dword *)(placement + 0xac));
-        function_be240(result, *(dword *)(placement + 0x74), (color3f const *)(placement + 0x78));
-        byte *properties = (byte *)function_d5b60(result);
-        object = (byte *)OBJECT_GET(result);
-        real first = properties ? *(real *)(properties + 0x28) : 0.0f;
-        real second = properties ? *(real *)(properties + 0x8c) : 0.0f;
-        *(real *)(object + 0xe4) = first;
-        *(real *)(object + 0xe8) = second;
-        *(real *)(object + 0xec) = first > 0.0f ? 1.0f : 0.0f;
-        *(real *)(object + 0xf0) = second > 0.0f ? 1.0f : 0.0f;
-        function_be8e0(result);
-        *(long *)(object + 0x24) = *(long *)(placement + 0xa8);
-        if (*(short *)((byte *)OBJECT_GET(result) + 0x12a) != NONE) function_ba3d0(result);
-        function_bd020(result);
-        if (g_4de2f4 && *(byte *)g_4de2f4)
-        {
-            if (!placement[0xb8]) placement[0xb8] = function_bf510(result, (s_location *)(placement + 0xbc));
-            function_b8600(result, placement[0xb8] ? (long)(placement + 0xbc) : 0);
-        }
-        function_be1d0(result);
-        function_b7360(result);
-        if (placement[0x18] & 0x20) object[0xc0] |= 2;
-        else object[0xc0] &= ~2;
-        function_b8890(result);
-        function_be690(result);
-        function_108b80(result);
-        long effect = *(long *)(definition + 0x50);
-        if (effect != NONE) function_176780(result, (s_effect_owner const *)(placement + 0x68), 0.0f, effect, 0.0f, 0, 0);
-        function_2e1e0(result);
-        if (hidden) *(dword *)(object + 4) |= 0x20000;
-        else *(dword *)(object + 4) &= ~0x20000;
-        function_109390(result);
-        if ((*(dword *)(object + 4) & 0x20000) && !(header->flags & 1) && function_b8820() &&
-            !(placement[0x18] & 2) && (!(placement[0x18] & 4) || *(short *)(object + 0x2c) != NONE))
-            function_b8540(result);
-    }
-    return result;
-fail_allocation:
-    function_bc300(result);
-    return NONE;
-}
-#endif
 
 
 struct s_entity_info
