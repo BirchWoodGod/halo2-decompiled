@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr /arch:SSE
 /* UNKNOWN_059AD0.CPP: the network session (lane D). Its members and their
    channels, the leave and disband paths, the session parameters and the
@@ -59,7 +60,7 @@ struct s_xnet_registry_entry
 	XNKEY key;
 };
 
-extern s_xnet_registry_entry g_4cf7d4[8];
+
 
 bool transport_security_create_key(long local, long index, bool online);
 bool transport_security_register_key(long index, long local, bool host, const XNKID *kid, const XNKEY *key);
@@ -1617,7 +1618,7 @@ bool network_session_stop_countdown(c_class_58d20 *session)
 }
 
 // @retail 0x5bf10
-bool network_session_start_countdown(c_class_58d20 *session, long countdown, bool start, long mode, const long *time)
+bool network_session_start_countdown(c_class_58d20 *session, bool start, long countdown, long mode, const long *time)
 {
 	bool result = false;
 
@@ -3267,8 +3268,8 @@ void __stdcall function_061570(c_class_58d20 *session, bool flag)
 		network_session_enter_state_5(session);
 }
 
-extern bool g_4cf792;
-extern XNADDR g_4cf793;
+
+
 bool function_07a9b0(void);
 void function_07ad80(long count, byte *buffer);
 void network_session_enter_state_5(c_class_58d20 *session);

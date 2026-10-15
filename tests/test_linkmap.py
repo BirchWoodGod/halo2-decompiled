@@ -60,6 +60,14 @@ def test_plain_name():
     assert plain_name('_RtlSizeHeap@12') == 'RtlSizeHeap'
 
 
+def test_plain_name_of_a_this_adjustor_thunk_is_its_members_with_the_offset():
+    # VC7.1 gives the thunk its member's name with the access code W (public), O or G and the offset
+    assert plain_name('??_Ec_object@@W7AEPAXI@Z') == "c_object::`deleting destructor'`adjustor{0x8}'"
+    assert plain_name('?f@c_1c3410@@WM@AEPAV1@K@Z') == "c_1c3410::f`adjustor{0xc}'"
+    assert plain_name('?f@c@@GBA@AEXXZ') == "c::f`adjustor{0x10}'"
+    assert plain_name('?f@c@@UAEXXZ') == 'c::f'
+
+
 def test_plain_name_of_a_vcall_thunk_is_its_vtable_offset():
     # VC7.1 names the thunk by the offset alone: a digit d is d + 1, else hex digits A-P ended by '@'
     assert plain_name('??_9@$BFM@AE') == "`vcall'{0x5c}"

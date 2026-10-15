@@ -119,8 +119,7 @@ bool function_2f970(s_2f970_view const *view, real *out)
 }
 
 // @retail 0x2f800
-void function_2f800(s_2f800_source const *source, s_2f800_size const *first,
-	s_2f800_size const *second, s_2f800_view *view)
+void function_2f800(s_2f800_view *view, s_2f800_source const *source, s_2f800_size const *first, s_2f800_size const *second)
 {
 	(void)&second;
 	if (source)
@@ -544,7 +543,7 @@ void function_3f660(transform4x3f const *matrix)
     function_1726d0((s_view_setup *)setup, &matrix->position,
         &matrix->forward, &matrix->up);
     s_2f970_view view;
-    function_2f800((s_2f800_source const *)setup, NULL, NULL, (s_2f800_view *)&view);
+    function_2f800((s_2f800_view *)&view, (s_2f800_source const *)setup, NULL, NULL);
     view.top = view.left = 0;
     view.bottom = 480;
     view.right = 640;

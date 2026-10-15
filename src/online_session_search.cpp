@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /arch:SSE /Gr
 /* ONLINE_SESSION_SEARCH.CPP: the Xbox Live matchmaking session searches: the
    online tasks that create, find and delete match sessions, the results of a
@@ -132,8 +133,8 @@ long g_4ce384;
 double g_4ce388;
 long g_4ce390;
 
-extern bool g_4cf792;
-extern XNADDR g_4cf793;
+
+
 bool function_07a9b0(void);
 
 #define SEARCH_LONG(object, offset) (*(long *)((byte *)(object) + (offset)))
