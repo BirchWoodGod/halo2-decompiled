@@ -763,12 +763,13 @@ extern short const g_4456d4[6] = { -1, 3, 2, 4, 0x380, 0x40 };
 void __stdcall function_208f10(short function_index, long thread_index, bool initialize)
 {
 	s_hs_thread *thread = hs_thread_get(thread_index);
-	s_hs_frame *frame = thread->frame;
+	s_hs_frame **frame_field = &thread->frame;
+	s_hs_frame *frame = *frame_field;
 	long *value = (long *)((byte *)frame + offsetof(s_hs_frame, unknown0e) + frame->size);
 	frame->size += sizeof(long);
 	if (initialize)
 	{
-		s_hs_expression *expression = hs_expression_get(thread->frame->expression_index);
+		s_hs_expression *expression = hs_expression_get((*frame_field)->expression_index);
 		s_hs_expression *name = hs_expression_get(expression->value);
 		function_2099f0(thread_index, value, *(long *)((byte *)name + 8));
 	}
@@ -779,10 +780,13 @@ void __stdcall function_208f10(short function_index, long thread_index, bool ini
 		{
 			byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
 			long type_mask = 1 << object[0xaa];
-			if (!(g_4456d4[(short)(function_index - 23)] & type_mask))
-				object_index = NONE;
+			if (g_4456d4[(short)(function_index - 23)] & type_mask)
+				function_209ae0(thread_index, object_index);
+			else
+				function_209ae0(thread_index, NONE);
 		}
-		function_209ae0(thread_index, object_index);
+		else
+			function_209ae0(thread_index, NONE);
 	}
 }
 
