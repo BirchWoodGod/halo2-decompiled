@@ -24,8 +24,8 @@ public:
 class c_interface_2789b0
 {
 public:
-    virtual void function_0() {}
-    ~c_interface_2789b0() {}
+    virtual ~c_interface_2789b0() {}
+    virtual void function_1() {}
 };
 
 class c_object_2789b0 : public c_sized_reference_2789b0, public c_interface_2789b0
@@ -39,3 +39,4 @@ c_object_2789b0::c_object_2789b0()
 }
 
 // @retail 0x2789b0 deleting c_object_2789b0
+// @retail 0x278b30 adjustor c_object_2789b0 8
