@@ -1,4 +1,5 @@
 #include "unknown_11c920.h"
+#include "unknown_0259d0.h"
 #include "camera_storage.h"
 #include "globals.h"
 #include <string.h>
@@ -418,19 +419,23 @@ real function_30bf0(vector3f *vector);
 // @retail 0xc0840
 bool function_c0840(point3f const *start, point3f const *end, point3f *out, real *distance)
 {
-    vector3f direction;
-    direction.i = (real)((double)end->x - start->x);
-    direction.j = (real)((double)end->y - start->y);
-    direction.k = (real)((double)end->z - start->z);
     bool result = false;
+    real length;
+    real x, y, z;
     real travelled = 0.0f;
     real step = 0.001f;
-    real length = function_30bf0(&direction);
+    {
+        vector3f direction;
+        direction.i = (real)((double)end->x - start->x);
+        direction.j = (real)((double)end->y - start->y);
+        direction.k = (real)((double)end->z - start->z);
+        length = normalize_inline(&direction);
+        x = direction.i;
+        y = direction.j;
+        z = direction.k;
+    }
     if (length > 0.0f)
     {
-        real x = direction.i;
-        real y = direction.j;
-        real z = direction.k;
         s_bsp3d *bsp = g_4e033c;
         short bsp_index = g_4686c4;
         s_match_globals *structure = g_4e0348;
@@ -447,7 +452,8 @@ bool function_c0840(point3f const *start, point3f const *end, point3f *out, real
                 {
                     *distance = travelled;
                     *out = point;
-                    return true;
+                    result = true;
+                    goto done;
                 }
             }
             travelled += step;
@@ -455,6 +461,7 @@ bool function_c0840(point3f const *start, point3f const *end, point3f *out, real
             if (step > 0.1f) step = 0.1f;
         }
     }
+done:
     return result;
 }
 
@@ -509,8 +516,9 @@ void function_c0b00(s_light_animation_ab const *animation, long seed, real range
     }
     if (animation->pair_count > 0)
     {
-        pair[0] = function_13bb90((s_tag_data *)animation->pair, time, range);
-        pair[1] = function_13bb90((s_tag_data *)(animation->pair + 8), time, range);
+        byte *function = animation->pair;
+        pair[0] = function_13bb90((s_tag_data *)function, time, range);
+        pair[1] = function_13bb90((s_tag_data *)(function + 8), time, range);
     }
 }
 #pragma inline_depth()
@@ -1575,9 +1583,7 @@ void function_c1400()
     volatile long time = g_510c54->game_time;
     s_record_pool *pool = g_4e030c;
     long absolute = function_16bc00(pool, 0);
-    long index = NONE;
-    if (absolute != NONE)
-        index = ((long)*(short *)(pool->data + absolute * pool->size) << 16) | absolute;
+    long index = data_datum_index(pool, absolute);
     while (index != NONE)
     {
         volatile long current_absolute = index & 0xffff;
@@ -1596,13 +1602,7 @@ void function_c1400()
                     byte *current = g_4e030c->data + current_absolute * 0x110;
                     if (current[2] & 2)
                     {
-                        s_cluster_partition partition =
-                        {
-                            (long *)g_4e0310,
-                            (s_record_pool *)g_4e0314,
-                            (s_record_pool *)g_4e0318
-                        };
-                        function_1cae40(&partition, index, (long *)(current + 0x10));
+                        function_1cae40(&g_4e0310_partition, index, (long *)(current + 0x10));
                         current[2] &= ~8;
                     }
                     function_c2d00(index);
@@ -1613,10 +1613,8 @@ void function_c1400()
             > (real)*(short *)((byte *)g_510c54 + 2) * *(real *)(definition + 0xb0))
             function_c3260(index, true);
         pool = g_4e030c;
-        absolute = data_next_absolute_index_inlined(pool, current_absolute + 1);
-        index = NONE;
-        if (absolute != NONE)
-            index = ((long)*(short *)(pool->data + absolute * pool->size) << 16) | absolute;
+        absolute = data_find_index(pool, index == NONE ? 0 : current_absolute + 1);
+        index = data_datum_index(pool, absolute);
     }
 }
 

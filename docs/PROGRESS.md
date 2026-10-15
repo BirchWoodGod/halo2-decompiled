@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8841 functions match
+
+```
+matched 8841 of 11321 game functions (1201429 of 2784283 bytes, 43.15%)
+```
+
+11 new matches, none lost:
+- Machine 3's batch 52 (#499): `0x5f7c0`, `0x6c170`, `0x6cc10`, `0xc0b00`, `0x13c050`, `0x18ec20`, `0x18ee60`, `0x18f100`, `0x224d90`, `0x2382d6` and `0x240d70` match.
+
+## 2026-10-15: 8830 functions match
+
+```
+matched 8830 of 11321 game functions (1199360 of 2784283 bytes, 43.08%)
+```
+
+2 new matches, none lost:
+- The inventory now splits three rows that each held two retail functions (machine 3's request): `0x2b557a` and `0x2b8da0` match, and `0x238459`, `0x2b55ae` and `0x2b8e10` get rows of their own.
+
 ## 2026-10-15: 8828 functions match
 
 ```
