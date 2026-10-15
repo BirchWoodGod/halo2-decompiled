@@ -1617,7 +1617,7 @@ bool network_session_stop_countdown(c_class_58d20 *session)
 }
 
 // @retail 0x5bf10
-bool network_session_start_countdown(c_class_58d20 *session, long countdown, bool start, long mode, const long *time)
+bool network_session_start_countdown(c_class_58d20 *session, bool start, long countdown, long mode, const long *time)
 {
 	bool result = false;
 
