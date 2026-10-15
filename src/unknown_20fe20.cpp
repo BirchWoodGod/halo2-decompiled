@@ -2725,7 +2725,7 @@ void function_20cbd0(short group_index, s_audio_priority_table *table, long targ
         *count = 0;
 }
 
-void __stdcall function_20d570(long arg_0, short arg_1, long arg_2, void *arg_3);
+void __stdcall function_20d570(short arg_1, long arg_0, long arg_2, void *arg_3);
 void function_20fda0(long arg_0);
 
 // @retail 0x20fec0
@@ -2734,7 +2734,8 @@ void function_20fec0(long arg_0, long arg_1)
     if (arg_1 != NONE)
     {
         byte *local_0 = *(byte **)(g_4e0300->data + (arg_0 & 0xffff) * 12 + 8);
-        short local_1 = (short)function_20f040(*(short *)(local_0 + 0x138));
+        long local_9 = *(short *)(local_0 + 0x138);
+        short local_1 = (short)function_20f040((short)local_9);
         s_node_owner *local_2 = (s_node_owner *)((byte *)g_4f939c + local_1 * 0x7dc);
         byte *local_3 = g_4f9398->data + (arg_1 & 0xffff) * 0x54;
         if (!local_3[0x41])
@@ -2772,11 +2773,9 @@ void function_20fb30(void)
 {
     s_audio_priority_table *local_0 = audio_priority_table();
     long local_1 = g_510c54->game_time;
-    long local_2 = 0;
-    long local_3 = 2;
-    do
+    for (short local_2 = 0; local_2 < 2; local_2++)
     {
-        s_node_owner *local_4 = (s_node_owner *)((byte *)g_4f939c + local_2);
+        s_node_owner *local_4 = (s_node_owner *)((byte *)g_4f939c + local_2 * 0x7dc);
         for (long local_5 = local_4->first; local_5 != NONE; )
         {
             byte *local_6 = g_4f9398->data + (local_5 & 0xffff) * 0x54;
@@ -2793,7 +2792,7 @@ void function_20fb30(void)
                         byte *local_9 = *(byte **)(g_4e0300->data + (*(long *)(local_6 + 4) & 0xffff) * 12 + 8);
                         byte *local_10 = local_9 + *(short *)(local_9 + 0x342);
                         short local_11 = *(short *)(local_6 + 0x22);
-                        if (TEST_FIELD_BIT(((s_audio_object_state *)local_9)->blocked) && local_11 != 15)
+                        if (TEST_FIELD_BIT(((s_audio_object_state_20f960 *)local_9)->blocked) && local_11 != 15)
                             goto local_18;
                         short local_12 = *(short *)(local_10 + 0xc);
                         if (local_12)
@@ -2841,7 +2840,5 @@ local_18:
             local_5 = *(long *)(local_6 + 0x50);
         }
         function_20fe20(local_4);
-        local_2 += 0x7dc;
     }
-    while (--local_3);
 }

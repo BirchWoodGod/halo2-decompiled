@@ -5,10 +5,10 @@
 
 PRIVATE __forceinline void direction_face_point(s_direction_face const *face, vector3f const *point, vector3f *out)
 {
+	real local_0 = face->scale;
 	real x = point->i;
 	real y = point->j;
 	real z = point->k;
-	real local_0 = face->scale;
 	if (local_0 != 1.f)
 	{
 		x *= local_0;
