@@ -324,6 +324,11 @@ static __forceinline point3f function_586f3(const point3f *source)
  return result;
 }
 
+static __forceinline real function_586f4(real z, real y, real x)
+{
+ return sqrtf(z * z + y * y + x * x);
+}
+
 // @retail 0x586f0
 void function_586f0(long player, c_voice_observer *observer, long *count, DSMIXBINVOLUMEPAIR *bins, const point3f *position)
 {
@@ -338,7 +343,7 @@ void function_586f0(long player, c_voice_observer *observer, long *count, DSMIXB
    point3f local;
    function_142700((const transform4x3f *)((const byte *)camera + 8), position, &local);
    point3f direction = function_586f3(&local);
-   real distance = sqrtf(direction.z * direction.z + direction.y * direction.y + direction.x * direction.x);
+   real distance = function_586f4(direction.z, direction.y, direction.x);
    real range = function_586f1();
    real attenuation;
    if (distance > range)
