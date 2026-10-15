@@ -78,12 +78,12 @@ long __stdcall function_b7b40(void *creation)
     if (tag == NONE) goto done;
     byte *definition = g_4e3b44[tag & 0xffff].bytes;
     short type = *(short *)definition;
-    byte *type_definition = (byte *)g_468630[type];
+    byte *object_type = (byte *)g_468630[type];
     byte *model = 0;
     long model_tag = *(long *)(definition + 0x38);
     if (model_tag != NONE) model = g_4e3b44[model_tag & 0xffff].bytes;
     if ((1 << type) & 0x1883) function_146bf0();
-    result = function_bc280(*(word *)(type_definition + 8));
+    result = function_bc280(*(word *)(object_type + 8));
     if (result == NONE) goto done;
     s_object_create_header *header = OBJECT_HEADER_GET(result);
     byte *object = (byte *)header->object;
