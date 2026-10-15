@@ -1587,9 +1587,9 @@ static __forceinline byte *datum_iterator_next_20e190(s_data_datum_iterator *ite
 // @retail 0x20e190
 real function_20e190(long object_index)
 {
+    real result = 0.0f;
     byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
     long actor_index = *(long *)(object + 0x12c);
-    real result = 0.0f;
     if (actor_index != NONE)
     {
         byte *actor = g_4f55f0->data + (actor_index & 0xffff) * 0x888;
@@ -1644,9 +1644,9 @@ real function_20e190(long object_index)
                     }
                     result = weight * 0.3f + 0.7f;
                 }
-                if (result > maximum)
-                    maximum = result;
             }
+            if (result > maximum)
+                maximum = result;
         }
         if (!found)
             maximum = 1.0f;
