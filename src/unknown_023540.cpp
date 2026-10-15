@@ -1889,7 +1889,7 @@ bool __stdcall function_26880(void *context)
     byte *definition = g_4e3b44[g_4857b8 & 0xffff].bytes;
     for (long stage = 0; stage < 4; ++stage)
     {
-        real index_bits = g_4b9c74[stage + 1][0];
+        real const &index_bits = g_4b9c74[stage + 1][0];
         function_143c0(*(long *)(definition + 0x18), *(short *)&index_bits, (short)stage, 0.0f);
         D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, 1);
         D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, 1);
@@ -1912,20 +1912,13 @@ bool __stdcall function_26880(void *context)
     function_0222d0(D3DRS_ZBIAS, 0);
     memset(&g_484f68, 0, sizeof(g_484f68));
     g_484f68.PSTextureModes = 0x8421;
-    color3f colors[4];
-    for (long i = 0; i < 4; ++i)
-    {
-        colors[i].red = g_4b9c74[i + 1][2];
-        colors[i].green = g_4b9c74[i + 1][3];
-        colors[i].blue = g_4b9c74[i + 1][4];
-    }
     if (!g_4b9d9c)
     {
         g_484f68.PSCombinerCount = 0x11004;
-        g_484f68.PSConstant0[0] = pack_color3f(&colors[0]);
-        g_484f68.PSConstant1[0] = pack_color3f(&colors[1]);
-        g_484f68.PSConstant0[1] = pack_color3f(&colors[2]);
-        g_484f68.PSConstant1[1] = pack_color3f(&colors[3]);
+        g_484f68.PSConstant0[0] = pack_color3f((color3f const *)(g_4b9c74[1] + 2));
+        g_484f68.PSConstant1[0] = pack_color3f((color3f const *)(g_4b9c74[2] + 2));
+        g_484f68.PSConstant0[1] = pack_color3f((color3f const *)(g_4b9c74[3] + 2));
+        g_484f68.PSConstant1[1] = pack_color3f((color3f const *)(g_4b9c74[4] + 2));
         g_484f68.PSRGBInputs[2] = 0x28292a2b;
         g_484f68.PSRGBOutputs[2] = 0xcd;
         g_484f68.PSRGBInputs[3] = 0x0c0d0000;
@@ -1936,10 +1929,10 @@ bool __stdcall function_26880(void *context)
     else
     {
         g_484f68.PSCombinerCount = 0x11003;
-        g_484f68.PSConstant0[0] = pack_color3f(&colors[0]);
-        g_484f68.PSConstant1[0] = pack_color3f(&colors[1]);
-        g_484f68.PSConstant0[1] = pack_color3f(&colors[2]);
-        g_484f68.PSConstant1[1] = pack_color3f(&colors[3]);
+        g_484f68.PSConstant0[0] = pack_color3f((color3f const *)(g_4b9c74[1] + 2));
+        g_484f68.PSConstant1[0] = pack_color3f((color3f const *)(g_4b9c74[2] + 2));
+        g_484f68.PSConstant0[1] = pack_color3f((color3f const *)(g_4b9c74[3] + 2));
+        g_484f68.PSConstant1[1] = pack_color3f((color3f const *)(g_4b9c74[4] + 2));
         g_484f68.PSConstant0[2] = 0xff0000;
         g_484f68.PSConstant1[2] = 0xff00;
         g_484f68.PSRGBInputs[2] = 0x9010a02;
