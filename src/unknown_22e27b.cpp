@@ -84,7 +84,13 @@ struct short_rect_pair
 	short_rect a, b;
 };
 
-extern short_rect_pair g_485a8a;
+struct s_unknown_485a88
+{
+    byte flag;
+    short_rect_pair rects;
+};
+extern s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 
 // @retail 0x22e27b
 c_class_1a2c81::c_class_1a2c81(long type, word user_flags)

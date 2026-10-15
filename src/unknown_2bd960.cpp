@@ -367,7 +367,8 @@ void function_2bdd20(s_spline_2bd *spline, point3f *points)
 // @retail 0x2bdd70
 void function_2bdd70(point3f *out, s_spline_2bd *spline, long n, point3f *points)
 {
-	long i = n * 2;
+	long const *index_reference = &n;
+	long i = *index_reference * 2;
 	long previous = i - 1;
 	long next = i + 2;
 

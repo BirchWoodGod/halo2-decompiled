@@ -863,8 +863,8 @@ void __fastcall function_1e18f0(long actor_index, long old_weapon, long player_i
   byte *object = *(byte **)(objects->data + (*weapon_reference & 0xffff) * 12 + 8);
   new_value = *(real *)(definitions[*(long *)object & 0xffff].bytes + 0x238);
  }
- byte *player = g_4e8c24->data + (*player_reference & 0xffff) * 0x21c;
  long unit = actor_get(actor_index)->unknown018;
+ byte *player = g_4e8c24->data + (*player_reference & 0xffff) * 0x21c;
  if (new_value > old_value)
  {
   if (unit != NONE)
