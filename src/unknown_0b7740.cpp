@@ -1,3 +1,4 @@
+#include "unknown_0b68c0.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_0259d0.h"
@@ -260,12 +261,7 @@ void function_b88e0(long object_index, s_object_partition_record_ab *record)
 
 
 
-struct s_cluster_partition
-{
-    long *cluster_first_data_references;
-    s_record_pool *data_references;
-    s_record_pool *cluster_references;
-};
+
 
 void function_1cadf0(s_cluster_partition *partition, long reference_index, long data_index, long payload_size, void const *payload);
 

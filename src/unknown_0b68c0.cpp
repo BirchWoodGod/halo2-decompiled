@@ -464,7 +464,7 @@ void function_d4830();
 void function_1088e0();
 void function_bffa0();
 struct s_loop_allocator;
-s_loop_allocator *game_state_loop_allocator_new(long size, char const *name);
+__declspec(noinline) s_loop_allocator *game_state_loop_allocator_new(long size, char const *name);
 void *function_123d40(char const *name, char const *type, long size);
 void function_1cabc0(s_cluster_partition *partition, char const *name, long payload_size);
 
@@ -484,15 +484,8 @@ void function_b67c0()
     memset(&g_object_masks_storage, 0, sizeof(g_object_masks_storage));
     g_4de2f4 = (s_object_list *)state;
     g_4de2d0 = (long *)function_123d40(NULL, NULL, 0xa00);
-    s_cluster_partition colliding, noncolliding;
-    function_1cabc0(&colliding, "collideable object", 0x14);
-    g_4de2e0 = colliding.cluster_first_data_references;
-    g_4de2e4 = colliding.data_references;
-    g_4de2e8 = colliding.cluster_references;
-    function_1cabc0(&noncolliding, "noncollideable object", 0x14);
-    g_4de2d4 = noncolliding.cluster_first_data_references;
-    g_4de2d8 = noncolliding.data_references;
-    g_4de2dc = noncolliding.cluster_references;
+    function_1cabc0(&g_partition_colliding_storage, "collideable object", 0x14);
+    function_1cabc0(&g_partition_noncolliding_storage, "noncollideable object", 0x14);
 }
 
 
