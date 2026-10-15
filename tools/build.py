@@ -54,10 +54,15 @@ from xbe import ROOT, xdk_dir
 # caller built without LTCG instead, see standard_source); "vcall" followed by a vtable offset marks the thunk the
 # compiler emits for a pointer to a virtual member function, which calls
 # through that vtable slot (a marker with no function under it, and no
-# stand-in: the code that takes the pointer emits the thunk)
+# stand-in: the code that takes the pointer emits the thunk); "adjustor"
+# followed by a name and an offset marks the this-adjustor thunk the compiler
+# emits for a virtual member reached through a base at that offset: a class
+# name alone means its deleting destructor, class::member that member (a
+# marker with no function under it, and no stand-in of its own: the class's
+# vtable, which the vtable stand-in emits, brings the thunk in)
 MARKER = re.compile(r'^\s*//\s*@(retail|stub)\s+(0x[0-9a-fA-F]+)'
                     r'(?:\s+(deleting)(?:\s+([A-Za-z_][\w:]*))?|\s+destructor\s+([A-Za-z_][\w:]*)|\s+(standard)'
-                    r'|\s+vcall\s+(0x[0-9a-fA-F]+))?\s*$')
+                    r'|\s+vcall\s+(0x[0-9a-fA-F]+)|\s+adjustor\s+([A-Za-z_][\w:]*)\s+(0x[0-9a-fA-F]+|\d+))?\s*$')
 DELETING = "`deleting destructor'"  # the compiler's deleting destructor (??_G or ??_E), as linkmap names it
 FLAGS = re.compile(r'^\s*//\s*@flags\s+(.+?)\s*$')
 FLAGS_LINES = 30
@@ -106,7 +111,7 @@ class Marked:
     params: list
     stub: bool = False
     cls: str = ''
-    kind: str = 'function'  # 'function', 'method', 'constructor', 'destructor', 'deleting' or 'vcall'
+    kind: str = 'function'  # 'function', 'method', 'constructor', 'destructor', 'deleting', 'vcall' or 'adjustor'
     const: bool = False  # a const method
     standard: bool = False  # "standard": its address escapes (a constructor: a caller outside LTCG calls it)
 
@@ -190,6 +195,15 @@ def scan(text, path):
             found.append(Marked(path, int(m.group(2), 16), vcall_name(int(m.group(7), 16)), '', [],
                                 kind='vcall'))
             continue
+        if m.group(8):
+            if m.group(1) == 'stub':
+                raise SystemExit(f'{path}:{i + 1}: "adjustor" marks a thunk the build emits, not a stub')
+            cls, _, member = m.group(8).rpartition('::')
+            if not cls:
+                cls, member = member, DELETING
+            found.append(Marked(path, int(m.group(2), 16), adjustor_name(cls, member, int(m.group(9), 0)), '', [],
+                                False, cls, 'adjustor'))
+            continue
         header = ''
         for later in lines[i + 1:]:
             header += ' ' + later.split('//')[0]
@@ -227,6 +241,12 @@ def vcall_name(offset):
     """The plain name (as linkmap names it) of the compiler's thunk that calls
     through the vtable slot at offset."""
     return f"`vcall'{{{offset:#x}}}"
+
+
+def adjustor_name(cls, member, offset):
+    """The plain name (as linkmap names it) of the compiler's this-adjustor
+    thunk for cls's member reached through a base at offset."""
+    return f"{cls}::{member}`adjustor{{{offset:#x}}}'"
 
 
 def _declared(text):
@@ -353,8 +373,8 @@ def tu_source(source_abs, marked, prefix, classes=(), polymorphic=(), outside=()
         if escape:
             out.append(escape)
     for k, m in enumerate(marked):
-        if m.kind == 'vcall':
-            continue  # the source's own code emits the thunk
+        if m.kind in ('vcall', 'adjustor'):
+            continue  # the source's own code, or the class's vtable, emits the thunk
         args = ', '.join(_argument(p, ARGUMENT_STRIDE * n, prefix, classes) for n, p in enumerate(m.params))
         member = m.name.rpartition('::')[2]
         if m.kind == 'constructor':
@@ -710,7 +730,7 @@ def build(root=ROOT, xdk=None, units=None, image=None, include=(), jobs=1, reuse
                 with open(compiled, 'w', encoding='utf-8') as f:
                     f.write(source)
             depends.append(compiled)
-            standins = [f'standin_{stem}_{k}' for k, m in enumerate(marked) if m.kind != 'vcall']
+            standins = [f'standin_{stem}_{k}' for k, m in enumerate(marked) if m.kind not in ('vcall', 'adjustor')]
             standins += [f'standin_{stem}_vtable_{j}' for j in range(len(vtable_classes(marked, polymorphic)))]
             for standin in standins:
                 entry_decls.append(f'void {standin}(void);')

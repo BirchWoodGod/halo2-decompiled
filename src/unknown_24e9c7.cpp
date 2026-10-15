@@ -5,7 +5,7 @@
 
 struct s_float_rect;
 struct s_widget_quad_2b11;
-void function_22a664(s_float_rect const *arg_1, s_widget_quad_2b11 const *arg_0,
+void function_22a664(s_widget_quad_2b11 const *arg_0, s_float_rect const *arg_1,
 	long arg_2, long arg_3, long arg_4);
 extern real g_4e69c0[4];
 
@@ -196,7 +196,7 @@ real function_24e9c7(s_24e9c7_marker const *marker, s_24e9c7_placement const *pl
 				else
 					alpha = 0.0f;
 				g_4e6950.value1c = alpha;
-				function_22a664((s_float_rect const *)&points, (s_widget_quad_2b11 const *)&bounds,
+				function_22a664((s_widget_quad_2b11 const *)&points, (s_float_rect const *)&bounds,
 					bitmap_index, first_bitmap, kind->shader_index);
 			}
 		}

@@ -585,8 +585,14 @@ void function_020f30(real b, real a)
 
     if (a > 0.0f)
     {
-        real x = (a + 1.0f) * 0.5f;
-        x = PIN(x, 0.0f, 1.0f);
+        real value = (a + 1.0f) * 0.5f;
+        real x;
+        if (value < 0.0f) x = 0.0f;
+        else
+        {
+            x = 1.0f;
+            if (!(value > 1.0f)) x = value;
+        }
         real scale = 255.0f;
         long v = 0;
         __asm
@@ -1421,9 +1427,10 @@ long function_211a0(long source, real passes, real distortion, real falloff,
                 configure_filter_textures(source);
                 function_34a90(target, 10, 0x1010101, false, false,
                     1.0f, fraction * distortion, 1.0f, 4, (bool)(byte)full_surface, false);
-                source = target;
+                long next_source = target;
                 target = alternate;
-                alternate = source;
+                alternate = next_source;
+                source = next_source;
             }
             distortion *= growth;
             pass += 1.0f;

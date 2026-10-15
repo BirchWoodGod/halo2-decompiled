@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /arch:SSE /Gr
 /* UNKNOWN_07F190.CPP: the trimmed mean of a set of samples (lane D: called
    by the session's member latency summary and the observer) */
@@ -11,21 +12,21 @@
 #include <string.h>
 
 /* the fraction of the samples dropped at each end */
-real *g_4cf8e8;
+
 
 struct s_network_observer;
 void network_observer_reset_bandwidth(s_network_observer *observer);
 
-bool g_4cf8e0;
-s_network_observer *g_4cf8e4;
-bool g_4cf8ec;
-long g_4cf8f0[27];
-extern bool g_4cf95c;
-bool g_4cf95d;
-long g_4cf960;
-bool g_4cf964;
-extern long g_4cf968;
-extern long g_4cf96c;
+
+
+
+
+
+
+
+
+
+
 
 /* sorts the samples, drops the given fraction of them at each end and returns
    the mean of the rest */
