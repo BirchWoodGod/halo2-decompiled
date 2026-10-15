@@ -623,17 +623,15 @@ local_2:
 }
 #pragma inline_depth(255)
 
-/* 0x189cd0: retained for the next matching pass. LTCG removes the unused
-   fourth and fifth arguments (ret 0x14 instead of retail's ret 0x1c),
-   breaking matched callers 0x292080, 0x2a9e00 and 0x2a9ed0. Taking the
-   arguments' addresses did not preserve them. Keep the lane_a stub until
-   the retail convention is reproduced. */
+/* 0x189cd0: kept out of the build until it matches (106 differences, 531
+   bytes against 521). Retail's callers 0x2760a0, 0x292080, 0x2a9e00,
+   0x2a9e60 and 0x2a9ed0 push seven words; built under LTCG, the unused
+   fourth and fifth arguments are dropped (ret 0x14), which breaks the
+   matched callers. The lane_a stub stays until the body matches. */
 #if 0
 void __stdcall function_189cd0(long tag_index, long object_index, real scale, long a, long b, long label, long duration_address)
 {
 	long const *object_reference = &object_index;
-	(void)&a;
-	(void)&b;
 	real *duration = (real *)duration_address;
 
 	if (tag_index != NONE)
@@ -642,7 +640,6 @@ void __stdcall function_189cd0(long tag_index, long object_index, real scale, lo
 		if (slot_index != NONE)
 		{
 			long sound_index;
-			s_sound_source_description description;
 			s_looping_sound_slot *slot = &g_4ed288->slots[slot_index];
 			if (duration)
 			{
@@ -678,6 +675,7 @@ void __stdcall function_189cd0(long tag_index, long object_index, real scale, lo
 			}
 			else
 			{
+				s_sound_source_description description;
 				description.flags = 0;
 				if (*object_reference != NONE)
 				{
