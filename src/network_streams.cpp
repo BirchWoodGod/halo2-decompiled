@@ -1342,15 +1342,16 @@ bool c_network_reliable_stream::v4(long arg_0, s_bitstream *arg_1, long arg_2, l
 		}
 		else if (sequence_window_count(&m_acknowledgement_window) <= 9)
 		{
+			long cursor = local_2;
 			dword local_3;
 			volatile long local_4;
 			bool local_5 = false;
 			local_4 = NONE;
 			local_3 = 0;
 			long local_6 = 0;
-			for (; local_2 > m_acknowledgement_window.oldest; local_2--, local_6++)
+			for (; cursor > m_acknowledgement_window.oldest; cursor--, local_6++)
 			{
-				long local_7 = sequence_window_index(&m_acknowledgement_window, local_2);
+				long local_7 = sequence_window_index(&m_acknowledgement_window, cursor);
 				word *local_8 = 0;
 				if (local_7 != NONE)
 					local_8 = &m_acknowledgements[local_7];
