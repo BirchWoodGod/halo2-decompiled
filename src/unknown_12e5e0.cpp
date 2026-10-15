@@ -131,9 +131,11 @@ void function_12e5e0(long arg_1, byte *arg_6, point3f const *arg_2, vector3f con
 				real local_6 = arg_0->field_11c * local_3;
 				real local_4 = (1.0f - local_7) * local_3;
 				real local_5 = (1.0f - local_6) * local_2;
-				arg_0->field_4.red = function_12e5e1(local_4 * arg_0->field_1c.red + arg_0->field_34.red * local_5);
-				arg_0->field_4.green = function_12e5e1(local_4 * arg_0->field_1c.green + arg_0->field_34.green * local_5);
-				arg_0->field_4.blue = function_12e5e1(local_4 * arg_0->field_1c.blue + arg_0->field_34.blue * local_5);
+				color3f const &first = arg_0->field_1c;
+				color3f const &second = arg_0->field_34;
+				arg_0->field_4.red = function_12e5e1(local_4 * first.red + second.red * local_5);
+				arg_0->field_4.green = function_12e5e1(local_4 * first.green + second.green * local_5);
+				arg_0->field_4.blue = function_12e5e1(local_4 * first.blue + second.blue * local_5);
 				arg_0->field_14 = arg_0->field_30 > arg_0->field_48 ? arg_0->field_30 : arg_0->field_48;
 				arg_0->field_18 = true;
 			}
