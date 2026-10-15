@@ -58,6 +58,23 @@ void function_080de0(s_player_status_values *values, s_player_status_source cons
 void function_2b01a2(long value, s_widget_item *item);
 void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
 
+#pragma optimize("g", off)
+PRIVATE __forceinline long function_2b2ed6(XUID const *xuid, bool *active)
+{
+ long result;
+ if (network_session_manager_session_unready() && function_19acc6(xuid))
+ {
+  *active = true;
+  result = function_19adca(xuid);
+ }
+ else
+ {
+  *active = false;
+  result = NONE;
+ }
+ return result;
+}
+#pragma optimize("", on)
 // @retail 0x2b2ed4
 void __stdcall function_2b2ed4(c_y_menu_list *list, bool friends, bool empty,
     c_class_1a2c81 *item, s_friend *datum)
@@ -133,13 +150,7 @@ void __stdcall function_2b2ed4(c_y_menu_list *list, bool friends, bool empty,
         voice_available = player != NONE && voice_port_flag0_only(player);
         voice_disabled = !voice_available || (player != NONE && voice_port_flag1(player));
         muted = player != NONE && local != NONE && voice_test_unknownF0(local, player);
-        active = false;
-        long active_player = NONE;
-        if (network_session_manager_session_unready() && function_19acc6(xuid))
-        {
-            active = true;
-            active_player = function_19adca(xuid);
-        }
+        long active_player = function_2b2ed6(xuid, &active);
         joinable = active_player != NONE && active && function_19abe4(active_player);
         bool allowed = friends ? !outgoing && !pending : !player_outgoing && !player_pending;
         online = allowed && (flags & 1);
@@ -185,9 +196,21 @@ void __stdcall function_2b2ed4(c_y_menu_list *list, bool friends, bool empty,
                 else if (in_session) ((c_widget *)list->get_screen())->function_230134(0x13000252, message);
                 else if (presence.state == 1)
                 {
-                    ((c_widget *)list->get_screen())->function_230134(presence.value04 ? 0x11000253 : 0xe000258, message);
-                    ((c_widget *)list->get_screen())->function_230134(presence.value04 ? (presence.value04 == 2 ? 0x12000255 :
-                        presence.value04 == 3 ? 0xd000254 : can_join ? 0xf000256 : 0x13000257) : 0x13000257, suffix);
+                    if (presence.value04)
+                    {
+                        ((c_widget *)list->get_screen())->function_230134(0x11000253, message);
+                        switch (presence.value04)
+                        {
+                        case 2: ((c_widget *)list->get_screen())->function_230134(0x12000255, suffix); break;
+                        case 3: ((c_widget *)list->get_screen())->function_230134(0xd000254, suffix); break;
+                        default: ((c_widget *)list->get_screen())->function_230134(can_join ? 0xf000256 : 0x13000257, suffix); break;
+                        }
+                    }
+                    else
+                    {
+                        ((c_widget *)list->get_screen())->function_230134(0xe000258, message);
+                        ((c_widget *)list->get_screen())->function_230134(0x13000257, suffix);
+                    }
                     unicode_string_append(message, suffix, 256);
                     message[255] = 0;
                 }
