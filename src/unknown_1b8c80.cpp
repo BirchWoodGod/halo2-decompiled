@@ -358,7 +358,7 @@ bool function_1b9200(long object_index, long prop_index)
 					direction.k = 0.0f;
 					if (function_30bf0(&direction) > g_45dbd8)
 					{
-						real angle = function_11cc90((vector2f *)&direction, (vector2f *)&forward);
+						real angle = function_11cc90((vector2f *)&forward, (vector2f *)&direction);
 
 						if (angle <= seat->unknown88 || angle > seat->unknown8c)
 							result = false;
