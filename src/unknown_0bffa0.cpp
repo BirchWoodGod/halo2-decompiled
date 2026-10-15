@@ -595,7 +595,7 @@ void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_li
         }
         else
         {
-            double slope = tan(shape->cone.values[2] * 0.5f);
+            real slope = (real)tan(shape->cone.values[2] * 0.5f);
             cone->slope_x = (real)slope;
             cone->slope_y = (real)slope * cone->aspect;
         }
@@ -1034,8 +1034,8 @@ void function_1cae40(s_cluster_partition *partition, long data_index, long *firs
 
 void __declspec(noinline) function_c3220(long light_index);
 
-// @retail 0xc3220
-void function_c3220(long light_index)
+/* takes a light out of the cluster partition if it is in it (0xc3220; 0xc0110 inlines it) */
+PRIVATE __forceinline void light_partition_clear(long light_index)
 {
     s_light_delete_view *light = &((s_light_delete_view *)g_4e030c->data)[light_index & 0xffff];
     if (light->flags & 2)
@@ -1043,6 +1043,12 @@ void function_c3220(long light_index)
         function_1cae40(&g_4e0310_partition, light_index, &light->first_cluster_reference);
         light->flags &= ~8;
     }
+}
+
+// @retail 0xc3220
+void function_c3220(long light_index)
+{
+    light_partition_clear(light_index);
 }
 
 // @retail 0xc0110
@@ -1056,7 +1062,7 @@ void function_c0110()
     while ((light = data_iterator_next_inlined(&iterator)) != 0)
     {
         if (*(long *)(light + 0x4c) == NONE && *(long *)(light + 0x58) == NONE && (light[2] & 8))
-            function_c3220(iterator.datum_index);
+            light_partition_clear(iterator.datum_index);
     }
 }
 
@@ -1493,12 +1499,12 @@ void function_bffa0()
 // @retail 0xc1720
 long __stdcall function_c1720(long object_index, long remove_from_partition, long update)
 {
+    long count = 0;
     s_record_pool *lights = g_4e030c;
     s_record_pool_iterator iterator;
     iterator.data = lights;
     iterator.datum_index = NONE;
     iterator.index = NONE;
-    long count = 0;
     byte *entry;
     while ((entry = (byte *)data_iterator_next_inlined(&iterator)) != NULL)
     {
@@ -1509,13 +1515,7 @@ long __stdcall function_c1720(long object_index, long remove_from_partition, lon
                 byte *light = lights->data + (iterator.datum_index & 0xffff) * 0x110;
                 if (light[2] & 2)
                 {
-                    s_cluster_partition partition =
-                    {
-                        (long *)g_4e0310,
-                        (s_record_pool *)g_4e0314,
-                        (s_record_pool *)g_4e0318
-                    };
-                    function_1cae40(&partition, iterator.datum_index, (long *)(light + 0x10));
+                    function_1cae40(&g_4e0310_partition, iterator.datum_index, (long *)(light + 0x10));
                     light[2] &= ~8;
                 }
             }

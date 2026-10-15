@@ -7,5 +7,3 @@
 // @stub 0x22c3e0
 hkPoolMemory::hkPoolMemory() { }
 
-// @stub 0x22cb90
-real hkPoolMemory::get_used_fraction(void) { return 0; }

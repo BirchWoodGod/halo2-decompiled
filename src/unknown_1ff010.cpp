@@ -166,13 +166,34 @@ struct s_50241c_element_1ff
 // @retail 0x1ff6c0
 bool function_1ff6c0(long actor_index, long prop_index, point3f const *point, long *target)
 {
+	/* retail squares i, then k, then j here */
+	struct distance_1ff6c0
+	{
+		static inline vector3f *sub(point3f const *a, point3f const *b, vector3f *result)
+		{
+			result->i = b->x - a->x;
+			result->j = b->y - a->y;
+			result->k = b->z - a->z;
+			return result;
+		}
+		static inline real root(real x)
+		{
+			return (real)sqrt(x);
+		}
+		static inline real get(point3f const *a, point3f const *b)
+		{
+			vector3f v;
+			sub(a, b, &v);
+			return root(v.j*v.j + v.k*v.k + v.i*v.i);
+		}
+	};
 	s_actor_view *actor = actor_get(actor_index);
 	bool result = false;
 	s_character_variant_ranges *ranges = (s_character_variant_ranges *)function_1e5380(actor_index);
 
 	if (ranges)
 	{
-		real distance = distance3d(&actor->position, point);
+		real distance = distance_1ff6c0::get(&actor->position, point);
 
 		if (distance > ranges->minimum_distance && ranges->maximum_distance > distance)
 		{
@@ -182,13 +203,17 @@ bool function_1ff6c0(long actor_index, long prop_index, point3f const *point, lo
 				s_prop_state_1ff *state = (s_prop_state_1ff *)function_25d690((s_prop_datum *)node);
 				s_50241c_element_1ff *element = (s_50241c_element_1ff *)(g_50241c->data + (node->unknown08 & 0xffff) * sizeof(s_50241c_element_1ff));
 
-				if (!element->unknown23 || state->unknown5e)
-					return result;
-				if ((node->unknown24 < 1 || node->unknown24 > 2) && !function_25d970((s_prop_datum *)node))
-					return result;
-				*target = state->unknown3c;
+				if (element->unknown23 && !state->unknown5e &&
+					((node->unknown24 >= 1 && node->unknown24 <= 2) || function_25d970((s_prop_datum *)node)))
+				{
+					*target = state->unknown3c;
+					result = true;
+				}
 			}
-			return true;
+			else
+			{
+				result = true;
+			}
 		}
 	}
 	return result;

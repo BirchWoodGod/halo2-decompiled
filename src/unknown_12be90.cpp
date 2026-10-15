@@ -164,24 +164,27 @@ void function_12b850(short field_0_3)
 {
 	if (field_0_3 >= 0 && field_0_3 < ((s_scenario_structure_bsps_view *)g_4e0350)->structure_bsp_count)
 	{
-		if (field_0_3 != g_4686c4)
+		if (field_0_3 == g_4686c4)
 		{
-			main_globals.field_0_3 = field_0_3;
+			if (main_globals.switch_structure_bsp)
+			{
+				main_globals.field_0_3 = field_0_3;
+				main_globals.switch_structure_bsp = false;
+				if (g_4e6948->state == 1)
+				{
+					function_24cdaf();
+					main_print_message(local_player_first_index(), 0xf0006a3);
+				}
+			}
+		}
+		else
+		{
 			main_globals.switch_structure_bsp = true;
+			main_globals.field_0_3 = field_0_3;
 			if (g_4e6948->state == 1)
 			{
 				function_24cdaf();
 				main_print_message(local_player_first_index(), 0x110006a2);
-			}
-		}
-		else if (main_globals.switch_structure_bsp)
-		{
-			main_globals.field_0_3 = field_0_3;
-			main_globals.switch_structure_bsp = false;
-			if (g_4e6948->state == 1)
-			{
-				function_24cdaf();
-				main_print_message(local_player_first_index(), 0xf0006a3);
 			}
 		}
 	}
