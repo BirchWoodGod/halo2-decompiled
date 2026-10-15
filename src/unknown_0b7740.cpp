@@ -755,7 +755,7 @@ void function_bfa40(long object_index, long node_mask)
         return;
     transform4x3f *matrices = (transform4x3f *)(object + *(short *)(object + 0x116));
     rigid_transform_scaled *orientations = (rigid_transform_scaled *)(object + *(short volatile *)(object + 0x112));
-    volatile long count = (dword)(long)*(short *)(object + 0x110) / sizeof(rigid_transform_scaled);
+    long count = (dword)(long)*(short *)(object + 0x110) / sizeof(rigid_transform_scaled);
     long parent_index = *(long *)(object + 0x14);
     transform4x3f *parent = 0;
     bool parent_mirrored = false;

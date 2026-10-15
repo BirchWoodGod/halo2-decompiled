@@ -70,28 +70,17 @@ static inline short function_xb76edd()
 	return difficulty;
 }
 
-#pragma optimize("g", off)
 PRIVATE __forceinline short function_1388a1(s_game_options_view const *arg_1)
 {
-	short local_1 = 0;
-	if (arg_1->state == _game_state_campaign)
-		local_1 = arg_1->difficulty;
-	return local_1;
+	return arg_1->state == _game_state_campaign ? arg_1->difficulty : 0;
 }
-#pragma optimize("", on)
 
 // @retail 0x1388a0
 bool function_1388a0()
 {
 	s_game_options_view *local_1 = g_4e6948;
 	long local_2 = local_1->state;
-	bool local_3 = true;
-	if (local_2 == _game_state_campaign)
-	{
-		if (g_4f55e7 || function_1388a1(local_1) == 3)
-			local_3 = false;
-	}
-	return local_3;
+	return !(local_2 == _game_state_campaign && g_4f55e7) && function_1388a1(local_1) != 3;
 }
 
 // @retail 0x138960

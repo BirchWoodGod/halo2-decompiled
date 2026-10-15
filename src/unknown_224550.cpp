@@ -203,5 +203,5 @@ void __stdcall function_224550(s_draw_sprite_seed const *seed,s_draw_value_cache
 	}
 	if(definition->flags&0x2000) angle+=1.5707963705062866f;
 	function_23ed30(position,direction,function_246cd0(&definition->size,values->values)*scale,
-		angle,packed,blend,geometry,uv_a.values,uv_b.values);
+		angle,packed,blend,uv_a.values,uv_b.values,geometry);
 }
