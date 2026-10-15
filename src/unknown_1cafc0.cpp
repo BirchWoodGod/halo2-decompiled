@@ -1594,8 +1594,8 @@ short const g_4454a0[4] = { 1, 3, 0, 2 };
 bool s_animation_state::channel_play_indexed(c_animation_channel *channel, long set, short item_index,
 	short animation_index, short *found_item_index, short *found_animation_index)
 {
-	s_graph_tag *graph = graph_get();
 	c_type_709360 animation_id;
+	s_graph_tag *graph = graph_get();
 	short first_item_index = item_index;
 	short first_animation_index = animation_index;
 	bool searching = true;
