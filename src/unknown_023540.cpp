@@ -1912,13 +1912,13 @@ bool __stdcall function_26880(void *context)
     function_0222d0(D3DRS_ZBIAS, 0);
     memset(&g_484f68, 0, sizeof(g_484f68));
     g_484f68.PSTextureModes = 0x8421;
+    g_484f68.PSConstant0[0] = pack_color3f((color3f const *)(g_4b9c74[1] + 2));
+    g_484f68.PSConstant1[0] = pack_color3f((color3f const *)(g_4b9c74[2] + 2));
+    g_484f68.PSConstant0[1] = pack_color3f((color3f const *)(g_4b9c74[3] + 2));
+    g_484f68.PSConstant1[1] = pack_color3f((color3f const *)(g_4b9c74[4] + 2));
     if (!g_4b9d9c)
     {
         g_484f68.PSCombinerCount = 0x11004;
-        g_484f68.PSConstant0[0] = pack_color3f((color3f const *)(g_4b9c74[1] + 2));
-        g_484f68.PSConstant1[0] = pack_color3f((color3f const *)(g_4b9c74[2] + 2));
-        g_484f68.PSConstant0[1] = pack_color3f((color3f const *)(g_4b9c74[3] + 2));
-        g_484f68.PSConstant1[1] = pack_color3f((color3f const *)(g_4b9c74[4] + 2));
         g_484f68.PSRGBInputs[2] = 0x28292a2b;
         g_484f68.PSRGBOutputs[2] = 0xcd;
         g_484f68.PSRGBInputs[3] = 0x0c0d0000;
@@ -1929,10 +1929,6 @@ bool __stdcall function_26880(void *context)
     else
     {
         g_484f68.PSCombinerCount = 0x11003;
-        g_484f68.PSConstant0[0] = pack_color3f((color3f const *)(g_4b9c74[1] + 2));
-        g_484f68.PSConstant1[0] = pack_color3f((color3f const *)(g_4b9c74[2] + 2));
-        g_484f68.PSConstant0[1] = pack_color3f((color3f const *)(g_4b9c74[3] + 2));
-        g_484f68.PSConstant1[1] = pack_color3f((color3f const *)(g_4b9c74[4] + 2));
         g_484f68.PSConstant0[2] = 0xff0000;
         g_484f68.PSConstant1[2] = 0xff00;
         g_484f68.PSRGBInputs[2] = 0x9010a02;
