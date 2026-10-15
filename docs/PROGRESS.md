@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8768 functions match
+
+```
+matched 8768 of 11318 game functions (1177540 of 2784283 bytes, 42.29%)
+```
+
+5 new matches, none lost:
+- Machine 3's batch 47 (#494): `0x83db0`, `0xc0110`, `0x1b83b0`, `0x1d4880` and `0x1ee410` match.
+
+## 2026-10-15: 8763 functions match
+
+```
+matched 8763 of 11318 game functions (1176682 of 2784283 bytes, 42.26%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 46 (#492): `0x153950`, `0x12b450` (written new, with `0x217c40`'s retail-evidenced `standard` marker) and `0x20fb30` (through `0x20d570`'s retail parameter order) match.
+
 ## 2026-10-15: 8760 functions match
 
 ```

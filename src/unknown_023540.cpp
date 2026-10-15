@@ -122,9 +122,9 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	struct location_indices { long cluster, leaf; bool invalid; volatile long object; } location;
 	s_speed_result speed;
 	memcpy(&speed.shake, g_4686d4, sizeof(speed.shake));
-	speed.type = 0;
-	speed.amount = 0.0f;
 	location.object = NONE;
+	speed.amount = 0.0f;
+	speed.type = 0;
 	g_4ba050 = view->player_index;
 	location.cluster = g_4ba054[view->player_index];
 	location.leaf = g_4ba064[view->player_index];
@@ -154,7 +154,7 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	{
 		long player = g_4e8c20->entries[view->object_index];
 		location.object = *(long *)((byte *)g_4e8c24->data + (player & 0xffff) * 0x21c + 0x24);
-		function_154310(location.object, &speed);
+		function_154310(view->object_index, &speed);
 	}
 	if (view->scale > 0.0f)
 		function_2ba10((s_2f970_view const *)&view->position, location.cluster, view->player_index,

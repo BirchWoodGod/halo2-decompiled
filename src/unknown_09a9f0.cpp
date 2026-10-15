@@ -514,7 +514,7 @@ long c_projectile_type::v27(long a, long b, long c, long d)
 }
 
 class c_handle_table_450cd0;
-bool function_99640(c_handle_table_450cd0 *self, long handle);
+__declspec(noinline) bool function_99640(c_handle_table_450cd0 *self, long handle);
 
 // @retail 0xa0e50
 bool c_projectile_type::v8(long a, long b)
