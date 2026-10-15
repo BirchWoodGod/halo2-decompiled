@@ -183,7 +183,7 @@ bool __stdcall function_1b23c0(long actor_index, s_slot *slot)
     s_prop_view_fields *view = prop_node_view(node);
     real duration;
     if (!view)
-        return false;
+        goto failed;
     if (view->unknown70 == 0)
     {
         duration = 3.0f;
@@ -192,7 +192,7 @@ bool __stdcall function_1b23c0(long actor_index, s_slot *slot)
                 actor->unknown26c != NONE ? 6.0f : 3.0f, 0.0f))
         {
             function_25d420(actor->prop_index, 3, actor_index);
-            return false;
+            goto failed;
         }
     }
     else
@@ -201,7 +201,7 @@ bool __stdcall function_1b23c0(long actor_index, s_slot *slot)
         duration = character ? slot_random_range(*(real *)(character + 4), *(real *)(character + 8)) : 8.0f;
         if (!function_2601f0(actor_index, &view->unknown78, *(long *)((byte *)view + 0x74),
             actor->unknown26c != NONE ? 5.0f : 2.0f, 0.0f))
-            return false;
+            goto failed;
     }
     s_slot_24 *state = (s_slot_24 *)slot;
     long ticks = real_to_long((real)g_510c54->field_2_3 * duration);
@@ -223,4 +223,6 @@ bool __stdcall function_1b23c0(long actor_index, s_slot *slot)
     }
     function_1f86a0(actor_index);
     return result;
+failed:
+    return false;
 }
