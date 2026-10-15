@@ -192,27 +192,37 @@ bool __stdcall function_1b82d0(long actor_index, s_slot *slot, long index)
 	return result;
 }
 
+PRIVATE __forceinline s_actor_view *actor_step_1b83b0(long *index, long *current)
+{
+    if (*index == NONE)
+        return NULL;
+    *current = *index;
+    s_actor_view *actor = actor_get(*index);
+    *index = actor->next_index;
+    return actor;
+}
+
 // @retail 0x1b83b0
 short __stdcall function_1b83b0(long actor_index, long leader_index, s_slot *slot, s_invite_data *data)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	long count = 0;
+	s_actor_view *actor = actor_get(actor_index);
 
 	data->unknown4 = ((s_slot_12 *)slot)->unknown1c;
-	if (actor->unknown07c != NONE)
+	if (actor->unknown07c == NONE)
+		goto done;
 	{
 		long index = element_502420_get(actor->unknown07c)->first_actor_index;
 
-		while (index != NONE)
+		long other_index;
+		s_actor_view *other;
+		while ((other = actor_step_1b83b0(&index, &other_index)) != NULL)
 		{
-			s_actor_view *other = actor_get(index);
-			long other_index = index;
-
-			index = other->next_index;
 			if (actor != other && function_26eae0(leader_index, other_index, 3, 1.0f))
 				count++;
 		}
 	}
+done:
 	return (short)count;
 }
 
