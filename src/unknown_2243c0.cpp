@@ -213,11 +213,17 @@ void function_1bbf0(long, long, long, long, long, real);
 void __stdcall function_224fd0(s_draw_mesh_seed const *, s_draw_value_cache *,
 	point3f const *, vector3f const *, real, color4f const *, s_draw_mesh_context const *);
 
+/* the address of element index of the tag block at block (count, then address) */
+static __forceinline void const *block_element_224db0(byte const *block, long index, long size)
+{
+	return *(byte const *const *)(block + 4) + index * size;
+}
+
 // @retail 0x224db0
 void __stdcall function_224db0(s_interface_definition *arg_0, long arg_1, long arg_2,
 	long arg_3, long arg_4)
 {
-	s_224db0 local_0 = { arg_0, NONE };
+	s_224db0 local_0;
 	s_2243c1 local_1;
 	byte *local_2 = (byte *)arg_0;
 	(void)&arg_1; (void)&arg_2; (void)&arg_3; (void)&arg_4;
@@ -229,9 +235,9 @@ void __stdcall function_224db0(s_interface_definition *arg_0, long arg_1, long a
 	else
 		local_5 = *(long const *const *)(g_4e3b44[local_3 & 0xffff].bytes + 0x24);
 	byte const *local_6 = *(byte const *const *)(g_4e3b44[*local_5 & 0xffff].bytes + 0x5c);
-	long local_7 = **(word const *const *)(local_6 + 4) & 0x1ff;
-	long local_8 = (*(word const *const *)(local_6 + 0xc))[local_7 + arg_3] & 0x1ff;
-	long local_9 = *(long const *)(*(byte const *const *)(local_6 + 0x14) + (local_8 + arg_4) * 10 + 4);
+	long local_7 = *(word const *)block_element_224db0(local_6, 0, 2) & 0x1ff;
+	long local_8 = *(word const *)block_element_224db0(local_6 + 8, local_7 + arg_3, 2) & 0x1ff;
+	long local_9 = *(long const *)((byte const *)block_element_224db0(local_6 + 0x10, local_8 + arg_4, 10) + 4);
 	byte const *local_10 = *(byte const *const *)(*(byte const *const *)(g_4e3b44[local_9 & 0xffff].bytes + 0x20) + 4) + 0x132;
 	byte const *local_11 = *(byte const *const *)(g_4e3b44[*(long const *)(local_10 + 0x100) & 0xffff].bytes + 8) + 0x1c;
 	local_1.field_44 = 0;
@@ -251,27 +257,28 @@ void __stdcall function_224db0(s_interface_definition *arg_0, long arg_1, long a
 		g_55ed60.field_4 = function_173c30;
 		function_1bd50(&g_55ed60);
 		function_1bbf0(*(long const *)(local_2 + 0x1c), 0, arg_3, arg_4, 1, 10000.0f);
-		long local_13 = *(long const *)(local_11 + 4);
-		word const *local_14 = *(word const *const *)(local_11 + 8);
-		for (long local_15 = 0; local_15 < local_13; ++local_15)
+		local_0.field_0 = arg_0;
+		dword local_16 = *(dword const *)(local_2 + 0xd8) & 0x107f0;
+		long local_17 = NONE;
+		for (long local_15 = 0; local_15 < *(long const *)(local_11 + 4); ++local_15)
 		{
-			if (local_14[local_15] == 14)
+			if (*(word const *)block_element_224db0(local_11 + 4, local_15, 2) == 14)
 			{
-				local_0.field_4 = local_15;
+				local_17 = local_15;
 				break;
 			}
 		}
-		if (local_1.field_48 != (void *)arg_1)
+		local_0.field_4 = local_17;
+		if ((void *)arg_1 != local_1.field_48)
 		{
 			local_1.field_48 = (void *)arg_1;
 			local_1.field_44 &= 0xfffff98f;
 		}
-		if (local_1.field_4c != (void *)arg_2)
+		if ((void *)arg_2 != local_1.field_4c)
 		{
 			local_1.field_4c = (void *)arg_2;
 			local_1.field_44 &= 0xfffecf7f;
 		}
-		dword local_16 = *(dword const *)(local_2 + 0xd8) & 0x107f0;
 		function_173ba0(~local_1.field_44 & local_16, local_1.field_48, local_1.field_4c,
 			local_1.field_50, local_1.field_0);
 		local_1.field_44 |= local_16;
