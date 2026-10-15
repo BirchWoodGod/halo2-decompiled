@@ -1025,12 +1025,11 @@ void __stdcall function_1ab50(byte *state, s_packed_shader_range const *range)
     for (long i = 0; i < (long)range->count(); ++i, entry += 4)
     {
         s_texture_stage_parameter const *parameter = &g_46703c[entry[1]];
-        D3DTEXTURESTAGESTATETYPE setting = (D3DTEXTURESTAGESTATETYPE)parameter->state;
         if (!(entry[2] == 1)) {
             dword color = pack_color3f((color3f *)(state + 0x108) + entry[3]);
             dword old;
-            D3DDevice_GetTextureStageState(entry[0], setting, &old);
-            D3DDevice_SetTextureStageState(entry[0], setting, (old & 0xff000000) | (color & 0xffffff));
+            D3DDevice_GetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, &old);
+            D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, (old & 0xff000000) | (color & 0xffffff));
         } else {
             real value = ((real *)(state + 0x5c))[entry[3]];
             switch (parameter->value_type)
@@ -1039,15 +1038,15 @@ void __stdcall function_1ab50(byte *state, s_packed_shader_range const *range)
                 {
                     dword alpha = (dword)rounded_shader_alpha(value) << 24;
                     dword old;
-                    D3DDevice_GetTextureStageState(entry[0], setting, &old);
-                    D3DDevice_SetTextureStageState(entry[0], setting, (old & 0xffffff) | alpha);
+                    D3DDevice_GetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, &old);
+                    D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, (old & 0xffffff) | alpha);
                 }
                 break;
             case 1:
-                D3DDevice_SetTextureStageState(entry[0], setting, *(dword *)&value);
+                D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, *(dword *)&value);
                 break;
             case 2:
-                D3DDevice_SetTextureStageState(entry[0], setting, rounded_shader_integer(value));
+                D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, rounded_shader_integer(value));
                 break;
             }
         }

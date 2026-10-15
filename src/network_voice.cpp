@@ -2080,10 +2080,16 @@ real function_57a80(long player, long other)
 
 #include "unknown_0662e0.h"
 
+#pragma inline_depth(0)
+static __forceinline long function_53e31(c_class_58d20 *session)
+{
+ return session->get_value_5e20();
+}
+#pragma inline_depth(255)
+
 // @retail 0x53e30
 void function_53e30(void)
 {
-	long selected = NONE;
 	long best = 0;
 	g_4c9878.unknown00 = NONE;
 	if (voice_available())
@@ -2098,28 +2104,28 @@ void function_53e30(void)
 			{
 				if (current == host)
 				{
+					long selected = NONE;
 					long count = *(long *)(membership + 8);
 					for (long i = 0; i < count; i++)
 					{
 						byte *member = membership + 0xc + i * 0x10c;
-						long quality = *(long *)(member + 0x94);
 						if (i != current && *(long *)(member + 0x98) != 3 &&
 							*(long *)(member + 0x90) >= g_network_configuration.valuee4 &&
-							quality >= g_network_configuration.valuee0 &&
-							*(dword *)(member + 0x9c) == (1U << count) - 1 && quality > best)
+							*(long *)(member + 0x94) >= g_network_configuration.valuee0 &&
+							*(dword *)(member + 0x9c) == (1U << count) - 1 && *(long *)(member + 0x94) > best)
 						{
 							selected = i;
-							best = quality;
+							best = *(long *)(member + 0x94);
 						}
 					}
 					if (selected == NONE && !voice_mode_is_1())
 						selected = current;
-					if (session->get_value_5e20() != selected)
+					if (function_53e31(session) != selected)
 						session->set_value_5e20(selected);
 					g_4c9878.unknown00 = selected;
 				}
 				else
-					g_4c9878.unknown00 = session->get_value_5e20();
+					g_4c9878.unknown00 = function_53e31(session);
 			}
 		}
 	}
@@ -2795,9 +2801,10 @@ void __stdcall function_56df0(s_voice_player_settings *settings, long talker, lo
 {
 	// The retail entry reads the talker from its stack argument slot.
 	long const *talker_reference = &talker;
-	bool active = false;
+	long voice_mode = 0;
 	if (settings->initialized && voice_available())
-		active = g_4c9878.mode == 1;
+		voice_mode = g_4c9878.mode;
+	bool active = voice_mode == 1;
 	if (active && voice_xhv_has_remote_talker(&g_476fc8, *talker_reference))
 	{
 		dword local = voice_get_local_player_mask();
@@ -2946,11 +2953,11 @@ void function_564c0(s_voice_channels *channels, byte *data, long size)
 {
  if (channels->initialized)
  {
-  byte *packet = data + 2;
   bool relay = (data[0] & 1) != 0;
   size -= 2;
   if (relay && !voice_current_member_is_unknown00()) return;
   if (voice_packet_clamp_count(data[1], 1, 15) != data[1]) return;
+  byte *packet = data + 2;
   for (long i = 0; i < data[1]; i++)
   {
    if (voice_packet_clamp_count(packet[0], 0, 15) != packet[0]) return;

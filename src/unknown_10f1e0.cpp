@@ -394,7 +394,8 @@ void __stdcall function_113980(long object_index, long target_index, bool altern
 	if (object_index != NONE && target_index != NONE && weight > 0.0f)
 	{
 		s_graph_tag *graph = GRAPH_GET(state->graph_tag_index);
-		if (graph && (short)graph->node_count != 0)
+		long const &initial_node_count = graph ? (long)(short)graph->node_count : 0;
+		if (graph && initial_node_count != 0)
 		{
 			s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(object_index);
 			s_unit_animation_definition *definition = (s_unit_animation_definition *)TAG_BYTES(unit->definition_index);

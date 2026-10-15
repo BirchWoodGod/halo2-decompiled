@@ -627,8 +627,11 @@ void network_session_close(c_class_58d20 *session);
 
 static inline bool session_dialog_is(c_class_1473c9 *screen, long id)
 {
- return screen && ((screen->screen_id >= 7 && screen->screen_id <= 8) ||
-  screen->screen_id == 0xf0) && ((c_dialog_screen *)screen)->dialog_id == id;
+ bool result = false;
+ if (screen && screen->screen_id >= 7 &&
+     (screen->screen_id <= 8 || screen->screen_id == 0xf0))
+  if (((c_dialog_screen *)screen)->dialog_id == id) result = true;
+ return result;
 }
 
 // @retail 0x6d270
@@ -636,9 +639,9 @@ void function_6d270(void)
 {
  function_148823();
  function_14a152();
- bool choice = true;
  long id = 0x38;
  dialog_choice_callback accept = function_236917;
+ bool choice = true;
  if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 1 && !g_4e6948->flag134)
  {
   choice = false;
@@ -646,7 +649,8 @@ void function_6d270(void)
   accept = function_2323ab;
  }
  c_window_channel *channel = &g_54d598.windows_1[4];
- if (!session_dialog_is(channel->current, id) && !session_dialog_is(channel->next, id))
+ bool present = session_dialog_is(channel->current, id);
+ if (!session_dialog_is(channel->next, id) && !present)
  {
   if (choice)
    dialog_choice_show(1, id, 4, (word)-1, accept, function_236953, 0);

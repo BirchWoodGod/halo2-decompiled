@@ -132,7 +132,8 @@ long online_stats_write(XONLINE_STAT_SPEC const *specs, word count)
 			s_type_9df9da *task = (s_type_9df9da *)(local_2 + local_3 * local_1);
 			if (task->salt != 0 && task->salt == (task_index >> 16))
 			{
-				if (SUCCEEDED(XOnlineStatWrite(count, specs, NULL, (PXONLINETASK_HANDLE)&task->handle)))
+				HRESULT status = XOnlineStatWrite(count, specs, NULL, (PXONLINETASK_HANDLE)&task->handle);
+				if (SUCCEEDED(status))
 				{
 					task->flags = 1;
 					task->type = 0x13;
@@ -141,7 +142,7 @@ long online_stats_write(XONLINE_STAT_SPEC const *specs, word count)
 				else
 				{
 					function_6b640(task_index);
-					return NONE;
+					task_index = NONE;
 				}
 			}
 		}

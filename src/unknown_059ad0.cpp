@@ -3474,6 +3474,13 @@ void function_617c0(c_class_58d20 *session)
 
 void function_07ad50(byte *buffer);
 
+#pragma inline_depth(0)
+static __forceinline void function_61051(byte *buffer)
+{
+ function_07ad50(buffer);
+}
+#pragma inline_depth(255)
+
 // @retail 0x61050
 void function_61050(c_class_58d20 *session, long channel_index,
 	const s_session_member_identity *host, const s_session_remote *remote, const s_type_99af70 *address)
@@ -3486,7 +3493,7 @@ void function_61050(c_class_58d20 *session, long channel_index,
 	data.time = network_session_time_now();
 	data.unknown1ec = 0;
 	data.remote = *remote;
-	function_07ad50(&data.remote.unknown14d[0x180 - 0x14d]);
+	function_61051(&data.remote.unknown14d[0x180 - 0x14d]);
 	session->update7650++;
 	memset(session->data761c, 0, sizeof(session->data761c));
 	session->member_index = 0;
@@ -3494,9 +3501,10 @@ void function_61050(c_class_58d20 *session, long channel_index,
 	session->value7658 = NONE;
 	network_session_add_member(session, 0, host, true, channel_index, 0);
 	network_session_add_member(session, 1, (const s_session_member_identity *)remote->key188, false, NONE, 0);
+	void *state_data = &session->value7420;
 	session->current_member = 1;
-	memset(&session->value7420, 0, SESSION_STATE_DATA_SIZE);
-	memcpy(&session->value7420, &data, sizeof(data));
+	memset(state_data, 0, SESSION_STATE_DATA_SIZE);
+	memcpy(state_data, &data, sizeof(data));
 	session->state = 1;
 	function_62300(session);
 }

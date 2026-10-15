@@ -3700,9 +3700,15 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     real height = (real)(*(short const *)(camera + 0x34) - *(short const *)(camera + 0x30));
     real left = (real)*(short const *)(camera + 0x32);
     real top = (real)*(short const *)(camera + 0x30);
-    real scale = 1.0f;
+    real scale;
     if (scaled && !g_5093fc)
-        scale = g_4670c8 < 0.0625f ? 0.0625f : g_4670c8 > 1.0f ? 1.0f : g_4670c8;
+    {
+        real input = g_4670c8;
+        if (input < 0.0625f) scale = 0.0625f;
+        else if (input > 1.0f) scale = 1.0f;
+        else scale = input;
+    }
+    else scale = 1.0f;
     real bias = 0.03125f;
     if (mode == 2)
     {
@@ -6270,8 +6276,8 @@ void __stdcall function_13870(bool finish, bool blur)
     {
         real strength = 0.0f;
         real extra = 0.0f;
-        real distortion = 0.9f;
         function_137a0(&strength, &extra);
+        real distortion = 0.9f;
         if (state)
             distortion = (1.0f - (1.0f - state->range[4])) * 0.9f;
         if (strength > 0.0f)
@@ -6290,22 +6296,23 @@ void __stdcall function_13870(bool finish, bool blur)
     {
         struct { real weights[4]; s_filter_vector grid[4]; } scratch;
         s_filter_vector *grid = scratch.grid;
-        real top = (real)g_4b9dd0;
         real left = (real)g_4b9dd2;
-        real bottom = (real)g_4b9dd4;
+        real top = (real)g_4b9dd0;
         real right = (real)g_4b9dd6;
+        real bottom = (real)g_4b9dd4;
         grid[0].x = left; grid[0].y = top; grid[0].z = 0.0f; grid[0].w = 0.0f;
         grid[1].x = right; grid[1].y = top; grid[1].z = 1.0f; grid[1].w = 0.0f;
         grid[2].x = left; grid[2].y = bottom; grid[2].z = 0.0f; grid[2].w = 1.0f;
         grid[3].x = right; grid[3].y = bottom; grid[3].z = 1.0f; grid[3].w = 1.0f;
-        for (long i = 0; i < *(long *)((byte *)g_4e0350 + 0x3d0); ++i)
+        dword byte_offset = 0;
+        for (long i = 0; i < *(long *)((byte *)g_4e0350 + 0x3d0); ++i, byte_offset += 0x24)
         {
-                byte *entry = *(byte **)((byte *)g_4e0350 + 0x3d4) + i * 0x24;
+                byte *entry = *(byte **)((byte *)g_4e0350 + 0x3d4) + byte_offset;
                 if (*(long *)(entry + 0x14) != NONE &&
                     (*(short *)(entry + 0x20) != NONE || *(short *)(entry + 0x22) != NONE))
                 {
                     real *weights = scratch.weights;
-                    weights[0] = weights[1] = weights[2] = weights[3] = 0.0f;
+                    weights[0] = 0.0f; weights[1] = 0.0f; weights[2] = 0.0f; weights[3] = 0.0f;
                     if (*(short *)(entry + 0x20) != NONE)
                         weights[0] = function_134fc0(*(short *)(entry + 0x20));
                     if (*(short *)(entry + 0x22) != NONE)
