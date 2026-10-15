@@ -1143,8 +1143,8 @@ __forceinline void quaternion_scale(quaternionf *quaternion, real fraction)
 {
 	real one = 1.0f;
 
-	*(dword *)&one |= *(dword *)&quaternion->w & 0x80000000;
 	quaternion->i *= fraction;
+	*(dword *)&one |= *(dword *)&quaternion->w & 0x80000000;
 	quaternion->j *= fraction;
 	quaternion->w -= one;
 	quaternion->k *= fraction;
