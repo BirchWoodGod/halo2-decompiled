@@ -382,11 +382,13 @@ bool function_1b9420(long actor_index)
 	s_object_child_iterator iterator;
 
 	function_d0620(actor->unknown26c, &iterator);
-	while (function_d0690(&iterator))
+	if (!function_d0690(&iterator))
+		return result;
+	do
 	{
 		if (object_get(iterator.child_value)->player_index != NONE)
 			return true;
-	}
+	} while (function_d0690(&iterator));
 	return result;
 }
 
