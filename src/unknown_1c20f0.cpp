@@ -132,9 +132,9 @@ bool __stdcall function_1c19b0(long actor_index, vector3f const *direction, s_ty
 // @retail 0x1c1d50
 bool __stdcall function_1c1d50(long actor_index, s_type_f17a25 *path)
 {
+	long closest_index = NONE;
 	s_actor_view *actor = actor_get(actor_index);
 	real closest = 3.4028235e38f;
-	long closest_index = NONE;
 	long prop_index;
 
 	for (prop_index = actor->first_prop_index; prop_index != NONE; )
@@ -162,9 +162,8 @@ bool __stdcall function_1c1d50(long actor_index, s_type_f17a25 *path)
 			direction = actor->unknown290;
 		}
 		function_1c19b0(actor_index, &direction, path);
-		return true;
 	}
-	return false;
+	return closest_index != NONE;
 }
 
 // @retail 0x1c1e70

@@ -4631,22 +4631,25 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 				iterator.iterator.index = NONE;
 				iterator.iterator.datum_index = NONE;
 				count = 0;
-				entry_offset = 0;
-				while (count < entry_count)
+				if (count < entry_count)
 				{
-					s_online_member *member;
+					entry_offset = 0;
+					do
+					{
+						s_online_member *member;
 
-					if (!function_2b2327(&iterator))
-					{
-						break;
-					}
-					member = (s_online_member *)iterator.item;
-					if (member->recipient.xuid && !function_19acc6((_XUID const *)&member->recipient.xuid) && !(member->flags & 0x30) && (member->flags & 1))
-					{
-						++count;
-						*(s_message_recipient *)((byte *)entries + entry_offset) = member->recipient;
-						entry_offset += sizeof(s_message_recipient);
-					}
+						if (!function_2b2327(&iterator))
+						{
+							break;
+						}
+						member = (s_online_member *)iterator.item;
+						if (member->recipient.xuid && !function_19acc6((_XUID const *)&member->recipient.xuid) && !(member->flags & 0x30) && (member->flags & 1))
+						{
+							++count;
+							*(s_message_recipient *)((byte *)entries + entry_offset) = member->recipient;
+							entry_offset += sizeof(s_message_recipient);
+						}
+					} while (count < entry_count);
 				}
 				if (count > 0)
 				{
