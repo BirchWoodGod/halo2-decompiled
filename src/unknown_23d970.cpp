@@ -547,6 +547,8 @@ struct s_follow_output_23de50
 	real valuea0;
 };
 
+PRIVATE __forceinline long camera_round_23de50(real value);
+
 PRIVATE inline long camera_round_23de50(real value)
 {
 	long result;
