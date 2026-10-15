@@ -1468,16 +1468,17 @@ bool __stdcall function_1ba5c0(long arg_0, s_slot *arg_1, long arg_2)
         return false;
     function_f5d10(local_2->object_index, local_2->seat_index, true);
     ((s_slot_4c *)((byte *)local_2 - 0x1c))->point = *(point3f *)&local_5.direction;
-    bool local_6 = false;
     if (local_5.approaching)
     {
         ++*(short *)((byte *)((s_slot_4c *)((byte *)local_2 - 0x1c)) + 0x30);
-        local_6 = (real)*(short *)((byte *)((s_slot_4c *)((byte *)local_2 - 0x1c)) + 0x30) * g_510c54->rate >= 1.0f;
+        if ((real)*(short *)((byte *)((s_slot_4c *)((byte *)local_2 - 0x1c)) + 0x30) * g_510c54->rate >= 1.0f)
+            goto submit_request;
     }
     else
         *(short *)((byte *)((s_slot_4c *)((byte *)local_2 - 0x1c)) + 0x30) = 0;
-    if (local_6 || (local_5.close && local_5.facing))
+    if (local_5.close && local_5.facing)
     {
+submit_request:
         s_unit_request local_7;
         local_7.type = 0x1c;
         local_7.type1c.object_index = local_2->object_index;
@@ -1519,7 +1520,14 @@ bool __stdcall function_1ba5c0(long arg_0, s_slot *arg_1, long arg_2)
     }
     bool local_12;
     if (function_1f8660(arg_0))
+    {
         local_12 = 1.0f > function_1f8940(arg_0);
+        if (local_12)
+            local_2->flags |= 4;
+        else
+            local_2->flags &= ~4;
+        return local_4;
+    }
     else
     {
         vector3f local_13;

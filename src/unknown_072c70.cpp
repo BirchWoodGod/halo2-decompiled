@@ -55,21 +55,7 @@ struct s_player_update
 struct s_player
 {
 	short identifier;
-	struct
-	{
-		byte bit0 : 1;
-		byte bit1 : 1;
-		byte bit2 : 1;
-		byte unknown : 5;
-	} flags2;
-	struct
-	{
-		byte unknown : 3;
-		byte bit3 : 1;
-		byte unknown2 : 2;
-		byte bit6 : 1;
-		byte unknown3 : 1;
-	} flags3;
+	word flags;
 	byte unknown04[0x2c - 4];
 	long l2c;
 	byte unknown30[0xc0 - 0x30];
@@ -572,9 +558,9 @@ bool c_game_engine::v19(short player_index, dword mask, long, s_player_update *u
 		if (mask & 8)
 		{
 			if (update->b18)
-				player->flags2.bit2 = 1;
+				player->flags |= 0x4;
 			else
-				player->flags2.bit2 = 0;
+				player->flags &= ~0x4;
 		}
 		if (mask & 0x10)
 			memcpy(&g->l6dc[index * 4], update->w26, 16);
@@ -598,23 +584,23 @@ bool c_game_engine::v19(short player_index, dword mask, long, s_player_update *u
 		if (mask & 0x100)
 		{
 			if (update->b22)
-				player->flags3.bit3 = 1;
+				player->flags |= 0x800;
 			else
-				player->flags3.bit3 = 0;
+				player->flags &= ~0x800;
 		}
 		if (mask & 0x200)
 		{
 			if (update->b23)
-				player->flags2.bit0 = 1;
+				player->flags |= 0x1;
 			else
-				player->flags2.bit0 = 0;
+				player->flags &= ~0x1;
 		}
 		if (mask & 0x400)
 		{
 			if (update->b24)
-				player->flags3.bit6 = 1;
+				player->flags |= 0x4000;
 			else
-				player->flags3.bit6 = 0;
+				player->flags &= ~0x4000;
 		}
 		result = true;
 	}
@@ -641,7 +627,7 @@ void c_game_engine_derived::v0(long killer, long victim, bool suicide_or_betraya
 {
 	if (options()->mode != 4)
 	{
-		if (killer != NONE && !player_get(victim)->flags2.bit1)
+		if (killer != NONE && !(player_get(victim)->flags & 0x2))
 		{
 			if (!suicide_or_betrayal)
 				function_15b7c0(1, killer);

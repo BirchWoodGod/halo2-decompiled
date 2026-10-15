@@ -720,12 +720,16 @@ void texture_cache_bitmap_build_texture(s_bitmap_data *bitmap)
 	D3DTexture *texture = (D3DTexture *)&bitmap->hardware_common;
 	dword data = bitmap->hardware_data + g_4e646c;
 	short format = bitmap->format;
-	long hardware_format = g_450768[0][format];
-	short levels;
+	long hardware_format;
+	long levels;
 
 	if ((bitmap->flags & 0x20) && (format == 10 || format == 11))
 	{
 		hardware_format = 0x33;
+	}
+	else
+	{
+		hardware_format = g_450768[0][format];
 	}
 	depth = bitmap->depth;
 	height = bitmap->height;
@@ -739,7 +743,10 @@ void texture_cache_bitmap_build_texture(s_bitmap_data *bitmap)
 	{
 		texture->Format = 0xd;
 	}
-	texture->Format |= ((((bitmap->type != 1) ? 2 : 3) | (hardware_format << 4)) << 4) | ((levels + 1) << 16);
+	long local_0;
+	if (bitmap->type != 1) local_0 = 2;
+	else local_0 = 3;
+	texture->Format |= ((local_0 | (hardware_format << 4)) << 4) | ((levels + 1) << 16);
 	texture->Format |= (short)log2_floor(width) << 20;
 	texture->Format |= (short)log2_floor(height) << 24;
 	texture->Format |= (short)log2_floor(depth) << 28;

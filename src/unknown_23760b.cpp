@@ -892,9 +892,14 @@ bool finish_variant_save(c_virtual_keyboard_screen *keyboard);
 bool finish_message_gamertag(c_virtual_keyboard_screen *keyboard);
 bool finish_friend_gamertag(c_virtual_keyboard_screen *keyboard);
 
+/* the keyboard types with no finish step of their own; retail's jump table
+   still lists them, so they keep their own (empty) case */
+PRIVATE inline void finish_nothing(c_virtual_keyboard_screen *keyboard)
+{
+}
+
 /* the string is done: the type's finish, then the screen closes */
-/* retail 0x238459: config/functions.csv counts it as the end of 0x2382d6,
-   so it can carry no marker and 0x2382d6 cannot match whole */
+// @retail 0x238459
 void c_virtual_keyboard_screen::finish()
 {
 	bool done = true;
@@ -937,6 +942,16 @@ void c_virtual_keyboard_screen::finish()
 		break;
 	case 14:
 		done = team_task == NONE;
+		break;
+	case 8:
+	case 9:
+	case 10:
+	case 11:
+	case 17:
+	case 18:
+	case 19:
+	case 20:
+		finish_nothing(this);
 		break;
 	}
 	if (done)
