@@ -2775,6 +2775,7 @@ void __stdcall function_2a2f0(volatile long tag, volatile real alpha)
         s_2a2f0_record *volatile record = records;
         for (i = 0; bitmap_offset < 5 * 0x74; ++i, ++record, bitmap_offset += 0x74)
         {
+            s_2a2f0_record *current_record = record;
             byte *definition = g_4e3b44[definition_index].bytes;
             volatile real &height = *(volatile real *)&tag;
             volatile real &width = alpha;
@@ -2834,7 +2835,7 @@ void __stdcall function_2a2f0(volatile long tag, volatile real alpha)
 #pragma inline_depth(0)
             function_1cf50();
             real half_height = height * 0.5f;
-            real center = 240.0f - ((real)record->y - half_height);
+            real center = 240.0f - ((real)current_record->y - half_height);
             box2f bounds;
             bounds.x0 = 0.0f; bounds.x1 = 640.0f;
             bounds.y0 = center - half_height;
@@ -2842,7 +2843,7 @@ void __stdcall function_2a2f0(volatile long tag, volatile real alpha)
             real time = 0.0f;
             if (g_510c54 && g_510c54->active)
                 time = g_510c54->game_time * g_510c54->rate;
-            real offset = 0.0f - record->speed * time;
+            real offset = 0.0f - current_record->speed * time;
             D3DDevice_Begin(D3DPT_TRIANGLEFAN);
             D3DDevice_SetVertexData2f(1, offset, 0.0f);
             D3DDevice_SetVertexData4f(0, bounds.x0, bounds.y0, 16777215.0f, 16777215.0f);

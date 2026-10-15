@@ -112,11 +112,17 @@ void function_c6de0(long object_index, void *control);
 void function_118e80(long object_index, vector3f *forward);
 void __stdcall function_cbf60(long unit_index, bool active);
 
-// @retail 0x1e1250
-void function_1e1250(long actor_index)
+/* the standard marker (docs/DECOMPILING.md): (1) with it this body matches
+   byte for byte (`ret 4`); without it LTCG passes the actor in eax, and
+   when 0x2902b0 and 0xb7b40 are built it passes it in ecx even with the
+   actor's address taken. (2) retail holds no reference to 0x1e1250's
+   address, and its one caller (0x1e0d50) is LTCG code that pushes the
+   argument (`push edi; call 0x1e1250`). (3) tried: taking the argument's
+   address (matches alone, lost once the object cycle is built). */
+// @retail 0x1e1250 standard
+void __stdcall function_1e1250(long actor_index)
 {
-	long const *index_reference = &actor_index;
-	s_actor_view *actor = actor_get(*index_reference);
+	s_actor_view *actor = actor_get(actor_index);
 	long unit_index = actor->unknown018;
 	if (unit_index != NONE)
 	{

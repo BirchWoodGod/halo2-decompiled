@@ -61,6 +61,8 @@ struct s_291746
 	s_291740 *field_244;
 };
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x291740
 void function_291740(short arg_0, long arg_1)
 {
@@ -73,10 +75,12 @@ void function_291740(short arg_0, long arg_1)
 		break;
 	default:
 		g_50242c = *local_2;
+		_ReadWriteBarrier();
 		function_2093d0(local_0->field_1bc[local_1->field_4c].field_24, false);
 		break;
 	}
 }
+#pragma function(_ReadWriteBarrier)
 
 bool __stdcall function_2912c0(s_ai_trigger_condition *condition, long squad_group_index, bool *result);
 bool function_290f60(s_ai_trigger_condition *condition, bool *result, long squad_index);
