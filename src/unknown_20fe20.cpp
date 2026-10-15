@@ -1264,6 +1264,7 @@ real function_210a30(s_type_c3b527 const *a, s_type_c3b527 const *b)
 	if (a->output_index == b->output_index)
 	{
 		local_0 = b->point.x - a->point.x;
+		local_0 *= local_0;
 		local_1 = b->point.y - a->point.y;
 		local_2 = b->point.z - a->point.z;
 	}
@@ -1277,9 +1278,12 @@ real function_210a30(s_type_c3b527 const *a, s_type_c3b527 const *b)
 		local_1 = pb.x - pa.x;
 		local_2 = pb.y - pa.y;
 		local_0 = pb.z - pa.z;
+		local_0 *= local_0;
 	}
 
-	return local_0 * local_0 + local_2 * local_2 + local_1 * local_1;
+	local_0 += local_2 * local_2;
+	local_0 += local_1 * local_1;
+	return local_0;
 }
 
 // @retail 0x210b60
@@ -1292,6 +1296,7 @@ real function_210b60(s_type_c3b527 const *a, point3f const *b)
 	if (a->output_index == NONE)
 	{
 		local_0 = b->x - a->point.x;
+		local_0 *= local_0;
 		local_1 = b->y - a->point.y;
 		local_2 = b->z - a->point.z;
 	}
@@ -1303,9 +1308,12 @@ real function_210b60(s_type_c3b527 const *a, point3f const *b)
 		local_1 = b->x - point.x;
 		local_2 = b->y - point.y;
 		local_0 = b->z - point.z;
+		local_0 *= local_0;
 	}
 
-	return local_0 * local_0 + local_2 * local_2 + local_1 * local_1;
+	local_0 += local_2 * local_2;
+	local_0 += local_1 * local_1;
+	return local_0;
 }
 
 /* ---- vectors and distances between node points ---- */
@@ -2725,7 +2733,7 @@ void function_20cbd0(short group_index, s_audio_priority_table *table, long targ
         *count = 0;
 }
 
-void __stdcall function_20d570(long arg_0, short arg_1, long arg_2, void *arg_3);
+void __stdcall function_20d570(short arg_1, long arg_0, long arg_2, void *arg_3);
 void function_20fda0(long arg_0);
 
 // @retail 0x20fec0

@@ -58,6 +58,8 @@ struct s_510c50_view
 bool function_163b60(void);
 void function_18e700(void);
 
+__declspec(noinline) void function_12ba90(void);
+
 // @retail 0x12ba90
 void function_12ba90(void)
 {
