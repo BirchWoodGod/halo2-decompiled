@@ -2725,7 +2725,7 @@ void function_20cbd0(short group_index, s_audio_priority_table *table, long targ
         *count = 0;
 }
 
-void __stdcall function_20d570(long arg_0, short arg_1, long arg_2, void *arg_3);
+void __stdcall function_20d570(short arg_1, long arg_0, long arg_2, void *arg_3);
 void function_20fda0(long arg_0);
 
 // @retail 0x20fec0
