@@ -1,5 +1,6 @@
 // @flags /O2 /arch:SSE /Gr
 #include "object_masks_storage.h"
+#include "material_records_storage.h"
 #include "light_visibility_storage.h"
 #include "partition_colliding_storage.h"
 #include "partition_noncolliding_storage.h"
@@ -1094,16 +1095,6 @@ void function_132900(s_bit_vector_pool *arg_1, s_sort_context const *arg_2, s_so
 	}
 }
 
-struct s_2cb30_state;
-struct s_2cb30_globals
-{
-	long current;
-	long previous;
-	s_2cb30_state *state;
-	byte unknown0c[0x9b0 - 0xc];
-};
-
-extern s_2cb30_globals g_4c0b78;
 extern bool g_4e7c18;
 bool g_4e0304;
 struct s_view_collection_1733e0;

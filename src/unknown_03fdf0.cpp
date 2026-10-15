@@ -11,22 +11,6 @@
 #include <xtl.h>
 
 struct s_record_source;
-struct s_2cb30_state;
-struct s_2cb30_entry { dword values[9]; };
-struct s_2cb30_globals
-{
-    long current;
-    long previous;
-    s_2cb30_state *state;
-    union
-    {
-        byte unknown0c[0x9b0 - 0xc];
-        struct { byte weights[850]; byte material_indices[850]; long materials[192]; };
-    };
-    long count;
-    s_2cb30_entry entries[32];
-    long entry_count;
-};
 struct s_cache_record;
 struct s_cache_record_state
 {
@@ -77,7 +61,6 @@ struct s_light_shape_ab
 
 /* The first cached record block precedes the existing metadata array.
    Later blocks occupy the preceding metadata entry's values storage. */
-extern s_2cb30_globals g_4c0b78;
 
 extern s_cache_record_state g_4b6280;
 extern s_record_pool *g_4e030c;
@@ -125,18 +108,19 @@ void function_402b0(long cache_index, long mode)
     g_4c1a80 = 0;
     if (g_4c6b00[cache_index].count > 0)
     {
-        long first = g_4c0b78.previous;
-        g_4c0b78.current = first;
+        g_4c0b78.current = g_4c0b78.previous;
+        long first = g_4c0b78.current;
         s_44940_entry const *entries = g_4c62f8.records.blocks[cache_index + 1].entries;
         memcpy(g_4ba138 + first, entries, g_4c6b00[cache_index].count * sizeof(s_44940_entry));
         g_4c0b78.current += g_4c6b00[cache_index].count;
         dword selection = !mode ? ~0UL : mode == 2 ? 0x10 : 0x20;
+        long n = 0;
         long index = first;
-        for (long n = 0; n < g_4c6b00[cache_index].count; ++n, ++index, ++entries)
+        for (; n < g_4c6b00[cache_index].count; ++n, ++index, ++entries)
         {
             s_44940_entry const *entry = entries;
             if (!((entry->unknown00 & selection) & 0x1fffff) ||
-                !(entry->unknown00 & 1) || !entry->unknown10[0xa] || (entry->flags & 0x1f0) != 0x1f0) continue;
+                !(entry->unknown00 & 1) || entry->unknown10[0xa] <= 0 || (entry->flags & 0x1f0) != 0x1f0) continue;
             byte weight = g_4c0b78.weights[index];
             long shape = entry->flags & 0xf;
             byte material_index = g_4c0b78.material_indices[(short)index];
