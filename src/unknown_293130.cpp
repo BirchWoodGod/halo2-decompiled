@@ -96,13 +96,12 @@ __forceinline void function_293133(real arg_0, vector3f const *arg_1, vector3f *
 	real local_0 = (real)sin(arg_0);
 	real local_1 = (real)cos(arg_0);
 	real local_2 = dot3f(arg_1, arg_2) * (1.0f - local_1);
-	vector3f local_3;
-	local_3.i = arg_1->k * arg_2->j - arg_2->k * arg_1->j;
-	local_3.j = arg_2->k * arg_1->i - arg_1->k * arg_2->i;
-	local_3.k = arg_2->i * arg_1->j - arg_1->i * arg_2->j;
-	arg_2->i = arg_2->i * local_1 + arg_1->i * local_2 - local_3.i * local_0;
-	arg_2->j = arg_2->j * local_1 + arg_1->j * local_2 - local_3.j * local_0;
-	arg_2->k = arg_2->k * local_1 + arg_1->k * local_2 - local_3.k * local_0;
+	real local_3 = arg_1->k * arg_2->j - arg_2->k * arg_1->j;
+	real local_4 = arg_2->k * arg_1->i - arg_1->k * arg_2->i;
+	real local_5 = arg_2->i * arg_1->j - arg_1->i * arg_2->j;
+	arg_2->i = arg_2->i * local_1 + arg_1->i * local_2 - local_3 * local_0;
+	arg_2->j = arg_2->j * local_1 + arg_1->j * local_2 - local_4 * local_0;
+	arg_2->k = arg_2->k * local_1 + arg_1->k * local_2 - local_5 * local_0;
 }
 
 // @retail 0x293130
@@ -153,7 +152,7 @@ long __stdcall function_293130(long arg_0)
 			{
 				if (local_2->field_10 & (1 << local_17))
 				{
-					if (local_10 == local_9)
+					if (local_9 == local_10)
 					{
 						local_8 = local_17;
 						break;
