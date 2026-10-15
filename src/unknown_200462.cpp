@@ -10,7 +10,6 @@ struct s_510c4c;
 extern s_510c4c *g_510c4c;
 extern point3f *g_468720;
 extern real g_4e69c0[4];
-extern real g_4e696c;
 
 struct s_4e6950
 {
@@ -135,7 +134,7 @@ void function_200462(long arg_0)
         g_4e6950.field_c = *g_468720;
         g_4e6950.value18 = 0.0f;
         g_4e6950.value20 = (real)local_22->delay * g_510c54->rate * 2.0f;
-        g_4e696c = function_200891(local_22, false) * g_4e69c0[g_4b9ed8];
+        g_4e6950.value1c = function_200891(local_22, false) * g_4e69c0[g_4b9ed8];
         function_22a664(&local_19, (s_widget_quad_2b11 const *)local_27,
             *(long *)(local_16 + 4), local_18, *(long *)(local_16 + 0xc));
         local_14.x += local_26;
