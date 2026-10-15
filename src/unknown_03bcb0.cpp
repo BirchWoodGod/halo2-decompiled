@@ -802,7 +802,9 @@ void function_41490(short group, long tag, short kind, real distance, t_record_f
             depth += g_485618.forward.i * delta.i;
             depth += g_485618.forward.j * delta.j;
             record->depth = 0.0f - depth;
-            record->position = *position;
+            record->position.x = position->x;
+            record->position.y = position->y;
+            record->position.z = position->z;
         }
     }
 }

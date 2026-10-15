@@ -59,10 +59,9 @@ void function_153950(void)
 
 	for (index = 0; index < 4; index++)
 	{
-		s_speed_slot *slot = speed->slots + index;
-
 		if (local_player_present(index))
 		{
+			s_speed_slot *slot = speed->slots + index;
 			real quarter_second = (real)g_510c54->field_2_3 * 0.25f;
 			long rounded;
 			long decay;
@@ -80,9 +79,7 @@ void function_153950(void)
 			{
 				if (slot->decay[i] > 0)
 				{
-					long value = slot->decay[i] - decay;
-					byte mask = (byte)((value < 0) - 1);
-					slot->decay[i] = (byte)value & mask;
+					slot->decay[i] = (byte)(slot->decay[i] - decay < 0 ? 0 : slot->decay[i] - decay);
 				}
 				i++;
 			}
@@ -121,7 +118,7 @@ void function_153950(void)
 		{
 			long i;
 
-			memset(slot, 0, sizeof(s_speed_slot));
+			memset(&speed->slots[index], 0, sizeof(s_speed_slot));
 			memset(&g_502120->entries[index], 0, sizeof(s_speed_table_entry));
 			for (i = 0; i < 8; i++)
 			{
