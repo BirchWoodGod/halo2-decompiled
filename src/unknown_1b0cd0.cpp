@@ -128,8 +128,9 @@ void __stdcall function_1b0d50(long actor_index, s_slot *slot)
 	{
 		if (function_26ecc0(actor_index, iterator.reference.unknown0, (s_joint_behavior_state *)slot))
 		{
+			long entry_value = entry->unknown4;
 			state->position_index = NONE;
-			if (entry->unknown4 != NONE)
+			if (entry_value != NONE)
 				return;
 			break;
 		}
@@ -140,7 +141,7 @@ void __stdcall function_1b0d50(long actor_index, s_slot *slot)
 	if (element_index != NONE)
 	{
 		s_slot_target_list *list = (s_slot_target_list *)element_502424_get(element_index);
-		long unknown24 = state->unknown24;
+		bool unknown24 = state->unknown24;
 		_ReadWriteBarrier();
 
 		state->unknown0c = true;
