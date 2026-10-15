@@ -155,6 +155,8 @@ struct s_1bd611
 long function_25d810(long object_index, long actor_index, bool create);
 void __stdcall function_26c2d0(long arg_0);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1bd610
 bool function_1bd610(s_1bd610 *arg_0, long arg_1, s_1bd611 *arg_2)
 {
@@ -206,8 +208,10 @@ bool function_1bd610(s_1bd610 *arg_0, long arg_1, s_1bd611 *arg_2)
         arg_0->field_0 |= 0x10;
     else
         arg_0->field_0 &= ~0x10;
+    _ReadWriteBarrier();
     return local_0;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x1bd850
 short __stdcall function_1bd850(long actor_index)

@@ -19,10 +19,6 @@ long const g_444ae0 = 0;
 
 
 
-// @stub 0x189cd0
-void __stdcall function_189cd0(long sound_index, long object_index, real scale, long a, long b, long name, long flags)
-{
-}
 
 
 
