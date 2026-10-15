@@ -2187,6 +2187,7 @@ struct s_1a4c01
 // @retail 0x1a4c00
 bool function_1a4c00(long player_index, s_entry_pair *pair, bool primary, vector3f *direction, point3f *point)
 {
+	bool result = false;
 	s_object_marker_target const *target = (s_object_marker_target const *)pair;
 	s_player_view *player = &((s_player_view *)g_4e8c24->data)[player_index & 0xffff];
 	long unit_index = function_cb6d0(player->unit_index);
@@ -2196,112 +2197,118 @@ bool function_1a4c00(long player_index, s_entry_pair *pair, bool primary, vector
 	{
 		vector3d_from_points3d(point, &target->point, direction);
 		function_30bf0(direction);
-		return true;
+		result = true;
+		goto done;
 	}
 
-	s_sort_weight_view weights;
+	{
+		real distance;
+		s_sort_weight_view weights;
 
-	if (!function_1a50a0(unit_index, ((s_1a4c00 *)OBJECT_HEADER(unit_index)->object)->field_240, &weights))
-		return false;
+		short selection = ((s_1a4c00 *)OBJECT_HEADER(unit_index)->object)->field_240;
+		if (!function_1a50a0(unit_index, selection, &weights))
+			goto done;
 
-	point3f position;
-	vector3f forward;
+		point3f position;
+		vector3f forward;
 
 #pragma inline_depth(0)
-	function_1557c0(player->unit_index, &position, &forward);
+		function_1557c0(player->unit_index, &position, &forward);
 #pragma inline_depth()
 
-	vector3f target_direction = *direction;
-	real fraction = 0.0f;
-	long target_index = NONE;
+		vector3f target_direction = *direction;
+		real fraction = 0.0f;
+		long target_index = NONE;
 
-	{
-		s_sort_candidate_view candidate;
-
-		if (function_1a6a80(target, &position, &forward, player->unit_index, player->field_c0, &candidate) && !candidate.alternate)
 		{
-			vector3d_from_points3d(point, &candidate.point, &target_direction);
-			if (function_30bf0(&target_direction) == 0.0f)
-				target_direction = *direction;
-			fraction = primary ? candidate.score : candidate.secondary_score;
-			target_index = candidate.object_index;
-		}
-	}
-	{
-		s_1a4c01 collision;
-		real distance;
+			s_sort_candidate_view candidate;
 
-		collision.field_24 = NONE;
-		{
-			point3f unit_position;
-
-			function_b9dd0(unit_index, &unit_position);
-			real dx = unit_position.x - position.x;
-			real dy = unit_position.y - position.y;
-			real dz = unit_position.z - position.z;
-			distance = (real)sqrt(dz * dz + dy * dy + dx * dx);
+			if (function_1a6a80(target, &position, &forward, player->unit_index, player->field_c0, &candidate) && !candidate.alternate)
+			{
+				vector3d_from_points3d(point, &candidate.point, &target_direction);
+				if (function_30bf0(&target_direction) == 0.0f)
+					target_direction = *direction;
+				fraction = primary ? candidate.score : candidate.secondary_score;
+				target_index = candidate.object_index;
+			}
 		}
 		{
-			vector3f offset = forward;
+			s_1a4c01 collision;
 
-			function_30bf0(&offset);
-			offset.i *= distance;
-			offset.j *= distance;
-			offset.k *= distance;
-			position.x += offset.i;
-			position.y += offset.j;
-			position.z += offset.k;
+			collision.field_24 = NONE;
+			{
+				point3f unit_position;
+
+				function_b9dd0(unit_index, &unit_position);
+				real dx = unit_position.x - position.x;
+				real dy = unit_position.y - position.y;
+				real dz = unit_position.z - position.z;
+				distance = (real)sqrt(dz * dz + dy * dy + dx * dx);
+			}
+			{
+				vector3f offset = forward;
+
+				function_30bf0(&offset);
+				offset.i *= distance;
+				offset.j *= distance;
+				offset.k *= distance;
+				position.x += offset.i;
+				position.y += offset.j;
+				position.z += offset.k;
+			}
+
+			vector3f ray;
+
+			ray.i = forward.i * 128.0f;
+			ray.j = forward.j * 128.0f;
+			ray.k = forward.k * 128.0f;
+			function_1697c0(0x2480000f, &position, &ray, function_baf80(unit_index), NONE, (s_collision_result_1697c0 *)&collision);
+			vector3d_from_points3d(point, &collision.point, &forward);
 		}
+		if (function_30bf0(&forward) == 0.0f)
+			forward = *direction;
 
-		vector3f ray;
-
-		ray.i = forward.i * 128.0f;
-		ray.j = forward.j * 128.0f;
-		ray.k = forward.k * 128.0f;
-		function_1697c0(0x2480000f, &position, &ray, function_baf80(unit_index), NONE, (s_collision_result_1697c0 *)&collision);
-		vector3d_from_points3d(point, &collision.point, &forward);
-	}
-	if (function_30bf0(&forward) == 0.0f)
-		forward = *direction;
-
-	bool result;
-	{
-		vector3f result_direction;
-
-		result_direction.i = (1.0f - fraction) * forward.i + target_direction.i * fraction;
-		result_direction.j = forward.j * (1.0f - fraction) + target_direction.j * fraction;
-		result_direction.k = forward.k * (1.0f - fraction) + target_direction.k * fraction;
-
-		real length_squared = result_direction.k * result_direction.k + result_direction.j * result_direction.j +
-			result_direction.i * result_direction.i;
-
-		if (length_squared != 0.0f)
+		bool accepted;
 		{
-			real inverse = 1.0f / (real)sqrt(length_squared);
+			vector3f result_direction;
+			distance = 1.0f - fraction;
 
-			result_direction.i *= inverse;
-			result_direction.j *= inverse;
-			result_direction.k *= inverse;
+			result_direction.i = distance * forward.i + target_direction.i * fraction;
+			result_direction.j = forward.j * distance + target_direction.j * fraction;
+			result_direction.k = forward.k * distance + target_direction.k * fraction;
+
+			real length_squared = result_direction.k * result_direction.k + result_direction.j * result_direction.j +
+				result_direction.i * result_direction.i;
+
+			if (length_squared != 0.0f)
+			{
+				real inverse = 1.0f / (real)sqrt(length_squared);
+
+				result_direction.i *= inverse;
+				result_direction.j *= inverse;
+				result_direction.k *= inverse;
+			}
+			if (function_1a6d30(player_index))
+			{
+				vector2f angle;
+
+				angle.n[1] = (real)cos(weights.outer_distance);
+				angle.n[0] = (real)sin(weights.outer_distance);
+				accepted = !function_11d3b0(&result_direction, direction, direction, angle);
+			}
+			else
+			{
+				*direction = result_direction;
+				accepted = true;
+			}
 		}
-		if (function_1a6d30(player_index))
+		if (fraction >= 1.0f && accepted)
 		{
-			vector2f angle;
-
-			angle.n[1] = (real)cos(weights.outer_distance);
-			angle.n[0] = (real)sin(weights.outer_distance);
-			result = !function_11d3b0(&result_direction, direction, direction, angle);
-		}
-		else
-		{
-			*direction = result_direction;
+			player->field_174 = target_index;
+			player->field_178 = g_510c54->game_time;
 			result = true;
 		}
 	}
-	if (fraction >= 1.0f && result)
-	{
-		player->field_174 = target_index;
-		player->field_178 = g_510c54->game_time;
-		return true;
-	}
-	return false;
+done:
+	return result;
 }
