@@ -22,7 +22,7 @@ struct s_system_link_globals
 class c_class_93590;
 class c_class_938e0;
 struct s_network_message_gateway;
-struct c_type_659ceb;
+class c_type_659ceb;
 struct s_session_interface_globals;
 struct s_search_value_globals;
 

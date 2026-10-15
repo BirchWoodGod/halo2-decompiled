@@ -477,14 +477,15 @@ real function_17bef0(dword flags, real lower, real scale, real upper, byte bit)
 {
 	byte const *bit_argument = &bit;
 	long bit_value = *bit_argument;
+	dword const *flags_reference = &flags;
 	real base = lower;
 
-	if (flags & (1 << bit_value))
+	if (*flags_reference & (1 << bit_value))
 		base = scale * lower;
 
 	real range = upper - lower;
 
-	if (flags & (1 << (byte)(bit_value + 1)))
+	if (*flags_reference & (1 << (byte)(bit_value + 1)))
 		range = range * scale;
 	return base + range * ((real)_random(&g_4e7408->seed, __FILE__, __LINE__) * (1.f / 65535.f));
 }

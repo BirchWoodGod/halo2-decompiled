@@ -124,7 +124,6 @@ void function_20aa70(vector3f *out, s_anim_data *data, long index_, real *w)
 // @retail 0x20ab60
 void function_20ab60(s_anim_data *data, vector3f *sum, real *w)
 {
-	s_anim_header *h;
 	byte *p;
 	long i;
 	short j;
@@ -136,9 +135,11 @@ void function_20ab60(s_anim_data *data, vector3f *sum, real *w)
 	case 1:
 		for (i = 0; i < data->count; i++)
 		{
-			h = data->header;
+			s_anim_header *const &h = data->header;
+			signed char prefix = h->unknown1;
+			short header_offset = h->unknown6;
 			j = (short)i;
-			p = data->base + h->unknown6 + h->unknown1 + j * 8 + h->unknownc + h->unknown0;
+			p = data->base + header_offset + prefix + j * 8 + h->unknownc + h->unknown0;
 			sum->i = ((real *)p)[0] + sum->i;
 			sum->j = ((real *)p)[1] + sum->j;
 		}
@@ -146,9 +147,11 @@ void function_20ab60(s_anim_data *data, vector3f *sum, real *w)
 	case 2:
 		for (i = 0; i < data->count; i++)
 		{
-			h = data->header;
+			s_anim_header *const &h = data->header;
+			signed char prefix = h->unknown1;
+			short header_offset = h->unknown6;
 			j = (short)i;
-			p = data->base + h->unknown6 + h->unknown1 + j * 12 + h->unknownc + h->unknown0;
+			p = data->base + header_offset + prefix + j * 12 + h->unknownc + h->unknown0;
 			sum->i = ((real *)p)[0] + sum->i;
 			sum->j = ((real *)p)[1] + sum->j;
 			*w = ((real *)p)[2] + *w;
@@ -157,9 +160,11 @@ void function_20ab60(s_anim_data *data, vector3f *sum, real *w)
 	case 3:
 		for (i = 0; i < data->count; i++)
 		{
-			h = data->header;
+			s_anim_header *const &h = data->header;
+			signed char prefix = h->unknown1;
+			short header_offset = h->unknown6;
 			j = (short)i;
-			p = data->base + h->unknown6 + h->unknown1 + j * 16 + h->unknownc + h->unknown0;
+			p = data->base + header_offset + prefix + j * 16 + h->unknownc + h->unknown0;
 			sum->i += ((real *)p)[0];
 			sum->j += ((real *)p)[1];
 			sum->k += ((real *)p)[2];

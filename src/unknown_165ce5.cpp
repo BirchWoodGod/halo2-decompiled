@@ -2072,7 +2072,7 @@ long __stdcall first_person_weapons_get_models(long user_index, long unit_index,
 	if (!(g_4e6948->state == 1 ? g_4f55e2 : false) && user_index != NONE)
 	{
 		s_first_person_user *user = &first_person_users[user_index];
-		bool active = false;
+		long active = 0;
 		bool armed = false;
 		long field_x11c898;
 
