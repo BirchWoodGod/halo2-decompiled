@@ -531,7 +531,7 @@ void __stdcall function_b83b0(long object_index, bool unused)
 
 void __stdcall function_b87b0(long object_index);
 void object_widgets_delete(long object_index);
-void function_bee60(long object_index);
+dword function_bee60(long object_index);
 void function_146bf0();
 void havok_object_detach(long object_index);
 void function_278f00();
