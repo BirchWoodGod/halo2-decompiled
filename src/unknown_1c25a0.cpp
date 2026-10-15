@@ -1779,7 +1779,7 @@ void fixed_memory_get_statistics(c_havok_fixed_memory *memory, s_fixed_memory_st
 void fixed_memory_get_statistics_16(c_havok_fixed_memory *memory, s_fixed_memory_statistics_16 *statistics);
 void function_22c390(hkMemory *memory, s_fixed_memory_statistics_16 *statistics);
 void function_22cb00(hkMemory *memory, s_physics_pool_statistics *statistics);
-long function_1d3880(s_havok_component const *component, long *constraints, long *contacts, long *other, long *bodies);
+long function_1d3880(s_havok_component const *component, long *constraints, long *bodies, long *contacts, long *other);
 
 // @retail 0x1c4590 standard
 void __stdcall function_1c4590(long flags)
@@ -1840,7 +1840,7 @@ void __stdcall function_1c4590(long flags)
     while ((component = (s_havok_component *)data_iterator_next_inlined(&iterator2)) != NULL)
     {
         long contacts, constraints, other, bodies;
-        function_1d3880(component, &contacts, &constraints, &other, &bodies);
+        function_1d3880(component, &contacts, &bodies, &constraints, &other);
         contacts_total += contacts;
         bodies_total += bodies;
         constraints_total += constraints;
