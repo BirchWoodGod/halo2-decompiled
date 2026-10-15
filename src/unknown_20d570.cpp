@@ -77,7 +77,7 @@ void function_20d870(long actor_index, short channel, short value);
 void __stdcall function_1fbac0(long unknown, long unit_index, bool unknown2, long unknown3, s_1fbac0_event *event);
 
 // @retail 0x20d570
-void __stdcall function_20d570(long arg_0, short arg_1, long arg_2, void *arg_3)
+void __stdcall function_20d570(short arg_1, long arg_0, long arg_2, void *arg_3)
 {
 	if (g_4f55d0->active)
 	{
