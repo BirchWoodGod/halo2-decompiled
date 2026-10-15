@@ -104,6 +104,8 @@ real c_world_contact_update::evaluate(void const *body, void const *query)
 class c_contact_callback
 {
 public:
+	__forceinline c_contact_callback() {}
+	__forceinline c_contact_callback(bool value) : found(value) {}
 	virtual ~c_contact_callback() {}
 	virtual void hit(void const *query, s_contact_body_view const *body) = 0;
 	bool found;
@@ -125,6 +127,7 @@ public:
 class c_contact_exclusion : public c_contact_callback
 {
 public:
+	__forceinline c_contact_exclusion() : c_contact_callback(false) {}
 	virtual void hit(void const *query, s_contact_body_view const *body);
 	bool found_other;
 	byte unknown09[3];
@@ -1591,7 +1594,7 @@ struct c_contact_query_bounds_info
     byte unknown18[8];
     hkVector4 lower, upper;
     c_contact_query_bounds_info();
-    ~c_contact_query_bounds_info()
+    __forceinline ~c_contact_query_bounds_info()
     {
         if (!(properties.capacity_and_flags & 0x80000000))
             g_480118->allocate((long)properties.data, (properties.capacity_and_flags & 0x7fffffff) * 8, 0x12);
@@ -1703,8 +1706,8 @@ bool function_1c5210(transform4x3f const *matrix, void *shape, long excluded_com
     (void)&filter;
     c_contact_query_transform_info info;
     c_contact_exclusion callback;
+    callback.found_other = false;
     callback.excluded_component = excluded_component;
-    callback.found = callback.found_other = false;
     info.shape = shape;
     info.transform.m_rotation.m_col0.set(matrix->forward.i, matrix->forward.j, matrix->forward.k);
     info.transform.m_rotation.m_col1.set(matrix->left.i, matrix->left.j, matrix->left.k);

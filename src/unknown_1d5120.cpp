@@ -32,6 +32,8 @@ public:
 
 __declspec(noinline) void function_1d56f0(s_havok_component *component);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1d56f0
 void function_1d56f0(s_havok_component *component)
 {
@@ -40,47 +42,57 @@ void function_1d56f0(s_havok_component *component)
     bool enabled = (bool)((object[0x348] >> 2) & 1);
     component->unknown1c = (byte)function_1d5940(component, enabled, false, true);
     char index = component->unknown18;
-    if (index >= 0 && index < component->rigid_bodies.size && (short)index != NONE)
+    if (index >= 0 && index < component->rigid_bodies.size)
     {
-        byte *physics = definition + 0x2ac;
-        if (*(long *)(definition + 0x2f8))
+        short const &converted_index = (short)index;
+        if (converted_index != NONE)
         {
-            byte *shape = *(byte **)(physics + 0x50);
-            if (*(long *)(shape + 0x38) > 0)
+            byte *physics = definition + 0x2ac;
+            if (*(long *)(definition + 0x2f8))
             {
-                if (((c_1d56f0_shape *)shape)->slot10() <= 1)
-                    shape += 0x60;
-                if (shape)
+                byte *shape = *(byte **)(physics + 0x50);
+                if (*(long *)(shape + 0x38) > 0)
                 {
-                    c_contact_query_transform_info info;
-                    transform4x3f matrix;
-                    function_1d4360(component, &matrix);
-                    info.shape = shape;
-                    info.filter = ((component->object_index + 1) << 16) | 0xc;
-                    function_181f80((s_havok_transform *)&info.transform, &matrix);
-                    component->rigid_body = (hkRigidBody *)new c_contact_query_transform_volume(&info);
+                    if (((c_1d56f0_shape *)shape)->slot10() <= 1)
+                        shape += 0x60;
+                    if (shape)
+                    {
+                        c_contact_query_transform_info info;
+                        transform4x3f matrix;
+                        function_1d4360(component, &matrix);
+                        info.shape = shape;
+                        info.filter = ((component->object_index + 1) << 16) | 0xc;
+                        function_181f80((s_havok_transform *)&info.transform, &matrix);
+                        component->rigid_body = (hkRigidBody *)new c_contact_query_transform_volume(&info);
+                    }
+                }
+                if (*(long *)(physics + 0x4c))
+                {
+                    bool skip = (bool)((*(dword *)(*(byte **)(physics + 0x50) + 0x3c) >> 1) & 1);
+                    (void)&skip;
+                    _ReadWriteBarrier();
+                    if (skip)
+                        goto label_1d585f;
                 }
             }
-            if (*(long *)(physics + 0x4c) &&
-                (bool)((*(dword *)(*(byte **)(physics + 0x50) + 0x3c) >> 1) & 1))
-                goto label_1d585f;
-        }
-        if (function_f1320(component->object_index))
-            return;
-label_1d585f:
-        {
-            real bounds[6];
-            if (function_205510(bounds, physics, component))
+            if (function_f1320(component->object_index))
+                return;
+        label_1d585f:
             {
-                c_contact_query_bounds_info info;
-                info.lower.set(bounds[0], bounds[2], bounds[4]);
-                info.upper.set(bounds[1], bounds[3], bounds[5]);
-                info.filter = ((component->object_index + 1) << 16) | 0xc;
-                component->unknown9c = (long)new c_contact_query_bounds_volume(&info);
+                real bounds[6];
+                if (function_205510(bounds, physics, component))
+                {
+                    c_contact_query_bounds_info info;
+                    info.lower.set(bounds[0], bounds[2], bounds[4]);
+                    info.upper.set(bounds[1], bounds[3], bounds[5]);
+                    info.filter = ((component->object_index + 1) << 16) | 0xc;
+                    component->unknown9c = (long)new c_contact_query_bounds_volume(&info);
+                }
             }
         }
     }
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x1d5120
 bool function_1d5120(s_havok_component *arg_0, long arg_1, long arg_2, long arg_3,

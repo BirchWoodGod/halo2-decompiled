@@ -607,6 +607,8 @@ void function_220fd0(
 	g_47005c.dirty = true;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x2211e0
 void sound_driver_voice_environment_set(
 	long voice_index,
@@ -622,6 +624,7 @@ void sound_driver_voice_environment_set(
 
 	parameters.lDirect = sound_gain_to_volume(globals->volume_a);
 	parameters.lDirectHF = sound_gain_to_volume(globals->volume_b);
+	_ReadWriteBarrier();
 	parameters.flRoomRolloffFactor = 0.0f;
 	parameters.Obstruction.flLFRatio = 0.0f;
 	parameters.Occlusion.flLFRatio = 0.25f;
@@ -631,6 +634,7 @@ void sound_driver_voice_environment_set(
 	parameters.lRoomHF = parameters.lRoom;
 	parameters.Obstruction.lHFLevel = sound_gain_to_volume(1.0f - voice->unknown30);
 	parameters.Occlusion.lHFLevel = sound_gain_to_volume(1.0f - voice->unknown2c);
+	_ReadWriteBarrier();
 	IDirectSoundBuffer_SetI3DL2Source(voice->buffer, &parameters, DS3D_DEFERRED);
 	filter.dwMode = DSFILTER_MODE_DLS2;
 	filter.dwQCoefficient = 0;
@@ -640,6 +644,7 @@ void sound_driver_voice_environment_set(
 	filter.adwCoefficients[3] = 0;
 	IDirectSoundBuffer_SetFilter(voice->buffer, &filter);
 }
+#pragma function(_ReadWriteBarrier)
 
 /* what the game asks of a voice each update */
 struct s_sound_driver_voice_parameters
