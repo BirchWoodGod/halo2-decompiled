@@ -66,6 +66,22 @@ NOT_STARTS = {
     0x231c00,
 }
 
+# Function starts that discovery cannot find: nothing calls these functions,
+# and the function laid out just before each one reaches it only by a jmp, so
+# tracing takes it for part of that function. A row seeds discovery, so each
+# start stays once its row exists; the list keeps the retail evidence.
+KNOWN_STARTS = {
+    # 0x2382d6 jumps to it (at 0x23842b); it follows an unconditional jmp out
+    # and opens by saving its own registers (push ebx ; push esi)
+    0x238459: 'tail jump target of 0x2382d6',
+    # 0x2b8da0 jumps to it (at 0x2b8dbf); it follows 0x2b8da0's jump table and
+    # opens its own frame (sub esp, 0x6c) over its own stack arguments
+    0x2b8e10: 'tail jump target of 0x2b8da0',
+    # 0x2b557a ends `jmp 0x2b55ae ; ... ; ret`, and it opens a full frame
+    # (push ebp ; lea ebp, [esp - 0x78] ; sub esp, 0x844)
+    0x2b55ae: 'tail jump target of 0x2b557a',
+}
+
 EH_MAX_SIZE = 32
 MIN_HANDLER_THUNKS = 8
 
@@ -225,7 +241,7 @@ def main():
     for section in image.sections:
         if section.name not in CODE_SECTIONS and not (section.name.startswith('BINK') and section.name != 'BINKDATA'):
             continue
-        found = discover(image, seeds=old_rows, text=section, not_starts=NOT_STARTS)
+        found = discover(image, seeds=old_rows.keys() | KNOWN_STARTS.keys(), text=section, not_starts=NOT_STARTS)
         lib_hits = {}
         if section.name == '.text':
             lib_hits = library_hits(

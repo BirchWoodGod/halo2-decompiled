@@ -1156,10 +1156,11 @@ bool __stdcall clan_member_compare(void const *a, void const *b, void const *con
 	bool b9 = (bool)((flags_b >> 9) & 1);
 	volatile bool result = false;
 	bool a_c0 = false;
-	bool b_c0 = false;
+	bool b_c0;
 
 	if (flags_a & 0xc0)
 		a_c0 = true;
+	b_c0 = false;
 	if (flags_b & 0xc0)
 		b_c0 = true;
 
