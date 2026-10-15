@@ -2940,8 +2940,11 @@ void function_176e40(void)
 
 	while (effect_index != NONE)
 	{
-		if (!function_1794e0(effect_index) && !function_179730(effect_index) && !function_179810(effect_index))
-			function_1792b0(effect_index, dt);
+		if (!function_1794e0(effect_index) && !function_179730(effect_index))
+		{
+			bool const &deleted = function_179810(effect_index);
+			if (!deleted) function_1792b0(effect_index, dt);
+		}
 		effect_index = data_datum_index(g_4ea93c, data_find_index(g_4ea93c, effect_index == NONE ? 0 : (effect_index & 0xffff) + 1));
 	}
 }

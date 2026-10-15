@@ -312,12 +312,13 @@ done:
 
 short function_1a6fe0(long owner_index, short type);
 
+#pragma inline_depth(0)
 // @retail 0x1e1e50
 bool function_1e1e50(long actor_index, vector3f *direction)
 {
 	const long *index_reference = &actor_index;
 	vector3f *const *direction_reference = &direction;
-	s_actor_moving *actor = actor_moving_get(*index_reference);
+	s_actor_moving *actor = (s_actor_moving *)(g_4f55f0->data + (*index_reference & 0xffff) * sizeof(s_actor_moving));
 	bool result = false;
 	if (actor->prop_index != NONE)
 	{
@@ -331,6 +332,8 @@ bool function_1e1e50(long actor_index, vector3f *direction)
 	}
 	return result;
 }
+#pragma inline_depth()
+
 
 struct s_actor_periodic_view
 {
