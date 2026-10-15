@@ -1869,13 +1869,19 @@ bool network_session_address_is_peer(c_class_58d20 *session, const s_type_99af70
 	bool result = false;
 
 	if (network_session_channel_is_host_address(session, address))
-		return true;
-	long local_0 = session->state;
-	if ((local_0 > 2 && local_0 <= 8) || local_0 == 1)
 	{
-		long member_index = network_session_find_member_by_address(session, address);
-		if (member_index != NONE && member_index != session->current_member && member_index == session->member_index)
-			result = true;
+		result = true;
+	}
+	else
+	{
+		long local_0;
+		local_0 = session->state;
+		if ((local_0 > 2 && local_0 <= 8) || local_0 == 1)
+		{
+			long member_index = network_session_find_member_by_address(session, address);
+			if (member_index != NONE && (long)member_index != session->current_member && member_index == session->member_index)
+				result = true;
+		}
 	}
 	return result;
 }

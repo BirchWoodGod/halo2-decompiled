@@ -20,13 +20,21 @@ extern bool g_510c21;
 
 long g_4ed294;
 
+PRIVATE __forceinline void function_18ec21(long stage = g_global_f9ae07.field_0, long const &next = (long)(g_global_f9ae07.field_0 + 1))
+{
+
+	g_global_f9ae07.field_c_6[stage + 1] = g_global_f9ae07.field_c_6[stage];
+	g_global_f9ae07.field_20[g_global_f9ae07.field_0 + 1] = g_global_f9ae07.field_20[g_global_f9ae07.field_0];
+	g_global_f9ae07.field_0 = next;
+}
+
 // @retail 0x18ec20
 void function_18ec20(bool keep)
 {
 	g_4ed294 = 1;
 	if (!keep)
 	{
-		function_xe0ae94();
+		function_18ec21();
 	}
 }
 
@@ -36,7 +44,7 @@ void texture_cache_initialize_for_new_map(void); /* unknown_12c0d0.cpp */
 // @retail 0x18ee60
 void function_18ee60(void)
 {
-	function_xe0ae94();
+	function_18ec21();
 	texture_cache_initialize_for_new_map();
 	g_4ed294 = 5;
 }
