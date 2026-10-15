@@ -319,8 +319,7 @@ bool function_1f1ee0(s_shape_carrier_contact const *contact, s_shape_state *stat
                     delta.j = point.y - contact->point.y;
                     delta.k = point.z - (contact->point.z + height);
                     real distance = (real)sqrt(delta.k * delta.k + delta.j * delta.j + delta.i * delta.i) - height;
-                    real upper = stepping ? 0.1f : 0.2f;
-                    valid = PIN(distance, -0.1f, upper) == distance;
+                    valid = PIN(distance, -0.1f, (stepping ? 0.1f : 0.2f)) == distance;
                 }
                 else
                 {
