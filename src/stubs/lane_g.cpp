@@ -75,7 +75,3 @@ struct s_saved_game_header;
 struct s_saved_game_read;
 class c_campaign_options_list;
 
-// @stub 0x2ca284
-void c_class_2c9e69::handle_item(s_controller_reference **controller, long *item)
-{
-}

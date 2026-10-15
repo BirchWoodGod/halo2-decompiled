@@ -376,24 +376,26 @@ void function_2bdd70(point3f *out, s_spline_2bd *spline, long n, point3f *points
 	if (next >= spline->count)
 		next -= spline->count;
 
+	point3f &first_output = out[0];
 	point3f *a = &points[previous];
 	point3f *b = &points[i];
 	point3f *c = &points[i + 1];
 	point3f *d = &points[next];
-	out[0].x = b->x + a->x;
-	out[0].y = b->y + a->y;
-	out[0].z = b->z + a->z;
-	out[0].x *= 0.5f;
-	out[0].y *= 0.5f;
-	out[0].z *= 0.5f;
+	first_output.x = b->x + a->x;
+	first_output.y = b->y + a->y;
+	first_output.z = b->z + a->z;
+	first_output.x *= 0.5f;
+	first_output.y *= 0.5f;
+	first_output.z *= 0.5f;
 	out[1] = *b;
 	out[2] = *c;
-	out[3].x = d->x + c->x;
-	out[3].y = d->y + c->y;
-	out[3].z = d->z + c->z;
-	out[3].x *= 0.5f;
-	out[3].y *= 0.5f;
-	out[3].z *= 0.5f;
+	point3f &last_output = out[3];
+	last_output.x = d->x + c->x;
+	last_output.y = d->y + c->y;
+	last_output.z = d->z + c->z;
+	last_output.x *= 0.5f;
+	last_output.y *= 0.5f;
+	last_output.z *= 0.5f;
 }
 
 // @retail 0x2bde90
