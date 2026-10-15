@@ -5,12 +5,20 @@
 #include "unknown_0259d0.h"
 
 struct s_245c0_state;
-struct s_frame_offset
+struct s_frame_camera
 {
     point3f position;
     vector3f forward;
     vector3f up;
+    byte unknown24[0xc];
+    short field_30;
+    short field_32;
+    short field_34;
+    short field_36;
+    byte unknown38[0x74 - 0x38];
 };
+
+typedef char assert_frame_camera_size[(sizeof(s_frame_camera) == 0x74) ? 1 : -1];
 
 struct s_frame_storage
 {
@@ -20,7 +28,7 @@ struct s_frame_storage
         struct { short value; } field_0;
         struct { byte unknown00[0x2]; short value; } field_2;
         struct { byte unknown00[0x7]; byte value; } field_7;
-        struct { byte unknown00[0x18]; s_frame_offset value; } field_18;
+        struct { byte unknown00[0x18]; s_frame_camera value; } field_18;
         struct { byte unknown00[0x40]; real value; } field_40;
         struct { byte unknown00[0x48]; word value; } field_48;
         struct { byte unknown00[0x4a]; word value; } field_4a;
