@@ -505,10 +505,10 @@ void function_28d840()
 			high = middle;
 		}
 	}
-	s_animation_output *result = g_5044c0;
 	_mm_prefetch((char const *)(keys + low), _MM_HINT_T0);
 	s_scale_key *key = keys + low;
-	result->scale = *key;
+	s_scale_key &output = g_5044c0->scale;
+	output = *key;
 	if (low + 1 < count)
 	{
 		dword frame = frames[low];
@@ -520,7 +520,7 @@ void function_28d840()
 			real reciprocal;
 			RECIPROCAL(reciprocal, denominator);
 			s_scale_key next = key[1];
-			function_28d091(result->scale.value, next.value, reciprocal, local_0, &result->scale.value);
+			function_28d091(output.value, next.value, reciprocal, local_0, &output.value);
 		}
 	}
 }

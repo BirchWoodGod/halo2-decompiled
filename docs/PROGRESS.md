@@ -2,6 +2,33 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8690 functions match
+
+```
+matched 8690 of 11318 game functions (1158069 of 2784283 bytes, 41.59%)
+```
+
+3 new matches, none lost:
+- Machine 1's key lane round 25: a new `adjustor` marker kind in `tools/build.py` for the compiler's this-adjustor thunks; with it `0x278b30`, `0x1c58d0` and `0x1c58e0` match.
+
+## 2026-10-14: 8687 functions match
+
+```
+matched 8687 of 11318 game functions (1158045 of 2784283 bytes, 41.59%)
+```
+
+3 new matches, none lost:
+- Machine 1's key lane round 24: machine 3's `0x2a2ce0`, `0x2a2d40` and `0x2a2da0` match (lent for the round); `0x5efd0` goes from 75 to 68.
+
+## 2026-10-14: 8684 functions match
+
+```
+matched 8684 of 11318 game functions (1157790 of 2784283 bytes, 41.58%)
+```
+
+6 new matches, none lost:
+- Machine 3's batch 35 (#481): `0x16a30`, `0x2c788a`, `0x189060`, `0x189340`, `0x28d840` and `0x27a100` match; `0x27a100` through @BirchWoodGod's approved `0x11dd80` parameter order, and their approved `0x122db0` order is in too.
+
 ## 2026-10-14: 8678 functions match
 
 ```
