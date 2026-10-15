@@ -62,6 +62,7 @@ void *game_state_malloc_aligned(
 }
 
 /* a loop allocator whose header and pool are in the game state */
+__declspec(noinline) s_loop_allocator *game_state_loop_allocator_new(long size, char const *name);
 // @retail 0x123dd0
 s_loop_allocator *game_state_loop_allocator_new(long size, char const *name)
 {
