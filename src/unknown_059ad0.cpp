@@ -2768,7 +2768,17 @@ bool network_session_member_leave(c_class_58d20 *session, long member_index)
 {
 	bool result = false;
 
-	if (network_session_is_leaving(session))
+	if (!network_session_is_leaving(session))
+	{
+		s_session_id member_id = session->members[member_index].id;
+		s_session_id message = *(s_session_id *)&session->unknown1c;
+		network_observer_send_message(session->observer, session->value10, session->member_states[member_index].unknown04, true, _network_message_type_leave_acknowledge, sizeof(message), &message);
+		network_session_remove_member(session, member_index);
+		if (session->listener)
+			session->listener->member_left(&member_id);
+		result = true;
+	}
+	else
 	{
 		long state = session->state;
 		if (state == 7)
@@ -2777,20 +2787,12 @@ bool network_session_member_leave(c_class_58d20 *session, long member_index)
 		}
 		else if (state == 8)
 		{
-			dword bit = 1 << member_index;
-			if (!(*(dword *)((byte *)&session->value7420 + 0x14) & bit))
-				*(dword *)((byte *)&session->value7420 + 0x14) |= bit;
+			dword &mask = *(dword *)((byte *)&session->value7420 + 0x14);
+			if (!(mask & (1 << member_index)))
+				mask |= 1 << member_index;
 		}
-		return result;
 	}
-
-	s_session_id member_id = session->members[member_index].id;
-	s_session_id message = *(s_session_id *)&session->unknown1c;
-	network_observer_send_message(session->observer, session->value10, session->member_states[member_index].unknown04, true, _network_message_type_leave_acknowledge, sizeof(message), &message);
-	network_session_remove_member(session, member_index);
-	if (session->listener)
-		session->listener->member_left(&member_id);
-	return true;
+	return result;
 }
 
 /* the update that carries the session parameters that changed (network_session_membership.cpp builds it) */
@@ -3806,9 +3808,7 @@ void __stdcall function_61ac0(c_class_58d20 *session)
    long elapsed = network_session_time_now() - local_0;
    if (choice->acknowledged == (1u << session->member_count) - 1 || elapsed >= g_network_configuration.value1474)
    {
-    if (!(choice->acknowledged & (1 << choice->selected)))
-     network_session_clear_peer(session, choice->selected);
-    else
+    if (choice->acknowledged & (1 << choice->selected))
     {
      s_session_id id = *(s_session_id *)&session->unknown1c;
      s_network_session_member_state *member = &session->member_states[choice->selected];
@@ -3818,6 +3818,8 @@ void __stdcall function_61ac0(c_class_58d20 *session)
      choice->commit_time = network_session_time_now();
      session->value44 = choice->selected;
     }
+    else
+     network_session_clear_peer(session, choice->selected);
    }
   }
   long local_1 = choice->commit_time;
