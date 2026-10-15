@@ -1,5 +1,7 @@
 // @flags /O2 /Gr /arch:SSE
-// BLOCKED-BY: enabling this body loses matched 0x1cfd10 and 0x277ec0 in the full image.
+// BLOCKED-BY 0x182b90: enabling this body loses matched 0x1cfd10 and 0x277ec0 in the full image: once this
+// self-aligning (16-byte frame) caller reaches 0x1cfd10, our 0x182b90 takes its fourth argument on the stack
+// instead of in ebx (build/codex-report.md, round 26).
 #if 0
 #include "unknown_1cec30.h"
 
@@ -8,25 +10,35 @@ struct s_component_contact_pair;
 bool function_2792c0(s_2792c0_context *);
 void function_1cfd10(s_component_contact_pair const *, s_havok_component *, real);
 
-// Retail 0x279410, disabled pending the contact-recording callee.
+/* an entity's property value read as a real (0 when it has no such property) */
+static inline real havok_entity_property_real_get(hkEntity const *entity, dword key)
+{
+    for (long i = 0; i < entity->m_property_count; i++)
+    {
+        if (entity->m_properties[i].m_key == key)
+            return *(real const *)&entity->m_properties[i].m_value.m_data;
+    }
+    return 0.0f;
+}
+
+// Retail 0x279410, disabled with its blocker above.
 bool __cdecl function_279410(s_component_contact_pair const *pair, hkEntity *moving,
     hkEntity *opposing, real limit, real reduction, real approach)
 {
     long slot = havok_entity_property_get(moving, 0x2001);
-    long discarded = havok_entity_property_get(moving, 0x2002);
-    (void)&discarded;
+    real absolute_speed = havok_entity_property_real_get(moving, 0x2002);
     long opposite_slot = havok_entity_property_get(opposing, 0x2001);
     s_havok_component *part = havok_component_get(slot);
-    byte *entity = (byte *)((s_havok_object_header *)g_4e0300->data)[part->object_index & 0xffff].object;
-    byte *second_entity = opposite_slot != NONE && part ?
-        (byte *)((s_havok_object_header *)g_4e0300->data)[part->object_index & 0xffff].object : NULL;
+    byte *entity = (byte *)havok_object_get(part->object_index);
+    byte *second_entity = NULL;
+    if (opposite_slot != NONE && part)
+        second_entity = (byte *)havok_object_get(part->object_index);
 
     __m128 squared = ((hkRigidBody *)moving)->m_motion->m_linear_velocity.m_quad;
     squared = _mm_mul_ps(squared, squared);
     __m128 accumulated = _mm_add_ss(_mm_shuffle_ps(squared, squared, 0x55), squared);
     accumulated = _mm_add_ss(_mm_shuffle_ps(squared, squared, 0xaa), accumulated);
     accumulated = _mm_sqrt_ss(accumulated);
-    real absolute_speed;
     _mm_store_ss(&absolute_speed, accumulated);
     real speed = absolute_speed;
     if (((hkRigidBody *)opposing)->m_motion->getType() != 7)
@@ -42,9 +54,10 @@ bool __cdecl function_279410(s_component_contact_pair const *pair, hkEntity *mov
         if (absolute_speed > relative_speed)
             speed = relative_speed;
     }
+    bool result;
     if (entity[0xaa] == 0)
     {
-        byte *current = (byte *)((s_havok_object_header *)g_4e0300->data)[part->object_index & 0xffff].object;
+        byte *current = (byte *)havok_object_get(part->object_index);
         if (current[0x3dd] && second_entity && second_entity[0xaa] == 0)
             return false;
         if (!current[0x34b])
@@ -52,18 +65,16 @@ bool __cdecl function_279410(s_component_contact_pair const *pair, hkEntity *mov
             real projected = approach;
             if (projected > speed)
                 projected = speed;
-            if (projected > limit)
-                goto record;
-            if (!(speed > limit) || function_2792c0((s_2792c0_context *)pair))
-                return false;
-            goto record;
+            result = projected > limit || speed > limit && !function_2792c0((s_2792c0_context *)pair);
         }
+        else
+            result = speed > limit;
     }
-    if (!(speed > limit))
-        return false;
-record:
-    function_1cfd10(pair, part, speed - reduction);
-    return true;
+    else
+        result = speed > limit;
+    if (result)
+        function_1cfd10(pair, part, speed - reduction);
+    return result;
 }
 
 #endif

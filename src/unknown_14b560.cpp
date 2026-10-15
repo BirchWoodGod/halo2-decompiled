@@ -435,6 +435,8 @@ static inline void player_action_target_clear(s_player_action_target *target)
 	target->index = 0;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x14d040
 void player_action_initialize(s_player_action *action)
 {
@@ -450,11 +452,13 @@ void player_action_initialize(s_player_action *action)
 	action->unknown34 = NONE;
 	action->unknown38 = NONE;
 	action->unknown3c = NONE;
+	_ReadWriteBarrier();
 	s_player_action_target *target = &action->target;
 	player_action_target_clear(target);
 	target->index = NONE;
 	target->unknown08 = NONE;
 }
+#pragma function(_ReadWriteBarrier)
 
 static inline bool function_x41b793(real value)
 {
