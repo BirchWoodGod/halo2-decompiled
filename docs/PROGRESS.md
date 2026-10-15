@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8758 functions match
+
+```
+matched 8758 of 11318 game functions (1174515 of 2784283 bytes, 42.18%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 44 (#490): `0x137ed0` (with a float angle in `0x39e50`'s rotation helper), `0x208f10` and `0x20ab60` match.
+
 ## 2026-10-15: 8755 functions match
 
 ```
