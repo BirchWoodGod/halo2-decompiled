@@ -463,6 +463,10 @@ void function_2b9b10(s_particle_properties_2ba const *definition, void const *or
 
 
 PRIVATE __declspec(noinline) void particle_damping_update_2b(s_particle_properties_2ba const *definition,
+    void *system, long first, real scale);
+
+// @retail 0x2b8e10
+PRIVATE void particle_damping_update_2b(s_particle_properties_2ba const *definition,
     void *system, long first, real scale)
 {
     s_particle_property_entry_2ba *properties = definition->properties;
