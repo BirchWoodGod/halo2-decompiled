@@ -852,7 +852,7 @@ void function_14887e(s_screen_settings_54dc6c *settings);
 struct s_screen_settings_view
 {
 	long mode;
-	XUID xuid;
+	dword xuid[2];
 	byte unknown0c[0x78 - 0x0c];
 };
 
@@ -862,6 +862,19 @@ void c_xbox_live_message_display_screen::show_next_message()
 	s_screen_settings_view settings;
 
 	function_14887e((s_screen_settings_54dc6c *)&settings);
+	/* both settings modes keep the viewer's xuid in the same place */
+	XUID const *self_xuid;
+	switch (settings.mode)
+	{
+	case 1:
+		self_xuid = (XUID const *)settings.xuid;
+		break;
+	case 2:
+		self_xuid = (XUID const *)settings.xuid;
+		break;
+	default:
+		__assume(0);
+	}
 	message_text[0] = 0;
 	value3510 = 0;
 	voice_mail_length = 0;
@@ -889,7 +902,7 @@ void c_xbox_live_message_display_screen::show_next_message()
 			task_2d0c = NONE;
 		}
 		other_title = !online_title_is_this_title(message->title_id);
-		if (xuid_equal(xuid, &settings.xuid, false) &&
+		if (xuid_equal(xuid, self_xuid, false) &&
 			(!TEST_FIELD_BIT(message->flag_bits.flag10) || value_db8 == 1) &&
 			(!TEST_FIELD_BIT(message->flag_bits.flag12) || value_db8 == 2))
 		{
@@ -901,10 +914,9 @@ void c_xbox_live_message_display_screen::show_next_message()
 					string_handle = 0x1d0002cc;
 				else if (TEST_FIELD_BIT(message->flag_bits.flag11))
 				{
+					string_handle = 0x1b0002ce;
 					if (other_title)
 						string_handle = 0x1a0002cd;
-					else
-						string_handle = 0x1b0002ce;
 				}
 				else if (TEST_FIELD_BIT(message->flag_bits.flag12))
 					string_handle = 0x1b0002d1;

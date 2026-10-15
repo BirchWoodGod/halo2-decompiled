@@ -441,7 +441,7 @@ real_quaternion_transform g_502430[255];
 /* the transform helpers (unknown_11cb00.cpp) */
 void function_11dbb0(real_quaternion_transform *out, real_quaternion_transform const *a,
 	real_quaternion_transform const *b);
-void function_11dd80(real_quaternion_transform *out, real_quaternion_transform const *in);
+void function_11dd80(real_quaternion_transform const *in, real_quaternion_transform *out);
 
 #define NODE_MASK_SET(mask, index, value) \
 	if (value) \
@@ -490,7 +490,7 @@ bool __stdcall function_27a100(s_graph_tag *graph, s_animation *animation, s_gra
 				function_11dbb0(&parent, &transforms[parent_index], &parent);
 				parent_index = graph->nodes[parent_index].parent_index;
 			}
-			function_11dd80(&inverse, &parent);
+			function_11dd80(&parent, &inverse);
 			quantized_transform_decompress(&entry->transform, &local);
 			function_11dbb0(&object_space, &inverse, &local);
 			for (child_index = node->first_child_index; child_index >= 0;
