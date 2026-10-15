@@ -1390,10 +1390,9 @@ void friends_lists_update_presence()
 		XONLINE_PRESENCE friend_presences[101];
 		XONLINE_PRESENCE clan_presences[121];
 		XONLINE_USER user;
-		long friend_count = g_global_4acf62.field_4_4 ? g_global_4acf62.field_4_4->actual_count : 0;
 		long clan_count = g_global_4acf62.field_8_2 ? g_global_4acf62.field_8_2->actual_count : 0;
+		long friend_count = g_global_4acf62.field_4_4 ? g_global_4acf62.field_4_4->actual_count : 0;
 		long i;
-		long j;
 
 		function_18ff47(g_global_4acf62.controller_index, (dword *)&user);
 		if (friend_count > 0)
@@ -1402,7 +1401,7 @@ void friends_lists_update_presence()
 			online_presence_get_latest(g_global_4acf62.presence_task_index, 'clan', clan_count, clan_presences);
 		for (i = 0; i < friend_count; i++)
 		{
-			for (j = 0; j < clan_count; j++)
+			for (long j = 0; j < clan_count; j++)
 			{
 				if (xuid_equal(&clan_presences[j].xuid, &friend_presences[i].xuid, false))
 				{
@@ -1429,7 +1428,7 @@ void friends_lists_update_presence()
 				{
 					if (xuid_equal(&user.xuid, &friend_->xuid, false))
 						friend_->flags20 |= 1;
-					for (j = 0; j < friend_count; j++)
+					for (long j = 0; j < friend_count; j++)
 					{
 						if (xuid_equal(&friend_->xuid, &friend_presences[j].xuid, false))
 						{
@@ -1458,17 +1457,16 @@ void friends_lists_update_presence()
 				{
 					if (xuid_equal(&user.xuid, &player->xuid, false))
 						player->flags20 |= 1;
-					for (j = 0; j < clan_count; j++)
+					for (long j = 0; j < clan_count; j++)
 					{
-						XONLINE_PRESENCE *presence = &clan_presences[j];
 
-						if (xuid_equal(&player->xuid, &presence->xuid, false))
+						if (xuid_equal(&player->xuid, &clan_presences[j].xuid, false))
 						{
-							player->flags20 |= presence->dwUserState;
-							player->session_id = presence->SessionID;
-							player->title_id = presence->dwTitleID;
-							player->state_data_size = presence->StateDataSize > sizeof(player->state_data) ? sizeof(player->state_data) : presence->StateDataSize;
-							memcpy(player->state_data, presence->StateData, player->state_data_size);
+							player->flags20 |= clan_presences[j].dwUserState;
+							player->session_id = clan_presences[j].SessionID;
+							player->title_id = clan_presences[j].dwTitleID;
+							player->state_data_size = clan_presences[j].StateDataSize > sizeof(player->state_data) ? sizeof(player->state_data) : clan_presences[j].StateDataSize;
+							memcpy(player->state_data, clan_presences[j].StateData, player->state_data_size);
 							if ((player->flags20 & 0xc00) && !friends_list_contains(&player->xuid))
 								player->flags20 &= ~0xf;
 							break;
