@@ -634,26 +634,27 @@ void function_295e60(short arg_0)
 	while ((object = (s_295e60_object *)function_baeb0(&iterator)) != NULL)
 	{
 		s_295e60_placement *placement = (s_295e60_placement *)function_b7a40((s_scenario_identifier_ab const *)((byte *)object + 0xa4), NULL);
-		object->flags &= ~0x400000;
+		dword *flags = &object->flags;
+		*flags &= ~0x400000;
 		object->field_130 = NONE;
 		if (placement)
 		{
 			switch (function_10a040(object->definition_index, (s_scenery_placement *)placement))
 			{
 			case 0:
-				object->flags |= 0x800000;
+				*flags |= 0x800000;
 				break;
 			case 1:
 				if (arg_0 < placement->count_50)
 				{
 					object->field_130 = placement->entries_54[arg_0].value;
 					if (placement->entries_54[arg_0].value != NONE)
-						object->flags |= 0x400000;
+						*flags |= 0x400000;
 				}
-				object->flags |= 0x800000;
+				*flags |= 0x800000;
 				break;
 			case 3:
-				object->flags |= 0x800000;
+				*flags |= 0x800000;
 				break;
 			}
 		}
@@ -663,7 +664,8 @@ void function_295e60(short arg_0)
 	while ((object = (s_295e60_object *)function_baeb0(&iterator)) != NULL)
 	{
 		s_295e60_placement *placement = (s_295e60_placement *)function_b7a40((s_scenario_identifier_ab const *)((byte *)object + 0xa4), NULL);
-		object->flags &= ~0x400000;
+		dword *flags = &object->flags;
+		*flags &= ~0x400000;
 		object->field_1d4 = NONE;
 		if (placement)
 		{
@@ -682,19 +684,19 @@ void function_295e60(short arg_0)
 			switch (mode)
 			{
 			case 0:
-				object->flags |= 0x800000;
+				*flags |= 0x800000;
 				break;
 			case 1:
 				if (arg_0 < placement->count_40)
 				{
 					object->field_1d4 = placement->entries_44[arg_0].value;
 					if (placement->entries_44[arg_0].value != NONE)
-						object->flags |= 0x400000;
+						*flags |= 0x400000;
 				}
-				object->flags |= 0x800000;
+				*flags |= 0x800000;
 				break;
 			case 3:
-				object->flags |= 0x800000;
+				*flags |= 0x800000;
 				break;
 			}
 		}
