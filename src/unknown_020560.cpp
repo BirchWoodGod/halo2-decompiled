@@ -1493,7 +1493,7 @@ void __stdcall function_21a80(real first, real second, real depth)
             function_34a90(5, 10, 0x1010101, false, false, 1.0f, 0.0f, 1.0f, 1, false, false);
             long filtered = function_211a0(5, first, 1.0f, 0.0f, 6, NONE, NONE, 1, 0, 0.0f, 0.0f);
             depth = first > 1.0f ? 1.0f : first;
-            first = (real)PIN(pow((double)depth, 0.33000001311302185), 0.0, 1.0);
+            first = (real)PIN((real)pow((double)depth, 0.33000001311302185), 0.0f, 1.0f);
             function_14f60(0, (short)filtered);
             function_15780(0, 4);
             if (first < 1.0f)
@@ -1516,7 +1516,7 @@ void __stdcall function_21a80(real first, real second, real depth)
             function_34a90(5, 10, 0x1010101, false, false, 1.0f, 0.0f, 1.0f, 1, false, false);
             long filtered = function_211a0(5, second, 1.0f, 0.0f, 6, NONE, NONE, 1, 0, 0.0f, 0.0f);
             depth = second > 1.0f ? 1.0f : second;
-            first = (real)PIN(pow((double)depth, 0.33000001311302185), 0.0, 1.0);
+            first = (real)PIN((real)pow((double)depth, 0.33000001311302185), 0.0f, 1.0f);
             function_14f60(0, (short)filtered);
             function_15780(0, 4);
             if (first < 1.0f)
@@ -1547,9 +1547,10 @@ void function_14bc0(short index, short element, bool use_depth);
 void __stdcall function_214f0(real passes, real distortion, real strength, real falloff,
     real scale, bool blend, bool preserve)
 {
-    struct { real first, second, alpha; color4f color; } values;
-    values.first = 1.0f;
-    values.second = 0.4f;
+    real first_factor, second_factor, alpha;
+    color4f color;
+    first_factor = 1.0f;
+    second_factor = 0.4f;
     if (g_510c50 && ((byte *)g_510c50)[5])
     {
         s_5093e4 *state = g_5093e4;
@@ -1577,8 +1578,8 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
             if (state->value14 != -1.0f) scale = state->value14;
             blend = state->flag18;
             preserve = state->flag19;
-            if (state->value1c != -1.0f) values.first = state->value1c;
-            if (state->value20 != -1.0f) values.second = state->value20;
+            if (state->value1c != -1.0f) first_factor = state->value1c;
+            if (state->value20 != -1.0f) second_factor = state->value20;
         }
     }
     passes = passes > 0.0f ? passes : 0.0f;
@@ -1586,11 +1587,11 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
     strength = PIN(strength, 0.0f, 1.0f);
     falloff = PIN(falloff, 0.0f, 1.0f);
     scale = PIN(scale, 0.0f, 1.0f);
-    volatile real first_input = values.first;
-    if (first_input < 0.0f) *(volatile real *)&values.first = 0.0f;
-    else if (first_input > 1.0f) *(volatile real *)&values.first = 1.0f;
-    values.second = PIN(values.second, 0.0f, 1.0f);
-    if (strength > 0.0f || values.first > 0.0f)
+    real first_input = first_factor;
+    if (first_input < 0.0f) first_factor = 0.0f;
+    else if (first_input > 1.0f) first_factor = 1.0f;
+    second_factor = PIN(second_factor, 0.0f, 1.0f);
+    if (strength > 0.0f || first_factor > 0.0f)
     {
         configure_filter_textures(g_4858b8);
         memset(&g_484f68, 0, sizeof(g_484f68));
@@ -1608,24 +1609,24 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         g_484f68.PSRGBOutputs[0] = 0x30c00;
         g_484f68.PSRGBOutputs[1] = 0x30d00;
         g_484f68.PSRGBOutputs[2] = 0x30c00;
-        values.color.alpha = 0.125f;
-        values.color.red = distortion;
-        values.color.green = distortion;
-        values.color.blue = distortion;
-        g_484f68.PSConstant0[3] = pack_color4f(&values.color);
+        color.alpha = 0.125f;
+        color.red = distortion;
+        color.green = distortion;
+        color.blue = distortion;
+        g_484f68.PSConstant0[3] = pack_color4f(&color);
         g_484f68.PSRGBInputs[3] = 0xc200140;
         g_484f68.PSRGBOutputs[3] = 0x20d00;
         g_484f68.PSAlphaInputs[3] = 0x1c110000;
         g_484f68.PSAlphaOutputs[3] = 0x10d00;
-        // Retail clears the values.alpha conversion slot before rounding.
-        values.alpha = 0.0f;
-        values.color.red = 255.0f;
+        // Retail clears the alpha conversion slot before rounding.
+        alpha = 0.0f;
+        color.red = 255.0f;
         long &packed = *(long *)&distortion;
         packed = 0;
         __asm
         {
-            fld values.alpha
-            fld values.color.red
+            fld alpha
+            fld color.red
             fmulp st(1), st(0)
             fistp distortion
         }
@@ -1634,7 +1635,7 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         g_484f68.PSFinalCombinerInputsEFG = ((g_485a74 ? 0x1d : 0) | 0xc1100) << 8;
         function_1ccf0(&g_484f68);
         function_34a90(7, 10, 0x1010101, false, false, 1.0f, 0.5f, 1.0f, 4, false, false);
-        long filtered = function_211a0(7, passes, 1.0f, falloff, 8, NONE, NONE, 1, 0, scale, values.second);
+        long filtered = function_211a0(7, passes, 1.0f, falloff, 8, NONE, NONE, 1, 0, scale, second_factor);
         function_14f60(0, (short)filtered);
         function_15780(0, 4);
         function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
@@ -1644,11 +1645,11 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         memset(&g_484f68, 0, sizeof(g_484f68));
         g_484f68.PSTextureModes = 1;
         g_484f68.PSCombinerCount = 0x11001;
-        values.color.alpha = values.first;
-        values.color.red = strength;
-        values.color.green = strength;
-        values.color.blue = strength;
-        g_484f68.PSConstant0[0] = pack_color4f(&values.color);
+        color.alpha = first_factor;
+        color.red = strength;
+        color.green = strength;
+        color.blue = strength;
+        g_484f68.PSConstant0[0] = pack_color4f(&color);
         g_484f68.PSRGBOutputs[0] = 0x10c00;
         g_484f68.PSFinalCombinerInputsABCD = 0xc;
         g_484f68.PSRGBInputs[0] = (g_485a74 ? 0x11 : 0) | 0x8011800;
