@@ -160,38 +160,38 @@ void function_195070(s_bitstream *stream, vector3f *out, real lo, real hi, long 
 }
 
 // @retail 0x195370
-bool __fastcall function_195370(vector3f const *b, vector3f const *a, real lo, real hi, long bits)
+bool __fastcall function_195370(vector3f const *a, vector3f const *b, real lo, real hi, long bits)
 {
-	vector3f direction_b = *b;
 	vector3f direction_a = *a;
-	real magnitude_b = (real)sqrt(direction_b.j * direction_b.j + direction_b.i * direction_b.i + direction_b.k * direction_b.k);
-	if (!(fabs(magnitude_b) < k_real_epsilon))
+	vector3f direction_b = *b;
+	real magnitude_a = (real)sqrt(direction_a.j * direction_a.j + direction_a.i * direction_a.i + direction_a.k * direction_a.k);
+	if (!(fabs(magnitude_a) < k_real_epsilon))
 	{
-		real scale = 1.0f / magnitude_b;
-		direction_b.i = scale * direction_b.i;
-		direction_b.j = scale * direction_b.j;
-		direction_b.k = direction_b.k * scale;
+		real scale = 1.0f / magnitude_a;
+		direction_a.i = scale * direction_a.i;
+		direction_a.j = scale * direction_a.j;
+		direction_a.k = direction_a.k * scale;
 	}
 	else
-		magnitude_b = 0.0f;
-	real magnitude_a = normalize3d(&direction_a);
-	bool short_b = lo > magnitude_b;
+		magnitude_a = 0.0f;
+	real magnitude_b = normalize3d(&direction_b);
 	bool short_a = lo > magnitude_a;
-	bool near_b = !short_b && function_1952f0(magnitude_b, lo, lo, hi, bits);
+	bool short_b = lo > magnitude_b;
 	bool near_a = !short_a && function_1952f0(magnitude_a, lo, lo, hi, bits);
-	if (short_b)
+	bool near_b = !short_b && function_1952f0(magnitude_b, lo, lo, hi, bits);
+	if (short_a)
 	{
-		if (short_a)
+		if (short_b)
 			return true;
-		if (!near_a)
-			return false;
-	}
-	else if (short_a)
-	{
 		if (!near_b)
 			return false;
 	}
-	if (direction_b.quantized_equal(&direction_a) && function_1952f0(magnitude_b, magnitude_a, lo, hi, bits))
+	else if (short_b)
+	{
+		if (!near_a)
+			return false;
+	}
+	if (direction_a.quantized_equal(&direction_b) && function_1952f0(magnitude_a, magnitude_b, lo, hi, bits))
 		return true;
 	return false;
 }

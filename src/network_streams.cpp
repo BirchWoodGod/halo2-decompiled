@@ -750,11 +750,9 @@ long c_network_reliable_stream::function_96910(long sequence, long bit_count, dw
 	s_reliable_message *message = 0;
 	if (index != NONE)
 		message = &m_messages[index];
-	long previous;
+	long previous = m_next_sequence;
 	if (message)
 		previous = acknowledged - message->distance;
-	else
-		previous = m_next_sequence;
 	m_unknown959 = false;
 	if (acknowledged <= m_message_window.oldest)
 	{
@@ -1307,11 +1305,15 @@ void function_194830(s_bitstream *arg_0, bool arg_1);
 
 static __forceinline void function_95e41(s_bitstream *arg_0, volatile long const *arg_1, long arg_2)
 {
-	if (arg_2 < 32 && (dword)*arg_1 >= (dword)(1 << arg_2))
+	if (arg_2 < 32)
 	{
-		char local_0[256];
-		local_0[0] = 0;
-		csprintf_256(local_0, "%u exceeds max value of %u", *arg_1, 1 << arg_2);
+		dword checked_value = (dword)*arg_1;
+		if (checked_value >= (dword)(1 << arg_2))
+		{
+			char local_0[256];
+			local_0[0] = 0;
+			csprintf_256(local_0, "%u exceeds max value of %u", checked_value, 1 << arg_2);
+		}
 	}
 	function_195720(arg_0, *arg_1, arg_2);
 }
@@ -1369,7 +1371,7 @@ bool c_network_reliable_stream::v4(long arg_0, s_bitstream *arg_1, long arg_2, l
 				stream_write_bit(arg_1, true);
 				stream_write_bit(arg_1, false);
 				for (long local_9 = 0; local_9 < 8; local_9++)
-					stream_write_bit(arg_1, ((local_3 >> local_9) & 1) != 0);
+					stream_write_bit(arg_1, (local_3 & (1UL << local_9)) != 0);
 			}
 			else
 			{
