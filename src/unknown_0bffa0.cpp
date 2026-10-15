@@ -426,9 +426,7 @@ bool function_c0840(point3f const *start, point3f const *end, point3f *out, real
     real step = 0.001f;
     {
         vector3f direction;
-        direction.i = (real)((double)end->x - start->x);
-        direction.j = (real)((double)end->y - start->y);
-        direction.k = (real)((double)end->z - start->z);
+        vector3d_from_points3d(start, end, &direction);
         length = normalize_inline(&direction);
         x = direction.i;
         y = direction.j;
@@ -778,7 +776,7 @@ void __stdcall function_c3340(long light_index, long unused)
             {
                 long object_index = *(long *)(light + 0x4c);
                 byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
-                long marker_name = function_b8c40(object_index, *(short *)(light + 0x54));
+                long marker_name = function_b8c40(*(long *)(light + 0x4c), *(short *)(light + 0x54));
                 s_object_marker markers[2];
                 long count = 0;
                 if (object[0xaa] == 2 && *(long *)(object + 0x14) != NONE)
@@ -792,8 +790,9 @@ void __stdcall function_c3340(long light_index, long unused)
                         g_55e708 = 1;
                     count = 1;
                 }
-                for (long i = 0; i < count; i++)
-                    function_2dba0(*(long *)(definition + 0x94), &markers[i].matrix.forward, 2, absolute_index, i, &markers[i].matrix.position, (color3f *)(light + 0xd4), 1.0f - *(real *)(light + 0xc8), *(real *)(light + 0xd0), 1.0f, function_3e9c0(*(long *)(light + 0x4c)));
+                s_object_marker *marker = markers;
+                for (long i = 0; i < count; i++, marker++)
+                    function_2dba0(*(long *)(definition + 0x94), &marker->matrix.forward, 2, absolute_index, i, &marker->matrix.position, (color3f *)(light + 0xd4), 1.0f - *(real *)(light + 0xc8), *(real *)(light + 0xd0), 1.0f, function_3e9c0(*(long *)(light + 0x4c)));
             }
             else
                 function_2dba0(*(long *)(definition + 0x94), (vector3f *)(light + 0xac), 2, absolute_index, 0, (point3f *)(light + 0x84), (color3f *)(light + 0xd4), 1.0f - *(real *)(light + 0xc8), *(real *)(light + 0xd0), 1.0f, function_3e9c0(*(long *)(light + 0x4c)));

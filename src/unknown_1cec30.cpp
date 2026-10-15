@@ -2741,7 +2741,7 @@ void function_1cf520(s_1cf520 *arg_1, c_1cf520 *arg_0, bool arg_2, bool arg_3, l
    __m128 local_10 = _mm_mul_ps(_mm_set1_ps(0.6f), local_7.m_quad);
    volatile __m128 local_11 = _mm_mul_ps(local_10, local_10);
    real local_12;
-   _mm_store_ss(&local_12, function_1cf527(_mm_load_ps((const real *)&local_11)));
+   _mm_store_ss(&local_12, function_1cf527(_mm_mul_ps(local_10, local_10)));
    local_7.m_quad = local_10;
    if (local_12 > 0.0000010000001f)
    {

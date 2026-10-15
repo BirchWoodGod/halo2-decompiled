@@ -706,11 +706,11 @@ real normalize2d(point2f *v);
 // @retail 0x1f8160
 bool function_1f8160(long actor_index, signed char const *types, point3f const *target, bool force)
 {
+    bool valid = false;
     s_actor_view *actor = actor_get(actor_index);
     real minimum = 0.0f;
     bool fast = false;
     bool first_type = false;
-    bool valid = false;
     real speed = function_1f8050(actor_index, &fast);
     if (!types)
         valid = true;
@@ -749,66 +749,74 @@ bool function_1f8160(long actor_index, signed char const *types, point3f const *
     }
     if (fast)
         force = true;
-    if (!valid)
-        return false;
-    vector3f direction;
-    real vertical;
-    real horizontal;
-    real chosen_speed = speed;
-    bool result = function_fa1a0(speed, 1.0f, &actor->position, target, &minimum, NULL, NULL, true,
-        &direction, NULL, NULL, NULL, &vertical, &horizontal);
-    if (force || speed * 1.25f > minimum)
+    if (valid)
     {
-        real retry_speed = minimum + 0.03f;
-        real retry_vertical;
-        real retry_horizontal;
-        if (function_fa1a0(retry_speed, 1.0f, &actor->position, target, &minimum, NULL, NULL, true,
-            &direction, NULL, NULL, NULL, &retry_vertical, &retry_horizontal))
+        vector3f direction;
+        real vertical;
+        real horizontal;
+        real chosen_speed = speed;
+        bool result = function_fa1a0(speed, 1.0f, &actor->position, target, &minimum, NULL, NULL, true,
+            &direction, NULL, NULL, NULL, &vertical, &horizontal);
+        if (force || speed * 1.25f > minimum)
         {
-            result = true;
-            vertical = retry_vertical;
-            horizontal = retry_horizontal;
-            chosen_speed = retry_speed;
-        }
-    }
-    if (result)
-    {
-        byte *unit = (byte *)object_get(actor->unknown018);
-        if (*(short *)(unit + *(short *)(unit + 0x346) + 0x36) == 5)
-        {
-            s_unit_request request;
-            request.type = 0x2e;
-            *(point3f *)((byte *)&request + 4) = *target;
-            return function_e6900(actor->unknown018, &request);
-        }
-        if (!first_type)
-        {
-            real base_speed = 0.0f;
-            byte *globals = (byte *)g_4e034c;
-            if (globals && *(long *)(globals + 0xc8) > 0)
-                base_speed = *(real *)(*(byte **)(globals + 0xcc) + 0x80);
-            if (base_speed * 1.2f < chosen_speed)
+            real retry_speed = minimum + 0.03f;
+            real retry_vertical;
+            real retry_horizontal;
+            if (function_fa1a0(retry_speed, 1.0f, &actor->position, target, &minimum, NULL, NULL, true,
+                &direction, NULL, NULL, NULL, &retry_vertical, &retry_horizontal))
             {
-                actor->unknown464 = true;
-                actor->unknown466 = true;
-                *(real *)((byte *)actor + 0x470) = horizontal;
-                *(real *)((byte *)actor + 0x474) = vertical > 1.2f ? vertical : 1.2f;
-                direction.k = 0.0f;
-                if (normalize2d((point2f *)&direction) <= 0.0f)
-                {
-                    direction = actor->unknown290;
-                    if (direction.k != 0.0f)
-                    {
-                        direction.k = 0.0f;
-                        if (normalize2d((point2f *)&direction) <= 0.0f)
-                            direction = *g_4687a8;
-                    }
-                }
-                *(point2f *)((byte *)actor + 0x468) = *(point2f *)&direction;
+                result = true;
+                vertical = retry_vertical;
+                horizontal = retry_horizontal;
+                chosen_speed = retry_speed;
             }
         }
+        if (result)
+        {
+            byte *unit = (byte *)object_get(actor->unknown018);
+            if (*(short *)(unit + *(short *)(unit + 0x346) + 0x36) == 5)
+            {
+                s_unit_request request;
+                request.type = 0x2e;
+                *(point3f *)((byte *)&request + 4) = *target;
+                return function_e6900(actor->unknown018, &request);
+            }
+            if (!first_type)
+            {
+                real base_speed = 0.0f;
+                byte *globals = (byte *)g_4e034c;
+                if (globals && *(long *)(globals + 0xc8) > 0)
+                    base_speed = *(real *)(*(byte **)(globals + 0xcc) + 0x80);
+                if (base_speed * 1.2f < chosen_speed)
+                {
+                    actor->unknown464 = true;
+                    actor->unknown466 = true;
+                    *(real *)((byte *)actor + 0x470) = horizontal;
+                    *(real *)((byte *)actor + 0x474) = vertical > 1.2f ? vertical : 1.2f;
+                    direction.k = 0.0f;
+                    if (normalize2d((point2f *)&direction) <= 0.0f)
+                    {
+                        direction = actor->unknown290;
+                        if (direction.k != 0.0f)
+                        {
+                            direction.k = 0.0f;
+                            if (normalize2d((point2f *)&direction) <= 0.0f)
+                            {
+                                direction = *g_4687a8;
+                                *(point2f *)((byte *)actor + 0x468) = *(point2f *)&direction;
+                                return result;
+                            }
+                            *(point2f *)((byte *)actor + 0x468) = *(point2f *)&direction;
+                            return result;
+                        }
+                    }
+                    *(point2f *)((byte *)actor + 0x468) = *(point2f *)&direction;
+                }
+            }
+        }
+        return result;
     }
-    return result;
+    return false;
 }
 
 long function_1fa7f0(void);
@@ -821,26 +829,26 @@ void __stdcall function_1f5ab0(long actor_index, vector3f const *input, vector3f
     short *type_out, vector3f *facing_out, bool *blocked)
 {
     byte *actor = (byte *)actor_get(actor_index);
+    vector3f movement;
     vector3f facing = *(vector3f *)(actor + 0x290);
-    vector3f movement = *g_4687a4;
+    movement = *g_4687a4;
     point3f position = *(point3f *)(actor + 0x238);
     real distance = 3.402823466e38f;
     byte *entry = NULL;
     byte *surface = NULL;
     actor[0x6d1] = false;
-    long unit_index = *(long *)(actor + 0x18);
+    long const &unit_index = *(long *)(actor + 0x18);
     if (unit_index != NONE)
     {
         byte *unit = (byte *)object_get(unit_index);
         position.z = *(real *)(unit + *(short *)(unit + 0x116) + 0x30);
     }
-    signed char step = *(signed char *)(actor + 0x53a);
-    if (actor[0x5d0] && !actor[0x5d2] && step >= 0 && step < *(signed char *)(actor + 0x539))
+    if (actor[0x5d0] && !actor[0x5d2] && *(signed char *)(actor + 0x53a) >= 0 && *(signed char *)(actor + 0x53a) < *(signed char *)(actor + 0x539))
     {
         if (function_1f8660(actor_index))
         {
-            entry = actor + 0x53c + step * 0x1c;
-            short surface_index = *(short *)(entry + 8);
+            entry = actor + 0x53c + *(signed char *)(actor + 0x53a) * 0x1c;
+            long surface_index = *(short *)(entry + 8);
             if (surface_index != NONE)
                 surface = *(byte **)((byte *)function_1fa7f0() + 0x3c) + surface_index * 0x14;
             distance = function_210ac0((s_type_c3b527 *)(entry + 0xc), &position);
@@ -882,8 +890,8 @@ void __stdcall function_1f5ab0(long actor_index, vector3f const *input, vector3f
                     function_210850((s_type_c3b527 *)(entry + 0xc), &target);
                     s_unit_request request;
                     request.type = 0x23;
-                    *(vector3f *)((byte *)&request + 8) = facing;
                     *(point3f *)((byte *)&request + 0x14) = target;
+                    *(vector3f *)((byte *)&request + 8) = facing;
                     function_e6900(unit_index, &request);
                     *blocked = true;
                     goto done;
@@ -908,12 +916,12 @@ void __stdcall function_1f5ab0(long actor_index, vector3f const *input, vector3f
         {
             if (direction.k > 0.0f)
             {
-                movement.i = movement.j = 0.0f;
+                movement.j = movement.i = 0.0f;
                 movement.k = 1.0f;
             }
             else if (direction.k < 0.0f)
             {
-                movement.i = movement.j = 0.0f;
+                movement.j = movement.i = 0.0f;
                 movement.k = -1.0f;
             }
         }
