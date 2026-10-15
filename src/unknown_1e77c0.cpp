@@ -356,11 +356,16 @@ void function_1e6b00(long player_index, s_request_source *source)
 	}
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1e8d80
 bool __stdcall function_1e8d80(long index, s_local_player_state_view *state, s_entry_420 *entry, s_request_transition *output)
 {
 	s_flag_pair *flags = (s_flag_pair *)((byte *)state + 0x170);
-	long value = ((flags->high & (1 << index)) ? 2 : 0) + ((flags->low & (1 << index)) ? 1 : 0);
+	dword high = flags->high;
+	// Preserve the observed order of the two flag-word reads.
+	_ReadWriteBarrier();
+	long value = ((high & (1 << index)) ? 2 : 0) + ((flags->low & (1 << index)) ? 1 : 0);
 	if (index == 21)
 		function_1e8d80(22, state, entry_420_get(22), (s_request_transition *)((byte *)state + 0x58));
 	if (!entry)
@@ -387,6 +392,7 @@ bool __stdcall function_1e8d80(long index, s_local_player_state_view *state, s_e
 	output->ticks = g_510c54->field_2_3 * entry->duration;
 	return false;
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x1e8fa0
 void function_1e8fa0(long player_index, long object_index, byte kind)

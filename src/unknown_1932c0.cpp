@@ -899,10 +899,10 @@ bool __stdcall game_variants_received(s_pending_message_header *header)
 		dword size = header->size - 16;
 		if (data && size > 0 && function_199560(data, size) == sizeof(s_game_variants_file))
 		{
+			long decompressed_size = 0;
 			s_game_variants_file *file = variants_buffer_allocate();
 			if (file)
 			{
-				long decompressed_size = 0;
 				if (function_199740(data, size, (byte *)file, &decompressed_size) && game_variants_file_write(file))
 					result = true;
 				function_12d520((long)file);
