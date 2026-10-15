@@ -595,7 +595,7 @@ void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_li
         }
         else
         {
-            double slope = tan(shape->cone.values[2] * 0.5f);
+            real slope = (real)tan(shape->cone.values[2] * 0.5f);
             cone->slope_x = (real)slope;
             cone->slope_y = (real)slope * cone->aspect;
         }

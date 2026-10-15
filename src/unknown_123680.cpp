@@ -59,7 +59,7 @@ bool g_510c21;
 long g_55e720;
 
 void function_1239d0(void);
-long function_1234a0(long type, s_cache_resource *resource, bool flush);
+long function_1234a0(s_cache_resource *resource, long type, bool flush);
 void function_1235b0(s_cache_load *load, long name, long priority);
 bool function_1237a0(s_cache_load *load);
 void __stdcall function_1238f0(long block_index);
@@ -182,7 +182,7 @@ void *function_1237e0(s_cache_resource *resource, long name)
 	{
 		s_cache_load *load;
 
-		block_index = function_1234a0(0, resource, true);
+		block_index = function_1234a0(resource, 0, true);
 		load = &((s_cache_load *)g_4e3b48->data)[datum_new_at_index_with_salt(g_4e3b48, block_index) & 0xffff];
 		load->handle = NONE;
 		load->done = false;
@@ -295,19 +295,33 @@ void function_123430(void)
 }
 
 // @retail 0x1234a0
-long function_1234a0(long type, s_cache_resource *resource, bool flush)
+long function_1234a0(s_cache_resource *resource, long type, bool flush)
 {
 	long block_index = function_13d370(g_4e3b54, resource->size, type);
 
 	if (block_index == NONE && flush)
 	{
-		long attempts = 3;
+		long attempts;
 
 		g_4e3b54->delete_proc = function_1238f0;
 		g_4e3b54->busy_proc = NULL;
+		attempts = 3;
 		while (block_index == NONE && attempts > 0)
 		{
-			physical_memory_new_frame(g_4e3b54);
+			s_physical_object *physical = g_4e3b54;
+
+			if (physical->time == 0x7fffffff)
+			{
+				physical_memory_reset_time(physical);
+			}
+			else
+			{
+				physical->time++;
+			}
+			for (long i = 0; i < 8; i++)
+			{
+				physical->limits[i] = 0x7fffffff;
+			}
 			block_index = function_13d370(g_4e3b54, resource->size, type);
 			attempts--;
 		}

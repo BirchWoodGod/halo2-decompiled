@@ -392,12 +392,11 @@ void function_154d70(s_speed_request *request, s_speed_slot *slot, real scale)
 }
 
 // @retail 0x154df0
-void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_speed_slot *slot, real priority)
+void function_154df0(long index, s_speed_bounds *bounds, s_speed_slot *slot, vector3f *direction, real priority)
 {
-	s_game_time_globals *time = g_510c54;
 	real timer = (real)slot->timer80;
 
-	if (bounds->duration > timer || priority > slot->priority9c || (priority >= slot->priority9c && bounds->duration > time->rate * timer))
+	if (bounds->duration > timer || priority > slot->priority9c || (priority >= slot->priority9c && bounds->duration > g_510c54->rate * timer))
 	{
 		vector3f w;
 		vector3f v;
@@ -414,7 +413,7 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 		w.k = 0.0f;
 		function_30bf0(&w);
 
-		if (fabs(v.j * v.j + v.i * v.i + v.k * v.k - 1.0f) < 0.0001f && fabs(w.j * w.j + w.i * w.i + w.k * w.k - 1.0f) < 0.0001f)
+		if (fabs(v.i * v.i + v.j * v.j + v.k * v.k - 1.0f) < 0.0001f && fabs(w.i * w.i + w.j * w.j + w.k * w.k - 1.0f) < 0.0001f)
 		{
 			real dot = v.j * w.j + w.i * v.i;
 			real angle;
@@ -433,7 +432,7 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 
 			slot->bounds = *bounds;
 			slot->priority9c = priority;
-			slot->bounds.duration = (real)time->field_2_3 * slot->bounds.duration;
+			slot->bounds.duration = (real)g_510c54->field_2_3 * slot->bounds.duration;
 			slot->timer80 = (short)slot->bounds.duration;
 			slot->forward.k = 0.0f;
 			slot->forward.i = (real)cos(angle);
@@ -446,9 +445,9 @@ void function_154df0(vector3f *direction, s_speed_bounds *bounds, long index, s_
 			vector3f *e = &slot->forward;
 			vector3f *u = &slot->vector;
 
-			real ci = up->k * e->j - up->j * e->k;
-			real cj = up->i * e->k - up->k * e->i;
 			real ck = e->i * up->j - e->j * up->i;
+			real cj = up->i * e->k - up->k * e->i;
+			real ci = up->k * e->j - up->j * e->k;
 			u->i = ci;
 			u->j = cj;
 			u->k = ck;
@@ -573,16 +572,18 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
                         {
                             request.duration = 0.8f;
                             request.amount = 0.6f;
+                            request.priority = 1;
+                            request.type = 1;
                             request.curve = 1;
                         }
                         else
                         {
                             request.duration = active ? 0.2f : 0.3f;
                             request.amount = 0.3f;
+                            request.priority = 1;
+                            request.type = 1;
                             request.curve = 0;
                         }
-                        request.priority = 1;
-                        request.type = 1;
                         function_154d70(&request, slot, function_17ca10(scale, 2));
                     }
                     rumble_player_play_effect(local_index, tag_index, i, priority);
@@ -592,7 +593,7 @@ void __stdcall function_153d10(long user_index, long tag_index, void *owner, voi
             }
         }
     }
-    function_154df0((vector3f *)direction, &definition->bounds, local_index, slot, priority);
+    function_154df0(local_index, &definition->bounds, slot, (vector3f *)direction, priority);
     function_155240(&definition->values, slot, priority);
     if (definition->sound_index != NONE)
     {
