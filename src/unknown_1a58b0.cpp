@@ -1855,7 +1855,8 @@ long __stdcall function_1a54a0(s_sort_weight_view const *arg_0, short arg_1,
 	long local_2[0x800];
 	real local_3 = arg_0->angle > (arg_0->secondary_angle > arg_0->scaled_angle ? arg_0->secondary_angle : arg_0->scaled_angle) ? arg_0->angle : (arg_0->secondary_angle > arg_0->scaled_angle ? arg_0->secondary_angle : arg_0->scaled_angle);
 	real local_4 = arg_0->distance > (arg_0->secondary_distance > arg_0->scaled_distance ? arg_0->secondary_distance : arg_0->scaled_distance) ? arg_0->distance : (arg_0->secondary_distance > arg_0->scaled_distance ? arg_0->secondary_distance : arg_0->scaled_distance);
-	if (local_3 > 0.0f && local_4 > 0.0f)
+	if (!(local_3 > 0.0f && local_4 > 0.0f))
+		goto done;
 	{
 		real local_5 = sin(local_4);
 		real local_6 = cos(local_4);
@@ -1896,6 +1897,7 @@ long __stdcall function_1a54a0(s_sort_weight_view const *arg_0, short arg_1,
 				break;
 		}
 	}
+	done:
 	return local_0;
 }
 
