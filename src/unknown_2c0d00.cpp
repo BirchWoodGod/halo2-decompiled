@@ -759,6 +759,14 @@ PRIVATE __forceinline real normalize_offset_direction_2c(point2f *v)
 // @retail 0x2c2910
 void function_2c2910(point2f const *center, point2f const *points, point2f const *previous, real radius, point2f *result)
 {
+    struct s_candidate_x
+    {
+        static __forceinline real calculate(point2f const *center, point2f const *first,
+            point2f const *second, real factor)
+        {
+            return center->x - (first->y - second->y) * factor;
+        }
+    };
     point2f first, second;
     vector2d_from_points2d(center, &points[0], &first);
     vector2d_from_points2d(center, &points[1], &second);
@@ -767,7 +775,7 @@ void function_2c2910(point2f const *center, point2f const *points, point2f const
     {
         real factor = radius * radius / cross;
         real y = center->y + (first.x - second.x) * factor;
-        real x = center->x - (first.y - second.y) * factor;
+        real x = s_candidate_x::calculate(center, &first, &second, factor);
         result->x = x;
         result->y = y;
         point2f delta;
