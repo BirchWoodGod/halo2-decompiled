@@ -127,10 +127,13 @@ long __stdcall function_b8ca0(long object_index)
     long result_value = 0;
 	s_object_view *object = OBJECT_GET(object_index);
 
-	if (object->parent_index != NONE &&
-		TEST_FIELD_BIT(TAG_DATA(s_object_definition_view, object->definition_index)->flag4))
+	if (object->parent_index != NONE)
+	{
+		byte const &parent_flag = TAG_DATA(s_object_definition_view, object->definition_index)->flag4;
+		if (TEST_FIELD_BIT(parent_flag))
 	{
 		{ result_value = function_b8ca0(object->parent_index); goto return_exit; }
+	}
 	}
 	if (TEST_FIELD_BIT(object->flag0) && ((byte)(1u << object->type) & 0x1c) && function_10cf50(object_index))
 		{ result_value = object->unit_index; goto return_exit; }
@@ -218,7 +221,8 @@ void __stdcall function_b9b90(long object_index, bool disable)
 	};
 	s_object_header_view *header = OBJECT_HEADER_GET(object_index);
 	s_object_view *object = header->object;
-	dword type_mask = 1 << header->type;
+	dword const &type = header->type;
+	dword type_mask = 1 << type;
 
 	if ((type_mask & 0x1883) &&
 		TEST_FIELD_BIT(((s_physics_flags *)((byte *)object + 0xc0))->active) &&
@@ -488,10 +492,10 @@ void __stdcall function_b9a50(long object_index)
     s_object_view *object = OBJECT_GET(object_index);
     if (object->parent_index != NONE)
     {
-        if (!((1 << object->type) & 3))
-            function_b9a90(object_index);
-        else
+        if ((1 << object->type) & 3)
             function_cc590(object_index);
+        else
+            function_b9a90(object_index);
     }
 }
 
@@ -517,10 +521,10 @@ void __stdcall function_b83b0(long object_index, bool unused)
             {
                 if (local_f86fb0->parent_index != NONE)
                 {
-                    if (!((1 << local_f86fb0->type) & 3))
-                        function_b9a90(child);
-                    else
+                    if ((1 << local_f86fb0->type) & 3)
                         function_cc590(child);
+                    else
+                        function_b9a90(child);
                 }
             }
         else
@@ -531,7 +535,7 @@ void __stdcall function_b83b0(long object_index, bool unused)
 
 void __stdcall function_b87b0(long object_index);
 void object_widgets_delete(long object_index);
-void function_bee60(long object_index);
+dword function_bee60(long object_index);
 void function_146bf0();
 void havok_object_detach(long object_index);
 void function_278f00();
@@ -584,10 +588,10 @@ void function_b9a90(long object_index)
 {
     s_object_view *object = OBJECT_GET(object_index);
     s_object_view *parent = OBJECT_GET(object->parent_index);
-    long connected = function_b9d20(object->parent_index);
+    bool connected = function_b9d20(object->parent_index);
     s_object_view *node_parent = OBJECT_GET(*(long volatile *)&object->parent_index);
     long node_offset = *(char *)((byte *)object + 0x18) * sizeof(transform4x3f);
-    transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + node_offset + *(short const volatile *)&node_parent->node_matrices_offset);
+    transform4x3f const *matrix = (transform4x3f *)((byte *)node_parent + node_offset + node_parent->node_matrices_offset);
     if (connected)
         function_bef30(object_index, 1, 0, 0, false);
     function_b9890(object_index);
@@ -1641,6 +1645,7 @@ done:
 // @retail 0xbb670
 long __stdcall function_bb670(short name_index, bool force)
 {
+    short remaining_name_index = name_index;
     long result = NONE;
     long existing = name_index >= 0 && name_index < 0x280 ? g_4de2d0[name_index] : NONE;
     if (force && existing != NONE)
@@ -1655,10 +1660,10 @@ long __stdcall function_bb670(short name_index, bool force)
         object[0xab] = 2;
         *(short *)(object + 0xa8) = NONE;
         *(long *)(object + 0xa4) = *(long *)((byte *)g_4de2f4 + 0x18);
+        remaining_name_index = *(short volatile const *)&name_index;
         object[0xb0] = 0;
     }
     else if (existing != NONE) return result;
-    short remaining_name_index = *(short volatile const *)&name_index;
     byte *scenario = (byte *)g_4e0350;
     byte *name = *(byte **)(scenario + 0x4c) + remaining_name_index * 0x24;
     short placement_index = *(short *)(name + 0x22);

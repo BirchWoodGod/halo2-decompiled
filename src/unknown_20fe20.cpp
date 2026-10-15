@@ -1264,6 +1264,7 @@ real function_210a30(s_type_c3b527 const *a, s_type_c3b527 const *b)
 	if (a->output_index == b->output_index)
 	{
 		local_0 = b->point.x - a->point.x;
+		local_0 *= local_0;
 		local_1 = b->point.y - a->point.y;
 		local_2 = b->point.z - a->point.z;
 	}
@@ -1277,9 +1278,12 @@ real function_210a30(s_type_c3b527 const *a, s_type_c3b527 const *b)
 		local_1 = pb.x - pa.x;
 		local_2 = pb.y - pa.y;
 		local_0 = pb.z - pa.z;
+		local_0 *= local_0;
 	}
 
-	return local_0 * local_0 + local_2 * local_2 + local_1 * local_1;
+	local_0 += local_2 * local_2;
+	local_0 += local_1 * local_1;
+	return local_0;
 }
 
 // @retail 0x210b60
@@ -1292,6 +1296,7 @@ real function_210b60(s_type_c3b527 const *a, point3f const *b)
 	if (a->output_index == NONE)
 	{
 		local_0 = b->x - a->point.x;
+		local_0 *= local_0;
 		local_1 = b->y - a->point.y;
 		local_2 = b->z - a->point.z;
 	}
@@ -1303,9 +1308,12 @@ real function_210b60(s_type_c3b527 const *a, point3f const *b)
 		local_1 = b->x - point.x;
 		local_2 = b->y - point.y;
 		local_0 = b->z - point.z;
+		local_0 *= local_0;
 	}
 
-	return local_0 * local_0 + local_2 * local_2 + local_1 * local_1;
+	local_0 += local_2 * local_2;
+	local_0 += local_1 * local_1;
+	return local_0;
 }
 
 /* ---- vectors and distances between node points ---- */
@@ -1561,12 +1569,35 @@ point3f *function_b9dd0(long object_index, point3f *result);
 real function_30bf0(vector3f *vector);
 long function_25d810(long object_index, long actor_index, bool create);
 
+/* the datum iterator's step, which retail inlines here around a call to function_16bc00 */
+static __forceinline byte *datum_iterator_next_20e190(s_data_datum_iterator *iterator)
+{
+    s_record_pool *data = iterator->data;
+    long index = function_16bc00(data, iterator->index + 1);
+    byte *result;
+
+    if (index != NONE)
+    {
+        result = data->data + data->size * index;
+        iterator->index = index;
+        iterator->datum_index = (*(short *)result << 16) | index;
+    }
+    else
+    {
+        iterator->index = data->maximum_count;
+        iterator->datum_index = NONE;
+        result = 0;
+    }
+    iterator->datum = result;
+    return result;
+}
+
 // @retail 0x20e190
 real function_20e190(long object_index)
 {
+    real result = 0.0f;
     byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
     long actor_index = *(long *)(object + 0x12c);
-    real result = 0.0f;
     if (actor_index != NONE)
     {
         byte *actor = g_4f55f0->data + (actor_index & 0xffff) * 0x888;
@@ -1574,14 +1605,13 @@ real function_20e190(long object_index)
             return *(real *)(actor + 0x2e4);
         real maximum = 0.0f;
         bool found = false;
-        s_record_pool *players = g_4e8c24;
-        long index = NONE;
+        s_data_datum_iterator iterator;
+        iterator.data = g_4e8c24;
+        iterator.datum_index = NONE;
+        iterator.index = NONE;
         for (;;)
         {
-            index = record_pool_next_used(players, index + 1);
-            if (index == NONE)
-                break;
-            byte *player = players->data + index * players->size;
+            byte *player = datum_iterator_next_20e190(&iterator);
             if (!player)
                 break;
             long unit_index = *(long *)(player + 0x2c);
@@ -1592,8 +1622,8 @@ real function_20e190(long object_index)
                 point3f position;
                 function_b9dd0(unit_index, &position);
                 point3f *actor_position = (point3f *)(actor + 0x238);
-                real y = position.y - actor_position->y;
                 real x = position.x - actor_position->x;
+                real y = position.y - actor_position->y;
                 real z = position.z - actor_position->z;
                 real squared = z * z + y * y + x * x;
                 if (squared > 64.0f)
@@ -1622,9 +1652,9 @@ real function_20e190(long object_index)
                     }
                     result = weight * 0.3f + 0.7f;
                 }
-                if (result > maximum)
-                    maximum = result;
             }
+            if (result > maximum)
+                maximum = result;
         }
         if (!found)
             maximum = 1.0f;
@@ -2703,7 +2733,7 @@ void function_20cbd0(short group_index, s_audio_priority_table *table, long targ
         *count = 0;
 }
 
-void __stdcall function_20d570(long arg_0, short arg_1, long arg_2, void *arg_3);
+void __stdcall function_20d570(short arg_1, long arg_0, long arg_2, void *arg_3);
 void function_20fda0(long arg_0);
 
 // @retail 0x20fec0
@@ -2712,7 +2742,8 @@ void function_20fec0(long arg_0, long arg_1)
     if (arg_1 != NONE)
     {
         byte *local_0 = *(byte **)(g_4e0300->data + (arg_0 & 0xffff) * 12 + 8);
-        short local_1 = (short)function_20f040(*(short *)(local_0 + 0x138));
+        long local_9 = *(short *)(local_0 + 0x138);
+        short local_1 = (short)function_20f040((short)local_9);
         s_node_owner *local_2 = (s_node_owner *)((byte *)g_4f939c + local_1 * 0x7dc);
         byte *local_3 = g_4f9398->data + (arg_1 & 0xffff) * 0x54;
         if (!local_3[0x41])
@@ -2750,11 +2781,9 @@ void function_20fb30(void)
 {
     s_audio_priority_table *local_0 = audio_priority_table();
     long local_1 = g_510c54->game_time;
-    long local_2 = 0;
-    long local_3 = 2;
-    do
+    for (short local_2 = 0; local_2 < 2; local_2++)
     {
-        s_node_owner *local_4 = (s_node_owner *)((byte *)g_4f939c + local_2);
+        s_node_owner *local_4 = (s_node_owner *)((byte *)g_4f939c + local_2 * 0x7dc);
         for (long local_5 = local_4->first; local_5 != NONE; )
         {
             byte *local_6 = g_4f9398->data + (local_5 & 0xffff) * 0x54;
@@ -2771,7 +2800,7 @@ void function_20fb30(void)
                         byte *local_9 = *(byte **)(g_4e0300->data + (*(long *)(local_6 + 4) & 0xffff) * 12 + 8);
                         byte *local_10 = local_9 + *(short *)(local_9 + 0x342);
                         short local_11 = *(short *)(local_6 + 0x22);
-                        if (TEST_FIELD_BIT(((s_audio_object_state *)local_9)->blocked) && local_11 != 15)
+                        if (TEST_FIELD_BIT(((s_audio_object_state_20f960 *)local_9)->blocked) && local_11 != 15)
                             goto local_18;
                         short local_12 = *(short *)(local_10 + 0xc);
                         if (local_12)
@@ -2819,7 +2848,5 @@ local_18:
             local_5 = *(long *)(local_6 + 0x50);
         }
         function_20fe20(local_4);
-        local_2 += 0x7dc;
     }
-    while (--local_3);
 }

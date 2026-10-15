@@ -514,7 +514,7 @@ long c_projectile_type::v27(long a, long b, long c, long d)
 }
 
 class c_handle_table_450cd0;
-bool function_99640(c_handle_table_450cd0 *self, long handle);
+__declspec(noinline) bool function_99640(c_handle_table_450cd0 *self, long handle);
 
 // @retail 0xa0e50
 bool c_projectile_type::v8(long a, long b)
@@ -540,7 +540,7 @@ long c_device_type::v27(long a, long b, long c, long d)
  }
  if (flags & 0x800)
  {
-  long index = *(long *)(object + 0x13c);
+  long const &index = *(long const *)(object + 0x13c);
   if (index != NONE)
   {
    byte *entry = g_4e0328.groups->data + (word)index * 12;

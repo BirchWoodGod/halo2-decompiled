@@ -55,6 +55,8 @@ void *c_game_havok_memory::allocate(long size, long memory_class)
 	return result;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x147160
 void c_game_havok_memory::deallocate(void *address)
 {
@@ -62,6 +64,7 @@ void c_game_havok_memory::deallocate(void *address)
 	{
 		if (((long)((byte *)g_479898 + 0x4340) <= (long)address && ((long)((byte *)g_479898 + 0xf0340) > (long)address || (byte *)g_479898 + 0xf0340 == address)))
 		{
+			_ReadWriteBarrier();
 			g_479898->deallocate(address);
 		}
 		else if (((long)((byte *)g_479894 + 0x30) <= (long)address && ((long)((byte *)g_479894 + 0x15030) > (long)address || (byte *)g_479894 + 0x15030 == address)))
@@ -78,6 +81,7 @@ void c_game_havok_memory::deallocate(void *address)
 		}
 	}
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x1471e0
 void *c_game_havok_memory::allocate_aligned(long alignment, long size, long memory_class)

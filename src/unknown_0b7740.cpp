@@ -38,6 +38,8 @@ __declspec(noinline) void function_1420f0(transform4x3f *out, point3f const *pos
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b,
 	transform4x3f *result);
 
+inline transform4x3f *function_ba160(long object_index, transform4x3f *matrix);
+
 // @retail 0xba160
 transform4x3f *function_ba160(long object_index, transform4x3f *matrix)
 {
@@ -339,8 +341,7 @@ long function_b8940(short cluster_index, s_object_cluster_reference **record, s_
 // @retail 0xb89b0
 long function_b89b0(s_object_cluster_reference **record, s_object_cluster_iterator *iterator)
 {
-	long result = NONE;
-	if (iterator->next != NONE)
+	if (iterator->next == NONE) return NONE;
 	{
 		s_record_pool *array = (s_record_pool *)g_4de2e4;
 		long *size = &array->size;
@@ -351,9 +352,8 @@ long function_b89b0(s_object_cluster_reference **record, s_object_cluster_iterat
 		if (next != NONE)
 			_mm_prefetch((char const *)(*data + (next & 0xffff) * *size), _MM_HINT_T0);
 		iterator->next = next;
-		result = link->object_index;
+		return link->object_index;
 	}
-	return result;
 }
 
 // @retail 0xb8a10
@@ -426,10 +426,10 @@ void function_b7930(void *data, long tag_index, long object_index, s_effect_owne
 	s_placement_source_ab *object = (s_placement_source_ab *)function_badc0(object_index, NONE);
 	placement->team = NONE;
 	placement->player_index = NONE;
+	placement->object_index = object ? object_index : NONE;
 	if (object)
 	{
 		dword flags = *(volatile dword *)&placement->flags;
-		placement->object_index = object_index;
 		if ((bool)(((dword)object->flags_c0 >> 2) & 1))
 			flags |= 0x20;
 		else
@@ -440,10 +440,6 @@ void function_b7930(void *data, long tag_index, long object_index, s_effect_owne
 			placement->player_index = object->player_index;
 			placement->team = object->team;
 		}
-	}
-	else
-	{
-		placement->object_index = NONE;
 	}
 	if (owner)
 		placement->owner = *owner;

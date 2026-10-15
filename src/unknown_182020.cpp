@@ -116,7 +116,7 @@ struct s_entity_material_view
 };
 
 struct s_lookup_source;
-void function_1ee410(s_lookup_source const *source, short *result);
+short *function_1ee410(s_lookup_source const *source, short *result);
 long havok_entity_component_index_get(hkEntity const *entity);
 extern short g_54e898;
 

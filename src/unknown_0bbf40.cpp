@@ -1058,7 +1058,7 @@ bool function_177610(long effect_index);
 void contrail_update(long contrail_index, bool detach, real dt);
 
 // @retail 0xbee60
-void function_bee60(long object_index)
+dword function_bee60(long object_index)
 {
     byte *object = (byte *)((s_object_header_0bbf40 *)g_4e0300->data)[object_index & 0xffff].object;
     long count = (dword)(long)*(short *)(object + 0x11c) / sizeof(s_object_attachment_ab);
@@ -1094,7 +1094,8 @@ void function_bee60(long object_index)
         } while (--remaining);
     }
     dword flags = *(dword *)(object + 4) & ~0x10;
-    dword final_flags = flags & ~0x20;
+    dword const &final_flags = flags & ~0x20;
     *(volatile dword *)(object + 4) = flags;
     *(dword *)(object + 4) = final_flags;
+    return final_flags;
 }

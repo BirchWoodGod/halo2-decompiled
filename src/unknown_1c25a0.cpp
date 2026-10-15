@@ -104,6 +104,8 @@ real c_world_contact_update::evaluate(void const *body, void const *query)
 class c_contact_callback
 {
 public:
+	__forceinline c_contact_callback() {}
+	__forceinline c_contact_callback(bool value) : found(value) {}
 	virtual ~c_contact_callback() {}
 	virtual void hit(void const *query, s_contact_body_view const *body) = 0;
 	bool found;
@@ -125,6 +127,7 @@ public:
 class c_contact_exclusion : public c_contact_callback
 {
 public:
+	__forceinline c_contact_exclusion() : c_contact_callback(false) {}
 	virtual void hit(void const *query, s_contact_body_view const *body);
 	bool found_other;
 	byte unknown09[3];
@@ -148,9 +151,11 @@ PRIVATE __forceinline bool contact_shape_has_material(s_contact_body_view const 
 	return *(byte *)(metadata + 0x1e) != 0xff;
 }
 
-PRIVATE __forceinline short function_1d4884(long arg_0)
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+PRIVATE __forceinline long function_1d4884(long arg_0)
 {
- return (short)(arg_0 < 1 ? 1 : arg_0 > 16 ? 16 : arg_0);
+ return arg_0 < 1 ? 1 : arg_0 > 16 ? 16 : arg_0;
 }
 
 PRIVATE __forceinline bool function_1d4885(s_contact_body_view const *arg_0)
@@ -158,11 +163,17 @@ PRIVATE __forceinline bool function_1d4885(s_contact_body_view const *arg_0)
  if (arg_0->shape->type() == 0x18)
   return false;
  long local_0 = arg_0->shape->metadata;
- if (!local_0 || function_1d4884(local_0) == local_0)
+ if (!local_0)
+  return false;
+ long bounded = function_1d4884(local_0);
+ _ReadWriteBarrier();
+ if (bounded == local_0)
   return false;
  return *(byte *)(local_0 + 0x1e) != 0xff;
 }
 
+
+#pragma function(_ReadWriteBarrier)
 // @retail 0x1d4880
 void c_contact_presence::hit(void const *query, s_contact_body_view const *body)
 {
@@ -791,13 +802,15 @@ void function_1c54b0(char const *variants, long object_index)
 		s_object_definition_view *definition = (s_object_definition_view *)g_4e3b44[object->tag_index & 0xffff].bytes;
 		s_model_view *model = (s_model_view *)g_4e3b44[definition->model_tag_index & 0xffff].bytes;
 		char const *current = (char const *)object + object->region_variants_offset;
+		long count = model->region_count;
 		s_model_region_view const *region = model->regions;
+		long offset = current - variants;
 		long i;
 
-		for (i = 0; i < model->region_count; i++, region++)
+		for (i = 0; i < count; i++, region++, variants++)
 		{
-			char variant = variants[i];
-			char current_variant = current[i];
+			char variant = *variants;
+			char current_variant = variants[offset];
 
 			if (variant == current_variant)
 				continue;
@@ -1589,7 +1602,7 @@ struct c_contact_query_bounds_info
     byte unknown18[8];
     hkVector4 lower, upper;
     c_contact_query_bounds_info();
-    ~c_contact_query_bounds_info()
+    __forceinline ~c_contact_query_bounds_info()
     {
         if (!(properties.capacity_and_flags & 0x80000000))
             g_480118->allocate((long)properties.data, (properties.capacity_and_flags & 0x7fffffff) * 8, 0x12);
@@ -1700,16 +1713,15 @@ bool function_1c5210(transform4x3f const *matrix, void *shape, long excluded_com
     (void)&excluded_component;
     (void)&filter;
     c_contact_query_transform_info info;
+    c_contact_exclusion callback;
+    callback.found_other = false;
+    callback.excluded_component = excluded_component;
+    info.shape = shape;
     info.transform.m_rotation.m_col0.set(matrix->forward.i, matrix->forward.j, matrix->forward.k);
     info.transform.m_rotation.m_col1.set(matrix->left.i, matrix->left.j, matrix->left.k);
     info.transform.m_rotation.m_col2.set(matrix->up.i, matrix->up.j, matrix->up.k);
     hkVector4 position;
     position.set(matrix->position.x, matrix->position.y, matrix->position.z);
-    info.shape = shape;
-    c_contact_exclusion callback;
-    callback.found = false;
-    callback.found_other = false;
-    callback.excluded_component = excluded_component;
     info.filter = filter;
     info.transform.m_translation = position;
     c_contact_query_transform_volume *volume = new c_contact_query_transform_volume(&info);

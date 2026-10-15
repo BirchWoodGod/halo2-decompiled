@@ -79,8 +79,8 @@ bool function_18f000(s_18e700 const *arg_0)
     function_d5560(false);
     function_c09c0(g_4e6948->state);
     function_137e40();
-    long local_1 = arg_0->field_120;
-    if (function_11c1b0((short)local_1, true))
+    short local_1 = arg_0->field_120;
+    if (function_11c1b0(local_1, true))
     {
         g_4e6948->flag1120 = true;
         if (g_4cf770 && !((s_18e701 *)g_4cf77c)->field_2f)

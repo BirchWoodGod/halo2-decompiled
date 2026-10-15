@@ -413,10 +413,10 @@ bool function_21d5a0(long effect_index)
 		if (!(effect->flags & (FLAG(_sound_effect_unmanaged_bit) | FLAG(_sound_effect_stopped_bit))))
 		{
 			long local_0 = effect->sound_index;
-			s_sound_source_callbacks const *local_1 = playing_sound_get(local_0)->marker.link.source;
+			s_sound_effect_link const &local_1 = playing_sound_get(local_0)->marker.link;
 			s_sound_playback_flags flags;
-			*(volatile word *)&flags = 0;
-			result = sound_playback_update_source(local_0, local_1, &flags);
+			memset(&flags, 0, sizeof(flags));
+			result = sound_playback_update_source(local_0, local_1.source, &flags);
 			if (TEST_FIELD_BIT(flags.source_updated))
 				effect->flags |= FLAG(_sound_effect_unmanaged_bit);
 		}

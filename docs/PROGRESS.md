@@ -2,6 +2,141 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8768 functions match
+
+```
+matched 8768 of 11318 game functions (1177540 of 2784283 bytes, 42.29%)
+```
+
+5 new matches, none lost:
+- Machine 3's batch 47 (#494): `0x83db0`, `0xc0110`, `0x1b83b0`, `0x1d4880` and `0x1ee410` match.
+
+## 2026-10-15: 8763 functions match
+
+```
+matched 8763 of 11318 game functions (1176682 of 2784283 bytes, 42.26%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 46 (#492): `0x153950`, `0x12b450` (written new, with `0x217c40`'s retail-evidenced `standard` marker) and `0x20fb30` (through `0x20d570`'s retail parameter order) match.
+
+## 2026-10-15: 8760 functions match
+
+```
+matched 8760 of 11318 game functions (1175027 of 2784283 bytes, 42.20%)
+```
+
+2 new matches, none lost:
+- Machine 3's batch 45 (#491): `0x1e06b0` and `0x9fdb0` match.
+
+## 2026-10-15: 8758 functions match
+
+```
+matched 8758 of 11318 game functions (1174515 of 2784283 bytes, 42.18%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 44 (#490): `0x137ed0` (with a float angle in `0x39e50`'s rotation helper), `0x208f10` and `0x20ab60` match.
+
+## 2026-10-15: 8755 functions match
+
+```
+matched 8755 of 11318 game functions (1173684 of 2784283 bytes, 42.15%)
+```
+
+5 new matches, none lost:
+- Machine 3's batch 43 (#489): `0x2a3600` and `0x2a3670`, the twins `0x2483f0` and `0x248d90`, and `0x12e5e0` match.
+
+## 2026-10-15: 8750 functions match
+
+```
+matched 8750 of 11318 game functions (1172405 of 2784283 bytes, 42.11%)
+```
+
+5 new matches, none lost:
+- Machine 3's batch 42 (#488): `0x1dd630` matches through `0x1dd5d0` returning through an output pointer; `0x1cf120`, `0x1c5210` and the script wrappers `0x2a3520` and `0x2a3590` match too.
+
+## 2026-10-15: 8745 functions match
+
+```
+matched 8745 of 11318 game functions (1171097 of 2784283 bytes, 42.06%)
+```
+
+2 new matches, none lost:
+- Machine 3's batch 41 (#487): `0x254200` (written for the first time) and `0x20b660` match; `0x1b9200` passes forward and direction to `0x11cc90` in retail's order.
+
+## 2026-10-15: 8743 functions match
+
+```
+matched 8743 of 11318 game functions (1169731 of 2784283 bytes, 42.01%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 40 (#486): `0x80490` (through `0x7f8b0`'s retail parameter order), `0x9aff0` and `0x9d000` match.
+
+## 2026-10-15: 8740 functions match
+
+```
+matched 8740 of 11318 game functions (1169098 of 2784283 bytes, 41.99%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 39 (#485): `0x1b0110`, `0x1b3c60` and `0x6dec0`, which had no body before, are written and match.
+
+## 2026-10-15: 8737 functions match
+
+```
+matched 8737 of 11318 game functions (1168168 of 2784283 bytes, 41.96%)
+```
+
+6 new matches, none lost:
+- Machine 1's key lane round 29: machine 3's `0x18f000` (lent for the round) takes retail's `eax` parameter and matches; with it `0x18e700`, `0x1240b0`, `0x124380`, `0x12bd40` and `0x18f0a0` match.
+
+## 2026-10-15: 8731 functions match
+
+```
+matched 8731 of 11318 game functions (1167147 of 2784283 bytes, 41.92%)
+```
+
+4 new matches, none lost:
+- Machine 3's batch 38 (#484): `0x86f10` (through `0x11f4f0`'s retail parameter order), `0x1a0660`, `0x1b6930` and `0x25fee0` match; `0x1d56f0` gets its first body.
+
+## 2026-10-15: 8727 functions match
+
+```
+matched 8727 of 11318 game functions (1166720 of 2784283 bytes, 41.90%)
+```
+
+1 new matches, none lost:
+- Machine 1's key lane round 28: machine 3's `0x216da0` (lent for the round) takes retail's parameter order, and its caller `0x2ad020` matches; `0x20e190` goes from 151 to 49.
+
+## 2026-10-15: 8726 functions match
+
+```
+matched 8726 of 11318 game functions (1166209 of 2784283 bytes, 41.89%)
+```
+
+8 new matches, none lost:
+- Machine 3's batch 37 (#483): `0x59570` (machine 1's key lane body, in its own file), `0x1d3880`, `0x87e90`, `0x1f4280`, `0x295e60`, `0x1b5c00`, `0x235c4a` and `0x242ef0` match.
+
+## 2026-10-15: 8718 functions match
+
+```
+matched 8718 of 11318 game functions (1163488 of 2784283 bytes, 41.79%)
+```
+
+6 new matches, none lost:
+- Machine 1's key lane round 27: machine 3's `0xb9a90` (lent for the round) takes retail's `ebx` convention, and with it `0x13c5a0`, `0x2ac1a0`, `0x10cd50` and `0x2a1cc0` match; `0xb9a50` and `0xb83b0` match too.
+
+## 2026-10-15: 8712 functions match
+
+```
+matched 8712 of 11318 game functions (1162704 of 2784283 bytes, 41.76%)
+```
+
+2 new matches, none lost:
+- Machine 1's key lane round 26: machine 3's `0x1c54b0` (lent for the round) takes retail's convention, and with it its callers `0xba7f0` and `0xba6f0` match.
+
 ## 2026-10-14: 8710 functions match
 
 ```

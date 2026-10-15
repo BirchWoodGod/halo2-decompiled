@@ -703,12 +703,12 @@ void function_273d30(long ai_index, long object_index)
 {
 	if (!(ai_index & 0xc0000000))
 	{
-		long squad_index = ai_index & 0xffff;
 		dword clump_bits[1];
 		s_squad_actor_iterator iterator;
 		s_actor_datum *actor;
 
 		clump_bits[0] = 0;
+		long squad_index = ai_index & 0xffff;
 		function_204d30(&iterator, squad_index);
 		while ((actor = squad_actor_iterator_next_inlined(&iterator)) != NULL)
 		{
@@ -2750,7 +2750,7 @@ struct s_location;
 void function_b75a0(long object_index, point3f const *point, vector3f const *forward, vector3f const *up,
 	s_location const *location, bool unknown);
 void function_b73b0(long object_index);
-void __stdcall function_1f4280(long actor_index);
+bool __stdcall function_1f4280(long actor_index);
 
 inline s_type_c3b527 *scenario_point_get(long point_reference)
 {

@@ -802,7 +802,9 @@ void function_41490(short group, long tag, short kind, real distance, t_record_f
             depth += g_485618.forward.i * delta.i;
             depth += g_485618.forward.j * delta.j;
             record->depth = 0.0f - depth;
-            record->position = *position;
+            record->position.x = position->x;
+            record->position.y = position->y;
+            record->position.z = position->z;
         }
     }
 }
@@ -1282,11 +1284,7 @@ bool __stdcall function_4cbf0(long tag, long context, long pass, long stage,
     return result;
 }
 
-#if 0 // Full camera and projection storage must be reconciled before enabling.
-struct s_camera_copy_3bd00
-{
-    byte data[0x74];
-};
+#if 0 // Activation changes matched rendering helpers.
 struct s_projection_copy_3bd00
 {
     transform4x3f transform;
@@ -1305,29 +1303,28 @@ bool __stdcall function_3bd00(real height, dword color)
     function_16b10((s_render_reset_state *)g_485b48);
     __declspec(align(8)) s_projection_copy_3bd00 saved_projection = *(s_projection_copy_3bd00 const *)g_48568c;
     __declspec(align(8)) s_projection_copy_3bd00 projection = saved_projection;
-    s_camera_copy_3bd00 saved_camera = *(s_camera_copy_3bd00 const *)&g_485618;
-    s_camera_copy_3bd00 camera = saved_camera;
+    s_frame_camera saved_camera = g_485618;
+    s_frame_camera camera = saved_camera;
     g_4858b8 = 21;
     function_14bc0(21, 0, false);
     if (g_485607 && !g_4858b8) function_14ac0();
     D3DDevice_Clear(0, 0, 0xf0, color, 1.0f, 0);
-    real *matrix = (real *)&projection.transform;
-    matrix[7] = 0.0f - matrix[7];
-    matrix[8] = 0.0f - matrix[8];
-    matrix[9] = 0.0f - matrix[9];
-    matrix[12] = height * 2.0f - matrix[12];
-    *(short *)(camera.data + 0x30) = 0;
-    *(short *)(camera.data + 0x32) = 0;
-    *(short *)(camera.data + 0x34) = 256;
-    *(short *)(camera.data + 0x36) = 512;
+    projection.transform.up.i = 0.0f - projection.transform.up.i;
+    projection.transform.up.j = 0.0f - projection.transform.up.j;
+    projection.transform.up.k = 0.0f - projection.transform.up.k;
+    projection.transform.position.z = height * 2.0f - projection.transform.position.z;
+    camera.field_30 = 0;
+    camera.field_32 = 0;
+    camera.field_34 = 256;
+    camera.field_36 = 512;
     function_141590(&projection.transform, &projection.inverse);
-    function_12fa0(camera.data, (real *)&projection, false, 21);
+    function_12fa0((byte const *)&camera, (real *)&projection, false, 21);
     function_3ede0();
     function_14bc0((short)target, 0, true);
-    memcpy(&g_485618, &saved_camera, sizeof(saved_camera));
+    g_485618 = saved_camera;
     memcpy(g_48568c, &saved_projection, sizeof(saved_projection));
     g_4858b8 = target;
-    function_12fa0(saved_camera.data, (real *)&saved_projection, false, target);
+    function_12fa0((byte const *)&saved_camera, (real *)&saved_projection, false, target);
     return true;
 }
 #endif

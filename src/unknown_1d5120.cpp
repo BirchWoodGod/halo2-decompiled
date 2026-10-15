@@ -6,6 +6,94 @@
 extern hkWorld *g_51e9a4;
 void havok_component_rigid_body_transform_set(long arg_0, s_havok_component *arg_1, hkTransform const *arg_2);
 
+
+long __stdcall function_1d5940(s_havok_component *component, bool first, bool second, bool third);
+__declspec(noinline) void function_1d4360(s_havok_component *component, transform4x3f *volatile result);
+struct s_havok_transform;
+void function_181f80(s_havok_transform *result, transform4x3f const *matrix);
+bool function_f1320(long object_index);
+bool function_205510(void *buffer, void const *definition_physics, s_havok_component *component);
+
+class c_1d56f0_shape
+{
+public:
+    virtual void slot0() = 0;
+    virtual void slot1() = 0;
+    virtual void slot2() = 0;
+    virtual void slot3() = 0;
+    virtual void slot4() = 0;
+    virtual void slot5() = 0;
+    virtual void slot6() = 0;
+    virtual void slot7() = 0;
+    virtual void slot8() = 0;
+    virtual void slot9() = 0;
+    virtual long slot10() = 0;
+};
+
+__declspec(noinline) void function_1d56f0(s_havok_component *component);
+
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+// @retail 0x1d56f0
+void function_1d56f0(s_havok_component *component)
+{
+    byte *object = *(byte **)((byte *)g_4e0300->data + (component->object_index & 0xffff) * 12 + 8);
+    byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+    bool enabled = (bool)((object[0x348] >> 2) & 1);
+    component->unknown1c = (byte)function_1d5940(component, enabled, false, true);
+    char index = component->unknown18;
+    if (index >= 0 && index < component->rigid_bodies.size)
+    {
+        short const &converted_index = (short)index;
+        if (converted_index != NONE)
+        {
+            byte *physics = definition + 0x2ac;
+            if (*(long *)(definition + 0x2f8))
+            {
+                byte *shape = *(byte **)(physics + 0x50);
+                if (*(long *)(shape + 0x38) > 0)
+                {
+                    if (((c_1d56f0_shape *)shape)->slot10() <= 1)
+                        shape += 0x60;
+                    if (shape)
+                    {
+                        c_contact_query_transform_info info;
+                        transform4x3f matrix;
+                        function_1d4360(component, &matrix);
+                        info.shape = shape;
+                        info.filter = ((component->object_index + 1) << 16) | 0xc;
+                        function_181f80((s_havok_transform *)&info.transform, &matrix);
+                        component->rigid_body = (hkRigidBody *)new c_contact_query_transform_volume(&info);
+                    }
+                }
+                if (*(long *)(physics + 0x4c))
+                {
+                    bool skip = (bool)((*(dword *)(*(byte **)(physics + 0x50) + 0x3c) >> 1) & 1);
+                    (void)&skip;
+                    _ReadWriteBarrier();
+                    if (skip)
+                        goto label_1d585f;
+                }
+            }
+            if (function_f1320(component->object_index))
+                return;
+        label_1d585f:
+            {
+                real bounds[6];
+                if (function_205510(bounds, physics, component))
+                {
+                    c_contact_query_bounds_info info;
+                    info.lower.set(bounds[0], bounds[2], bounds[4]);
+                    info.upper.set(bounds[1], bounds[3], bounds[5]);
+                    info.filter = ((component->object_index + 1) << 16) | 0xc;
+                    component->unknown9c = (long)new c_contact_query_bounds_volume(&info);
+                }
+            }
+        }
+    }
+}
+#pragma function(_ReadWriteBarrier)
+
 // @retail 0x1d5120
 bool function_1d5120(s_havok_component *arg_0, long arg_1, long arg_2, long arg_3,
  real arg_4, long *arg_5, long arg_6)

@@ -94,7 +94,14 @@ PRIVATE __forceinline void function_217c42(real *arg_0, real *arg_1, real arg_2,
     *arg_1 = function_217c41(local_1);
 }
 
-// @retail 0x217c40
+/* standard marker before the body matches (frame alignment): retail's
+   prologue self-aligns its frame (`push ebp; mov ebp, esp; and esp, -8`),
+   takes no arguments and returns with a bare `ret`. Our build self-aligns
+   such a function only when its address escapes (a scan of the 170
+   self-aligning functions showed this). Retail holds no reference to its
+   address, and its caller 0x12b450 is LTCG code. With the marker 0x12b450 and
+   0x12b690 match; without it they don't. The body itself doesn't match yet. */
+// @retail 0x217c40 standard
 void function_217c40(void)
 {
     for (long local_0 = 0; local_0 != NONE; )
