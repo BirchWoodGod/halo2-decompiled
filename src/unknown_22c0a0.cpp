@@ -214,3 +214,63 @@ void *c_havok_fixed_memory::allocate_aligned(long alignment, long size, long mem
 done:
     return result;
 }
+
+
+// @retail 0x22c390
+void function_22c390(hkMemory *memory, s_fixed_memory_statistics_16 *statistics)
+{
+    c_havok_fixed_memory *storage = (c_havok_fixed_memory *)memory;
+    statistics->header_size = 0x15040;
+    statistics->allocation_count = storage->m_count;
+    statistics->allocated_size = 0;
+    for (long i = 0; i < storage->m_count; i++)
+    {
+        s_fixed_memory_entry *entries = (s_fixed_memory_entry *)((byte *)storage->m_buffer + storage->m_size);
+        statistics->allocated_size += entries[-1 - i].size;
+    }
+    statistics->unknown0c = 0;
+}
+
+
+struct s_physics_pool_statistics
+{
+    long allocated, pages, used_pages, page_size, free_size;
+    real used_fraction;
+    struct s_entry { long size, stride, count, used; } entries[16];
+    long metadata_size, entry_count;
+};
+
+struct s_22cb00_memory
+{
+    byte unknown00[0x1c];
+    long field_1c;
+    long field_20;
+    byte unknown24[0x6c - 0x24];
+    long field_6c[16];
+    byte unknownac[0xf0340 - 0xac];
+    long field_f0340;
+    byte unknownf0344[4];
+    long field_f0348[16];
+    byte unknownf0388[4];
+    long field_f038c[16];
+};
+
+// @retail 0x22cb00
+void function_22cb00(hkMemory *memory, s_physics_pool_statistics *statistics)
+{
+    s_22cb00_memory *storage = (s_22cb00_memory *)memory;
+    statistics->allocated = 0xf03d0;
+    statistics->pages = 0x76;
+    statistics->used_pages = storage->field_f0340;
+    statistics->page_size = 0x2000;
+    statistics->free_size = storage->field_1c - storage->field_20 + 1;
+    long used = 0;
+    for (long i = 15; i >= 0; --i)
+    {
+        used += (storage->field_f0348[i] - storage->field_f038c[i]) * storage->field_6c[i];
+    }
+    statistics->used_fraction = (real)used * (1.0f / 966656.0f);
+    statistics->entry_count = 16;
+    statistics->metadata_size = 0;
+    memset(statistics->entries, 0, sizeof(statistics->entries));
+}

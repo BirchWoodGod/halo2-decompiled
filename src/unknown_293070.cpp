@@ -403,8 +403,9 @@ void function_293d30(s_scenario_flock const *definition, point3f *point, real *s
 			local_0.field_0 = 0.0f;
 			vector3f relative;
 			vector3d_from_points3d(&matrix.position, point, &relative);
+			local_0.field_8 = 0;
 			long axis_count = *horizontal_reference ? 2 : 3;
-			for (local_0.field_8 = 0; (short)local_0.field_8 < axis_count; local_0.field_8++)
+			for (; (short)local_0.field_8 < axis_count; local_0.field_8++)
 			{
 				vector3f const *axis = &(&matrix.forward)[(short)local_0.field_8];
 				real distance = function_293d31(axis, &relative);

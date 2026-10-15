@@ -69,8 +69,7 @@ extern s_profile_edit g_54e5d0;
 
 /* the game variant being edited (or shown when no session holds one) and
    its saved game file index (user_interface_text_parser.cpp) */
-extern long g_54e49c;
-extern s_game_variant g_54e4a0;
+#include "unknown_54e49c.h"
 
 /* unknown_147f6d.cpp */
 void function_14800c(long channel, long index);
