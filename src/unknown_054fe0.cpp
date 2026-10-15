@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Ob1 /Gr
 /* UNKNOWN_054FE0.CPP: the session interface globals (0x4cd868)
    and the queries on the current game session (the manager's session_a) (lane D) */
@@ -355,8 +356,8 @@ void network_session_interface_set_user_properties(long index, long unknown10, c
 	g_4cd868.users[index].unknowna4 = unknowna4;
 }
 
-long g_4cf968;
-long g_4cf96c;
+
+
 
 // @retail 0x64870
 void network_session_interface_set_unknown64(const byte *data, long unknown84)

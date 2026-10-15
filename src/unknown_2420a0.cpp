@@ -668,50 +668,12 @@ bool function_2440a0(s_marker_list *list, long object_index, point3f const *poin
 }
 
 /* ---- the object whose destructor is at 0x244930 ---- */
-struct c_marker_base : c_a
-{
-	dword d8;
-	dword dc;
-
-	c_marker_base(dword other)
-	{
-		dc = other;
-		unknown06 = 1;
-		d8 = 0;
-	}
-};
-
-struct c_marker_object : c_marker_base
-{
-	dword d10;
-
-	c_marker_object(dword value, dword other) : c_marker_base(other)
-	{
-		d10 = value;
-	}
-
-	void operator delete(void *block)
-	{
-		g_480118->allocate((long)block, ((c_a *)block)->flags, 0x22);
-	}
-};
+#include "unknown_244980.h"
 
 // @retail 0x244930 deleting c_marker_object
 
-class c_marker_object_factory
-{
-public:
-	dword unknown04[2];
-	dword value0c;
-
-	virtual c_marker_object *create(dword value, void *memory);
-	virtual void s1() {}
-	virtual void s2() {}
-	virtual void s3() {}
-};
-
 // @retail 0x244bb0
-c_marker_object *c_marker_object_factory::create(dword value, void *memory)
+c_marker_object *c_marker_object::create(dword value, void *memory)
 {
 	return new (memory) c_marker_object(value, value0c);
 }

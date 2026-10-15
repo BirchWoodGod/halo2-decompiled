@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr
 /* UNKNOWN_0805E0.CPP: the cache of the configurations of the
    players met recently (entries of 0x68 bytes at 0x4cf98c, chained through
@@ -24,7 +25,7 @@ struct s_player_configuration_cache_entry
 	};
 };
 
-s_player_configuration_cache_entry g_4cf98c[350];
+
 
 /* whether a XUID is an offline (machine-local) one */
 static inline bool xuid_is_offline(unsigned __int64 xuid)
@@ -76,11 +77,11 @@ bool player_configuration_cache_next_recent_player(s_recent_player *player, long
 	return result;
 }
 
-long g_4cf97c;
-long g_4cf980;
-extern long g_4cf984;
-long g_4cf988;
-long g_4cf978;
+
+
+
+
+
 
 long __stdcall function_7fc80(const void *identity, long *position);
 
@@ -301,8 +302,8 @@ void function_7fe40(long index)
 	}
 }
 
-long g_4cf970;
-long g_4cf974;
+
+
 
 struct s_player_appearance;
 bool function_153750(s_player_appearance *appearance);
@@ -792,3 +793,5 @@ void function_80390(void)
   } while (local_3 < g_4cf978);
  }
 }
+
+s_4cf790 g_4cf790_storage;

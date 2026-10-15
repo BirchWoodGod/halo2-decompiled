@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 /* GLOBALS.H: globals shared by more than one source file (defined in
 src/globals.cpp) */
 
@@ -740,8 +741,8 @@ extern long g_51054c;
 extern c_data_allocator *g_510c2c;
 extern s_record_pool *g_4e0338;
 extern s_record_pool *g_4e0320;
-extern s_record_pool *g_4cf8d8;
-extern bool g_4cf8d4;
+
+
 extern s_record_pool *g_502414;
 
 /* the 16 player slots of 0xc70 bytes (058cb0, 1900a5, and the vibration
@@ -933,7 +934,7 @@ extern byte g_4cf771; /* defined in unknown_03d380.cpp */
 extern byte g_4cf772; /* defined in unknown_03d380.cpp */
 typedef void (__stdcall *game_module_proc)(dword);
 extern game_module_proc g_46e320[30]; /* the game module table (unknown_03d380.cpp) */
-extern byte g_4cf7cc[6]; /* the local machine's address (unknown_07a9a0.cpp) */
+
 /* the transport globals (0x4d8b18, src/transport.cpp): whether the transport
    is initialized and started, the link state, and the transition functions
    the network modules register (startup, shutdown, reset, with a context) */
