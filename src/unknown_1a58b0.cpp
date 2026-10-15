@@ -1027,7 +1027,7 @@ short function_1a77a0(long actor_index, long argument, short level)
 	short index = NONE;
 	long local_0 = actor_index;
 	s_slot *slot = actor_slot_get(local_0, level);
-	short state = slot->unknown4;
+	long state = slot->unknown4;
 	short result = function_1a7030(local_0, level, argument, (short *)&actor_index);
 
 	if (result == g_46fbec)

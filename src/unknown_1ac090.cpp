@@ -723,11 +723,14 @@ bool __stdcall function_1ad6a0(long arg_0, s_slot *arg_1)
 	if (local_0->unknown040)
 	{
 		if (local_2->unknown0c && function_1f8660(arg_0))
-			return local_1;
+			goto done;
 		s_tag_element_54 *local_3 = (s_tag_element_54 *)function_1e5450(arg_0,
 			ai_object_get(local_0->unknown26c)->definition_index);
 		if (!local_3)
-			return false;
+		{
+			local_1 = false;
+			goto done;
+		}
 		byte *local_4 = ai_scratch_buffer_get();
 		s_2605d0_request local_5;
 		memset(&local_5, 0, sizeof(local_5));
@@ -750,7 +753,8 @@ bool __stdcall function_1ad6a0(long arg_0, s_slot *arg_1)
 		{
 			actor_get(arg_0)->unknown040 = false;
 			ai_scratch_buffer_release(local_4);
-			return false;
+			local_1 = false;
+			goto done;
 		}
 		if (!local_2->unknown0c && local_0->unknown270 == 4 && local_0->prop_index != NONE)
 		{
@@ -796,6 +800,7 @@ bool __stdcall function_1ad6a0(long arg_0, s_slot *arg_1)
 		local_2->unknown0c = true;
 		ai_scratch_buffer_release(local_4);
 	}
+done:
 	return local_1;
 }
 

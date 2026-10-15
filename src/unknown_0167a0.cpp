@@ -1025,12 +1025,11 @@ void __stdcall function_1ab50(byte *state, s_packed_shader_range const *range)
     for (long i = 0; i < (long)range->count(); ++i, entry += 4)
     {
         s_texture_stage_parameter const *parameter = &g_46703c[entry[1]];
-        D3DTEXTURESTAGESTATETYPE setting = (D3DTEXTURESTAGESTATETYPE)parameter->state;
         if (!(entry[2] == 1)) {
             dword color = pack_color3f((color3f *)(state + 0x108) + entry[3]);
             dword old;
-            D3DDevice_GetTextureStageState(entry[0], setting, &old);
-            D3DDevice_SetTextureStageState(entry[0], setting, (old & 0xff000000) | (color & 0xffffff));
+            D3DDevice_GetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, &old);
+            D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, (old & 0xff000000) | (color & 0xffffff));
         } else {
             real value = ((real *)(state + 0x5c))[entry[3]];
             switch (parameter->value_type)
@@ -1039,15 +1038,15 @@ void __stdcall function_1ab50(byte *state, s_packed_shader_range const *range)
                 {
                     dword alpha = (dword)rounded_shader_alpha(value) << 24;
                     dword old;
-                    D3DDevice_GetTextureStageState(entry[0], setting, &old);
-                    D3DDevice_SetTextureStageState(entry[0], setting, (old & 0xffffff) | alpha);
+                    D3DDevice_GetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, &old);
+                    D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, (old & 0xffffff) | alpha);
                 }
                 break;
             case 1:
-                D3DDevice_SetTextureStageState(entry[0], setting, *(dword *)&value);
+                D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, *(dword *)&value);
                 break;
             case 2:
-                D3DDevice_SetTextureStageState(entry[0], setting, rounded_shader_integer(value));
+                D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, rounded_shader_integer(value));
                 break;
             }
         }
@@ -1139,7 +1138,7 @@ void function_19ca0(byte *state, word const *range)
     {
         for (long i = 0; i < (*range >> 9); ++i, entry += 4)
         {
-            dword mask = g_467068[entry[2] & 7];
+            long component = entry[2] & 7;
             function_1b2c0(state, entry[3], entry[2] & 7, 0, (entry[2] >> 3) & 7, values);
             if (*(word const *)entry & 0x800)
                 for (long j = 0; j < 4; ++j) values[j] = (values[j] + 1.0f) * 0.5f;
@@ -1150,6 +1149,7 @@ void function_19ca0(byte *state, word const *range)
             color4f color;
             color.red = values[0]; color.green = values[1]; color.blue = values[2]; color.alpha = values[3];
             dword value = pack_color4f(&color);
+            dword mask = g_467068[component];
             word packed = *(word const *)entry;
             store_shader_mask(state, packed, (packed >> 6) & 15, mask, value);
         }
@@ -1163,7 +1163,7 @@ void function_19ca0(byte *state, word const *range)
             long slot = packed & 7;
             short source = *(short const *)(mapping + slot * 4);
             if (source != NONE && ((packed >> 3) & 7) != *(long *)(state + 0x300 + source * 4)) continue;
-            dword mask = g_467068[entry[2] & 7];
+            long component = entry[2] & 7;
             function_1b2c0(state, entry[3], entry[2] & 7, 0, (entry[2] >> 3) & 7, values);
             if (*(word const *)entry & 0x800)
                 for (long j = 0; j < 4; ++j) values[j] = (values[j] + 1.0f) * 0.5f;
@@ -1174,6 +1174,7 @@ void function_19ca0(byte *state, word const *range)
             color4f color;
             color.red = values[0]; color.green = values[1]; color.blue = values[2]; color.alpha = values[3];
             dword value = pack_color4f(&color);
+            dword mask = g_467068[component];
             packed = *(word const *)entry;
             long index = (packed >> 6) & 15;
             if ((packed & 0x3c0) != 0x200) index += *(signed char *)(state + 0x1520 + (packed & 7));
