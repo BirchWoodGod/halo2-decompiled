@@ -71,15 +71,35 @@ void __stdcall function_2b2ed4(c_y_menu_list *list, bool friends, bool empty,
     word display_name[256];
     display_name[0] = 0;
     long invitations = 0;
-    volatile bool online = false, voice_enabled = false, pending = false, outgoing = false;
-    bool player_pending = false, player_outgoing = false, received = false, sent = false, declined = false;
-    bool in_session = false, voice_available = false, voice_disabled = false, muted = false;
-    bool active = false, joinable = false, self = false;
+    volatile bool online, voice_enabled, pending, outgoing;
+    bool player_pending, player_outgoing, received, sent, declined;
+    bool in_session, voice_available, voice_disabled, muted;
+    bool active, joinable, self;
     if (empty)
     {
         s_friend_request request;
-        long text = friends ? 0x1600029e : friend_request_get(&request) ? 0x180002a2 : 0xb0002e7;
-        ((c_widget *)list->get_screen())->function_230134(text, display_name);
+        if (friends)
+            ((c_widget *)list->get_screen())->function_230134(0x1600029e, display_name);
+        else if (friend_request_get(&request))
+            ((c_widget *)list->get_screen())->function_230134(0x180002a2, display_name);
+        else
+            ((c_widget *)list->get_screen())->function_230134(0xb0002e7, display_name);
+        online = false;
+        voice_enabled = false;
+        pending = false;
+        outgoing = false;
+        received = false;
+        sent = false;
+        player_pending = false;
+        player_outgoing = false;
+        in_session = false;
+        voice_available = false;
+        voice_disabled = false;
+        muted = false;
+        active = false;
+        joinable = false;
+        self = false;
+        declined = false;
     }
     else
     {
@@ -113,6 +133,7 @@ void __stdcall function_2b2ed4(c_y_menu_list *list, bool friends, bool empty,
         voice_available = player != NONE && voice_port_flag0_only(player);
         voice_disabled = !voice_available || (player != NONE && voice_port_flag1(player));
         muted = player != NONE && local != NONE && voice_test_unknownF0(local, player);
+        active = false;
         long active_player = NONE;
         if (network_session_manager_session_unready() && function_19acc6(xuid))
         {
@@ -154,33 +175,45 @@ void __stdcall function_2b2ed4(c_y_menu_list *list, bool friends, bool empty,
             online_friend_get_title_name(&friend_, (wchar_t *)title, 256);
             s_friend_presence_status presence;
             bool known = function_8d230(&friend_, &presence);
-            long suffix_id = NONE;
             if (online_title_is_this_title(friend_.dwTitleID) && known)
             {
                 XNKID zero = {0};
                 bool can_join = memcmp(&friend_.sessionID, &zero, sizeof(zero)) != 0 &&
                     (*(dword *)((byte *)datum + 0x20) & 8) && !active;
-                long message_id;
-                if (joinable) message_id = 0x18000250;
-                else if (active) message_id = 0x14000251;
-                else if (in_session) message_id = 0x13000252;
+                if (joinable) ((c_widget *)list->get_screen())->function_230134(0x18000250, message);
+                else if (active) ((c_widget *)list->get_screen())->function_230134(0x14000251, message);
+                else if (in_session) ((c_widget *)list->get_screen())->function_230134(0x13000252, message);
                 else if (presence.state == 1)
                 {
-                    message_id = presence.value04 ? 0x11000253 : 0xe000258;
-                    suffix_id = presence.value04 ? (presence.value04 == 2 ? 0x12000255 :
-                        presence.value04 == 3 ? 0xd000254 : can_join ? 0xf000256 : 0x13000257) : 0x13000257;
+                    ((c_widget *)list->get_screen())->function_230134(presence.value04 ? 0x11000253 : 0xe000258, message);
+                    ((c_widget *)list->get_screen())->function_230134(presence.value04 ? (presence.value04 == 2 ? 0x12000255 :
+                        presence.value04 == 3 ? 0xd000254 : can_join ? 0xf000256 : 0x13000257) : 0x13000257, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
                 }
-                else if (presence.state == 5) { message_id = 0x17000259; suffix_id = 0x13000257; }
+                else if (presence.state == 5)
+                {
+                    ((c_widget *)list->get_screen())->function_230134(0x17000259, message);
+                    ((c_widget *)list->get_screen())->function_230134(0x13000257, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
+                }
                 else if (presence.value08 == 1)
                 {
-                    message_id = 0x1900025a;
-                    suffix_id = presence.value04 == 2 ? 0x12000255 : presence.value04 == 3 ? 0xd000254 :
-                        can_join ? 0xf000256 : 0x13000257;
+                    ((c_widget *)list->get_screen())->function_230134(0x1900025a, message);
+                    ((c_widget *)list->get_screen())->function_230134(presence.value04 == 2 ? 0x12000255 : presence.value04 == 3 ? 0xd000254 :
+                        can_join ? 0xf000256 : 0x13000257, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
                 }
                 else if (presence.value08 == 2 || presence.value08 == 3)
-                    { message_id = 0x1500025b; suffix_id = 0x13000257; }
-                else message_id = 0xe00024f;
-                ((c_widget *)list->get_screen())->function_230134(message_id, message);
+                {
+                    ((c_widget *)list->get_screen())->function_230134(0x1500025b, message);
+                    ((c_widget *)list->get_screen())->function_230134(0x13000257, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
+                }
+                else ((c_widget *)list->get_screen())->function_230134(0xe00024f, message);
             }
             else if (known && (long)function_217b70(title) > 0)
             {
@@ -188,12 +221,36 @@ void __stdcall function_2b2ed4(c_y_menu_list *list, bool friends, bool empty,
                 function_1630e0(message, suffix, title);
                 switch (presence.state)
                 {
-                case 1: suffix_id = 0x1200025e; break;
-                case 2: suffix_id = 0x1600025f; break;
-                case 3: suffix_id = 0x11000260; break;
-                case 4: suffix_id = 0x1e000261; break;
-                case 5: suffix_id = 0x14000262; break;
-                case 6: suffix_id = 0x1b000263; break;
+                case 1:
+                    ((c_widget *)list->get_screen())->function_230134(0x1200025e, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
+                    break;
+                case 2:
+                    ((c_widget *)list->get_screen())->function_230134(0x1600025f, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
+                    break;
+                case 3:
+                    ((c_widget *)list->get_screen())->function_230134(0x11000260, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
+                    break;
+                case 4:
+                    ((c_widget *)list->get_screen())->function_230134(0x1e000261, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
+                    break;
+                case 5:
+                    ((c_widget *)list->get_screen())->function_230134(0x14000262, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
+                    break;
+                case 6:
+                    ((c_widget *)list->get_screen())->function_230134(0x1b000263, suffix);
+                    unicode_string_append(message, suffix, 256);
+                    message[255] = 0;
+                    break;
                 }
             }
             else if ((long)function_217b70(title) > 0)
@@ -203,49 +260,87 @@ void __stdcall function_2b2ed4(c_y_menu_list *list, bool friends, bool empty,
                 function_1630e0(message, suffix, title);
             }
             else text = 0xe00024f;
-            if (suffix_id != NONE)
-            {
-                ((c_widget *)list->get_screen())->function_230134(suffix_id, suffix);
-                unicode_string_append(message, suffix, 256);
-                message[255] = 0;
-            }
         }
         if (text != NONE) status->function_253b1a(text);
         else status->function_22f52e()->set_text(message);
     }
     if (invite)
     {
-        short icon = NONE;
-        if (!self)
+        if (self) invite->value6e = false;
+        else if (invitations >= 10)
         {
-            if (invitations >= 10) icon = received ? 28 : 17;
-            else if (invitations > 1) icon = (short)(invitations + (received ? 18 : 7));
-            else if ((player_pending && !friends) || (pending && friends)) icon = 1;
-            else if (received && invitations > 0) icon = 18;
-            else if (sent) icon = 6;
-            else if ((player_outgoing && !friends) || (outgoing && friends)) icon = 2;
-            else if (declined) icon = 7;
+            invite->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)invite, received ? 28 : 17);
         }
-        invite->value6e = icon != NONE;
-        if (icon != NONE) function_2b0a14((s_widget_view_2b0a *)invite, icon);
+        else if (invitations > 1)
+        {
+            invite->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)invite, (short)(invitations + (received ? 18 : 7)));
+        }
+        else if ((player_pending && !friends) || (pending && friends))
+        {
+            invite->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)invite, 1);
+        }
+        else if (received && invitations > 0)
+        {
+            invite->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)invite, 18);
+        }
+        else if (sent)
+        {
+            invite->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)invite, 6);
+        }
+        else if ((player_outgoing && !friends) || (outgoing && friends))
+        {
+            invite->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)invite, 2);
+        }
+        else if (declined)
+        {
+            invite->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)invite, 7);
+        }
+        else invite->value6e = false;
     }
     if (session)
     {
-        session->value6e = online;
-        if (online) function_2b0a14((s_widget_view_2b0a *)session, joinable ? 29 : active ? 19 : 0);
+        if (!online) session->value6e = false;
+        else if (joinable)
+        {
+            session->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)session, 29);
+        }
+        else if (active)
+        {
+            session->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)session, 19);
+        }
+        else
+        {
+            session->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)session, 0);
+        }
     }
     if (voice)
     {
-        short icon = NONE;
-        if (in_session)
+        if (in_session && muted)
         {
-            if (muted) icon = 3;
-            else if (voice_disabled) icon = 5;
-            else if (voice_available) icon = 4;
+            voice->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)voice, 3);
         }
-        else if (voice_enabled) icon = 4;
-        voice->value6e = icon != NONE;
-        if (icon != NONE) function_2b0a14((s_widget_view_2b0a *)voice, icon);
+        else if (in_session && voice_disabled)
+        {
+            voice->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)voice, 5);
+        }
+        else if (in_session ? voice_available : voice_enabled)
+        {
+            voice->value6e = true;
+            function_2b0a14((s_widget_view_2b0a *)voice, 4);
+        }
+        else voice->value6e = false;
     }
     s_recent_player player;
     s_widget_item layout;
