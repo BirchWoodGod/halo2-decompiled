@@ -1447,7 +1447,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00080330,95,game,speed,a16 pad,,,0007fe90 001537f0,src/unknown_0805e0.cpp,matched
 00080390,167,game,speed,a16 pad,,,0007fb50 00320d00 003303f3 003314b0,src/unknown_0805e0.cpp,matched
 00080440,75,game,speed,a16 pad,,,0007fc80 0007fdf0 00080330,src/unknown_0805e0.cpp,matched
-00080490,306,game,speed,a16 pad,,,0007f8b0 0007fc80 0007fe40 0007fe90 00320d00 003303f3,src/unknown_0805e0.cpp,near
+00080490,306,game,speed,a16 pad,,,0007f8b0 0007fc80 0007fe40 0007fe90 00320d00 003303f3,src/unknown_0805e0.cpp,matched
 000805d0,16,game,speed,a16 pad,,,00080490,src/unknown_0805e0.cpp,matched
 000805e0,127,game,unknown,a16,,,,src/unknown_0805e0.cpp,todo
 00080660,731,game,speed,a16 pad,,,00153750,src/unknown_0805e0.cpp,matched
@@ -1989,7 +1989,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0009aeb0,72,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,todo
 0009af00,176,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
 0009afb0,49,game,unknown,a16,,,,src/unknown_09a5e0.cpp,matched
-0009aff0,171,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,todo
+0009aff0,171,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
 0009b0a0,223,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
 0009b180,181,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
 0009b240,1219,game,speed,a16 pad,,,000b56e0 000b5760 000b66f0 00194830 001955d0 00195720,src/unknown_09a5e0.cpp,matched
@@ -2047,7 +2047,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0009cfa0,43,game,speed,a16 pad,,,001957d0 00195820,src/unknown_09a5e0.cpp,matched
 0009cfd0,18,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
 0009cff0,15,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
-0009d000,156,game,speed,a16 pad,,,00184000,src/unknown_09a5e0.cpp,todo
+0009d000,156,game,speed,a16 pad,,,00184000,src/unknown_09a5e0.cpp,matched
 0009d0a0,54,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
 0009d0e0,48,game,speed,a16 pad,,,,src/unknown_09a5e0.cpp,matched
 0009d110,150,game,unknown,a16,,,00183fc0 00184000,src/unknown_09a5e0.cpp,near
