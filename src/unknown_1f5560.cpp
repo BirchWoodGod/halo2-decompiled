@@ -618,9 +618,9 @@ bool function_1f9490(long actor_index, s_reference reference, s_actor_move_reque
 bool function_1f9760(long actor_index, long object_index, point3f const *point, real distance,
 	bool *last_out, bool *direction_valid_out, vector3f *direction_out)
 {
+	bool reached = false;
 	s_actor_view *actor = actor_get(actor_index);
 	byte *definition = g_4e3b44[moving_object_get(object_index)->tag_index & 0xffff].bytes;
-	bool reached = false;
 	bool last = actor->unknown53a + 1 >= actor->unknown539;
 	bool direction_valid = false;
 	vector3f direction;
