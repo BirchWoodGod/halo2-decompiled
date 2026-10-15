@@ -24,7 +24,7 @@ void function_3d600(void)
 			byte *shader = *(byte **)(g_4e3b44[tag & 0xffff].bytes + 0x24);
 			for (long texture = 0; texture < *(long *)(shader + 4); ++texture)
 			{
-				long bitmap_tag = *(long *)(*(byte **)(shader + 8) + texture * 0xc);
+				long const &bitmap_tag = *(long *)(*(byte **)(shader + 8) + texture * 0xc);
 				if (bitmap_tag == NONE) continue;
 				byte *bitmap = g_4e3b44[bitmap_tag & 0xffff].bytes;
 				for (long index = 0; index < *(long *)(bitmap + 0x44); ++index)
