@@ -85,14 +85,17 @@ real function_187f30(void)
 	if (index != NONE)
 	{
 		long player_index = g_4e8c20->entries[index];
-		bool valid = player_index != NONE;
+		bool const &valid = player_index != NONE;
 		if (valid)
 		{
 			long unit_index = player_get(player_index)->unit_index;
 			if (unit_index != NONE)
 			{
 				vector3f vector = ((s_object_header *)g_4e0300->data)[unit_index & 0xffff].object->vector;
-				result = (real)atan2(vector.k, sqrt(vector.i * vector.i + vector.j * vector.j));
+				real const &i = vector.i;
+				real const &j = vector.j;
+				real const &k = vector.k;
+				result = (real)atan2(k, sqrt(i * i + j * j));
 			}
 		}
 	}

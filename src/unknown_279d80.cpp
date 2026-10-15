@@ -325,11 +325,11 @@ void function_279e40(s_aiming_screen const *screen, s_graph_tag *graph, c_type_7
 	real fraction;
 
 	function_1ddb40(&data, graph, animation_id);
-	right_frame_count = screen->right_frame_count;
 	left_frame_count = screen->left_frame_count;
+	right_frame_count = screen->right_frame_count;
 	yaw_frame_count = right_frame_count + left_frame_count + 1;
-	down_frame_count = screen->down_frame_count;
 	up_frame_count = screen->up_frame_count;
+	down_frame_count = screen->down_frame_count;
 
 	yaw_per_frame = yaw < 0.0f ? screen->right_yaw_per_frame : screen->left_yaw_per_frame;
 	yaw_frames = yaw_per_frame < 0.0001f ? 0.0f : yaw / yaw_per_frame;
@@ -346,8 +346,8 @@ void function_279e40(s_aiming_screen const *screen, s_graph_tag *graph, c_type_7
 	lower_row = PIN(lower_row, 0.0f, (real)(down_frame_count + up_frame_count));
 	upper_row = PIN(upper_row, 0.0f, (real)(down_frame_count + up_frame_count));
 	lower_frame = (real)yaw_frame_count * lower_row + yaw_frame;
-	upper_frame = (real)yaw_frame_count * upper_row + yaw_frame;
 	fraction = pitch_frame - lower_row;
+	upper_frame = (real)yaw_frame_count * upper_row + yaw_frame;
 	if (fraction < 0.0001f)
 	{
 		function_2798a0(&data, lower_frame, weight, graph, animation, node_count, inheritance, node_mask, transforms,
@@ -1143,10 +1143,10 @@ __forceinline void quaternion_scale(quaternionf *quaternion, real fraction)
 {
 	real one = 1.0f;
 
-	*(dword *)&one |= *(dword *)&quaternion->w & 0x80000000;
-	quaternion->w -= one;
 	quaternion->i *= fraction;
+	*(dword *)&one |= *(dword *)&quaternion->w & 0x80000000;
 	quaternion->j *= fraction;
+	quaternion->w -= one;
 	quaternion->k *= fraction;
 	quaternion->w *= fraction;
 	quaternion->w += one;
@@ -1939,10 +1939,12 @@ void function_27b660(void)
 	compute_orientations(0, 1, true, false);
 }
 
+__forceinline void compute_orientations_inheritance_mapping(long blend_method, long node_kind, bool destination_mask, bool interpolate);
+
 // @retail 0x27b920
 void function_27b920(void)
 {
-	compute_orientations_inheritance(0, 1, false, true);
+	compute_orientations_inheritance_mapping(0, 1, false, true);
 }
 
 // @retail 0x27bd60
@@ -1966,7 +1968,7 @@ void function_27c490(void)
 // @retail 0x27c750
 void function_27c750(void)
 {
-	compute_orientations_inheritance(0, 2, false, true);
+	compute_orientations_inheritance_mapping(0, 2, false, true);
 }
 
 // @retail 0x27cb90
@@ -2289,4 +2291,159 @@ void function_28b9c0(void)
 void function_28c090(void)
 {
 	compute_orientations(4, 2, false, false);
+}
+
+
+__forceinline bool node_destination_mapping_get(s_graph_inheritance const *inheritance, long node_kind, long node_index, long *destination_index)
+{
+	if (node_kind == 0)
+	{
+		*destination_index = node_index;
+		return true;
+	}
+	dword const *flags = (dword const *)inheritance->node_map_flags;
+	short const *mapping = (short const *)inheritance->node_map;
+	if (flags[node_index >> 5] & (1 << (node_index & 31)))
+	{
+		long index = mapping[node_index];
+
+		if (index >= 0 && index < g_sampling_settings.destination_node_count)
+		{
+			*destination_index = index;
+			return true;
+		}
+	}
+	return false;
+}
+
+__forceinline void compute_component_orientations_mapping(long blend_method, long node_kind, bool destination_mask, bool interpolate, long component, byte const *&bit_flags, long &node_index, long node_count, s_graph_inheritance const *const &inheritance)
+{
+	bool in_place = blend_method == 0 || blend_method == 4;
+	s_animation_output *destination = (s_animation_output *)g_sampling_settings.field_4c;
+
+	g_5044c0 = in_place ? destination : &g_504430;
+	bit_flags = component == 0 ? g_sampling_settings.rotation_bit_flags : (component == 1 ? g_sampling_settings.translation_bit_flags : g_sampling_settings.scale_bit_flags);
+	for (node_index = 0; node_index < node_count; )
+	{
+		long flags = *bit_flags++;
+
+		if (flags == 0)
+		{
+			node_index += 8;
+			if (node_kind == 0)
+			{
+				if (in_place)
+				{
+					g_5044c0 += 8;
+				}
+				else
+				{
+					destination += 8;
+				}
+			}
+		}
+		else
+		{
+			long last = node_index + 8 > node_count ? node_count : node_index + 8;
+
+			for (; node_index < last; node_index++)
+			{
+				if (flags & 1)
+				{
+					long destination_index;
+
+					if (node_destination_mapping_get(inheritance, node_kind, node_index, &destination_index) &&
+						(!destination_mask || node_flags_test(g_sampling_settings.destination_node_mask, destination_index)))
+					{
+						if (node_kind != 0)
+						{
+							destination = (s_animation_output *)g_sampling_settings.field_4c + destination_index;
+							if (in_place)
+							{
+								g_5044c0 = destination;
+							}
+						}
+						component_decompress(component);
+						if (!interpolate && !in_place)
+						{
+							root_offset_scale(node_kind, component, node_index);
+						}
+						if (interpolate)
+						{
+							dword frame_index = g_sampling_settings.frame_index;
+							long frame_index2 = g_sampling_settings.next_frame_index;
+							real frame_fraction = g_sampling_settings.frame_fraction;
+
+							g_sampling_settings.frame_index = g_sampling_settings.blend_frame_index;
+							g_sampling_settings.next_frame_index = g_sampling_settings.blend_next_frame_index;
+							g_sampling_settings.frame_fraction = g_sampling_settings.blend_frame_fraction;
+							g_5044c0 = &g_504410;
+							component_decompress(component);
+							component_interpolate(component);
+							if (blend_method != 4)
+							{
+								root_offset_scale(node_kind, component, node_index);
+							}
+							if (blend_method == 0)
+							{
+								__assume(0);
+							}
+							component_apply(blend_method, component, destination, node_kind == 0 ? node_index : destination_index);
+							g_sampling_settings.frame_index = frame_index;
+							g_sampling_settings.next_frame_index = frame_index2;
+							g_sampling_settings.frame_fraction = frame_fraction;
+							g_5044c0 = &g_504430;
+						}
+						else
+						{
+							component_apply(blend_method, component, destination, node_kind == 0 ? node_index : destination_index);
+						}
+					}
+					if (component == 0)
+					{
+						g_5044b4++;
+					}
+					else if (component == 1)
+					{
+						g_5044b8++;
+					}
+					else
+					{
+						g_5044bc++;
+					}
+				}
+				if (node_kind == 0)
+				{
+					if (in_place)
+					{
+						g_5044c0++;
+					}
+					else
+					{
+						destination++;
+					}
+				}
+				flags >>= 1;
+			}
+		}
+	}
+}
+
+__forceinline void compute_orientations_inheritance_mapping(long blend_method, long node_kind, bool destination_mask, bool interpolate)
+{
+	s_graph_inheritance const *inheritance = g_sampling_settings.inheritance;
+	long node_index;
+	byte const *bit_flags;
+	long node_count = g_sampling_settings.node_count;
+
+	g_5044b4 = 0;
+	g_5044b8 = 0;
+	g_5044bc = 0;
+	compute_component_orientations_mapping(blend_method, node_kind, destination_mask, interpolate, 0, bit_flags, node_index, node_count, inheritance);
+	if (node_kind == 2 && node_count > 1)
+	{
+		node_count = 1;
+	}
+	compute_component_orientations_mapping(blend_method, node_kind, destination_mask, interpolate, 1, bit_flags, node_index, node_count, inheritance);
+	compute_component_orientations_mapping(blend_method, node_kind, destination_mask, interpolate, 2, bit_flags, node_index, node_count, inheritance);
 }
