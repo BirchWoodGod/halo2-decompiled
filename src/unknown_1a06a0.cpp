@@ -198,9 +198,14 @@ bool function_1a0540(long file_index, s_player_profile_settings *settings)
 // @retail 0x1a0660
 bool function_1a0660(long file_index, s_player_profile *profile)
 {
-	if (file_index == NONE)
+	if (file_index != NONE)
+	{
+		return function_216240(file_index, profile, sizeof(s_player_profile), profile->name);
+	}
+	else
+	{
 		return false;
-	return function_216240(file_index, profile, sizeof(s_player_profile), profile->name);
+	}
 }
 
 void __stdcall function_215900(long controller, long type, word *capacity, long *indices, long include_cached);
