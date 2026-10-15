@@ -857,7 +857,7 @@ void function_21ee80(void)
 		}
 	}
 	SOUND_DRIVER_GLOBALS->direct_sound->CommitDeferredSettings();
-	for (long channel = 0; channel < SOUND_DRIVER_GLOBALS->channel_count; channel++)
+	for (long channel = 0; channel < SOUND_DRIVER_GLOBALS->channel_count; )
 	{
 		s_sound_stream *stream = &SOUND_DRIVER_GLOBALS->channels[channel];
 		switch (stream->state)
@@ -870,10 +870,11 @@ void function_21ee80(void)
 		}
 		switch (stream->state)
 		{
-		case 0: break;
-		case 1: break;
-		case 2: break;
-		case 3: break;
+		case 0: ++channel; break;
+		case 1: ++channel; break;
+		case 2: ++channel; break;
+		case 3: ++channel; break;
+		default: ++channel; break;
 		}
 	}
 	function_191550();

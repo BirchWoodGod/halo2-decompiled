@@ -799,6 +799,7 @@ bool function_1995a0(const byte *source, dword source_size, byte *destination, l
 // @retail 0x86800
 bool function_86800(dword capacity, c_simulation_view *view, dword source_size, byte *destination)
 {
+ c_simulation_view *const *view_argument = &view;
  bool result;
  long compressed_size;
  result = function_1995a0(game_state_globals.base_address, source_size, destination, &compressed_size, capacity, 9);
@@ -813,23 +814,23 @@ bool function_86800(dword capacity, c_simulation_view *view, dword source_size, 
    if (compressed_size > 0)
    {
     header.size = (short)(compressed_size > 1024 ? 1024 : compressed_size);
-    s_ring_buffer *buffer = (s_ring_buffer *)&view->unknown9c;
+    s_ring_buffer *buffer = (s_ring_buffer *)&(*view_argument)->unknown9c;
     header.offset = offset;
     if (view_buffer_write(buffer, sizeof(header), &header) == NONE ||
      view_buffer_write(buffer, header.size, destination + offset) == NONE)
      { result = false; goto local_0; }
     compressed_size -= header.size;
     offset += header.size;
-    view->unknownac++;
+    (*view_argument)->unknownac++;
    }
    else
    {
     header.size = 0;
-    s_ring_buffer *buffer = (s_ring_buffer *)&view->unknown9c;
+    s_ring_buffer *buffer = (s_ring_buffer *)&(*view_argument)->unknown9c;
     header.offset = offset;
     if (view_buffer_write(buffer, sizeof(header), &header) == NONE)
      { result = false; goto local_0; }
-    view->unknownac++;
+    (*view_argument)->unknownac++;
     break;
    }
   }
