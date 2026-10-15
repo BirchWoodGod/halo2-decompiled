@@ -43,8 +43,6 @@ struct s_prop_node_view;
 /* callbacks of the region, referenced by the handlers */
 
 
-// @stub 0x1b0110
-void __stdcall function_1b0110(long actor_index, s_slot *slot) { }
 
 
 
@@ -57,8 +55,6 @@ struct s_squad_choice;
 
 
 
-// @stub 0x1b3c60
-void __stdcall function_1b3c60(long actor_index, s_slot *slot) { }
 
 
 
@@ -79,8 +75,6 @@ void __stdcall function_1b47b0(long actor_index, s_slot *slot) { }
 
 
 
-// @stub 0x1bc850
-short __stdcall function_1bc850(long actor_index, s_slot *slot, bool active) { return 0; }
 
 
 
@@ -94,12 +88,4 @@ struct s_1fbac0_event;
 
 // @stub 0x1fbac0
 void __stdcall function_1fbac0(long unknown, long unit_index, bool unknown2, long unknown3, s_1fbac0_event *event) { }
-
-
-
-
-
-
-
-
 

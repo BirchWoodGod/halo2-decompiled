@@ -218,7 +218,8 @@ void __stdcall function_b9b90(long object_index, bool disable)
 	};
 	s_object_header_view *header = OBJECT_HEADER_GET(object_index);
 	s_object_view *object = header->object;
-	dword type_mask = 1 << header->type;
+	dword const &type = header->type;
+	dword type_mask = 1 << type;
 
 	if ((type_mask & 0x1883) &&
 		TEST_FIELD_BIT(((s_physics_flags *)((byte *)object + 0xc0))->active) &&
@@ -531,7 +532,7 @@ void __stdcall function_b83b0(long object_index, bool unused)
 
 void __stdcall function_b87b0(long object_index);
 void object_widgets_delete(long object_index);
-void function_bee60(long object_index);
+dword function_bee60(long object_index);
 void function_146bf0();
 void havok_object_detach(long object_index);
 void function_278f00();

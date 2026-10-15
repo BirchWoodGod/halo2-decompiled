@@ -5,10 +5,6 @@
 #include "unknown_0259d0.h"
 #include "screen_widgets.h"
 
-// @stub 0x254200
-void function_254200(void)
-{
-}
 
 
 struct s_slot;

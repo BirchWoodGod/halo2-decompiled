@@ -273,7 +273,8 @@ void function_20b660(void)
                 if (bit_index != NONE)
                 {
                     long count = set->count;
-                    long offset = bit_index + count + (short)log2_ceiling_plus_one(count);
+                    short const &width = (short)log2_ceiling_plus_one(count);
+                    long offset = bit_index + count + width;
                     short timer = 0;
                     for (long i = 0; i < 5; i++)
                         SET_BIT(timer, i, BIT_VECTOR_TEST(g_51e9ec, offset + i));
