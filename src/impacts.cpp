@@ -255,7 +255,7 @@ bool havok_component_impact_make_room(long rigid_body_index, s_havok_component *
 bool havok_component_any_rigid_body_active(s_havok_component *component);
 real havok_component_rigid_body_mass_get(long rigid_body_index, s_havok_component *component);
 void havok_component_rigid_body_point_velocity_get(long rigid_body_index, s_havok_component *component, point3f const *point, vector3f *velocity);
-void havok_component_rigid_body_linear_velocity_get(long rigid_body_index, s_havok_component *component, vector3f *velocity);
+void havok_component_rigid_body_linear_velocity_get(s_havok_component *component, long rigid_body_index, vector3f *velocity);
 void havok_component_impact_add(s_havok_component *component, long impact_index);
 
 /* a physics model's material: its two global materials and the shapes made
@@ -1113,7 +1113,7 @@ void impact_type_update(
 		{
 			vector3f velocity_b;
 
-			havok_component_rigid_body_linear_velocity_get(rigid_body_index_b, havok_component_get(impact->component_b), &velocity_b);
+			havok_component_rigid_body_linear_velocity_get(havok_component_get(impact->component_b), rigid_body_index_b, &velocity_b);
 			velocity.i -= velocity_b.i;
 			velocity.j -= velocity_b.j;
 			velocity.k -= velocity_b.k;
@@ -1756,7 +1756,7 @@ void function_2294a0(
 		{
 			vector3f velocity_b;
 
-			havok_component_rigid_body_linear_velocity_get(rigid_body_index_b, havok_component_get(impact->component_b), &velocity_b);
+			havok_component_rigid_body_linear_velocity_get(havok_component_get(impact->component_b), rigid_body_index_b, &velocity_b);
 			velocity.i -= velocity_b.i;
 			velocity.j -= velocity_b.j;
 			velocity.k -= velocity_b.k;
