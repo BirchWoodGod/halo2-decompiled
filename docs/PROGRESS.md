@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8740 functions match
+
+```
+matched 8740 of 11318 game functions (1169098 of 2784283 bytes, 41.99%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 39 (#485): `0x1b0110`, `0x1b3c60` and `0x6dec0`, which had no body before, are written and match.
+
+## 2026-10-15: 8737 functions match
+
+```
+matched 8737 of 11318 game functions (1168168 of 2784283 bytes, 41.96%)
+```
+
+6 new matches, none lost:
+- Machine 1's key lane round 29: machine 3's `0x18f000` (lent for the round) takes retail's `eax` parameter and matches; with it `0x18e700`, `0x1240b0`, `0x124380`, `0x12bd40` and `0x18f0a0` match.
+
 ## 2026-10-15: 8731 functions match
 
 ```
