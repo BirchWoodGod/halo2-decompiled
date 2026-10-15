@@ -294,17 +294,25 @@ bool function_1fdce0(long actor_index, short type)
 // @retail 0x1fef40
 bool function_1fef40(s_type_c3b527 const *target, long actor_index)
 {
+	bool result = false;
 	s_actor_view *actor = actor_get(actor_index);
 	byte *ranges = (byte *)function_1e5380(actor_index);
 	point3f point;
-	if (target->output_index == NONE || !function_2104b0(target->output_index, &target->point, &point))
+	if (target->output_index != NONE)
+	{
+		if (!function_2104b0(target->output_index, &target->point, &point))
+			point = target->point;
+	}
+	else
+	{
 		point = target->point;
+	}
 	if (ranges && function_1ff7d0(actor_index, &point, *(real *)(ranges + 0xc), *(real *)(ranges + 0x20), NULL))
 	{
 		*(s_type_c3b527 *)((byte *)actor + 0x7d0) = *target;
-		return true;
+		result = true;
 	}
-	return false;
+	return result;
 }
 
 real function_30bf0(vector3f *v);
