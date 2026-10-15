@@ -148,8 +148,8 @@ void function_2798a0(s_animation_data *data, real frame, real weight, s_graph_ta
 			long blend_frame_index = _mm_cvtt_ss2si(_mm_set_ss(blend_frame));
 
 			g_sampling_settings.blend_frame_index = PIN(blend_frame_index, 0, last_frame);
-			g_sampling_settings.blend_next_frame_index = PIN(blend_frame_index + 1, 0, last_frame);
 			g_sampling_settings.blend_frame_fraction = blend_frame - (real)g_sampling_settings.blend_frame_index;
+			g_sampling_settings.blend_next_frame_index = PIN(blend_frame_index + 1, 0, last_frame);
 			g_sampling_settings.next_frame_index = PIN(g_sampling_settings.frame_index + 1, 0, last_frame);
 			g_sampling_settings.frame_fraction = frame - (real)g_sampling_settings.frame_index;
 			g_sampling_settings.blend_fraction = blend_weight;
@@ -345,9 +345,9 @@ void function_279e40(s_aiming_screen const *screen, s_graph_tag *graph, c_type_7
 	upper_row = (real)ceil(pitch_frame);
 	lower_row = PIN(lower_row, 0.0f, (real)(down_frame_count + up_frame_count));
 	upper_row = PIN(upper_row, 0.0f, (real)(down_frame_count + up_frame_count));
-	fraction = pitch_frame - lower_row;
 	lower_frame = (real)yaw_frame_count * lower_row + yaw_frame;
 	upper_frame = (real)yaw_frame_count * upper_row + yaw_frame;
+	fraction = pitch_frame - lower_row;
 	if (fraction < 0.0001f)
 	{
 		function_2798a0(&data, lower_frame, weight, graph, animation, node_count, inheritance, node_mask, transforms,
