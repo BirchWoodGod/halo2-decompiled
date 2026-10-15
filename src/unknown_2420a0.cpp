@@ -2325,26 +2325,32 @@ void __stdcall function_240820(long arg_0)
 // @retail 0x240d70
 void c_game_engine_markers::v18()
 {
-	if (ctf_engine_running())
+	s_ctf_engine_state *state = (s_ctf_engine_state *)g_4e9ae8;
+	if (g_55e4d0[state->engine_index] && state->w6c == 1)
 	{
-		if (ctf_options()->mode != 4)
-			function_2447f0();
-		for (long i = 0; i < 9; i++)
+		long const &first_mode = (long)ctf_options()->mode;
+		if (first_mode == 4 || state->lc04 == 1)
 		{
-			s_team_entry *entry = function_15e410((short)i);
-
-			if (entry)
-				function_240820(entry->object_index);
-		}
-		if (ctf_options()->mode != 4)
-		{
-			function_2431a0();
-			if (ctf_options()->mode != 4 && ctf_options()->team_mode == 1)
+			long const &mode = (long)ctf_options()->mode;
+			if (mode != 4)
+				function_2447f0();
+			for (long i = 0; i < 9; i++)
 			{
-				long team = g_51ec80->l1f4;
+				s_team_entry *entry = function_15e410((short)i);
 
-				if (team >= 0 && team < 8 && !function_161e10(team))
-					function_15b3a0(NONE, false);
+				if (entry)
+					function_240820(entry->object_index);
+			}
+			if (ctf_options()->mode != 4)
+			{
+				function_2431a0();
+				if (ctf_options()->mode != 4 && ctf_options()->team_mode == 1)
+				{
+					long team = g_51ec80->l1f4;
+
+					if (team >= 0 && team < 8 && !function_161e10(team))
+						function_15b3a0(NONE, false);
+				}
 			}
 		}
 	}
