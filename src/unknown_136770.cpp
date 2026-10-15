@@ -108,9 +108,11 @@ void function_136fc0(s_type_b56524 *find)
 // @retail 0x137000
 bool function_137000(s_type_b56524 *find, file_reference_data *file, s_file_time *time)
 {
+	bool result = false;
 	char buffer[256] = {0};
 	short depth = find->depth;
 	char *path = find->path;
+	WIN32_FIND_DATA *data = &find->data;
 
 	while (depth >= 0)
 	{
@@ -122,7 +124,7 @@ bool function_137000(s_type_b56524 *find, file_reference_data *file, s_file_time
 			{
 				find_files_path_append(buffer, find->root);
 			}
-			*handle = FindFirstFileA(buffer, &find->data);
+			*handle = FindFirstFileA(buffer, data);
 			if (*handle == INVALID_HANDLE_VALUE)
 			{
 				find_files_path_truncate(path);
@@ -130,7 +132,7 @@ bool function_137000(s_type_b56524 *find, file_reference_data *file, s_file_time
 				continue;
 			}
 		}
-		else if (!FindNextFileA(*handle, &find->data))
+		else if (!FindNextFileA(*handle, data))
 		{
 			CloseHandle(*handle);
 			*handle = INVALID_HANDLE_VALUE;
@@ -139,16 +141,16 @@ bool function_137000(s_type_b56524 *find, file_reference_data *file, s_file_time
 			continue;
 		}
 
-		if (find->data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		if (data->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
-			if (!strcmp(find->data.cFileName, ".") || !strcmp(find->data.cFileName, ".."))
+			if (!strcmp(data->cFileName, ".") || !strcmp(data->cFileName, ".."))
 			{
 				continue;
 			}
 			bool descended = false;
 			if (find->flags & 1)
 			{
-				function_137320(path, find->data.cFileName);
+				function_137320(path, data->cFileName);
 				depth++;
 				descended = true;
 			}
@@ -161,15 +163,15 @@ bool function_137000(s_type_b56524 *find, file_reference_data *file, s_file_time
 				function_137320(file->path, path);
 				if (!descended)
 				{
-					function_137320(file->path, find->data.cFileName);
+					function_137320(file->path, data->cFileName);
 				}
 				if (time)
 				{
-					time->low = find->data.ftLastWriteTime.dwLowDateTime;
-					time->high = find->data.ftLastWriteTime.dwHighDateTime;
+					time->low = data->ftLastWriteTime.dwLowDateTime;
+					time->high = data->ftLastWriteTime.dwHighDateTime;
 				}
-				find->depth = depth;
-				return true;
+				result = true;
+				goto done;
 			}
 		}
 		else if ((find->flags & 4) || !(find->flags & 2))
@@ -183,19 +185,20 @@ bool function_137000(s_type_b56524 *find, file_reference_data *file, s_file_time
 			{
 				function_1373c0(file->path);
 			}
-			function_137320(file->path, find->data.cFileName);
+			function_137320(file->path, data->cFileName);
 			file->flags |= 1;
 			if (time)
 			{
-				time->low = find->data.ftLastWriteTime.dwLowDateTime;
-				time->high = find->data.ftLastWriteTime.dwHighDateTime;
+				time->low = data->ftLastWriteTime.dwLowDateTime;
+				time->high = data->ftLastWriteTime.dwHighDateTime;
 			}
-			find->depth = depth;
-			return true;
+			result = true;
+			goto done;
 		}
 	}
+done:
 	find->depth = depth;
-	return false;
+	return result;
 }
 
 // @retail 0x137320

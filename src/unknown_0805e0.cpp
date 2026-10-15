@@ -106,6 +106,7 @@ void function_80940(s_cache_property_record *records, long record_capacity,
 	s_cache_property *properties, long property_capacity, long buffer_capacity,
 	byte *buffers, long *record_count, long *property_count, long *buffer_count)
 {
+	s_cache_property_record **record_slot = &records;
 	long records_used = 0;
 	long properties_used = 0;
 	long buffers_used = 0;
@@ -120,11 +121,11 @@ void function_80940(s_cache_property_record *records, long record_capacity,
 			{
 				if (record_capacity <= 0 || property_capacity < 4 || buffer_capacity <= 0)
 					break;
-				memcpy(records->identity, &entry->player, sizeof(records->identity));
-				records->type = 0x61;
-				records->count = 4;
-				records->properties = properties;
-				records++;
+				memcpy((*record_slot)->identity, &entry->player, sizeof(records->identity));
+				(*record_slot)->type = 0x61;
+				(*record_slot)->count = 4;
+				(*record_slot)->properties = properties;
+				++*record_slot;
 				record_capacity--;
 				records_used++;
 				*(short *)&properties->unknown00 = -3;
