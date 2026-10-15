@@ -21,8 +21,8 @@ PRIVATE __forceinline void function_292e19(s_292e04 *arg_0)
 {
     if (g_4f55d0->active)
     {
-        arg_0->field_4.data = g_51ecb4;
         arg_0->field_4.index = NONE;
+        arg_0->field_4.data = g_51ecb4;
     }
 }
 PRIVATE __forceinline s_292e00 *function_292e30(s_292e04 *arg_0)
