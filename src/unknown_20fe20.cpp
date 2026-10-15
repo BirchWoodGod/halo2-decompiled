@@ -1561,6 +1561,29 @@ point3f *function_b9dd0(long object_index, point3f *result);
 real function_30bf0(vector3f *vector);
 long function_25d810(long object_index, long actor_index, bool create);
 
+/* the datum iterator's step, which retail inlines here around a call to function_16bc00 */
+static __forceinline byte *datum_iterator_next_20e190(s_data_datum_iterator *iterator)
+{
+    s_record_pool *data = iterator->data;
+    long index = function_16bc00(data, iterator->index + 1);
+    byte *result;
+
+    if (index != NONE)
+    {
+        result = data->data + data->size * index;
+        iterator->index = index;
+        iterator->datum_index = (*(short *)result << 16) | index;
+    }
+    else
+    {
+        iterator->index = data->maximum_count;
+        iterator->datum_index = NONE;
+        result = 0;
+    }
+    iterator->datum = result;
+    return result;
+}
+
 // @retail 0x20e190
 real function_20e190(long object_index)
 {
@@ -1574,14 +1597,13 @@ real function_20e190(long object_index)
             return *(real *)(actor + 0x2e4);
         real maximum = 0.0f;
         bool found = false;
-        s_record_pool *players = g_4e8c24;
-        long index = NONE;
+        s_data_datum_iterator iterator;
+        iterator.data = g_4e8c24;
+        iterator.datum_index = NONE;
+        iterator.index = NONE;
         for (;;)
         {
-            index = record_pool_next_used(players, index + 1);
-            if (index == NONE)
-                break;
-            byte *player = players->data + index * players->size;
+            byte *player = datum_iterator_next_20e190(&iterator);
             if (!player)
                 break;
             long unit_index = *(long *)(player + 0x2c);
@@ -1592,8 +1614,8 @@ real function_20e190(long object_index)
                 point3f position;
                 function_b9dd0(unit_index, &position);
                 point3f *actor_position = (point3f *)(actor + 0x238);
-                real y = position.y - actor_position->y;
                 real x = position.x - actor_position->x;
+                real y = position.y - actor_position->y;
                 real z = position.z - actor_position->z;
                 real squared = z * z + y * y + x * x;
                 if (squared > 64.0f)

@@ -75,7 +75,7 @@ char *function_11c9c0(char *buffer, long maximum_count, const char *format, ...)
 bool function_1249f0(long memory_unit, char *drive_letter);
 bool function_1367d0(s_type_acf665 *file);
 bool function_136c40(s_type_acf665 *file, dword position);
-bool function_216da0(wchar_t *name, long type, const wchar_t *display_name, long language);
+bool function_216da0(long type, wchar_t *name, const wchar_t *display_name, long language);
 bool function_216f80(long type, s_saved_game_file_location *location);
 bool function_2168b0(s_saved_game_file_location *location, long flags);
 
@@ -312,7 +312,7 @@ bool saved_game_file_copy_create(s_saved_game_file *file)
 	s_type_acf665 s_type_acf665;
 
 	name[0] = 0;
-	function_216da0(name, type, file->display_name, language);
+	function_216da0(type, name, file->display_name, language);
 	if (saved_game_file_create_directory(file, name, path))
 	{
 		dword error;
@@ -433,7 +433,7 @@ void saved_game_file_copy_finish(s_saved_game_file *file, bool succeeded)
 	name[0] = 0;
 	if (succeeded)
 	{
-		function_216da0(name, type, file->location.display_name, file->location.language);
+		function_216da0(type, name, file->location.display_name, file->location.language);
 		XDeleteSaveGame(root, name);
 		saved_game_file_copy_display_name(file->location.display_name, file->display_name);
 		file->location.language = (char)get_current_language();
@@ -441,7 +441,7 @@ void saved_game_file_copy_finish(s_saved_game_file *file, bool succeeded)
 	}
 	else
 	{
-		function_216da0(name, type, file->display_name, get_current_language());
+		function_216da0(type, name, file->display_name, get_current_language());
 		XDeleteSaveGame(root, name);
 	}
 	*file->done = true;
