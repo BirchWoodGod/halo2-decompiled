@@ -17,8 +17,11 @@ namespace D3D
 	dword volatile *WINAPI MakeRequestedSpace(dword fallback_size, dword requested_size);
 }
 
+/* retail calls it out of line */
+__declspec(noinline) bool function_015d00(dword **out, long count);
+
 // @retail 0x15d00
-bool function_015d00(long count, dword **out)
+bool function_015d00(dword **out, long count)
 {
 	bool result = true;
 	if (count < 0x800)
