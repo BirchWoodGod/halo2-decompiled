@@ -2818,8 +2818,8 @@ void __stdcall function_14d3a0(byte const *input)
         if (unit == NONE) continue;
         long root = NONE;
         for (long current = unit; current != NONE; current = *(long *)(object_get_unchecked(current) + 0x14)) root = current;
-        short cluster = *(short *)(object_get_unchecked(root) + 0x2c);
-        if (cluster != NONE) *(short *)(player + 0x2a) = cluster;
+        byte *root_object = object_get_unchecked(root);
+        if (*(short *)(root_object + 0x2c) != NONE) *(short *)(player + 0x2a) = *(short *)(root_object + 0x2c);
     }
     iterator.cursor.data = g_4e8c24; iterator.cursor.index = NONE; iterator.cursor.datum_index = NONE;
     while ((player = iterator.current = data_iterator_next_inlined(&iterator.cursor)) != NULL)

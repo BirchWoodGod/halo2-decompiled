@@ -161,13 +161,14 @@ void __stdcall function_157020(byte *definition, point3f const *position, vector
 	real value, long row, long column, long element, long entry)
 {
 	byte *const *definition_reference = &definition;
+	long const *row_reference = &row;
 	long model = *material_reference_156b60(*(long *)((*definition_reference) + 4));
 	byte *local_0f244f = *(byte **)((byte *)g_4e3b44 + (model & 0xffff) * 16 + 8);
 	byte *tables = *(byte **)(local_0f244f + 0x5c);
 	word *rows = *(word **)(tables + 4);
 	word *columns = *(word **)(tables + 0xc);
 	byte *elements = *(byte **)(tables + 0x14);
-	long column_index = (rows[row * 5] & 0x1ff) + column;
+	long column_index = (rows[*row_reference * 5] & 0x1ff) + column;
 	long element_index = (columns[column_index] & 0x1ff) + element;
 	long selected = *(long *)(elements + element_index * 10 + 4);
 	byte *selected_definition = *(byte **)((byte *)g_4e3b44 + (selected & 0xffff) * 16 + 8);

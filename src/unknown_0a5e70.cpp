@@ -258,7 +258,7 @@ long function_a5e70(long object_index, long flags, long state_pointer)
 
 byte simulation_positions_close(long bits, real const *a, real const *b);
 bool function_195560(vector3f const *b, vector3f const *a, vector3f const *up_a, vector3f const *up_b);
-bool __fastcall function_195370(vector3f const *b, vector3f const *a, real lo, real hi, long bits);
+bool __fastcall function_195370(vector3f const *a, vector3f const *b, real lo, real hi, long bits);
 
 // @retail 0xa7180
 bool function_a7180(long state_a, long state_b)
@@ -276,10 +276,10 @@ bool function_a7180(long state_a, long state_b)
     result = result && fabs(b->scalar - a->scalar) < 0.07874015718698502f;
     b->scalar = 0.0f;
     a->scalar = 0.0f;
-    result = result && function_195370(&b->vector_a, &a->vector_a, 0.03f, 350.0f, 10);
+    result = result && function_195370(&a->vector_a, &b->vector_a, 0.03f, 350.0f, 10);
     b->vector_a = *g_4687a4;
     a->vector_a = *g_4687a4;
-    result = result && function_195370(&b->vector_b, &a->vector_b, 0.03f, 30.0f, 8);
+    result = result && function_195370(&a->vector_b, &b->vector_b, 0.03f, 30.0f, 8);
     b->vector_b = *g_4687a4;
     a->vector_b = *g_4687a4;
     result = result && fabs(b->bounded_a - a->bounded_a) < 0.007874015718698502f;
