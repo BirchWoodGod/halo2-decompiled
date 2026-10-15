@@ -56,11 +56,12 @@ void __cdecl function_3153c0(void *arg_0, void *arg_1, void const *arg_2);
 __forceinline hkEntity *s_278370::function_27838d()
 {
 	s_278370 *local_0 = this;
-	s_278370 *local_1 = local_0->field_c;
-	while (local_1)
+	for (;;)
 	{
-		local_0 = local_1;
-		local_1 = local_0->field_c;
+		s_278370 *const &next = local_0->field_c;
+		if (!next)
+			break;
+		local_0 = next;
 	}
 	return local_0->field_18 == 1 ? local_0->field_20 : NULL;
 }
@@ -70,7 +71,7 @@ extern "C" void _ReadWriteBarrier(void);
 // @retail 0x278370
 void c_278370::function_278370(s_278371 *arg_0)
 {
-	s_278370 *local_6 = arg_0->field_8;
+	s_278370 *const &local_6 = arg_0->field_8;
 	hkEntity *local_0 = local_6->function_27838d();
 	hkEntity *local_1 = arg_0->field_c->function_27838d();
 	if (local_0 && local_1 && *((byte *)local_0 + 0x48) == 1 && *((byte *)local_1 + 0x48) == 1 &&
