@@ -1305,47 +1305,6 @@ void function_b6bb0()
 bool __stdcall function_b7430(long object_index, point3f const *position, vector3f const *forward,
     vector3f const *up, s_location const *location, bool update, bool physics, bool force, bool keep_partition);
 
-// Disabled: this exact 360-byte draft still changes matched b75a0 and 14e970
-// when b8540 is stubbed, so retain the complete body with its original stub.
-#if 0
-// Retail 0xb7430
-bool __stdcall function_b7430(long object_index, point3f const *position, vector3f const *forward,
-    vector3f const *up, s_location const *location, bool update, bool physics, bool force, bool keep_partition)
-{
-    byte *object = (byte *)OBJECT_GET(object_index);
-    bool placed = (*(dword *)(object + 4) & 0x100) != 0;
-    bool result = true;
-    if (placed && !keep_partition) function_b87b0(object_index);
-    if (position)
-    {
-        if (*(long *)(object + 0x14) == NONE &&
-            !(position->x >= -32768.0f && 32768.0f >= position->x && position->y >= -32768.0f &&
-                32768.0f >= position->y && position->z >= -32768.0f && 32768.0f >= position->z)) result = false;
-        else
-        {
-            *(point3f *)(object + 0x64) = *position;
-            long component = *(long *)((byte *)OBJECT_GET(object_index) + 0xd4);
-            if (component != NONE) function_b58c0(component, 2);
-        }
-    }
-    if (forward)
-    {
-        *(vector3f *)(object + 0x70) = *forward;
-        *(vector3f *)(object + 0x7c) = *up;
-        object = (byte *)OBJECT_GET(object_index);
-        if (*(long *)(object + 0xd4) != NONE)
-            function_b58c0(*(long *)(object + 0xd4), 4);
-    }
-    if (physics)
-    {
-        bool no_position = position == 0;
-        function_1c4a80(object_index, no_position, force);
-    }
-    if (update) function_bd020(object_index);
-    if (placed && !keep_partition) function_b8600(object_index, (long)location);
-    return result;
-}
-#endif
 
 
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
