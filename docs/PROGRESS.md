@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8755 functions match
+
+```
+matched 8755 of 11318 game functions (1173684 of 2784283 bytes, 42.15%)
+```
+
+5 new matches, none lost:
+- Machine 3's batch 43 (#489): `0x2a3600` and `0x2a3670`, the twins `0x2483f0` and `0x248d90`, and `0x12e5e0` match.
+
 ## 2026-10-15: 8750 functions match
 
 ```
