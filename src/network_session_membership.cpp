@@ -524,25 +524,28 @@ static inline bool session_peer_map_is_reachable(s_session_peer_map *map, const 
 }
 
 // @retail 0x62c20
-bool session_peer_map_update_reachable(s_session_member_header *a, s_session_member_header *b, s_session_peer_map *map)
+bool session_peer_map_update_reachable(s_session_member_header *a, s_session_peer_map *map, s_session_member_header *b)
 {
+	bool result = false;
 	s_session_peer_map * volatile *map_pointer = &map;
 	s_session_peer_map *local_map = *map_pointer;
 	s_session_member_header *other;
 	if (!memcmp(&local_map->host_member, a, sizeof(s_session_member_header)))
 		other = b;
-	else if (!memcmp(b, &local_map->host_member, sizeof(s_session_member_header)))
+	else if (!memcmp(&local_map->host_member, b, sizeof(s_session_member_header)))
 		other = a;
 	else
-		return false;
+		goto done;
 
 	if (!other)
-		return false;
+		goto done;
 	if (session_peer_map_is_reachable(local_map, other))
-		return false;
+		goto done;
 	if (session_peer_map_add_reachable(local_map, other) == NONE)
-		return false;
-	return true;
+		goto done;
+	result = true;
+done:
+	return result;
 }
 
 static inline bool session_peer_map_is_connected(s_session_peer_map *map, const s_session_member_header *member)
