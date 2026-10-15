@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8690 functions match
+
+```
+matched 8690 of 11318 game functions (1158069 of 2784283 bytes, 41.59%)
+```
+
+3 new matches, none lost:
+- Machine 1's key lane round 25: a new `adjustor` marker kind in `tools/build.py` for the compiler's this-adjustor thunks; with it `0x278b30`, `0x1c58d0` and `0x1c58e0` match.
+
 ## 2026-10-14: 8687 functions match
 
 ```
