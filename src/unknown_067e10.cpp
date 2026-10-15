@@ -2058,9 +2058,9 @@ void __stdcall function_69110(c_class_6a600 *world, s_simulation_input_69110 *in
 {
  input->player_mask = 0;
  input->actor_mask = 0;
- for (long i = 0; i < 16; i++)
+ s_simulation_world_player *player = world->players;
+ for (long i = 0; i < 16; i++, player++)
  {
-  s_simulation_world_player *player = &world->players[i];
   if (player->player_index != NONE &&
    function_84990((s_simulation_controller *)player, &input->field_c_10[i]))
    input->player_mask |= 1 << i;
@@ -2090,9 +2090,9 @@ void __stdcall function_69110(c_class_6a600 *world, s_simulation_input_69110 *in
    }
   }
  }
- for (long k = 0; k < 16; k++)
+ s_simulation_world_actor *actor = world->actors;
+ for (long k = 0; k < 16; k++, actor++)
  {
-  s_simulation_world_actor *actor = &world->actors[k];
   if (actor->actor_index != NONE &&
    function_8b660(actor, &input->actor_indices[k], (s_unit_state_c6ef0 *)input->actor_states[k]))
    input->actor_mask |= 1 << k;
