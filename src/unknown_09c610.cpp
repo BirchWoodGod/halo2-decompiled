@@ -30,8 +30,8 @@ static __forceinline long function_9c912(long arg_0, long arg_1, long arg_2)
 bool c_damage_section_response_event_definition::v11(long arg_0, long const *arg_1, long arg_2, void const *arg_3)
 {
     bool local_0 = false;
-    volatile bool local_12 = local_0;
     arg_1 = (long const *)function_a58d0(arg_1[0]);
+    volatile bool local_12 = local_0;
     if ((long)arg_1 != NONE)
     {
         byte *local_3 = (byte *)((s_object_header *)g_4e0300->data)[(long)arg_1 & 0xffff].object;
@@ -96,10 +96,10 @@ struct s_9cca0
 bool c_breakable_surface_damage_event_definition::v11(long arg_0, long const *arg_1, long arg_2, void const *arg_3)
 {
     volatile bool local_2 = false;
+    s_9cca0 local_1;
     byte const *local_0 = (byte const *)arg_3;
     if (function_122c10(0x6a707421, *(long const *)(local_0 + 0x30)))
     {
-        s_9cca0 local_1;
         memset((byte *)&local_1 + 4, 0, 0x78);
         memset(local_1.field_7e, 0, sizeof(local_1.field_7e));
         local_1.field_1c = *(long const *)(local_0 + 0xc);
