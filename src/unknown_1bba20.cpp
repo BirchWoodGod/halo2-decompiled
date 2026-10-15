@@ -90,8 +90,8 @@ void function_1bbcc0(long player_index, long vehicle_index, long seat_index)
 {
 	if (g_4f55d0->active)
 	{
-		s_ai_player *player = ai_player_get(player_index);
 		long player_slot = NONE;
+		s_ai_player *player = ai_player_get(player_index);
 
 		for (long i = 0; i < MAXIMUM_AI_PLAYERS; i++)
 		{
