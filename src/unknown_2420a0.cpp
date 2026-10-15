@@ -1733,14 +1733,12 @@ PRIVATE __forceinline long function_242ef4(s_slot_table *g, s_242ef1 const &arg_
 
 			if (slot != NONE)
 			{
-				long team_mode = ctf_options()->team_mode;
-
 				for (long k = 0; k < 2; k++)
 				{
 					long marker_index = k == 0 ? g->b[slot] : g->c[slot];
 					bool valid;
 
-					if (team_mode == 1 && ctf_options()->engine_type == 9)
+					if (ctf_options()->team_mode == 1 && ctf_options()->engine_type == 9)
 						valid = i != team && i == g->l1f4;
 					else
 						valid = ctf_options()->engine_type == 9 ? i != team : i == team;

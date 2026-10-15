@@ -135,6 +135,8 @@ void main_menu_music_update_playing(s_main_menu_music *music)
 }
 
 /* the campaign screen wants the music until the campaign is far enough in */
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x235c4a
 void main_menu_music_check_campaign(s_main_menu_music *music)
 {
@@ -159,7 +161,10 @@ void main_menu_music_check_campaign(s_main_menu_music *music)
 	case 1:
 	{
 		long volatile limit = function_235ca9();
-		if (function_122db0(0, map_name) <= limit)
+		long current = function_122db0(0, map_name);
+		long threshold = limit;
+		_ReadWriteBarrier();
+		if (current <= threshold)
 		{
 			music->enabled = 0;
 		}

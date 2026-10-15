@@ -25,7 +25,7 @@ struct s_slot_7e
 	byte unknown30[0x40 - 0x30];
 };
 
-void __stdcall function_1f4280(long actor_index);
+bool __stdcall function_1f4280(long actor_index);
 real normalize2d(point2f *v);
 
 /* the points function_25ab50 validates: g_4e0350 + 0x1dc */
@@ -113,6 +113,8 @@ short __stdcall function_1b0d10(long actor_index, s_slot *slot, bool active)
 	return result;
 }
 
+extern "C" void _ReadWriteBarrier();
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1b0d50
 void __stdcall function_1b0d50(long actor_index, s_slot *slot)
 {
@@ -138,7 +140,8 @@ void __stdcall function_1b0d50(long actor_index, s_slot *slot)
 	if (element_index != NONE)
 	{
 		s_slot_target_list *list = (s_slot_target_list *)element_502424_get(element_index);
-		bool unknown24 = state->unknown24;
+		long unknown24 = state->unknown24;
+		_ReadWriteBarrier();
 
 		state->unknown0c = true;
 		state->element_index = element_index;
@@ -159,6 +162,8 @@ void __stdcall function_1b0d50(long actor_index, s_slot *slot)
 		}
 	}
 }
+#pragma function(_ReadWriteBarrier)
+
 
 PRIVATE __forceinline void function_1b0e41(short arg_0, vector2f const *arg_1,
     vector2f const *arg_2, point2f const *arg_3, point2f *arg_4)
