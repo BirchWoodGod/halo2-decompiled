@@ -65,6 +65,8 @@ __forceinline hkEntity *s_278370::function_27838d()
 	return local_0->field_18 == 1 ? local_0->field_20 : NULL;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x278370
 void c_278370::function_278370(s_278371 *arg_0)
 {
@@ -75,7 +77,8 @@ void c_278370::function_278370(s_278371 *arg_0)
 		(local_6->field_0->function_278376() == 0x18 || arg_0->field_c->field_0->function_278376() == 0x18))
 	{
 		bool local_2 = arg_0->field_8->field_0->function_278376() != 0x18;
-		c_278372 *local_3 = (local_2 ? arg_0->field_c : arg_0->field_8)->field_0;
+		c_278372 *local_3 = local_2 ? arg_0->field_c->field_0 : arg_0->field_8->field_0;
+		_ReadWriteBarrier();
 		long local_4 = havok_entity_component_index_get(local_2 ? local_0 : local_1);
 		if (!(bool)((havok_component_get(local_4)->unknown04 >> 18) & 1) &&
 			(local_3->field_1a & 0x20) && local_3->field_1b)
@@ -85,3 +88,4 @@ void c_278370::function_278370(s_278371 *arg_0)
 		}
 	}
 }
+#pragma function(_ReadWriteBarrier)
