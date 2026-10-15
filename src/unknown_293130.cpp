@@ -52,6 +52,7 @@ struct s_293134
 	byte field_5c[0x58];
 	word field_b4;
 	word field_b6;
+	byte field_b8[0xc];
 };
 
 struct s_293135
@@ -177,8 +178,9 @@ long __stdcall function_293130(long arg_0)
 				local_13.field_1c.z = local_11->field_0.z;
 			else
 				local_13.field_1c.z = function_293132(-local_11->field_14, local_11->field_14) + local_11->field_0.z;
+			real local_18 = local_11->field_c;
 			local_13.field_28 = *g_4687a8;
-			function_293133(local_11->field_c, g_4687b0, &local_13.field_28);
+			function_293133(local_18, g_4687b0, &local_13.field_28);
 			local_0 = function_b7b40(&local_13);
 			if (local_0 != NONE)
 			{
