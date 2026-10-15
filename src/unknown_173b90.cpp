@@ -94,13 +94,14 @@ bool __stdcall function_173cb0(long tag_index, long unused, long first, long sec
 	byte *items = *(byte **)(table + 0x14);
 	long item_tag = *(long *)(items + index * 10 + 4);
 	byte *item = g_4e3b44[item_tag & 0xffff].bytes;
-	output->field_10 = (*(long **)(item + 0x20))[1];
-	output->field_5 = 3;
-	output->field_4 = 0;
-	output->field_8 = 7;
-	output->field_14 = 0;
-	output->field_6 = value;
-	output->field_c = NONE;
+	s_particle_callback_output_173cb0 *out = output;
+	out->field_10 = (*(long **)(item + 0x20))[1];
+	out->field_5 = 3;
+	out->field_4 = 0;
+	out->field_8 = 7;
+	out->field_14 = 0;
+	out->field_6 = value;
+	out->field_c = NONE;
 	return true;
 }
 

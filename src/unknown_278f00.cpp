@@ -93,7 +93,7 @@ void function_278f00()
 								if (local_1[local_16] == local_12)
 									break;
 							}
-							if (local_16 == local_8 && !local_15)
+							if (!local_15 && local_16 == local_8)
 							{
 								if (local_14)
 									local_0[local_7++] = local_12;

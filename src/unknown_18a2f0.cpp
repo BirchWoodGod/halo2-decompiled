@@ -361,11 +361,11 @@ long function_18a6c0(long tag_index, long value)
 			sound->type = 2;
 			sound->value2 = 3;
 			sound->value10 = value;
+			sound->value8 = 0.0f;
 			_ReadWriteBarrier();
 			sound->flags = 0;
 			_ReadWriteBarrier();
 			sound->flag_bits.bit8 = true;
-			sound->value8 = 0.0f;
 			sound->tag_index = tag_index;
 			sound->value6 = NONE;
 			_ReadWriteBarrier();
@@ -392,11 +392,11 @@ long function_18a750(long tag_index, long value)
 			sound->type = 3;
 			sound->value2 = 3;
 			sound->value10 = value;
+			sound->value8 = 0.0f;
 			_ReadWriteBarrier();
 			sound->flags = 0;
 			_ReadWriteBarrier();
 			sound->flag_bits.bit8 = true;
-			sound->value8 = 0.0f;
 			sound->tag_index = tag_index;
 			sound->value6 = NONE;
 			_ReadWriteBarrier();

@@ -694,6 +694,7 @@ short function_2039d0(long squad_index, dword *available, dword const *blocked)
 {
 	(void)&available;
 	(void)&blocked;
+	short result = NONE;
 	s_squad_placement_definition *squad;
 	short maximum;
 	short maximum_count;
@@ -723,14 +724,14 @@ short function_2039d0(long squad_index, dword *available, dword const *blocked)
 			}
 		}
 		if (blocked_count == squad->count)
-			return NONE;
+			goto done;
 		if (!available_count && squad->count > 0)
 			memset(available, 0xff, ((squad->count + 31) >> 5) * sizeof(dword));
 		else
 			break;
 	}
 	if (!maximum_count)
-		return NONE;
+		goto done;
 	short choice;
 	if (maximum_count > 1)
 	{
@@ -747,12 +748,14 @@ short function_2039d0(long squad_index, dword *available, dword const *blocked)
 			if (found == choice)
 			{
 				available[i >> 5] &= ~(1 << (i & 31));
-				return i;
+				result = i;
+				goto done;
 			}
 			found++;
 		}
 	}
-	return NONE;
+done:
+	return result;
 }
 
 // @retail 0x205010

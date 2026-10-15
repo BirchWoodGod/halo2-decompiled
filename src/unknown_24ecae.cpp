@@ -124,7 +124,7 @@ long __stdcall function_24ecae(s_marker_list const *list, s_24ecae_placement con
 				g_4e6950.value20 = item->r;
 				g_4e6950.value3c = 1.0f;
 				function_1392c5(item->index);
-				function_22a664((s_float_rect const *)points, (s_widget_quad_2b11 const *)&bounds,
+				function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)&bounds,
 					kind->bitmap_index, bitmap_index, kind->shader_index);
 				++drawn;
 			}

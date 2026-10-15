@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Ob1 /arch:SSE /Gr
 /* UNKNOWN_07A8A0.CPP: the registered XNet keys and the secure addresses
    they give (lane D, outside its regions: the network session and observer
@@ -18,7 +19,7 @@ struct s_xnet_registry_entry
 	XNKEY key;
 };
 
-extern s_xnet_registry_entry g_4cf7d4[8];
+
 
 #define BYTE_SWAP_LONG(v) ((((v) & 0xff0000) | ((v) >> 16)) >> 8 | ((((v) << 16) | ((v) & 0xff00)) << 8))
 
