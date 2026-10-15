@@ -364,32 +364,6 @@ void __stdcall function_0942d0(c_class_938e0 *handler, const s_session_id *messa
 	}
 }
 
-/* 0x94310 (handle_session_disband), kept out of the build: it matches, but
-   as a caller of 0x5e150 it makes our LTCG pass network_session_close's
-   (0x5a520) session in ecx instead of eax, which breaks lane D's matched
-   0x593e0, 0x618d0 and 0x61910. */
-#if 0
-void c_class_938e0::handle_session_disband(const s_session_id *message, const s_type_99af70 *address)
-{
-	c_class_58d20 *session = network_session_manager_find_session(session_manager, message);
-	if (session)
-		network_session_handle_session_disband(session, address);
-}
-#endif
-
-/* 0x94330 (handle_session_boot), kept out of the build: it matches, but
-   as a caller of 0x5e1a0 it makes our LTCG pass network_session_close's
-   (0x5a520) session in ecx instead of eax, which breaks lane D's matched
-   0x593e0, 0x618d0 and 0x61910. */
-#if 0
-void c_class_938e0::handle_session_boot(const s_session_id *message, const s_type_99af70 *address)
-{
-	c_class_58d20 *session = network_session_manager_find_session(session_manager, message);
-	if (session)
-		network_session_handle_session_boot(session, address);
-}
-#endif
-
 // @retail 0x94350
 void c_class_938e0::handle_host_handoff(const s_network_message_handoff *message, long remote_index)
 {
