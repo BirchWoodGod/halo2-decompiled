@@ -1832,8 +1832,10 @@ bool __stdcall function_105c20(long weapon_index, long animation_name)
 						if (animation_id.index != NONE ||
 							(animation_id = state.animation_get(animation_name, state.unknown74, state.unknown78)).index != NONE)
 						{
+							long graph_index = player_animation->graph_index;
+
 							weapon->animation_254 = animation_id;
-							weapon->value250 = player_animation->graph_index;
+							weapon->value250 = graph_index;
 							weapon->value258 = 0.0f;
 							function_b7360(weapon_index);
 							result = true;
