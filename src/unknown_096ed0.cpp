@@ -142,10 +142,11 @@ long c_handle_table_450cd0::v1(long a1, long max_count, void *output)
 bool function_991d0(c_handle_table_450cd0 *self, long handle, long size, void const *data)
 {
 	long index = handle & 0x3ff;
+	s_handle_entry const &entry = self->entries[index];
 	bool result = false;
-	if (self->entries[index].state)
+	if (entry.state)
 	{
-		long old_handle = self->entries[index].handle;
+		long old_handle = entry.handle;
 		long difference = ((dword)handle >> 28) - ((dword)old_handle >> 28) + 16;
 		if (difference > 8)
 			difference -= 16;
@@ -750,7 +751,7 @@ long c_handle_table_450cd0::v5(dword a1, s_bitstream *stream, long max_blocks, s
 		s_handle_block *cursor = blocks;
 		do
 		{
-			dword type = function_1959c0(stream, 3);
+			byte type = (byte)function_1959c0(stream, 3);
 			long n;
 			if (type >= 6)
 			{
