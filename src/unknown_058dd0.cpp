@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr
 /* UNKNOWN_058DD0.CPP: the game-session state machine states */
 
@@ -800,7 +801,7 @@ void c_session_client::function_06dbd0(const s_session_id *id)
 /* ---- shared by the states (lane D, round 4) ---- */
 
 /* ends the hosted game early (network configuration) */
-bool g_4cf95c;
+
 
 static inline long session_time_get(void)
 {
@@ -904,7 +905,7 @@ bool c_session_state_pre_game::function_06e360()
 		{
 			unknown14 = session_time_get();
 			unknown18 = --countdown;
-			network_session_start_countdown(session, countdown, true, 0, NULL);
+			network_session_start_countdown(session, true, countdown, 0, NULL);
 		}
 	}
 	return false;
@@ -956,16 +957,22 @@ local_0:
 	return true;
 }
 
+#pragma inline_depth(0)
 // @retail 0x6dcc0
 bool c_session_client::function_06dcc0(s_session_remote *remote)
 {
 	bool result = true;
-	if (!function_192e60(session->get_value_49c8()) || remote->unknown170 > remote->unknown16c)
+	c_class_58d20 *current = session;
+	long index = NONE;
+	if (current->state > 2 && current->state <= 8)
+		index = current->value49c8;
+	if (!function_192e60(index) || remote->unknown170 > remote->unknown16c)
 	{
 		result = false;
 	}
 	return result;
 }
+#pragma inline_depth(255)
 
 // @retail 0x70160
 long function_70160(c_class_58d20 *session)
@@ -1891,7 +1898,7 @@ bool c_session_state_start_match::update()
                 long remaining_raw = 10000 - function_75890(unknown18);
                 long remaining = ((long)(remaining_raw < 0) - 1) & remaining_raw;
                 network_session_host_become_leader(b);
-                network_session_start_countdown(b, (remaining + 999) / 1000, true, 0, NULL);
+                network_session_start_countdown(b, true, (remaining + 999) / 1000, 0, NULL);
                 ready = remaining == 0;
             }
             else
@@ -1966,7 +1973,7 @@ bool c_session_state_pre_game::function_06e410()
    if (ready)
     network_session_set_mode(session, 2);
    else
-    network_session_start_countdown(session, 1, true, 2, 0);
+    network_session_start_countdown(session, true, 1, 2, 0);
   }
  }
  return false;

@@ -76,9 +76,10 @@ void function_1c2b10()
    local_1.field_4.signature = 0x86868686;
    local_1.field_4.flags = 0;
    local_1.field_4.index = 0;
-   while ((local_1.field_0 = function_baeb0(&local_1.field_4)) != NULL)
+   s_type_f1af8e *iterator = &local_1.field_4;
+   while ((local_1.field_0 = function_baeb0(iterator)) != NULL)
    {
-    long local_2 = local_1.field_4.object_index;
+    long local_2 = iterator->object_index;
     s_1c2b11 *local_3 = (s_1c2b11 *)havok_object_get(local_2);
     bool local_4 = (bool)(((dword)local_3->field_c0 >> 6) & 1);
     if (local_4)

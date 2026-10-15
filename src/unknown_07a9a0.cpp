@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /arch:SSE /Gr
 /* UNKNOWN_07A9A0.CPP: the transport layer's local address cache, address
    resolution against the XNet key registry, and the QoS handle pool */
@@ -21,12 +22,12 @@ struct s_xnet_registry_entry
 };
 
 /* 0x4cf791: the cached title address and the flag for its state */
-bool g_4cf791;
-bool g_4cf792;
-XNADDR g_4cf793;
-s_type_99af70 g_4cf7b8;
-byte g_4cf7cc[6];
-s_xnet_registry_entry g_4cf7d4[8];
+
+
+
+
+
+
 
 /* 0x46725c: points at the eight zero bytes of g_440070 (globals.h) */
 const byte *g_46725c = g_440070;

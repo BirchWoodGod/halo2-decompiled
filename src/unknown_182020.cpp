@@ -128,7 +128,7 @@ void function_182b90(c_material_shape *shape, hkEntity const *entity,
 		shape = shape->child;
 	if (shape->shape_kind() == 0x18)
 	{
-		short index;
+		__declspec(align(8)) short index;
 		function_1ee410((s_lookup_source *)shape, &index);
 		s_material_properties *properties = 0;
 		if (index != NONE && index >= 0)

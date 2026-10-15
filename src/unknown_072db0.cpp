@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr
 #include <string.h>
 #include "unknown_11c920.h"
@@ -225,7 +226,7 @@ struct s_xnet_registry_entry
 	XNKEY key;
 };
 
-extern s_xnet_registry_entry g_4cf7d4[8];
+
 
 // @retail 0x72df0
 void function_72df0(c_helper_a *helper)

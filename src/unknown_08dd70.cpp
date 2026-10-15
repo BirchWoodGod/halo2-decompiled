@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr
 /* UNKNOWN_08DD70.CPP: the network dispose: releases the pending messages,
    the online tasks, the sessions, the observer, the message handler, the
@@ -28,7 +29,7 @@ struct s_search_value_globals;
 extern bool g_4d8ba0;
 extern long g_510584;
 extern bool g_510580;
-extern bool g_4cf8e0;
+
 extern long g_510518;
 extern long g_510530;
 extern s_search_value_globals g_509450;
