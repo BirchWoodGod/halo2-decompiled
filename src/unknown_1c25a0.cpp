@@ -151,9 +151,11 @@ PRIVATE __forceinline bool contact_shape_has_material(s_contact_body_view const 
 	return *(byte *)(metadata + 0x1e) != 0xff;
 }
 
-PRIVATE __forceinline short function_1d4884(long arg_0)
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
+PRIVATE __forceinline long function_1d4884(long arg_0)
 {
- return (short)(arg_0 < 1 ? 1 : arg_0 > 16 ? 16 : arg_0);
+ return arg_0 < 1 ? 1 : arg_0 > 16 ? 16 : arg_0;
 }
 
 PRIVATE __forceinline bool function_1d4885(s_contact_body_view const *arg_0)
@@ -161,11 +163,17 @@ PRIVATE __forceinline bool function_1d4885(s_contact_body_view const *arg_0)
  if (arg_0->shape->type() == 0x18)
   return false;
  long local_0 = arg_0->shape->metadata;
- if (!local_0 || function_1d4884(local_0) == local_0)
+ if (!local_0)
+  return false;
+ long bounded = function_1d4884(local_0);
+ _ReadWriteBarrier();
+ if (bounded == local_0)
   return false;
  return *(byte *)(local_0 + 0x1e) != 0xff;
 }
 
+
+#pragma function(_ReadWriteBarrier)
 // @retail 0x1d4880
 void c_contact_presence::hit(void const *query, s_contact_body_view const *body)
 {

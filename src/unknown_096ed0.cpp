@@ -218,6 +218,8 @@ long function_98480(long handle, c_handle_table_450cd0 *self)
 	}
 	return result;
 }
+__declspec(noinline) bool function_99640(c_handle_table_450cd0 *self, long handle);
+
 // @retail 0x99640
 bool function_99640(c_handle_table_450cd0 *self, long handle)
 {

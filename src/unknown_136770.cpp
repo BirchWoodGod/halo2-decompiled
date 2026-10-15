@@ -248,7 +248,7 @@ void function_1373c0(char *path)
 // @retail 0x137400
 void function_137400(char *path, char **a, char **b, char **c, char **d, bool flag)
 {
-	short length = (short)strlen(path);
+	long length = (short)strlen(path);
 	char *p = path + length;
 	*c = p;
 	*d = p;
