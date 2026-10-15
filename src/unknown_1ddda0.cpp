@@ -70,6 +70,7 @@ struct s_1debd0
 bool function_1debd0(dword const *arg_1, s_bsp3d const *arg_0, short arg_2, long arg_3,
  short arg_4, bool arg_5, point2f const *arg_6)
 {
+ bool result = false;
  (void)&arg_2; (void)&arg_3; (void)&arg_4; (void)&arg_5; (void)&arg_6;
  point2f const *const *local_18 = &arg_6;
  s_1ddda0 const *local_0 = (s_1ddda0 const *)arg_0;
@@ -92,12 +93,13 @@ bool function_1debd0(dword const *arg_1, s_bsp3d const *arg_0, short arg_2, long
    point2f local_14 = { (*local_18)->x - local_12.x, (*local_18)->y - local_12.y };
    real const *local_16 = (real const *)&local_3[local_9->field_0[!local_10]].field_0;
    point2f local_17 = { *(real const *)((byte const *)local_16 + local_7) - local_12.x, *(real const *)((byte const *)local_16 + local_8) - local_12.y };
-   if (local_17.y * local_14.x - local_14.y * local_17.x > 0.0f) return false;
+   if (local_17.y * local_14.x - local_14.y * local_17.x > 0.0f) goto done;
    local_5 = local_9->field_4[local_10];
   } while (local_5 != local_4);
-  return true;
+  result = true;
  }
- return false;
+done:
+ return result;
 }
 
 struct s_1dea01

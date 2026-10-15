@@ -127,10 +127,13 @@ long __stdcall function_b8ca0(long object_index)
     long result_value = 0;
 	s_object_view *object = OBJECT_GET(object_index);
 
-	if (object->parent_index != NONE &&
-		TEST_FIELD_BIT(TAG_DATA(s_object_definition_view, object->definition_index)->flag4))
+	if (object->parent_index != NONE)
+	{
+		byte const &parent_flag = TAG_DATA(s_object_definition_view, object->definition_index)->flag4;
+		if (TEST_FIELD_BIT(parent_flag))
 	{
 		{ result_value = function_b8ca0(object->parent_index); goto return_exit; }
+	}
 	}
 	if (TEST_FIELD_BIT(object->flag0) && ((byte)(1u << object->type) & 0x1c) && function_10cf50(object_index))
 		{ result_value = object->unit_index; goto return_exit; }
@@ -1642,6 +1645,7 @@ done:
 // @retail 0xbb670
 long __stdcall function_bb670(short name_index, bool force)
 {
+    short remaining_name_index = name_index;
     long result = NONE;
     long existing = name_index >= 0 && name_index < 0x280 ? g_4de2d0[name_index] : NONE;
     if (force && existing != NONE)
@@ -1656,10 +1660,10 @@ long __stdcall function_bb670(short name_index, bool force)
         object[0xab] = 2;
         *(short *)(object + 0xa8) = NONE;
         *(long *)(object + 0xa4) = *(long *)((byte *)g_4de2f4 + 0x18);
+        remaining_name_index = *(short volatile const *)&name_index;
         object[0xb0] = 0;
     }
     else if (existing != NONE) return result;
-    short remaining_name_index = *(short volatile const *)&name_index;
     byte *scenario = (byte *)g_4e0350;
     byte *name = *(byte **)(scenario + 0x4c) + remaining_name_index * 0x24;
     short placement_index = *(short *)(name + 0x22);

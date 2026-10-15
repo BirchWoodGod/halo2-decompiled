@@ -74,25 +74,7 @@ static __forceinline s_loop_allocator *compression_pool_allocate(long size)
     return result;
 }
 
-// @retail 0x199740
-bool __stdcall function_199740(byte *buffer, long size, byte *destination, long *decompressed_size)
-{
-    bool result = false;
-    s_loop_allocator *pool = compression_pool_allocate(0x10000);
-    if (pool)
-    {
-        function_18e250(pool, 0xffb0, "zlib pool", NULL);
-        pool->field3c = true;
-        pool->field3d = true;
-        s_loop_allocator *allocator = pool;
-        *decompressed_size = function_199560(buffer, size);
-        if (function_2cb5b0(destination, decompressed_size, buffer + 4, size, loop_allocator_zalloc, loop_allocator_zfree, &allocator) == 0)
-            result = true;
-        function_12d520((long)pool);
-    }
-    return result;
-}
-
+bool __stdcall function_199740(byte *buffer, long size, byte *destination, long *decompressed_size);
 
 // @retail 0x1995a0
 bool function_1995a0(byte const *source, dword source_size, byte *destination, long *compressed_size, dword capacity, long level)
