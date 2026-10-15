@@ -152,7 +152,7 @@ struct s_firing_cover_view
 	byte unknown6c[0x70 - 0x6c];
 };
 
-bool function_29d7b0(s_pathfinding_data *pathfinding, s_type_d4fbfa *definition, vector3f const *direction,
+bool function_29d7b0(long index, s_pathfinding_data *pathfinding, s_type_d4fbfa *definition, vector3f const *direction,
 	point3f *point, vector3f *normal, char *side);
 
 /* the unit's actor (+0x12c) */
@@ -449,7 +449,7 @@ void __stdcall function_25e430(
 					(point3f *)definition, NONE, &direction, 0.35f, 0) ||
 				!*(bool *)&trace.unknown00 || *(long *)&trace.unknown10[4] == 0xffff ||
 				!(((s_pathfinding_faces_view *)pathfinding)->faces[*(long *)&trace.unknown10[4]].flags & 8) ||
-				!function_29d7b0(pathfinding, definition, &direction, &point, &normal, &side) ||
+				!function_29d7b0(*(long *)&trace.unknown10[4], pathfinding, definition, &direction, &point, &normal, &side) ||
 				!side)
 			{
 				continue;
