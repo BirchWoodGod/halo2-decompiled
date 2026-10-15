@@ -2404,15 +2404,11 @@ long __stdcall function_53b00(long player, byte *output, long capacity)
  return result;
 }
 
-// Disabled pending a source-shape fix: enabling this removes a required
-// caller-local initialization in the matched 0x54890.
-#if 0
-// Retail address: 0x565c0 (disabled).
+// @retail 0x565c0
 void __stdcall function_565c0(s_voice_routing *routing, dword remaining, s_voice_route *output)
 {
- output->unknown02 = 0;
- output->members = 0;
- if (!routing->enabled || !remaining)
+ output->members = output->unknown02 = 0;
+ if (routing->enabled == 0 || !remaining)
   return;
  long capacity = voice_get_mode_value();
  if (capacity <= 0)
@@ -2425,29 +2421,31 @@ void __stdcall function_565c0(s_voice_routing *routing, dword remaining, s_voice
  if (g_4c9878.initialized)
   mode = g_4c9878.session_kind;
  dword eligible = voice_get_current_member_value();
- dword preferred_bit = 1 << preferred;
- word selected = 0;
- word deferred = 0;
+ dword preferred_bit = 1 << (long)preferred;
  bool blocked = false;
+ word selected = output->members;
+ dword deferred = output->unknown02;
  if (!(eligible & preferred_bit))
-  preserve = false;
- if (!(eligible & preferred_bit) || !preserve)
  {
+  preserve = false;
   if (mode == 2)
    capacity = 1;
  }
- else if (mode == 1 || mode == 2)
+ else if (preserve && (mode == 1 || mode == 2))
  {
   blocked = true;
   goto finish;
  }
+ else if (mode == 2)
+  capacity = 1;
  {
   long kind = voice_get_session_kind();
-  deferred = (word)(remaining & ~eligible);
+  long tmp0 = (remaining & ~eligible);
+  deferred = (word)tmp0;
   remaining &= eligible;
-  if (deferred)
+  if ((dword)deferred)
    blocked = true;
-  if (kind == 2)
+  if ((long)kind == 2)
    function_56790(&capacity, &remaining, function_53c70(), &selected, preserve, preferred, &blocked);
   if (capacity != 1 || !preserve || !blocked)
    function_56790(&capacity, &remaining, (dword)-1, &selected, preserve, preferred, &blocked);
@@ -2457,13 +2455,13 @@ finish:
  {
   if (blocked)
   {
-   selected |= (word)preferred_bit;
    deferred |= (word)remaining;
+   selected |= (word)preferred_bit;
   }
-  else if (remaining & preferred_bit)
+  else if ((remaining & preferred_bit) != 0)
   {
    selected |= (word)preferred_bit;
-   deferred |= (word)preferred_bit;
+   deferred = deferred | (word)preferred_bit;
   }
  }
  else
@@ -2471,8 +2469,6 @@ finish:
  output->members = selected;
  output->unknown02 = deferred;
 }
-
-#endif
 
 PRIVATE __forceinline byte *function_54592(void *arg_0, const s_network_session_player *arg_1, dword arg_2, long arg_3, const dword *arg_4)
 {

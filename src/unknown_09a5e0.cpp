@@ -754,16 +754,14 @@ static inline long pin(long value, long lo, long hi)
 /* 0xf47d0, src/unknown_0f47d0.cpp */
 bool function_f47d0(long unit_index, long trick);
 
-static __forceinline short function_9fdb1(long arg_0, long arg_1, long arg_2)
+static __forceinline void function_9fdb1(long &local_0, long arg_0, long arg_1, long arg_2)
 {
-	long local_0 = arg_1;
-	if (arg_0 >= arg_1)
-	{
+	if (arg_0 < arg_1)
+		local_0 = arg_1;
+	else if (arg_0 > arg_2)
 		local_0 = arg_2;
-		if (arg_0 <= local_0)
-			local_0 = arg_0;
-	}
-	return (short)local_0;
+	else
+		local_0 = arg_0;
 }
 
 // @retail 0x9fdb0
@@ -773,8 +771,9 @@ bool c_vehicle_trick_event_definition::v11(long a, long const *entities, long c,
 	long unit_index = function_a58d0(entities[0]);
 	if (unit_index != NONE && ((1 << ((s_typed_object_header *)g_4e0300->data)[unit_index & 0xffff].type) & 2))
 	{
-		long trick = *(long const *)data;
-		short local_0 = function_9fdb1(trick, 0, 3);
+		long const &trick = *(long const *)data;
+		long local_0;
+		function_9fdb1(local_0, trick, 0, 3);
 		if (local_0 == trick)
 			result = function_f47d0(unit_index, trick);
 	}
