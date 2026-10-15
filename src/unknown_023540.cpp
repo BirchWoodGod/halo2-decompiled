@@ -154,7 +154,7 @@ void function_2b790(s_render_view_2b790 *view, bool enabled)
 	{
 		long player = g_4e8c20->entries[view->object_index];
 		location.object = *(long *)((byte *)g_4e8c24->data + (player & 0xffff) * 0x21c + 0x24);
-		function_154310(location.object, &speed);
+		function_154310(view->object_index, &speed);
 	}
 	if (view->scale > 0.0f)
 		function_2ba10((s_2f970_view const *)&view->position, location.cluster, view->player_index,
