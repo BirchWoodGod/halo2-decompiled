@@ -2695,7 +2695,10 @@ void function_129790(short voice_index, vector3f const *attenuation)
 					parameters.obstruction_rate = 0.0f;
 					parameters.occlusion_rate = 0.0f;
 				}
-				*(dword *)&parameters.flags = (listener->unknown07 != 0) | 2;
+				dword flags;
+				if (listener->unknown07 != 0) flags = 1;
+				else flags = 0;
+				*(dword *)&parameters.flags = flags | 2;
 				sound_driver_voice_update(voice->unknown0e, &parameters);
 			}
 		}
