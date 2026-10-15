@@ -555,14 +555,16 @@ void c_window_channel_4599a8::set_next(c_class_1473c9 *screen, s_screen_paramete
 	if (current && !(new_request->type & 6))
 	{
 		c_class_1473c9 *active = current;
-		s_screen_request previous_request;
-		word flags = active->user_flags;
-		screen_load_proc load = active->get_load_proc();
-		long window = active->v21();
-		long channel = active->v20();
-		function_149f49((s_message *)&previous_request, 2, 0, flags, channel, window, (long)load);
-		active->v24((s_screen_focus *)&previous_request.id);
-		function_2355ed(this, &previous_request, active->screen_id);
+		{
+			s_screen_request previous_request;
+			word flags = active->user_flags;
+			screen_load_proc load = active->get_load_proc();
+			long window = active->v21();
+			long channel = active->v20();
+			function_149f49((s_message *)&previous_request, 2, 0, flags, channel, window, (long)load);
+			active->v24((s_screen_focus *)&previous_request.id);
+			function_2355ed(this, &previous_request, active->screen_id);
+		}
 	}
 	if (new_request->type & 4)
 		function_235647(this);

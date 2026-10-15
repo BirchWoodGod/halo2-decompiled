@@ -415,8 +415,16 @@ byte *network_session_interface_get_data_4db0(void)
 {
 	byte *result = 0;
 	c_class_58d20 *session = 0;
-	if (network_session_get(&session) && SESSION_STATE_IS_LIVE(session->state))
-		result = session_get_data_4db0(session);
+	bool found = network_session_get(&session);
+	if (found)
+	{
+		long state = session->state;
+		if (state > 2)
+		{
+			if (state <= 8)
+				result = session_get_data_4db0(session);
+		}
+	}
 	return result;
 }
 
@@ -433,8 +441,16 @@ short network_session_interface_get_value_5dd0(void)
 {
 	c_class_58d20 *session = 0;
 	short result = NONE;
-	if (network_session_get(&session) && SESSION_STATE_IS_LIVE(session->state))
-		result = session_get_value_5dd0(session);
+	bool found = network_session_get(&session);
+	if (found)
+	{
+		long state = session->state;
+		if (state > 2)
+		{
+			if (state <= 8)
+				result = session_get_value_5dd0(session);
+		}
+	}
 	return result;
 }
 
@@ -866,9 +882,9 @@ bool network_session_interface_set_value4d08(long value4d08, long value4d0c, con
 	if (session && session_is_established(session))
 	{
 		_ReadWriteBarrier();
-		if (session_is_leader(session))
-			{ result = function_63f51(string, session, value4d08, value4d0c); goto local_0; }
 		result = true;
+		if (session_is_leader(session))
+			result = function_63f51(string, session, value4d08, value4d0c);
 	}
 local_0:
 	return result;
@@ -1822,8 +1838,15 @@ bool __stdcall function_64d70(s_session_browser_summary *output)
  if (g_527330.initialized)
  {
   c_class_58d20 *session = (c_class_58d20 *)g_527330.session_a;
-  if (session->state && session->value18 && SESSION_STATE_IS_LIVE(session->state))
+  long state = session->state;
+  if (state)
   {
+   if (session->value18)
+   {
+    if (state > 2)
+    {
+     if (state <= 8)
+     {
    long map = NONE;
    long map_variant = NONE;
    byte *map_data;
@@ -1935,6 +1958,10 @@ bool __stdcall function_64d70(s_session_browser_summary *output)
     }
    }
    result = true;
+
+     }
+    }
+   }
   }
  }
  return result;

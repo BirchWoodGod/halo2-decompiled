@@ -59,7 +59,9 @@ bool __stdcall function_1b7770(long actor_index, s_slot *slot)
 				fistp rounded
 			}
 			state->ticks = (short)rounded;
-			state->vector = actor->unknown3c0;
+			state->vector.i = actor->unknown3c0.i;
+			state->vector.j = actor->unknown3c0.j;
+			state->vector.k = actor->unknown3c0.k;
 			result = true;
 		}
 	}

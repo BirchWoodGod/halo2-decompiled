@@ -35,7 +35,7 @@ void __stdcall function_b8600(long object_index, long location);
 void __stdcall function_bd020(long object_index);
 void function_1c4a80(long object_index, bool position_unchanged, bool force);
 
-// Disabled: matches byte for byte, but closes the call cycle b75a0 -> b7430 -> b8600 -> b7300 -> 1c38a0 -> e18d0 -> b75a0, which gives matched b75a0 its default convention and costs it and ten callers; with 0xb7b40 and 0x2902b0 also enabled it costs nothing of its own (their 5: d6bc0, 11a320, 1ca290, 1e0d50, 1e1250) (build/codex-report.md, rounds 26 and 27).
+// Disabled: matches byte for byte, but closes the call cycle b75a0 -> b7430 -> b8600 -> b7300 -> 1c38a0 -> e18d0 -> b75a0, which gives matched b75a0 its default convention and costs it and ten callers; with 0xb7b40 and 0x2902b0 also enabled it costs nothing of its own (their 3: d6bc0, 11a320, 1ca290) (build/codex-report.md, rounds 26 to 28).
 #if 0
 // @retail 0xb7430 disabled
 bool __stdcall function_b7430(long object_index, point3f const *position, vector3f const *forward,

@@ -6080,7 +6080,6 @@ bool __stdcall function_37a60(void *context)
     struct s_filter_vertex { real x, y; byte unknown08[0x10]; point2f coordinates[3]; };
     s_filter_vertex vertices[4];
     void (WINAPI *volatile vertex2f)(INT, float, float) = D3DDevice_SetVertexData2f;
-    void (WINAPI *volatile vertex4f)(INT, float, float, float, float) = D3DDevice_SetVertexData4f;
     {
 
         real extent = *(real *)(view + 0x134 + 0 * 4);
@@ -6213,22 +6212,30 @@ bool __stdcall function_37a60(void *context)
         vertex2f(2, vertices[0].coordinates[0].x, vertices[0].coordinates[0].y);
         vertex2f(3, vertices[0].coordinates[1].x, vertices[0].coordinates[1].y);
         vertex2f(4, vertices[0].coordinates[2].x, vertices[0].coordinates[2].y);
-        vertex4f(0, vertices[0].x, vertices[0].y, z, w);
+        #pragma inline_depth(0)
+        D3DDevice_SetVertexData4f(0, vertices[0].x, vertices[0].y, z, w);
+        #pragma inline_depth(255)
         vertex2f(1, vertices[1].x, vertices[1].y);
         vertex2f(2, vertices[1].coordinates[0].x, vertices[1].coordinates[0].y);
         vertex2f(3, vertices[1].coordinates[1].x, vertices[1].coordinates[1].y);
         vertex2f(4, vertices[1].coordinates[2].x, vertices[1].coordinates[2].y);
-        vertex4f(0, vertices[1].x, vertices[1].y, z, w);
+        #pragma inline_depth(0)
+        D3DDevice_SetVertexData4f(0, vertices[1].x, vertices[1].y, z, w);
+        #pragma inline_depth(255)
         vertex2f(1, vertices[2].x, vertices[2].y);
         vertex2f(2, vertices[2].coordinates[0].x, vertices[2].coordinates[0].y);
         vertex2f(3, vertices[2].coordinates[1].x, vertices[2].coordinates[1].y);
         vertex2f(4, vertices[2].coordinates[2].x, vertices[2].coordinates[2].y);
-        vertex4f(0, vertices[2].x, vertices[2].y, z, w);
+        #pragma inline_depth(0)
+        D3DDevice_SetVertexData4f(0, vertices[2].x, vertices[2].y, z, w);
+        #pragma inline_depth(255)
         vertex2f(1, vertices[3].x, vertices[3].y);
         vertex2f(2, vertices[3].coordinates[0].x, vertices[3].coordinates[0].y);
         vertex2f(3, vertices[3].coordinates[1].x, vertices[3].coordinates[1].y);
         vertex2f(4, vertices[3].coordinates[2].x, vertices[3].coordinates[2].y);
-        vertex4f(0, vertices[3].x, vertices[3].y, z, w);
+        #pragma inline_depth(0)
+        D3DDevice_SetVertexData4f(0, vertices[3].x, vertices[3].y, z, w);
+        #pragma inline_depth(255)
         D3DDevice_End();
         D3DDevice_SetRenderState(D3DRS_ALPHATESTENABLE, 0);
         D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
