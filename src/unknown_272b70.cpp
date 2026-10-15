@@ -2750,7 +2750,7 @@ struct s_location;
 void function_b75a0(long object_index, point3f const *point, vector3f const *forward, vector3f const *up,
 	s_location const *location, bool unknown);
 void function_b73b0(long object_index);
-void __stdcall function_1f4280(long actor_index);
+bool __stdcall function_1f4280(long actor_index);
 
 inline s_type_c3b527 *scenario_point_get(long point_reference)
 {

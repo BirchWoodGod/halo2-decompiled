@@ -42,8 +42,8 @@ void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
 void c_4way_signin_screen::v3()
 {
     set_user_flags(0xffff);
-    s_widget_item items[4];
     long controller = 0;
+    s_widget_item items[4];
     do
     {
         bool connected = controller_is_connected((short)controller);
