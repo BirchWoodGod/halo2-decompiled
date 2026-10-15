@@ -22,10 +22,8 @@ long c_handle_table_450cd0::v1(long a1, long max_count, void *output)
 		long index = unknown5024;
 		if (index != NONE)
 		{
-			do
+			while (index != NONE && count < max_count)
 			{
-				if (count >= max_count)
-					break;
 				s_handle_entry *entry = &entries[index];
 				if (entry->state)
 				{
@@ -133,7 +131,7 @@ long c_handle_table_450cd0::v1(long a1, long max_count, void *output)
 				}
 			next:
 				index = entry->unknown0a;
-			} while (index != NONE);
+			}
 		}
 	}
 	return count;

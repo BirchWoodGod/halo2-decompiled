@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8784 functions match
+
+```
+matched 8784 of 11318 game functions (1182766 of 2784283 bytes, 42.48%)
+```
+
+7 new matches, none lost:
+- Machine 3's batch 48 (#495): `0x586f0`, `0xc17f0`, `0x12ad30`, `0x12b850`, `0x176e40`, `0x1e1e50` and `0x1fef40` match.
+
+## 2026-10-15: 8777 functions match
+
+```
+matched 8777 of 11318 game functions (1180345 of 2784283 bytes, 42.39%)
+```
+
+9 new matches, none lost:
+- Our key lane's round 33 (machine 3's loan): `0x146fd0`, `0x1b4560`, `0x1b54d0`, `0x1fbe00`, `0x1fbff0`, `0x1fc160`, `0x1ff6c0`, `0x22cb90`, `0x255b10` and `0x255ce0` match.
+
 ## 2026-10-15: 8768 functions match
 
 ```
