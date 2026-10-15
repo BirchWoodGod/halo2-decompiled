@@ -196,7 +196,7 @@ bool __stdcall function_1b1f70(long actor_index, s_slot *slot)
             *((byte *)&request + 0x59) = true;
             byte *scratch = ai_scratch_buffer_get();
             bool unknown = false;
-            s_reference reference;
+            s_reference reference = actor->unknown418;
             if (state->unknown0c)
             {
                 reference = function_2605d0(actor_index, &request, 0, (long)&other_index, scratch, &unknown);
@@ -209,8 +209,6 @@ bool __stdcall function_1b1f70(long actor_index, s_slot *slot)
                         state->reference = reference;
                 }
             }
-            else
-                reference = actor->unknown418;
             if (!REFERENCE_EQUAL(function_2626b0(actor_index, reference, other_index, scratch, unknown, true), g_470fa0))
             {
                 state->unknown0c = false;
