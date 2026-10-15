@@ -2175,7 +2175,8 @@ void __stdcall function_683a0(byte *block)
 		function_14c630(*(dword *)(block + 0xdd4), (const s_machine_address *)(block + 0xdd8));
 	long count = *(long *)(block + 0xe38);
 	s_simulation_player_update *update = (s_simulation_player_update *)(block + 0xe3c);
-	for (long j = 0; j < count; j++, update++)
+	long j = 0;
+	if (count > 0) do
 	{
 		bool result;
 		switch (update->type)
@@ -2204,7 +2205,9 @@ void __stdcall function_683a0(byte *block)
 			g_4cf771 = true;
 			break;
 		}
-	}
+		update++;
+		j++;
+	} while (j < count);
 	if (*(bool *)(block + 0x403c) &&
 		(SIMULATION_WORLD->state == 3 || SIMULATION_WORLD->state == 5))
 	{

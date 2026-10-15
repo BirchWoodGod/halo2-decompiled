@@ -5657,7 +5657,10 @@ bool function_19a250();
 bool function_19a203();
 
 /* Retail tail-calls this separate update body from the list tick. */
-PRIVATE __declspec(noinline) void update_player_actions_2b55ae(c_y_menu_player_selected_list *list)
+PRIVATE __declspec(noinline) void update_player_actions_2b55ae(c_y_menu_player_selected_list *list);
+
+// @retail 0x2b55ae
+PRIVATE void update_player_actions_2b55ae(c_y_menu_player_selected_list *list)
 {
     long controller = list->get_controller_index();
     s_player_selection selection;
