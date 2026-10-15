@@ -673,9 +673,3 @@ c_component_joint_4::c_component_joint_4(c_component_joint_snapshot_4 const *inf
 
 // @stub 0x314ef0
 c_component_joint_5::c_component_joint_5(c_component_joint_snapshot_5 const *info) {}
-
-
-
-
-// @stub 0x1d56f0
-void function_1d56f0(s_havok_component *arg_0) {}
