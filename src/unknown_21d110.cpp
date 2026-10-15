@@ -414,8 +414,7 @@ bool function_21d5a0(long effect_index)
 		{
 			long local_0 = effect->sound_index;
 			s_sound_source_callbacks const *const &local_1 = playing_sound_get(local_0)->marker.link.source;
-			s_sound_playback_flags flags;
-			*(volatile word *)&flags = 0;
+			s_sound_playback_flags flags = {};
 			result = sound_playback_update_source(local_0, local_1, &flags);
 			if (TEST_FIELD_BIT(flags.source_updated))
 				effect->flags |= FLAG(_sound_effect_unmanaged_bit);
