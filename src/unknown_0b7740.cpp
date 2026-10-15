@@ -771,7 +771,7 @@ void function_bfa40(long object_index, long node_mask)
         byte *local_be682a = (byte *)((s_object_transform_header *)g_4e0300->data)[parent_index & 0xffff].object;
         parent_mirrored = (*(dword *)(local_be682a + 4) >> 10) & 1;
     }
-    struct { transform4x3f root, inverse_root, inverse_parent, relative; } workspace;
+    struct { transform4x3f relative, root, inverse_parent, inverse_root; } workspace;
     function_bdc40((point3f *)(object + 0x64), (vector3f *)(object + 0x70), (vector3f *)(object + 0x7c),
         *(real *)(object + 0xa0), (*(dword *)(object + 4) >> 10) & 1, parent, parent_mirrored, &workspace.root);
     function_141590(&workspace.root, &workspace.inverse_root);
@@ -780,7 +780,7 @@ void function_bfa40(long object_index, long node_mask)
         if (!node_mask || (((dword *)node_mask)[i >> 5] & (1 << (i & 31))))
         {
             short node_parent = *(short *)(*(byte **)(model + 0x7c) + i * 0x5c + 4);
-            if (node_parent != NONE)
+            if ((dword)(long)node_parent != (dword)NONE)
             {
                 function_141590(&matrices[node_parent], &workspace.inverse_parent);
                 function_142a60(&workspace.inverse_parent, &matrices[i], &workspace.relative);

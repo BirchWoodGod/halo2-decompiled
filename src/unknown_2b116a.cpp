@@ -5865,7 +5865,13 @@ struct s_widget_quad_2b11
     real points[8];
 };
 
-real g_4e696c;
+struct s_4e6950
+{
+    byte unknown00[0x1c];
+    real value1c;
+    byte unknown20[0x80 - 0x20];
+};
+extern s_4e6950 g_4e6950;
 void function_1bbd0();
 void function_1392f8(s_player_appearance const *appearance);
 s_float_rect *function_22ea81(c_class_1a2c81 *widget, s_float_rect *rect, short_rectangle2d const *frame);
@@ -5887,16 +5893,16 @@ void c_widget_45adf0::v4(long frame)
         s_preview_state_2b11 *state = (s_preview_state_2b11 *)g_510c4c;
         state->player_index = NONE;
         function_1392f8((s_player_appearance const *)value74);
-        state->sequence = *(short *)unknown86;
         s_widget_quad_2b11 quad;
-        g_4e696c = scale;
         quad.points[0] = rectangle.x0;
         quad.points[1] = rectangle.y0;
         quad.points[2] = rectangle.x1;
         quad.points[3] = rectangle.y0;
         quad.points[4] = rectangle.x1;
-        quad.points[5] = rectangle.y1;
         quad.points[6] = rectangle.x0;
+        state->sequence = *(short *)unknown86;
+        g_4e6950.value1c = scale;
+        quad.points[5] = rectangle.y1;
         quad.points[7] = rectangle.y1;
         function_22a664(&coordinates, &quad, definition->tag_index,
             *(short *)((byte *)definition + 0xa), *(long *)((byte *)definition + 0x18));
