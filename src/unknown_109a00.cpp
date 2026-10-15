@@ -206,14 +206,20 @@ void function_109580(long object_index)
 	}
 }
 
+struct s_carrier_vector4
+{
+	real n[4];
+
+	real const &operator()(long i) const { return n[i]; }
+};
+
 struct s_carrier_body_motion
 {
 	byte unknown00[0x40];
-	vector3f velocity;
-	byte unknown4c[4];
-	vector3f angular_velocity;
-	byte unknown5c[0x70 - 0x5c];
-	point3f center;
+	s_carrier_vector4 velocity;
+	s_carrier_vector4 angular_velocity;
+	byte unknown60[0x70 - 0x60];
+	s_carrier_vector4 center;
 };
 
 struct s_carrier_body
@@ -270,6 +276,42 @@ PRIVATE inline short carrier_component_default_body(s_carrier_component const *c
 	return body_index;
 }
 
+PRIVATE inline void carrier_make_vector3f(vector3f *vector, real i, real j, real k)
+{
+	vector->i = i;
+	vector->j = j;
+	vector->k = k;
+}
+
+PRIVATE inline void carrier_vector_from_havok(vector3f *vector, s_carrier_vector4 const *havok)
+{
+	carrier_make_vector3f(vector, (*havok)(0), (*havok)(1), (*havok)(2));
+}
+
+PRIVATE inline void carrier_body_velocity_get(s_carrier_body const *body, vector3f *velocity)
+{
+	if (!body->inactive)
+	{
+		carrier_vector_from_havok(velocity, &body->motion->velocity);
+	}
+	else
+	{
+		*velocity = *g_4687a4;
+	}
+}
+
+PRIVATE inline void carrier_body_angular_velocity_get(s_carrier_body const *body, vector3f *velocity)
+{
+	if (!body->inactive)
+	{
+		carrier_vector_from_havok(velocity, &body->motion->angular_velocity);
+	}
+	else
+	{
+		*velocity = *g_4687a4;
+	}
+}
+
 // @retail 0x109660
 void function_109660(long object_index, long entry_index)
 {
@@ -310,17 +352,9 @@ void function_109660(long object_index, long entry_index)
 					entry->valid = true;
 				}
 				havok_component_rigid_body_matrix_get(body_index, (s_havok_component *)component, &entry->current_transform);
-				s_carrier_body *body = component->bodies[body_index].body;
-				if (!body->inactive)
-					entry->velocity = body->motion->velocity;
-				else
-					entry->velocity = *g_4687a4;
-				body = component->bodies[body_index].body;
-				if (!body->inactive)
-					entry->angular_velocity = body->motion->angular_velocity;
-				else
-					entry->angular_velocity = *g_4687a4;
-				entry->center = component->bodies[body_index].body->motion->center;
+				carrier_body_velocity_get(component->bodies[body_index].body, &entry->velocity);
+				carrier_body_angular_velocity_get(component->bodies[body_index].body, &entry->angular_velocity);
+				*(vector3f *)&entry->center = *(vector3f *)&component->bodies[body_index].body->motion->center;
 				entry->active = true;
 				if (entry->valid)
 				{
@@ -334,13 +368,19 @@ void function_109660(long object_index, long entry_index)
 					vector3f *up = &entry->transform.up;
 					function_30bf0(up);
 					real dot = up->k * forward->k + up->j * forward->j + forward->i * up->i;
-					up->i -= forward->i * dot;
-					up->j -= forward->j * dot;
-					up->k -= forward->k * dot;
+					real scaled_i = forward->i * dot;
+					real scaled_j = forward->j * dot;
+					real scaled_k = forward->k * dot;
+					up->i -= scaled_i;
+					up->j -= scaled_j;
+					up->k -= scaled_k;
 					function_30bf0(up);
-					left->i = up->j * forward->k - up->k * forward->j;
-					left->j = forward->i * up->k - forward->k * up->i;
-					left->k = forward->j * up->i - forward->i * up->j;
+					real cross_k = forward->j * up->i - forward->i * up->j;
+					real cross_j = forward->i * up->k - forward->k * up->i;
+					real cross_i = up->j * forward->k - up->k * forward->j;
+					left->i = cross_i;
+					left->j = cross_j;
+					left->k = cross_k;
 					function_30bf0(left);
 				}
 				return;
