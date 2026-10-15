@@ -86,7 +86,7 @@ short __stdcall function_1b5aa0(long actor_index, s_slot *slot, bool active)
 			}
 			if (view->unknown69 && g_46eeb8[0x27]->unknown8 != g_46f348 &&
 				(g_46eeb8[0x27]->mask & g_4ee4ec) == g_4ee4ec &&
-				((g_557c40[0x27 >> 5] >> (0x27 & 31)) & 1))
+				(bool)((g_557c40[0x27 >> 5] >> (0x27 & 31)) & 1))
 				result = 0x27;
 		}
 	}
@@ -125,7 +125,8 @@ bool __stdcall function_1b5c00(long actor_index, s_slot *slot)
 
 		if (view && view->unknown10 >= 0)
 		{
-			real second_ticks = function_259d0(&g_4e7408->unknown0, __FILE__, __LINE__, 2.0f, 4.0f) * g_510c54->field_2_3;
+			real draw = function_x82e52f(&g_4e7408->unknown0, __FILE__, __LINE__);
+			real second_ticks = (2.0f + (draw + draw)) * g_510c54->field_2_3;
 			__asm
 			{
 				fld second_ticks

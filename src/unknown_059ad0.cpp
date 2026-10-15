@@ -1618,7 +1618,7 @@ bool network_session_stop_countdown(c_class_58d20 *session)
 }
 
 // @retail 0x5bf10
-bool network_session_start_countdown(c_class_58d20 *session, long countdown, bool start, long mode, const long *time)
+bool network_session_start_countdown(c_class_58d20 *session, bool start, long countdown, long mode, const long *time)
 {
 	bool result = false;
 
@@ -1816,9 +1816,9 @@ bool network_session_host_set_summary(c_class_58d20 *session, const s_session_su
 				local_1->flag49fd = false;
 				memset(local_1->data4a00, 0, sizeof(local_1->data4a00));
 			}
+			result = true;
 			_ReadWriteBarrier();
 			local_1->update_count++;
-			result = true;
 		}
 	}
 local_2:
@@ -1848,9 +1848,9 @@ bool network_session_host_set_data5ddc(c_class_58d20 *session, const s_parameter
 				local_1->flag5dd8 = false;
 				memset(local_1->data5ddc, 0, sizeof(local_1->data5ddc));
 			}
+			result = true;
 			_ReadWriteBarrier();
 			local_1->update_count++;
-			result = true;
 		}
 	}
 local_2:

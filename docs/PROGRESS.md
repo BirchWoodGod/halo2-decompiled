@@ -2,6 +2,51 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8726 functions match
+
+```
+matched 8726 of 11318 game functions (1166209 of 2784283 bytes, 41.89%)
+```
+
+8 new matches, none lost:
+- Machine 3's batch 37 (#483): `0x59570` (machine 1's key lane body, in its own file), `0x1d3880`, `0x87e90`, `0x1f4280`, `0x295e60`, `0x1b5c00`, `0x235c4a` and `0x242ef0` match.
+
+## 2026-10-15: 8718 functions match
+
+```
+matched 8718 of 11318 game functions (1163488 of 2784283 bytes, 41.79%)
+```
+
+6 new matches, none lost:
+- Machine 1's key lane round 27: machine 3's `0xb9a90` (lent for the round) takes retail's `ebx` convention, and with it `0x13c5a0`, `0x2ac1a0`, `0x10cd50` and `0x2a1cc0` match; `0xb9a50` and `0xb83b0` match too.
+
+## 2026-10-15: 8712 functions match
+
+```
+matched 8712 of 11318 game functions (1162704 of 2784283 bytes, 41.76%)
+```
+
+2 new matches, none lost:
+- Machine 1's key lane round 26: machine 3's `0x1c54b0` (lent for the round) takes retail's convention, and with it its callers `0xba7f0` and `0xba6f0` match.
+
+## 2026-10-14: 8710 functions match
+
+```
+matched 8710 of 11318 game functions (1162254 of 2784283 bytes, 41.74%)
+```
+
+20 new matches, none lost:
+- Machine 3's batch 36 (#482): 20 functions match, among them `0x2232a0` (through `0x2f800`'s retail parameter order), `0x64060`, `0x64100` and `0x6dcc0`, `0x7a840` and four neighbours through the `0x4cf790` global record, and `0x1c2b10`, `0x215880`, `0x20ad40`, `0x1d0a20`, `0x173cb0`, `0x168470`, `0x2039d0` and `0xa9a70`.
+
+## 2026-10-14: 8690 functions match
+
+```
+matched 8690 of 11318 game functions (1158069 of 2784283 bytes, 41.59%)
+```
+
+3 new matches, none lost:
+- Machine 1's key lane round 25: a new `adjustor` marker kind in `tools/build.py` for the compiler's this-adjustor thunks; with it `0x278b30`, `0x1c58d0` and `0x1c58e0` match.
+
 ## 2026-10-14: 8687 functions match
 
 ```

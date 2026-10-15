@@ -12,6 +12,9 @@ SYMBOL = re.compile(r'^\s*([0-9a-f]{4}):([0-9a-f]{8})\s+(\S+)\s+([0-9a-f]{8})\b'
 SECTION = re.compile(r'^\s*([0-9a-f]{4}):([0-9a-f]{8})\s+([0-9a-f]{8})H\s+\S+\s+\S+\s*$')
 BASE = re.compile(r'Preferred load address is ([0-9a-f]{8})')
 VCALL = re.compile(r'^\?\?_9.*?@\$B(\d|[A-P]+@)')  # a vcall thunk and its vtable offset
+# after the name's '@@': the access code of a this-adjustor thunk (G/H private, O/P protected, W/X public)
+# and the adjustment, then the this qualifier and the calling convention
+ADJUSTOR = re.compile(r'^[GHOPWX](\d|[A-P]+@)[A-D][A-I]')
 
 
 @dataclass(frozen=True)
@@ -33,7 +36,13 @@ def _number(encoded):
 
 def plain_name(decorated):
     """A decorated name without its decoration: 'name' or 'class::name'. The
-    compiler's vcall thunk (??_9) is "`vcall'{<vtable offset>}"."""
+    compiler's vcall thunk (??_9) is "`vcall'{<vtable offset>}"; its
+    this-adjustor thunk for a member reached through a base at a nonzero
+    offset is the member's plain name followed by "`adjustor{<offset>}'"."""
+    if decorated.startswith('?') and not decorated.startswith('??_9'):
+        rest = decorated.split('@@', 1)[1] if '@@' in decorated else ''
+        if m := ADJUSTOR.match(rest):
+            return plain_name(decorated[:-len(rest)] + 'U' + rest[m.end(1):]) + adjustor_suffix(_number(m.group(1)))
     if m := VCALL.match(decorated):
         return f"`vcall'{{{_number(m.group(1)):#x}}}"
     if decorated[:4] in ('??_G', '??_E'):  # scalar or vector deleting destructor
@@ -47,6 +56,11 @@ def plain_name(decorated):
         return '::'.join(reversed(parts))
     name = decorated.lstrip('_@')
     return name.split('@', 1)[0]
+
+
+def adjustor_suffix(offset):
+    """What a this-adjustor thunk's plain name adds to its member's."""
+    return f"`adjustor{{{offset:#x}}}'"
 
 
 class LinkMap:

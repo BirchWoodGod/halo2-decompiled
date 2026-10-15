@@ -226,7 +226,7 @@ bool s_component_property_view::function_1d3550(long key, bool *positive, real *
 }
 
 // @retail 0x1d3880
-long function_1d3880(s_havok_component const *component, long *constraints, long *contacts, long *other, long *bodies)
+long function_1d3880(s_havok_component const *component, long *constraints, long *bodies, long *contacts, long *other)
 {
 	*constraints = component->unknown88.size * sizeof(s_havok_component_element48);
 	*contacts = (component->unknown7c.capacity_and_flags & 0x7fffffff) * sizeof(s_havok_component_element0c);
@@ -713,7 +713,7 @@ void havok_component_rigid_body_angular_velocity_get(long rigid_body_index, s_ha
 // @retail 0x1d0a20
 void havok_component_rigid_body_point_velocity_get(long rigid_body_index, s_havok_component *component, point3f const *point, vector3f *velocity)
 {
-    s_havok_component *const volatile *local_0 = &component;
+    s_havok_component *const *local_0 = &component;
     s_havok_component *local_1 = *local_0;
 	if (!havok_component_rigid_body_get(rigid_body_index, local_1)->m_fixed)
 	{

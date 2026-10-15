@@ -327,6 +327,27 @@ def test_vcall_marker_names_the_compilers_thunk_and_gets_no_standin():
     assert build.standin_names([thunk, f])[('src/l.cpp', 0x1010)] == 'standin_l_1'
 
 
+def test_adjustor_marker_names_the_compilers_this_adjustor_thunk_and_gets_no_standin():
+    text = ('// @retail 0x278b30 adjustor c_object 8' + chr(10) +
+            '// @retail 0x1c58d0 adjustor c_1c3410::function_1c3410 0xc' + chr(10) +
+            '// @retail 0x1010' + chr(10) + 'void f(long a)' + chr(10) + '{' + chr(10) + '}' + chr(10))
+    deleting, method, f = scan(text, 'src/a.cpp')
+    assert (deleting.retail, deleting.name, deleting.cls, deleting.kind, deleting.params, deleting.stub) == (
+        0x278b30, "c_object::`deleting destructor'`adjustor{0x8}'", 'c_object', 'adjustor', [], False)
+    assert (method.name, method.cls, method.kind) == (
+        "c_1c3410::function_1c3410`adjustor{0xc}'", 'c_1c3410', 'adjustor')
+    tu = build.tu_source('/abs/src/a.cpp', [deleting, method, f], 'a', {'c_object'}, {'c_object'})
+    # the class's vtable stand-in emits the thunk; the other stand-ins keep their numbers
+    assert 'standin_a_0' not in tu and 'standin_a_1(' not in tu and 'void standin_a_2(void) { f(' in tu
+    assert 'standin_a_vtable_0' in tu
+    assert build.standin_names([deleting, method, f])[('src/a.cpp', 0x1010)] == 'standin_a_2'
+
+
+def test_adjustor_marker_is_not_for_stubs():
+    with pytest.raises(SystemExit, match='"adjustor" marks'):
+        scan('// @stub 0x278b30 adjustor c_object 8' + chr(10), 'src/stubs/s.cpp')
+
+
 def test_vcall_marker_is_not_for_stubs():
     with pytest.raises(SystemExit, match='"vcall" marks'):
         scan('// @stub 0x234c5f vcall 0x5c\n', 'src/stubs/s.cpp')

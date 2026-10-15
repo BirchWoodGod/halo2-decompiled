@@ -791,13 +791,15 @@ void function_1c54b0(char const *variants, long object_index)
 		s_object_definition_view *definition = (s_object_definition_view *)g_4e3b44[object->tag_index & 0xffff].bytes;
 		s_model_view *model = (s_model_view *)g_4e3b44[definition->model_tag_index & 0xffff].bytes;
 		char const *current = (char const *)object + object->region_variants_offset;
+		long count = model->region_count;
 		s_model_region_view const *region = model->regions;
+		long offset = current - variants;
 		long i;
 
-		for (i = 0; i < model->region_count; i++, region++)
+		for (i = 0; i < count; i++, region++, variants++)
 		{
-			char variant = variants[i];
-			char current_variant = current[i];
+			char variant = *variants;
+			char current_variant = variants[offset];
 
 			if (variant == current_variant)
 				continue;
@@ -1777,7 +1779,7 @@ void fixed_memory_get_statistics(c_havok_fixed_memory *memory, s_fixed_memory_st
 void fixed_memory_get_statistics_16(c_havok_fixed_memory *memory, s_fixed_memory_statistics_16 *statistics);
 void function_22c390(hkMemory *memory, s_fixed_memory_statistics_16 *statistics);
 void function_22cb00(hkMemory *memory, s_physics_pool_statistics *statistics);
-long function_1d3880(s_havok_component const *component, long *constraints, long *contacts, long *other, long *bodies);
+long function_1d3880(s_havok_component const *component, long *constraints, long *bodies, long *contacts, long *other);
 
 // @retail 0x1c4590 standard
 void __stdcall function_1c4590(long flags)
@@ -1838,7 +1840,7 @@ void __stdcall function_1c4590(long flags)
     while ((component = (s_havok_component *)data_iterator_next_inlined(&iterator2)) != NULL)
     {
         long contacts, constraints, other, bodies;
-        function_1d3880(component, &contacts, &constraints, &other, &bodies);
+        function_1d3880(component, &contacts, &bodies, &constraints, &other);
         contacts_total += contacts;
         bodies_total += bodies;
         constraints_total += constraints;

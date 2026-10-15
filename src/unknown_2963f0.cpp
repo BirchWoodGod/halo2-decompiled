@@ -594,3 +594,113 @@ void function_295bd0(bool prefer_selected)
 		}
 	}
 }
+
+struct s_295e60_object
+{
+	long definition_index;
+	dword flags;
+	byte unknown008[0x130 - 8];
+	short field_130;
+	byte unknown132[0x1d4 - 0x132];
+	short field_1d4;
+};
+
+struct s_295e60_entry
+{
+	short field_0;
+	short value;
+};
+
+struct s_295e60_placement
+{
+	byte unknown00[0x40];
+	long count_40;
+	s_295e60_entry *entries_44;
+	byte unknown48[8];
+	long count_50;
+	s_295e60_entry *entries_54;
+};
+
+struct s_scenery_placement;
+short __fastcall function_10a040(long definition_index, s_scenery_placement *placement);
+inline void function_b8b70(long object_index);
+
+// @retail 0x295e60
+void function_295e60(short arg_0)
+{
+	struct
+	{
+		s_295e60_object *object;
+		s_type_f1af8e iterator;
+	} state;
+	function_bae80(&state.iterator, 0x40, 0);
+	while ((state.object = (s_295e60_object *)function_baeb0(&state.iterator)) != NULL)
+	{
+		s_295e60_placement *placement = (s_295e60_placement *)function_b7a40((s_scenario_identifier_ab const *)((byte *)state.object + 0xa4), NULL);
+		dword *flags = &state.object->flags;
+		*flags &= ~0x400000;
+		state.object->field_130 = NONE;
+		if (placement)
+		{
+			switch (function_10a040(state.object->definition_index, (s_scenery_placement *)placement))
+			{
+			case 0:
+			case 3:
+				*flags |= 0x800000;
+				break;
+			case 1:
+				if (arg_0 < placement->count_50)
+				{
+					s_295e60_entry *entry = &placement->entries_54[arg_0];
+					state.object->field_130 = entry->value;
+					if (entry->value != NONE)
+						*flags |= 0x400000;
+				}
+				*flags |= 0x800000;
+				break;
+			}
+		}
+		function_b8b70(state.iterator.object_index);
+	}
+	function_bae80(&state.iterator, 0x80, 0);
+	while ((state.object = (s_295e60_object *)function_baeb0(&state.iterator)) != NULL)
+	{
+		s_295e60_placement *placement = (s_295e60_placement *)function_b7a40((s_scenario_identifier_ab const *)((byte *)state.object + 0xa4), NULL);
+		dword *flags = &state.object->flags;
+		*flags &= ~0x400000;
+		state.object->field_1d4 = NONE;
+		if (placement)
+		{
+			short mode = 3;
+			if (state.object->definition_index != NONE)
+			{
+				byte *definition = g_4e3b44[state.object->definition_index & 0xffff].bytes;
+				switch (*(short *)(definition + 0x130))
+				{
+				case 0: mode = 2; break;
+				case 1: mode = 1; break;
+				case 2: mode = 0; break;
+				default: mode = 3; break;
+				}
+			}
+			switch (mode)
+			{
+			case 0:
+			case 3:
+				*flags |= 0x800000;
+				break;
+			case 1:
+				if (arg_0 < placement->count_40)
+				{
+					s_295e60_entry *entry = &placement->entries_44[arg_0];
+					state.object->field_1d4 = entry->value;
+					if (entry->value != NONE)
+						*flags |= 0x400000;
+				}
+				*flags |= 0x800000;
+				break;
+			}
+		}
+		function_b8b70(state.iterator.object_index);
+	}
+}

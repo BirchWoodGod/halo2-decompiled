@@ -14,12 +14,6 @@
 
 
 
-// @stub 0x29d7b0
-bool function_29d7b0(s_pathfinding_data *pathfinding, s_type_d4fbfa *definition, vector3f const *direction,
-	point3f *point, vector3f *normal, char *side)
-{
-	return false;
-}
 
 
 

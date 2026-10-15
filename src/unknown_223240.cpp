@@ -48,7 +48,7 @@ extern byte g_485ac2;
 extern real g_5234dc;
 s_223240 g_47f0f8[6];
 
-void function_2f800(s_2f800_source const *, s_2f800_size const *, s_2f800_size const *, s_2f800_view *);
+void function_2f800(s_2f800_view *, s_2f800_source const *, s_2f800_size const *, s_2f800_size const *);
 void __stdcall function_2c8a0(byte const *);
 void function_2b5d0(long, long, long, long, s_223240 const *);
 void function_223080(long, long, long, s_223080 *, long, long, s_223081 const *);
@@ -63,7 +63,7 @@ PRIVATE __forceinline s_223240 *function_2232a1(s_223240 *arg_0)
 	arg_0->field_b0 = g_485a8a.a;
 	arg_0->field_b8 = g_485a8a.b;
 	arg_0->field_0 = 1;
-	function_2f800(0, 0, 0, (s_2f800_view *)arg_0->field_80);
+	function_2f800((s_2f800_view *)arg_0->field_80, 0, 0, 0);
 	memcpy(arg_0->field_c, arg_0->field_80, 0x74);
 	return arg_0;
 }

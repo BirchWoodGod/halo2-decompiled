@@ -183,7 +183,7 @@ bool network_session_parameters_set_value4dac(c_class_58d20 *session, long value
 
 static inline bool session_interface_stop_countdown(c_class_58d20 *session)
 {
-	return network_session_start_countdown(session, 0, false, 0, 0);
+	return network_session_start_countdown(session, false, 0, 0, 0);
 }
 
 // @retail 0x64060
@@ -891,7 +891,7 @@ bool network_session_interface_set_value4d08_and_stop_countdown(long value4d08, 
 	if (network_session_interface_local_machine_is_host())
 	{
 		c_class_58d20 *session = network_session_get_current();
-		if (network_session_parameters_set_value4d08(session, string, value4d08, value4d0c) && network_session_start_countdown(session, 0, false, 0, 0))
+		if (network_session_parameters_set_value4d08(session, string, value4d08, value4d0c) && network_session_start_countdown(session, false, 0, 0, 0))
 			result = true;
 		else
 			return false;
@@ -907,7 +907,7 @@ bool network_session_interface_set_value5dd0(short value)
 	{
 		c_class_58d20 *session = network_session_get_current();
 		result = network_session_parameters_set_value5dd0(session, value) &&
-			network_session_start_countdown(session, 0, false, 0, 0);
+			network_session_start_countdown(session, false, 0, 0, 0);
 	}
 	return result;
 }
@@ -973,7 +973,7 @@ bool network_session_interface_start_countdown(long user_index, bool start, long
 		s_session_interface_user *user = &g_4cd868.users[user_index];
 		if (user->valid)
 		{
-			if (network_session_start_countdown(session, countdown, start, mode, (const long *)&user->xuid))
+			if (network_session_start_countdown(session, start, countdown, mode, (const long *)&user->xuid))
 				result = true;
 		}
 	}
@@ -1625,25 +1625,34 @@ struct s_66050
     s_network_session_player field_10d4[16];
 };
 
-#pragma optimize("s", on)
+#pragma optimize("t", on)
 #pragma inline_depth(0)
+struct s_type_66052
+{
+ byte unknown00[0xac];
+ long field_ac[16];
+ byte unknownec[0x20];
+};
 // @retail 0x66050
 long function_66050(c_class_58d20 *session, long variant_index)
 {
- volatile long result = variant_index;
- long local_1 = result;
- bool missing = false;
+ volatile long result;
+ long local_1 = variant_index;
+ bool different;
  bool compatible;
+ bool missing;
  long current = session->member_index;
+ missing = false;
  s_66050 *local_0 = (s_66050 *)&session->value4c;
- compatible = function_7ed20((const s_message_identities *)local_0, 0, &missing, &compatible);
+ compatible = function_7ed20((const s_message_identities *)local_0, 0, &missing, &different);
  s_surface_description *variant = function_192e60(local_1);
  result = 0;
  if (!variant)
  {
   result = 2;
-  return result;
+  goto local_66050;
  }
+ {
  if (variant->type == 5 || variant->type == 2 || variant->type == 4)
  {
   for (long i = 0; i < 16; i++)
@@ -1653,42 +1662,53 @@ long function_66050(c_class_58d20 *session, long variant_index)
     return result;
    }
  }
+ dword mask = local_0->field_10d0;
  for (long i = 0; i < 16; i++)
-  if ((local_0->field_10d0 & (1 << i)) && local_0->field_10d4[i].user_flags == 0xbad00000)
+  if ((mask & (1 << i)) && local_0->field_10d4[i].user_flags == 0xbad00000)
   {
    result = 13;
    return result;
   }
  for (long member = 0; member < local_0->field_8; member++)
  {
-  long state = *(long *)((byte *)&local_0->field_c[member] + 0xac + local_1 * 4);
-  if (state != 1)
+  const s_type_66052 *entry = (const s_type_66052 *)&local_0->field_c[member];
+  if (entry->field_ac[local_1] != 1)
   {
+   long state = entry->field_ac[local_1];
    if (!state)
     result = 14;
    else
-    result = state == 3 ? 2 : 11;
+    {
+     long outcome = state == 3 ? 2 : 11;
+     result = outcome;
+     return outcome;
+    }
    return result;
   }
  }
  for (long i = 0; i < 16; i++)
-  if ((local_0->field_10d0 & (1 << i)) && (signed char)local_0->field_10d4[i].propertiesa8[0x81] < variant->field5e4)
+  if ((mask & (1 << i)) && (signed char)local_0->field_10d4[i].propertiesa8[0x81] < variant->field5e4)
   {
    result = 15;
    return result;
   }
- if (variant->type == 5 && !compatible)
+ const long &type = variant->type;
+ if (type == 5 && !compatible)
  {
-  result = missing ? 8 : 9;
-  return result;
+  long outcome = missing ? 8 : 9;
+  result = outcome;
+  return outcome;
  }
  long minimum;
- if (variant->type <= 3)
-  minimum = 1;
- else if (variant->type == 4)
-  minimum = variant->field5fc;
+ if (type > 3)
+ {
+  if (type != 4)
+   minimum = variant->field5f0;
+  else
+   minimum = variant->field5fc;
+ }
  else
-  minimum = variant->field5f0;
+  minimum = 1;
  long count = local_0->field_10cc;
  if (count < minimum)
  {
@@ -1700,7 +1720,7 @@ long function_66050(c_class_58d20 *session, long variant_index)
   result = 7;
   return result;
  }
- if (variant->type == 5)
+ if (type == 5)
  {
   function_7e100(current, (const s_member_quality_collection *)local_0, 0, 0, 0, &current);
   long required;
@@ -1716,6 +1736,8 @@ long function_66050(c_class_58d20 *session, long variant_index)
   if (current < required)
    result = 10;
  }
+ }
+local_66050:
  return result;
 }
 #pragma inline_depth(8)
