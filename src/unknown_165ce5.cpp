@@ -320,7 +320,7 @@ long function_166244(long key);
 /* 0x1d9430 is in unknown_1d9240.cpp and 0x14de90 in unknown_14b560.cpp; 0x1cba80 is in
    unknown_1cafc0.cpp (state, weapon_class, weapon_type, set) */
 real function_1d9430(s_1d9240 const *p);
-s_animation const *function_1cba80(s_animation_state *state, long mode, long weapon_class, long name);
+s_animation const *function_1cba80(s_animation_state *state, long weapon_class, long weapon_type, long name);
 long unit_get_player_index(long unit_index);
 void function_1776e0(long user_index, long object_index, bool add); /* unknown_175bd0.cpp */
 short function_1d90b0(long render_model_index, long marker_name, byte const *unknown0, long model_index, long const *node_map,
@@ -681,14 +681,14 @@ s_animation const *first_person_weapon_animation_get(long weapon_index, long ani
 
 					if (state.initialize(interface->animation_graph_index, NONE, true))
 					{
-						long mode = 0x7000101;
-						long weapon_class = mode;
+						long weapon_type = 0x7000101;
+						long weapon_class = weapon_type;
 
 						if (function_cd660(weapon->unit_index))
 						{
 							weapon_class = 0x400054b;
 						}
-						result = function_1cba80(&state, mode, weapon_class, animation_name);
+						result = function_1cba80(&state, weapon_class, weapon_type, animation_name);
 						if (result && (short)function_1dae80(result) != NONE && frame_out)
 						{
 							*frame_out = *(long *)((byte *)state.entry_get((short)function_1dae80(result)) + 4);
