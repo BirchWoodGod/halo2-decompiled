@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8712 functions match
+
+```
+matched 8712 of 11318 game functions (1162704 of 2784283 bytes, 41.76%)
+```
+
+2 new matches, none lost:
+- Machine 1's key lane round 26: machine 3's `0x1c54b0` (lent for the round) takes retail's convention, and with it its callers `0xba7f0` and `0xba6f0` match.
+
 ## 2026-10-14: 8710 functions match
 
 ```
