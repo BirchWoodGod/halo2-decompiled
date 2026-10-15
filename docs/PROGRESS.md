@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8687 functions match
+
+```
+matched 8687 of 11318 game functions (1158045 of 2784283 bytes, 41.59%)
+```
+
+3 new matches, none lost:
+- Machine 1's key lane round 24: machine 3's `0x2a2ce0`, `0x2a2d40` and `0x2a2da0` match (lent for the round); `0x5efd0` goes from 75 to 68.
+
 ## 2026-10-14: 8684 functions match
 
 ```
