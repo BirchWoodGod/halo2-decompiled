@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr
 /* UNKNOWN_058DD0.CPP: the game-session state machine states */
 
@@ -800,7 +801,7 @@ void c_session_client::function_06dbd0(const s_session_id *id)
 /* ---- shared by the states (lane D, round 4) ---- */
 
 /* ends the hosted game early (network configuration) */
-bool g_4cf95c;
+
 
 static inline long session_time_get(void)
 {

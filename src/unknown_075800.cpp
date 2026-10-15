@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr
 /* UNKNOWN_075800.CPP: the handler the message gateway (0x93aa0)
    passes each incoming session message to. Every session message begins
@@ -123,7 +124,7 @@ bool network_session_manager_get_hosted_session(c_class_58d20 **arg_0);
 struct s_session_browser_summary;
 bool __stdcall function_64d70(s_session_browser_summary *arg_0);
 bool function_07a9b0(void);
-extern bool g_4cf792;
+
 
 /* the sessions the session manager owns */
 struct s_network_session_list
