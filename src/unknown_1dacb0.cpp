@@ -259,7 +259,7 @@ bool function_1dd4c0(long render_model_tag_index, s_graph_tag *graph, long *node
 }
 
 // @retail 0x1dd5d0
-c_type_709360 function_1dd5d0(s_graph_tag *graph, c_type_709360 animation_id)
+c_type_709360 *function_1dd5d0(s_graph_tag *graph, c_type_709360 animation_id, c_type_709360 *output)
 {
 	c_type_709360 result = animation_id;
 
@@ -277,7 +277,8 @@ c_type_709360 function_1dd5d0(s_graph_tag *graph, c_type_709360 animation_id)
 			}
 		}
 	}
-	return result;
+	*output = result;
+	return output;
 }
 
 PRIVATE __forceinline real function_1dd632(bool arg_0, s_random_globals *arg_1)
@@ -300,7 +301,8 @@ c_type_709360 *function_1dd630(s_graph_tag *graph, c_type_709360 *result, c_type
 			{
 				arg_0e6cbc = function_1dafc0(graph, animation_id.graph_index);
 			}
-			animation_id = function_1dd5d0(graph, animation_id);
+			long temporary;
+			animation_id = *function_1dd5d0(graph, animation_id, (c_type_709360 *)&temporary);
 			animation = graph_animation_get(arg_0e6cbc, animation_id.index);
 			if (1.0f > animation->weight)
 			{

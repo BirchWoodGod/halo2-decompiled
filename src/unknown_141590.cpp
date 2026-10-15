@@ -25,7 +25,7 @@ void function_141590(
 		x = 0.f - in->position.x;
 		if (in->scale != 1.f)
 		{
-			real inverse = 1.f / in->scale;
+			real const &inverse = 1.f / in->scale;
 			out->scale = inverse;
 			z = (real)(z * inverse);
 			y = (real)(y * inverse);

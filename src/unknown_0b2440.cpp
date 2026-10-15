@@ -284,6 +284,8 @@ bool __stdcall function_b2da0(s_bitstream *stream, long size, s_test_message *me
 	return ok;
 }
 
+__declspec(noinline) void network_message_types_register_test(c_type_659ceb *collection);
+
 // @retail 0xb2de0
 void network_message_types_register_test(c_type_659ceb *collection)
 {

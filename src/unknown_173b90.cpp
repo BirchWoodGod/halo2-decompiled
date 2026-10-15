@@ -108,6 +108,7 @@ bool __stdcall function_173cb0(long tag_index, long unused, long first, long sec
 bool function_16e210(long cluster_index, long value);
 void function_25ca0(bool enabled);
 
+#pragma optimize("p", on)
 // @retail 0x174f80
 void function_174f80(s_particle_system_datum *system, void *a, void *b, void *c)
 {
@@ -121,8 +122,9 @@ void function_174f80(s_particle_system_datum *system, void *a, void *b, void *c)
 		real divisor = g_4b9fa4;
 		if (0.0001f > divisor)
 			divisor = 0.0001f;
+		real reciprocal = 1.0f / divisor;
 		real value = g_4b9ff8;
-		value *= 1.0f / divisor;
+		value *= reciprocal;
 		value = 0.0f - value;
 		real constants[4];
 		constants[0] = value < 0.0f ? 0.0f : value > 1.0f ? 1.0f : value;
@@ -132,6 +134,7 @@ void function_174f80(s_particle_system_datum *system, void *a, void *b, void *c)
 		D3DDevice_SetVertexShaderConstant(-81, constants, 1);
 	}
 }
+#pragma optimize("", on)
 
 struct s_particle_render_request_173c90
 {

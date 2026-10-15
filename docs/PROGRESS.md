@@ -2,6 +2,51 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8755 functions match
+
+```
+matched 8755 of 11318 game functions (1173684 of 2784283 bytes, 42.15%)
+```
+
+5 new matches, none lost:
+- Machine 3's batch 43 (#489): `0x2a3600` and `0x2a3670`, the twins `0x2483f0` and `0x248d90`, and `0x12e5e0` match.
+
+## 2026-10-15: 8750 functions match
+
+```
+matched 8750 of 11318 game functions (1172405 of 2784283 bytes, 42.11%)
+```
+
+5 new matches, none lost:
+- Machine 3's batch 42 (#488): `0x1dd630` matches through `0x1dd5d0` returning through an output pointer; `0x1cf120`, `0x1c5210` and the script wrappers `0x2a3520` and `0x2a3590` match too.
+
+## 2026-10-15: 8745 functions match
+
+```
+matched 8745 of 11318 game functions (1171097 of 2784283 bytes, 42.06%)
+```
+
+2 new matches, none lost:
+- Machine 3's batch 41 (#487): `0x254200` (written for the first time) and `0x20b660` match; `0x1b9200` passes forward and direction to `0x11cc90` in retail's order.
+
+## 2026-10-15: 8743 functions match
+
+```
+matched 8743 of 11318 game functions (1169731 of 2784283 bytes, 42.01%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 40 (#486): `0x80490` (through `0x7f8b0`'s retail parameter order), `0x9aff0` and `0x9d000` match.
+
+## 2026-10-15: 8740 functions match
+
+```
+matched 8740 of 11318 game functions (1169098 of 2784283 bytes, 41.99%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 39 (#485): `0x1b0110`, `0x1b3c60` and `0x6dec0`, which had no body before, are written and match.
+
 ## 2026-10-15: 8737 functions match
 
 ```
