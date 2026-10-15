@@ -176,12 +176,12 @@ void function_151ea0(long player_index, long object_index)
 	byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
 	real duration = *(real *)(definition + 0x130) * g_510c54->field_2_3;
 	long ticks;
+	bool unavailable = (header->flags & 0x10) != 0;
 	__asm
 	{
 		fld duration
 		fistp ticks
 	}
-	bool unavailable = (header->flags & 0x10) != 0;
 	if ((short)ticks > 0 && !unavailable)
 	{
 		short kind = *(short *)(definition + 0x12c);
