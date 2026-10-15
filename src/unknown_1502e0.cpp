@@ -536,11 +536,12 @@ bool function_cd660(long unit_index);
 bool function_150dd0(long player_index)
 {
 	s_tail_player *player = tail_player_get(player_index);
-	if ((short)function_cdeb0(player->unit_index, NONE, NONE, 0) == NONE)
+	long const &current = player->unit_index;
+	if ((short)function_cdeb0(current, NONE, NONE, 0) == NONE)
 		return true;
 	if (g_4e6948->state != 2)
 	{
-		long unit_index = player->unit_index;
+		long unit_index = current;
 		if (function_cbe60(unit_index) == NONE && !function_cd660(unit_index))
 			return true;
 	}

@@ -415,7 +415,7 @@ void function_3dd10(long object_index, bool force);
 // @retail 0xbe240
 void __stdcall function_be240(long object_index, dword color_mask, color3f const *colors)
 {
-    color3f const *const *colors_reference = &colors;
+
     byte *object = (byte *)((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
     byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
     color3f *output = (color3f *)(object + *(short *)(object + 0x126));
@@ -424,29 +424,32 @@ void __stdcall function_be240(long object_index, dword color_mask, color3f const
     {
         s_colour_choices_ab *entry = &(*(s_colour_choices_ab **)(definition + 0xb0))[i];
         if (color_mask & (1 << i))
-            output[i] = (*colors_reference)[i];
+            output[i] = colors[i];
         else
         {
             output[i] = *(color3f *)g_468710;
             long choice_count = entry->count;
             if (choice_count > 0)
             {
+                long last = NONE;
+                dword eligible = 0;
+                long variant = 0;
+                real weight = 0.0f;
                 real index = (real)i;
                 real seed = (real)fabs(*(real *)(object + 0x6c) * 744.1241455078125f + *(real *)(object + 0x64) * 315.89312744140625f + index * 431.1289367675781f + *(real *)(object + 0x68) * 587.1294555664062f);
                 real selection = (real)fmod((double)seed, 1.0);
                 seed = (real)fabs(index * 0.7121099829673767f + *(real *)(object + 0x68));
                 real blend = (real)fmod((double)seed, 1.0);
-                long variant = 0;
+
                 char variant_index = *(char *)(object + 0xb1);
                 if (variant_index != NONE && *(long *)(definition + 0x38) != NONE)
                 {
                     byte *model = g_4e3b44[*(long *)(definition + 0x38) & 0xffff].bytes;
                     variant = *(long *)(*(byte **)(model + 0x54) + variant_index * 0x38);
                 }
-                dword eligible = 0;
-                long last = NONE;
-                real weight = 0.0f;
-                for (long j = 0; j < choice_count; ++j)
+
+                long j = 0;
+                do
                 {
                     s_colour_choice_ab *choice = &entry->choices[j];
                     if (!choice->field_1c_4 || choice->field_1c_4 == variant)
@@ -455,7 +458,9 @@ void __stdcall function_be240(long object_index, dword color_mask, color3f const
                         last = j;
                         eligible |= 1 << j;
                     }
-                }
+
+                    ++j;
+                } while (j < choice_count);
                 if (eligible && weight > 0.0f)
                 {
                     real target = selection * weight;

@@ -874,7 +874,10 @@ bool __stdcall function_b1c80(s_bitstream *stream, long size, void *message_)
 	{
 		message->part8_valid = function_1957d0(stream);
 		if (message->part8_valid)
-			valid = function_063980(stream, message->part8);
+		{
+			byte const &decoded = function_063980(stream, message->part8);
+			valid = decoded != 0;
+		}
 	}
 	message->has_name = function_1957d0(stream);
 	if (message->has_name)

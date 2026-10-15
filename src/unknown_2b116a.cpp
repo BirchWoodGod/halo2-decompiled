@@ -5707,12 +5707,18 @@ PRIVATE __declspec(noinline) void update_player_actions_2b55ae(c_y_menu_player_s
         bool remove_friend = listed_friend && !(flags & 0x30) && list->value3a0 == 1;
         long rank = *(long *)(local_status.data + 0x1c);
         bool add_member = request_valid && !is_player && !self && rank >= 1 && list->value3a0 != 4 && list->value3a0 != 2;
-        bool pending_member = false;
-        bool change_member = false;
+        bool pending_member;
+        bool change_member;
         if (!add_member && is_player && !self && (flags & 0x800) && list->value3a0 == 2)
+        {
             pending_member = true;
+            change_member = false;
+        }
         else
+        {
+            pending_member = false;
             change_member = regular_player && rank >= 2 && !self && list->value3a0 == 2;
+        }
         bool remove_member = regular_player && rank >= 2 && !self && list->value3a0 == 2;
         bool mute = !muted && !self;
         bool unmute = !mute && muted && !self;

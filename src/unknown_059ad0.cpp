@@ -1870,13 +1870,19 @@ bool network_session_address_is_peer(c_class_58d20 *session, const s_type_99af70
 	bool result = false;
 
 	if (network_session_channel_is_host_address(session, address))
-		return true;
-	long local_0 = session->state;
-	if ((local_0 > 2 && local_0 <= 8) || local_0 == 1)
 	{
-		long member_index = network_session_find_member_by_address(session, address);
-		if (member_index != NONE && member_index != session->current_member && member_index == session->member_index)
-			result = true;
+		result = true;
+	}
+	else
+	{
+		long local_0;
+		local_0 = session->state;
+		if ((local_0 > 2 && local_0 <= 8) || local_0 == 1)
+		{
+			long member_index = network_session_find_member_by_address(session, address);
+			if (member_index != NONE && (long)member_index != session->current_member && member_index == session->member_index)
+				result = true;
+		}
 	}
 	return result;
 }
@@ -2768,7 +2774,17 @@ bool network_session_member_leave(c_class_58d20 *session, long member_index)
 {
 	bool result = false;
 
-	if (network_session_is_leaving(session))
+	if (!network_session_is_leaving(session))
+	{
+		s_session_id member_id = session->members[member_index].id;
+		s_session_id message = *(s_session_id *)&session->unknown1c;
+		network_observer_send_message(session->observer, session->value10, session->member_states[member_index].unknown04, true, _network_message_type_leave_acknowledge, sizeof(message), &message);
+		network_session_remove_member(session, member_index);
+		if (session->listener)
+			session->listener->member_left(&member_id);
+		result = true;
+	}
+	else
 	{
 		long state = session->state;
 		if (state == 7)
@@ -2777,20 +2793,12 @@ bool network_session_member_leave(c_class_58d20 *session, long member_index)
 		}
 		else if (state == 8)
 		{
-			dword bit = 1 << member_index;
-			if (!(*(dword *)((byte *)&session->value7420 + 0x14) & bit))
-				*(dword *)((byte *)&session->value7420 + 0x14) |= bit;
+			dword &mask = *(dword *)((byte *)&session->value7420 + 0x14);
+			if (!(mask & (1 << member_index)))
+				mask |= 1 << member_index;
 		}
-		return result;
 	}
-
-	s_session_id member_id = session->members[member_index].id;
-	s_session_id message = *(s_session_id *)&session->unknown1c;
-	network_observer_send_message(session->observer, session->value10, session->member_states[member_index].unknown04, true, _network_message_type_leave_acknowledge, sizeof(message), &message);
-	network_session_remove_member(session, member_index);
-	if (session->listener)
-		session->listener->member_left(&member_id);
-	return true;
+	return result;
 }
 
 /* the update that carries the session parameters that changed (network_session_membership.cpp builds it) */
