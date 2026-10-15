@@ -308,7 +308,7 @@ struct s_lookup_source
 short g_54e898;
 
 // @retail 0x1ee410
-void function_1ee410(const s_lookup_source *source, short *result)
+short *function_1ee410(const s_lookup_source *source, short *result)
 {
     struct { short value; } local;
     long tag_index;
@@ -323,6 +323,7 @@ void function_1ee410(const s_lookup_source *source, short *result)
 		local.value = g_4e0348->entries[source->index].value08;
 	}
     *result = local.value;
+    return result;
 }
 
 struct s_count_entry
