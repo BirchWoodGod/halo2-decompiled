@@ -327,7 +327,7 @@ static __forceinline void function_9dfc1(s_bitstream *arg_0, real arg_1, real ar
 }
 
 class c_handle_table_450cd0;
-bool function_99640(c_handle_table_450cd0 *arg_0, long arg_1);
+__declspec(noinline) bool function_99640(c_handle_table_450cd0 *arg_0, long arg_1);
 void scenario_object_name_encode(long arg_0, s_bitstream *arg_1);
 void function_1947e0(s_bitstream *arg_0, dword arg_1, long arg_2);
 void function_194830(s_bitstream *arg_0, bool arg_1);
