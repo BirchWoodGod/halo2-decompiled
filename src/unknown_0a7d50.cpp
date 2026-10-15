@@ -226,9 +226,9 @@ void function_a85c0(long index, s_collision_result_1697c0 const *collision,
             {
                 s_collision_event_data data;
                 data.definition = *(long *)object;
-                data.direction = *direction;
                 data.first_scale = first_scale;
                 data.second_scale = second_scale;
+                data.direction = *direction;
                 data.normal = *(vector3f const *)(input + 0x28);
                 data.point = *(point3f const *)(input + 8);
                 data.material = *(short const *)(input + 0x24);
