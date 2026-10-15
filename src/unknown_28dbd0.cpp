@@ -47,13 +47,13 @@ __forceinline real function_28dbd1()
 
 __forceinline void function_28dbd2(real arg_0, vector3f const *arg_1, vector3f *arg_2)
 {
-	real local_0 = (real)sin(arg_0);
 	real local_1 = (real)cos(arg_0);
 	real local_2 = dot3f(arg_1, arg_2) * (1.0f - local_1);
 	vector3f local_3;
 	local_3.i = arg_1->k * arg_2->j - arg_2->k * arg_1->j;
 	local_3.j = arg_2->k * arg_1->i - arg_1->k * arg_2->i;
 	local_3.k = arg_2->i * arg_1->j - arg_1->i * arg_2->j;
+	real local_0 = (real)sin(arg_0);
 	arg_2->i = arg_2->i * local_1 + arg_1->i * local_2 - local_3.i * local_0;
 	arg_2->j = arg_2->j * local_1 + arg_1->j * local_2 - local_3.j * local_0;
 	arg_2->k = arg_2->k * local_1 + arg_1->k * local_2 - local_3.k * local_0;
@@ -67,7 +67,7 @@ __forceinline void function_28dbd4(s_type_c3b527 const *arg_0, point3f *arg_1)
 
 __forceinline s_object_ai_data *function_28dbd5(s_handler_object_view *arg_0)
 {
-	long volatile const *local_0 = (long volatile const *)((byte *)arg_0 + 0x134);
+	long const *local_0 = (long const *)((byte *)arg_0 + 0x134);
 	s_object_ai_data *local_1;
 	if (!*local_0)
 		local_1 = (s_object_ai_data *)((byte *)arg_0 + arg_0->ai_offset);
