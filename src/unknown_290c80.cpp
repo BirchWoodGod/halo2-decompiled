@@ -60,13 +60,14 @@ struct s_object_ai_data
 // @retail 0x28da50
 void function_28da50(s_object_ai_data *data)
 {
-	memset(&data->flags, 0, sizeof(data->flags));
+	data->flags = 0;
 	data->index04 = NONE;
 	data->index10 = NONE;
 	data->next_object_index = NONE;
 	data->index20 = NONE;
 	data->index08 = NONE;
-	data->position14 = *g_468788;
+	point3f &first = data->position14;
+	first = *g_468788;
 	data->index50 = NONE;
 	data->flag56 = false;
 	data->count66 = 0;
