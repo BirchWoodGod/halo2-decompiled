@@ -65,12 +65,12 @@ bool function_29d7b0(long index, s_pathfinding_data *pathfinding, s_type_d4fbfa 
 	vector3f const *direction, point3f *point, vector3f *normal, char *side)
 {
 	vector3f const *const *direction_reference = &direction;
-	bool result = false;
+	long result = 0;
 	if (index < 0 || index >= *(long *)((byte *)pathfinding + 8))
-		return result;
+		return result != 0;
 	vector3f edge_normal;
 	if (!function_29d740(&edge_normal, pathfinding, index))
-		return result;
+		return result != 0;
 	vector3f local_direction;
 	if (*direction_reference)
 	{
@@ -136,5 +136,5 @@ bool function_29d7b0(long index, s_pathfinding_data *pathfinding, s_type_d4fbfa 
 		if (point)
 			*point = projected;
 	}
-	return result;
+	return result != 0;
 }
