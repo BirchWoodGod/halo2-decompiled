@@ -134,7 +134,8 @@ void function_188cd0(void)
 	{
 		long local_0 = function_2197f0(0.0f);
 		_ReadWriteBarrier();
-		function_221980("", local_0, 1.0f);
+		long const &value = local_0;
+		function_221980("", value, 1.0f);
 		local_0 = function_2197f0(g_45dc5c);
 		_ReadWriteBarrier();
 		function_221980("ambient_nature", local_0, 1.0f);
@@ -154,7 +155,8 @@ void function_188d60(void)
 	{
 		long local_0 = function_2197f0(0.0f);
 		_ReadWriteBarrier();
-		function_221980("", local_0, 0.0f);
+		long const &value = local_0;
+		function_221980("", value, 0.0f);
 		local_0 = function_2197f0(g_45dbc0);
 		_ReadWriteBarrier();
 		function_221980("", local_0, 2.0f);

@@ -759,7 +759,10 @@ bool sound_voice_promotion_enabled(short voice_index)
 		char promotion_index = sound_definition_get(sound->definition_index)->promotion_index;
 
 		if ((promotion_index < 0 ? 0 : (promotion_index > 0x35 ? 0x35 : promotion_index)) == promotion_index)
-			result = !TEST_FIELD_BIT(((s_sound_promotion_flags *)function_221810(promotion_index))->disabled);
+		{
+			short const &argument = promotion_index;
+			result = !TEST_FIELD_BIT(((s_sound_promotion_flags *)function_221810(argument))->disabled);
+		}
 	}
 	return result;
 }
