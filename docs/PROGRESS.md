@@ -2,6 +2,80 @@
 
 The newest entry comes first.
 
+## 2026-10-14: 8690 functions match
+
+```
+matched 8690 of 11318 game functions (1158069 of 2784283 bytes, 41.59%)
+```
+
+3 new matches, none lost:
+- Machine 1's key lane round 25: a new `adjustor` marker kind in `tools/build.py` for the compiler's this-adjustor thunks; with it `0x278b30`, `0x1c58d0` and `0x1c58e0` match.
+
+## 2026-10-14: 8687 functions match
+
+```
+matched 8687 of 11318 game functions (1158045 of 2784283 bytes, 41.59%)
+```
+
+3 new matches, none lost:
+- Machine 1's key lane round 24: machine 3's `0x2a2ce0`, `0x2a2d40` and `0x2a2da0` match (lent for the round); `0x5efd0` goes from 75 to 68.
+
+## 2026-10-14: 8684 functions match
+
+```
+matched 8684 of 11318 game functions (1157790 of 2784283 bytes, 41.58%)
+```
+
+6 new matches, none lost:
+- Machine 3's batch 35 (#481): `0x16a30`, `0x2c788a`, `0x189060`, `0x189340`, `0x28d840` and `0x27a100` match; `0x27a100` through @BirchWoodGod's approved `0x11dd80` parameter order, and their approved `0x122db0` order is in too.
+
+## 2026-10-14: 8678 functions match
+
+```
+matched 8678 of 11318 game functions (1156097 of 2784283 bytes, 41.52%)
+```
+
+4 new matches, none lost:
+- Machine 1's key lane round 22: `0x94310`, `0x94330`, `0xa9ef0` and `0x2789b0` are written and match; `0x2c8a0` goes from 64 to 26.
+
+## 2026-10-14: 8674 functions match
+
+```
+matched 8674 of 11318 game functions (1155938 of 2784283 bytes, 41.52%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 34 (#480): `0x23b8e0`, `0x23b3f0` and `0x2b3a9d` match, plus two Havok library functions; `0x2ca284` gets its first body.
+
+## 2026-10-14: 8671 functions match
+
+```
+matched 8671 of 11318 game functions (1154472 of 2784283 bytes, 41.46%)
+```
+
+9 new matches, none lost:
+- @BirchWoodGod's #474 (unit and biped update code): `0xe5300`, `0xe56f0`, `0xe5750`, `0xe57e0`, `0xe5930` and `0xe63b0` match, and with them their callers `0xea7c0`, `0xeaeb0` and `0xeb340`.
+
+## 2026-10-14: 8662 functions match
+
+```
+matched 8662 of 11318 game functions (1153269 of 2784283 bytes, 41.42%)
+```
+
+3 new matches, none lost:
+- Machine 3's batch 33 (#478): `0x69b50`, `0x57d60` and `0x26e180` match.
+- Machine 1's key lane round 21: `0x2c8a0` goes from 71 to 64.
+
+## 2026-10-14: 8659 functions match
+
+```
+matched 8659 of 11318 game functions (1152199 of 2784283 bytes, 41.38%)
+```
+
+4 new matches, none lost:
+- Machine 3's batch 32 (#477): `0x3d2c0`, `0xb2fc0`, `0x273040` and `0x28cb70` match.
+- A GitHub Actions workflow now runs the Python tests on pull requests and on main (#476).
+
 ## 2026-10-14: 8655 functions match
 
 ```

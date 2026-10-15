@@ -75,7 +75,8 @@ void __stdcall function_39e50(real step)
     vector3f axis1 = g_485618.up;
     matrix3x3 first, second;
     rotation_from_axis(&axis0, (double)step * 0.5f, &first);
-    rotation_from_axis(&axis1, (double)step * 0.30000001192092896f, &second);
+    axis0 = axis1;
+    rotation_from_axis(&axis0, (double)step * 0.30000001192092896f, &second);
     vector3f forward = g_467104.forward;
     vector3f left = g_467104.left;
     vector3f up = g_467104.up;
@@ -2901,7 +2902,13 @@ void function_0497a0(s_view_source *source, s_view_result *result, s_view_camera
 bool function_1650a0(s_view const *view, point3f const *point, s_bounds3d *bounds, real radius);
 struct short_rect { short v0, v1, v2, v3; };
 struct short_rect_pair { short_rect a, b; };
-extern short_rect_pair g_485a8a;
+struct s_unknown_485a88
+{
+    byte flag;
+    short_rect_pair rects;
+};
+extern s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 
 PRIVATE __forceinline real clamp_4a1e0(real value, real lower, real upper)
 {
@@ -3822,9 +3829,9 @@ void __stdcall function_2bcd0(long frame_mode, long draw_ui, bool world_effects,
     long context_mode, long filter_mode, real transition)
 {
     s_depth_parameters_13450 parameters = zero_orchestration_parameters();
-    parameters.identifier = ++g_4ba03c;
-    parameters.mode = filter_mode;
     parameters.distance = transition;
+    parameters.mode = filter_mode;
+    parameters.identifier = ++g_4ba03c;
     function_13450(&parameters);
     if (!function_289e0() && !function_159610())
     {

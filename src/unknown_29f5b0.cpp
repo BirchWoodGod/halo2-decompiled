@@ -2974,11 +2974,10 @@ void __stdcall function_2a2ce0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	s_type_f4462a *definition = function_xca4acb(function_index);
-	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
+	long volatile *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		long unit = arguments[0];
-		*(bool *)&result = function_1fb360(unit, (word)arguments[1], 0);
+		*(bool *)&result = function_1fb360(arguments[0], (word)arguments[1], 0);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -2991,11 +2990,10 @@ void __stdcall function_2a2d40(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	s_type_f4462a *definition = function_xca4acb(function_index);
-	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
+	long volatile *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		long unit = arguments[0];
-		*(bool *)&result = function_1fb360(unit, (word)arguments[1], 8);
+		*(bool *)&result = function_1fb360(arguments[0], (word)arguments[1], 8);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -3008,11 +3006,10 @@ void __stdcall function_2a2da0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	s_type_f4462a *definition = function_xca4acb(function_index);
-	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
+	long volatile *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		long unit = arguments[0];
-		*(bool *)&result = function_1fb360(unit, (word)arguments[1], 0x10);
+		*(bool *)&result = function_1fb360(arguments[0], (word)arguments[1], 0x10);
 		function_209ae0(thread_index, result);
 	}
 }

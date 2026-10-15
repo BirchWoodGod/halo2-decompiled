@@ -1560,8 +1560,8 @@ long function_152a50(s_loadout_state_152a50 const *state, long owner_index, bool
 
 #include <math.h>
 byte function_150380(long player_index);
-void __stdcall function_e64e0(vector3f const *move, vector3f const *forward, bool flag,
-    vector3f *output, long mode);
+void function_e64e0(vector3f const *reference, vector3f const *direction, vector3f const *fallback,
+    bool three_dimensional, vector3f *result, short *axis_index);
 
 struct s_xy_150400 { real i; real j; };
 
@@ -1589,7 +1589,7 @@ void function_150400(long player_index, vector3f const *forward, vector3f const 
         world.i = axes.left.i * move_j + scaled_i;
         world.j = axes.left.j * move_j + scaled_j;
         world.k = axes.left.k * move_j + scaled_k;
-        function_e64e0(&world, *local_41f0cc_2, false, &facing, 0);
+        function_e64e0(&world, *local_41f0cc_2, (vector3f const *)(unit + 0x70), false, &facing, NULL);
         function_1502e0(&facing, (vector3f const *)(unit + 0x70), &axes);
         xy.i = axes.forward.j * world.j + axes.forward.k * world.k + axes.forward.i * world.i;
         xy.j = axes.left.k * world.k + axes.left.j * world.j + axes.left.i * world.i;

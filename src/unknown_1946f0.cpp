@@ -70,15 +70,35 @@ void function_194c10(s_bitstream *stream, vector3f const *vector, real lo, real 
 		function_194830(stream, true);
 }
 
+/* the direction an index names: a 64 x 64 grid point on one face of the
+   direction table */
+static __forceinline void decode_direction_194d30(long index, vector3f *direction)
+{
+	real x = (real)(index & 0x3f) * (1.f / 63.f);
+	real y = (real)((index >> 6) & 0x3f) * (1.f / 63.f);
+	s_direction_face const *face = &g_475480[index >> 12];
+	x = x * 2.f;
+	y = y * 2.f;
+	real z = 0.f;
+	if (face->scale != 1.f)
+	{
+		x = face->scale * x;
+		y = face->scale * y;
+		z = face->scale * z;
+	}
+	direction->i = z * face->axes[2].i + y * face->axes[1].i + x * face->axes[0].i + face->origin.i;
+	direction->j = z * face->axes[2].j + y * face->axes[1].j + x * face->axes[0].j + face->origin.j;
+	direction->k = z * face->axes[2].k + y * face->axes[1].k + x * face->axes[0].k + face->origin.k;
+}
+
 // @retail 0x194d30
 void function_194d30(s_bitstream *stream, vector3f const *up, vector3f const *forward)
 {
 	vector3f direction;
-	vector3f const *default_forward = g_4687b0;
-	if (!(fabs(forward->i - default_forward->i) < k_real_epsilon && fabs(forward->j - default_forward->j) < k_real_epsilon && fabs(forward->k - default_forward->k) < k_real_epsilon))
+	if (!(fabs(forward->i - g_4687b0->i) < k_real_epsilon && fabs(forward->j - g_4687b0->j) < k_real_epsilon && fabs(forward->k - g_4687b0->k) < k_real_epsilon))
 	{
-		function_194830(stream, false);
 		long index = function_24f590(forward);
+		function_194830(stream, false);
 		if ((dword)index >= k_direction_limit)
 		{
 			char message[256];
@@ -86,27 +106,13 @@ void function_194d30(s_bitstream *stream, vector3f const *up, vector3f const *fo
 			csprintf_256(message, "%u exceeds max value of %u", index, k_direction_limit);
 		}
 		function_195720(stream, index, k_direction_bits);
-		{
-			s_direction_face const *face = &g_475480[index >> 12];
-			real x = (real)(index & 0x3f) * (1.f / 63.f) * 2.f;
-			real y = (real)((index >> 6) & 0x3f) * (1.f / 63.f) * 2.f;
-			real z = 0.f;
-			if (face->scale != 1.f)
-			{
-				x = face->scale * x;
-				y = face->scale * y;
-				z = face->scale * z;
-			}
-			direction.i = z * face->axes[2].i + y * face->axes[1].i + x * face->axes[0].i + face->origin.i;
-			direction.j = z * face->axes[2].j + y * face->axes[1].j + x * face->axes[0].j + face->origin.j;
-			direction.k = z * face->axes[2].k + y * face->axes[1].k + x * face->axes[0].k + face->origin.k;
-		}
+		decode_direction_194d30(index, &direction);
 		normalize3d(&direction);
 	}
 	else
 	{
 		function_194830(stream, true);
-		direction = *default_forward;
+		direction = *g_4687b0;
 	}
 	real angle = function_1949b0(&direction, up);
 	real v = (angle - -k_pi) * 40.42535400390625f;

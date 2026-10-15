@@ -2029,7 +2029,7 @@ void function_18e80(s_shader_constant_state *state)
 }
 
 extern s_record_pool *g_509434;
-extern long g_4c1bd0;
+#include "target_cache_storage.h"
 
 // @retail 0x3d270
 void function_3d270(void)
@@ -2940,7 +2940,13 @@ struct short_rect_pair
 {
     struct { short v0, v1, v2, v3; } a, b;
 };
-extern short_rect_pair g_485a8a;
+struct s_unknown_485a88
+{
+    byte flag;
+    short_rect_pair rects;
+};
+extern s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 
 s_runtime_device_configuration g_runtime_device_configuration;
 long g_467008, g_46700c;
@@ -7845,7 +7851,7 @@ void texture_cache_initialize();
 void function_020eb0();
 extern dword g_468848[256];
 extern long g_4b72c0;
-byte g_485a88;
+#define g_485a88 (g_unknown_485a88.flag)
 long g_4670f8;
 point3f g_4b72b4;
 

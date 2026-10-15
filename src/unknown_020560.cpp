@@ -585,8 +585,14 @@ void function_020f30(real b, real a)
 
     if (a > 0.0f)
     {
-        real x = (a + 1.0f) * 0.5f;
-        x = PIN(x, 0.0f, 1.0f);
+        real value = (a + 1.0f) * 0.5f;
+        real x;
+        if (value < 0.0f) x = 0.0f;
+        else
+        {
+            x = 1.0f;
+            if (!(value > 1.0f)) x = value;
+        }
         real scale = 255.0f;
         long v = 0;
         __asm
@@ -1421,9 +1427,10 @@ long function_211a0(long source, real passes, real distortion, real falloff,
                 configure_filter_textures(source);
                 function_34a90(target, 10, 0x1010101, false, false,
                     1.0f, fraction * distortion, 1.0f, 4, (bool)(byte)full_surface, false);
-                source = target;
+                long next_source = target;
                 target = alternate;
-                alternate = source;
+                alternate = next_source;
+                source = next_source;
             }
             distortion *= growth;
             pass += 1.0f;
@@ -1540,7 +1547,7 @@ void function_14bc0(short index, short element, bool use_depth);
 void __stdcall function_214f0(real passes, real distortion, real strength, real falloff,
     real scale, bool blend, bool preserve)
 {
-    struct { real first, second, alpha_scale, alpha; color4f color; } values;
+    struct { real first, second, alpha; color4f color; } values;
     values.first = 1.0f;
     values.second = 0.4f;
     if (g_510c50 && ((byte *)g_510c50)[5])
@@ -1612,13 +1619,13 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         g_484f68.PSAlphaOutputs[3] = 0x10d00;
         // Retail clears the values.alpha conversion slot before rounding.
         values.alpha = 0.0f;
-        values.alpha_scale = 255.0f;
+        values.color.red = 255.0f;
         long &packed = *(long *)&distortion;
         packed = 0;
         __asm
         {
             fld values.alpha
-            fld values.alpha_scale
+            fld values.color.red
             fmulp st(1), st(0)
             fistp distortion
         }

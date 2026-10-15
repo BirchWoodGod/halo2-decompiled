@@ -124,7 +124,9 @@ long c_handle_table_450cd0::v1(long a1, long max_count, void *output)
 					out->index = index;
 					out->unknown04 = priority;
 					out->unknown0c = type;
-					out->size = (handles_count > 1 ? 2 : 0) + size + 14 * handles_count + 3;
+					out->size = size + 14 * handles_count + 3;
+					if (handles_count > 1)
+						out->size += 2;
 					out++;
 					count++;
 				}
@@ -694,8 +696,8 @@ void c_handle_table_450cd0::v8(long handle, bool flag)
 			{
 				long item_handle = item->handle;
 				s_handle_item *next_item = item->next;
-				long index = item_handle & 0x3ff;
-				s_handle_peer *peer = &table->peers[index];
+				long offset = (item_handle & 0x3ff) * sizeof(s_handle_peer);
+				s_handle_peer *peer = (s_handle_peer *)((byte *)table->peers + offset);
 				if (item->kind == 1)
 				{
 					if (!flag)
@@ -718,10 +720,11 @@ void c_handle_table_450cd0::v8(long handle, bool flag)
 					function_99690(this, item_handle, 0);
 					peer->mask &= ~(1 << shift);
 					s_handle_peers *peers = table;
-					if (peers->peers[index].mask == 0)
+					if (((s_handle_peer *)((byte *)peers->peers + offset))->mask == 0)
 					{
 						peers->owner->v12(item_handle);
-						peers->peers[index].flag0 = 0;
+						byte *flags = (byte *)peers->peers + offset;
+						*flags &= 0xfe;
 					}
 					unknown5038++;
 				}

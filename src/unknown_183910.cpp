@@ -146,10 +146,10 @@ bool function_183910(long arg_0, point3f const *arg_1, point3f *arg_2, vector3f 
    {
     s_18391a local_23;
     c_query_array_collector &local_10 = local_23.field_0;
-    local_10.maximum = FLT_MAX;
     local_10.entries.data = local_23.field_20;
     local_10.entries.capacity_and_flags = 0x80000008;
     local_10.entries.count = 0;
+    local_10.maximum = FLT_MAX;
     c_183911 **local_12 = &local_9->field_c;
     long local_13 = local_9->field_c->function_5();
     local_12 = &local_9r->field_c;

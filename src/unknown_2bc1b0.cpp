@@ -202,48 +202,43 @@ void function_1972a0(long player_index, long value14, long value10);
 void function_2bce70(long player_index);
 
 // @retail 0x2bc990
-// Retail reuses the incoming stack team slot for the ball's object pointer.
-void __stdcall function_2bc990(long volatile team_argument)
+void __stdcall function_2bc990(long team)
 {
-	long team = team_argument;
-	byte *const &entry = (byte *)function_15e410((short)team);
+	long const *team_reference = &team;
+	byte *entry = (byte *)function_15e410((short)*team_reference);
 	if (!entry || *(long *)entry == NONE) return;
 	long object_index = *(long *)entry;
-	team_argument = (long)*(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
-	byte *object = (byte *)team_argument;
-	volatile long maximum = g_510c54->field_2_3 * 40;
+	byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
+	dword maximum = g_510c54->field_2_3 * 40;
 	point3f position;
 	function_10da60(object_index, &position);
-	byte *state = (byte *)g_51ecc4;
 	if (*(long *)(entry + 0xc) == NONE && team_ball_away_from_home(team))
 	{
-		long ticks = *(short *)(state + team * 2 + 0x1e) + 1;
-		if ((dword)ticks > (dword)maximum) ticks = maximum;
-		*(short *)(state + team * 2 + 0x1e) = (short)ticks;
+		dword ticks = *(short *)(((byte *)g_51ecc4) + team * 2 + 0x1e) + 1;
+		if (ticks > maximum) ticks = maximum;
+		*(short *)(((byte *)g_51ecc4) + team * 2 + 0x1e) = (short)ticks;
 	}
-	else *(short *)(state + team * 2 + 0x1e) = 0;
+	else *(short *)(((byte *)g_51ecc4) + team * 2 + 0x1e) = 0;
 	byte *current = *(byte **)(g_4e0300->data + (*(long *)entry & 0xffff) * 12 + 8);
 	byte *definition = g_4e3b44[*(long *)current & 0xffff].bytes;
 	if (*(short *)(definition + 0x290) == 2 && !(object[0x12c] & 1) &&
-		((dword)*(short *)(state + team * 2 + 0x1e) >= (dword)maximum || function_162b90(*(long *)entry)) &&
+		((dword)*(short *)(((byte *)g_51ecc4) + team * 2 + 0x1e) >= (dword)maximum || function_162b90(*(long *)entry)) &&
 		*(long *)(object + 0x14) == NONE && (*(dword *)(object + 4) & 0x100))
 	{
 		s_event event;
 		game_engine_event_initialize_inline(&event, 4, 4);
 		function_19eb90(&event);
 		function_2bc340(team);
-		state = (byte *)g_51ecc4;
 	}
 	if (*(long *)(entry + 0xc) != NONE)
 	{
-		char &timer = *(char *)(state + team + 0x18);
+		char &timer = *(char *)(((byte *)g_51ecc4) + team + 0x18);
 		if (timer != NONE && --timer <= 0)
 		{
 			function_1972a0(*(long *)(entry + 0xc), 3, *(short *)(entry + 4));
 			function_2bce70(*(long *)(entry + 0xc));
-			state = (byte *)g_51ecc4;
-			state[team + 0x18] = (byte)g_510c54->field_2_3;
-			char &count = *(char *)(state + team + 0x1b);
+				((byte *)g_51ecc4)[team + 0x18] = (byte)g_510c54->field_2_3;
+			char &count = *(char *)(((byte *)g_51ecc4) + team + 0x1b);
 			++count;
 			function_15b930(*(long *)(entry + 0xc), function_15eaf0(), 0x17, 1);
 			if (count % 5 == 0)
@@ -255,7 +250,7 @@ void __stdcall function_2bc990(long volatile team_argument)
 			}
 		}
 	}
-	else state[team + 0x1b] = 0;
+	else ((byte *)g_51ecc4)[team + 0x1b] = 0;
 }
 
 // @retail 0x2bce70

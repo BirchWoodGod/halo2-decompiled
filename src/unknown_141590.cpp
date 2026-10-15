@@ -11,13 +11,6 @@
 
 vector3f *function_11d000(vector3f const *v, vector3f *out);
 
-__inline void real_point3d_set(point3f *point, real x, real y, real z)
-{
-	point->x = x;
-	point->y = y;
-	point->z = z;
-}
-
 // @retail 0x141590
 void function_141590(
 	transform4x3f const *in,

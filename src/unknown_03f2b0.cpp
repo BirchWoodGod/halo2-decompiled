@@ -87,7 +87,6 @@ c_allocator *function_46220(void)
 	return g_480118;
 }
 
-long g_4c1bd4;
 
 struct s_render_object_header
 {
@@ -1447,7 +1446,7 @@ __declspec(noinline) void function_4c640(long object_index, signed char value);
 extern s_record_pool *g_509434;
 extern long g_4ba050;
 long __stdcall function_3ddd0(long object_index);
-extern long g_4c1bd0, g_4ba01c;
+extern long g_4ba01c;
 extern bool g_4ba019;
 extern byte *g_485a80;
 bool object_or_parent_hidden(long object_index);

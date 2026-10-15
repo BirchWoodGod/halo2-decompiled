@@ -15,7 +15,6 @@ byte g_4c5018[0x6a8];
 extern long g_4ba134;
 extern long g_4b9970[12];
 extern byte g_5093fc;
-long g_4c1bd0;
 
 bool object_or_parent_hidden(long object_index);
 
@@ -250,7 +249,6 @@ void function_3d2c0()
 #endif
 
 
-extern long g_4c1bd4;
 struct s_first_person_model;
 struct s_unknown_78;
 extern s_unknown_78 *g_510c6c;

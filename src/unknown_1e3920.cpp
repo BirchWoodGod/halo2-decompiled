@@ -851,7 +851,6 @@ void __fastcall function_1e18f0(long actor_index, long old_weapon, long player_i
  long const *weapon_reference = &new_weapon;
  s_record_pool *objects = g_4e0300;
  s_tag_instance *definitions = g_4e3b44;
- byte *player = g_4e8c24->data + (*player_reference & 0xffff) * 0x21c;
  real old_value = 0.0f;
  real new_value = 0.0f;
  if (old_weapon != NONE)
@@ -865,6 +864,7 @@ void __fastcall function_1e18f0(long actor_index, long old_weapon, long player_i
   new_value = *(real *)(definitions[*(long *)object & 0xffff].bytes + 0x238);
  }
  long unit = actor_get(actor_index)->unknown018;
+ byte *player = g_4e8c24->data + (*player_reference & 0xffff) * 0x21c;
  if (new_value > old_value)
  {
   if (unit != NONE)

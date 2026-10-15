@@ -98,7 +98,7 @@ void title_name_get(wchar_t *name, long name_length, dword title_id);
 
 /* ---- data ---- */
 
-s_game_variant g_54e4a0;
+s_54e49c g_54e49c_storage;
 
 struct s_510c4c;
 extern s_510c4c *g_510c4c;
