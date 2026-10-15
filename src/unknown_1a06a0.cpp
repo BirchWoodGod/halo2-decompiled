@@ -208,7 +208,7 @@ bool function_1a0660(long file_index, s_player_profile *profile)
 	}
 }
 
-void __stdcall function_215900(long controller, long type, word *capacity, long *indices, long include_cached);
+void __stdcall function_215900(long controller, long type, word *capacity, long *indices, bool include_cached);
 word *function_215b50(long file_index, word *name);
 
 // @retail 0x1a0560
@@ -222,7 +222,7 @@ bool function_1a0560(wchar_t const *name, s_player_profile_settings *settings, l
 		*file_index = NONE;
 	if (*name)
 	{
-		function_215900(255, 0, (word *)&count, indices, 1);
+		function_215900(255, 0, (word *)&count, indices, true);
 		for (long index = 0; index < (word)count; index++)
 		{
 			wchar_t const *local_1 = (wchar_t *)function_215b50(indices[index], (word *)local_0);

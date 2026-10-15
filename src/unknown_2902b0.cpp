@@ -287,8 +287,8 @@ void __stdcall function_2902b0(long arg_0, long arg_1, long arg_2, long arg_3,
 			long weapon_index = function_cbd50(unit_index, (char)object_data_get(unit_index)[0x212]);
 			if (weapon_index != NONE)
 			{
-				byte *weapon_definition = g_4e3b44[*(long *)object_data_get(weapon_index) & 0xffff].bytes;
-				if (*(long *)(weapon_definition + 0x2f4) != NONE)
+				byte *weapon_tag = g_4e3b44[*(long *)object_data_get(weapon_index) & 0xffff].bytes;
+				if (*(long *)(weapon_tag + 0x2f4) != NONE)
 					actor->field_22a = true;
 			}
 		}

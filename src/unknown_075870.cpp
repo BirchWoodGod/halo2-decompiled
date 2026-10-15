@@ -1628,14 +1628,15 @@ bool function_79de0(s_network_observer *observer, long index, bool *exhausted_ou
 	bool exhausted = false;
 	bool changed = false;
 	long increase = observer_round(channel->budget * *(real *)((byte *)observer->configuration + 0x190));
-	long step = *(long *)((byte *)observer->configuration + 0x18c);
-	if (increase <= step) step = increase;
+	long minimum_step = *(long *)((byte *)observer->configuration + 0x18c);
+	long step = increase <= minimum_step ? increase : minimum_step;
 	long cap = *(long *)((byte *)observer->configuration + 0x150);
 	budget_limit = channel->budget + step;
 	if (budget_limit > cap) budget_limit = cap;
 	bool can_raise_budget = budget_limit > channel->budget;
-	real amount = 0.0f;
+	real amount;
 	if (channel->rate > 0.0f) amount = (real)channel->budget / (channel->rate * 8.0f);
+	else amount = 0.0f;
 	long burst_limit = channel->burst + (long)amount;
 	bool can_raise_burst = burst_limit > channel->burst;
 	real rate_limit = network_observer_rate_above(observer, channel->rate, channel->callback_inactive);

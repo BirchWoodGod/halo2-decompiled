@@ -244,7 +244,7 @@ bool __stdcall function_2163d0(long first, long second, void const *context)
 }
 
 // @retail 0x215900
-void __stdcall function_215900(long controller, long type, word *capacity, long *indices, long include_cached)
+void __stdcall function_215900(long controller, long type, word *capacity, long *indices, bool include_cached)
 {
 	(void)&controller;
 	(void)&type;
@@ -284,22 +284,18 @@ void __stdcall function_215900(long controller, long type, word *capacity, long 
 					}
 				} while (count < *capacity);
 			}
-			if (controller == 0xff)
-				unit++;
-			else
+			switch (controller)
 			{
-				switch (controller)
-				{
-				case NONE: unit++; break;
-				case 0: unit = pass + 1; break;
-				case 1: unit = pass + 3; break;
-				case 2: unit = pass + 5; break;
-				case 3: unit = pass + 7; break;
-				default: __assume(0); break;
-				}
+			case 0: unit = pass + 1; break;
+			case 1: unit = pass + 3; break;
+			case 2: unit = pass + 5; break;
+			case 3: unit = pass + 7; break;
+			case NONE:
+			case 0xff: unit++; break;
+			default: __assume(0); break;
 			}
 		}
-		if ((byte)include_cached)
+		if (include_cached)
 		{
 			s_cached_location_table *files = (s_cached_location_table *)g_51ea14;
 			long cached_count = files->count;
