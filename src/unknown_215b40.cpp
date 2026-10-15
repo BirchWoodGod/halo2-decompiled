@@ -347,13 +347,14 @@ bool __stdcall function_212c20(word const *name, s_game_variant *variant, long *
 	{
 		for (long type = 1; type <= 9 && !result; type++)
 		{
+			word candidate[0x80];
 			long indices[0x1000];
 			long capacity = 0x1000;
-			word candidate[0x100];
 			function_215900(0xff, type, (word *)&capacity, indices, true);
 			for (long index = 0; index < (word)capacity; index++)
 			{
-				if (!_wcsicmp(function_215b50(indices[index], candidate), name))
+				word const *candidate_name = function_215b50(indices[index], candidate);
+				if (!_wcsicmp(candidate_name, name))
 				{
 					result = true;
 					if (variant)
@@ -367,7 +368,7 @@ bool __stdcall function_212c20(word const *name, s_game_variant *variant, long *
 	}
 	else if (variant)
 	{
-		function_19d220(variant, 0);
+		variant_defaults_initialize(variant, 0);
 		result = true;
 	}
 	return result;
