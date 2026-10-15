@@ -2167,7 +2167,8 @@ void c_controller_settings_edit_list::handle_item(s_controller_reference **contr
 		s_screen_parameters parameters;
 
 		parameters.field_c = 0;
-		function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 5, 4, 0);
+		long const &controller_mask = 1 << (*controller)->controller_index;
+		function_149f49((s_message *)&parameters, 0, 0, controller_mask, 5, 4, 0);
 		switch (index)
 		{
 		case 0:
