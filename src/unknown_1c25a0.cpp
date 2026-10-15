@@ -1591,7 +1591,7 @@ struct c_contact_query_bounds_info
     byte unknown18[8];
     hkVector4 lower, upper;
     c_contact_query_bounds_info();
-    ~c_contact_query_bounds_info()
+    __forceinline ~c_contact_query_bounds_info()
     {
         if (!(properties.capacity_and_flags & 0x80000000))
             g_480118->allocate((long)properties.data, (properties.capacity_and_flags & 0x7fffffff) * 8, 0x12);
