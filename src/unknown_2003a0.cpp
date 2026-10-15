@@ -2597,39 +2597,35 @@ PRIVATE __forceinline s_squad_datum *function_201c83(s_squad_record_iterator *ar
 void function_201c80(void)
 {
     long local_0 = g_510c54->game_time;
-    struct s_201c82
-    {
-        long field_0;
-        long field_4;
-        volatile long field_8;
-        volatile long field_c;
-    } local_8;
-    local_8.field_8 = local_0;
+    long period_once;
+    long period_twice;
+    long time_copy = local_0;
+    long period_half;
     real local_6 = (real)g_510c54->field_2_3;
     __asm
     {
         fld local_6
-        fistp local_8.field_0
+        fistp period_once
     }
     local_6 = (real)g_510c54->field_2_3 * 2.0f;
     __asm
     {
         fld local_6
-        fistp local_8.field_4
+        fistp period_twice
     }
     local_6 = (real)g_510c54->field_2_3 * 0.5f;
     __asm
     {
         fld local_6
-        fistp local_8.field_c
+        fistp period_half
     }
-    if (local_0 % local_8.field_0 == 0)
+    if (local_0 % period_once == 0)
     {
         function_201df0();
         function_201ea0();
         function_202370();
     }
-    if (local_0 % local_8.field_4 == 10)
+    if (local_0 % period_twice == 10)
     {
         function_2024c0();
         function_202720();
@@ -2643,7 +2639,7 @@ void function_201c80(void)
     while (function_201c83(&local_4))
     {
         long local_5 = local_4.squad_index;
-        if (((word)local_5 + local_8.field_8) % local_8.field_c == 0 && *(signed char *)((byte *)local_4.squad + 2) < 0)
+        if (((word)local_5 + time_copy) % period_half == 0 && *(signed char *)((byte *)local_4.squad + 2) < 0)
             function_203360(local_5);
     }
     function_201df0();
