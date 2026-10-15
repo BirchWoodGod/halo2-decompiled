@@ -62,7 +62,7 @@ struct s_tag_element_53
 };
 
 long function_1469f0(real seconds);
-void __stdcall function_1f4280(long actor_index);
+bool __stdcall function_1f4280(long actor_index);
 real function_30bf0(vector3f *v);
 bool __stdcall function_1ab770(long actor_index, s_slot *slot);
 bool function_25d9b0(long prop_index);

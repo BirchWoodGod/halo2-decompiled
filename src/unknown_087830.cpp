@@ -365,5 +365,6 @@ bool function_87e90(s_bitstream *stream, void *message)
  *(bool *)(block + 0x403c) = stream_read_bit(stream);
  *(dword *)(block + 0x4040) = function_1959c0(stream, 32);
  *(dword *)(block + 0x4044) = function_1959c0(stream, 32);
- return result && !stream_overflowed(stream) && *(long *)(block + 0x4040) >= 0 && *(long *)block >= 0;
+ result = result && !stream_overflowed(stream) && *(long *)(block + 0x4040) >= 0 && *(long *)block >= 0;
+ return result;
 }

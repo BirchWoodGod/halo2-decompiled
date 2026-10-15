@@ -213,7 +213,7 @@ long function_257e70(long script_index);
 long function_257fa0(long actor_index, short script_index, long thread_index);
 long function_258040(long actor_index, short script_index, long thread_index);
 
-void __stdcall function_1f4280(long actor_index);
+bool __stdcall function_1f4280(long actor_index);
 long function_209520(short script_index);
 void function_267770(long prop_index, long actor_index);
 
