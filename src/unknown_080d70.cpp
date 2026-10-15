@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 #include "unknown_11c920.h"
 #include "unknown_2312b4.h"
 
@@ -17,7 +18,7 @@ struct s_player_configuration_cache_entry
 		dword field_64;
 	};
 };
-extern s_player_configuration_cache_entry g_4cf98c[350];
+
 
 struct s_cache_property
 {

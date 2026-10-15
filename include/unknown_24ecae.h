@@ -98,7 +98,7 @@ extern real g_4e69c0[4];
 
 struct s_float_rect;
 struct s_widget_quad_2b11;
-void function_22a664(s_float_rect const *, s_widget_quad_2b11 const *, long, long, long);
+void function_22a664(s_widget_quad_2b11 const *, s_float_rect const *, long, long, long);
 void function_1392c5(long);
 
 #endif
