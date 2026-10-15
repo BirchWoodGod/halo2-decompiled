@@ -1,4 +1,5 @@
 #include "filter_storage.h"
+#include "material_records_storage.h"
 #include "render_source_storage.h"
 #include "visibility_storage.h"
 #include "camera_storage.h"
@@ -3425,37 +3426,6 @@ void function_0494b0(real const *bounds, real const *clip);
 void function_40e90(long mode);
 
 extern long g_4ba134, g_4c19ac;
-struct s_2cb30_state
-{
-	byte unknown00[0x2a78];
-	long active;
-};
-
-struct s_2cb30_entry
-{
-	dword values[9];
-};
-
-struct s_2cb30_globals
-{
-	long current;
-	long previous;
-	s_2cb30_state *state;
-	union
-	{
-		byte unknown0c[0x9b0 - 0xc];
-		struct
-		{
-			byte weights[850];
-			byte material_indices[850];
-			long materials[192];
-		};
-	};
-	long count;
-	s_2cb30_entry entries[32];
-	long entry_count;
-};
-extern s_2cb30_globals g_4c0b78;
 
 PRIVATE __forceinline void draw_source_pass_r18(long group, long mode, bool extra_enabled, bool depth, bool normal_cull, long target, bool filter)
 {

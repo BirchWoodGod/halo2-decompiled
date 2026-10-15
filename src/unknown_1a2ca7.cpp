@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O1 /Ob1 /Oi /arch:SSE /Gr
 /* UNKNOWN_1A2CA7.CPP: the screen that waits for an online task (vtable
    0x4549c0: it shows the task's title and description and calls back when
@@ -1056,7 +1057,7 @@ long online_team_members_enumerate(long controller_index, XUID const *team);
 long function_75870(void);
 bool player_configuration_cache_next_recent_player(s_recent_player *player, long *iterator);
 extern dword g_54d5b8;
-extern long g_4cf984;
+
 
 /* creates the lists of the controller's friends and team members and starts
    the tasks that fill them */

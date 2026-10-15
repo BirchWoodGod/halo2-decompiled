@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 
@@ -64,8 +65,8 @@ s_game_proc_table_557c6c *g_557c6c;
 c_data_allocator *g_510c2c;
 s_record_pool *g_4e0338;
 s_record_pool *g_4e0320;
-s_record_pool *g_4cf8d8;
-bool g_4cf8d4;
+
+
 s_record_pool *g_502414;
 s_player_slot g_54e8e0[16];
 s_random_globals *g_4e7408;
