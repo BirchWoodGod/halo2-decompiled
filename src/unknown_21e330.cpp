@@ -1021,7 +1021,7 @@ void function_21ec00(void)
 
 	DirectSoundDoWork();
 
-	for (long i = 0; i < SOUND_DRIVER_GLOBALS->channel_count; i++)
+	for (long i = 0; i < SOUND_DRIVER_GLOBALS->channel_count; )
 	{
 		s_sound_stream *stream = sound_driver_channel_get(i);
 
@@ -1037,21 +1037,26 @@ void function_21ec00(void)
 			}
 		}
 
-		/* retail keeps a jump table here whose four cases are all empty;
-		   no source shape for it found yet */
 		switch (((s_sound_stream const volatile *)stream)->state)
 		{
 		case 0:
 			stream = function_21ec01(stream);
+			i++;
 			break;
 		case 1:
 			stream = function_21ec02(stream);
+			i++;
 			break;
 		case 2:
 			stream = function_21ec03(stream);
+			i++;
 			break;
 		case 3:
 			stream = function_21ec04(stream);
+			i++;
+			break;
+		default:
+			i++;
 			break;
 		}
 	}
