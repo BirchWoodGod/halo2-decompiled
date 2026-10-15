@@ -2021,7 +2021,7 @@ struct s_114c60
 
 void sound_choose_permutation(long arg_0, s_sound_permutation_reference *arg_1, bool *arg_2);
 long function_1891d0(long arg_0, long arg_1, s_sound_label_play const *arg_2);
-void __stdcall function_20d570(long arg_0, short arg_1, long arg_2, void *arg_3);
+void __stdcall function_20d570(short arg_1, long arg_0, long arg_2, void *arg_3);
 void function_20fd50(long arg_0, long arg_1);
 
 // @retail 0x114c60
@@ -2091,14 +2091,14 @@ void function_114c60(long arg_0)
         }
         if (*(short *)(local_1 + 0xc) > 0 && !*(short *)(local_1 + 0x4e) && !local_1[0x49])
         {
-            function_20d570(*(long *)(local_1 + 0x1c), *(short *)(local_1 + 0xe), arg_0, local_1 + 0x20);
+            function_20d570(*(short *)(local_1 + 0xe), *(long *)(local_1 + 0x1c), arg_0, local_1 + 0x20);
             local_1[0x49] = true;
         }
         if (*(short *)(local_1 + 0xc) > 0 && !*(short *)(local_1 + 0x4c) && !*(short *)(local_1 + 0x50))
         {
             if (!local_1[0x49])
             {
-                function_20d570(*(long *)(local_1 + 0x1c), *(short *)(local_1 + 0xe), arg_0, local_1 + 0x20);
+                function_20d570(*(short *)(local_1 + 0xe), *(long *)(local_1 + 0x1c), arg_0, local_1 + 0x20);
                 local_1[0x49] = true;
             }
             if (*(long *)(local_1 + 0x1c) != NONE)
