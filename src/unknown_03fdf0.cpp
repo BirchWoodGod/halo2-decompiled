@@ -131,24 +131,29 @@ void function_402b0(long cache_index, long mode)
         memcpy(g_4ba138 + first, entries, g_4c6b00[cache_index].count * sizeof(s_44940_entry));
         g_4c0b78.current += g_4c6b00[cache_index].count;
         dword selection = !mode ? ~0UL : mode == 2 ? 0x10 : 0x20;
-        for (long n = 0, index = first; n < g_4c6b00[cache_index].count; ++n, ++index)
+        long index = first;
+        for (long n = 0; n < g_4c6b00[cache_index].count; ++n, ++index, ++entries)
         {
-            s_44940_entry const *entry = &entries[n];
+            s_44940_entry const *entry = entries;
             if (!((entry->unknown00 & selection) & 0x1fffff) ||
                 !(entry->unknown00 & 1) || !entry->unknown10[0xa] || (entry->flags & 0x1f0) != 0x1f0) continue;
             byte weight = g_4c0b78.weights[index];
+            long shape = entry->flags & 0xf;
             byte material_index = g_4c0b78.material_indices[(short)index];
-            long material = material_index == 0xff ? NONE : g_4c0b78.materials[material_index];
+            long material = NONE;
+            if (material_index != 0xff)
+                material = g_4c0b78.materials[material_index];
             byte *geometry = (byte *)function_449e0((short)index, false, (bool)((entry->unknown00 >> 12) & 1));
             if (!geometry) continue;
             for (long part = 0; part < *(long *)geometry; ++part)
             {
                 s_render_part_context context;
-                if (function_45ce0((short)index, (byte *)&context, (short)part, (short)(entry->flags & 0xf)) &&
+                if (function_45ce0((short)index, (byte *)&context, (short)part, (short)shape) &&
                     function_460d0(*(dword const **)(entry->unknown10 + 4), (short)index, part))
                 {
-                    long const *material_source = material == NONE ? &context.material : &material;
-                    long chosen = *material_source;
+                    long chosen = context.material;
+                    if (material != NONE)
+                        chosen = material;
                     if (chosen != NONE)
                         function_41040((short)index, part, 1, weight, &context, chosen, true, ~0UL, 0);
                 }

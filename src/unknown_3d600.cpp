@@ -5,7 +5,6 @@
 #include "geometry_cache.h"
 #include "unknown_03bcb0.h"
 
-extern long g_4c1bd4;
 
 // @retail 0x3d600
 void function_3d600(void)

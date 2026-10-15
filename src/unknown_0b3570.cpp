@@ -164,8 +164,8 @@ void __stdcall function_0b2fc0(s_network_message_session_query const *message)
 	{
 		byte const *reply = (byte const *)message;
 		long free_index = NONE;
-		long replacement = NONE;
 		long match = NONE;
+		long replacement = NONE;
 		for (long i = 0; i < g_4d8ec4; i++)
 		{
 			byte *entry = (byte *)g_4d8ec8 + i * 0x784;
@@ -183,7 +183,7 @@ void __stdcall function_0b2fc0(s_network_message_session_query const *message)
 				*(short const *)(reply + 0xaa) < *(short *)(entry + 0x10e))
 				replacement = i;
 		}
-		long index = match != NONE ? match : free_index != NONE ? free_index : replacement;
+		long index = match != NONE ? match : (free_index != NONE ? free_index : (replacement != NONE ? replacement : NONE));
 		if (index != NONE)
 		{
 			byte *entry = (byte *)g_4d8ec8 + index * 0x784;
@@ -196,8 +196,8 @@ void __stdcall function_0b2fc0(s_network_message_session_query const *message)
 				g_4d8eb4.unknown01[0] = 1;
 			}
 			entry[0] = 1;
-			entry[0x44] = 1;
 			*(long *)(entry + 4) = search_time();
+			entry[0x44] = 1;
 		}
 	}
 }

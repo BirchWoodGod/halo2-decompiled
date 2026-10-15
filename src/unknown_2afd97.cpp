@@ -477,22 +477,28 @@ void c_widget_45ad18::place(s_widget_point *origin)
 	if (grid_definition->tag_index != NONE)
 	{
 		s_widget_group_definition *group = (s_widget_group_definition *)g_4e3b44[grid_definition->tag_index & 0xffff].bytes;
-		long rows = 1;
-  if (grid_definition->rows > 1) rows = grid_definition->rows;
 		long columns = 1;
-  if (grid_definition->columns > 1) columns = grid_definition->columns;
+		long rows = 1;
+
+		if (grid_definition->rows > 1)
+			rows = grid_definition->rows;
+		if (grid_definition->columns > 1)
+			columns = grid_definition->columns;
 		long column;
 		long row;
 
-		if (grid_definition->order != 0)
+		switch (grid_definition->order)
 		{
+		case 0:
+			row = index / columns;
+			column = index % columns;
+			break;
+		case 1:
 			column = index / rows;
 			row = index % rows;
-		}
-		else
-		{
-			column = index % columns;
-			row = index / columns;
+			break;
+		default:
+			__assume(0);
 		}
 		if (PIN(column, 0, columns - 1) == column && PIN(row, 0, rows - 1) == row)
 		{
