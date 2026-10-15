@@ -738,7 +738,7 @@ void function_133390(s_bit_vector_pool const *arg_1)
 	for (long local_2 = 0; local_2 < local_1->count; local_2++)
 	{
 		dword local_3 = function_1332f0(arg_1, local_1->shorts_b[(short)local_2]);
-		long local_4 = local_1->longs_a[(short)local_2];
+		long const &local_4 = local_1->longs_a[(short)local_2];
 		s_visible_cluster const *local_5 = &((s_visibility_bsp *)g_4e0348)->clusters[local_4];
 		point3f local_6;
 		local_6.x = (local_5->bounds[0][0] + local_5->bounds[0][1]) * 0.5f;
