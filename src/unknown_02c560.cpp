@@ -46,8 +46,7 @@ long g_4e9194;
 
 void function_2fd90(s_2f800_view const *view, box2f const *clip, byte *out);
 bool function_2f970(s_2f970_view const *view, real *out);
-void function_2f800(s_2f800_source const *source, s_2f800_size const *first,
-    s_2f800_size const *second, s_2f800_view *view);
+void function_2f800(s_2f800_view *view, s_2f800_source const *source, s_2f800_size const *first, s_2f800_size const *second);
 void function_12a50(s_frame_parameters_12a50 const *parameters);
 void __stdcall function_132d0(s_frame_view_2c560 const *frame);
 void function_13c20(void);
@@ -150,7 +149,7 @@ void function_2ca00(point3f const *position, t_aux_view_callback callback, void 
     if (position) source = position;
     frame.position = *source;
     frame.location = 1;
-    function_2f800(0, 0, 0, (s_2f800_view *)frame.view);
+    function_2f800((s_2f800_view *)frame.view, 0, 0, 0);
     memcpy(frame.view + 0x30, &g_485a8a, sizeof(g_485a8a));
     function_2fd90((s_2f800_view const *)frame.view, 0, frame.projection);
     s_frame_view_2c560 *saved = &g_4850d0[++g_46701c];

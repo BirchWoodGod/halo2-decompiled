@@ -1,4 +1,5 @@
 #include <string.h>
+#include "material_records_storage.h"
 #include "visibility_storage.h"
 #include "unknown_11c920.h"
 #include <xtl.h>
@@ -5980,18 +5981,6 @@ struct s_model_render_definition_2b
 };
 
 struct s_visibility_object_lists;
-struct s_2cb30_state;
-struct s_2cb30_entry { dword values[9]; };
-struct s_2cb30_globals
-{
-    long current, previous;
-    s_2cb30_state *state;
-    byte unknown0c[0x9b0 - 0xc];
-    long count;
-    s_2cb30_entry entries[32];
-    long entry_count;
-};
-extern s_2cb30_globals g_4c0b78;
 extern color3f *g_46871c;
 extern color4f *g_4686d8;
 static s_visibility_object_lists *const model_visibility_lists = (s_visibility_object_lists *)((byte *)g_547f88.lists - offsetof(s_bit_vector_pool, lists));

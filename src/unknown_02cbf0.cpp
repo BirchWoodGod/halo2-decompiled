@@ -20,37 +20,8 @@
 #include <xtl.h>
 #include "unknown_030290.h"
 
-struct s_2cb30_state
-{
-	byte unknown00[0x2a78];
-	long active;
-};
 
-struct s_2cb30_entry
-{
-	dword values[9];
-};
 
-struct s_2cb30_globals
-{
-	long current;
-	long previous;
-	s_2cb30_state *state;
-	union
-	{
-		byte unknown0c[0x9b0 - 0xc];
-		struct
-		{
-			byte weights[850];
-			byte material_indices[850];
-			long materials[192];
-		};
-	};
-	long count;
-	s_2cb30_entry entries[32];
-	long entry_count;
-};
-extern s_2cb30_globals g_4c0b78;
 
 struct s_bit_vector_pool;
 dword *function_1332b0(long bit_count, s_bit_vector_pool *data);

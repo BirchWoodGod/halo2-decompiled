@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Ob1 /Gr
 /* ONLINE_TASKS.CPP: the online tasks (the data array g_4cf78c, 24 tasks of
    0x14 bytes) (lane D) */
@@ -798,8 +799,8 @@ bool function_6d080(long controller, s_channel_message *result)
 
 #include "unknown_075870.h"
 
-extern s_network_observer *g_4cf8e4;
-extern bool g_4cf95c;
+
+
 void function_7f410(void);
 void transport_reset(void);
 long online_task_get_change_logon_status(s_type_9df9da *task);
