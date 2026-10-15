@@ -209,9 +209,9 @@ byte function_11f470(real lo, real hi, real value)
 
 // @retail 0x11f4f0
 void function_11f4f0(
-	long bits,
 	real const *in,
 	real_bounds const *ranges,
+	long bits,
 	long *out)
 {
 	long i = 0;
