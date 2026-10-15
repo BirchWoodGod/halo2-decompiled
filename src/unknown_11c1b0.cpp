@@ -27,11 +27,9 @@ struct s_11c1b0
 
 #define g_440df0 (*( s_11c1b0 const (*)[68])((byte const *)g_440dd8 + 0x18))
 
-// @retail 0x11c1b0
+// @retail 0x11c1b0 standard
 bool __stdcall function_11c1b0(short arg_0, bool arg_1)
 {
-    (void)&arg_0;
-    (void)&arg_1;
     short local_0 = g_4e6948->index;
     bool local_1 = false;
     if (arg_0 != NONE && (arg_0 < 0 || arg_0 >= *(long *)((byte *)g_4e0350 + 0x210)))
@@ -43,10 +41,11 @@ bool __stdcall function_11c1b0(short arg_0, bool arg_1)
         if (g_440df0[local_2].field_0)
             g_440df0[local_2].field_0(arg_0);
     }
+    short local_7 = local_0;
     if (local_0 != NONE && local_0 != arg_0)
     {
         function_137da0();
-        local_0 = g_4e6948->index;
+        local_7 = g_4e6948->index;
     }
     if (g_4686c4 != NONE && g_4686c4 != arg_0)
     {
@@ -86,7 +85,7 @@ bool __stdcall function_11c1b0(short arg_0, bool arg_1)
         g_4e0340 = *(s_slot_entry_list **)((byte *)g_4e0348 + 0x18);
         g_4e033c = (s_bsp3d *)g_4e0340;
     }
-    if (local_0 != arg_0)
+    if (local_7 != arg_0)
         function_137d40();
 local_5:
     g_4e6398 = g_485ab0;

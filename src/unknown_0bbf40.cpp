@@ -1094,7 +1094,7 @@ void function_bee60(long object_index)
         } while (--remaining);
     }
     dword flags = *(dword *)(object + 4) & ~0x10;
-    dword final_flags = flags & ~0x20;
+    dword const &final_flags = flags & ~0x20;
     *(volatile dword *)(object + 4) = flags;
     *(dword *)(object + 4) = final_flags;
 }
