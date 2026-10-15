@@ -22,11 +22,6 @@ class c_class_1473c9;
 
 
 
-// @stub 0x59570
-long function_59570(void)
-{
-	return 0;
-}
 
 
 

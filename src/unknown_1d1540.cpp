@@ -81,7 +81,7 @@ void function_1d1540(s_havok_component *arg_0)
  for (long local_1 = 0; local_1 < arg_0->rigid_bodies.size; ++local_1)
  {
   (void)&local_1;
-  hkRigidBody *local_2 = arg_0->rigid_bodies.data[local_1].rigid_body;
+  __declspec(align(16)) hkRigidBody *local_2 = arg_0->rigid_bodies.data[local_1].rigid_body;
   ((s_1d1540 *)local_2)->function_30be00(g_51eca8);
   if ((arg_0->unknown04 & 1) && !local_2->m_fixed && local_2->m_motion->getType() != 6)
   {
@@ -102,7 +102,7 @@ void function_1d1540(s_havok_component *arg_0)
    byte *local_7 = g_4e3b44[*(long *)(local_6 + 0x24) & 0xffff].bytes;
    if (*(real *)(local_7 + 8) != 1.0f || *(real *)(local_7 + 0xc) != 1.0f)
    {
-    __declspec(align(16)) s_314320 local_8;
+    s_314320 local_8;
     ((s_314450 *)local_3)->function_314450(&local_8);
     local_8.field_4 *= *(real *)(local_7 + 8);
     local_8.field_8 *= *(real *)(local_7 + 8);
