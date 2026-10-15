@@ -4546,45 +4546,44 @@ void function_1bbf0(long tag, long first, long second, long third, long fourth, 
 bool __stdcall function_16610(long tag, long stage, long wanted_pass, long variant,
     long target, bool copy)
 {
-    volatile bool result = false;
+    bool result = false;
     if (tag != NONE)
     {
         byte *definition = g_4e3b44[tag & 0xffff].bytes;
         byte *shader = g_4e3b44[*(long *)(definition + 4) & 0xffff].bytes;
         byte *tables = *(byte **)(shader + 0x5c);
-        if (*(long *)tables > 0)
+        // the first entry, its index clamped to the entry count
+        long entry_index = 0;
+        if (entry_index > *(long *)tables - 1)
+            entry_index = *(long *)tables - 1;
+        if (entry_index == 0)
         {
             byte *entry = *(byte **)(tables + 4);
             if (*(dword *)(entry + 2) & (1 << stage))
             {
                 word *passes = (word *)*(byte **)(tables + 0xc) + (*(word *)entry & 0x1ff) + stage;
-                long pass = 0;
-                if ((*passes >> 9) > 0)
+                for (long pass = 0; pass < (*passes >> 9); ++pass)
                 {
-                    do
+                    if (wanted_pass == NONE || wanted_pass == pass)
                     {
-                        if (wanted_pass == NONE || wanted_pass == pass)
+                        byte *pass_entry = *(byte **)(tables + 0x14) + ((*passes & 0x1ff) + pass) * 10;
+                        byte *pass_definition = g_4e3b44[*(long *)(pass_entry + 4) & 0xffff].bytes;
+                        byte *record = *(byte **)(*(byte **)(pass_definition + 0x20) + 4) + variant * 0x132;
+                        if (*(long *)(record + 0x100) != NONE)
                         {
-                            byte *pass_entry = *(byte **)(tables + 0x14) + ((*passes & 0x1ff) + pass) * 10;
-                            byte *pass_definition = g_4e3b44[*(long *)(pass_entry + 4) & 0xffff].bytes;
-                            byte *record = *(byte **)(*(byte **)(pass_definition + 0x20) + 4) + variant * 0x132;
-                            if (*(long *)(record + 0x100) != NONE)
-                            {
-                                g_4670bc = true;
-                                function_16b10((s_render_reset_state *)g_485b48);
-                                function_1bbf0(tag, 0, stage, pass, variant, 0.0f);
-                                function_1c590((s_shader_cache *)g_51f0f0, *(long *)(record + 0x100), 0);
-                                function_1c710(g_51f0f0);
-                                function_1cf50();
-                                g_4b8448 = 0;
-                                D3DDevice_SetRenderState(D3DRS_CULLMODE, 0);
-                                if (copy) function_15ec0(target);
-                                else function_14bc0((short)target, 0, false);
-                                result = true;
-                            }
+                            g_4670bc = true;
+                            function_16b10((s_render_reset_state *)g_485b48);
+                            function_1bbf0(tag, 0, stage, pass, variant, 0.0f);
+                            function_1c590((s_shader_cache *)g_51f0f0, *(long *)(record + 0x100), 0);
+                            function_1c710(g_51f0f0);
+                            function_1cf50();
+                            g_4b8448 = 0;
+                            D3DDevice_SetRenderState(D3DRS_CULLMODE, 0);
+                            if (copy) function_15ec0(target);
+                            else function_14bc0((short)target, 0, false);
+                            result = true;
                         }
-                        ++pass;
-                    } while (pass < (*passes >> 9));
+                    }
                 }
             }
         }

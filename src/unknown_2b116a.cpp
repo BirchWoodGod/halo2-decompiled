@@ -3025,7 +3025,7 @@ long function_1945c0(long index);
 bool function_194610(long index);
 struct s_game_variant_block;
 bool game_variant_block_read(long index, s_game_variant_block *block);
-void __stdcall function_215900(long controller_index, long type, word *count, long *files, long a);
+void __stdcall function_215900(long controller_index, long type, word *count, long *files, bool a);
 
 /* a player slot's value at +0x204, as fill reads it */
 struct s_player_slot_2b1f
