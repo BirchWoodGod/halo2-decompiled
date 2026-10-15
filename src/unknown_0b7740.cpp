@@ -1,3 +1,4 @@
+#include "unknown_0b68c0.h"
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_0259d0.h"
@@ -260,12 +261,7 @@ void function_b88e0(long object_index, s_object_partition_record_ab *record)
 
 
 
-struct s_cluster_partition
-{
-    long *cluster_first_data_references;
-    s_record_pool *data_references;
-    s_record_pool *cluster_references;
-};
+
 
 void function_1cadf0(s_cluster_partition *partition, long reference_index, long data_index, long payload_size, void const *payload);
 
@@ -759,7 +755,7 @@ void function_bfa40(long object_index, long node_mask)
         return;
     transform4x3f *matrices = (transform4x3f *)(object + *(short *)(object + 0x116));
     rigid_transform_scaled *orientations = (rigid_transform_scaled *)(object + *(short volatile *)(object + 0x112));
-    volatile long count = (dword)(long)*(short *)(object + 0x110) / sizeof(rigid_transform_scaled);
+    long count = (dword)(long)*(short *)(object + 0x110) / sizeof(rigid_transform_scaled);
     long parent_index = *(long *)(object + 0x14);
     transform4x3f *parent = 0;
     bool parent_mirrored = false;
