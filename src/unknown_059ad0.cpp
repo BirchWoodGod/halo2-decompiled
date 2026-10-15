@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr /arch:SSE
 /* UNKNOWN_059AD0.CPP: the network session (lane D). Its members and their
    channels, the leave and disband paths, the session parameters and the
@@ -59,7 +60,7 @@ struct s_xnet_registry_entry
 	XNKEY key;
 };
 
-extern s_xnet_registry_entry g_4cf7d4[8];
+
 
 bool transport_security_create_key(long local, long index, bool online);
 bool transport_security_register_key(long index, long local, bool host, const XNKID *kid, const XNKEY *key);
@@ -2530,49 +2531,6 @@ bool network_session_handle_player_refuse(c_class_58d20 *session, const s_networ
 	return false;
 }
 
-/* the host takes a player a peer adds, or refuses it: 0x5efd0, kept out of
-   the build. Retail keeps all three arguments on the stack (ret 0xc) and its
-   only caller, the message handler's 0x94700, pushes them; built here, our
-   LTCG passes the session in eax, which breaks the matched 0x94700. The
-   handler calls a stub of it (src/stubs/lane_j.cpp) until this matches. */
-#if 0
-bool __stdcall network_session_handle_player_add(c_class_58d20 *session, long remote_index, const void *data)
-{
-	const s_network_message_player_add *message = (const s_network_message_player_add *)data;
-	bool result = false;
-
-	if (session_state_is_live(session) && session->function_058d20())
-	{
-		long channel_index = network_observer_find_channel(session->observer, session->value10, remote_index);
-		long member_index = network_session_find_member_by_channel(session, channel_index);
-		if (member_index != NONE && member_index != session->current_member)
-		{
-			long player_index = network_session_add_local_player(session, member_index, message->slot, message->identity);
-			if (player_index != NONE)
-			{
-				s_network_session_player *player = &session->players[player_index];
-				player->unknown14 = message->unknown18;
-				memcpy(player->properties18, message->properties, sizeof(player->properties18));
-				player->unknown138 = message->unknownac;
-				return true;
-			}
-			s_network_message_player_refuse refuse;
-			memset(&refuse, 0, sizeof(refuse));
-			refuse.session_id = *(s_session_id *)&session->unknown1c;
-			refuse.slot = message->slot;
-			refuse.identity[0] = message->identity[0];
-			refuse.identity[1] = message->identity[1];
-			refuse.identity[2] = message->identity[2];
-			s_network_session_member_state *state = &session->member_states[member_index];
-			if (state->flag1)
-				network_observer_send_message(session->observer, session->value10, state->unknown04, false, _network_message_type_player_refuse, sizeof(refuse), &refuse);
-			return true;
-		}
-	}
-	return result;
-}
-#endif
-
 // @retail 0x5f190
 bool network_session_handle_player_remove(c_class_58d20 *session, long remote_index, const s_network_message_player_remove *message)
 {
@@ -3310,8 +3268,8 @@ void __stdcall function_061570(c_class_58d20 *session, bool flag)
 		network_session_enter_state_5(session);
 }
 
-extern bool g_4cf792;
-extern XNADDR g_4cf793;
+
+
 bool function_07a9b0(void);
 void function_07ad80(long count, byte *buffer);
 void network_session_enter_state_5(c_class_58d20 *session);

@@ -47,6 +47,7 @@ __forceinline s_handler_object_view *function_28fa62(s_ai_object_iterator *arg_0
 	return local_0;
 }
 
+#pragma optimize("y", off)
 // @retail 0x28fa60
 bool function_28fa60(long arg_0, point3f const *arg_1, s_actor_object_sample *arg_2)
 {
@@ -77,6 +78,7 @@ bool function_28fa60(long arg_0, point3f const *arg_1, s_actor_object_sample *ar
 	}
 	return false;
 }
+#pragma optimize("y", on)
 
 __forceinline real function_28fb51(point3f const *arg_0, point3f const *arg_1)
 {

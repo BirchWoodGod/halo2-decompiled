@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr
 /* UNKNOWN_06B590.CPP: Xbox Live logon users, services and passcodes
    (lane D) */
@@ -373,8 +374,8 @@ long function_6c8b0(long controller, XONLINE_USER *user)
  return result;
 }
 
-extern s_network_observer *g_4cf8e4;
-extern bool g_4cf95c;
+
+
 struct s_message_of_the_day_globals
 {
  union { dword flags; word field_0; };

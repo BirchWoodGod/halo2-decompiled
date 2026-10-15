@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O2 /Gr
 /* UNKNOWN_075800.CPP: the handler the message gateway (0x93aa0)
    passes each incoming session message to. Every session message begins
@@ -60,7 +61,7 @@ void network_connection_close(s_network_connection *connection, long reason);
 void __stdcall function_061570(c_class_58d20 *session, bool flag);
 bool __stdcall function_05e3f0(c_class_58d20 *session, const s_type_99af70 *address);
 bool __stdcall function_05cb80(c_class_58d20 *session, const void *message);
-bool __stdcall network_session_handle_player_add(c_class_58d20 *session, long remote_index, const void *message);
+bool __stdcall network_session_handle_player_add(c_class_58d20 *session, long remote_index, const void *volatile message);
 bool __stdcall function_05d9e0(c_class_58d20 *session, const void *message);
 bool network_session_handle_peer_establish(c_class_58d20 *session, long remote_index);
 bool __stdcall function_05e7f0(c_class_58d20 *session, const s_type_99af70 *address, const void *message, long *reason, bool *has_identity, s_session_member_identity *identity);
@@ -123,7 +124,7 @@ bool network_session_manager_get_hosted_session(c_class_58d20 **arg_0);
 struct s_session_browser_summary;
 bool __stdcall function_64d70(s_session_browser_summary *arg_0);
 bool function_07a9b0(void);
-extern bool g_4cf792;
+
 
 /* the sessions the session manager owns */
 struct s_network_session_list
@@ -363,32 +364,6 @@ void __stdcall function_0942d0(c_class_938e0 *handler, const s_session_id *messa
 		network_session_close(session);
 	}
 }
-
-/* 0x94310 (handle_session_disband), kept out of the build: it matches, but
-   as a caller of 0x5e150 it makes our LTCG pass network_session_close's
-   (0x5a520) session in ecx instead of eax, which breaks lane D's matched
-   0x593e0, 0x618d0 and 0x61910. */
-#if 0
-void c_class_938e0::handle_session_disband(const s_session_id *message, const s_type_99af70 *address)
-{
-	c_class_58d20 *session = network_session_manager_find_session(session_manager, message);
-	if (session)
-		network_session_handle_session_disband(session, address);
-}
-#endif
-
-/* 0x94330 (handle_session_boot), kept out of the build: it matches, but
-   as a caller of 0x5e1a0 it makes our LTCG pass network_session_close's
-   (0x5a520) session in ecx instead of eax, which breaks lane D's matched
-   0x593e0, 0x618d0 and 0x61910. */
-#if 0
-void c_class_938e0::handle_session_boot(const s_session_id *message, const s_type_99af70 *address)
-{
-	c_class_58d20 *session = network_session_manager_find_session(session_manager, message);
-	if (session)
-		network_session_handle_session_boot(session, address);
-}
-#endif
 
 // @retail 0x94350
 void c_class_938e0::handle_host_handoff(const s_network_message_handoff *message, long remote_index)

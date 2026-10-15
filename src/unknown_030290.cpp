@@ -423,21 +423,21 @@ PRIVATE __forceinline void normalize_cross_vector(vector3f *v)
 	}
 }
 
+static __forceinline void cross_product_31b40(vector3f const *a, vector3f const *b, vector3f *out)
+{
+	out->i = a->j * b->k - b->j * a->k;
+	out->j = b->i * a->k - a->i * b->k;
+	out->k = b->j * a->i - a->j * b->i;
+}
+
 // @retail 0x31b40
 real function_31b40(vector3f *vector, vector3f const *axis)
 {
 	vector3f cross;
-	cross.i = *(real const volatile *)&vector->j * axis->k - *(real const volatile *)&axis->j * vector->k;
-	cross.j = *(real const volatile *)&axis->i * vector->k - *(real const volatile *)&vector->i * axis->k;
-	real cross_j = cross.j;
-	cross.k = *(real const volatile *)&axis->j * vector->i - *(real const volatile *)&vector->j * axis->i;
-	cross.j = cross_j;
+	cross_product_31b40(vector, axis, &cross);
 	normalize_cross_vector(&cross);
-	vector3f const volatile &normalized = cross;
 	vector3f result;
-	result.i = axis->j * normalized.k - normalized.j * axis->k;
-	result.j = normalized.i * axis->k - axis->i * normalized.k;
-	result.k = axis->i * normalized.j - axis->j * normalized.i;
+	cross_product_31b40(axis, &cross, &result);
 	vector->i = result.i;
 	vector->j = result.j;
 	vector->k = result.k;
