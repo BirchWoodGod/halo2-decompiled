@@ -829,26 +829,26 @@ void __stdcall function_1f5ab0(long actor_index, vector3f const *input, vector3f
     short *type_out, vector3f *facing_out, bool *blocked)
 {
     byte *actor = (byte *)actor_get(actor_index);
+    vector3f movement;
     vector3f facing = *(vector3f *)(actor + 0x290);
-    vector3f movement = *g_4687a4;
+    movement = *g_4687a4;
     point3f position = *(point3f *)(actor + 0x238);
     real distance = 3.402823466e38f;
     byte *entry = NULL;
     byte *surface = NULL;
     actor[0x6d1] = false;
-    long unit_index = *(long *)(actor + 0x18);
+    long const &unit_index = *(long *)(actor + 0x18);
     if (unit_index != NONE)
     {
         byte *unit = (byte *)object_get(unit_index);
         position.z = *(real *)(unit + *(short *)(unit + 0x116) + 0x30);
     }
-    signed char step = *(signed char *)(actor + 0x53a);
-    if (actor[0x5d0] && !actor[0x5d2] && step >= 0 && step < *(signed char *)(actor + 0x539))
+    if (actor[0x5d0] && !actor[0x5d2] && *(signed char *)(actor + 0x53a) >= 0 && *(signed char *)(actor + 0x53a) < *(signed char *)(actor + 0x539))
     {
         if (function_1f8660(actor_index))
         {
-            entry = actor + 0x53c + step * 0x1c;
-            short surface_index = *(short *)(entry + 8);
+            entry = actor + 0x53c + *(signed char *)(actor + 0x53a) * 0x1c;
+            long surface_index = *(short *)(entry + 8);
             if (surface_index != NONE)
                 surface = *(byte **)((byte *)function_1fa7f0() + 0x3c) + surface_index * 0x14;
             distance = function_210ac0((s_type_c3b527 *)(entry + 0xc), &position);
@@ -890,8 +890,8 @@ void __stdcall function_1f5ab0(long actor_index, vector3f const *input, vector3f
                     function_210850((s_type_c3b527 *)(entry + 0xc), &target);
                     s_unit_request request;
                     request.type = 0x23;
-                    *(vector3f *)((byte *)&request + 8) = facing;
                     *(point3f *)((byte *)&request + 0x14) = target;
+                    *(vector3f *)((byte *)&request + 8) = facing;
                     function_e6900(unit_index, &request);
                     *blocked = true;
                     goto done;
@@ -916,12 +916,12 @@ void __stdcall function_1f5ab0(long actor_index, vector3f const *input, vector3f
         {
             if (direction.k > 0.0f)
             {
-                movement.i = movement.j = 0.0f;
+                movement.j = movement.i = 0.0f;
                 movement.k = 1.0f;
             }
             else if (direction.k < 0.0f)
             {
-                movement.i = movement.j = 0.0f;
+                movement.j = movement.i = 0.0f;
                 movement.k = -1.0f;
             }
         }

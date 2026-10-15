@@ -397,7 +397,7 @@ void function_1f2a80(vector3f const *velocity, byte const *request, bool moving,
     for (long i = 0; i < count; i++)
     {
         byte *entry = *(byte **)(component + 0x88) + indices[i] * 0x48;
-        real z = *(real *)(entry + 0x30);
+        real const &z = *(real *)(entry + 0x30);
         if (lowest > z && z > -0.999f && function_1f2e60(moving, (s_shape_ground *)entry,
             velocity, ((*(dword *)(request + 0x18) >> 1) & 1) != 0,
             (point3f const *)(request + 0x1c), *(real *)(*(byte *const *)request + 0xc)))
