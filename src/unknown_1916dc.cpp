@@ -149,7 +149,8 @@ static __forceinline byte *definition_19188c(long index)
 // @retail 0x19188c
 void function_19188c(long user_index)
 {
-    byte *player = g_4e8c24->data + (function_14de70(user_index) & 0xffff) * 0x21c;
+    long const &player_index = function_14de70(user_index);
+    byte *player = g_4e8c24->data + (player_index & 0xffff) * 0x21c;
     short state = *(short *)((byte *)g_4e8c20 + 0x9c);
     s_target_candidate *candidate = (s_target_candidate *)((byte *)g_4ed284 + user_index * 0x94 + 0x80);
     if (state != 0 && *(long *)(player + 0x2c) == NONE)
