@@ -1093,9 +1093,9 @@ bool c_vehicle_flip_event_definition::v11(long a, long const *entities, long c, 
 	if (vehicle_index != NONE && unit_index != NONE)
 	{
 		s_typed_object_header *headers = (s_typed_object_header *)g_4e0300->data;
-		if ((1 << headers[vehicle_index & 0xffff].type) & 2)
+		if (!((1 << headers[vehicle_index & 0xffff].type) & 2)) goto done;
 		{
-			if ((1 << headers[unit_index & 0xffff].type) & 3)
+			if (!((1 << headers[unit_index & 0xffff].type) & 3)) goto done;
 			{
 				_ReadWriteBarrier();
 				s_typed_object_header *current_headers = (s_typed_object_header *)g_4e0300->data;
@@ -1110,6 +1110,7 @@ bool c_vehicle_flip_event_definition::v11(long a, long const *entities, long c, 
 			}
 		}
 	}
+done:
 	return result;
 }
 #pragma function(_ReadWriteBarrier)
