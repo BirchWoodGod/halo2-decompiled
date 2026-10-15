@@ -335,12 +335,14 @@ long function_b4450(long kind, long controller, struct _XUID owner, wchar_t cons
                 task->controller_index = controller;
                 task->flags = 1;
                 task->type = 0x2a;
-                return 0;
+                result = 0;
+                goto done;
             }
             result = storage_error_ab(status);
             function_6b640(task_index);
         }
     }
+done:
     return result;
 }
 
