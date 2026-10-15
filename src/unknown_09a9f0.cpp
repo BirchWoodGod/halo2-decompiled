@@ -540,7 +540,7 @@ long c_device_type::v27(long a, long b, long c, long d)
  }
  if (flags & 0x800)
  {
-  long index = *(long *)(object + 0x13c);
+  long const &index = *(long const *)(object + 0x13c);
   if (index != NONE)
   {
    byte *entry = g_4e0328.groups->data + (word)index * 12;
