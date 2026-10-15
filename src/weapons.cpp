@@ -4034,7 +4034,9 @@ void __stdcall function_fd980(long weapon_index)
             *(byte *)((byte *)barrel + 4) &= 0xfd;
         }
     }
-    *(byte *)((byte *)*weapon_reference + 0x16c) &= 0xfe;
+    struct s_flag_view { word enabled : 1; word other : 15; };
+    s_flag_view *flag = (s_flag_view *)((byte *)*weapon_reference + 0x16c);
+    flag->enabled = false;
 }
 
 #include "object_iterator.h"
