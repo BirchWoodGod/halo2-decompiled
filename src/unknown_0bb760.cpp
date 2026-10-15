@@ -289,8 +289,8 @@ void function_bb950(long object_index, bool add, long delta)
 		while (*link != object_index)
 			link = &((s_object_header *)g_4e0300->data)[*link & 0xffff].object->next_index;
 		*link = object->next_index;
+		object->flags &= ~0x4000UL;
 		object->next_index = NONE;
-		*(volatile dword *)((byte *)object + 4) &= ~0x4000;
 		if (TEST_FIELD_BIT(header->flag0))
 			list->count--;
 	}

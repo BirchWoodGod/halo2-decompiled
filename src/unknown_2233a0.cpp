@@ -17,7 +17,13 @@ struct short_rect_pair
 struct s_33a0b_default;
 struct short_rectangle2d;
 extern s_33a0b_default *g_4686d4;
-extern short_rect_pair g_485a8a;
+struct s_unknown_485a88
+{
+    byte flag;
+    short_rect_pair rects;
+};
+extern s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 
 class c_1fa50
 {
