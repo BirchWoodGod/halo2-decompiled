@@ -92,12 +92,15 @@ bool havok_component_impact_make_room(long rigid_body_index, s_havok_component *
 			{
 				long i;
 
-				for (i = 0; i < list->count; i++)
+				i = 0;
+				while (i < list->count)
 				{
 					if (havok_impact_get(list->impact_indices[i])->unknown04 > strength)
 					{
-						weakest = i;
+						weakest = i++;
+						continue;
 					}
+					++i;
 				}
 			}
 		}
