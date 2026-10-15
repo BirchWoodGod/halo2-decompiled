@@ -36,6 +36,8 @@ struct s_13c050
 
 void __stdcall function_52040(void const *arg_1, void const *arg_2);
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x13c050
 void function_13c050(s_13c051 const *arg_2, dword arg_1)
 {
@@ -43,15 +45,18 @@ void function_13c050(s_13c051 const *arg_2, dword arg_1)
 	{
 		byte *local_1 = *(long *)((byte *)g_4e034c + 0x108) ? *(byte **)((byte *)g_4e034c + 0x10c) : NULL;
 		byte *local_2 = g_4e3b44[*(long *)(local_1 + 0x64) & 0xffff].bytes;
+		real first_x = (real)arg_2->field_2;
+		long first_y = arg_2->field_0;
+		_ReadWriteBarrier();
 		byte *local_3 = *(byte **)(local_2 + 0x48);
 		point2f local_4[4];
-		local_4[0].x = arg_2->field_2;
-		local_4[0].y = arg_2->field_0;
+		local_4[0].x = first_x;
+		local_4[0].y = first_y;
 		local_4[1].x = arg_2->field_6;
-		local_4[1].y = arg_2->field_0;
+		local_4[1].y = first_y;
 		local_4[2].x = arg_2->field_6;
 		local_4[2].y = arg_2->field_4;
-		local_4[3].x = arg_2->field_2;
+		local_4[3].x = first_x;
 		local_4[3].y = arg_2->field_4;
 		s_13c052 local_5[4];
 		local_5[0].field_0 = local_4[0];
@@ -83,3 +88,4 @@ void function_13c050(s_13c051 const *arg_2, dword arg_1)
 		function_52040(&local_6, local_5);
 	}
 }
+#pragma function(_ReadWriteBarrier)

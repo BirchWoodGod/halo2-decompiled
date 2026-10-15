@@ -113,12 +113,21 @@ bool __stdcall function_1b3070(long actor_index, s_squad_choice *choice)
 			byte *squads = *(byte **)(encounters + encounter * 0x38 + 0x34);
 			s_type_c3b527 *target = (s_type_c3b527 *)(squads + squad * 0x88 + 0x24);
 			point3f point;
-			if (target->output_index == NONE || !function_2104b0(target->output_index, &target->point, &point))
-				point = target->point;
 			vector3f direction;
-			direction.i = point.x - actor->position.x;
-			direction.j = point.y - actor->position.y;
-			direction.k = point.z - actor->position.z;
+			if (target->output_index == NONE)
+			{
+				direction.i = target->point.x - actor->position.x;
+				direction.j = target->point.y - actor->position.y;
+				direction.k = target->point.z - actor->position.z;
+			}
+			else
+			{
+				if (!function_2104b0(target->output_index, &target->point, &point))
+					point = target->point;
+				direction.i = point.x - actor->position.x;
+				direction.j = point.y - actor->position.y;
+				direction.k = point.z - actor->position.z;
+			}
 			real distance = (real)sqrt(direction.i * direction.i + (direction.j * direction.j + direction.k * direction.k));
 			if (!(fabs(distance) < 0.0001f))
 			{
@@ -156,8 +165,12 @@ bool __stdcall function_1b3070(long actor_index, s_squad_choice *choice)
 	choice->tried = 1 << previous;
 	actor = actor_get(actor_index);
 	actor->unknown3fe = 3;
-	for (long i = 0; i < 4; i++)
+	long i = 0;
+	do
+	{
 		actor->unknown400[i].reference = g_470fa0;
+		i++;
+	} while (i < 4);
 	function_1b3070(actor_index, choice);
 	return true;
 }
