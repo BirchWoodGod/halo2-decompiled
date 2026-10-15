@@ -44,12 +44,14 @@ static inline bool upload_read_ab(s_upload_file_ab *file, long position, void *b
 // @retail 0xb6320
 bool function_b6320(s_upload_ab *upload, byte *buffer, long maximum, long *written)
 {
+    bool result = false;
     byte *out = buffer;
     long remaining = maximum;
-    volatile bool result = false;
-    bool valid = upload->kind == 2 || upload->kind == 1;
-    unsigned long length = 0;
+    bool valid = true;
+    if (upload->kind != 2 && upload->kind != 1)
+        valid = false;
     char const *path = upload->path;
+    unsigned long length = 0;
     for (; length < 0x7f; ++length)
         if (!*path++) break;
     if (length && valid)
@@ -63,17 +65,17 @@ bool function_b6320(s_upload_ab *upload, byte *buffer, long maximum, long *writt
             long count;
             if (position < upload->header_length)
             {
-                count = remaining < upload->header_length - position ? remaining : upload->header_length - position;
+                count = remaining > upload->header_length - position ? upload->header_length - position : remaining;
                 memcpy(out, upload->header + position, count);
             }
             else if ((position -= upload->header_length) < upload->part_length)
             {
-                count = remaining < upload->part_length - position ? remaining : upload->part_length - position;
+                count = remaining > upload->part_length - position ? upload->part_length - position : remaining;
                 memcpy(out, upload->part + position, count);
             }
             else if ((position -= upload->part_length) < upload->file_length)
             {
-                count = remaining < upload->file_length - position ? remaining : upload->file_length - position;
+                count = remaining > upload->file_length - position ? upload->file_length - position : remaining;
                 if (upload->kind == 1)
                     memcpy(out, upload->memory + position, count);
                 else
@@ -107,7 +109,7 @@ bool function_b6320(s_upload_ab *upload, byte *buffer, long maximum, long *writt
             }
             else if ((position -= upload->file_length) < upload->ending_length)
             {
-                count = remaining < upload->ending_length - position ? remaining : upload->ending_length - position;
+                count = remaining > upload->ending_length - position ? upload->ending_length - position : remaining;
                 memcpy(out, upload->ending + position, count);
             }
             else
@@ -115,8 +117,8 @@ bool function_b6320(s_upload_ab *upload, byte *buffer, long maximum, long *writt
                 result = false;
                 break;
             }
-            upload->position += count;
             out += count;
+            upload->position += count;
             remaining = maximum - (out - buffer);
         }
         *written = out - buffer;
