@@ -117,6 +117,8 @@ long __stdcall function_293130(long arg_0)
 		real local_4 = 0.0f;
 		short local_6 = 0;
 		short local_7;
+		short local_16;
+		short local_17;
 		short local_8 = NONE;
 		for (local_7 = 0; local_7 < local_3->field_c; local_7++)
 		{
@@ -129,14 +131,14 @@ long __stdcall function_293130(long arg_0)
 		if (local_4 > 0.0f)
 		{
 			local_4 *= (real)function_293131() * (1.0f / 65535.0f);
-			for (local_7 = 0; local_7 < local_3->field_c; local_7++)
+			for (local_16 = 0; local_16 < local_3->field_c; local_16++)
 			{
-				if (local_2->field_10 & (1 << local_7))
+				if (local_2->field_10 & (1 << local_16))
 				{
-					local_5 += local_3->field_10[local_7].field_18;
+					local_5 += local_3->field_10[local_16].field_18;
 					if (local_5 >= local_4)
 					{
-						local_8 = local_7;
+						local_8 = local_16;
 						break;
 					}
 				}
@@ -146,13 +148,13 @@ long __stdcall function_293130(long arg_0)
 		{
 			short local_9 = (short)((function_293131() * local_6) >> 16);
 			short local_10 = 0;
-			for (local_7 = 0; local_7 < local_3->field_c; local_7++)
+			for (local_17 = 0; local_17 < local_3->field_c; local_17++)
 			{
-				if (local_2->field_10 & (1 << local_7))
+				if (local_2->field_10 & (1 << local_17))
 				{
 					if (local_10 == local_9)
 					{
-						local_8 = local_7;
+						local_8 = local_17;
 						break;
 					}
 					local_10++;

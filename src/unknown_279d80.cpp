@@ -196,19 +196,15 @@ void function_2798a0(s_animation_data *data, real frame, real weight, s_graph_ta
 			}
 		}
 		g_sampling_settings.blend_method = 0;
+		if (animation->type == 1)
 		{
-			bool full = weight > 0.9999f ? true : false;
-
-			if (animation->type == 1)
-			{
-				g_sampling_settings.blend_method = full ? 2 : 3;
-				g_sampling_settings.blend_weight = weight;
-			}
-			else if (!full)
-			{
-				g_sampling_settings.blend_method = 1;
-				g_sampling_settings.blend_weight = weight;
-			}
+			g_sampling_settings.blend_method = weight > 0.9999f ? 2 : 3;
+			g_sampling_settings.blend_weight = weight;
+		}
+		else if (!(weight > 0.9999f))
+		{
+			g_sampling_settings.blend_method = 1;
+			g_sampling_settings.blend_weight = weight;
 		}
 		if (animation->type == 0 && data->sizes->static_data_size != 0)
 		{
