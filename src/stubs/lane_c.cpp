@@ -112,7 +112,6 @@ class c_278370
 public:
  virtual void function_a9ef0(void *arg_0);
 };
-// @stub 0xa9ef0
 void c_278370::function_a9ef0(void *arg_0) {}
 
 // @stub 0x2d8910
@@ -416,11 +415,7 @@ class hkMemory;
 struct s_fixed_memory_statistics_16;
 struct s_physics_pool_statistics;
 
-// @stub 0x22c390
-void function_22c390(hkMemory *memory, s_fixed_memory_statistics_16 *statistics) {}
 
-// @stub 0x22cb00
-void function_22cb00(hkMemory *memory, s_physics_pool_statistics *statistics) {}
 
 
 struct s_physics_mass_array;

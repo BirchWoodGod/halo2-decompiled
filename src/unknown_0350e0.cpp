@@ -3823,9 +3823,9 @@ void __stdcall function_2bcd0(long frame_mode, long draw_ui, bool world_effects,
     long context_mode, long filter_mode, real transition)
 {
     s_depth_parameters_13450 parameters = zero_orchestration_parameters();
-    parameters.identifier = ++g_4ba03c;
-    parameters.mode = filter_mode;
     parameters.distance = transition;
+    parameters.mode = filter_mode;
+    parameters.identifier = ++g_4ba03c;
     function_13450(&parameters);
     if (!function_289e0() && !function_159610())
     {

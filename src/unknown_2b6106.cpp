@@ -651,12 +651,17 @@ void c_y_menu_player_selected_screen::update_friend_details(XONLINE_FRIEND const
     volatile unsigned row = 0;
     volatile dword flags = online_friend_get_flags(friend_);
     bool local = network_session_interface_has_user(&friend_->xuid);
-    volatile bool active = false;
-    long player = NONE;
+    volatile bool active;
+    long player;
     if (network_session_manager_session_unready() && function_19acc6(&friend_->xuid))
     {
         active = true;
         player = function_19adca(&friend_->xuid);
+    }
+    else
+    {
+        active = false;
+        player = NONE;
     }
     bool joinable = player != NONE && active && function_19abe4(player);
     dword now = g_54d5b8;
