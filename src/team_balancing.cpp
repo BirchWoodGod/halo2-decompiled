@@ -241,41 +241,63 @@ void s_balance_solution::reset(long count)
 		teams[i].reset();
 }
 
+PRIVATE __forceinline long function_91801(s_balance_solution const *solution)
+{
+	long result = solution->teams[0].players.total;
+	for (long i = 1; i < solution->team_count; ++i)
+	{
+		long value = solution->teams[i].players.total;
+		if (result <= value) result = value;
+	}
+	return result;
+}
+
+PRIVATE __forceinline long function_91802(s_balance_solution const *solution)
+{
+	long result = solution->teams[0].players.total;
+	for (long i = 1; i < solution->team_count; ++i)
+	{
+		long value = solution->teams[i].players.total;
+		if (result > value) result = value;
+	}
+	return result;
+}
+
 // @retail 0x91800
 long s_balance_solution::total_spread() const
 {
-	long minimum = teams[0].players.total;
-	long maximum = minimum;
-	long i;
-	for (i = 1; i < team_count; i++)
-	{
-		if (maximum <= teams[i].players.total)
-			maximum = teams[i].players.total;
-	}
-	for (i = 1; i < team_count; i++)
-	{
-		if (minimum > teams[i].players.total)
-			minimum = teams[i].players.total;
-	}
+	long maximum = function_91801(this);
+	long minimum = function_91802(this);
 	return maximum - minimum;
+}
+
+PRIVATE __forceinline long function_91861(s_balance_solution const *solution)
+{
+	long result = solution->teams[0].players.count;
+	for (long i = 1; i < solution->team_count; ++i)
+	{
+		long value = solution->teams[i].players.count;
+		if (result <= value) result = value;
+	}
+	return result;
+}
+
+PRIVATE __forceinline long function_91862(s_balance_solution const *solution)
+{
+	long result = solution->teams[0].players.count;
+	for (long i = 1; i < solution->team_count; ++i)
+	{
+		long value = solution->teams[i].players.count;
+		if (result > value) result = value;
+	}
+	return result;
 }
 
 // @retail 0x91860
 long s_balance_solution::count_spread() const
 {
-	long minimum = teams[0].players.count;
-	long maximum = minimum;
-	long i;
-	for (i = 1; i < team_count; i++)
-	{
-		if (maximum <= teams[i].players.count)
-			maximum = teams[i].players.count;
-	}
-	for (i = 1; i < team_count; i++)
-	{
-		if (minimum > teams[i].players.count)
-			minimum = teams[i].players.count;
-	}
+	long maximum = function_91861(this);
+	long minimum = function_91862(this);
 	return maximum - minimum;
 }
 
