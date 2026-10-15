@@ -1724,13 +1724,14 @@ void function_70280(c_session_state_matchmaking *volatile state)
 	summary.machine_ids[0] = *id;
 	function_7ed20((const s_message_identities *)&session->value4c,
 		(s_message_identity *)&summary.machine_users[0], NULL, NULL);
-	state->mode = 1;
+	c_session_state_matchmaking *initial_state = state;
+	initial_state->mode = 1;
 	long current = session->state;
 	if (current == 5 || current == 6 || current == 7 || current == 8)
 	{
 		network_session_host_set_summary(session, (const s_session_summary *)&summary);
 		network_session_set_mode(session, 6);
-		state->mode = 3;
+		initial_state->mode = 3;
 	}
 	else
 	{
