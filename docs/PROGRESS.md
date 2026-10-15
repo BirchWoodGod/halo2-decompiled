@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8830 functions match
+
+```
+matched 8830 of 11321 game functions (1199360 of 2784283 bytes, 43.08%)
+```
+
+2 new matches, none lost:
+- The inventory now splits three rows that each held two retail functions (machine 3's request): `0x2b557a` and `0x2b8da0` match, and `0x238459`, `0x2b55ae` and `0x2b8e10` get rows of their own.
+
 ## 2026-10-15: 8828 functions match
 
 ```
