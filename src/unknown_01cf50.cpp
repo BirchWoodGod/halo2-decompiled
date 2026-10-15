@@ -5724,37 +5724,8 @@ void function_46ea0(long tag, point3f const *position)
 
 
 extern long g_50943c, g_509440;
-struct s_2cb30_state
-{
-	byte unknown00[0x2a78];
-	long active;
-};
 
-struct s_2cb30_entry
-{
-	dword values[9];
-};
 
-struct s_2cb30_globals
-{
-	long current;
-	long previous;
-	s_2cb30_state *state;
-	union
-	{
-		byte unknown0c[0x9b0 - 0xc];
-		struct
-		{
-			byte weights[850];
-			byte material_indices[850];
-			long materials[192];
-		};
-	};
-	long count;
-	s_2cb30_entry entries[32];
-	long entry_count;
-};
-extern s_2cb30_globals g_4c0b78;
 struct s_render_part_context;
 void function_41040(short index, long part_index, long group, byte weight,
     s_render_part_context const *context, long material_override, bool force,

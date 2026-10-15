@@ -6,6 +6,7 @@
 
 #include "unknown_11c920.h"
 #include "unknown_0259d0.h"
+#include "vector_angles.h"
 #include "globals.h"
 #include "data_array.h"
 #include "object_markers.h"
@@ -569,12 +570,10 @@ void __stdcall function_23cbb0(void *state, void *input, s_observer_command *out
         function_23c300(alternate, (s_camera_tracks_23c300 *)camera.camera, &direction, time, &offset);
         real final_yaw = angles.yaw + values->yaw;
         vector3f *forward = &command->forward;
+        direction_from_angles(forward, final_yaw, pitch);
         real cosine = (real)cos(pitch);
-        forward->i = (real)cos(final_yaw) * cosine;
-        forward->j = (real)sin(final_yaw) * cosine;
         real sine = (real)sin(pitch);
-        forward->k = sine;
-        real distance = (real)sqrt(offset.z * offset.z + offset.y * offset.y + offset.x * offset.x);
+        real distance = (real)sqrt(offset.x * offset.x + offset.y * offset.y + offset.z * offset.z);
         command->distance = distance;
         command->offset.i = (cosine * distance + offset.x) * values->scale;
         command->offset.j = -values->scale * offset.y;

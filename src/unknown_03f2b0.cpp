@@ -702,37 +702,8 @@ point3f *function_3f220(dword a, dword b, dword c, point3f *out)
 }
 
 
-struct s_2cb30_state
-{
-	byte unknown00[0x2a78];
-	long active;
-};
 
-struct s_2cb30_entry
-{
-	dword values[9];
-};
 
-struct s_2cb30_globals
-{
-	long current;
-	long previous;
-	s_2cb30_state *state;
-	union
-	{
-		byte unknown0c[0x9b0 - 0xc];
-		struct
-		{
-			byte weights[850];
-			byte material_indices[850];
-			long materials[192];
-		};
-	};
-	long count;
-	s_2cb30_entry entries[32];
-	long entry_count;
-};
-s_2cb30_globals g_4c0b78;
 
 // @retail 0x2cb30
 void function_2cb30(void)

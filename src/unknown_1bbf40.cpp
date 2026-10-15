@@ -332,8 +332,8 @@ real function_1e3920(long actor_index);
 // @retail 0x1bcab0
 bool __stdcall function_1bcab0(long actor_index, s_slot *slot)
 {
-	s_actor_view *actor = actor_get(actor_index);
 	bool result = true;
+	s_actor_view *actor = actor_get(actor_index);
 	if (actor->unknown040)
 	{
 		s_2605d0_request request;
@@ -441,7 +441,7 @@ short __stdcall function_1bbf40(long actor_index, s_slot *slot)
         if (!special)
         {
             if (function_1b8d40(actor->unknown26c) != NONE)
-                return g_46fbe4;
+                goto done;
             long seat_object = NONE;
             short seat = function_1b8cc0(actor->unknown26c, &seat_object);
             allow_exit = true;
@@ -461,9 +461,9 @@ short __stdcall function_1bbf40(long actor_index, s_slot *slot)
                     {
                         if (player->unit_index == seat_object && *(short *)((byte *)player + 8) == seat &&
                             *(short *)((byte *)player + 0xa) > 0)
-                            return g_46fbe4;
+                            goto done;
                         if (actor->unknown31c == player_index)
-                            return g_46fbe4;
+                            goto done;
                     }
                     long unit_index = *(long *)((byte *)iterator.datum + 0x2c);
                     if (unit_index != NONE)
@@ -480,7 +480,7 @@ short __stdcall function_1bbf40(long actor_index, s_slot *slot)
                             short minimum = (short)real_to_long((real)g_510c54->field_2_3 * 3.0f);
                             if (*(short *)actor->unknown2f4 < minimum)
                                 *(short *)actor->unknown2f4 = minimum;
-                            return g_46fbe4;
+                            goto done;
                         }
                     }
                 }
@@ -507,5 +507,6 @@ short __stdcall function_1bbf40(long actor_index, s_slot *slot)
         if (allow_exit && *(short *)actor->unknown2f4 <= 0)
             function_e68c0(0x1d, actor->unknown018);
     }
+done:
     return g_46fbe4;
 }

@@ -365,7 +365,7 @@ bool network_session_parameters_set_value4d08(c_class_58d20 *session, const char
 bool network_session_parameters_set_value49a1(c_class_58d20 *session, const byte *value);
 bool network_session_parameters_set_value5dd0(c_class_58d20 *session, short value);
 bool network_session_parameters_set_value498c(c_class_58d20 *session, long value);
-bool network_session_start_countdown(c_class_58d20 *session, long countdown, bool start, long mode, const long *time);
+bool network_session_start_countdown(c_class_58d20 *session, bool start, long countdown, long mode, const long *time);
 void network_session_set_mode(c_class_58d20 *session, long mode);
 bool network_session_host_set_value49f8(c_class_58d20 *session, long value);
 bool network_session_get_key(c_class_58d20 *session, s_session_id *id, byte *key, long *key_index, long *local);
