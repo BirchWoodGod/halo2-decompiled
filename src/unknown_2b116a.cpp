@@ -5874,7 +5874,7 @@ extern s_4e6950 g_4e6950;
 void function_1bbd0();
 void function_1392f8(s_player_appearance const *appearance);
 s_float_rect *function_22ea81(c_class_1a2c81 *widget, s_float_rect *rect, short_rectangle2d const *frame);
-void function_22a664(s_float_rect const *coordinates, s_widget_quad_2b11 const *quad,
+void function_22a664(s_widget_quad_2b11 const *quad, s_float_rect const *coordinates,
     long tag_index, long sequence, long resource_index);
 
 // @retail 0x2b11c9
@@ -5898,12 +5898,12 @@ void c_widget_45adf0::v4(long frame)
         quad.points[2] = rectangle.x1;
         quad.points[3] = rectangle.y0;
         quad.points[4] = rectangle.x1;
+        quad.points[5] = rectangle.y1;
         quad.points[6] = rectangle.x0;
+        quad.points[7] = rectangle.y1;
         state->sequence = *(short *)unknown86;
         g_4e6950.value1c = scale;
-        quad.points[5] = rectangle.y1;
-        quad.points[7] = rectangle.y1;
-        function_22a664(&coordinates, &quad, definition->tag_index,
+        function_22a664(&quad, &coordinates, definition->tag_index,
             *(short *)((byte *)definition + 0xa), *(long *)((byte *)definition + 0x18));
     }
 }
