@@ -304,34 +304,38 @@ void function_1de50(void)
 		function_1dc40(18, 640, 480);
 }
 
+PRIVATE __forceinline void *allocate_entry_bytes(long index, long size)
+{
+    void *result = (byte *)g_4b4b58[index].data + *(long *)g_4b4b58[index].unknown8c;
+    *(long *)g_4b4b58[index].unknown8c += size;
+    return result;
+}
+
 // @retail 0x1d770
 bool function_1d770()
 {
     bool success;
     void *data;
     success = (function_1db10(1, 640, 480, 1, false)) &&
-        (data = (byte *)g_4b4b58[1].data + *(long *)g_4b4b58[1].unknown8c, *(long *)g_4b4b58[1].unknown8c += 307200, function_1df20(5, 2, 320, 240, false, true, 1, data)) &&
-        (data = (byte *)g_4b4b58[1].data + *(long *)g_4b4b58[1].unknown8c, *(long *)g_4b4b58[1].unknown8c += 307200, function_1df20(6, 2, 320, 240, false, true, 1, data)) &&
+        (function_1df20(5, 2, 320, 240, false, true, 1, allocate_entry_bytes(1, 307200))) &&
+        (function_1df20(6, 2, 320, 240, false, true, 1, allocate_entry_bytes(1, 307200))) &&
         (function_1db10(9, 512, 512, 1, true)) &&
-        (data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c, *(long *)g_4b4b58[9].unknown8c += 65536, function_1df20(10, 2, 128, 128, false, true, 1, data)) &&
-        (data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c, *(long *)g_4b4b58[9].unknown8c += 65536, function_1df20(11, 2, 128, 128, false, true, 1, data)) &&
-        (data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c, *(long *)g_4b4b58[9].unknown8c += 65536, function_1df20(12, 2, 128, 128, false, true, 1, data)) &&
-        (*(long *)g_4b4b58[9].unknown8c = 0, data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c, *(long *)g_4b4b58[9].unknown8c += 92160, function_1df20(7, 2, 160, 120, false, true, 1, data)) &&
-        (data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c, *(long *)g_4b4b58[9].unknown8c += 92160, function_1df20(8, 2, 160, 120, false, true, 1, data)) &&
-        (data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c, *(long *)g_4b4b58[9].unknown8c += 307200, function_1df20(19, 2, 320, 240, false, true, 1, data)) &&
+        (function_1df20(10, 2, 128, 128, false, true, 1, allocate_entry_bytes(9, 65536))) &&
+        (function_1df20(11, 2, 128, 128, false, true, 1, allocate_entry_bytes(9, 65536))) &&
+        (function_1df20(12, 2, 128, 128, false, true, 1, allocate_entry_bytes(9, 65536))) &&
+        (*(long *)g_4b4b58[9].unknown8c = 0, function_1df20(7, 2, 160, 120, false, true, 1, allocate_entry_bytes(9, 92160))) &&
+        (function_1df20(8, 2, 160, 120, false, true, 1, allocate_entry_bytes(9, 92160))) &&
+        (function_1df20(19, 2, 320, 240, false, true, 1, allocate_entry_bytes(9, 307200))) &&
         (function_1df20(13, 2, 256, 256, false, false, 3, g_4b4b58[9].data)) &&
-        (*(long *)g_4b4b58[9].unknown8c = 0, data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c, *(long *)g_4b4b58[9].unknown8c += 524288, function_1df20(21, 2, 512, 256, false, false, 1, data)) &&
-        (data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c, *(long *)g_4b4b58[9].unknown8c += 524288, function_1df20(22, 2, 512, 256, false, false, 1, data));
+        (*(long *)g_4b4b58[9].unknown8c = 0, function_1df20(21, 2, 512, 256, false, false, 1, allocate_entry_bytes(9, 524288))) &&
+        (function_1df20(22, 2, 512, 256, false, false, 1, allocate_entry_bytes(9, 524288)));
     *(long *)g_4b4b58[9].unknown8c = 0;
     if (!success) goto failure;
-    data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c;
-    *(long *)g_4b4b58[9].unknown8c += 307200;
+    data = allocate_entry_bytes(9, 307200);
     if (!function_1df20(25, 2, 320, 240, false, true, 1, data)) goto failure;
-    data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c;
-    *(long *)g_4b4b58[9].unknown8c += 307200;
+    data = allocate_entry_bytes(9, 307200);
     if (!function_1df20(26, 2, 320, 240, false, true, 1, data)) goto failure;
-    data = (byte *)g_4b4b58[9].data + *(long *)g_4b4b58[9].unknown8c;
-    *(long *)g_4b4b58[9].unknown8c += 307200;
+    data = allocate_entry_bytes(9, 307200);
     if (!function_1df20(27, 2, 320, 240, false, true, 1, data)) goto failure;
     if (!function_1df20(23, 2, 320, 240, false, true, 1, g_4b4b58[1].data)) goto failure;
     if (!function_1db10(15, 64, 64, 0, false)) goto failure;
