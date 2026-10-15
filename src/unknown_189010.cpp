@@ -53,7 +53,7 @@ static inline s_source_object_header *source_object_header(long object_index)
 }
 
 // @retail 0x189010
-bool function_189010(long object_index, long tag_index)
+bool function_189010(long tag_index, long object_index)
 {
 	bool result = false;
 
@@ -82,7 +82,7 @@ void function_1892a0(s_sound_source_description *description, point3f const *pos
 	description->value24 = NONE;
 	description->value0 = (char)(local_0 & value);
 
-	if (object_index != NONE && function_189010(object_index, tag_index))
+	if (object_index != NONE && function_189010(tag_index, object_index))
 	{
 		s_source_object_header *header = source_object_header(object_index);
 		if ((1 << header->type) & 4)
@@ -339,15 +339,15 @@ long function_189760(s_sound_label_play const *play)
 }
 
 // @retail 0x189340
-long function_189340(long object_index, long tag_index, char audible, s_sound_marker const *marker, s_sound_source_callbacks const *source, real scale, long platform_playback, char const *variant)
+long function_189340(long object_index, long tag_index, long audible, s_sound_marker const *marker, s_sound_source_callbacks const *source, real scale, long platform_playback, char const *variant)
 {
 	s_sound_request request;
 
 	request.location.flags = 0;
-	audible = *(char const volatile *)&audible;
-	function_18d4f0(object_index, &audible, NULL);
-	request.location.audible = audible;
-	request.location.requested_audible = audible;
+	char local_audible = *(char const volatile *)&audible;
+	function_18d4f0(object_index, &local_audible, NULL);
+	request.location.audible = local_audible;
+	request.location.requested_audible = local_audible;
 	request.location.unknown02 = 0;
 	request.location.flags = 0;
 	request.location.unknown08 = 0;
@@ -471,7 +471,7 @@ long function_189060(long object_index, short value, real scale, point3f const *
 
 	description.flags = 0;
 	function_1892a0(&description, position, direction, *local_0, tag_index, object_index);
-	return function_189340(object_index, tag_index, 1, (s_sound_marker *)&description, function_189010(object_index, tag_index) ? &g_444b1c : &g_444afc, scale, NONE, NULL);
+	return function_189340(object_index, tag_index, 1, (s_sound_marker *)&description, function_189010(tag_index, object_index) ? &g_444b1c : &g_444afc, scale, NONE, NULL);
 }
 
 // @retail 0x1890c0
@@ -502,7 +502,7 @@ long function_1890c0(s_sound_label_play const *play, long object_index, short va
 		request.object_index = object_index;
 		request.marker = (s_sound_marker *)&description;
 		request.platform_playback = function_18d5b0(play->label);
-		request.source = function_189010(object_index, play->tag_index) ? &g_444b1c : &g_444afc;
+		request.source = function_189010(play->tag_index, object_index) ? &g_444b1c : &g_444afc;
 		result = function_189fe0(&request, play->tag_index);
 	}
 	return result;
@@ -623,17 +623,15 @@ local_2:
 }
 #pragma inline_depth(255)
 
-/* 0x189cd0: retained for the next matching pass. LTCG removes the unused
-   fourth and fifth arguments (ret 0x14 instead of retail's ret 0x1c),
-   breaking matched callers 0x292080, 0x2a9e00 and 0x2a9ed0. Taking the
-   arguments' addresses did not preserve them. Keep the lane_a stub until
-   the retail convention is reproduced. */
+/* 0x189cd0: kept out of the build until it matches (106 differences, 531
+   bytes against 521). Retail's callers 0x2760a0, 0x292080, 0x2a9e00,
+   0x2a9e60 and 0x2a9ed0 push seven words; built under LTCG, the unused
+   fourth and fifth arguments are dropped (ret 0x14), which breaks the
+   matched callers. The lane_a stub stays until the body matches. */
 #if 0
 void __stdcall function_189cd0(long tag_index, long object_index, real scale, long a, long b, long label, long duration_address)
 {
 	long const *object_reference = &object_index;
-	(void)&a;
-	(void)&b;
 	real *duration = (real *)duration_address;
 
 	if (tag_index != NONE)
@@ -642,7 +640,6 @@ void __stdcall function_189cd0(long tag_index, long object_index, real scale, lo
 		if (slot_index != NONE)
 		{
 			long sound_index;
-			s_sound_source_description description;
 			s_looping_sound_slot *slot = &g_4ed288->slots[slot_index];
 			if (duration)
 			{
@@ -678,6 +675,7 @@ void __stdcall function_189cd0(long tag_index, long object_index, real scale, lo
 			}
 			else
 			{
+				s_sound_source_description description;
 				description.flags = 0;
 				if (*object_reference != NONE)
 				{

@@ -1347,6 +1347,8 @@ bool __stdcall function_26520(void *context)
 
 void function_14f60(short stage, short index);
 
+void function_0224f0(dword stage, D3DTEXTURESTAGESTATETYPE type, dword value);
+
 // @retail 0x2b000
 bool __stdcall function_2b000(void *context)
 {
@@ -1356,8 +1358,12 @@ bool __stdcall function_2b000(void *context)
     D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
     D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
     D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+#pragma inline_depth(0)
+    function_0224f0(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+#pragma inline_depth(255)
+#pragma inline_depth(0)
+    function_0224f0(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+#pragma inline_depth(255)
     D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 0);
     D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
     D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
@@ -2583,7 +2589,9 @@ void __stdcall function_29b00(long tag, long first_bitmap, real first_alpha,
         width = (real)*(short *)(bitmap + 4);
         height = (real)*(short *)(bitmap + 6);
     }
-    function_14bc0(screen_target ? 0 : *(short *)(g_4b99b0 + 0x34), 0, false);
+    short target = 0;
+    if (!screen_target) target = *(short *)(g_4b99b0 + 0x34);
+    function_14bc0(target, 0, false);
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
     function_0222d0(D3DRS_SRCBLEND, 1);
@@ -2664,7 +2672,9 @@ void __stdcall function_29b00(long tag, long first_bitmap, real first_alpha,
 #pragma inline_depth(0)
     D3DDevice_Begin(D3DPT_QUADLIST);
 #pragma inline_depth(255)
+#pragma inline_depth(0)
     D3DDevice_SetVertexData2f(1, first_coordinates[0], first_coordinates[1]);
+#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(2, second_coordinates[0], second_coordinates[1]);
 #pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, bounds[0], bounds[2], 16777215.0f, 16777215.0f);
@@ -2950,9 +2960,13 @@ bool __stdcall function_3a5c0(byte const *configuration, real low, real high, lo
         g_4b843c = 0; D3DDevice_SetRenderState(D3DRS_STENCILENABLE, 0);
         g_4b8438 = 0; D3DDevice_SetRenderState(D3DRS_ZENABLE, 0);
         g_4b82fc = 0; D3DDevice_SetRenderState(D3DRS_ZWRITEENABLE, 0);
+#pragma inline_depth(0)
         function_0222d0(D3DRS_ZFUNC, 0x207);
+#pragma inline_depth(255)
         g_4b8450 = 0; D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
+#pragma inline_depth(0)
         function_0222d0(D3DRS_DEPTHCLIPCONTROL, 0x10);
+#pragma inline_depth(255)
         function_1cc30(12);
         function_1c710(g_51f0f0);
     }

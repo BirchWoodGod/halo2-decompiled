@@ -233,8 +233,8 @@ void function_11dbb0(
 
 // @retail 0x11dd80
 void function_11dd80(
-	real_quaternion_transform *out,
-	real_quaternion_transform const *in)
+	real_quaternion_transform const *in,
+	real_quaternion_transform *out)
 {
 	real inv = 1.f;
 
