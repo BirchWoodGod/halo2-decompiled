@@ -46,7 +46,8 @@ bool __stdcall network_session_handle_player_add(c_class_58d20 *session, long re
 		long member_index = network_session_find_member_by_channel(session, channel_index);
 		if (member_index != NONE && member_index != session->current_member)
 		{
-			long player_index = network_session_add_local_player(session, member_index, message->slot, message->identity);
+			const dword *identity = message->identity;
+			long player_index = network_session_add_local_player(session, member_index, message->slot, identity);
 			if (player_index != NONE)
 			{
 				s_network_session_player *player = &session->players[player_index];
@@ -61,9 +62,9 @@ bool __stdcall network_session_handle_player_add(c_class_58d20 *session, long re
 			memset(&refuse, 0, sizeof(refuse));
 			refuse.session_id = *(s_session_id *)&session->unknown1c;
 			refuse.slot = message->slot;
-			refuse.identity[0] = message->identity[0];
-			refuse.identity[1] = message->identity[1];
-			refuse.identity[2] = message->identity[2];
+			refuse.identity[0] = identity[0];
+			refuse.identity[1] = identity[1];
+			refuse.identity[2] = identity[2];
 			s_network_session_member_state *state = &session->member_states[member_index];
 			if (state->flag1)
 				network_observer_send_message(session->observer, session->value10, state->unknown04, false, _network_message_type_player_refuse, sizeof(refuse), &refuse);
