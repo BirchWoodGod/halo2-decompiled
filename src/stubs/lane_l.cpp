@@ -23,8 +23,6 @@ void __stdcall function_6d4c0(void *object) { }
 
 
 
-// @stub 0x12b450
-void function_12b450(void) { }
 
 
 
