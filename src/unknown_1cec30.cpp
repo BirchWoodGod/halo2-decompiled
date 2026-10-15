@@ -671,7 +671,7 @@ void havok_component_rigid_body_position_get(long rigid_body_index, s_havok_comp
 }
 
 /* retail inlines the velocity getters into this file's callers */
-static inline void rigid_body_linear_velocity_get(long rigid_body_index, s_havok_component *component, vector3f *velocity)
+static inline void rigid_body_linear_velocity_get(s_havok_component *component, long rigid_body_index, vector3f *velocity)
 {
 	hkRigidBody *rigid_body = havok_component_rigid_body_get(rigid_body_index, component);
 
@@ -685,7 +685,7 @@ static inline void rigid_body_linear_velocity_get(long rigid_body_index, s_havok
 	}
 }
 
-static inline void rigid_body_angular_velocity_get(long rigid_body_index, s_havok_component *component, vector3f *velocity)
+static inline void rigid_body_angular_velocity_get(s_havok_component *component, long rigid_body_index, vector3f *velocity)
 {
 	hkRigidBody *rigid_body = havok_component_rigid_body_get(rigid_body_index, component);
 
@@ -700,15 +700,37 @@ static inline void rigid_body_angular_velocity_get(long rigid_body_index, s_havo
 }
 
 // @retail 0x1d09d0
-void havok_component_rigid_body_linear_velocity_get(long rigid_body_index, s_havok_component *component, vector3f *velocity)
+void havok_component_rigid_body_linear_velocity_get(s_havok_component *component, long rigid_body_index, vector3f *velocity)
 {
-	rigid_body_linear_velocity_get(rigid_body_index, component, velocity);
+	/* the rigid body read through a pointer to the array at each use keeps
+	   retail's [index + data] addressing with this parameter order */
+	s_havok_array60 const *rigid_bodies = &component->rigid_bodies;
+
+	if (!rigid_bodies->data[rigid_body_index].rigid_body->m_fixed)
+	{
+		vector3d_from_havok(velocity, &rigid_bodies->data[rigid_body_index].rigid_body->m_motion->m_linear_velocity);
+	}
+	else
+	{
+		*velocity = *g_4687a4;
+	}
 }
 
 // @retail 0x1d0ad0
-void havok_component_rigid_body_angular_velocity_get(long rigid_body_index, s_havok_component *component, vector3f *velocity)
+void havok_component_rigid_body_angular_velocity_get(s_havok_component *component, long rigid_body_index, vector3f *velocity)
 {
-	rigid_body_angular_velocity_get(rigid_body_index, component, velocity);
+	/* the rigid body read through a pointer to the array at each use keeps
+	   retail's [index + data] addressing with this parameter order */
+	s_havok_array60 const *rigid_bodies = &component->rigid_bodies;
+
+	if (!rigid_bodies->data[rigid_body_index].rigid_body->m_fixed)
+	{
+		vector3d_from_havok(velocity, &rigid_bodies->data[rigid_body_index].rigid_body->m_motion->m_angular_velocity);
+	}
+	else
+	{
+		*velocity = *g_4687a4;
+	}
 }
 
 // @retail 0x1d0a20
@@ -911,7 +933,7 @@ void havok_component_rigid_body_linear_velocity_change(long rigid_body_index, s_
 {
 	vector3f velocity;
 
-	rigid_body_linear_velocity_get(rigid_body_index, component, &velocity);
+	rigid_body_linear_velocity_get(component, rigid_body_index, &velocity);
 	velocity.i += change->i;
 	velocity.j += change->j;
 	velocity.k += change->k;
@@ -970,8 +992,8 @@ void havok_component_node_states_get(s_havok_component *component, s_havok_node_
 			{
 				states->valid[node_index >> 5] |= 1 << (node_index & 0x1f);
 				havok_component_rigid_body_matrix_get(rigid_body_index, component, &states->matrices[node_index]);
-				rigid_body_linear_velocity_get(rigid_body_index, component, &states->linear_velocities[node_index]);
-				rigid_body_angular_velocity_get(rigid_body_index, component, &states->angular_velocities[node_index]);
+				rigid_body_linear_velocity_get(component, rigid_body_index, &states->linear_velocities[node_index]);
+				rigid_body_angular_velocity_get(component, rigid_body_index, &states->angular_velocities[node_index]);
 			}
 		}
 	}
@@ -2470,8 +2492,8 @@ void function_1ced00(s_havok_component *component)
             if (havok_component_rigid_body_get(i, component)->m_motion->getType() != 6)
             {
                 vector3f linear, angular;
-                rigid_body_linear_velocity_get(i, component, &linear);
-                rigid_body_angular_velocity_get(i, component, &angular);
+                rigid_body_linear_velocity_get(component, i, &linear);
+                rigid_body_angular_velocity_get(component, i, &angular);
                 real speed_squared = linear.k * linear.k + linear.j * linear.j + linear.i * linear.i;
                 if (speed_squared > 10000.0f)
                 {
