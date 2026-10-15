@@ -777,11 +777,6 @@ void c_session_client::function_06dbd0(const s_session_id *id)
 	case 6:
 		return;
 	case 7:
-		if (s->flag7420)
-		{
-			return;
-		}
-		break;
 	case 8:
 		if (s->flag7420)
 		{
