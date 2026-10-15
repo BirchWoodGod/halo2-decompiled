@@ -345,8 +345,8 @@ void function_279e40(s_aiming_screen const *screen, s_graph_tag *graph, c_type_7
 	upper_row = (real)ceil(pitch_frame);
 	lower_row = PIN(lower_row, 0.0f, (real)(down_frame_count + up_frame_count));
 	upper_row = PIN(upper_row, 0.0f, (real)(down_frame_count + up_frame_count));
-	lower_frame = (real)yaw_frame_count * lower_row + yaw_frame;
 	fraction = pitch_frame - lower_row;
+	lower_frame = (real)yaw_frame_count * lower_row + yaw_frame;
 	upper_frame = (real)yaw_frame_count * upper_row + yaw_frame;
 	if (fraction < 0.0001f)
 	{
@@ -1378,7 +1378,7 @@ __forceinline void compute_component_orientations(long blend_method, long node_k
 						}
 						if (interpolate)
 						{
-							dword frame_index = g_sampling_settings.frame_index;
+							long frame_index = g_sampling_settings.frame_index;
 							long frame_index2 = g_sampling_settings.next_frame_index;
 							real frame_fraction = g_sampling_settings.frame_fraction;
 
