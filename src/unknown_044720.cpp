@@ -190,13 +190,13 @@ void function_44720(void)
 void __stdcall function_44c90(long group, dword selection_mask, long level,
     dword and_mask, dword or_mask, dword fallback_and_mask, dword fallback_or_mask, bool force)
 {
-    long end = (word)(group ? g_4c0b78.current : g_4c0b78.previous);
-    long begin = group ? (word)g_4c0b78.previous : 0;
+    long end = (word)(!group ? g_4c0b78.previous : g_4c0b78.current);
+    long begin = !group ? 0 : (word)g_4c0b78.previous;
     for (long index = begin; index < end; ++index)
     {
         s_44940_entry *entry = &g_4ba138[(short)index];
         if (!((entry->unknown00 & selection_mask) & 0x1fffff) ||
-            ((entry->flags >> 4) & 0x1f) != level || !(entry->unknown00 & 1) || !entry->unknown10[0xa]) continue;
+            ((entry->flags >> 4) & 0x1f) != level || !(entry->unknown00 & 1) || entry->unknown10[0xa] <= 0) continue;
         byte weight = g_4c0b78.weights[index];
         short transform_index = (short)(entry->flags & 0xf);
         byte material_index = g_4c0b78.material_indices[(short)index];

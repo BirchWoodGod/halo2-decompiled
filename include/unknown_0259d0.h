@@ -118,6 +118,14 @@ static inline void vector3d_from_points3d(point3f const *p0, point3f const *p1, 
 	out->k = p1->z - p0->z;
 }
 
+__inline point3f *real_point3d_set(point3f *point, real x, real y, real z)
+{
+	point->x = x;
+	point->y = y;
+	point->z = z;
+	return point;
+}
+
 static inline real plane_distance_to_point(plane3f const *plane, point3f const *point)
 {
 	return plane->i * point->x + plane->j * point->y + plane->k * point->z - plane->d;

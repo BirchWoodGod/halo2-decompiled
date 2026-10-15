@@ -220,10 +220,15 @@ bool function_26e180(long record_index, s_record_motion_view const *motion, shor
 							*reported_point = point;
 						result = true;
 					}
+					else
+						goto failed;
 				}
+				else
+					goto failed;
 			}
 		}
 	}
+failed:
 	return result;
 }
 
