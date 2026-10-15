@@ -1495,8 +1495,8 @@ struct s_havok_component;
 bool havok_component_any_rigid_body_active(s_havok_component *component);
 bool havok_component_main_rigid_body_movable(s_havok_component *component);
 void function_1d4360(s_havok_component *component, transform4x3f *volatile result);
-void havok_component_rigid_body_linear_velocity_get(long body, s_havok_component *component, vector3f *velocity);
-void havok_component_rigid_body_angular_velocity_get(long body, s_havok_component *component, vector3f *velocity);
+void havok_component_rigid_body_linear_velocity_get(s_havok_component *component, long body, vector3f *velocity);
+void havok_component_rigid_body_angular_velocity_get(s_havok_component *component, long body, vector3f *velocity);
 void function_1d96d0(long index);
 
 // @retail 0xbc5e0
@@ -1523,10 +1523,10 @@ void __stdcall function_bc5e0(long index)
                 {
                     vector3f linear, angular;
                     vector3f *angular_pointer = 0;
-                    havok_component_rigid_body_linear_velocity_get(0, (s_havok_component *)component, &linear);
+                    havok_component_rigid_body_linear_velocity_get((s_havok_component *)component, 0, &linear);
                     if (!(*(dword *)(component + 4) & 2))
                     {
-                        havok_component_rigid_body_angular_velocity_get(0, (s_havok_component *)component, &angular);
+                        havok_component_rigid_body_angular_velocity_get((s_havok_component *)component, 0, &angular);
                         angular_pointer = &angular;
                     }
                     function_b7740(index, &linear, angular_pointer, false);
