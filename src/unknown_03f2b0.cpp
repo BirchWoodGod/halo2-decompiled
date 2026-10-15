@@ -8,6 +8,7 @@
 /* UNKNOWN_03F2B0.CPP: visibility lists, resource prediction and index caches */
 
 #include "unknown_11c920.h"
+#include "unknown_044e90.h"
 #include "visibility_storage.h"
 #include "camera_storage.h"
 #include "frame_storage.h"
@@ -87,12 +88,6 @@ c_allocator *function_46220(void)
 	return g_480118;
 }
 
-
-struct s_render_object_header
-{
-	byte unknown00[8];
-	long *object;
-};
 
 // @retail 0x3d3e0
 short function_3d3e0(long object_index, bool cached)
@@ -780,12 +775,6 @@ void *function_449e0(short index, bool load, bool instance)
 	return result;
 }
 
-struct s_geometry_visibility_list
-{
-	dword *indices;
-	long count;
-};
-
 PRIVATE __forceinline byte *visible_entry_geometry(s_44940_entry *entry)
 {
 	if (entry->tag != NONE)
@@ -1250,155 +1239,7 @@ extern s_42760_entry g_4c152c[32];
 extern long g_4c19ac;
 
 
-struct s_frustum_set_view;
-bool function_165010(s_frustum_set_view const *set, long section_index, point3f const *center, real radius, bool *contained);
-int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
-struct s_visibility_plane_query
-{
-    long count;
-    plane3f *planes;
-};
-struct s_visibility_query_list
-{
-    dword *indices;
-    long count;
-    long capacity;
-};
-void __cdecl function_2dd930(void *data, s_visibility_plane_query const *query,
-    s_visibility_query_list *second, s_visibility_query_list *first);
-template<long N> struct s_visibility_query_storage
-{
-    s_visibility_query_list list;
-    dword indices[N];
-};
-struct s_visibility_query_workspace
-{
-    s_visibility_query_storage<1024> first, second;
-    s_visibility_query_storage<2048> third;
-    union
-    {
-        s_visibility_query_storage<2048> fourth;
-        transform4x3f transforms[255];
-    };
-};
-
-PRIVATE __forceinline void release_visibility_list(s_visibility_query_list *list)
-{
-    if (list->capacity >= 0)
-        g_480118->allocate((long)list->indices, (list->capacity & 0x7fffffff) * 4, 0x12);
-}
-
-// @retail 0x44e90
-void __stdcall function_44e90(short entry_index, short section_index)
-{
-    (void)&entry_index; (void)&section_index;
-    s_visibility_query_workspace workspace;
-    s_44940_entry *entry = &g_4ba138[entry_index];
-    byte *geometry = visible_entry_geometry(entry);
-    byte *views = *(byte **)g_4c0b78.state->unknown00;
-    byte *view_ranges = views + section_index * 0x1a + 0xa6e;
-    if (!(*(long *)(geometry + 0x30) > 0)) {
-        byte *tag = g_4e3b44[entry->tag & 0xffff].bytes;
-        long object_index = **(long **)entry->unknown10;
-        byte *object = (byte *)((s_render_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-        long node_count = *(short *)(object + 0x114) / sizeof(transform4x3f);
-        transform4x3f const *nodes = (transform4x3f *)(object + *(short *)(object + 0x116));
-        for (long i = 0; i < node_count; ++i)
-            function_142a60(&nodes[i], (transform4x3f *)(*(byte **)(tag + 0x4c) + i * 0x60 + 0x28), &workspace.transforms[i]);
-        dword *visible = *(dword **)(entry->unknown10 + 4);
-        for (long part = 0; part < *(long *)(geometry + 8); ++part)
-        {
-            dword bit = 1 << (part & 31);
-            if (!(visible[part >> 5] & bit))
-            {
-                word bound_index = *(word *)(*(byte **)(geometry + 0xc) + part * 8 + 4);
-                byte *bound = *(byte **)(geometry + 0x14) + bound_index * 20;
-                transform4x3f const *transform = &workspace.transforms[bound[0x10]];
-                point3f local = *(point3f *)bound;
-                if (transform->scale != 1.0f)
-                {
-                    local.x *= transform->scale;
-                    local.y *= transform->scale;
-                    local.z *= transform->scale;
-                }
-                point3f center;
-                center.x = transform->up.i * local.z + transform->left.i * local.y + transform->forward.i * local.x + transform->position.x;
-                center.y = transform->up.j * local.z + transform->left.j * local.y + transform->forward.j * local.x + transform->position.y;
-                center.z = transform->up.k * local.z + transform->left.k * local.y + transform->forward.k * local.x + transform->position.z;
-                bool contained = false;
-                if (function_165010((s_frustum_set_view *)views, section_index, &center, *(real *)(bound + 0xc), &contained))
-                {
-                    entry->unknown00 |= 1;
-                    visible[part >> 5] |= bit;
-                }
-            }
-        }
-    } else {
-        bool parts = !g_4c0b78.state->active && (entry->unknown00 & 0x1000) &&
-            *(long *)(geometry + 0x30) > 2 * *(long *)(geometry + 8);
-        byte *query_data = *(byte **)(geometry + 0x2c);
-        if (parts)
-            query_data += (*(long *)(query_data + 0x20) + 15) & ~15;
-        workspace.first.list.indices = workspace.first.indices;
-        workspace.first.list.count = 0;
-        workspace.first.list.capacity = (long)0x80000400;
-        workspace.second.list.indices = workspace.second.indices;
-        workspace.second.list.count = 0;
-        workspace.second.list.capacity = (long)0x80000400;
-        workspace.third.list.indices = workspace.third.indices;
-        workspace.third.list.count = 0;
-        workspace.third.list.capacity = (long)0x80000800;
-        workspace.fourth.list.indices = workspace.fourth.indices;
-        workspace.fourth.list.count = 0;
-        workspace.fourth.list.capacity = (long)0x80000800;
-        __declspec(align(16)) plane3f planes[6];
-        s_visibility_plane_query query = { 6, planes };
-        for (long view = 0; view < *(short *)views; ++view)
-        {
-            for (long i = 0; i < ((short *)view_ranges)[view + 1]; ++i)
-            {
-                long frustum_index = *(short *)(view_ranges + 0xe + view * 2) + i;
-                plane3f const *source = (plane3f *)(views + 0x1974 + frustum_index * 0x108 + 0x78);
-                transform4x3f const *transform = *(transform4x3f **)(entry->unknown10 + 0xc);
-                for (long j = 0; j < 6; ++j)
-                {
-                    plane3f p = source[j];
-                    if (transform)
-                    {
-                        if (transform->scale != 0.0f)
-                        {
-                            p.d -= transform->position.y * p.j + transform->position.z * p.k + transform->position.x * p.i;
-                            if (transform->scale != 1.0f)
-                                p.d /= transform->scale;
-                        }
-                        vector3f n = p.n;
-                        if (transform->scale != 1.0f)
-                        {
-                            real inverse = 1.0f / transform->scale;
-                            n.i *= inverse; n.j *= inverse; n.k *= inverse;
-                        }
-                        p.i = transform->forward.k * n.k + transform->forward.j * n.j + transform->forward.i * n.i;
-                        p.j = transform->left.k * n.k + transform->left.j * n.j + transform->left.i * n.i;
-                        p.k = transform->up.k * n.k + transform->up.j * n.j + transform->up.i * n.i;
-                    }
-                    p.d = -p.d;
-                    planes[j] = p;
-                }
-                function_2dd930(query_data, &query, &workspace.first.list, &workspace.second.list);
-            }
-            if (parts)
-                function_45a80(entry_index, true, (s_geometry_visibility_list *)&workspace.second.list,
-                    (s_geometry_visibility_list *)&workspace.first.list);
-            else
-                function_458d0(entry_index, true, (s_geometry_visibility_list *)&workspace.second.list,
-                    (s_geometry_visibility_list *)&workspace.first.list);
-        }
-        release_visibility_list(&workspace.fourth.list);
-        release_visibility_list(&workspace.third.list);
-        release_visibility_list(&workspace.first.list);
-        release_visibility_list(&workspace.second.list);
-    }
-}
+void __stdcall function_44e90(short entry_index, short section_index);
 
 
 transform4x3f *function_b8c00(long object_index, long *node_count);
