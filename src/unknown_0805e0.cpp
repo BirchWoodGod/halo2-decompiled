@@ -254,7 +254,7 @@ struct s_cached_player_view
 };
 
 // @retail 0x7f8b0
-void function_7f8b0(const s_cached_player_identity *identity, s_cached_player_view *result,
+void function_7f8b0(s_cached_player_view *result, const s_cached_player_identity *identity,
 	const s_cached_player_source *source, const s_cached_player_view *previous)
 {
 	memset(result, 0, sizeof(*result));
@@ -449,7 +449,7 @@ void function_7f930(void)
 		source.field78 = 0;
 		source.field7f = 0xff;
 		s_player_configuration_cache_entry *entry = &g_4cf98c[i];
-		function_7f8b0(&identity, (s_cached_player_view *)&entry->player, &source, NULL);
+		function_7f8b0((s_cached_player_view *)&entry->player, &identity, &source, NULL);
 		entry->next = entry->next_other = entry->unknown58 = entry->previous_other = NONE;
 		entry->flags = 0;
 		*(long *)entry->unknown64 = 0;
@@ -595,7 +595,7 @@ void function_80490(const s_cached_player_identity *identity, const s_cached_pla
 	{
 		s_player_configuration_cache_entry *entry = &g_4cf98c[index];
 		s_cached_player_view player;
-		function_7f8b0(identity, &player, source, (const s_cached_player_view *)&entry->player);
+		function_7f8b0(&player, identity, source, (const s_cached_player_view *)&entry->player);
 		changed = memcmp(&entry->player, &player, sizeof(entry->player)) != 0;
 		if (changed)
 			memcpy(&entry->player, &player, sizeof(entry->player));
