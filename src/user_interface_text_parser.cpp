@@ -1505,15 +1505,16 @@ void function_22d2ee(word *string, long maximum_length)
 				}
 			}
 		}
-		for (i = 0; i < NUMBEROF(g_44a3f0); i++)
+		s_emoticon const *entry = g_44a3f0;
+		for (i = 0; i < NUMBEROF(g_44a3f0); i++, entry++)
 		{
-			long text_length = wcslen(g_44a3f0[i].text);
+			long text_length = wcslen(entry->text);
 
-			if (!wcsncmp(g_44a3f0[i].text, character, text_length))
+			if (!wcsncmp(entry->text, character, text_length))
 			{
 				word glyph[2];
 
-				glyph[0] = (word)g_44a3f0[i].character;
+				glyph[0] = (word)entry->character;
 				glyph[1] = 0;
 				wcsncpy(replacement, glyph, k_parse_buffer_length - 1);
 				replacement[k_parse_buffer_length - 1] = 0;
