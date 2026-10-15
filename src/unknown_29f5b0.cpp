@@ -3444,8 +3444,8 @@ void __stdcall function_2a3600(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		bool interpolate = *(bool *)&arguments[3];
 		long object_index = arguments[4];
+		bool interpolate = *(bool *)&arguments[3];
 		long animation_name = arguments[2];
 		long graph_index = arguments[1];
 		long unit = arguments[0];
@@ -3465,8 +3465,8 @@ void __stdcall function_2a3670(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		bool interpolate = *(bool *)&arguments[3];
 		long object_index = arguments[4];
+		bool interpolate = *(bool *)&arguments[3];
 		long animation_name = arguments[2];
 		long graph_index = arguments[1];
 		long unit = arguments[0];

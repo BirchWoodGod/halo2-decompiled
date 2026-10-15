@@ -108,11 +108,11 @@ void function_b5920(long identifier)
 		s_world_pool *pool = &world->data->pool;
 		s_world_state *saved_state = pool->state;
 		long index = identifier & 0x3ff;
-		byte flags = *(byte *)&saved_state->entries[identifier & 0x3ff];
+		bool active = (*(byte *)&saved_state->entries[identifier & 0x3ff] & 4) != 0;
 		s_world_slot *slot = &pool->slots[index];
 		*((byte *)slot + 6) = 0;
 		*(long *)((byte *)slot + 8) = NONE;
-		if (flags & 4)
+		if (active)
 		{
 			s_world_state *peers = saved_state;
 			byte current_flags = *(byte *)&peers->entries[identifier & 0x3ff];
