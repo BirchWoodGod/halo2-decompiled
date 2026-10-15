@@ -144,9 +144,10 @@ bool voice_xhv_get_runtime_parameters(XHV_RUNTIME_PARAMS *parameters, c_voice_xh
 bool voice_xhv_create(c_voice_xhv *xhv)
 {
     XHV_RUNTIME_PARAMS parameters;
-    XHVEngine **engine = &xhv->engine;
+    XHVEngine **engine;
     HRESULT error;
     bool result = voice_xhv_get_runtime_parameters(&parameters, xhv);
+    engine = &xhv->engine;
     bool *local_0 = &result;
     if (!result)
         goto local_1;
