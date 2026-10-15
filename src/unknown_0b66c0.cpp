@@ -327,8 +327,8 @@ bool s_http_connection_ab::connect(long address, word port, char const *path, bo
         endpoint->socket = NONE;
         endpoint->flags = 0;
         endpoint->type = 4;
-        if (flag) connection->endpoint->flags |= 0x40;
-        if (function_b51b0(connection->endpoint, &connection->address))
+        if (flag) endpoint->flags |= 0x40;
+        if (function_b51b0(endpoint, &connection->address))
         {
             connection->attempt_count++;
             connection->state = 1;

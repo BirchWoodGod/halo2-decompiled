@@ -159,11 +159,12 @@ bool function_23a220(const point2f *point, short count, const point2f *points, r
 // @retail 0x1edf50
 void c_vertex_shape::ray_test(bool *hit, const s_shape_ray *ray, s_shape_ray_result *result)
 {
+	point3f origin = *(point3f *)&vertices_raw[0];
 	vector3f direction;
 	vector3d_from_points3d(&ray->start, &ray->end, &direction);
 	vector3f first, second;
-	vector3d_from_points3d((point3f *)&vertices_raw[0], (point3f *)&vertices_raw[4], &first);
-	vector3d_from_points3d((point3f *)&vertices_raw[0], (point3f *)&vertices_raw[8], &second);
+	vector3d_from_points3d(&origin, (point3f *)&vertices_raw[4], &first);
+	vector3d_from_points3d(&origin, (point3f *)&vertices_raw[8], &second);
 	vector3f normal;
 	normal.i = first.j * second.k - first.k * second.j;
 	normal.j = first.k * second.i - first.i * second.k;
@@ -179,7 +180,7 @@ void c_vertex_shape::ray_test(bool *hit, const s_shape_ray *ray, s_shape_ray_res
 	}
 	real fourth = 0.0f;
 	vector3f offset;
-	vector3d_from_points3d((point3f *)&vertices_raw[0], &ray->start, &offset);
+	vector3d_from_points3d(&origin, &ray->start, &offset);
 	real dot = dot3f(&normal, &direction);
 	real fraction = 0.0f;
 	if (dot != 0.0f)

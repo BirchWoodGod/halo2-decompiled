@@ -495,7 +495,8 @@ bool function_1a8220(long index, short a, short b, long unknown, short c, short 
 // @retail 0x2662f0
 void function_2662f0(long actor_index)
 {
-	s_actor_view *actor = actor_get(actor_index);
+	long const *actor_reference = &actor_index;
+	s_actor_view *actor = actor_get(*actor_reference);
 	short desired;
 	long task_index = actor->unknown858;
 	if (task_index != NONE)
@@ -522,59 +523,61 @@ void function_2662f0(long actor_index)
 		if (actor->unknown358 > 0)
 			recent_minimum = 2;
 		short maximum = clump_minimum > recent_minimum ? clump_minimum : recent_minimum;
-		desired = desired > maximum ? desired : (clump_minimum > recent_minimum ? clump_minimum : recent_minimum);
+		desired = desired > maximum ? desired : maximum;
 	}
-	if (desired >= 3)
-		goto reset_time;
-	if (actor->unknown086 > 3)
+	if (desired < 3)
 	{
-		actor->unknown086 = 3;
-		*(long *)actor->unknown088 = 0;
-	}
-	{
-		byte *definition = NULL;
-		if (actor->unknown030 != NONE)
+		if (actor->unknown086 > 3)
 		{
-			byte *squad = g_51e9d8->data + (actor->unknown030 & 0xffff) * 0x98;
-			short definition_index = *(short *)(squad + 0x2a);
-			if (definition_index != NONE)
-				definition = *(byte **)((byte *)g_4e0350 + 0x244) + definition_index * 0x7c;
+			actor->unknown086 = 3;
+			*(long *)actor->unknown088 = 0;
 		}
-		if (definition && desired < *(short *)(definition + 0x28) - 1)
-			desired = *(short *)(definition + 0x28) - 1;
-		else
 		{
-			byte *variant = (byte *)function_272a00(actor_index);
-			if (variant)
+			byte *definition = NULL;
+			if (actor->unknown030 != NONE)
 			{
-				short level = g_470fe0[*(short *)(variant + 0x20)];
-				if (actor->unknown086 >= level && desired < level)
-					desired = level;
+				byte *squad = g_51e9d8->data + (actor->unknown030 & 0xffff) * 0x98;
+				short definition_index = *(short *)(squad + 0x2a);
+				if (definition_index != NONE)
+					definition = *(byte **)((byte *)g_4e0350 + 0x244) + definition_index * 0x7c;
+			}
+			if (definition && desired < *(short *)(definition + 0x28) - 1)
+				desired = *(short *)(definition + 0x28) - 1;
+			else
+			{
+				byte *variant = (byte *)function_272a00(*actor_reference);
+				if (variant)
+				{
+					short level = g_470fe0[*(short *)(variant + 0x20)];
+					if (actor->unknown086 >= level && desired < level)
+						desired = level;
+				}
 			}
 		}
+		if (desired < actor->unknown086)
+		{
+			desired = actor->unknown086;
+			switch (desired)
+			{
+			case 3:
+				if (*(short *)actor->unknown088 * g_510c54->rate < 0.0f)
+					break;
+				desired = 2;
+			case 2:
+				if (*(short *)actor->unknown088 * g_510c54->rate >= 15.0f)
+					desired = 1;
+				break;
+			}
+			goto update;
+		}
 	}
-	if (desired >= actor->unknown086)
-		goto reset_time;
-	desired = actor->unknown086;
-	switch (desired)
-	{
-	case 3:
-		if (*(short *)actor->unknown088 * g_510c54->rate < 0.0f)
-			break;
-		desired = 2;
-	case 2:
-		if (*(short *)actor->unknown088 * g_510c54->rate >= 15.0f)
-			desired = 1;
-		break;
-	}
-	goto update;
 reset_time:
 	*(long *)actor->unknown088 = 0;
 update:
 	if (actor->unknown086 != desired)
 	{
 		if (desired >= 3 && actor->unknown086 < 2)
-			function_1a8220(actor_index, 7, 2, 3, 1, 42, 3);
+			function_1a8220(*actor_reference, 7, 2, 3, 1, 42, 3);
 		*(long *)actor->unknown088 = 0;
 		actor->unknown086 = desired;
 	}
@@ -947,9 +950,9 @@ bool function_267840(long actor_index, long prop_index, vector3f *direction)
 	{
 		if (prop->unknown25)
 		{
-			long player_index = object_get(*(long *)((byte *)prop + 8))->player_index;
+			s_slot_object_view *object = object_get(*(long *)((byte *)prop + 8));
 			s_ai_player *player;
-			if (player_index != NONE && (player = ai_player_get(player_index)) != NULL)
+			if (object->player_index != NONE && (player = ai_player_get(object->player_index)) != NULL)
 			{
 				if (state->unknown63)
 					result = true;

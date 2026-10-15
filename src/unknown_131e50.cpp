@@ -43,8 +43,6 @@ dword __cdecl pack_color4f(const color4f *color)
 	return pixel;
 }
 
-__declspec(noinline) dword __cdecl pack_color3f(color3f const *color);
-
 // @retail 0x131ed0
 dword __cdecl pack_color3f(const color3f *color)
 {

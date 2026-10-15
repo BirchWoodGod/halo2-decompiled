@@ -227,7 +227,11 @@ bool __stdcall function_29e730(s_29e730 *arg_0, long arg_1, point3f const *arg_2
 {
     bool local_0 = false;
     s_29e731 *local_1 = (s_29e731 *)(g_4f55f0->data + (arg_1 & 0xffff) * 0x888);
-    long local_2 = local_1->field_18 == NONE ? NONE : function_baf80(local_1->field_18);
+    long local_2;
+    if (local_1->field_18 != NONE)
+        local_2 = function_baf80(local_1->field_18);
+    else
+        local_2 = NONE;
     memset(arg_7, 0, sizeof(*arg_7));
     s_type_c3b527 local_3;
     vector3f local_4;
@@ -237,7 +241,7 @@ bool __stdcall function_29e730(s_29e730 *arg_0, long arg_1, point3f const *arg_2
     vector3f local_8;
     point3f local_9;
     s_262b40_result *local_10;
-    if (arg_0->field_0 == 6)
+    if (arg_0->field_0 != 6) goto local_24;
     {
         if (!function_262a90(arg_0->field_c, &local_5, &local_4)) goto local_20;
         if (!function_2702a0(arg_1, 0xf000545, 0x5000049, 0x6000542, 0x400000c,
@@ -262,19 +266,7 @@ bool __stdcall function_29e730(s_29e730 *arg_0, long arg_1, point3f const *arg_2
         }
         goto local_21;
     }
-    if (arg_0->field_0 == 4)
-    {
-        long local_12 = function_1e4990(local_1->field_54);
-        if (!local_12 || (*(byte *)local_12 & 2)) goto local_20;
-        local_10 = function_262b40(arg_0->field_c);
-        if (!local_10 || !((byte)local_10->flags & 0x40)) goto local_20;
-        if (!function_262af0(arg_0->field_c, &local_5, &local_8)) goto local_20;
-        if (!function_2702a0(arg_1, 0x6000542, 0x400069d, 0x6000542, 0x400000c,
-            (point3f *)&local_8, (vector3f *)&local_5, &local_9, NULL, &local_4, NULL)) goto local_20;
-        local_3.output_index = ((s_type_c3b527 *)local_10)->output_index;
-        if (!function_210690(local_3.output_index, &local_9, &local_3.point)) goto local_20;
-        goto local_21;
-    }
+
 local_20:
     local_3 = *arg_3;
     local_0 = false;
@@ -349,4 +341,19 @@ local_22:
         if (++*local_23 > 32) *local_23 = 0;
     }
     return arg_7->field_0;
+local_24:
+    if (arg_0->field_0 == 4)
+    {
+        long local_12 = function_1e4990(local_1->field_54);
+        if (!local_12 || (*(byte *)local_12 & 2)) goto local_20;
+        local_10 = function_262b40(arg_0->field_c);
+        if (!local_10 || !((byte)local_10->flags & 0x40)) goto local_20;
+        if (!function_262af0(arg_0->field_c, &local_5, &local_8)) goto local_20;
+        if (!function_2702a0(arg_1, 0x6000542, 0x400069d, 0x6000542, 0x400000c,
+            (point3f *)&local_8, (vector3f *)&local_5, &local_9, NULL, &local_4, NULL)) goto local_20;
+        local_3.output_index = ((s_type_c3b527 *)local_10)->output_index;
+        if (!function_210690(local_3.output_index, &local_9, &local_3.point)) goto local_20;
+        goto local_21;
+    }
+    goto local_20;
 }
