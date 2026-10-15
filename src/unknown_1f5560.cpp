@@ -89,6 +89,8 @@ done:
     return result;
 }
 
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1f5390
 bool function_1f5390(point2f const *heading, long actor_index, real distance,
     short *mode, real vertical_distance, bool *vertical_out, s_path_trace_result *trace)
@@ -121,8 +123,11 @@ bool function_1f5390(point2f const *heading, long actor_index, real distance,
             attempts = 2;
             if (*(byte *)((byte *)actor + 0x5d0))
             {
-                real side = *(real *)((byte *)actor + 0x5f0) * heading->x +
-                    *(real *)((byte *)actor + 0x5ec) * (0.0f - heading->y);
+                real forward = heading->x;
+                _ReadWriteBarrier();
+                real side_direction = 0.0f - heading->y;
+                real side = *(real *)((byte *)actor + 0x5f0) * forward;
+                side += *(real *)((byte *)actor + 0x5ec) * side_direction;
                 if (side > 0.5f)
                 {
                     selected = 0;
@@ -140,9 +145,11 @@ bool function_1f5390(point2f const *heading, long actor_index, real distance,
             }
             else
             {
+                dword value;
                 dword *seed = &g_4e7408->unknown0;
-                *seed = *seed * 0x19660d + 0x3c6ef35f;
-                if (*seed & 0x80000000)
+                value = *seed * 0x19660d + 0x3c6ef35f;
+                *seed = value;
+                if ((value & 0x80000000) > 0)
                 {
                     selected = 0;
                     direction.x = 0.0f - heading->y;
@@ -168,11 +175,11 @@ bool function_1f5390(point2f const *heading, long actor_index, real distance,
         direction.x = 0.0f - direction.x;
         direction.y = 0.0f - direction.y;
     }
-    selected = NONE;
 local_1:
-    *mode = selected;
+    *mode = local_0 ? selected : NONE;
     return local_0;
 }
+#pragma function(_ReadWriteBarrier)
 
 long function_1e4a50(long index);
 real function_26f290(short type);

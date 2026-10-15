@@ -594,3 +594,110 @@ void function_295bd0(bool prefer_selected)
 		}
 	}
 }
+
+struct s_295e60_object
+{
+	long definition_index;
+	dword flags;
+	byte unknown008[0x130 - 8];
+	short field_130;
+	byte unknown132[0x1d4 - 0x132];
+	short field_1d4;
+};
+
+struct s_295e60_entry
+{
+	short field_0;
+	short value;
+};
+
+struct s_295e60_placement
+{
+	byte unknown00[0x40];
+	long count_40;
+	s_295e60_entry *entries_44;
+	byte unknown48[8];
+	long count_50;
+	s_295e60_entry *entries_54;
+};
+
+struct s_scenery_placement;
+short __fastcall function_10a040(long definition_index, s_scenery_placement *placement);
+inline void function_b8b70(long object_index);
+
+// @retail 0x295e60
+void function_295e60(short arg_0)
+{
+	s_type_f1af8e iterator;
+	s_295e60_object *object;
+	function_bae80(&iterator, 0x40, 0);
+	while ((object = (s_295e60_object *)function_baeb0(&iterator)) != NULL)
+	{
+		s_295e60_placement *placement = (s_295e60_placement *)function_b7a40((s_scenario_identifier_ab const *)((byte *)object + 0xa4), NULL);
+		object->flags &= ~0x400000;
+		object->field_130 = NONE;
+		if (placement)
+		{
+			switch (function_10a040(object->definition_index, (s_scenery_placement *)placement))
+			{
+			case 0:
+				object->flags |= 0x800000;
+				break;
+			case 1:
+				if (arg_0 < placement->count_50)
+				{
+					object->field_130 = placement->entries_54[arg_0].value;
+					if (placement->entries_54[arg_0].value != NONE)
+						object->flags |= 0x400000;
+				}
+				object->flags |= 0x800000;
+				break;
+			case 3:
+				object->flags |= 0x800000;
+				break;
+			}
+		}
+		function_b8b70(iterator.object_index);
+	}
+	function_bae80(&iterator, 0x80, 0);
+	while ((object = (s_295e60_object *)function_baeb0(&iterator)) != NULL)
+	{
+		s_295e60_placement *placement = (s_295e60_placement *)function_b7a40((s_scenario_identifier_ab const *)((byte *)object + 0xa4), NULL);
+		object->flags &= ~0x400000;
+		object->field_1d4 = NONE;
+		if (placement)
+		{
+			short mode = 3;
+			if (object->definition_index != NONE)
+			{
+				byte *definition = g_4e3b44[object->definition_index & 0xffff].bytes;
+				switch (*(short *)(definition + 0x130))
+				{
+				case 0: mode = 2; break;
+				case 1: mode = 1; break;
+				case 2: mode = 0; break;
+				default: mode = 3; break;
+				}
+			}
+			switch (mode)
+			{
+			case 0:
+				object->flags |= 0x800000;
+				break;
+			case 1:
+				if (arg_0 < placement->count_40)
+				{
+					object->field_1d4 = placement->entries_44[arg_0].value;
+					if (placement->entries_44[arg_0].value != NONE)
+						object->flags |= 0x400000;
+				}
+				object->flags |= 0x800000;
+				break;
+			case 3:
+				object->flags |= 0x800000;
+				break;
+			}
+		}
+		function_b8b70(iterator.object_index);
+	}
+}

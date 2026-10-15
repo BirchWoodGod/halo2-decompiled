@@ -1,3 +1,4 @@
+#include "unknown_4cf790.h"
 // @flags /O1 /Oi /Gr
 /* UNKNOWN_2B393C.CPP: the online Y menu's list of
    the players of the recent games, copied from the player configuration
@@ -18,7 +19,7 @@ c_class_1473c9 *__stdcall function_2b7212(s_screen_parameters *parameters);
 void unicode_string_to_ascii(const word *source, char *destination, long maximum_count);
 
 /* the player configuration cache's first used entry (not decompiled yet) */
-long g_4cf984;
+
 
 /* the next player of the player configuration cache after the iterator's */
 bool player_configuration_cache_next_recent_player(s_recent_player *player, long *iterator);

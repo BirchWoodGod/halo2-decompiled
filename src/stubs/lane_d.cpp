@@ -16,10 +16,6 @@ void __stdcall function_565c0(s_voice_routing *routing, unsigned long members, s
 class c_class_6a600;
 
 
-// @stub 0x7a840
-void function_07a840(void)
-{
-}
 
 
 

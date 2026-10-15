@@ -2940,7 +2940,13 @@ struct short_rect_pair
 {
     struct { short v0, v1, v2, v3; } a, b;
 };
-extern short_rect_pair g_485a8a;
+struct s_unknown_485a88
+{
+    byte flag;
+    short_rect_pair rects;
+};
+extern s_unknown_485a88 g_unknown_485a88;
+#define g_485a8a (g_unknown_485a88.rects)
 
 s_runtime_device_configuration g_runtime_device_configuration;
 long g_467008, g_46700c;
@@ -5718,37 +5724,8 @@ void function_46ea0(long tag, point3f const *position)
 
 
 extern long g_50943c, g_509440;
-struct s_2cb30_state
-{
-	byte unknown00[0x2a78];
-	long active;
-};
 
-struct s_2cb30_entry
-{
-	dword values[9];
-};
 
-struct s_2cb30_globals
-{
-	long current;
-	long previous;
-	s_2cb30_state *state;
-	union
-	{
-		byte unknown0c[0x9b0 - 0xc];
-		struct
-		{
-			byte weights[850];
-			byte material_indices[850];
-			long materials[192];
-		};
-	};
-	long count;
-	s_2cb30_entry entries[32];
-	long entry_count;
-};
-extern s_2cb30_globals g_4c0b78;
 struct s_render_part_context;
 void function_41040(short index, long part_index, long group, byte weight,
     s_render_part_context const *context, long material_override, bool force,
@@ -7845,7 +7822,7 @@ void texture_cache_initialize();
 void function_020eb0();
 extern dword g_468848[256];
 extern long g_4b72c0;
-byte g_485a88;
+#define g_485a88 (g_unknown_485a88.flag)
 long g_4670f8;
 point3f g_4b72b4;
 
