@@ -267,6 +267,8 @@ struct s_cluster_partition
 
 void function_1cadf0(s_cluster_partition *partition, long reference_index, long data_index, long payload_size, void const *payload);
 
+inline void function_b8b70(long object_index);
+
 // @retail 0xb8b70
 void function_b8b70(long object_index)
 {

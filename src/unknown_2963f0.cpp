@@ -623,7 +623,7 @@ struct s_295e60_placement
 
 struct s_scenery_placement;
 short __fastcall function_10a040(long definition_index, s_scenery_placement *placement);
-void function_b8b70(long object_index);
+inline void function_b8b70(long object_index);
 
 // @retail 0x295e60
 void function_295e60(short arg_0)
