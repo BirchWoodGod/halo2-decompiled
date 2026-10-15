@@ -90,8 +90,8 @@ struct s_object_query_havok_component
 };
 
 struct s_havok_component;
-void havok_component_rigid_body_linear_velocity_get(long rigid_body_index, s_havok_component *component, vector3f *velocity);
-void havok_component_rigid_body_angular_velocity_get(long rigid_body_index, s_havok_component *component, vector3f *velocity);
+void havok_component_rigid_body_linear_velocity_get(s_havok_component *component, long rigid_body_index, vector3f *velocity);
+void havok_component_rigid_body_angular_velocity_get(s_havok_component *component, long rigid_body_index, vector3f *velocity);
 
 // @retail 0xba1d0
 void function_ba1d0(long object_index, vector3f *linear_velocity, vector3f *angular_velocity)
@@ -122,7 +122,7 @@ void function_ba1d0(long object_index, vector3f *linear_velocity, vector3f *angu
 				}
 				else
 				{
-					havok_component_rigid_body_linear_velocity_get(rigid_body_index, (s_havok_component *)component, linear_velocity);
+					havok_component_rigid_body_linear_velocity_get((s_havok_component *)component, rigid_body_index, linear_velocity);
 				}
 			}
 			if (angular_velocity)
@@ -133,7 +133,7 @@ void function_ba1d0(long object_index, vector3f *linear_velocity, vector3f *angu
 				}
 				else
 				{
-					havok_component_rigid_body_angular_velocity_get(rigid_body_index, (s_havok_component *)component, angular_velocity);
+					havok_component_rigid_body_angular_velocity_get((s_havok_component *)component, rigid_body_index, angular_velocity);
 				}
 			}
 			return;
