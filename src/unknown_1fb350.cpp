@@ -335,6 +335,8 @@ void function_f0fd0(long vehicle_index, bool set);
 
 /* advances every recorded animation by a tick; finished ones restore the
    unit's flags and are deleted */
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1fb510
 void function_1fb510(void)
 {
@@ -346,7 +348,9 @@ void function_1fb510(void)
 	iterator.datum_index = NONE;
 	while ((animation = (s_recorded_animation *)function_1fb762(&iterator)) != 0)
 	{
-		if (recorded_animation_unit_try_and_get(animation->object_index))
+		s_recorded_animation_object *unit = recorded_animation_unit_try_and_get(animation->object_index);
+		_ReadWriteBarrier();
+		if (unit)
 		{
 			if (!(animation->flags & 1))
 			{
@@ -378,3 +382,4 @@ void function_1fb510(void)
 		record_pool_release(g_4f5724, iterator.datum_index);
 	}
 }
+#pragma function(_ReadWriteBarrier)
