@@ -40,10 +40,10 @@ PRIVATE __forceinline s_actor_view *function_256071(long arg_0)
 // @retail 0x256070
 short __stdcall function_256070(long actor_index)
 {
-	short result = 0;
-	short count = 0;
-	short ready_count = 0;
 	s_actor_view *actor = function_256071(actor_index);
+	short result = 0;
+	long count = 0;
+	short ready_count = 0;
 
 	if (actor->unknown07c != NONE)
 	{
@@ -57,7 +57,7 @@ short __stdcall function_256070(long actor_index)
 
 			if (*(volatile short *)&actor->unknown004 == member->unknown004)
 			{
-				count++;
+				count = (short)(count + 1);
 				if (function_1a6fe0(current_index, 0x1b) != NONE)
 				{
 					ready_count++;
