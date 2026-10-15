@@ -25,9 +25,9 @@ PRIVATE __forceinline void direction_face_point(s_direction_face const *face, ve
 real __fastcall function_24f6b0(dword index, vector3f *direction)
 {
 	long value = (long)index;
+	direction->k = 0.f;
 	direction->i = (real)(value & 0x3f) * (2.f / 63.f);
 	direction->j = (real)((value >> 6) & 0x3f) * (2.f / 63.f);
-	direction->k = 0.f;
 	direction_face_point(&g_475480[value >> 12], direction, direction);
 	return function_30bf0(direction);
 }
