@@ -229,7 +229,7 @@ void __stdcall function_2548f0(point2f const *arg_0, real arg_1)
 			function_15180(&g_484f68);
 			color3f const *local_2 = (color3f const *)function_13927e(g_4b9ed8);
 			function_1cf50();
-			D3DDevice_Begin(D3DPT_TRIANGLEFAN);
+			D3DDevice::Begin(D3DPT_TRIANGLEFAN);
 			D3DDevice_SetVertexData4f(5, local_2->red, local_2->green, local_2->blue, 1.f);
 			real local_3 = arg_1 * 0.5f;
 			real local_4 = local_3 + 0.5f;
@@ -253,6 +253,7 @@ void __stdcall function_2548f0(point2f const *arg_0, real arg_1)
 			g_484f68.PSFinalCombinerInputsEFG = 0x1800;
 			function_15180(&g_484f68);
 			function_1cf50();
+			#pragma inline_depth(0)
 			D3DDevice_Begin(D3DPT_TRIANGLEFAN);
 			D3DDevice_SetVertexData4f(5, 0.4f, 0.8f, 0.4f, 1.f);
 			D3DDevice_SetVertexData2f(1, 1.f, 0.f);
@@ -292,7 +293,7 @@ void __stdcall function_2548f0(point2f const *arg_0, real arg_1)
 			g_484f68.PSFinalCombinerInputsABCD = 8;
 			g_484f68.PSFinalCombinerInputsEFG = 0x1800;
 			function_15180(&g_484f68);
-			real local_7 = g_4ba04c > 1 ? 32.f : 42.f;
+			real const &local_7 = g_4ba04c > 1 ? 32.f : 42.f;
 			function_1cf50();
 			D3DDevice_Begin(D3DPT_TRIANGLEFAN);
 			D3DDevice_SetVertexData2s(1, 0, 0);
@@ -304,6 +305,7 @@ void __stdcall function_2548f0(point2f const *arg_0, real arg_1)
 			D3DDevice_SetVertexData2s(1, 0, 1);
 			D3DDevice_SetVertexData4f(D3DVSDE_VERTEX, arg_0->x - local_7, arg_0->y + local_7, 16777215.f, 16777215.f);
 			D3DDevice_End();
+			#pragma inline_depth(255)
 		}
 		else if (g_51ec9a)
 		{

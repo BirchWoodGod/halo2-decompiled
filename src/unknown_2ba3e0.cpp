@@ -465,29 +465,29 @@ void function_2b9b10(s_particle_properties_2ba const *definition, void const *or
 PRIVATE __declspec(noinline) void particle_damping_update_2b(s_particle_properties_2ba const *definition,
     void *system, long first, real scale)
 {
-    dword remaining = definition->constant_mask;
     s_particle_property_entry_2ba *properties = definition->properties;
     long next = first;
-    dword valid = 0;
-    void *current_system = 0;
-    void *current_emitter = 0;
-    s_particle_2b96 *current_particle = 0;
+    s_particle_cache_2ba cache;
+    cache.valid = 0;
+    cache.current_system = 0;
+    cache.current_emitter = 0;
+    cache.current_particle = 0;
     real properties_values[3] = { 0.0f, 0.0f, 0.0f };
-    real values[17];
+    dword remaining = definition->constant_mask;
     if (system)
     {
-        current_system = system;
-        valid = 0;
+        cache.current_system = system;
+        cache.valid = 0;
     }
     dword requested = definition->input_mask & 0x107f0;
-    function_173ba0(requested, current_system, current_emitter, current_particle, values);
-    valid |= requested;
+    function_173ba0(requested, cache.current_system, cache.current_emitter, cache.current_particle, cache.values);
+    cache.valid |= requested;
     for (dword i = 0; i < 3 && remaining; ++i)
     {
         dword bit = 1 << i;
         if (remaining & bit)
         {
-            properties_values[i] = function_246cd0(&properties[i].property, values);
+            properties_values[i] = function_246cd0(&properties[i].property, cache.values);
             remaining &= ~bit;
         }
     }
@@ -497,28 +497,25 @@ PRIVATE __declspec(noinline) void particle_damping_update_2b(s_particle_properti
         next = particle->next;
         if (!(*((byte *)particle + 2) & 9) && *(real *)((byte *)particle + 8) <= 1.0f)
         {
-            if (particle != current_particle)
+            if (particle != cache.current_particle)
             {
-                current_particle = particle;
-                valid &= 0xffff07f0;
+                cache.current_particle = particle;
+                cache.valid &= 0xffff07f0;
             }
             requested = definition->input_mask & 0xf80f;
-            function_173ba0(requested & ~valid, current_system, current_emitter, current_particle, values);
-            valid |= requested;
+            function_173ba0(requested & ~cache.valid, cache.current_system, cache.current_emitter, cache.current_particle, cache.values);
+            cache.valid |= requested;
             for (dword j = 0; j < 3; ++j)
             {
                 if (!(definition->constant_mask & (1 << j)))
-                    properties_values[j] = function_246cd0(&properties[j].property, values);
+                    properties_values[j] = function_246cd0(&properties[j].property, cache.values);
             }
             real linear = properties_values[1] * scale;
             real angular = properties_values[2] * scale;
             linear = linear < 0.0f ? 0.0f : (linear > 1.0f ? 1.0f : linear);
             angular = angular < 0.0f ? 0.0f : (angular > 1.0f ? 1.0f : angular);
             particle->velocity.k -= g_51e9c4->unknown0 * properties_values[0] * scale;
-            real linear_remaining = 1.0f - linear;
-            particle->velocity.i *= linear_remaining;
-            particle->velocity.j *= linear_remaining;
-            particle->velocity.k *= linear_remaining;
+            scale_particle_vector_2b(1.0f - linear, &particle->velocity);
             *(real *)((byte *)particle + 0x34) *= 1.0f - angular;
         }
     }

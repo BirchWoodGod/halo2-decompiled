@@ -159,65 +159,65 @@ void function_33980(long selector, vector3f *out)
 		byte *view = (byte *)g_485a58;
 		if (view && index >= 0 && index < view[0x74])
 			unpack_color3f(((dword *)(view + 0x64))[index], (color3f *)out);
-		else *out = *(vector3f *)g_468710;
+		else copy_vector(out, &(*(vector3f *)g_468710));
 		return;
 	}
-	case 5: *out = g_4859dc; return;
-	case 6: *out = g_4859ec; return;
-	case 14: *out = g_485a58 ? g_485a58->vector3c : g_4686d4->vector; return;
-	case 15: *out = g_485a58 ? g_485a58->vector30 : g_4686d4->vector; return;
-	case 16: *out = g_485a58 ? g_485a58->vector54 : g_4686d4->vector; return;
-	case 17: *out = g_485a58 ? g_485a58->vector48 : g_4686d4->vector; return;
-	case 18: *out = g_485768; return;
-	case 19: *out = g_4857ec; return;
+	case 5: copy_vector(out, &(g_4859dc)); return;
+	case 6: copy_vector(out, &(g_4859ec)); return;
+	case 14: copy_vector(out, &(g_485a58 ? g_485a58->vector3c : g_4686d4->vector)); return;
+	case 15: copy_vector(out, &(g_485a58 ? g_485a58->vector30 : g_4686d4->vector)); return;
+	case 16: copy_vector(out, &(g_485a58 ? g_485a58->vector54 : g_4686d4->vector)); return;
+	case 17: copy_vector(out, &(g_485a58 ? g_485a58->vector48 : g_4686d4->vector)); return;
+	case 18: copy_vector(out, &(g_485768)); return;
+	case 19: copy_vector(out, &(g_4857ec)); return;
 	case 23:
-		*out = g_485a58 ? g_485a58->vector30 : g_4686d4->vector;
+		copy_vector(out, &(g_485a58 ? g_485a58->vector30 : g_4686d4->vector));
 		out->i = pin_unit(out->i * g_485a6c);
 		out->j = pin_unit(out->j * g_485a6c);
 		out->k = pin_unit(out->k * g_485a6c);
 		return;
 	case 24:
-		*out = g_485a58 ? g_485a58->vector10 : g_4686d4->vector;
+		copy_vector(out, &(g_485a58 ? g_485a58->vector10 : g_4686d4->vector));
 		out->i = pin_unit((g_485a70 + 1.0f) * out->i);
 		out->j = pin_unit((g_485a70 + 1.0f) * out->j);
 		out->k = pin_unit((g_485a70 + 1.0f) * out->k);
 		return;
-	case 25: *out = g_485768; return;
+	case 25: copy_vector(out, &(g_485768)); return;
 	case 26:
 		out->i = g_485768.i * g_485774;
 		out->j = g_485768.j * g_485774;
 		out->k = g_485768.k * g_485774;
 		return;
-	case 27: *out = g_485780; return;
+	case 27: copy_vector(out, &(g_485780)); return;
 	case 28:
 		out->i = g_485780.i * g_48578c;
 		out->j = g_485780.j * g_48578c;
 		out->k = g_485780.k * g_48578c;
 		return;
-	case 29: *out = g_485798; return;
+	case 29: copy_vector(out, &(g_485798)); return;
 	case 30:
 		out->i = g_485798.i * g_4857a4;
 		out->j = g_485798.j * g_4857a4;
 		out->k = g_485798.k * g_4857a4;
 		return;
-	case 31: *out = g_4857ec; return;
+	case 31: copy_vector(out, &(g_4857ec)); return;
 	case 32:
 		out->i = g_4857ec.i * g_4857f8;
 		out->j = g_4857ec.j * g_4857f8;
 		out->k = g_4857ec.k * g_4857f8;
 		return;
-	case 33: *out = *(vector3f *)(g_4e6950.unknown00 + 0x00); return;
-	case 34: *out = *(vector3f *)(g_4e6950.unknown00 + 0x0c); return;
+	case 33: copy_vector(out, &(*(vector3f *)(g_4e6950.unknown00 + 0x00))); return;
+	case 34: copy_vector(out, &(*(vector3f *)(g_4e6950.unknown00 + 0x0c))); return;
 	case 35:
-		*out = g_485a58 ? g_485a58->vector30 : g_4686d4->vector;
+		copy_vector(out, &(g_485a58 ? g_485a58->vector30 : g_4686d4->vector));
 		out->i = pin_unit(out->i * g_485a6c * 0.5f);
 		out->j = pin_unit(out->j * g_485a6c * 0.5f);
 		out->k = pin_unit(out->k * g_485a6c * 0.5f);
 		return;
-	case 36: *out = *(vector3f *)(g_4e6950.unknown00 + 0x40); return;
-	case 37: *out = *(vector3f *)(g_4e6950.unknown00 + 0x4c); return;
-	case 38: *out = *(vector3f *)(g_4e6950.unknown00 + 0x58); return;
-	case 39: *out = *(vector3f *)(g_4e6950.unknown00 + 0x64); return;
+	case 36: copy_vector(out, &(*(vector3f *)(g_4e6950.unknown00 + 0x40))); return;
+	case 37: copy_vector(out, &(*(vector3f *)(g_4e6950.unknown00 + 0x4c))); return;
+	case 38: copy_vector(out, &(*(vector3f *)(g_4e6950.unknown00 + 0x58))); return;
+	case 39: copy_vector(out, &(*(vector3f *)(g_4e6950.unknown00 + 0x64))); return;
 	case 40:
 	{
 		real value = function_33670(*(long *)g_485a58);
@@ -234,7 +234,7 @@ void function_33980(long selector, vector3f *out)
 			out->j = 0.0f - g_4b9dac.j * inverse;
 			out->k = 0.0f - g_4b9dac.k * inverse;
 		}
-		else *out = g_4686d4->vector;
+		else copy_vector(out, &(g_4686d4->vector));
 		return;
 	default: __assume(0);
 	}
