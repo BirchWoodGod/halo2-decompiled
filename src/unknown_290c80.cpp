@@ -60,7 +60,7 @@ struct s_object_ai_data
 // @retail 0x28da50
 void function_28da50(s_object_ai_data *data)
 {
-	data->flags = 0;
+	memset(&data->flags, 0, sizeof(data->flags));
 	data->index04 = NONE;
 	data->index10 = NONE;
 	data->next_object_index = NONE;

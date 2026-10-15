@@ -1548,7 +1548,8 @@ bool __stdcall function_25fee0(
 		}
 		else
 		{
-			real value = 0.f;
+			real value_storage = 0.f;
+			real &value = value_storage;
 
 			switch (position->type)
 			{
