@@ -34,7 +34,7 @@ matrix3x3 g_467104 = {
     { 0.0f, 0.0f, 1.0f }
 };
 
-PRIVATE __forceinline void rotation_from_axis(vector3f const *axis, double angle, matrix3x3 *matrix)
+PRIVATE __forceinline void rotation_from_axis(vector3f const *axis, real angle, matrix3x3 *matrix)
 {
     real sine = (real)sin(angle);
     real cosine = (real)cos(angle);
@@ -75,9 +75,9 @@ void __stdcall function_39e50(real step)
     axis0.k = axis0_k;
     vector3f axis1 = g_485618.up;
     matrix3x3 first, second;
-    rotation_from_axis(&axis0, (double)step * 0.5f, &first);
+    rotation_from_axis(&axis0, step * 0.5f, &first);
     axis0 = axis1;
-    rotation_from_axis(&axis0, (double)step * 0.30000001192092896f, &second);
+    rotation_from_axis(&axis0, step * 0.30000001192092896f, &second);
     vector3f forward = g_467104.forward;
     vector3f left = g_467104.left;
     vector3f up = g_467104.up;
