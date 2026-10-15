@@ -780,7 +780,7 @@ void function_bfa40(long object_index, long node_mask)
         if (!node_mask || (((dword *)node_mask)[i >> 5] & (1 << (i & 31))))
         {
             short node_parent = *(short *)(*(byte **)(model + 0x7c) + i * 0x5c + 4);
-            if (node_parent != NONE)
+            if ((dword)(long)node_parent != (dword)NONE)
             {
                 function_141590(&matrices[node_parent], &workspace.inverse_parent);
                 function_142a60(&workspace.inverse_parent, &matrices[i], &workspace.relative);
