@@ -9,7 +9,7 @@ extern void *g_51ea14;
 extern long g_55c280;
 bool function_1249f0(long memory_unit, char *drive_letter);
 char *function_216400(long memory_unit, char *buffer, short capacity);
-bool function_216da0(wchar_t *name, long type, wchar_t const *display_name, long language);
+bool function_216da0(long type, wchar_t *name, wchar_t const *display_name, long language);
 
 struct s_saved_game_drive
 {
@@ -42,7 +42,7 @@ bool __stdcall function_215f40(long type, byte *buffer)
 			unicode_string_snprintf(name, 128, L"Halo%04d", index + 1);
 			word full_name[128];
 			full_name[0] = 0;
-			function_216da0(full_name, type, name, g_55c280);
+			function_216da0(type, full_name, name, g_55c280);
 			if (XCreateSaveGame(root, full_name, 3, 0, path, sizeof(path)) != 0)
 				break;
 			index++;
@@ -69,7 +69,7 @@ bool function_216120(word *string, long type)
 		word name[128];
 		char root[8];
 		name[0] = 0;
-		if (function_216da0(name, type, string, g_55c280))
+		if (function_216da0(type, name, string, g_55c280))
 		{
 			if (XCreateSaveGame(function_216400(0, root, 8), name, 3, 0, path, sizeof(path)) != 0)
 				result = true;
@@ -131,7 +131,7 @@ void function_217a80(long string_handle_2, long language, word *buffer);
 word *unicode_string_append(word *destination, word const *source, long maximum_count);
 
 // @retail 0x216da0
-bool function_216da0(wchar_t *name, long type, wchar_t const *display_name, long language)
+bool function_216da0(long type, wchar_t *name, wchar_t const *display_name, long language)
 {
 	(void)&display_name;
 	(void)&language;
