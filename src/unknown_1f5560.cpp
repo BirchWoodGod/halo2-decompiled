@@ -624,6 +624,9 @@ bool function_1f9760(long actor_index, long object_index, point3f const *point, 
 	bool last = actor->unknown53a + 1 >= actor->unknown539;
 	bool direction_valid = false;
 	vector3f direction;
+	vector3f approach;
+	long current_index;
+	vector3f const *projection_direction;
 	if (actor->unknown456)
 	{
 		direction_valid = false;
@@ -631,20 +634,18 @@ bool function_1f9760(long actor_index, long object_index, point3f const *point, 
 	}
 	else if (!last)
 	{
-		s_type_c3b527 *current = &actor->unknown53c[actor->unknown53a].point;
+		current_index = actor->unknown53a;
 		s_type_c3b527 *next = &actor->unknown53c[actor->unknown53a + 1].point;
-		function_210be0(current, next, &direction);
+		function_210be0(&actor->unknown53c[current_index].point, next, &direction);
 		if (function_30bf0(&direction) > 0.0001f)
 		{
 			direction_valid = true;
 			s_type_c3b527 *previous = actor->unknown53a > 0 ? &actor->unknown53c[actor->unknown53a - 1].point : (s_type_c3b527 *)actor->unknown528;
-			vector3f approach;
-			function_210be0(previous, current, &approach);
+			function_210be0(previous, &actor->unknown53c[current_index].point, &approach);
 			if (function_30bf0(&approach) > 0.0f)
 			{
-				real remaining = dot3f((vector3f *)&current->point, &approach) - dot3f((vector3f const *)point, &approach);
-				if (*(real *)(definition + 4) * 1.2f > remaining)
-					reached = true;
+				projection_direction = &approach;
+				goto projection;
 			}
 		}
 	}
@@ -660,12 +661,19 @@ bool function_1f9760(long actor_index, long object_index, point3f const *point, 
 			reached = true;
 		else if (direction_valid && actor->unknown4d4)
 		{
-			s_type_c3b527 *current = &actor->unknown53c[actor->unknown53a].point;
-			real remaining = dot3f((vector3f *)&current->point, &direction) - dot3f((vector3f const *)point, &direction);
-			if (*(real *)(definition + 4) * 1.2f > remaining)
-				reached = true;
+			current_index = actor->unknown53a;
+			projection_direction = &direction;
+			goto projection;
 		}
 	}
+	goto finish;
+projection:
+	{
+		real remaining = dot3f((vector3f *)&actor->unknown53c[current_index].point.point, projection_direction) - dot3f((vector3f const *)point, projection_direction);
+		if (*(real *)(definition + 4) * 1.2f > remaining)
+			reached = true;
+	}
+finish:
 	*last_out = last;
 	if (last && !actor->unknown4d5)
 		*direction_valid_out = false;

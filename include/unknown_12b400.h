@@ -47,9 +47,8 @@ __forceinline void *physical_memory_malloc_fixed(long size, dword protect)
 __forceinline void function_xe0ae94(void)
 {
 	long stage = g_global_f9ae07.field_0;
-	long next = stage + 1;
-
-	g_global_f9ae07.field_c_6[next] = g_global_f9ae07.field_c_6[stage];
+	long next = g_global_f9ae07.field_0 + 1;
+	g_global_f9ae07.field_c_6[stage + 1] = g_global_f9ae07.field_c_6[stage];
 	g_global_f9ae07.field_20[g_global_f9ae07.field_0 + 1] = g_global_f9ae07.field_20[g_global_f9ae07.field_0];
 	g_global_f9ae07.field_0 = next;
 }

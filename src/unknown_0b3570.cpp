@@ -316,6 +316,7 @@ void function_b3200(void)
 		switch (online_task_poll(g_4d8ef0))
 		{
 		case 0:
+			break;
 		case 1:
 			break;
 		case 2:

@@ -141,7 +141,7 @@ void function_28cdb0()
 	while (high > low + 1)
 	{
 		long middle = (high + low) >> 1;
-		if (frames[middle] <= g_sampling_settings.frame_index)
+		if (frames[middle] <= (dword)g_sampling_settings.frame_index)
 		{
 			low = middle;
 		}
@@ -185,7 +185,7 @@ void function_28cf40()
 	while (high > low + 1)
 	{
 		long middle = (high + low) >> 1;
-		if (frames[middle] <= g_sampling_settings.frame_index)
+		if (frames[middle] <= (dword)g_sampling_settings.frame_index)
 		{
 			low = middle;
 		}
@@ -237,7 +237,7 @@ void function_28d090()
 	while (high > low + 1)
 	{
 		long middle = (high + low) >> 1;
-		if (frames[middle] <= g_sampling_settings.frame_index)
+		if (frames[middle] <= (dword)g_sampling_settings.frame_index)
 		{
 			low = middle;
 		}
@@ -282,7 +282,7 @@ void function_28d180()
 	while (high > low + 1)
 	{
 		long middle = (high + low) >> 1;
-		if (frames[middle] <= g_sampling_settings.frame_index)
+		if (frames[middle] <= (dword)g_sampling_settings.frame_index)
 		{
 			low = middle;
 		}
@@ -323,7 +323,7 @@ void function_28d320()
 	while (high > low + 1)
 	{
 		long middle = (high + low) >> 1;
-		if (frames[middle] <= g_sampling_settings.frame_index)
+		if (frames[middle] <= (dword)g_sampling_settings.frame_index)
 		{
 			low = middle;
 		}
@@ -367,7 +367,7 @@ void function_28d470()
 	while (high > low + 1)
 	{
 		long middle = (high + low) >> 1;
-		if (frames[middle] <= g_sampling_settings.frame_index)
+		if (frames[middle] <= (dword)g_sampling_settings.frame_index)
 		{
 			low = middle;
 		}
@@ -408,7 +408,7 @@ void function_28d560()
 	while (high > low + 1)
 	{
 		long middle = (high + low) >> 1;
-		if (frames[middle] <= g_sampling_settings.frame_index)
+		if (frames[middle] <= (dword)g_sampling_settings.frame_index)
 		{
 			low = middle;
 		}
@@ -450,7 +450,7 @@ void function_28d6f0()
 	while (high > low + 1)
 	{
 		long middle = (high + low) >> 1;
-		if (frames[middle] <= g_sampling_settings.frame_index)
+		if (frames[middle] <= (dword)g_sampling_settings.frame_index)
 		{
 			low = middle;
 		}
@@ -496,7 +496,7 @@ void function_28d840()
 	while (high > low + 1)
 	{
 		long middle = (high + low) >> 1;
-		if (frames[middle] <= g_sampling_settings.frame_index)
+		if (frames[middle] <= (dword)g_sampling_settings.frame_index)
 		{
 			low = middle;
 		}

@@ -578,8 +578,12 @@ void __stdcall function_18a7b0(long datum_index)
 	else active = !TEST_FIELD_BIT(sound->flag_bits.bit1);
 	long identifier = datum_index;
 	s_looping_sound *current = looping_sound_get(datum_index);
-	if (current->type == 0 && current->byte14 != NONE)
-		identifier = current->tag_index | 0x8000;
+	if (current->type == 0)
+	{
+		long const &local_1 = (long)current->byte14;
+		if (local_1 != NONE)
+			identifier = current->tag_index | 0x8000;
+	}
 	if (((definition->flags & 0x10) && sound->type == 1) || (definition->flags & 0x20))
 	{
 		controller = loop_update_owner(sound);
