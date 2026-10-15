@@ -358,7 +358,7 @@ bool function_1b9200(long object_index, long prop_index)
 					direction.k = 0.0f;
 					if (function_30bf0(&direction) > g_45dbd8)
 					{
-						real angle = function_11cc90((vector2f *)&direction, (vector2f *)&forward);
+						real angle = function_11cc90((vector2f *)&forward, (vector2f *)&direction);
 
 						if (angle <= seat->unknown88 || angle > seat->unknown8c)
 							result = false;
@@ -1183,8 +1183,8 @@ bool function_1e2030(long actor_index);
 bool function_1b9e70(long actor_index, s_seat_selection *selection, bool reserved,
     s_4c_element const *element, s_seat_approach_result *out)
 {
-    bool search = false;
     bool result = false;
+    bool search = false;
     if (selection->seat_index != NONE)
     {
         if (function_1baae0(actor_index, selection->object_index, selection->seat_index, false, !reserved, false, out))

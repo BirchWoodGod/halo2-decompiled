@@ -461,7 +461,7 @@ real *function_1daf30(s_graph_tag *graph, c_type_709360 animation_id);
 void *function_1db120(s_graph_tag *graph, long mode, long weapon_class, long weapon_type);
 long function_1dd490(s_graph_tag *graph, long flags);
 bool function_1dd4c0(long render_model_tag_index, s_graph_tag *graph, long *node_count, long *node_map);
-c_type_709360 function_1dd5d0(s_graph_tag *graph, c_type_709360 animation_id);
+c_type_709360 *function_1dd5d0(s_graph_tag *graph, c_type_709360 animation_id, c_type_709360 *output);
 c_type_709360 *function_1dd630(s_graph_tag *graph, c_type_709360 *result, c_type_709360 animation_id, bool first_seed);
 byte *function_1dd7c0(s_graph_tag *graph, c_type_709360 animation_id);
 void function_1dd880(s_graph_tag *graph, c_type_709360 animation_id, s_graph_tag **arg_0e6cbc, s_animation **animation);
