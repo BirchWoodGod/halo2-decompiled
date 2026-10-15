@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-15: 8718 functions match
+
+```
+matched 8718 of 11318 game functions (1163488 of 2784283 bytes, 41.79%)
+```
+
+6 new matches, none lost:
+- Machine 1's key lane round 27: machine 3's `0xb9a90` (lent for the round) takes retail's `ebx` convention, and with it `0x13c5a0`, `0x2ac1a0`, `0x10cd50` and `0x2a1cc0` match; `0xb9a50` and `0xb83b0` match too.
+
 ## 2026-10-15: 8712 functions match
 
 ```
