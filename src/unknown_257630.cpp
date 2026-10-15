@@ -66,7 +66,7 @@ short g_470c5c = -2;
 real function_30bf0(vector3f *v);
 real normalize2d(point2f *v);
 bool actor_has_joint_invitation(long actor_index, short type);
-void __stdcall function_1f4280(long actor_index);
+bool __stdcall function_1f4280(long actor_index);
 
 short __stdcall function_257630(long actor_index);
 short __stdcall function_2576c0(long actor_index, s_slot *slot, s_slot *next);

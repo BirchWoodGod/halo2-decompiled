@@ -545,7 +545,7 @@ struct s_saved_game_file_location
 };
 
 char *function_216400(long memory_unit, char *buffer, short capacity);
-bool function_216da0(wchar_t *name, long type, wchar_t const *display_name, long language);
+bool function_216da0(long type, wchar_t *name, wchar_t const *display_name, long language);
 
 // @retail 0x215e60
 void __stdcall function_215e60(long file_index)
@@ -574,7 +574,7 @@ void __stdcall function_215e60(long file_index)
                 {
                     wchar_t *name = local_0.name;
                     name[0] = 0;
-                    function_216da0(name, file_index & 15, location.display_name, location.language);
+                    function_216da0(file_index & 15, name, location.display_name, location.language);
                     XDeleteSaveGame(function_216400(unit, root, 8), name);
                 }
             }
@@ -607,7 +607,7 @@ long function_215c00(long type, wchar_t const *display_name)
             long index = g_55c280;
             wchar_t name[128];
             name[0] = 0;
-            if (function_216da0(name, type, display_name, index))
+            if (function_216da0(type, name, display_name, index))
             {
                 char directory[256] = "";
                 char root[8];
@@ -650,7 +650,7 @@ long function_215c00(long type, wchar_t const *display_name)
                     {
                         wchar_t remove_name[128];
                         remove_name[0] = 0;
-                        function_216da0(remove_name, type, display_name, location.language);
+                        function_216da0(type, remove_name, display_name, location.language);
                         XDeleteSaveGame(root, remove_name);
                     }
                 }

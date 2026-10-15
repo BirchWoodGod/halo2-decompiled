@@ -154,7 +154,7 @@ local_0:
 
 void function_1f86a0(long index);
 byte function_1f8640(long index);
-void __stdcall function_1f4280(long actor_index);
+bool __stdcall function_1f4280(long actor_index);
 void function_265c30(long prop_index, long actor_index, bool unknown);
 
 /* stops the actor's prop approach once the prop is out of reach */
