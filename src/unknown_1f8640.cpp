@@ -169,10 +169,13 @@ local_0:
 	}
 }
 /* the length of the rest of the actor's path */
+extern "C" void _ReadWriteBarrier(void);
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1f8940
 real function_1f8940(long actor_index)
 {
 	s_actor_moving *actor = actor_moving_get(actor_index);
+	_ReadWriteBarrier();
 	real length = 0.0f;
 
 	if (actor->unknown50c && actor->unknown504 == 1)
@@ -197,6 +200,7 @@ real function_1f8940(long actor_index)
 
 	return length;
 }
+#pragma function(_ReadWriteBarrier)
 /* the parts of the actor's character block and of its vehicle's entry that
    set the radius of the actor's path source */
 struct s_path_radius_block
