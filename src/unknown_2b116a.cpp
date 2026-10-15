@@ -5898,11 +5898,11 @@ void c_widget_45adf0::v4(long frame)
         quad.points[2] = rectangle.x1;
         quad.points[3] = rectangle.y0;
         quad.points[4] = rectangle.x1;
+        quad.points[5] = rectangle.y1;
         quad.points[6] = rectangle.x0;
+        quad.points[7] = rectangle.y1;
         state->sequence = *(short *)unknown86;
         g_4e6950.value1c = scale;
-        quad.points[5] = rectangle.y1;
-        quad.points[7] = rectangle.y1;
         function_22a664(&coordinates, &quad, definition->tag_index,
             *(short *)((byte *)definition + 0xa), *(long *)((byte *)definition + 0x18));
     }

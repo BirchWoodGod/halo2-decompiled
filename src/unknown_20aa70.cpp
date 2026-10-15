@@ -180,21 +180,19 @@ void function_20ab60(s_anim_data *data, vector3f *sum, real *w)
 void function_20ad40(s_anim_data *data, vector3f *a, vector3f *b, long index)
 {
 	s_anim_header *h;
-	byte *p;
 
 	*a = *(vector3f *)g_468788;
 	*b = *g_4687a4;
 	h = data->header;
 	if (h->unknown4 != 0)
 	{
-		p = *(byte * volatile *)&data->base + (h->unknown2 + h->unknown6 + h->unknown1 + h->unknownc + h->unknown0);
-		p += index * 12;
-		*a = *(vector3f *)p;
+		vector3f *keys = (vector3f *)(data->base + (h->unknown2 + h->unknown6 + h->unknown1 + h->unknownc + h->unknown0));
+		*a = keys[index];
 		if (index + 1 < data->count)
 		{
-			b->i = ((real *)p)[3] - ((real *)p)[0];
-			b->j = ((real *)p)[4] - ((real *)p)[1];
-			b->k = ((real *)p)[5] - ((real *)p)[2];
+			b->i = keys[index + 1].i - keys[index].i;
+			b->j = keys[index + 1].j - keys[index].j;
+			b->k = keys[index + 1].k - keys[index].k;
 		}
 	}
 }
