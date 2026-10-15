@@ -1,5 +1,5 @@
 #include "unknown_4cf790.h"
-// @flags /O2 /Gr
+// @flags /O2 /arch:SSE /Gr
 /* UNKNOWN_06B590.CPP: Xbox Live logon users, services and passcodes
    (lane D) */
 
@@ -76,7 +76,7 @@ void online_mutelists_refresh(XONLINE_USER *users)
 		XONLINE_USER *user = &users[i];
 		if (user->xuid.qwUserID != 0 && user->szGamertag[0] && SUCCEEDED(user->hr))
 		{
-			XUID *xuid = online_user_get_xuid(user);
+			XUID *xuid = online_user_get_xuid(users + i);
 			if (!XOnlineIsUserGuest(xuid->dwUserFlags))
 			{
 				online_mutelist_dispose(i);
@@ -411,31 +411,48 @@ void function_6c4a0(long result, long task_index)
 
 void function_190d0a(long index);
 
+#pragma inline_depth(0)
+static __forceinline void function_6cc12(long controller)
+{
+ function_190d0a(controller);
+}
+#pragma inline_depth(255)
+
+static __forceinline s_type_9df9da *function_6cc14(long index)
+{
+ return online_task_try_get(index);
+}
+
 // @retail 0x6cc10
 long __stdcall function_6cc10(long controller)
 {
  long const *controller_reference = &controller;
  controller = *controller_reference;
  long result = NONE;
- if (g_467214 != NONE)
+ if (g_467214 != result)
  {
   long previous = online_task_find(3, controller);
-  if (previous != NONE)
+  if (previous != result)
    function_6b640(previous);
-  function_190d0a(controller);
+  function_6cc12(controller);
   XONLINE_USER users[XONLINE_MAX_LOGON_USERS];
   memset(users, 0, sizeof(users));
   long count = 0;
-  for (long i = 0; i < XONLINE_MAX_LOGON_USERS; i++)
-   if (i != controller && (bool)((*(dword *)&g_54e8e0[i] >> 5) & 1))
+  long i = 0;
+  do
+  {
+   const s_player_slot &slot = g_54e8e0[i];
+   if (i != controller && (bool)((*(const dword *)&slot >> 5) & 1))
    {
-    users[i] = *(const XONLINE_USER *)((const byte *)&g_54e8e0[i] + 0x470);
+    users[i] = *(const XONLINE_USER *)((const byte *)&slot + 0x470);
     count++;
    }
+   i++;
+  } while (i < XONLINE_MAX_LOGON_USERS);
   if (count > 0)
   {
    long index = online_task_new_if_logged_on();
-   s_type_9df9da *task = online_task_try_get(index);
+   s_type_9df9da *task = function_6cc14(index);
    if (task)
    {
     online_connect_to_service_20();
@@ -444,7 +461,8 @@ long __stdcall function_6cc10(long controller)
      task->flags = 1;
      task->type = 1;
      task->controller_index = controller;
-     return index;
+     result = index;
+     goto done;
     }
     function_6b640(index);
    }
@@ -452,5 +470,6 @@ long __stdcall function_6cc10(long controller)
   else
    function_6cb60();
  }
+done:
  return result;
 }

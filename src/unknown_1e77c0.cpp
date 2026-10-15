@@ -297,7 +297,8 @@ void function_1e8ce0(s_request_state *state, s_request_source *source)
 {
 	short type = source->type;
 	long stored_type = state->type;
-	if (stored_type != type || source->id != state->id)
+	long const &incoming_type = (long)type;
+	if (incoming_type != stored_type || source->id != state->id)
 	{
 		state->type = type;
 		state->id = source->id;

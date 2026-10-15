@@ -437,65 +437,70 @@ void function_204ec0(s_squad_iterator *iterator, short squad_index, short flags,
 {
 	(void)&flags;
 	(void)&mode;
-	if (squad_index == NONE)
+	if (squad_index != NONE)
 	{
-		iterator->next = NONE;
-		return;
-	}
-	s_squad_datum *squad;
-	s_squad_definition_entry *definition;
-	for (;;)
-	{
-		squad = squad_get((word)squad_index);
-		short index = ((s_squad_definition_view *)squad)->definition_index;
-		definition = index == NONE ? NULL : &((s_squad_definition_table_view *)g_4e0350)->entries[index];
-		if (!definition || !(definition->data[0x24] & 0x20) || *(short *)(definition->data + 0x4e) == NONE)
-			break;
-		squad_index = *(short *)(definition->data + 0x4e);
-	}
-	iterator->definition = definition;
-	iterator->current = NONE;
-	iterator->next = 0;
-	iterator->squad_index = squad_index;
-	if (definition)
-	{
-		iterator->palette_index = NONE;
-		if ((flags & 4) && !(flags & 1))
+		s_squad_datum *squad;
+		s_squad_definition_entry *definition;
+		for (;;)
 		{
-			bool alternate = *(bool *)((byte *)squad + 0x60);
-			long count = *(long *)(definition->data + (alternate ? 0x5c : 0x54));
-			short index = 0;
-			for (; index < count; index++)
-			{
-				byte *entries = *(byte **)(definition->data + (alternate ? 0x60 : 0x58));
-				if (*(short *)(entries + index * 8) == 2)
-					break;
-			}
-			if (index >= count)
-				flags |= 1;
+			squad = squad_get((word)squad_index);
+			short index = ((s_squad_definition_view *)squad)->definition_index;
+			definition = index == NONE ? NULL : &((s_squad_definition_table_view *)g_4e0350)->entries[index];
+			if (!definition || !(definition->data[0x24] & 0x20) || *(short *)(definition->data + 0x4e) == NONE)
+				break;
+			squad_index = *(short *)(definition->data + 0x4e);
 		}
-	}
-	else
-	{
-		byte *scenario = (byte *)g_4e0350;
-		byte *entry = *(byte **)(scenario + 0x164) + (word)squad_index * 0x74;
-		iterator->palette_index = *(short *)(entry + 0x38);
-		if (*(short *)(entry + 0x38) == NONE)
-			iterator->next = NONE;
+		iterator->definition = definition;
+		iterator->current = NONE;
+		iterator->next = 0;
+		iterator->squad_index = squad_index;
+		if (definition)
+		{
+			iterator->palette_index = NONE;
+			if ((flags & 4) && !(flags & 1))
+			{
+				bool alternate = *(bool *)((byte *)squad + 0x60);
+				long *count_slot;
+				if (alternate) count_slot = (long *)(definition->data + 0x5c);
+				else count_slot = (long *)(definition->data + 0x54);
+				long count = *count_slot;
+				short index = 0;
+				for (; index < count; index++)
+				{
+					byte *entries;
+					if (alternate) entries = *(byte **)(definition->data + 0x60);
+					else entries = *(byte **)(definition->data + 0x58);
+					if (*(short *)(entries + index * 8) == 2)
+						break;
+				}
+				if (index >= count)
+					flags |= 1;
+			}
+		}
 		else
 		{
-			byte *palette = *(byte **)(scenario + 0x16c) + (word)iterator->palette_index * 0x38;
-			iterator->next = (*(long *)(palette + 0x30) > 0) - 1;
+			byte *scenario = (byte *)g_4e0350;
+			byte *entry = *(byte **)(scenario + 0x164) + (word)squad_index * 0x74;
+			iterator->palette_index = *(short *)(entry + 0x38);
+			if (*(short *)(entry + 0x38) == NONE)
+				iterator->next = NONE;
+			else
+			{
+				byte *palette = *(byte **)(scenario + 0x16c) + (word)iterator->palette_index * 0x38;
+				iterator->next = (*(long *)(palette + 0x30) > 0) - 1;
+			}
 		}
+		iterator->flags = (word)flags;
+		iterator->flag_b = false;
+		iterator->flag_a = false;
+		iterator->flag_c = false;
+		if (mode == 2)
+			iterator->flag_c = true;
+		else if (mode == 1)
+			iterator->flag_a = true;
 	}
-	iterator->flags = (word)flags;
-	iterator->flag_b = false;
-	iterator->flag_a = false;
-	iterator->flag_c = false;
-	if (mode == 2)
-		iterator->flag_c = true;
-	else if (mode == 1)
-		iterator->flag_a = true;
+	else
+		iterator->next = NONE;
 }
 
 struct s_squad_object_state

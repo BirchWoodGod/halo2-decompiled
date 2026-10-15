@@ -97,12 +97,12 @@ bool function_244980(long cluster_index, point3f const *point, vector3f const *v
     {
         c_marker_object reference((dword)cluster, (dword)g_4e0348);
         c_shape_library_base_a query((c_havok_reference_counted *)&reference, *(long *)(cluster + 0xac));
-        real const &end_y = vector->j + point->y;
         real const &end_z = vector->k + point->z;
+        real const &end_y = vector->j + point->y;
         s_244980_workspace workspace;
         s_244980_ray ray;
-        s_244980_output output = { &query, NONE, &workspace, 0, 0, 0, 0, 0, 0 };
         c_244c10 callback;
+        s_244980_output output = { &query, NONE, &workspace, 0, 0, 0, 0, 0, 0 };
         workspace.minimum.m_quad = _mm_setzero_ps();
         workspace.minimum.m_quad.m128_f32[3] = FLT_MAX;
         workspace.maximum.m_quad = _mm_setzero_ps();
@@ -112,7 +112,6 @@ bool function_244980(long cluster_index, point3f const *point, vector3f const *v
         ray.first.m_quad.m128_f32[2] = point->z;
         ray.first.m_quad.m128_f32[1] = point->y;
         ray.first.m_quad.m128_f32[3] = 0.0f;
-        ray.second.m_quad.m128_f32[0] = point->x + vector->i;
         callback.field_0c = test_flags;
         callback.field_10 = point;
         callback.field_14 = vector;
@@ -121,6 +120,8 @@ bool function_244980(long cluster_index, point3f const *point, vector3f const *v
         reference.flags = 0;
         query.allocation_size = 0;
         callback.field_04 = ((real *)result)[1];
+        real const &end_x = point->x + vector->i;
+        ray.second.m_quad.m128_f32[0] = end_x;
         ray.second.m_quad.m128_f32[1] = end_y;
         ray.second.m_quad.m128_f32[2] = end_z;
         ray.second.m_quad.m128_f32[3] = 0.0f;

@@ -179,9 +179,7 @@ long function_11c5f0(long trigger_volume_index, long type_mask)
 		point3f center;
 		s_location location;
 
-		center.x = trigger_volume->extents.i * 0.5f;
-		center.y = trigger_volume->extents.j * 0.5f;
-		center.z = trigger_volume->extents.k * 0.5f;
+		function_11c471(0.5f, &trigger_volume->extents, (vector3f *)&center);
 		transform4x3f_apply_point(&matrix, &center, &center);
 		function_11bed0(&location, &center);
 		if (location.cluster_index != NONE)
