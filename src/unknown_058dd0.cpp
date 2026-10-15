@@ -1944,9 +1944,13 @@ long function_66050(c_class_58d20 *session, long variant_index);
 bool c_session_state_pre_game::function_06e410()
 {
  c_class_58d20 *session = owner->session_a;
- if (SESSION_STATE_IS_LIVE(session->state) && session->flag49a8 && !session->value49ac)
+ long countdown = session_get_countdown(session);
+ if (!countdown)
  {
-  if (SESSION_STATE_IS_LIVE(session->state) && session->value49a4 > 1)
+  long remaining = NONE;
+  if (SESSION_STATE_IS_LIVE(session->state))
+   remaining = session->value49a4;
+  if (remaining > 1)
   {
    network_session_stop_countdown(session);
    if (session->value18 == 2)
@@ -1966,7 +1970,7 @@ bool c_session_state_pre_game::function_06e410()
     if (session->members[i].unknown88 <= 2)
     {
      mask |= 1 << i;
-     ready = false;
+     ready = mask == 0;
     }
    if (ready)
     network_session_set_mode(session, 2);

@@ -2157,6 +2157,7 @@ bool simulation_player_remove_if_left(const s_simulation_player_identity *identi
 bool __stdcall function_85140(const s_simulation_player_update *update);
 bool __stdcall function_854c0(const s_simulation_player_update *update);
 
+#pragma inline_depth(0)
 // @retail 0x683a0
 void __stdcall function_683a0(byte *block)
 {
@@ -2212,6 +2213,7 @@ void __stdcall function_683a0(byte *block)
 		g_46e320[4](0);
 	}
 }
+#pragma inline_depth(255)
 
 bool simulation_watcher_changed(s_simulation_world_owner *watcher);
 
