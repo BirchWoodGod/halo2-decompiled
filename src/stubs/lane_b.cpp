@@ -89,5 +89,3 @@ struct s_1fbac0_event;
 // @stub 0x1fbac0
 void __stdcall function_1fbac0(long unknown, long unit_index, bool unknown2, long unknown3, s_1fbac0_event *event) { }
 
-// @stub 0x1bc850
-short __stdcall function_1bc850(long actor_index, s_slot *slot, bool active) { return 0; }

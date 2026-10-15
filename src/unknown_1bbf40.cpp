@@ -30,7 +30,7 @@ void function_1f86a0(long index);
 short __stdcall function_1bbf40(long actor_index, s_slot *slot);
 short __stdcall function_1bc2a0(long actor_index, s_slot *slot);
 short __stdcall function_1bc6d0(long actor_index);
-short __stdcall function_1bc850(long actor_index, s_slot *slot, bool active);
+short __stdcall function_1bc850(long actor_index, s_slot *slot, s_slot *next);
 bool __stdcall function_1bc810(long actor_index, s_slot *slot);
 void __stdcall function_1c1520(long actor_index, s_slot *slot, long index);
 void __stdcall function_1c1990(long actor_index, s_slot *slot, long index);
@@ -406,7 +406,7 @@ s_slot_handler_2 g_47eab8 =
 {
 	{
 		0x59, 2, 0xbff, -2, 0,
-		function_1bc6d0, function_1bc850, function_1bc810, 0, NONE, {0},
+		function_1bc6d0, (t_slot_evaluate)function_1bc850, function_1bc810, 0, NONE, {0},
 		function_1c1520, 0, 0, 0, 0, 0, 0
 	},
 	(t_slot_proc)function_1bc980, 0, function_1bca20
