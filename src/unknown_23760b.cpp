@@ -771,44 +771,40 @@ void c_virtual_keyboard_screen::press_key(short key)
 	case _keyboard_key_done:
 		if (type != NONE)
 		{
+			long dialog_id = 0;
 			long error = check_string();
 
 			if (error)
 			{
-				long dialog_id = 0;
-
-				if (type <= 4)
+				if (type > 4)
 				{
-					if (error == 1)
-						dialog_id = 0x58;
-					else if (error == 2)
-						dialog_id = 0x46;
-				}
-				else if (type <= 7)
-				{
-					if (error == 1)
+					if (type > 7)
+					{
+						if (type > 9)
+						{
+							if (type > 11)
+							{
+								dialog_id = type > 13 ? 0x8e : 0xa7;
+							}
+							else if (error == 1)
+								dialog_id = 0x5b;
+							else if (error == 2)
+								dialog_id = 0x49;
+						}
+						else if (error == 1)
+							dialog_id = 0x5a;
+						else if (error == 2)
+							dialog_id = 0x48;
+					}
+					else if (error == 1)
 						dialog_id = 0x59;
 					else if (error == 2)
 						dialog_id = 0x47;
 				}
-				else if (type <= 9)
-				{
-					if (error == 1)
-						dialog_id = 0x5a;
-					else if (error == 2)
-						dialog_id = 0x48;
-				}
-				else if (type <= 11)
-				{
-					if (error == 1)
-						dialog_id = 0x5b;
-					else if (error == 2)
-						dialog_id = 0x49;
-				}
-				else
-				{
-					dialog_id = type <= 13 ? 0xa7 : 0x8e;
-				}
+				else if (error == 1)
+					dialog_id = 0x58;
+				else if (error == 2)
+					dialog_id = 0x46;
 				dialog_ok_show(1, dialog_id, 4, user_flags, 0, 0);
 				break;
 			}
@@ -866,23 +862,18 @@ void c_virtual_keyboard_screen::press_key(short key)
 		{
 			word const *text = keys[key].function_22f52e()->function_22f52e();
 
-			if (*text)
+			for (long index = 0; text[index]; index++)
 			{
-				do
-				{
-					word character = *text;
+				word character = text[index];
 
-					if (function_140420(character))
-					{
-						character = 0x25a1;
-					}
-					if (!insert(character))
-					{
-						break;
-					}
-					text++;
+				if (function_140420(character))
+				{
+					character = 0x25a1;
 				}
-				while (*text);
+				if (!insert(character))
+				{
+					break;
+				}
 			}
 		}
 		break;
@@ -906,7 +897,7 @@ bool finish_friend_gamertag(c_virtual_keyboard_screen *keyboard);
    so it can carry no marker and 0x2382d6 cannot match whole */
 void c_virtual_keyboard_screen::finish()
 {
-	bool done;
+	bool done = true;
 
 	switch (type)
 	{
@@ -926,13 +917,11 @@ void c_virtual_keyboard_screen::finish()
 		done = finish_profile_rename(this);
 		break;
 	case 5:
+	case 7:
 		done = finish_variant_name(this);
 		break;
 	case 6:
 		done = finish_variant_save(this);
-		break;
-	case 7:
-		done = finish_variant_name(this);
 		break;
 	case 12:
 		done = finish_message_gamertag(this);
@@ -940,18 +929,14 @@ void c_virtual_keyboard_screen::finish()
 	case 13:
 		done = finish_friend_gamertag(this);
 		break;
-	case 14:
-		done = team_task == NONE;
-		break;
 	case 15:
 		done = function_238922(this);
 		break;
 	case 16:
 		create_team();
-		done = true;
 		break;
-	default:
-		done = true;
+	case 14:
+		done = team_task == NONE;
 		break;
 	}
 	if (done)
