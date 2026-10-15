@@ -2,6 +2,7 @@
 #include "device_setup_storage.h"
 #include "unknown_11c920.h"
 #include "unknown_0259d0.h"
+#include <string.h>
 
 
 
@@ -30,14 +31,10 @@ void function_137ed0(real arg_1)
 		function_18c060(arg_1);
 		function_2118c0();
 		function_134e00(arg_1);
-		if (g_485ac8 != 0 || g_485aca != 1 || g_485acc != 3 || g_485ad0 != 1)
+		if (memcmp(&g_runtime_device_configuration, &g_43ed80, sizeof(g_43ed80)) != 0)
 		{
 			function_14980();
-			s_128c0_settings local_1;
-			*(long *)&local_1 = 0x00010000;
-			local_1.quality = 3;
-			local_1.extra = 1;
-			function_128c0(&local_1);
+			function_128c0(&g_43ed80);
 			function_14600();
 		}
 		g_485b20 = arg_1;

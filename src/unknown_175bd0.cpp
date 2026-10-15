@@ -316,7 +316,7 @@ long function_1785c0(s_effect_object_marker const *marker, s_effect_datum *effec
 transform4x3f *function_178bc0(s_effect_location_datum *location, s_effect_datum *effect, transform4x3f *matrix, bool field_b4);
 void function_178c80(real scale, s_effect_datum *effect, s_particle_system_datum *particle_system, s_effect_particle_system_definition *definition, real unknown, bool field_b4);
 bool function_178020(short placement, point3f const *point, s_location const *location);
-__declspec(noinline) bool function_17b270(short const *values, s_effect_datum *effect, long mode);
+__declspec(noinline) bool function_17b270(s_effect_datum *effect, short const *values, long mode);
 void function_17af30(bool field_b4, short node_index, s_effect_datum *effect, transform4x3f *matrix);
 void function_177260(long effect_index, bool flag);
 __declspec(noinline) bool function_1794a0(long object_index, long other_object_index);
@@ -1267,7 +1267,7 @@ PRIVATE __forceinline byte effect_placement_allowed_17b270(s_effect_datum const 
 }
 
 // @retail 0x17b270
-bool function_17b270(short const *values, s_effect_datum *effect, long mode)
+bool function_17b270(s_effect_datum *effect, short const *values, long mode)
 {
 	bool result = effect_placement_allowed_17b270(effect, values[8]) != 0;
 	if (*(short *)&g_4e8c20->unknown00[8] == 1)
@@ -1949,7 +1949,7 @@ s_particle_system_datum *function_178eb0(long effect_index, long definition_inde
 
 	if (effect->unknown58 != NONE && !function_155760(effect->unknown58))
 		mode = 1;
-	if (function_17b270((short const *)definition, effect, mode))
+	if (function_17b270(effect, (short const *)definition, mode))
 	{
 		long location_index = definition->location_index;
 
