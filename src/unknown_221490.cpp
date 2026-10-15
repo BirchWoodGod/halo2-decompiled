@@ -169,7 +169,10 @@ void function_2215d0(
 	out_mixbins.dwMixBinCount = 0;
 	out_mixbins.lpMixBinVolumePairs = out_pairs;
 
-	if (list && list->count == (long)settings->mixbins.dwMixBinCount)
+	if (!list)
+		goto set_all;
+	if (list->count != (long)settings->mixbins.dwMixBinCount)
+		goto set_all;
 	{
 		long count = list->count;
 		changed = false;

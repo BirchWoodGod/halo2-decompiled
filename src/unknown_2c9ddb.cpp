@@ -643,7 +643,7 @@ c_class_1473c9 *__stdcall function_2cabc2(s_screen_parameters *parameters)
 
 #include <string.h>
 #include "unknown_19d220.h"
-void __stdcall function_215900(long controller, long type, word *capacity, long *indices, long include_cached);
+void __stdcall function_215900(long controller, long type, word *capacity, long *indices, bool include_cached);
 bool function_212bc0(long file_index, s_game_variant *variant);
 long function_19fd00(long index);
 void function_24c0c4(c_widget *widget);
@@ -653,7 +653,7 @@ void c_class_2c9e69::fill()
 {
     long indices[0x1065];
     word count = 0x1065;
-    function_215900(get_controller_index(), game_type, &count, indices, 1);
+    function_215900(get_controller_index(), game_type, &count, indices, true);
     record_pool_release_all(data);
     memset(variants, 0xff, sizeof(variants));
     if (flag_a)

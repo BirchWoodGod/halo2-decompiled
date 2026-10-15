@@ -70,7 +70,7 @@ void __stdcall function_2243c0(s_interface_definition *arg_0, long arg_1, long a
 		g_55edd8.field_0 = (s_particle_system_datum const *)arg_1;
 		g_55edd8.field_4 = function_173c30;
 		function_1bd50(&g_55edd8);
-		if (function_23ea80(arg_3, g_4687d0, *(word const *)(local_2 + 4), arg_4, arg_5))
+		if (function_23ea80(arg_3, g_4687d0, arg_5, *(word const *)(local_2 + 4), arg_4))
 		{
 			local_1.field_44 = 0;
 			local_1.field_48 = 0;

@@ -98,7 +98,7 @@ struct s_input_state
 };
 
 void __stdcall function_23d970(s_view_state *state);
-bool function_015d00(long count, dword **out);
+bool function_015d00(dword **out, long count);
 
 /* ---- globals ---- */
 
@@ -128,7 +128,7 @@ byte g_4e61b9;
 s_input_state g_4e61dc[3];
 s_input_state g_4e630c;
 byte g_485af0;
-long g_470a3c[8];
+long g_470a3c, g_470a40, g_470a44, g_470a48, g_470a4c, g_470a50, g_470a54, g_470a58;
 byte g_470a38;
 
 void __stdcall function_23d260(void *a, void *b, void *c);
@@ -744,17 +744,20 @@ void function_23e460(void)
 	}
 }
 
+/* retail calls it out of line */
+__declspec(noinline) void function_23ecd0(void);
+
 // @retail 0x23ecd0
 void function_23ecd0(void)
 {
-	g_470a3c[0] = 1;
-	g_470a3c[1] = 2;
-	g_470a3c[2] = 3;
-	g_470a3c[3] = 4;
-	g_470a3c[4] = 5;
-	g_470a3c[5] = 6;
-	g_470a3c[6] = 7;
-	g_470a3c[7] = 8;
+	g_470a3c = 1;
+	g_470a40 = 2;
+	g_470a44 = 3;
+	g_470a48 = 4;
+	g_470a4c = 5;
+	g_470a50 = 6;
+	g_470a54 = 7;
+	g_470a58 = 8;
 }
 
 struct s_shader_cache;
@@ -775,19 +778,18 @@ byte g_470a39 = 1;
 
 /* Sets the material pass and matrix constants for an interface draw. */
 // @retail 0x23ea80
-bool function_23ea80(long tag, transform4x3f const *matrix, long stage, long pass, long variant)
+bool function_23ea80(long tag, transform4x3f const *matrix, long variant, long stage, long pass)
 {
-	long *tag_index_ptr = &tag;
+	(void)&variant;
 	(void)&stage;
 	(void)&pass;
-	(void)&variant;
 	bool result = false;
-	dword kind = ((dword *)g_4e3b44)[(short)(*tag_index_ptr) * 4];
+	dword kind = ((dword *)g_4e3b44)[(short)tag * 4];
 	long const *reference;
 	if (kind == 0x5052544d || kind == 0x70727433)
-		reference = function_137bd0((*tag_index_ptr))->function_x947334();
+		reference = function_137bd0(tag)->function_x947334();
 	else
-		reference = *(long const **)(g_4e3b44[(*tag_index_ptr) & 0xffff].bytes + 0x24);
+		reference = *(long const **)(g_4e3b44[tag & 0xffff].bytes + 0x24);
 	byte *groups = *(byte **)(g_4e3b44[*reference & 0xffff].bytes + 0x5c);
 	long first = **(word **)(groups + 4) & 0x1ff;
 	long second = (*(word **)(groups + 0xc))[first + stage] & 0x1ff;
@@ -810,15 +812,14 @@ bool function_23ea80(long tag, transform4x3f const *matrix, long stage, long pas
 	constants[10] = matrix->up.k;
 	constants[11] = matrix->position.z;
 	D3DDevice_SetVertexShaderConstant(78, constants, 3);
-	function_1bbf0((*tag_index_ptr), 0, pass, variant, 0, 10000.0f);
+	function_1bbf0(tag, 0, pass, variant, 0, 10000.0f);
 	function_1cf50();
 	long binding_tag = *(long *)(shader + 0x100);
 	long entry = stage + 7;
-	if (binding_tag != NONE)
+	if (binding_tag != NONE &&
+		(dword)entry < *(dword *)(g_4e3b44[binding_tag & 0xffff].bytes + 4) &&
+		(dword)(*(long *)(*(byte **)(g_4e3b44[binding_tag & 0xffff].bytes + 8) + entry * 0x1c + 0xc) >> 4) > 0)
 	{
-		byte *bindings = g_4e3b44[binding_tag & 0xffff].bytes;
-		if ((dword)entry < *(dword *)(bindings + 4) &&
-			(dword)(*(long *)(*(byte **)(bindings + 8) + entry * 0x1c + 0xc) >> 4) > 0)
 		{
 			result = true;
 			function_1c590((s_shader_cache *)g_51f0f0, binding_tag, entry);
@@ -840,59 +841,70 @@ bool function_23ea80(long tag, transform4x3f const *matrix, long stage, long pas
 	return result;
 }
 
-static inline dword *push_vertex_data4f(dword *push, long slot, real a, real b, real c, real d)
+static inline void push_vertex_data4f(dword *&push, long slot, real a, real b, real c, real d)
 {
 	push[0] = D3DPUSH_ENCODE(0x1a00 + slot * 16, 4);
 	((real *)push)[1] = a;
 	((real *)push)[2] = b;
 	((real *)push)[3] = c;
 	((real *)push)[4] = d;
-	return push + 5;
+	push += 5;
 }
 
-static inline dword *push_vertex_data2f(dword *push, long slot, real a, real b)
+static inline void push_vertex_data2f(dword *&push, long slot, real a, real b)
 {
 	push[0] = D3DPUSH_ENCODE(0x1880 + slot * 8, 2);
 	((real *)push)[1] = a;
 	((real *)push)[2] = b;
-	return push + 3;
+	push += 3;
 }
 
-static inline dword *push_vertex_data4ub(dword *push, long slot, dword value)
+static inline void push_vertex_data4ub(dword *&push, long slot, dword value)
 {
 	push[0] = D3DPUSH_ENCODE(0x1940 + slot * 4, 1);
 	push[1] = value;
-	return push + 2;
+	push += 2;
 }
+static inline void push_begin(dword *&push, dword primitive, dword count)
+{
+	push[0] = D3DPUSH_ENCODE(D3DPUSH_SET_BEGIN_END, 1);
+	push[1] = primitive;
+	push[2] = D3DPUSH_ENCODE(D3DPUSH_INLINE_ARRAY, count) | D3DPUSH_NOINCREMENT_FLAG;
+	push += 3;
+}
+
+static inline void push_end(dword *&push)
+{
+	push[0] = D3DPUSH_ENCODE(D3DPUSH_SET_BEGIN_END, 1);
+	push[1] = 0;
+	push += 2;
+}
+
 // @retail 0x23ed30
-void function_23ed30(point3f *a, point3f *b, real c, real d, dword color, real e, real *f, real *g, real *h)
+void function_23ed30(point3f *a, point3f *b, real c, real d, dword color, real e, real *f, real *h, real *g)
 {
 	dword *push;
 
-	if (g_470a38 && function_015d00(0x2e, &push))
+	if (g_470a38 && function_015d00(&push, 0x2e))
 	{
-		push = push_vertex_data4f(push, g_470a3c[0], b->x, b->y, b->z, 1.f);
-		push = push_vertex_data2f(push, g_470a3c[1], e, 0.f);
-		push = push_vertex_data4f(push, g_470a3c[3], a->x, a->y, a->z, 1.f);
-		push = push_vertex_data2f(push, g_470a3c[4], c, d);
-		push = push_vertex_data4ub(push, g_470a3c[7], color);
-		push = push_vertex_data4f(push, g_470a3c[2], f[0], f[1], f[2], f[3]);
-		push = push_vertex_data4f(push, g_470a3c[5], g[0], g[1], g[2], g[3]);
-		push = push_vertex_data4f(push, g_470a3c[6], h[0], h[1], h[2], h[3]);
-		push[0] = D3DPUSH_ENCODE(D3DPUSH_SET_BEGIN_END, 1);
-		push[1] = 8;
-		push[2] = D3DPUSH_ENCODE(D3DPUSH_INLINE_ARRAY, 8) | D3DPUSH_NOINCREMENT_FLAG;
-		push[3] = 0;
-		push[4] = 0;
-		push[5] = 1;
-		push[6] = 0;
-		push[7] = 0x10001;
-		push[8] = 0;
-		push[9] = 0x10000;
-		push[10] = 0;
-		push[11] = D3DPUSH_ENCODE(D3DPUSH_SET_BEGIN_END, 1);
-		push[12] = 0;
-		push += 13;
+		push_vertex_data4f(push, g_470a3c, b->x, b->y, b->z, 1.f);
+		push_vertex_data2f(push, g_470a40, e, 0.f);
+		push_vertex_data4f(push, g_470a48, a->x, a->y, a->z, 1.f);
+		push_vertex_data2f(push, g_470a4c, c, d);
+		push_vertex_data4ub(push, g_470a58, color);
+		push_vertex_data4f(push, g_470a44, f[0], f[1], f[2], f[3]);
+		push_vertex_data4f(push, g_470a50, g[0], g[1], g[2], g[3]);
+		push_vertex_data4f(push, g_470a54, h[0], h[1], h[2], h[3]);
+		push_begin(push, 8, 8);
+		*push++ = 0;
+		*push++ = 0;
+		*push++ = 1;
+		*push++ = 0;
+		*push++ = 0x10001;
+		*push++ = 0;
+		*push++ = 0x10000;
+		*push++ = 0;
+		push_end(push);
 		D3DDevice_EndPush(push);
 	}
 }

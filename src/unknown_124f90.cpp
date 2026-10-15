@@ -759,7 +759,10 @@ bool sound_voice_promotion_enabled(short voice_index)
 		char promotion_index = sound_definition_get(sound->definition_index)->promotion_index;
 
 		if ((promotion_index < 0 ? 0 : (promotion_index > 0x35 ? 0x35 : promotion_index)) == promotion_index)
-			result = !TEST_FIELD_BIT(((s_sound_promotion_flags *)function_221810(promotion_index))->disabled);
+		{
+			short const &argument = promotion_index;
+			result = !TEST_FIELD_BIT(((s_sound_promotion_flags *)function_221810(argument))->disabled);
+		}
 	}
 	return result;
 }
@@ -2695,7 +2698,10 @@ void function_129790(short voice_index, vector3f const *attenuation)
 					parameters.obstruction_rate = 0.0f;
 					parameters.occlusion_rate = 0.0f;
 				}
-				*(dword *)&parameters.flags = (listener->unknown07 != 0) | 2;
+				dword flags;
+				if (listener->unknown07 != 0) flags = 1;
+				else flags = 0;
+				*(dword *)&parameters.flags = flags | 2;
 				sound_driver_voice_update(voice->unknown0e, &parameters);
 			}
 		}
