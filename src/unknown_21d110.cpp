@@ -413,7 +413,7 @@ bool function_21d5a0(long effect_index)
 		if (!(effect->flags & (FLAG(_sound_effect_unmanaged_bit) | FLAG(_sound_effect_stopped_bit))))
 		{
 			long local_0 = effect->sound_index;
-			s_sound_source_callbacks const *local_1 = playing_sound_get(local_0)->marker.link.source;
+			s_sound_source_callbacks const *const &local_1 = playing_sound_get(local_0)->marker.link.source;
 			s_sound_playback_flags flags;
 			*(volatile word *)&flags = 0;
 			result = sound_playback_update_source(local_0, local_1, &flags);

@@ -29,7 +29,7 @@ __inline vector3f *subtract_points3f(
 }
 
 // @retail 0x3ea30
-real distance3d(
+inline real distance3d(
 	point3f const *a,
 	point3f const *b)
 {
