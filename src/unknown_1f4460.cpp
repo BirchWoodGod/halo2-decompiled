@@ -196,6 +196,23 @@ inline void function_1f45c1(s_1f45c1 *arg_0)
 	arg_0->field_3c = false;
 }
 
+// @retail 0x1f4280
+bool __stdcall function_1f4280(long actor_index)
+{
+	s_actor_view *actor = actor_get(actor_index);
+	if (actor->unknown270 == 4 && actor->unknown5d0)
+	{
+		s_type_c3b527 point;
+		point.point = actor->position;
+		point.output_index = NONE;
+		return function_1f4460(actor_index, &point, NONE, NONE, true);
+	}
+	function_2628f0(actor_index, g_470fa0);
+	if (actor->unknown4ac != 1)
+		actor->unknown4ac = 1;
+	return function_1f8a70(actor_index, 0);
+}
+
 // @retail 0x1f4460
 bool function_1f4460(long actor_index, s_type_c3b527 const *point, long target_index, long unknown, bool unknown2)
 {
@@ -220,8 +237,8 @@ bool function_1f4460(long actor_index, s_type_c3b527 const *point, long target_i
 		{
 			function_1f86a0(actor_index);
 			function_1f45c1((s_1f45c1 *)&actor->unknown4ac);
-			actor->unknown4ae = unknown2;
 			actor->unknown4ac = 2;
+			actor->unknown4ae = unknown2;
 			actor->unknown4b8 = *point;
 			actor->unknown4c8 = target_index;
 			actor->unknown4e4 = unknown;
