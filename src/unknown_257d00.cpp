@@ -1062,12 +1062,13 @@ PRIVATE __forceinline void function_25a1b3(vector3f const *arg_0, vector3f *arg_
    or to its side (2, 3 the other side) */
 PRIVATE __forceinline void function_25a131(vector3f const *arg_0, vector3f const *arg_1, vector3f *arg_2)
 {
-	arg_2->i = arg_1->k * arg_0->j;
-	arg_2->i -= arg_0->k * arg_1->j;
-	arg_2->j = arg_1->i * arg_0->k;
-	arg_2->j -= arg_0->i * arg_1->k;
-	arg_2->k = arg_1->j * arg_0->i;
-	arg_2->k -= arg_0->j * arg_1->i;
+	vector3f const &first = *arg_0;
+	arg_2->i = arg_1->k * first.j;
+	arg_2->i -= first.k * arg_1->j;
+	arg_2->j = arg_1->i * first.k;
+	arg_2->j -= first.i * arg_1->k;
+	arg_2->k = arg_1->j * first.i;
+	arg_2->k -= first.j * arg_1->i;
 }
 
 // @retail 0x25a130
@@ -1105,7 +1106,9 @@ void function_25a130(long actor_index, long object_index, s_cs_facing *facing)
 			{
 				s_cs_facing_object *object = ((s_cs_facing_object_header *)g_4e0300->data)[object_index & 0xffff].object;
 
-				function_25a131(&object->up, &forward, &side);
+				vector3f const *up_source = &object->up;
+				vector3f const *forward_source = &forward;
+				function_25a131(up_source, forward_source, &side);
 				if (function_30bf0(&side) == 0.f)
 				{
 					side = *g_4687a8;

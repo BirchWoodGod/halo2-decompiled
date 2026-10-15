@@ -4010,7 +4010,7 @@ void c_variant_editing_options_list::handle_item(s_controller_reference **contro
 
 	if (datum)
 	{
-		long type;
+		long type = NONE;
 
 		switch (datum->item)
 		{
@@ -4039,7 +4039,7 @@ void c_variant_editing_options_list::handle_item(s_controller_reference **contro
 				type = 8;
 				break;
 			default:
-				return;
+				break;
 			}
 			break;
 		case 1:
@@ -4070,7 +4070,7 @@ void c_variant_editing_options_list::handle_item(s_controller_reference **contro
 				type = 0x27;
 				break;
 			default:
-				return;
+				break;
 			}
 			break;
 		case 3:
@@ -4098,7 +4098,7 @@ void c_variant_editing_options_list::handle_item(s_controller_reference **contro
 				type = 0x15;
 				break;
 			default:
-				return;
+				break;
 			}
 			break;
 		case 4:
@@ -4108,9 +4108,10 @@ void c_variant_editing_options_list::handle_item(s_controller_reference **contro
 			type = 0xc;
 			break;
 		default:
-			return;
+			break;
 		}
-		function_2c83e6(type, 5, 4, 1 << (*controller)->controller_index);
+		if (type != NONE)
+			function_2c83e6(type, 5, 4, 1 << (*controller)->controller_index);
 	}
 }
 
@@ -4456,9 +4457,6 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 
 	if (datum)
 	{
-		s_screen_parameters parameters;
-		s_list_item_iterator iterator;
-		long count;
 
 		switch (datum->item)
 		{
@@ -4470,6 +4468,10 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 			}
 			break;
 		case 2:
+		{
+			s_screen_parameters parameters;
+			s_list_item_iterator iterator;
+			long count;
 			parameters.field_c = 0;
 			if (source && source->actual_count > 0)
 			{
@@ -4493,7 +4495,9 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 
 					if (member->recipient.xuid && !function_19acc6((_XUID const *)&member->recipient.xuid) && !(member->flags & 0xc00) && (member->flags & 1))
 					{
-						((s_message_recipient *)entries)[count++] = member->recipient;
+						s_message_recipient *recipient = &((s_message_recipient *)entries)[count];
+						++count;
+						*recipient = member->recipient;
 					}
 				}
 				if (count > 0)
@@ -4515,7 +4519,12 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 			}
 			function_236299(2);
 			break;
+		}
 		case 1:
+		{
+			s_screen_parameters parameters;
+			s_list_item_iterator iterator;
+			long count;
 			parameters.field_c = 0;
 			if (source && source->actual_count > 0)
 			{
@@ -4535,7 +4544,9 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 
 					if (member->recipient.xuid && !(member->flags & 0xc00))
 					{
-						((s_message_recipient *)entries)[count++] = member->recipient;
+						s_message_recipient *recipient = &((s_message_recipient *)entries)[count];
+						++count;
+						*recipient = member->recipient;
 					}
 				}
 				if (count > 0)
@@ -4557,6 +4568,7 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 			}
 			function_236299(2);
 			break;
+		}
 		case 3:
 		{
 			long controller_index = (*controller)->controller_index;
@@ -4619,22 +4631,25 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 				iterator.iterator.index = NONE;
 				iterator.iterator.datum_index = NONE;
 				count = 0;
-				entry_offset = 0;
-				while (count < entry_count)
+				if (count < entry_count)
 				{
-					s_online_member *member;
+					entry_offset = 0;
+					do
+					{
+						s_online_member *member;
 
-					if (!function_2b2327(&iterator))
-					{
-						break;
-					}
-					member = (s_online_member *)iterator.item;
-					if (member->recipient.xuid && !function_19acc6((_XUID const *)&member->recipient.xuid) && !(member->flags & 0x30) && (member->flags & 1))
-					{
-						++count;
-						*(s_message_recipient *)((byte *)entries + entry_offset) = member->recipient;
-						entry_offset += sizeof(s_message_recipient);
-					}
+						if (!function_2b2327(&iterator))
+						{
+							break;
+						}
+						member = (s_online_member *)iterator.item;
+						if (member->recipient.xuid && !function_19acc6((_XUID const *)&member->recipient.xuid) && !(member->flags & 0x30) && (member->flags & 1))
+						{
+							++count;
+							*(s_message_recipient *)((byte *)entries + entry_offset) = member->recipient;
+							entry_offset += sizeof(s_message_recipient);
+						}
+					} while (count < entry_count);
 				}
 				if (count > 0)
 				{
