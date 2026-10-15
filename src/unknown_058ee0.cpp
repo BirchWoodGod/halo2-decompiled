@@ -583,8 +583,7 @@ bool __stdcall network_session_manager_host_session(long mode, const XNKID *kid,
 	if (!session->state)
 	{
 		s_session_id id;
-		id.a = 0;
-		id.b = 0;
+		memset(&id, 0, sizeof(id));
 		if (network_session_host(session, mode, 0, kid, key, 0, NULL, NULL, &id, 0))
 		{
 			result = true;

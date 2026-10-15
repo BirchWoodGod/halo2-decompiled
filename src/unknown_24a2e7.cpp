@@ -280,7 +280,7 @@ c_list_24a64d::c_list_24a64d(word arg_0) :
 }
 
 void function_24c166(c_class_1474e8 *arg_0);
-void __stdcall function_215900(long arg_0, long arg_1, word *arg_2, long *arg_3, long arg_4);
+void __stdcall function_215900(long arg_0, long arg_1, word *arg_2, long *arg_3, bool arg_4);
 bool player_slot_profile_in_use(long arg_0);
 
 // @retail 0x24a190
@@ -292,8 +292,8 @@ void function_24a190(void *arg_0)
 	bool local_1 = !local_0->field_89;
 	word local_2 = 0x1000;
 	long local_3[0x1000];
-	long local_4 = 0;
 	long local_5 = 0;
+	long local_4 = 0;
 	c_class_14750b *local_6 = (c_class_14750b *)local_0->get_item_data();
 	long local_7 = local_0->get_item_count();
 	function_215900(local_0->get_controller_index(), 0, &local_2, local_3, local_1);

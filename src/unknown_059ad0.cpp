@@ -460,7 +460,7 @@ bool network_session_create_key(c_class_58d20 *session, long local, long mode)
 }
 
 // @retail 0x5fac0
-bool network_session_join_key(c_class_58d20 *session, long mode, const XNKID *kid, const XNKEY *key, long local)
+bool network_session_join_key(const XNKEY *key, long mode, const XNKID *kid, c_class_58d20 *session, long local)
 {
 	network_session_release_key(session);
 	if (transport_security_register_key(session->value38, local, false, kid, key))
@@ -1017,16 +1017,17 @@ bool __stdcall network_session_boot_machine(c_class_58d20 *session, const s_sess
 			if (session->function_058d20())
 			{
 				network_session_boot_member(session, member_index);
-				return true;
+				{ result = true; goto local_5acc0; }
 			}
 			s_network_message_peer_identity message;
 			memset(&message, 0, sizeof(message));
 			message.session_id = *(s_session_id *)&session->unknown1c;
 			message.identity = *identity;
 			network_session_send_to_host(session, _network_message_type_boot_machine, sizeof(message), &message);
-			return true;
+			{ result = true; goto local_5acc0; }
 		}
 	}
+local_5acc0:
 	return result;
 }
 
@@ -1909,10 +1910,8 @@ void function_62990(c_class_58d20 *session)
 				memset(&message, 0, sizeof(message));
 				message.type = 0;
 				message.session_id = *(s_session_id *)&session->unknown1c;
-				message.times[0] = NONE;
-				message.times[1] = NONE;
-				message.times[2] = NONE;
-				message.times[3] = NONE;
+				memset(message.times, 0xff, 8);
+				memset(message.times + 2, 0xff, 8);
 				network_observer_send_message(session->observer, session->value10, member->unknown04, true,
 					_network_message_type_time_synchronize, sizeof(message), &message);
 				session->value7658 = network_session_time_now();
@@ -3293,7 +3292,7 @@ bool __stdcall network_session_host(c_class_58d20 *session, long mode, long loca
 			return false;
 		if (kid && key)
 		{
-			if (!network_session_join_key(session, mode, kid, key, local))
+			if (!network_session_join_key(key, mode, kid, session, local))
 				return false;
 		}
 		else
@@ -4254,7 +4253,7 @@ local_5:
  }
 }
 
-bool session_peer_map_update_reachable(s_session_member_header *a, s_session_member_header *b, s_session_peer_map *map);
+bool session_peer_map_update_reachable(s_session_member_header *a, s_session_peer_map *map, s_session_member_header *b);
 bool session_peer_map_set_connected(s_session_peer_map *map, const s_session_member_header *member, bool connected);
 
 // @retail 0x5e7f0
@@ -4324,8 +4323,8 @@ bool __stdcall function_05e7f0(c_class_58d20 *session, const s_type_99af70 *addr
   s_session_member_header *local = (s_session_member_header *)&session->members[session->current_member];
   s_session_peer_transition *transition = (s_session_peer_transition *)&session->value7420;
   s_session_peer_map *map = (s_session_peer_map *)transition->map;
-  session_peer_map_update_reachable(local, remote, (s_session_peer_map *)received);
-  session_peer_map_update_reachable(local, remote, map);
+  session_peer_map_update_reachable(local, (s_session_peer_map *)received, remote);
+  session_peer_map_update_reachable(local, map, remote);
   long selected = network_session_find_member(session, (const s_session_member_identity *)(received + 0x24));
   bool better = false;
   bool same = false;

@@ -220,9 +220,8 @@ bool c_session_state_start_game::update()
 		if (a->type == 4)
 		{
 			function_06df60(o, 3, 0, 0);
-			return result;
 		}
-		if (a->type == 2)
+		else if (a->type == 2)
 		{
 			if (a->function_058d20() && function_06e720(a) && function_06e6b0(a, &flag10))
 			{
@@ -279,7 +278,7 @@ bool c_session_state_in_game::update()
 					network_session_leave(a, false);
 					result = true;
 				}
-				return result;
+				goto local_6ea21;
 			}
 			if (a->function_058d20())
 			{
@@ -313,9 +312,13 @@ bool c_session_state_in_game::update()
 		}
 		else
 		{
-			function_06df60(o, a->type == 5 ? 4 : 1, 0, 0);
+			if (a->type == 5)
+				function_06df60(o, 4, 0, 0);
+			else
+				function_06df60(o, 1, 0, 0);
 		}
 	}
+local_6ea21:
 	return result;
 }
 
@@ -745,10 +748,9 @@ void c_session_client::function_06dae0(long a, s_session_remote *remote)
 fallback:
 	s = session;
 	long local[3];
-	local[0] = 0;
-	local[1] = 0;
+	memset(local + 2, 0, 4);
+	memset(local, 0, 8);
 	local[0] = s->unknown1c;
-	local[2] = 0;
 	local[1] = s->unknown20;
 	local[2] = 3;
 	function_07b140(s->unknown04, a, 10, 12, local);
@@ -777,11 +779,6 @@ void c_session_client::function_06dbd0(const s_session_id *id)
 	case 6:
 		return;
 	case 7:
-		if (s->flag7420)
-		{
-			return;
-		}
-		break;
 	case 8:
 		if (s->flag7420)
 		{
