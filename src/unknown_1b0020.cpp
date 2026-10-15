@@ -63,10 +63,10 @@ s_slot_handler_2 g_47dec0 =
 // @retail 0x1b02a0
 bool function_1b02a0(long actor_index)
 {
+	bool result = false;
 	s_reference invalid_reference = g_470fa0;
 	s_record_pool *actors = g_4f55f0;
 	s_actor_view *actor = (s_actor_view *)(actors->data + (actor_index & 0xffff) * sizeof(s_actor_view));
-	bool result = false;
 
 	if (!REFERENCE_EQUAL(actor->unknown418, invalid_reference))
 	{
@@ -78,7 +78,8 @@ bool function_1b02a0(long actor_index)
 				(actor->unknown4ac == 4 || actor->unknown4ac == 6 || actor->unknown4ac == 5) &&
 				REFERENCE_EQUAL(actor->unknown4b8, actor->unknown418))
 			{
-				return true;
+				result = true;
+				goto done;
 			}
 
 			volatile real radius = function_1e3920(actor_index);
@@ -92,16 +93,20 @@ bool function_1b02a0(long actor_index)
 			if (distance * distance > distance_squared)
 			{
 				if (actor->unknown344 == NONE)
-					return true;
+				{
+					result = true;
+					goto done;
+				}
 				bool waiting = false;
 				s_prop_view_fields *view = prop_view_fields_get(actor->unknown344);
 
 				if (view && (view->unknown06 == 0 || view->unknown06 == 1))
 					waiting = true;
-				return !waiting;
+				result = !waiting;
 			}
 		}
 	}
+done:
 	return result;
 }
 

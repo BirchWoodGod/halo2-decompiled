@@ -347,7 +347,7 @@ real const g_47ff50 = 16384.0f;
 /* interpolates two colours channel by channel in fixed point (MMX) */
 static __forceinline dword pixel32_interpolate(real t, dword second, dword first)
 {
-	__m64 zero = _mm_setzero_si64();
+	__int64 zero = 0;
 	__int64 rounding = 0x0001000100010001;
 
 	__asm
@@ -381,12 +381,13 @@ enum
 	_function_output_color_4
 };
 
+/* retail keeps the frame pointer here (an ebp frame, nothing aligned) */
+#pragma optimize("y", off)
 // @retail 0x13bc00
 dword function_13bc00(s_tag_data const *function, real input)
 {
 	dword result = 0xffffffff;
 	s_function_header const *header = (s_function_header const *)function->address;
-	long index;
 
 	if (header && function->size > 0)
 	{
@@ -422,7 +423,7 @@ dword function_13bc00(s_tag_data const *function, real input)
 		case _function_output_color_3:
 		{
 			input *= 2.0;
-			index = function_016ae0(input);
+			long index = function_016ae0(input);
 			input -= index;
 			dword a;
 			dword b;
@@ -448,7 +449,7 @@ dword function_13bc00(s_tag_data const *function, real input)
 		case _function_output_color_4:
 		{
 			input *= 3.0;
-			index = function_016ae0(input);
+			long index = function_016ae0(input);
 			input -= index;
 			if (index >= 3)
 			{
@@ -464,6 +465,7 @@ dword function_13bc00(s_tag_data const *function, real input)
 local_1:
 	return result;
 }
+#pragma optimize("y", on)
 
 color3f *unpack_color3f(dword pixel, color3f *color);
 

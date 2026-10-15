@@ -98,7 +98,7 @@ long online_get_logon_users_status(void)
 	online_get_logon_users(users);
 	for (long i = 0; i < XONLINE_MAX_LOGON_USERS; i++)
 	{
-		XONLINE_USER *user = &users[i];
+		XONLINE_USER *const &user = &users[i];
 		HRESULT hr = user->hr;
 		if (user && user->xuid.qwUserID != 0 && hr != S_OK)
 		{
