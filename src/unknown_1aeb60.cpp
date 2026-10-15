@@ -341,7 +341,9 @@ void __stdcall function_1afb30(long actor_index, s_slot *slot)
 		if (!state->timer && actor->unknown227 && !actor->unknown229)
 			function_1f86a0(actor_index);
 	}
-	if (--state->ticks <= 0)
+	short remaining = state->ticks - 1;
+	state->ticks = remaining;
+	if (remaining <= 0)
 	{
 		if (actor->prop_index != NONE)
 		{
