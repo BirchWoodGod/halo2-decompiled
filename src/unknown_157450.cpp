@@ -5473,7 +5473,7 @@ void function_210db0(void);
 void function_210df0(void);
 void function_210e10(void);
 void function_211030(void);
-void function_215690(void);
+void saved_game_storage_initialize(void);
 void function_215720(void);
 void function_215730(void);
 void function_217bc0(void);
@@ -5503,7 +5503,7 @@ s_subsystem_440dd8 const g_440dd8[68] =
     { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { function_215690, function_215730, function_175f40, function_215720, NULL, NULL, NULL, NULL, NULL },
+    { saved_game_storage_initialize, function_215730, function_175f40, function_215720, NULL, NULL, NULL, NULL, NULL },
     { function_217bc0, function_217c20, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { function_155ea0, function_155ed0, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
