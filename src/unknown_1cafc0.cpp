@@ -823,7 +823,6 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 		animation_id.index != NONE && !(state_flags & 8))
 	{
 		c_type_709360 transition_id;
-		c_type_709360 blend_id;
 		bool blend = false;
 		real fraction;
 		long transition_set;
@@ -865,6 +864,7 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 					fraction = PIN(fraction, 0.0f, 1.0f);
 				}
 			}
+			c_type_709360 blend_id;
 			transition_set = NONE;
 			if (!(state_flags & 0x100))
 			{
