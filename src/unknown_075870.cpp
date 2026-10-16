@@ -1984,8 +1984,9 @@ void function_79260(s_network_observer *observer)
 			if (count > 0)
 			{
 				if (observer->value4e0c != NONE)
-					total = observer->value4e0c + ((total - observer->value4e0c) >> observer->configuration->shift1b4);
-				observer->value4e0c = total;
+					observer->value4e0c = observer->value4e0c + ((total - observer->value4e0c) >> observer->configuration->shift1b4);
+				else
+					observer->value4e0c = total;
 			}
 		}
 		function_79480(observer);

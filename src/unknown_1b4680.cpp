@@ -191,6 +191,18 @@ short __stdcall function_1b4d10(long actor_index, short level, long a, long b)
 }
 #pragma inline_depth()
 
+static inline s_actor_view *member_next_1b4e70(long &next, long &current)
+{
+	s_actor_view *member = 0;
+	if (next != NONE)
+	{
+		member = actor_get(next);
+		current = next;
+		next = member->next_index;
+	}
+	return member;
+}
+
 // @retail 0x1b4e70
 short __stdcall function_1b4e70(long actor_index, long leader_index, long a, long b)
 {
@@ -199,17 +211,15 @@ short __stdcall function_1b4e70(long actor_index, long leader_index, long a, lon
 
 	if (actor->unknown07c != NONE)
 	{
-	long index = element_502420_get(actor->unknown07c)->first_actor_index;
+		long index = element_502420_get(actor->unknown07c)->first_actor_index;
 
-	while (index != NONE)
-	{
-		s_actor_view *other = actor_get(index);
-		long other_index = index;
-
-		index = other->next_index;
-		if (actor != other && function_26eae0(leader_index, other_index, 3, 1.0f))
-			count++;
-	}
+		s_actor_view *other;
+		long other_index;
+		while ((other = member_next_1b4e70(index, other_index)) != 0)
+		{
+			if (actor != other && function_26eae0(leader_index, other_index, 3, 1.0f))
+				count++;
+		}
 	}
 	return (short)count;
 }

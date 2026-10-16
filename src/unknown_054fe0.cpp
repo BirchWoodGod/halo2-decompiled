@@ -1143,6 +1143,7 @@ static inline bool session_member_get_qos(s_network_observer *observer, c_class_
 // @retail 0x64480
 void network_session_get_member_latency(s_session_member_latency *latency, c_class_58d20 *session)
 {
+	long host = session->current_member;
 	s_network_observer *observer = 0;
 	long count = 0;
 	long maximum = 0x80000000;
@@ -1150,8 +1151,6 @@ void network_session_get_member_latency(s_session_member_latency *latency, c_cla
 	long times[16];
 	if (g_527330.initialized)
 		observer = (s_network_observer *)g_527330.unknown48;
-	long host = session->current_member;
-
 	memset(latency, 0, sizeof(*latency));
 	for (long i = 0; i < session->member_count; i++)
 	{

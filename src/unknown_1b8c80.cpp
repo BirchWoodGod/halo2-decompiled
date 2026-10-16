@@ -1453,7 +1453,10 @@ bool __stdcall function_1ba5c0(long arg_0, s_slot *arg_1, long arg_2)
     s_4c_element *local_3 = (s_4c_element *)arg_2;
     volatile bool local_4 = true;
     if (local_2->object_index == NONE || local_3->object_index == NONE)
-        return false;
+    {
+        local_4 = false;
+        return local_4;
+    }
     if (local_0->unknown26c != NONE || (local_2->flags & 2))
         return local_4;
     if (*(short *)((byte *)local_3 + 2) <= 0 &&
@@ -1462,10 +1465,16 @@ bool __stdcall function_1ba5c0(long arg_0, s_slot *arg_1, long arg_2)
     if (*((byte *)local_0 + 0x5d8) || !function_1b90b0(arg_0, local_3->object_index) ||
         !function_1ba990(arg_0, local_3->object_index, !(local_2->flags & 1),
             ((s_slot_4c *)((byte *)local_2 - 0x1c))->unknown28, ((s_slot_4c *)((byte *)local_2 - 0x1c))->unknown2c, true))
-        return false;
+    {
+        local_4 = false;
+        return local_4;
+    }
     s_seat_approach_result local_5;
     if (!function_1b9e70(arg_0, local_2, false, local_3, &local_5))
-        return false;
+    {
+        local_4 = false;
+        return local_4;
+    }
     function_f5d10(local_2->object_index, local_2->seat_index, true);
     ((s_slot_4c *)((byte *)local_2 - 0x1c))->point = *(point3f *)&local_5.direction;
     if (local_5.approaching)
@@ -1494,29 +1503,30 @@ submit_request:
         s_type_c3b527 local_8;
         long local_9;
         bool local_10;
-        if (function_1badc0(arg_0, local_2->object_index, &local_5.point,
+        bool local_14;
+        if (!function_1badc0(arg_0, local_2->object_index, &local_5.point,
             &local_8, &local_9, false, &local_10))
+            goto reset_attempts;
+        local_14 = function_1f4460(arg_0, &local_8, local_9,
+            local_10 ? NONE : local_2->object_index, false);
+        local_4 = local_14;
+        if (local_14)
         {
-            bool local_14 = function_1f4460(arg_0, &local_8, local_9,
-                local_10 ? NONE : local_2->object_index, false);
-            local_4 = local_14;
-            if (!local_14)
-            {
-                ++local_2->unknown7;
-                short local_11 = (local_2->flags & 1) ? 5 : 50;
-                if ((short)local_2->unknown7 > local_11)
-                {
-                    local_4 = false;
-                    actor_get(arg_0)->unknown040 = false;
-                }
-                else
-                    local_4 = true;
-            }
-            else
-                local_2->unknown7 = 0;
+reset_attempts:
+            local_2->unknown7 = 0;
         }
         else
-            local_2->unknown7 = 0;
+        {
+            ++local_2->unknown7;
+            short local_11 = (local_2->flags & 1) ? 5 : 50;
+            if ((short)local_2->unknown7 > local_11)
+            {
+                local_4 = false;
+                actor_get(arg_0)->unknown040 = false;
+            }
+            else
+                local_4 = true;
+        }
     }
     bool local_12;
     if (function_1f8660(arg_0))
@@ -1532,7 +1542,10 @@ submit_request:
     {
         vector3f local_13;
         vector3d_from_points3d(&local_0->position, &local_5.point, &local_13);
-        local_12 = 1.0f > local_13.k * local_13.k + local_13.i * local_13.i + local_13.j * local_13.j;
+        real square = local_13.k * local_13.k;
+        square += local_13.i * local_13.i;
+        square += local_13.j * local_13.j;
+        local_12 = 1.0f > square;
     }
     if (local_12)
         local_2->flags |= 4;

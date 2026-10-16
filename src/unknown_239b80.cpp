@@ -283,13 +283,13 @@ short function_239e50(short count, point2f const *points, short *indices)
 			current = next;
 			previous_angle = best_angle;
 			if (next == NONE)
-				return hull_count;
+				goto finished;
 			if (!left_start)
 				left_start = !points2d_equal(&points[next], &points[(*indices_reference)[0]]);
 			if (next == (*indices_reference)[0])
-				return hull_count;
+				goto finished;
 			if (left_start && points2d_equal(&points[next], &points[(*indices_reference)[0]]))
-				return hull_count;
+				goto finished;
 		}
 
 		for (short i = 0; i < (short)hull_count; i++)
@@ -309,6 +309,7 @@ short function_239e50(short count, point2f const *points, short *indices)
 		}
 	}
 
+finished:
 	return hull_count;
 }
 
