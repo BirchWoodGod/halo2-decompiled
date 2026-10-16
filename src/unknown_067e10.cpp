@@ -2065,10 +2065,11 @@ void __stdcall function_69110(c_class_6a600 *world, s_simulation_input_69110 *in
    function_84990((s_simulation_controller *)player, &input->field_c_10[i]))
    input->player_mask |= 1 << i;
  }
- for (long j = 0; j < 16; j++)
+ const long *state_cursor = &world->players[0].unknown08;
+ for (long j = 0; j < 16; j++, state_cursor = (const long *)((const byte *)state_cursor + sizeof(s_simulation_world_player)))
  {
-  s_simulation_world_player *player = &world->players[j];
-  if (player->player_index != NONE && player->unknown08 == 4)
+  s_simulation_world_player *player = (s_simulation_world_player *)((byte *)state_cursor - 8);
+  if (player->player_index != NONE && *state_cursor == 4)
   {
    c_simulation_view *view = function_6ad40((c_class_6a600 *)player->unknown20,
     (const s_machine_address *)player->unknown18);
@@ -2090,8 +2091,9 @@ void __stdcall function_69110(c_class_6a600 *world, s_simulation_input_69110 *in
    }
   }
  }
+ long k = 0;
  s_simulation_world_actor *actor = world->actors;
- for (long k = 0; k < 16; k++, actor++)
+ for (; k < 16; k++, actor++)
  {
   if (actor->actor_index != NONE &&
    function_8b660(actor, &input->actor_indices[k], (s_unit_state_c6ef0 *)input->actor_states[k]))

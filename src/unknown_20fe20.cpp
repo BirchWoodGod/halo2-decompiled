@@ -1233,25 +1233,23 @@ void function_211fd0(vector3f *out, real const *position, real scale, real time)
 	out->k *= scale;
 }
 // @retail 0x212100
-void function_212100(point3f const *p3, point3f const *p2, point3f const *p1, point3f const *p0, point3f *out, real a, real b, real c)
+void function_212100(point3f *out, point3f const *p0, point3f const *p1, point3f const *p2, point3f const *p3, real a, real b, real c)
 {
-	real two_b = b * 2.0f;
-	real three_b = b * 3.0f;
-	real inverse_b = 1.0f / b;
-	real t0 = c - a;
-	real t1 = c - (a + b);
-	real t2 = c - (two_b + a);
 	long i;
 
 	for (i = 0; i < 3; i++)
 	{
-		real s0 = p3->n[i] - p2->n[i];
-		real s1 = p2->n[i] - p1->n[i];
-		real s2 = p1->n[i] - p0->n[i];
-		real d2 = s1 - s2;
-		real d3 = (s0 - s1) - d2;
-
-		out->n[i] = ((d3 * t2 / three_b + d2) * t1 / two_b + s2) * inverse_b * t0 + p0->n[i];
+		real x3 = p3->n[i];
+		real x2 = p2->n[i];
+		real x1 = p1->n[i];
+		real x0 = p0->n[i];
+		x3 -= x2;
+		x2 -= x1;
+		x1 -= x0;
+		x3 -= x2;
+		x2 -= x1;
+		x3 -= x2;
+		out->n[i] = ((x3 * (c - (b * 2.0f + a)) / (b * 3.0f) + x2) * (c - (a + b)) / (b * 2.0f) + x1) * (1.0f / b) * (c - a) + x0;
 	}
 }
 

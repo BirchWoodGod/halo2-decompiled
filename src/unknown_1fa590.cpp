@@ -510,13 +510,11 @@ bool function_1faf80(vector3f *facing, long object_index, void const *settings_p
     return true;
 }
 
-PRIVATE inline vector3f motion_cross(vector3f const &a, vector3f const &b)
+PRIVATE __forceinline void motion_cross(vector3f const &a, vector3f const &b, vector3f *result)
 {
-    vector3f result;
-    result.i = a.j * b.k - a.k * b.j;
-    result.j = a.k * b.i - a.i * b.k;
-    result.k = a.i * b.j - a.j * b.i;
-    return result;
+    result->i = a.j * b.k - a.k * b.j;
+    result->j = a.k * b.i - a.i * b.k;
+    result->k = a.i * b.j - a.j * b.i;
 }
 
 // @retail 0x1faa20
@@ -536,12 +534,11 @@ void function_1faa20(byte const *state, vector3f *up, vector3f *forward, long *t
         real cosine = (real)cos(angle);
         real sine = (real)sin(angle);
         real dot = (up->j * axis.j + up->k * axis.k + up->i * axis.i) * (1.0f - cosine);
-        vector3f cross = motion_cross(*up, axis);
-        vector3f rotated;
-        rotated.i = up->i * cosine + axis.i * dot - cross.i * sine;
-        rotated.j = up->j * cosine + axis.j * dot - cross.j * sine;
-        rotated.k = up->k * cosine + axis.k * dot - cross.k * sine;
-        *up = rotated;
+        vector3f cross;
+        motion_cross(*up, axis, &cross);
+        up->i = up->i * cosine + axis.i * dot - cross.i * sine;
+        up->j = up->j * cosine + axis.j * dot - cross.j * sine;
+        up->k = up->k * cosine + axis.k * dot - cross.k * sine;
         real projection = up->k * forward->k + up->j * forward->j + forward->i * up->i;
         forward->i -= up->i * projection;
         forward->j -= up->j * projection;
@@ -556,8 +553,10 @@ void function_1faa20(byte const *state, vector3f *up, vector3f *forward, long *t
     }
     else
     {
-        vector3f axis = motion_cross(*forward, *g_4687b0);
-        vector3f base = motion_cross(axis, *forward);
+        vector3f axis;
+        motion_cross(*forward, *g_4687b0, &axis);
+        vector3f base;
+        motion_cross(axis, *forward, &base);
         if (function_30bf0(&base) == 0.0f)
         {
             base = *g_4687a8;
