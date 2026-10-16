@@ -2351,6 +2351,8 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     if (strength > 1.0f) strength = 1.0f;
     else if (strength <= 0.0f) return;
     if (!g_4b99b0[1] && alternate_target) return;
+    real default_source[4];
+    real default_destination[4];
     real width = 1.0f, height = 1.0f;
     if (tag != NONE)
     {
@@ -2385,10 +2387,12 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, 2);
     D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 2);
     D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
+#pragma inline_depth(0)
     function_0224f0(0, D3DTSS_MAXANISOTROPY, 0);
     function_0224f0(0, D3DTSS_MIPMAPLODBIAS, 0);
     function_0224f0(0, D3DTSS_COLORSIGN, 0);
     function_0224f0(0, D3DTSS_ALPHAKILL, 0);
+#pragma inline_depth(255)
     function_1cf50();
     memset(&g_484f68, 0, sizeof(g_484f68));
     g_484f68.PSTextureModes = 1;
@@ -2428,8 +2432,10 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     function_1ccf0(&g_484f68);
     function_1cc30(12);
     function_1c710(g_51f0f0);
-    real default_source[4] = { 0.0f, width, 0.0f, height };
-    real default_destination[4];
+    default_source[0] = 0.0f;
+    default_source[1] = width;
+    default_source[2] = 0.0f;
+    default_source[3] = height;
     default_destination[0] = 320.0f - width * 0.5f;
     default_destination[1] = 320.0f + width * 0.5f;
     default_destination[2] = 240.0f - height * 0.5f + arg_af5a49;
