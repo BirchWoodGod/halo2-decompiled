@@ -736,7 +736,7 @@ bool __stdcall function_2c41b0(long actor_index, s_type_f17a25 *state, short cou
      input->node_index, false, last);
     if (!found)
     {
-     bool retry = obstacles->flag0_count > 0;
+     long retry = obstacles->flag0_count > 0;
      if (avoid)
      {
       retry = retry || (obstacles->flag3_count > 0 && search->result != NONE);
