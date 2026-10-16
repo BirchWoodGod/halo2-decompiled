@@ -732,22 +732,25 @@ bool __stdcall function_1ad6a0(long arg_0, s_slot *arg_1)
 			goto done;
 		}
 		byte *local_4 = ai_scratch_buffer_get();
-		s_2605d0_request local_5;
-		memset(&local_5, 0, sizeof(local_5));
-		*(real *)((byte *)&local_5 + 0x60) = 15.0f;
-		local_5.type = 7;
-		local_5.unknown015 = true;
-		local_5.unknown05b = true;
-		real local_6 = local_3->unknown98 > 0.0f ? local_3->unknown98 : 20.0f;
-		local_5.unknown008 = local_6 * 0.5f;
-		local_5.unknown00c = local_6;
-		local_5.unknown010 = local_6 + 10.0f;
 		s_261d20_entry local_7;
 		long local_8;
 		bool local_9;
-		s_reference local_10 = function_2605d0(arg_0, &local_5, (long)&local_7,
-			(long)&local_8, local_4, &local_9);
-		local_10 = function_2626b0(arg_0, local_10, local_8, local_4, local_9, true);
+		s_reference local_10;
+		{
+			s_2605d0_request local_5;
+			memset(&local_5, 0, sizeof(local_5));
+			*(real *)((byte *)&local_5 + 0x60) = 15.0f;
+			local_5.type = 7;
+			local_5.unknown015 = true;
+			local_5.unknown05b = true;
+			real local_6 = local_3->unknown98 > 0.0f ? local_3->unknown98 : 20.0f;
+			local_5.unknown008 = local_6 * 0.5f;
+			local_5.unknown00c = local_6;
+			local_5.unknown010 = local_6 + 10.0f;
+			local_10 = function_2605d0(arg_0, &local_5, (long)&local_7,
+				(long)&local_8, local_4, &local_9);
+			local_10 = function_2626b0(arg_0, local_10, local_8, local_4, local_9, true);
+		}
 		s_reference local_11 = g_470fa0;
 		if (*(long *)&local_10 == *(long *)&local_11)
 		{
