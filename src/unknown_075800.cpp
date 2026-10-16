@@ -305,21 +305,29 @@ struct s_type_f7e40b
 	long reason;
 };
 
+PRIVATE __forceinline void function_94151(s_type_f7e40b *reply, const s_session_id *message, long reason)
+{
+    memset(reply, 0, sizeof(*reply));
+    reply->session_id = *message;
+    reply->reason = reason;
+}
+
 // @retail 0x94150
 void network_message_handler_handle_leave_request(c_class_938e0 *handler, long address, const s_session_id *message)
 {
 	c_class_58d20 *session = network_session_manager_find_session(handler->session_manager, message);
 	if (session && function_058d70(session) && session->function_058d20())
 	{
-		long reason;
 		long member_index = network_session_find_member_by_address(session, (const s_type_99af70 *)address);
-		if (member_index == NONE || member_index == session->current_member || network_session_member_leave(session, member_index))
-			reason = 8;
-		else
-			reason = 9;
-		s_type_f7e40b reply = { 0 };
-		reply.session_id = *message;
-		reply.reason = reason;
+        long reason;
+        if (member_index == NONE || member_index == session->current_member)
+            reason = 8;
+        else if (network_session_member_leave(session, member_index))
+            reason = 8;
+        else
+            reason = 9;
+		s_type_f7e40b reply;
+		function_94151(&reply, message, reason);
 		function_07b140(handler->link, address, 10, sizeof(reply), &reply);
 	}
 }
