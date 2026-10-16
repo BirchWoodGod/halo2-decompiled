@@ -141,7 +141,7 @@ void function_1515e0(long object_index, long player_index, s_target_candidate *b
 	byte type = ((s_tail_object_header *)g_4e0300->data)[unit_index & 0xffff].type;
 	if (((1 << type) & 1) && !TEST_FIELD_BIT(object->unknown10a_2))
 	{
-		if (function_1df560(object->team, (short)*(char *)(player + 0xc0)))
+		if (function_1df560((short)*(char *)(player + 0xc0), object->team))
 			*(long *)((byte *)*best_reference + 8) = function_e5bc0(unit_index, object_index, *(long *)((byte *)*best_reference + 8));
 		else if (function_e5470(*player_reference, object_index))
 		{
