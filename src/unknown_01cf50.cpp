@@ -492,7 +492,7 @@ long g_5093d8;
 
 #include "surface_resource_pairs.h"
 D3DTexture *g_509354[2];
-D3DSurface *g_50935c, *g_509360, *g_509364, *g_509370;
+D3DSurface *g_50935c[2], *g_509364, *g_509370;
 D3DTexture *g_509368, *g_50936c;
 D3DSurface *g_509384;
 D3DTexture *g_50938c;
@@ -546,15 +546,15 @@ void function_36880(color4f const *color, s_short_rectangle const *rectangle)
 // @retail 0x14980
 void function_14980(void)
 {
-	if (g_50935c)
+	if (g_50935c[0])
 	{
-		D3DResource_Release(g_50935c);
-		g_50935c = NULL;
+		D3DResource_Release(g_50935c[0]);
+		g_50935c[0] = NULL;
 	}
-	if (g_509360)
+	if (g_50935c[1])
 	{
-		D3DResource_Release(g_509360);
-		g_509360 = NULL;
+		D3DResource_Release(g_50935c[1]);
+		g_50935c[1] = NULL;
 	}
 	if (g_509364)
 	{
@@ -712,36 +712,40 @@ selected:
 short g_55ece0, g_55ece2;
 
 // @retail 0x14560
-bool function_14560(long tag, short stage, short fallback, short fallback_index, short index)
+bool function_14560(long tag, short stage, long fallback, short fallback_index, short index)
 {
-    volatile bool result = false;
-    s_type_7ba8e9 *bitmap = NULL;
+    bool result = false;
+    s_type_7ba8e9 *bitmap;
     if (tag != NONE)
     {
         byte *group = g_4e3b44[tag & 0xffff].bytes;
-        volatile long count = *(long *)(group + 0x44);
+        long count = *(long *)(group + 0x44);
         if (count > 0)
         {
             bitmap = function_137550(tag, (short)(index % count));
-            if (!function_12360((s_bitmap_view *)bitmap, 0.0f))
+            if (function_12360((s_bitmap_view *)bitmap, 0.0f))
+            {
+                if (*(short *)((byte *)bitmap + 0xa) == fallback)
+                    goto selected;
+            }
+            else
+            {
                 result = true;
+                goto done;
+            }
         }
     }
-    if (!result)
-    {
-        if (!bitmap || *(short *)((byte *)bitmap + 0xa) != fallback)
-        {
-            tag = *(long *)(g_485a80 + fallback * 8 + 0x64);
-            if (tag == NONE) return result;
-            bitmap = function_137550(tag, fallback_index);
-        }
-        if (bitmap)
-        {
-            function_14390(stage, bitmap, 0.0f);
-            g_55ece0 = *(short *)((byte *)bitmap + 4);
-            g_55ece2 = *(short *)((byte *)bitmap + 6);
-        }
-    }
+    tag = *(long *)(g_485a80 + fallback * 8 + 0x64);
+    if (tag == NONE)
+        goto done;
+    bitmap = function_137550(tag, fallback_index);
+    if (!bitmap)
+        goto done;
+selected:
+    function_14390(stage, bitmap, 0.0f);
+    g_55ece0 = *(short *)((byte *)bitmap + 4);
+    g_55ece2 = *(short *)((byte *)bitmap + 6);
+done:
     return result;
 }
 
@@ -814,8 +818,8 @@ void function_14bc0(short index, short element, bool use_depth)
 	bool flag = false;
 	switch (index)
 	{
-	case 0: target = g_50935c; depth = g_509364; flag = true; break;
-	case 4: target = g_509360; flag = true; break;
+	case 0: target = g_50935c[0]; depth = g_509364; flag = true; break;
+	case 4: target = g_50935c[1]; flag = true; break;
 	case 16: case 29: target = (D3DSurface *)g_509378; break;
 	case 17: target = (D3DSurface *)g_509380; break;
 	case 3: target = g_509370; depth = g_509364; flag = true; break;
@@ -3193,10 +3197,10 @@ void function_12d50(real const *projection, bool scaled, real *output)
 bool function_14600()
 {
     bool result = true;
-    g_50935c = D3DDevice_GetBackBuffer2(0);
-    g_509360 = D3DDevice_GetBackBuffer2(-1);
-    g_509364 = D3DDevice_GetDepthStencilSurface2();
-    if (g_50935c && g_509360 && g_509364)
+    D3DDevice_GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &g_50935c[0]);
+    D3DDevice_GetBackBuffer(-1, D3DBACKBUFFER_TYPE_MONO, &g_50935c[1]);
+    D3DDevice_GetDepthStencilSurface(&g_509364);
+    if (g_50935c[0] && g_50935c[1] && g_509364)
     {
         void *memory = VirtualAlloc(NULL, 20, 0x101000, PAGE_READWRITE);
         if (!memory) GetLastError();
@@ -3206,11 +3210,11 @@ bool function_14600()
         g_509354[1] = (D3DTexture *)memory;
         if (g_509354[0] && g_509354[1])
         {
-            for (long i = 0; i < 2; ++i)
+            for (short i = 0; i < 2; ++i)
             {
                 D3DTexture *texture = g_509354[i];
                 texture->Common = 0x40001;
-                texture->Data = (i ? g_509360 : g_50935c)->Data;
+                texture->Data = g_50935c[i]->Data;
                 texture->Lock = 0;
                 texture->Size = 0x271df27f;
                 texture->Format = 0x11229;
@@ -3226,7 +3230,7 @@ bool function_14600()
     g_509370 = (D3DSurface *)memory;
     if (g_509370)
     {
-        *g_509370 = *g_50935c;
+        *g_509370 = *g_50935c[0];
         g_509370->Data = g_509364->Data;
     }
     else

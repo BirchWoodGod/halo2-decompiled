@@ -4406,7 +4406,9 @@ void __stdcall function_e5d50(long arg_159e6d, long target_index, vector3f *offs
 		s_biped_collision collision;
 
 		function_b9dd0(arg_159e6d, &eye);
+#pragma inline_depth(0)
 		crouch = function_e0dc0(arg_159e6d) ? 0.0f : self->crouch;
+#pragma inline_depth()
 		eye.z += ((1.0f - crouch) * *(real *)(self_definition + 0x218) + *(real *)(self_definition + 0x21c) * crouch) *
 			self->scale;
 		head = eye;
