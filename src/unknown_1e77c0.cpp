@@ -744,7 +744,7 @@ void function_1e6bd0(long player_index)
   {
    if (i != *current)
    {
-    s_local_player_state_view *local_8da5ff = &((s_local_player_state_view *)g_51e9c0)[local_index];
+    s_local_player_state_view *local_8da5ff = state;
     long value = ((local_8da5ff->request_flags[1] & (1 << i)) ? 2 : 0) +
      ((local_8da5ff->request_flags[0] & (1 << i)) ? 1 : 0);
     if (value != 3)

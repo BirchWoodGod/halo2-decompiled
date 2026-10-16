@@ -2780,11 +2780,13 @@ void function_128020(void)
 			goto skip_to_next;
 		}
 		if (definition->flags & 8)
-			sound->location.flag0 = true;
+			((s_sound_location_byte_flags *)&sound->location)->flag0 = true;
 		{
 			real maximum;
-			if (TEST_FIELD_BIT(sound->location.flag3))
-				maximum = *(real *)((byte *)&sound->location + 0x38);
+			s_type_99c531 *location = &sound->location;
+			word location_flags = *(word *)location;
+			if ((bool)((location_flags >> 3) & 1))
+				maximum = *(real *)((byte *)location + 0x38);
 			else
 			{
 				s_sound_definition *current = sound_definition_get(sound->definition_index);
@@ -2797,7 +2799,7 @@ void function_128020(void)
 				else
 					maximum = function_xaa8231(current->class_index)->maximum_distance;
 			}
-			long listener = function_127d00(&sound->location, maximum, NULL);
+			long listener = function_127d00(location, maximum, NULL);
 			if (listener == NONE)
 			{
 				if (!TEST_FIELD_BIT(sound->flag2))
@@ -2809,7 +2811,8 @@ void function_128020(void)
 						fading->fade_curve = 0;
 						fading->fade_start_time = 2000;
 						fading->fade_end_time = NONE;
-						fading->fading = true;
+						byte *flags = (byte *)&fading->flags;
+						*flags |= 0x80;
 					}
 					sound->flag2 = true;
 				}
