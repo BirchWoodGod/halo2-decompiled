@@ -213,14 +213,6 @@ struct s_callback_pair
 extern s_callback_pair g_453c00[8];
 long g_4ed290;
 
-PRIVATE __forceinline void function_18ef01(long arg_0)
-{
-	long local_0 = arg_0 + 1;
-	g_global_f9ae07.field_c_6[local_0] = g_global_f9ae07.field_c_6[arg_0];
-	g_global_f9ae07.field_20[g_global_f9ae07.field_0 + 1] = g_global_f9ae07.field_20[g_global_f9ae07.field_0];
-	g_global_f9ae07.field_0 = local_0;
-}
-
 // @retail 0x18ef00
 void function_18ef00(s_saved_game_header const *header)
 {
@@ -229,7 +221,6 @@ void function_18ef00(s_saved_game_header const *header)
 	if (g_4ed290 != stage)
 	{
 		long i;
-		long local_0;
 
 		if (g_4ed290 > 0)
 		{
@@ -240,11 +231,9 @@ void function_18ef00(s_saved_game_header const *header)
 					g_453c00[i].dispose();
 				}
 			}
-			local_0 = g_global_f9ae07.field_0 - 1;
-			g_global_f9ae07.field_0 = local_0;
+			g_global_f9ae07.field_0--;
 		}
-		else local_0 = g_global_f9ae07.field_0;
-		function_18ef01(local_0);
+		function_xe0ae94();
 		g_4ed290 = stage;
 		for (i = 0; i < sizeof(g_453c00) / sizeof(g_453c00[0]); i++)
 		{
