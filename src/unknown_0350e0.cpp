@@ -2299,11 +2299,11 @@ long __stdcall function_4ac30(s_cached_input_list *state, s_cached_input *output
 {
 	if (state->count > 0 && (!g_510c50 || !((byte *)g_510c50)[5]))
 	{
+		long last = state->count - 1;
 		long requested = limit;
 		if (limit > state->count) limit = state->count;
 		bool found = false;
 		long first = 0;
-		long last = state->count - 1;
 		long i;
 		for (i = 0; i <= last; ++i)
 		{
@@ -2366,16 +2366,19 @@ long __stdcall function_4ac30(s_cached_input_list *state, s_cached_input *output
 				else entry->elapsed = 0.0f;
 			}
 		}
-		for (i = 0; i < limit; ++i)
+		if (limit > 0)
 		{
-			s_cached_input_entry *entry = &state->entries[i];
-			if (*(real *)&entry->input.data[3] > *(real *)&entry->initial)
+			s_cached_input_entry *end = state->entries + limit;
+			for (s_cached_input_entry *entry = state->entries; entry != end; ++entry)
 			{
-				entry->elapsed += step;
-				*(real *)&entry->initial += entry->elapsed;
-				clamp_cached_input(entry);
+				if (*(real *)&entry->input.data[3] > *(real *)&entry->initial)
+				{
+					entry->elapsed += step;
+					*(real *)&entry->initial += entry->elapsed;
+					clamp_cached_input(entry);
+				}
+				else entry->elapsed = 0.0f;
 			}
-			else entry->elapsed = 0.0f;
 		}
 	}
 	for (long i = 0; i < state->count; ++i)
