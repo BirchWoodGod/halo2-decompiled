@@ -78,6 +78,28 @@ short __stdcall function_1b57c0(long actor_index, short level, bool active)
 	return function_1a79e0(actor_index, level, active);
 }
 
+/* walks the actors of a clump (an element of g_502420) */
+struct s_clump_iterator_1b57f0
+{
+	long index;
+	long next_index;
+};
+
+static inline s_actor_view *clump_iterator_next_1b57f0(s_clump_iterator_1b57f0 *iterator)
+{
+	s_actor_view *member = 0;
+
+	if (iterator->next_index != NONE)
+	{
+		member = actor_get(iterator->next_index);
+		iterator->index = iterator->next_index;
+		iterator->next_index = member->next_index;
+	}
+	return member;
+}
+
+/* sends the nearest clump member at the actor's prop (in slot group 0x22 or
+   0x1b) to slot 0xb, unless a near one is already in it */
 // @retail 0x1b57f0
 short __stdcall function_1b57f0(long actor_index, s_slot *slot)
 {
@@ -92,40 +114,42 @@ short __stdcall function_1b57f0(long actor_index, s_slot *slot)
 		{
 			real best_weight = 0.0f;
 			long best_index = NONE;
-			long index = element_502420_get(actor->unknown07c)->first_actor_index;
+			s_clump_iterator_1b57f0 iterator;
+			s_actor_view *other;
 
-			volatile long local_0;
-			for (; index != NONE; index = local_0)
+			iterator.next_index = element_502420_get(actor->unknown07c)->first_actor_index;
+			while ((other = clump_iterator_next_1b57f0(&iterator)) != 0)
 			{
-				s_actor_view *other = actor_get(index);
-				long other_index = index;
+				long other_index = iterator.index;
 
-				local_0 = other->next_index;
-				if (other != actor && other->prop_index != NONE)
+				if (other == actor || other->prop_index == NONE)
+					continue;
+
+				s_prop_node_view *other_node = prop_node_get(other->prop_index);
+
+				if (other_node->unknown08 != node->unknown08)
+					continue;
+				if (actor_behavior_find_level(other_index, 0x22) == NONE && actor_behavior_find_level(other_index, 0x1b) == NONE)
+					continue;
+
+				s_prop_view_fields *other_view = prop_node_view(other_node);
+
+				if (!other_view || other_view->unknown70 != 0)
+					continue;
+
+				real distance = distance3d(&actor->position, &other->position);
+
+				if (!(distance < 4.0f))
+					continue;
+				if (actor_behavior_find_level(other_index, 0xb) != NONE)
+					return g_46fbe4;
+
+				real weight = 1.0f / (distance + 1.0f);
+
+				if (weight > best_weight)
 				{
-					s_prop_node_view *other_node = prop_node_get(other->prop_index);
-
-					if (other_node->unknown08 == node->unknown08 &&
-						(actor_behavior_find_level(other_index, 0x22) != NONE || actor_behavior_find_level(other_index, 0x1b) != NONE))
-					{
-						s_prop_view_fields *other_view = prop_node_view(other_node);
-
-						if (other_view && other_view->unknown70 == 0)
-						{
-							real distance = distance3d(&actor->position, &other->position);
-
-							if (distance < 4.0f && actor_behavior_find_level(other_index, 0xb) == NONE)
-							{
-								real weight = 1.0f / (distance + 1.0f);
-
-								if (weight > best_weight)
-								{
-									best_weight = weight;
-									best_index = other_index;
-								}
-							}
-						}
-					}
+					best_weight = weight;
+					best_index = other_index;
 				}
 			}
 			if (best_index != NONE)
