@@ -135,14 +135,13 @@ void function_1515e0(long object_index, long player_index, s_target_candidate *b
 {
 	long const *player_reference = &player_index;
 	s_target_candidate *const *best_reference = &best;
+	s_tail_player *player = tail_player_get(*player_reference);
 	s_1515e0_object *object = (s_1515e0_object *)tail_object_get(object_index);
-	byte *player = (byte *)tail_player_get(*player_reference);
-	long unit_index = *(long *)(player + 0x2c);
-	byte type = ((s_tail_object_header *)g_4e0300->data)[unit_index & 0xffff].type;
+	byte type = ((s_tail_object_header *)g_4e0300->data)[player->unit_index & 0xffff].type;
 	if (((1 << type) & 1) && !TEST_FIELD_BIT(object->unknown10a_2))
 	{
-		if (function_1df560((short)*(char *)(player + 0xc0), object->team))
-			*(long *)((byte *)*best_reference + 8) = function_e5bc0(unit_index, object_index, *(long *)((byte *)*best_reference + 8));
+		if (function_1df560((short)*((char *)player + 0xc0), object->team))
+			*(long *)((byte *)*best_reference + 8) = function_e5bc0(player->unit_index, object_index, *(long *)((byte *)*best_reference + 8));
 		else if (function_e5470(*player_reference, object_index))
 		{
 			s_target_candidate candidate;
