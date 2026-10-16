@@ -2327,6 +2327,7 @@ static __forceinline long voice_proximity_object(long player_index)
 	return object_index;
 }
 
+#pragma optimize("s", on)
 // @retail 0x57080
 void __stdcall function_57080(s_voice_player_values *values)
 {
@@ -2374,6 +2375,7 @@ void __stdcall function_57080(s_voice_player_values *values)
 		}
 	}
 }
+#pragma optimize("", on)
 
 static __forceinline bool function_56790(dword arg_0, long arg_1)
 {
@@ -2625,7 +2627,7 @@ void function_54030(void)
  if (voice_get_players_inlined())
  {
   dword local = voice_get_local_player_mask();
-  dword players = voice_get_player_mask();
+  dword players = voice_get_player_mask_inlined();
   for (long i = 0; i < 16; i++)
   {
    if (players & (1 << i))
