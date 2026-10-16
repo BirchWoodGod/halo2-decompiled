@@ -216,7 +216,7 @@ struct s_combat_blend_block
 	s_combat_blend_values *values;
 };
 
-void *function_1e5300(long actor_index, long key);
+void *actor_get_character_weapon_extra(long actor_index, long key);
 
 // @retail 0x1fe1e0
 bool function_1fe1e0(long actor_index, real blend, s_combat_blend_values *out)
@@ -225,7 +225,7 @@ bool function_1fe1e0(long actor_index, real blend, s_combat_blend_values *out)
 	long weapon_index = function_1e1f20(actor_index);
 	if (weapon_index != NONE)
 	{
-		s_combat_blend_block *block = (s_combat_blend_block *)function_1e5300(actor_index, moving_object_get(weapon_index)->tag_index);
+		s_combat_blend_block *block = (s_combat_blend_block *)actor_get_character_weapon_extra(actor_index, moving_object_get(weapon_index)->tag_index);
 		if (block && block->count > 0)
 		{
 			s_combat_blend_values const *lower = &block->values[0];

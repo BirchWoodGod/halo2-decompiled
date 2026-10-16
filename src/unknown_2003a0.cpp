@@ -1326,7 +1326,7 @@ struct s_squad_difficulty_values
 	real values_c[4];
 };
 
-long function_1e49d0(long index);
+long character_get_difficulty_values(long index);
 bool g_4f55df;
 
 // @retail 0x2036c0
@@ -1334,7 +1334,7 @@ void function_2036c0(long definition_index, short mode, bool *enabled, bool *for
 {
 	(void)&mode;
 	(void)&forced;
-	s_squad_difficulty_values *data = (s_squad_difficulty_values *)function_1e49d0(definition_index);
+	s_squad_difficulty_values *data = (s_squad_difficulty_values *)character_get_difficulty_values(definition_index);
 	if (data)
 	{
 		short difficulty = g_4e6948->state == 1 ? g_4e6948->difficulty : 1;
