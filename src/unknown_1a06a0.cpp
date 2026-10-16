@@ -154,7 +154,7 @@ void function_1a07b0(s_player_profile *profile, long type)
 
 /* the saved game files (save_file_group.cpp, not decompiled yet) */
 bool function_2161d0(long file_index, void *buffer, long size);
-bool function_216240(long file_index, void *buffer, long size, wchar_t *name);
+bool saved_game_file_read_synchronous(long file_index, void *buffer, long size, wchar_t *name);
 
 struct s_player_appearance;
 bool function_153750(s_player_appearance *appearance);
@@ -200,7 +200,7 @@ bool function_1a0660(long file_index, s_player_profile *profile)
 {
 	if (file_index != NONE)
 	{
-		return function_216240(file_index, profile, sizeof(s_player_profile), profile->name);
+		return saved_game_file_read_synchronous(file_index, profile, sizeof(s_player_profile), profile->name);
 	}
 	else
 	{
@@ -284,7 +284,7 @@ long __stdcall function_1a03a0(long arg_0, word *arg_1)
 		*(long *)((byte *)&local_0 + 0xf0) = NONE;
 		*(long *)((byte *)&local_0 + 0xf4) = NONE;
 		*(long *)((byte *)&local_0 + 0xf8) = NONE;
-		if (!function_216240(local_1, &local_0, sizeof(local_0), local_0.name))
+		if (!saved_game_file_read_synchronous(local_1, &local_0, sizeof(local_0), local_0.name))
 		{
 			function_215e60(local_1);
 			return NONE;
