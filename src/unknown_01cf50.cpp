@@ -7609,12 +7609,10 @@ void function_13c20()
     --g_46701c;
     if (g_46701c >= 0)
     {
-        byte *frame = (byte *)&g_4850d0 + g_46701c * 0x298;
-        function_132d0((s_frame_view_2c560 const *)frame);
-        frame = (byte *)&g_4850d0 + g_46701c * 0x298;
-        g_4b9ed4 = *(short *)frame;
-        memcpy(&g_4b9ef0, frame + 0x14c, 0x120);
-        memcpy(&g_4b9da0, frame + 0x18, 0x74);
+        function_132d0(&g_4850d0[g_46701c]);
+        g_4b9ed4 = g_4850d0[g_46701c].index;
+        memcpy(&g_4b9ef0, g_4850d0[g_46701c].records, 0x120);
+        memcpy(&g_4b9da0, g_4850d0[g_46701c].view, 0x74);
         real bounds[4];
         function_2f970((s_2f970_view const *)&g_4b9da0, bounds);
         function_2fd90((s_2f800_view const *)&g_4b9da0, (box2f const *)bounds, (byte *)&g_4b9e14);
