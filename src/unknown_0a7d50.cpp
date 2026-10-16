@@ -120,10 +120,10 @@ void function_a7d50(long index, long group, long target, short node, point3f con
             long parent = NONE;
             if (object[0x12c] & 1)
                 parent = *(long *)(object + 0x154);
-            long slot = function_101f50(index);
-            long objects[2] = {NONE, NONE};
             long source = NONE;
             long subject = NONE;
+            long slot = function_101f50(index);
+            long objects[2] = {NONE, NONE};
             if (parent != NONE)
             {
                 if (slot >= 0 && slot < 4)
