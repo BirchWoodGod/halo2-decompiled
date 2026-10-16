@@ -3208,7 +3208,8 @@ bool __stdcall function_25e50(void *context)
 {
     if (g_48578c == 0.0f)
     {
-        byte configuration[0x6c] = { 0 };
+        byte configuration[0x6c];
+        memset(configuration, 0, sizeof(configuration));
         *(vector3f *)(configuration + 0x1c) = g_485768;
         *(real *)(configuration + 0x28) = g_485774;
         *(color3f *)(configuration + 0x5c) = g_4857a8;

@@ -9541,11 +9541,8 @@ void __stdcall function_2ab0a0(short function_index, long thread_index, bool ini
 			ticks = ticks + (short)hud->time1398 - (short)g_510c54->game_time;
 	}
 	short script_ticks;
-	if (ticks == NONE)
-	{
-		script_ticks = NONE;
-	}
-	else
+	script_ticks = NONE;
+	if (ticks != NONE)
 	{
 		real ticks_real = (real)ticks * g_510c54->rate * 30.0f;
 		long rounded;

@@ -1129,63 +1129,69 @@ PRIVATE __forceinline real lighting_normalize_ordered(vector3f *v, real square)
 bool function_d37f0(s_lighting_parameter_block *block, long type, s_effect_color_query const *query,
 	s_lighting_record *record, color3f const *base, color3f const *lightmap)
 {
-	s_lighting_parameters *parameters = NULL;
-	dword mask = (1 << (type + 1)) | 1;
-	for (long i = 0; i < block->count; i++)
+	bool result = false;
 	{
-		if (block->entries[i].flags & mask)
-			parameters = &block->entries[i];
+		s_lighting_parameters *parameters = NULL;
+		dword mask = 1 << (type + 1);
+		for (long i = 0; i < block->count; i++)
+		{
+			if ((block->entries[i].flags & mask) || (block->entries[i].flags & 1))
+				parameters = &block->entries[i];
+		}
+		if (!parameters)
+			goto done;
+		vector3f const *input_normal = (vector3f const *)query;
+		vector3f normal = { input_normal->i, input_normal->j, input_normal->k };
+		real length = (real)sqrt(normal.i * normal.i + normal.j * normal.j + normal.k * normal.k);
+		record->length = length;
+		lighting_normalize_ordered(&normal, (normal.k * normal.k + normal.j * normal.j) + normal.i * normal.i);
+		color3f adjusted;
+		adjusted.red = lightmap->red + parameters->bias;
+		adjusted.green = lightmap->green + parameters->bias;
+		adjusted.blue = lightmap->blue + parameters->bias;
+		lighting_pin_color(&adjusted, &parameters->lower1, &parameters->upper1, &record->color1);
+		function_117c80(&normal, &record->direction1, parameters->angle1 * 0.01745329238474369f);
+		lighting_negate(&record->direction1);
+		color3f limited_base;
+		color3f limited_lightmap;
+		lighting_pin_color(base, &parameters->lower_base, &parameters->upper_base, &limited_base);
+		lighting_pin_color(&adjusted, &parameters->lower2, &parameters->upper2, &limited_lightmap);
+		real square = length * length;
+		record->color2.red = ((limited_base.red * limited_lightmap.red) * square) * 2.0f + record->color1.red * (1.0f - square);
+		record->color2.green = ((limited_base.green * limited_lightmap.green) * square) * 2.0f + record->color1.green * (1.0f - square);
+		record->color2.blue = ((limited_base.blue * limited_lightmap.blue) * square) * 2.0f + record->color1.blue * (1.0f - square);
+		vector3f turned = record->direction1;
+		lighting_negate(&turned);
+		lighting_rotate(&turned, parameters->angle2 * 0.01745329238474369f, &record->direction2);
+		lighting_pin_color(&adjusted, &parameters->lower0, &parameters->upper0, &record->color0);
+		record->direction0 = normal;
+		lighting_negate(&record->direction0);
+		if (record->direction0.k > -0.75f)
+		{
+			record->direction0.k = lighting_pin(record->direction0.k, -1.0f, -0.75f);
+			lighting_normalize_ordered(&record->direction0,
+			(record->direction0.i * record->direction0.i + record->direction0.j * record->direction0.j) +
+			record->direction0.k * record->direction0.k);
+		}
+		real luminance = 2.0f * (0.11f * lightmap->blue + 0.59f * lightmap->green + 0.3f * lightmap->red);
+		record->value1c = lighting_function(&parameters->value1c, lighting_pin(luminance, 0.0f, 1.0f));
+		real scale1 = lighting_function(&parameters->scale1, length);
+		real scale2 = lighting_function(&parameters->scale2, length);
+		record->color1.red *= scale1;
+		record->color1.green *= scale1;
+		record->color1.blue *= scale1;
+		record->color2.red *= scale2;
+		record->color2.green *= scale2;
+		record->color2.blue *= scale2;
+		luminance = 0.114f * adjusted.blue + 0.587f * adjusted.green + 0.299f * adjusted.red;
+		real scale0 = (lighting_function(&parameters->scale0, luminance) * (1.0f - (0.1f * length + 0.6f))) * 1.4f;
+		record->color0.red *= scale0;
+		record->color0.green *= scale0;
+		record->color0.blue *= scale0;
+		result = true;
 	}
-	if (!parameters)
-		return false;
-	vector3f normal = *(vector3f const *)query;
-	real length = (real)sqrt(normal.i * normal.i + normal.j * normal.j + normal.k * normal.k);
-	record->length = length;
-	lighting_normalize_ordered(&normal, (normal.k * normal.k + normal.j * normal.j) + normal.i * normal.i);
-	color3f adjusted;
-	adjusted.red = lightmap->red + parameters->bias;
-	adjusted.green = lightmap->green + parameters->bias;
-	adjusted.blue = lightmap->blue + parameters->bias;
-	lighting_pin_color(&adjusted, &parameters->lower1, &parameters->upper1, &record->color1);
-	function_117c80(&normal, &record->direction1, parameters->angle1 * 0.01745329238474369f);
-	lighting_negate(&record->direction1);
-	color3f limited_base;
-	color3f limited_lightmap;
-	lighting_pin_color(base, &parameters->lower_base, &parameters->upper_base, &limited_base);
-	lighting_pin_color(&adjusted, &parameters->lower2, &parameters->upper2, &limited_lightmap);
-	real square = length * length;
-	record->color2.red = ((limited_base.red * limited_lightmap.red) * square) * 2.0f + record->color1.red * (1.0f - square);
-	record->color2.green = ((limited_base.green * limited_lightmap.green) * square) * 2.0f + record->color1.green * (1.0f - square);
-	record->color2.blue = ((limited_base.blue * limited_lightmap.blue) * square) * 2.0f + record->color1.blue * (1.0f - square);
-	vector3f turned = record->direction1;
-	lighting_negate(&turned);
-	lighting_rotate(&turned, parameters->angle2 * 0.01745329238474369f, &record->direction2);
-	lighting_pin_color(&adjusted, &parameters->lower0, &parameters->upper0, &record->color0);
-	record->direction0 = normal;
-	lighting_negate(&record->direction0);
-	if (record->direction0.k > -0.75f)
-	{
-		record->direction0.k = lighting_pin(record->direction0.k, -1.0f, -0.75f);
-		lighting_normalize_ordered(&record->direction0,
-            (record->direction0.i * record->direction0.i + record->direction0.j * record->direction0.j) +
-            record->direction0.k * record->direction0.k);
-	}
-	real luminance = 2.0f * (0.11f * lightmap->blue + 0.59f * lightmap->green + 0.3f * lightmap->red);
-	record->value1c = lighting_function(&parameters->value1c, lighting_pin(luminance, 0.0f, 1.0f));
-	real scale1 = lighting_function(&parameters->scale1, length);
-	real scale2 = lighting_function(&parameters->scale2, length);
-	record->color1.red *= scale1;
-	record->color1.green *= scale1;
-	record->color1.blue *= scale1;
-	record->color2.red *= scale2;
-	record->color2.green *= scale2;
-	record->color2.blue *= scale2;
-	luminance = 0.114f * adjusted.blue + 0.587f * adjusted.green + 0.299f * adjusted.red;
-	real scale0 = (lighting_function(&parameters->scale0, luminance) * (1.0f - (0.1f * length + 0.6f))) * 1.4f;
-	record->color0.red *= scale0;
-	record->color0.green *= scale0;
-	record->color0.blue *= scale0;
-	return true;
+done:
+	return result;
 }
 
 real g_467484 = 15.0f;

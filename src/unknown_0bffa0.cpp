@@ -609,9 +609,10 @@ void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_li
         cone->height = cone->aspect * shape->cone.values[0];
         cone->far_distance = shape->cone.values[4] * frame->radius;
         cone->near_distance = shape->cone.values[3] * frame->radius;
-        cone->far_width = cone->slope_x * cone->far_distance + cone->width;
-        cone->far_height = cone->slope_y * cone->far_distance + cone->height;
-        real distance = cone->far_distance;
+        real far_distance = cone->far_distance;
+        cone->far_width = cone->slope_x * far_distance + cone->width;
+        cone->far_height = cone->slope_y * far_distance + cone->height;
+        real distance = shape->cone_render.far_distance;
         cone->endpoint.x = direction->i * distance + frame->position.x;
         cone->endpoint.y = direction->j * distance + frame->position.y;
         cone->endpoint.z = direction->k * distance + frame->position.z;
@@ -622,15 +623,16 @@ void function_c1a80(s_light_frame_ab const *frame, s_light_shape_ab *shape, s_li
     shape->left.j = y;
     shape->left.k = z;
     shape->left.i = x;
+    point3f *origin = &shape->origin;
     shape->origin_offset = 0.0f;
-    shape->origin = frame->position;
+    *origin = frame->position;
     if (shape->kind == 2 && cone->slope_x > 0.0001f)
     {
         shape->origin_offset = shape->cone.values[0] / cone->slope_x * 0.5f;
         real distance = 0.0f - shape->origin_offset;
-        shape->origin.x = cone->direction.i * distance + frame->position.x;
-        shape->origin.y = cone->direction.j * distance + frame->position.y;
-        shape->origin.z = cone->direction.k * distance + frame->position.z;
+        origin->x = cone->direction.i * distance + frame->position.x;
+        origin->y = cone->direction.j * distance + frame->position.y;
+        origin->z = cone->direction.k * distance + frame->position.z;
     }
     shape->ready = true;
 }
@@ -815,8 +817,6 @@ void function_c28b0(long light_index)
     s_light_definition_ab *definition = (s_light_definition_ab *)g_4e3b44[light->tag_index & 0xffff].bytes;
     s_light_shape_ab shape;
     function_c19f0(light_index, &shape);
-    s_light_frame_ab *frame = (s_light_frame_ab *)((byte *)light + 0x84);
-    point3f *centre = (point3f *)((byte *)light + 0x18);
     if ((short)shape.kind == 0)
     {
         real radius = (definition->flags & 2) ? shape.sphere.radius_a :
@@ -824,6 +824,8 @@ void function_c28b0(long light_index)
         radius *= *(real *)((byte *)definition + 0xc);
         real minimum = *(real *)((byte *)definition + 0x98);
         radius = radius > minimum ? radius : minimum;
+        s_light_frame_ab *frame = (s_light_frame_ab *)((byte *)light + 0x84);
+        point3f *centre = (point3f *)((byte *)light + 0x18);
         if (frame->clip_distance > 0.0f)
         {
             *centre = frame->field_1c_3;
@@ -840,13 +842,14 @@ void function_c28b0(long light_index)
     }
     else
     {
+        s_light_frame_ab *frame = (s_light_frame_ab *)((byte *)light + 0x84);
         function_c1a80(frame, &shape, definition);
         real width = shape.cone_render.slope_x * shape.cone.values[4] * 2.0f + shape.cone_render.width;
         real height = shape.cone_render.aspect * width;
         vector3f *direction = &shape.cone_render.direction;
-        real side = direction->k * shape.left.k + direction->j * shape.left.j + direction->i * shape.left.i;
+        real side = dot3f(direction, &shape.left);
         real side_sign = side < 0.0f ? -1.0f : 1.0f;
-        real up = direction->k * frame->up.k + direction->j * frame->up.j + direction->i * frame->up.i;
+        real up = dot3f(direction, &frame->up);
         real up_sign = up < 0.0f ? -1.0f : 1.0f;
         vector3f unit = *direction;
         function_30bf0(&unit);
@@ -863,8 +866,9 @@ void function_c28b0(long light_index)
         corner.y += frame->up.j * up_extent;
         corner.z += frame->up.k * up_extent;
         real radius = (real)(sqrt((double)corner.z * corner.z + (double)corner.y * corner.y + (double)corner.x * corner.x) * *(real *)((byte *)definition + 0xc));
-        real minimum = *(real *)((byte *)definition + 0x98);
-        light->radius = radius > minimum ? radius : minimum;
+        real const *minimum = (real *)((byte *)definition + 0x98);
+        light->radius = radius > *minimum ? radius : *minimum;
+        point3f *centre = (point3f *)((byte *)light + 0x18);
         *centre = frame->clip_distance > 0.0f ? frame->field_1c_3 : frame->position;
         *(point3f *)((byte *)light + 0x38) = *centre;
     }
@@ -1127,7 +1131,8 @@ point3f *transform4x3f_apply_point(transform4x3f const *matrix, point3f const *p
 void __stdcall function_c2d00(long light_index)
 {
     union { s_object_marker marker; s_cluster_partition partition; } scratch;
-    byte *light = g_4e030c->data + (light_index & 0xffff) * 0x110;
+    long const *light_reference = &light_index;
+    byte *light = g_4e030c->data + (*light_reference & 0xffff) * 0x110;
     byte *definition = g_4e3b44[*(long *)(light + 4) & 0xffff].bytes;
     if (!(*(word *)(light + 2) & 2))
         return;
@@ -1171,7 +1176,7 @@ void __stdcall function_c2d00(long light_index)
         *(real *)(light + 0x94) = *(real *)(light + 0x88) + world_forward->j;
         *(real *)(light + 0x98) = *(real *)(light + 0x8c) + world_forward->k;
     }
-    function_c28b0(light_index);
+    function_c28b0(*light_reference);
     if (!(light[2] & 8) && *(short *)(light + 0x48) == NONE &&
         (*(long *)definition & 0x8000) && *(real *)(light + 0x24) > 0.0f)
     {
@@ -1339,7 +1344,7 @@ bool function_b9d20(long object_index);
 struct s_object_list;
 extern s_object_list *g_4de2f4;
 
-PRIVATE __forceinline real clamp_light(real x, real low, real high)
+PRIVATE __forceinline real clamp_light(real &x, real low, real high)
 {
     if (low > x) return low;
     if (x > high) return high;
@@ -1400,14 +1405,16 @@ void __stdcall function_c0c80(long light_index)
         pair_first.alpha = 1.0f;
         *(color3f *)&pair_second.red = *(color3f *)(definition + 0x4c);
         pair_second.alpha = 1.0f;
-        function_bab40(object_index, light->name, &light->fraction);
+        real *fraction = &light->fraction;
+        function_bab40(object_index, light->name, fraction);
         function_bad50(object_index, light->colour_index, (point3f *)&tint);
         function_131d60(&first, &second, *(dword *)(definition + 0x34),
-            light->fraction, &tint, &light->colour);
+            *fraction, &tint, &light->colour);
         function_131d60(&pair_first, &pair_second, *(dword *)(definition + 0x34),
             light->fraction, &tint, &light->pair_colour);
-        light->intensity = (1.0f - light->fraction) *
-            *(real *)(definition + 0x70) + *(real *)(definition + 0x74) * light->fraction;
+        real blend = light->fraction;
+        light->intensity = (1.0f - blend) *
+            *(real *)(definition + 0x70) + *(real *)(definition + 0x74) * blend;
     }
     else if (((byte *)&light->flags)[0] & 0x10)
     {
@@ -1419,8 +1426,9 @@ void __stdcall function_c0c80(long light_index)
             *(dword *)(definition + 0x34), light->fraction, &light->colour);
         function_131c20((color3f *)(definition + 0x40), (color3f *)(definition + 0x4c),
             *(dword *)(definition + 0x34), light->fraction, &light->pair_colour);
-        light->intensity = (1.0f - light->fraction) *
-            *(real *)(definition + 0x70) + *(real *)(definition + 0x74) * light->fraction;
+        real blend = light->fraction;
+        light->intensity = (1.0f - blend) *
+            *(real *)(definition + 0x70) + *(real *)(definition + 0x74) * blend;
     }
     else
     {
@@ -1449,18 +1457,20 @@ void __stdcall function_c0c80(long light_index)
         }
     }
     real red = clamp_light(light->colour.red, 0.0f, 1.0f);
-    light->colour.red = red;
     real green = clamp_light(light->colour.green, 0.0f, 1.0f);
+    light->colour.red = red;
+    real blue = light->colour.blue;
+    blue = clamp_light(blue, 0.0f, 1.0f);
     light->colour.green = green;
-    real blue = clamp_light(light->colour.blue, 0.0f, 1.0f);
-    light->colour.blue = blue;
     real pair_red = clamp_light(light->pair_colour.red, 0.0f, 1.0f);
-    light->pair_colour.red = pair_red;
+    light->colour.blue = blue;
     real pair_green = clamp_light(light->pair_colour.green, 0.0f, 1.0f);
-    light->pair_colour.green = pair_green;
+    light->pair_colour.red = pair_red;
     real pair_blue = clamp_light(light->pair_colour.blue, 0.0f, 1.0f);
+    light->pair_colour.green = pair_green;
     light->pair_colour.blue = pair_blue;
-    light->intensity = clamp_light(light->intensity * 2.0f, 0.0f, 4.0f);
+    real intensity = light->intensity * 2.0f;
+    light->intensity = clamp_light(intensity, 0.0f, 4.0f);
     light->radius = (1.0f - light->fraction) * *(real *)(definition + 8) +
         *(real *)(definition + 0xc) * light->fraction;
     if ((((byte *)&light->flags)[0] & 1) && light->radius > 0.0f &&

@@ -2350,11 +2350,12 @@ bool function_1fb8a0(long arg_0, short arg_1);
 void function_202be0(long arg_0, long arg_1)
 {
     long const *local_0 = &arg_1;
+    long const *choice = &arg_0;
     byte *local_1 = (byte *)squad_get(*local_0);
-    if (arg_0 != NONE && (!(local_1[2] & 0x40) ||
+    if (*choice != NONE && (!(local_1[2] & 0x40) ||
         *(short *)(local_1 + 0x2a) == NONE ||
         !((*(byte **)((byte *)g_4e0350 + 0x244) + *(short *)(local_1 + 0x2a) * 0x7c)[0x24] & 1)))
-        function_202e90(*local_0, (short)arg_0, false);
+        function_202e90(*local_0, (short)*choice, false);
     else if ((local_1[2] & 0x40) && *(short *)(local_1 + 0x2a) != NONE)
     {
         long local_2 = NONE;

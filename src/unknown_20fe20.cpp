@@ -393,9 +393,10 @@ void function_20fe20(s_node_owner *owner)
 		{
 			long next = node->next;
 
-			if (NODE(*link)->object_index != NONE)
+			s_node &linked = *NODE(*link);
+			if (linked.object_index != NONE)
 			{
-				s_node_object *object = (s_node_object *)OBJECT_FROM_INDEX(NODE(*link)->object_index);
+				s_node_object *object = (s_node_object *)OBJECT_FROM_INDEX(linked.object_index);
 				s_node_link *object_link = (s_node_link *)((byte *)object + object->link_offset);
 
 				if (object_link->node_index == node_index)
