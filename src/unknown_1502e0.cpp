@@ -961,11 +961,13 @@ void function_152660(s_tail_transfer_options *options)
 				else
 				{
 					s_tail_transfer_unit *first = (s_tail_transfer_unit *)tail_object_get(unit_index);
-					if (first->primary_slot != NONE)
-						primary = first->weapons[first->primary_slot];
+					short primary_slot = first->primary_slot;
+					if (primary_slot != NONE)
+						primary = first->weapons[primary_slot];
 					s_tail_transfer_unit *second = (s_tail_transfer_unit *)tail_object_get(unit_index);
-					if (second->secondary_slot != NONE)
-						secondary = second->weapons[second->secondary_slot];
+					short secondary_slot = second->secondary_slot;
+					if (secondary_slot != NONE)
+						secondary = second->weapons[secondary_slot];
 					other = function_cbe60(unit_index);
 				}
 				if (primary != NONE)
@@ -1684,10 +1686,12 @@ void function_1505f0(long player_index, long unit_index, byte const *input)
     *(vector3f *)(control + 0x28) = projected_facing;
     *(vector3f *)(control + 0x34) = facing;
     *(vector3f *)(control + 0x40) = facing;
-    memcpy(control + 6, input + 0x1e, 8);
-    memcpy(control + 0x58, input + 0x34, 0x24);
+    *(dword *)(control + 6) = *(dword const *)(input + 0x1e);
+    *(word *)(control + 0xa) = *(word const *)(input + 0x22);
+    *(word *)(control + 0xc) = *(word const *)(input + 0x24);
     *(dword *)control = 0x06000086;
     *(word *)(control + 4) = 0;
+    memcpy(control + 0x58, input + 0x34, 0x24);
     dword *flags = (dword *)((byte *)tail_object_get(unit_index) + 0x134);
     if (input[0x58]) *flags |= 0x40000000;
     else *flags &= ~0x40000000;
