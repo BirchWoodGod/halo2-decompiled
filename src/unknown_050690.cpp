@@ -158,13 +158,15 @@ long __stdcall function_516d0(bool reduced, dword seed,
 	const s_noise_draw_definition *definition, const s_random_draw *draw,
 	const s_noise_basis *basis, real amplitude, s_noise_point *points)
 {
-	long exponent = definition->exponent;
+	long exponent;
 	if (reduced)
 	{
-		exponent -= 2;
+		exponent = definition->exponent - 2;
 		if (exponent < 0)
 			exponent = 0;
 	}
+	else
+		exponent = definition->exponent;
 	long count = (4 << exponent) + 1;
 	long level_count = exponent + 2;
 	real inverse_count = 1.0f / (real)(count - 1);

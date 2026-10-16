@@ -1089,7 +1089,8 @@ c_type_709360 s_graph_tag::animation_get(long mode, long weapon_class, long weap
 {
 	c_type_709360 result;
 
-	if (weapon_class != NONE)
+	if (weapon_class == NONE)
+		return result;
 	{
 		s_graph_weapon_type_iterator iterator;
 		long iterator_mode = NONE;
@@ -1149,7 +1150,8 @@ c_type_709360 s_graph_tag::overlay_get(long mode, long weapon_class, long weapon
 {
 	c_type_709360 result;
 
-	if (weapon_class != NONE)
+	if (weapon_class == NONE)
+		return result;
 	{
 		s_graph_weapon_type_iterator iterator;
 		long iterator_mode = NONE;

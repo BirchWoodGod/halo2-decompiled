@@ -32,7 +32,7 @@ long __stdcall function_063190(void *summary, long user);
 long session_summary_get_player_value(s_session_summary *summary, long player_index, long variant_index);
 long network_session_find_member(c_class_58d20 *session, const s_session_member_identity *identity);
 void network_session_disband_member(c_class_58d20 *session, long member_index);
-long network_session_cancel_reservations(c_class_58d20 *session, const s_session_id *id);
+__declspec(noinline) long network_session_cancel_reservations(c_class_58d20 *session, const s_session_id *id);
 bool session_summary_remove_machine(s_session_summary *summary, s_session_id *id);
 bool network_session_host_set_summary(c_class_58d20 *session, const s_session_summary *summary);
 
@@ -836,7 +836,9 @@ bool __stdcall function_59e50(c_class_58d20 *session, long mode, long local,
  long count, const dword *identities, const long *values, const long *other_values,
  bool reserve, long timeout, const s_session_id *id, const void *extra);
 
-// @retail 0x6fe90
+// Retail aligns its frame; 0x6fcc0, 0x6f940 and 0x6fa60 push all three arguments.
+// The body still differs; this boundary preserves those callers.
+// @retail 0x6fe90 standard
 bool __stdcall function_6fe90(c_session_state_joining *state, bool all_players, bool reserve)
 {
  c_class_58d20 *current = state->owner->session_a;
@@ -967,14 +969,16 @@ void function_6fa60(c_session_state_joining *self)
    {
     long local = current->current_member;
     state->entry_count = 0;
-    for (long i = 0; i < 16; i++)
+    long i = 0;
+    do
     {
      if ((current->player_mask & (1 << i)) && current->players[i].member_index == local)
      {
       memcpy(state->entries + state->entry_count * 12, &current->players[i], 12);
       state->entry_count++;
      }
-    }
+     i++;
+    } while (i < 16);
     state->unknown68 = true;
     function_6fe90(self, false, false);
    }
