@@ -2430,21 +2430,24 @@ void function_4d830(s_render_transform_record const *record)
 		constants[9] = matrix[6];
 		constants[10] = matrix[9];
 		constants[11] = matrix[12];
-		D3DDevice_SetVertexShaderConstant(-46, constants, 3);
+		D3DDevice_SetVertexShaderConstantFast(-46, constants, 3);
 		g_5093d8 = 0;
 	}
 	else if (record->handle != NONE)
 	{
 		byte *data = (byte *)table_entry_data(record->handle);
+		long entry_count = *(word *)data;
 		long size = 0;
-		if (*(word *)data > 0)
-			size = *(word *)data * 48 + 0x44;
+		if (entry_count > 0)
+			size = entry_count * 48 + 0x44;
 		for (long i = size / 32; i > 0; --i, data += 32)
 			_mm_prefetch((char const *)data, _MM_HINT_T0);
 		dword flags = record->flags;
 		if ((flags & 0xe0000000) == 0x20000000)
 		{
+#pragma inline_depth(0)
 			long index = function_4cb80((flags >> 9) & 0x1ff, record->tag);
+#pragma inline_depth()
 			if (index != NONE)
 			{
 				s_shader_transform_table *table = (s_shader_transform_table *)table_entry_data(record->handle);
@@ -2455,7 +2458,7 @@ void function_4d830(s_render_transform_record const *record)
 					constants = table->transforms[index];
 				if (constants)
 				{
-					D3DDevice_SetVertexShaderConstant(-46, constants, 3);
+					D3DDevice_SetVertexShaderConstantFast(-46, constants, 3);
 					g_5093d8 = 0;
 					return;
 				}
