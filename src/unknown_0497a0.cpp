@@ -431,8 +431,17 @@ bool __stdcall function_42cf0(s_ribbon_vertex *vertices, long unknown, s_ribbon_
             if (input->normal)
             {
                 s_ribbon_point *neighbor = previous ? previous : (s_ribbon_point *)(g_4ea940->data + (point->next & 0xffff) * 0x38);
-                real dx = previous ? point->position.x - neighbor->position.x : neighbor->position.x - point->position.x;
-                real dy = previous ? neighbor->position.y - point->position.y : point->position.y - neighbor->position.y;
+                real dx, dy;
+                if (previous)
+                {
+                    dx = point->position.x - neighbor->position.x;
+                    dy = neighbor->position.y - point->position.y;
+                }
+                else
+                {
+                    dx = neighbor->position.x - point->position.x;
+                    dy = point->position.y - neighbor->position.y;
+                }
                 normal.i = dy; normal.j = dx; normal.k = 0.0f;
                 real length = (real)sqrt(dx * dx + dy * dy);
                 if (!(fabs(length) < 0.0001f))
@@ -446,8 +455,17 @@ bool __stdcall function_42cf0(s_ribbon_vertex *vertices, long unknown, s_ribbon_
         case 2:
             {
                 s_ribbon_point *neighbor = previous ? previous : (s_ribbon_point *)(g_4ea940->data + (point->next & 0xffff) * 0x38);
-                real dx = previous ? point->position.x - neighbor->position.x : neighbor->position.x - point->position.x;
-                real dy = previous ? neighbor->position.y - point->position.y : point->position.y - neighbor->position.y;
+                real dx, dy;
+                if (previous)
+                {
+                    dx = point->position.x - neighbor->position.x;
+                    dy = neighbor->position.y - point->position.y;
+                }
+                else
+                {
+                    dx = neighbor->position.x - point->position.x;
+                    dy = point->position.y - neighbor->position.y;
+                }
                 real length = (real)sqrt(dx * dx + dy * dy);
                 if (!(fabs(length) < 0.0001f))
                 {
@@ -462,9 +480,9 @@ bool __stdcall function_42cf0(s_ribbon_vertex *vertices, long unknown, s_ribbon_
         case 4:
             {
                 s_ribbon_point *neighbor = previous ? previous : (s_ribbon_point *)(g_4ea940->data + (point->next & 0xffff) * 0x38);
-                point3f origin = previous ? neighbor->position : point->position;
+                point3f const *origin = previous ? &neighbor->position : &point->position;
                 vector3f view, direction, side;
-                view.i = g_4b9da0.x - origin.x; view.j = g_4b9da0.y - origin.y; view.k = g_4b9da0.z - origin.z;
+                view.i = g_4b9da0.x - origin->x; view.j = g_4b9da0.y - origin->y; view.k = g_4b9da0.z - origin->z;
                 direction.i = previous ? point->position.x - neighbor->position.x : neighbor->position.x - point->position.x;
                 direction.j = previous ? point->position.y - neighbor->position.y : neighbor->position.y - point->position.y;
                 direction.k = previous ? point->position.z - neighbor->position.z : neighbor->position.z - point->position.z;
