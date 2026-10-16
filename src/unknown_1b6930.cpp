@@ -29,7 +29,7 @@ short __stdcall function_1b70f0(long actor_index, s_slot *slot);
 short __stdcall function_1b7210(long actor_index, s_slot *slot);
 short __stdcall function_1b73b0(long actor_index, s_slot *slot);
 short __stdcall function_1b74c0(long actor_index, s_slot *slot);
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 
 /* the block of the actor's character tag function_1e4d10 returns */
 struct s_character_d10
@@ -212,7 +212,7 @@ PRIVATE __forceinline long function_1b6e55(void)
 short function_1b6e50(long actor_index)
 {
 	short result = 0x7fff;
-	short level = function_1a6fe0(actor_index, 0x2a);
+	short level = actor_behavior_find_level(actor_index, 0x2a);
 
 	if (level != NONE)
 	{
@@ -223,9 +223,9 @@ short function_1b6e50(long actor_index)
 			result = (short)function_1b6e55();
 			goto local_1;
 		}
-		level = function_1a6fe0(actor_index, 0x2b);
+		level = actor_behavior_find_level(actor_index, 0x2b);
 		if (level == NONE)
-			level = function_1a6fe0(actor_index, 0x2c);
+			level = actor_behavior_find_level(actor_index, 0x2c);
 		if (level != NONE)
 		{
 			struct s_1b6e51 { bool field_0; byte field_1; short field_2; };

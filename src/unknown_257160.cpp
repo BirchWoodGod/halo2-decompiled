@@ -56,7 +56,7 @@ short __stdcall function_257320(long arg_0, s_slot *arg_1);
 s_slot_handler_0 g_47fa94 = {0x7b, 0, 0x7ff, -2, 0, function_257320};
 bool function_2675b0(long arg_0);
 void *function_1e5280(long actor_index, long key);
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 bool function_1ff7d0(long actor_index, point3f const *point, real enemy_radius, real friendly_radius, short *count_out);
 
 // @retail 0x257320
@@ -95,7 +95,7 @@ short __stdcall function_257320(long arg_0, s_slot *arg_1)
 			local_15 = 0;
 		}
 		else if (local_6 && (local_11 >= *(real *)(local_6 + 0x10) &&
-			(function_1a6fe0(arg_0, 0x1e) != NONE || local_8) || !local_5))
+			(actor_behavior_find_level(arg_0, 0x1e) != NONE || local_8) || !local_5))
 		{
 			local_15 = 1;
 		}

@@ -75,7 +75,7 @@ struct s_sort_element
 
 /* ---- callees ---- */
 
-void function_1c2330(long bit_count, dword *a, dword *b, dword *result);
+void bit_vector_and(long bit_count, dword *a, dword *b, dword *result);
 
 /* ---- globals ---- */
 
@@ -763,7 +763,7 @@ void function_1a7b30(s_flag_bits *result, long owner_index)
 
 		if (element && element->tag_index != NONE)
 		{
-			function_1c2330(0x83, (dword *)(tags[element->tag_index & 0xffff].bytes + 0x38), result->d, result->d);
+			bit_vector_and(0x83, (dword *)(tags[element->tag_index & 0xffff].bytes + 0x38), result->d, result->d);
 			return;
 		}
 	}
@@ -780,7 +780,7 @@ void function_1a7b30(s_flag_bits *result, long owner_index)
 	}
 }
 
-short function_1a8080(short type, short slot, s_slot_owner_entry *entry);
+short actor_behavior_get_insert_level(short type, short slot, s_slot_owner_entry *entry);
 bool function_1a80e0(long index, short type, s_slot *data, short slot);
 void function_25aba0(long actor_index);
 
@@ -912,7 +912,7 @@ void __stdcall function_1a7cc0(long actor_index)
 			continue;
 		}
 
-		short local_0 = function_1a8080(choice, level, (s_slot_owner_entry *)owner);
+		short local_0 = actor_behavior_get_insert_level(choice, level, (s_slot_owner_entry *)owner);
 
 		if (local_0 != NONE && function_1a80e0(actor_index, choice, &data, local_0))
 		{

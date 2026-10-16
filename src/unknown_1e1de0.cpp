@@ -54,7 +54,7 @@ inline s_object_1e1de0 *object_get_1e1de0(long object_index)
 	return ((s_object_header_1e1de0 *)g_4e0300->data)[object_index & 0xffff].object;
 }
 
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 void function_b7360(long object_index);
 void function_b58c0(long index, dword mask);
 void function_d0e00(long unit_index, real rate);
@@ -70,7 +70,7 @@ bool function_1e1de0(long actor_index)
 
 	if (actor->flag009 && actor->value328 > 2 && actor->value306 <= g_510c54->field_2_3 * 20)
 	{
-		if (function_1a6fe0(actor_index, 0x38) != NONE)
+		if (actor_behavior_find_level(actor_index, 0x38) != NONE)
 			result = false;
 	}
 	else

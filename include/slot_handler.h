@@ -1,6 +1,6 @@
 /* SLOT_HANDLER.H: the actor slot handlers of 0x1b0000..0x1bffff (lane B).
 
-   g_46eeb8 (unknown_1a8080.cpp) points at one handler per slot type. Each
+   g_46eeb8 (actor_behavior.cpp) points at one handler per slot type. Each
    handler is a static struct in the data of its own source file, next to
    its callbacks; all callbacks take the actor index first and are called
    through these structs, so they keep the standard __stdcall convention.
@@ -93,7 +93,7 @@ struct s_slot_handler
 	long unknown3c;
 };
 
-/* the handlers by slot type (unknown_1a8080.cpp) and what enables a type:
+/* the handlers by slot type (actor_behavior.cpp) and what enables a type:
    its handler's unknown8 differs from g_46f348, its mask covers g_4ee4ec,
    and its bit in g_557c40 is set (globals.h) */
 enum
@@ -303,7 +303,7 @@ static void __stdcall slot_release_nothing(long actor_index, s_slot *slot, long 
 }
 
 /* callbacks shared by several handlers (identical functions folded) */
-short __stdcall function_1a8370(long actor_index);
+short __stdcall actor_behavior_priority_minimum(long actor_index);
 short __stdcall function_1bced0(long actor_index, s_slot *slot, bool active);
 short __stdcall function_1b2d90(long actor_index, s_slot *slot, bool active);
 short __stdcall function_1a79e0(long actor_index, short level, bool active);
@@ -866,7 +866,7 @@ struct s_actor_view
 	};
 	byte unknown814[0x858 - 0x814];
 	long unknown858;
-	long unknown85c;
+	long command_script_index;  /* the command script it runs (actor_behavior_x87.cpp), or NONE */
 	byte unknown860[0x888 - 0x860];
 	// END s_actor_view
 };

@@ -122,10 +122,10 @@ void function_1523c0();
 void function_196780();
 void function_15cba0(long mode);
 void function_1389c0();
-long function_19f3c0(long, long);
+long player_find_unit_item_of_type(long, long);
 struct s_team_entry;
 s_team_entry *function_15e410(short team);
-bool function_19f240(long *);
+bool player_iterator_next(long *);
 void function_15fe70(long);
 void function_2bc1f0(long team);
 void __stdcall function_2bc990(long);
@@ -696,7 +696,7 @@ real c_game_engine_derived::v41(long a)
 {
 	real result = 1.0f;
 
-	if (function_19f3c0(a, 2) != NONE)
+	if (player_find_unit_item_of_type(a, 2) != NONE)
 	{
 		switch (options()->s234)
 		{
@@ -772,7 +772,7 @@ void c_game_engine_derived::v37(long a)
 {
 	if (player_get(a)->l2c != NONE)
 	{
-		if (function_19f3c0(a, 2) != NONE)
+		if (player_find_unit_item_of_type(a, 2) != NONE)
 		{
 			c_engine_peer *engine = g_55e4d0[g_4e9ae8->engine_index];
 			if (!engine->p35(a, 1))
@@ -878,7 +878,7 @@ void c_game_engine_derived::v36(long local_player)
 		iterator.array = g_4e8c24;
 		iterator.next = NONE;
 		iterator.index = NONE;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 		{
 			long other = iterator.index;
 
@@ -888,7 +888,7 @@ void c_game_engine_derived::v36(long local_player)
 				{
 					if (function_162550(other, &list))
 					{
-						long unit = function_19f3c0(other, 2);
+						long unit = player_find_unit_item_of_type(other, 2);
 
 						if (unit != NONE && mode != 3)
 						{

@@ -1769,7 +1769,7 @@ struct s_game_allegiance_globals;
 extern s_game_allegiance_globals *g_4f55ec;
 bool function_0bfe60(dword const *flags, long bit);
 bool function_15e020(short a, short b);
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 dword function_1a7ad0(long owner_index);
 long function_114440(long unit_index);
 bool function_1144a0(long unit_index, short entry_index, long *tag_index);
@@ -1867,7 +1867,7 @@ short function_20d8c0(long source_index, s_audio_priority_table *table, byte con
         {
             actor = g_4f55f0->data + (actor_index & 0xffff) * 0x888;
             if (actor && (actor[0x223] ||
-                ((actor[0x225] || function_1a6fe0(actor_index, 0x38) != NONE) && priority < 13)))
+                ((actor[0x225] || actor_behavior_find_level(actor_index, 0x38) != NONE) && priority < 13)))
                 eligible = false;
         }
         if ((bool)((*(dword *)(object + 0x134) >> 3) & 1))
@@ -1934,8 +1934,8 @@ short function_20d8c0(long source_index, s_audio_priority_table *table, byte con
                 goto ineligible;
             flags = *(word const *)(request + 0xa);
             if ((flags & 0x40) && (!actor ||
-                (function_1a6fe0(*(long *)(object + 0x12c), 0x22) == NONE &&
-                 function_1a6fe0(*(long *)(object + 0x12c), 0x1b) == NONE)))
+                (actor_behavior_find_level(*(long *)(object + 0x12c), 0x22) == NONE &&
+                 actor_behavior_find_level(*(long *)(object + 0x12c), 0x1b) == NONE)))
                 goto ineligible;
             if (flags & 0x80)
             {

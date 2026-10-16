@@ -22,7 +22,7 @@ struct s_state_2bc1
 	long markers[3];
 };
 
-long function_19f3c0(long player_index, long type);
+long player_find_unit_item_of_type(long player_index, long type);
 bool function_15eaf0();
 void function_15b930(long player_index, bool by_team, long counter, long delta);
 
@@ -59,11 +59,11 @@ bool function_2bc1b0(point3f *position, long index)
 // @retail 0x2bcc10
 void c_game_engine_45c7a8::v0(long player_index, long other_player_index, bool flag, long)
 {
-	if (function_19f3c0(other_player_index, 2) != NONE && !flag && player_index != NONE && player_index != other_player_index)
+	if (player_find_unit_item_of_type(other_player_index, 2) != NONE && !flag && player_index != NONE && player_index != other_player_index)
 	{
 		function_15b930(player_index, function_15eaf0(), 0x1a, 1);
 	}
-	if (player_index != NONE && !flag && player_index != other_player_index && function_19f3c0(player_index, 2) != NONE)
+	if (player_index != NONE && !flag && player_index != other_player_index && player_find_unit_item_of_type(player_index, 2) != NONE)
 	{
 		function_15b930(player_index, function_15eaf0(), 0x19, 1);
 	}
@@ -74,7 +74,7 @@ bool c_game_engine_45c7a8::v5(long player_index, long type)
 {
 	bool result = false;
 
-	if (function_19f3c0(player_index, 2) != NONE)
+	if (player_find_unit_item_of_type(player_index, 2) != NONE)
 	{
 		if (type == 2)
 			result = g_4e6948->s232 == 0;
@@ -94,7 +94,7 @@ long c_game_engine_45c7a8::v7(long player_index, byte *b)
 	long result = NONE;
 
 	*b = 1;
-	if (function_19f3c0(player_index, 2) != NONE)
+	if (player_find_unit_item_of_type(player_index, 2) != NONE)
 		result = 0xe;
 	return result;
 }
@@ -194,7 +194,7 @@ void c_game_engine_45c7a8::v2(long unused, long list_pointer)
 
 bool function_15b7c0(long delta, long player_index);
 long function_19fc70(dword player_index);
-void function_19f470(long player_index, long score);
+void player_announce_points_to_win(long player_index, long score);
 void function_10da60(long item_index, point3f *position);
 bool team_ball_away_from_home(long team);
 bool function_162b90(long item_index);
@@ -274,7 +274,7 @@ void function_2bce70(long player_index)
 		long score = function_19fc70(player_index);
 		if (old_score != score)
 		{
-			function_19f470(player_index, score);
+			player_announce_points_to_win(player_index, score);
 		}
 	}
 }

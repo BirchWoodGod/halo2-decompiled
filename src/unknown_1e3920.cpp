@@ -310,7 +310,7 @@ done:
 	return result;
 }
 
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 
 #pragma inline_depth(0)
 // @retail 0x1e1e50
@@ -323,7 +323,7 @@ bool function_1e1e50(long actor_index, vector3f *direction)
 	if (actor->prop_index != NONE)
 	{
 		s_type_f95cd3 *view = function_25d700(actor->prop_index);
-		if (view && *(short *)view > 6 && function_1a6fe0(*index_reference, 14) != NONE && actor->unknown722 > 0)
+		if (view && *(short *)view > 6 && actor_behavior_find_level(*index_reference, 14) != NONE && actor->unknown722 > 0)
 		{
 			**direction_reference = *(vector3f *)((byte *)actor + 0x758);
 			vector3f *value = *direction_reference;
@@ -1133,9 +1133,9 @@ void function_267c50(long actor_index);
 void function_1e36d0(long actor_index);
 void function_258660(long actor_index);
 void __stdcall function_1a7cc0(long actor_index);
-void function_1a82d0(long actor_index);
+void actor_behavior_current_update44(long actor_index);
 void function_1e3860(long actor_index);
-void function_1a8320(long actor_index);
+void actor_behavior_current_update48(long actor_index);
 void __stdcall function_28f700(long actor_index);
 void function_25a380(long actor_index);
 void function_1f38c0(long actor_index);
@@ -1168,9 +1168,9 @@ void function_1e34e0(long actor_index)
 		*(short *)(current + 0x454) = NONE;
 		function_258660(actor_index);
 		function_1a7cc0(actor_index);
-		function_1a82d0(actor_index);
+		actor_behavior_current_update44(actor_index);
 		function_1e3860(actor_index);
-		function_1a8320(actor_index);
+		actor_behavior_current_update48(actor_index);
 		if (actor[7])
 		{
 			if (*(long *)(actor + 0x1c)) function_28f700(actor_index);

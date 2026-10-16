@@ -592,7 +592,7 @@ struct s_player_iterator_2be
 	long absolute_index;
 };
 
-bool function_19f300(long *iterator);
+bool player_iterator_next_with_unit(long *iterator);
 extern color3f *g_468714;
 color3f *function_7f720(color3f *color, short team_index);
 
@@ -651,7 +651,7 @@ void hill_color(long player_index, s_color_bits *color)
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		while (function_19f300((long *)&iterator))
+		while (player_iterator_next_with_unit((long *)&iterator))
 		{
 			if ((1 << (byte)iterator.index) & (word)g_51ecc8->s1a8)
 			{
@@ -883,7 +883,7 @@ struct s_player_iterator_2bf
 	long absolute_index;
 };
 
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 
 /* marks the parts of the engine's globals in the mask changed */
 static inline void game_engine_globals_changed_mask_2bf(dword mask)
@@ -1116,7 +1116,7 @@ void territories_update_players()
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		s_state_2bf *state = g_51eccc;
 		long player = iterator.index & 0xffff;
@@ -1364,7 +1364,7 @@ void function_15e050(long object_index, short value);
 bool function_15f330(s_player_appearance const *appearance, short team_index, color3f *colors);
 bool function_15b7c0(long delta, long player_index);
 long function_19fc70(dword player_index);
-void function_19f470(long player_index, long score);
+void player_announce_points_to_win(long player_index, long score);
 
 /* The territory item uses its holder's four appearance colors. */
 struct s_territory_placement
@@ -1534,7 +1534,7 @@ void territories_update_scores()
 				long score = function_19fc70(holder);
 				if (score != old_score)
 				{
-					function_19f470(holder, score);
+					player_announce_points_to_win(holder, score);
 				}
 			}
 		}
@@ -1556,7 +1556,7 @@ void territories_update_holders()
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	bool active = function_19f240((long *)&iterator);
+	bool active = player_iterator_next((long *)&iterator);
 	while (active)
 	{
 		long player = iterator.index & 0xffff;
@@ -1619,12 +1619,12 @@ void territories_update_holders()
 				}
 			}
 		}
-		active = function_19f240((long *)&iterator);
+		active = player_iterator_next((long *)&iterator);
 	}
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		long player = iterator.index & 0xffff;
 		long territory = (char)g_51eccc->entries90[player].a;
@@ -1770,7 +1770,7 @@ void c_game_engine_45c948::v14(long local_player)
 			iterator.data = g_4e8c24;
 			iterator.absolute_index = NONE;
 			iterator.index = NONE;
-			while (function_19f240((long *)&iterator))
+			while (player_iterator_next((long *)&iterator))
 			{
 				long other = iterator.index;
 				if (other != player_index)
@@ -1885,7 +1885,7 @@ bool function_15b2f0();
 bool function_15b7c0(long delta, long player_index);
 void function_1972a0(long player_index, long value14, long value10);
 long function_19fc70(dword player_index);
-void function_19f470(long player_index, long score);
+void player_announce_points_to_win(long player_index, long score);
 
 // @retail 0x2beee0
 void function_2beee0()
@@ -1896,7 +1896,7 @@ void function_2beee0()
     iterator.data = g_4e8c24;
     iterator.absolute_index = NONE;
     iterator.index = NONE;
-    while (function_19f300((long *)&iterator))
+    while (player_iterator_next_with_unit((long *)&iterator))
     {
         if (iterator.player->time_inside)
         {
@@ -1936,7 +1936,7 @@ void function_2beee0()
                 members.data = g_4e8c24;
                 members.absolute_index = NONE;
                 members.index = NONE;
-                while (function_19f300((long *)&members))
+                while (player_iterator_next_with_unit((long *)&members))
                 {
                     if (members.player->team == team && members.player->time_inside)
                     {
@@ -1946,7 +1946,7 @@ void function_2beee0()
                             iterator.data = g_4e8c24;
                             iterator.absolute_index = NONE;
                             iterator.index = NONE;
-                            while (function_19f300((long *)&iterator))
+                            while (player_iterator_next_with_unit((long *)&iterator))
                             {
                                 if (iterator.index != members.index && iterator.player->team == members.player->team &&
                                     iterator.player->time_inside &&
@@ -1963,7 +1963,7 @@ void function_2beee0()
                             long updated = function_19fc70(members.index);
                             last = members.index;
                             if (score != updated)
-                                function_19f470(members.index, updated);
+                                player_announce_points_to_win(members.index, updated);
                         }
                     }
                 }
@@ -1978,7 +1978,7 @@ void function_2beee0()
         members.data = g_4e8c24;
         members.absolute_index = NONE;
         members.index = NONE;
-        while (function_19f300((long *)&members))
+        while (player_iterator_next_with_unit((long *)&members))
         {
             if (members.player->time_inside && members.player->time_inside % g_510c54->field_2_3 == 0)
             {
@@ -1987,7 +1987,7 @@ void function_2beee0()
                 function_15b7c0(1, members.index);
                 long updated = function_19fc70(members.index);
                 if (score != updated)
-                    function_19f470(members.index, updated);
+                    player_announce_points_to_win(members.index, updated);
             }
         }
     }

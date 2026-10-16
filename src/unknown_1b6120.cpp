@@ -157,7 +157,7 @@ long __stdcall function_1b6120(long actor_index, s_slot *slot)
 	return joint_index;
 }
 short __stdcall function_1b6740(long actor_index, long leader_index, long a, long b);
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 
 /* the state of slot type 0x22 another actor has */
 struct s_slot_22
@@ -285,7 +285,7 @@ short __stdcall function_1b6740(long actor_index, long leader_index, long a, lon
 			index = other->next_index;
 			if (other != actor && other->unknown221)
 			{
-				short slot_index = function_1a6fe0(other_index, 0x22);
+				short slot_index = actor_behavior_find_level(other_index, 0x22);
 
 				if (slot_index != NONE)
 				{

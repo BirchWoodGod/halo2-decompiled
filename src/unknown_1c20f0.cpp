@@ -36,7 +36,7 @@ short g_47ffa8 = 3;
 
 real function_30bf0(vector3f *v);
 extern vector3f *g_4687bc;
-void __stdcall function_1c22c0(long object_index, long unused);
+void __stdcall actor_behavior_81_update48(long object_index, long unused);
 
 // @retail 0x1c19b0
 bool __stdcall function_1c19b0(long actor_index, vector3f const *direction, s_type_f17a25 *path)
@@ -309,5 +309,5 @@ s_slot_handler_2 g_47eff8 =
 		function_1c20f0, function_1c2100, function_1c2120, 0, NONE, {0},
 		0, 0, 0, 0, 0, 0, 0
 	},
-	(t_slot_proc)function_1c2130, 0, (t_slot_proc)function_1c22c0
+	(t_slot_proc)function_1c2130, 0, (t_slot_proc)actor_behavior_81_update48
 };
