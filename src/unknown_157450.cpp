@@ -153,7 +153,7 @@ struct s_engine_options
 dword g_502258[0x27];
 s_local_engine_state g_4e9af0;
 
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 void function_b58c0(long index, dword mask);
 void function_1523c0();
 void function_23aea0(void);
@@ -429,7 +429,7 @@ void function_157a80(void)
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		iterator.player->flag1a7 = false;
 		iterator.player->value1a8 = NONE;
@@ -841,7 +841,7 @@ void function_158e20(void)
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		count++;
 	}
@@ -1535,7 +1535,7 @@ bool function_15db80(long team)
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 		{
 			s_engine_player *player = iterator.player;
 
@@ -1608,7 +1608,7 @@ void function_15dc40(void)
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		long absolute_index = iterator.index & 0xffff;
 
@@ -1935,7 +1935,7 @@ void function_159460(long player_index, bool *leading, bool *tied)
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 		{
 			if (iterator.index != player_index)
 			{
@@ -2050,7 +2050,7 @@ void function_15d6c0(long player_index, long maximum, long minimum)
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		s_engine_player *other = iterator.player;
 
@@ -2381,7 +2381,7 @@ void __stdcall function_15b650(long team, long delta)
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 		{
 			if (iterator.player->team == *team_reference)
 			{
@@ -2449,7 +2449,7 @@ void function_15b3a0(long player_or_team, bool value)
 			iterator.data = g_4e8c24;
 			iterator.absolute_index = NONE;
 			iterator.index = NONE;
-			while (function_19f240((long *)&iterator))
+			while (player_iterator_next((long *)&iterator))
 			{
 				if (iterator.player->team == player_or_team)
 				{
@@ -2530,7 +2530,7 @@ void function_15ea80(long code, word *buffer, long maximum_count)
 	}
 }
 
-bool function_19f300(long *iterator);
+bool player_iterator_next_with_unit(long *iterator);
 
 static __forceinline real engine_distance_squared(point3f const *a, point3f const *b)
 {
@@ -2553,7 +2553,7 @@ bool function_15f060(point3f const *position, real radius)
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f300((long *)&iterator))
+	while (player_iterator_next_with_unit((long *)&iterator))
 	{
 		s_engine_object *object = engine_object_get(iterator.player->unit_index);
 
@@ -2608,7 +2608,7 @@ void function_15ba90(long team)
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 		{
 			if (iterator.player->team == team && iterator.player->unit_index != NONE)
 			{
@@ -3014,7 +3014,7 @@ void function_15c000(void)
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f300((long *)&iterator))
+	while (player_iterator_next_with_unit((long *)&iterator))
 	{
 		s_engine_scaled_player *player = (s_engine_scaled_player *)iterator.player;
 		real current = player->scale;
@@ -3115,7 +3115,7 @@ void function_15ed60(void)
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 		{
 			long player_index = iterator.index;
 			bool blocked = false;
@@ -4097,7 +4097,7 @@ bool function_15f3a0(long local_index, s_player_score_display *display)
                 iterator.data = g_4e8c24;
                 iterator.index = NONE;
                 iterator.absolute_index = NONE;
-                while (function_19f240((long *)&iterator))
+                while (player_iterator_next((long *)&iterator))
                 {
                     if (iterator.index != player_index)
                     {
@@ -4145,7 +4145,7 @@ bool function_15f3a0(long local_index, s_player_score_display *display)
                 iterator.data = g_4e8c24;
                 iterator.index = NONE;
                 iterator.absolute_index = NONE;
-                while (function_19f240((long *)&iterator)) present |= 1 << iterator.index;
+                while (player_iterator_next((long *)&iterator)) present |= 1 << iterator.index;
                 s_score_zone_view *zones = (s_score_zone_view *)g_4e9ae8;
                 for (long zone = 0; zone < zones->count; zone++)
                 {
@@ -4388,7 +4388,7 @@ bool function_158f50()
     iterator.data = g_4e8c24;
     iterator.absolute_index = NONE;
     iterator.index = NONE;
-    while (function_19f240((long *)&iterator))
+    while (player_iterator_next((long *)&iterator))
     {
         ++count;
         bool flag = g_4e6948->flag1128;
@@ -4720,7 +4720,7 @@ void function_159e20(void)
         players.data = g_4e8c24;
         players.absolute_index = NONE;
         players.index = NONE;
-        while (function_19f300((long *)&players))
+        while (player_iterator_next_with_unit((long *)&players))
         {
             long unit = players.player->unit_index;
             function_b83b0(unit, true);
@@ -4958,7 +4958,7 @@ void function_159880(void)
                 iterator.data = g_4e8c24;
                 iterator.absolute_index = NONE;
                 iterator.index = NONE;
-                while (function_19f300((long *)&iterator))
+                while (player_iterator_next_with_unit((long *)&iterator))
                 {
                     long target_index = iterator.index;
                     if (target_index == player_index) continue;

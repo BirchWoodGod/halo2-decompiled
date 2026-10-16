@@ -50,10 +50,10 @@ short __stdcall function_1bf990(long actor_index);
 short __stdcall function_1bfd00(long actor_index, s_slot *slot, bool active);
 bool __stdcall function_1bfb10(long actor_index, s_slot *slot);
 void __stdcall function_1bfc30(long actor_index, s_slot *slot);
-void __stdcall function_1c1990(long actor_index, s_slot *slot, long index);
+void __stdcall actor_behavior_release_prop(long actor_index, s_slot *slot, long index);
 void __stdcall function_1c1520(long actor_index, s_slot *slot, long index);
 bool __stdcall function_1bff80(long actor_index, s_slot *slot);
-void __stdcall function_1c0230(long actor_index, s_slot *slot);
+void __stdcall actor_behavior_50_update48(long actor_index, s_slot *slot);
 
 inline s_vehicle_board_unit_tag *vehicle_board_unit_tag_get(s_slot_object_view *unit)
 {
@@ -222,9 +222,9 @@ s_slot_handler_2 g_47eeb8 =
 	{
 		0x50, 2, 0, -2, 0,
 		function_1bf990, function_1bfd00, function_1bfb10, function_1bfc30, NONE, {0},
-		0, function_1c1990, function_1c1520, 0, 0, 0, 0
+		0, actor_behavior_release_prop, function_1c1520, 0, 0, 0, 0
 	},
-	(t_slot_proc)function_1bff80, 0, function_1c0230
+	(t_slot_proc)function_1bff80, 0, actor_behavior_50_update48
 };
 
 long function_1e4a50(long index);

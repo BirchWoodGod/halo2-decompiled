@@ -59,7 +59,7 @@ struct s_juggernaut_update
 	word players;
 };
 
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 void function_b58c0(long index, dword mask);
 bool function_15b7c0(long a, long b);
 bool function_15d770(long player_index);
@@ -146,7 +146,7 @@ void juggernaut_update_teams()
 	g_510c9c->teams = 0;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		if (g_510c9c->players & (1 << (char)iterator.index))
 			g_510c9c->teams |= 1 << iterator.player->team;
@@ -203,7 +203,7 @@ void function_192a30(long excluded_player_index)
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		long player_index = iterator.index;
 
@@ -291,7 +291,7 @@ void c_juggernaut_engine::v18()
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 		{
 			long player_index = iterator.index;
 			long absolute_index = player_index & 0xffff;
@@ -526,7 +526,7 @@ void c_juggernaut_engine::v14(long local_index)
 				iterator.data = g_4e8c24;
 				iterator.absolute_index = NONE;
 				iterator.index = NONE;
-				while (function_19f240((long *)&iterator))
+				while (player_iterator_next((long *)&iterator))
 				{
 					long other = iterator.index;
 
