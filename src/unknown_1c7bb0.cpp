@@ -15,7 +15,7 @@ struct s_1c7bb0
  byte field_80[0x98 - 0x80];
 };
 bool function_204390(long squad_index);
-bool function_1e1500(long actor_index);
+bool actor_update_bsp_locations(long actor_index);
 void function_203ed0(long actor_index, bool keep_count);
 void function_1e22d0(long actor_index, bool conditional);
 void function_203cc0(long squad_index);
@@ -67,7 +67,7 @@ void function_1c7bb0()
     s_actor_datum *local_6;
     while ((local_6 = squad_actors_next(&local_4)) != NULL)
     {
-     if (!function_1e1500(local_4.actor_index))
+     if (!actor_update_bsp_locations(local_4.actor_index))
      {
       *(long *)((byte *)local_6 + 0x34) = local_6->squad_index;
       function_203ed0(local_4.actor_index, false);
@@ -89,7 +89,7 @@ void function_1c7bb0()
    long local_5 = local_4;
    s_actor_view *local_6 = actor_get(local_5);
    local_4 = local_6->unknown020;
-   if (function_1e13f0(local_5) && function_1e1500(local_5))
+   if (function_1e13f0(local_5) && actor_update_bsp_locations(local_5))
    {
     long local_7 = *(long *)((byte *)local_6 + 0x34);
     if (local_7 != NONE && ((s_1c7bb0 *)g_51e9d8->data)[local_7 & 0xffff].field_7e == (short)local_0)

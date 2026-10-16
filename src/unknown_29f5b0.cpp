@@ -634,7 +634,7 @@ real objects_distance_to_object(long list_index, long object_index)
 		point3f origin;
 		function_b9dd0(object_index, &origin);
 		long reference_index;
-		long list_object_index = function_1dee50(list_index, &reference_index);
+		long list_object_index = script_list_head_object(list_index, &reference_index);
 		while (list_object_index != NONE)
 		{
 			point3f point;
@@ -764,7 +764,7 @@ real objects_distance_to_flag(long list_index, short cutscene_flag_index)
 	{
 		point3f *position = &((s_scenario_cutscene_flags_view *)g_4e0350)->cutscene_flags[cutscene_flag_index].position;
 		long reference_index;
-		long list_object_index = function_1dee50(list_index, &reference_index);
+		long list_object_index = script_list_head_object(list_index, &reference_index);
 		while (list_object_index != NONE)
 		{
 			point3f point;
@@ -801,7 +801,7 @@ extern s_record_pool *g_4f55d4;
 long object_list_get_element(long list_index, short index)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = script_list_head_object(list_index, &reference_index);
 	while (index > 0 && object_index != NONE)
 	{
 		object_index = function_x457076(&reference_index);
@@ -853,7 +853,7 @@ void function_2a0380(long object_index, long region_name, short state)
 void function_2a03d0(long list_index, bool flag)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = script_list_head_object(list_index, &reference_index);
 	while (object_index != NONE)
 	{
 		if (flag)
@@ -10451,7 +10451,7 @@ inline bool function_2ac270_get(long index)
 	return false;
 }
 
-void function_1df3e0(long value);
+void hud_message_show_once(long value);
 
 /* 876: void (long_integer) */
 // @retail 0x2ac230
@@ -10461,7 +10461,7 @@ void __stdcall function_2ac230(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_1df3e0(arguments[0]);
+		hud_message_show_once(arguments[0]);
 		function_209ae0(thread_index, 0);
 	}
 }

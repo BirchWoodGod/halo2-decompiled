@@ -5449,9 +5449,9 @@ void function_1c7bb0();
 void function_1c7f60(void);
 void function_1df460(void);
 void function_1df4b0(void);
-void function_1e6a40(void);
-void function_1e6a80(void);
-void function_1e6ae0(void);
+void player_request_state_initialize(void);
+void player_request_state_initialize_for_new_map(void);
+void player_request_state_dispose_from_old_map(void);
 void function_1eb550(void);
 void function_1eb5e0(void);
 void function_1eb5f0(void);
@@ -5515,7 +5515,7 @@ s_subsystem_440dd8 const g_440dd8[68] =
     { function_1df460, function_175f40, function_1df4b0, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_14b4b0, function_14b560, function_14b580, function_14b600, function_175f40, function_175f40, NULL, NULL, NULL },
     { function_185ab0, function_175f40, function_185b00, function_175f40, NULL, NULL, NULL, NULL, NULL },
-    { function_1e6a40, function_175f40, function_1e6a80, function_1e6ae0, NULL, NULL, NULL, NULL, NULL },
+    { player_request_state_initialize, function_175f40, player_request_state_initialize_for_new_map, player_request_state_dispose_from_old_map, NULL, NULL, NULL, NULL, NULL },
     { function_157450, function_175f40, function_1574c0, function_157bb0, NULL, NULL, NULL, NULL, NULL },
     { function_67e30, function_067eb0, function_67ee0, function_67f60, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, function_11be20, function_11be40, NULL, NULL, NULL, NULL, NULL },
