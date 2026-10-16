@@ -18,8 +18,8 @@
    handler of its events (0x14954a) */
 enum e_shell_mode
 {
-	_game_mode_campaign = 0,
-	_game_mode_multiplayer,
+	_shell_mode_campaign = 0,
+	_shell_mode_multiplayer,
 	_shell_mode_main_menu
 };
 

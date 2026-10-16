@@ -623,10 +623,10 @@ void window_manager_handle_event(s_event const *event)
 {
 	switch (g_54d598.shell_mode)
 	{
-	case _game_mode_campaign:
+	case _shell_mode_campaign:
 		window_manager_handle_campaign_event(event);
 		break;
-	case _game_mode_multiplayer:
+	case _shell_mode_multiplayer:
 		window_manager_handle_multiplayer_event(event);
 		break;
 	case _shell_mode_main_menu:

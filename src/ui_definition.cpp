@@ -28,10 +28,10 @@ s_user_interface_shared_globals *ui_mode_definition_get(void)
 			long tag_index;
 			switch (scenario->shell_mode)
 			{
-			case _game_mode_campaign:
+			case _shell_mode_campaign:
 				tag_index = references->campaign_shared_globals.tag_index;
 				break;
-			case _game_mode_multiplayer:
+			case _shell_mode_multiplayer:
 				tag_index = references->multiplayer_shared_globals.tag_index;
 				break;
 			case _shell_mode_main_menu:
