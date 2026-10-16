@@ -3861,6 +3861,7 @@ bool function_45ce0(short index, byte *out, short part, short transform_index)
 
 __declspec(noinline) dword __cdecl pack_color4f(color4f const *color);
 
+#pragma inline_depth(0)
 // @retail 0x40890
 void function_40890(void)
 {
@@ -3873,7 +3874,7 @@ void function_40890(void)
 	inverse.red = (1.0f - g_48587c) * g_485874;
 	inverse.green = (1.0f - g_485880) * g_485874;
 	inverse.blue = (1.0f - g_485884) * g_485874;
-	volatile dword packed = pack_color4f(&color);
+	dword packed = pack_color4f(&color);
 	dword constant = pack_color4f(&inverse);
 	function_0222d0(D3DRS_CULLMODE, 0x901);
 	function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
@@ -3881,21 +3882,47 @@ void function_40890(void)
 	dword local_617c45, rgb_inputs;
 	switch (g_485870)
 	{
-	case 1: case 2:
+	case 1:
 		function_0222d0(D3DRS_SRCBLEND, 1);
-		function_0222d0(D3DRS_DESTBLEND, g_485870 == 1 ? 0x303 : 1);
-		function_0222d0(D3DRS_BLENDOP, g_485870 == 1 ? 0x8006 : 0x800b);
+		function_0222d0(D3DRS_DESTBLEND, 0x303);
+		function_0222d0(D3DRS_BLENDOP, 0x8006);
 		constant = packed;
 		rgb_inputs = 0x1200000;
 		local_617c45 = 0x11200000;
 		break;
-	case 3: case 4: case 5:
+	case 2:
+		function_0222d0(D3DRS_SRCBLEND, 1);
+		function_0222d0(D3DRS_DESTBLEND, 1);
+		function_0222d0(D3DRS_BLENDOP, 0x800b);
+		constant = packed;
+		rgb_inputs = 0x1200000;
+		local_617c45 = 0x11200000;
+		break;
+	case 3:
 		function_0222d0(D3DRS_SRCBLEND, 0x307);
 		function_0222d0(D3DRS_DESTBLEND, 0x8002);
-		function_0222d0(D3DRS_BLENDOP, g_485870 == 3 ? 0x8008 : g_485870 == 4 ? 0x8007 : 0x8006);
+		function_0222d0(D3DRS_BLENDOP, 0x8008);
 		function_0222d0(D3DRS_BLENDCOLOR, packed);
 		constant = packed;
-		rgb_inputs = g_485870 == 3 ? 0x1201140 : g_485870 == 4 ? 0x1201120 : 0x1411120;
+		rgb_inputs = 0x1201140;
+		local_617c45 = 0;
+		break;
+	case 4:
+		function_0222d0(D3DRS_SRCBLEND, 0x307);
+		function_0222d0(D3DRS_DESTBLEND, 0x8002);
+		function_0222d0(D3DRS_BLENDOP, 0x8007);
+		function_0222d0(D3DRS_BLENDCOLOR, packed);
+		constant = packed;
+		rgb_inputs = 0x1201120;
+		local_617c45 = 0;
+		break;
+	case 5:
+		function_0222d0(D3DRS_SRCBLEND, 0x307);
+		function_0222d0(D3DRS_DESTBLEND, 0x8002);
+		function_0222d0(D3DRS_BLENDOP, 0x8006);
+		function_0222d0(D3DRS_BLENDCOLOR, packed);
+		constant = packed;
+		rgb_inputs = 0x1411120;
 		local_617c45 = 0;
 		break;
 	default:
@@ -3944,6 +3971,7 @@ void function_40890(void)
 	D3DDevice_SetVertexData2s(0, 0, height);
 	D3DDevice_End();
 }
+#pragma inline_depth()
 
 bool function_48b00(point3f const *point, real radius, real *screen, real *extent);
 void function_1cf50();
@@ -4914,7 +4942,8 @@ void __stdcall function_4e260(long tag, long context, long first, long second,
     if (function_12de70((s_geometry_block_info *)block, 3)
         && function_12de70((s_geometry_block_info *)(definition + 0x38), 3))
     {
-        struct { real a, b; } local_opacity_min_opacity_scale_record = { *(real *)(definition + 8), *(real *)(definition + 0xc) };
+        real local_0 = *(real *)(definition + 8);
+        real local_1 = *(real *)(definition + 0xc);
         real constants[4] = {g_52598c[handle >> 30], g_525998[handle >> 30], 0.0f, 1.0f};
         D3DDevice_SetVertexShaderConstant(-43, constants, 1);
         point3f center;
@@ -4941,13 +4970,13 @@ void __stdcall function_4e260(long tag, long context, long first, long second,
             if (variant >= *(long *)(definition + 0x18)) continue;
             byte *draw = *(byte **)(definition + 0x1c) + variant * 8;
             if (!*(word *)(draw + 6)) continue;
-            vector3f packed_vector;
-            function_4dd70(&packed_vector, *(dword *)(vertex + 0x10));
+            vector3f decoded_vector;
+            vector3f packed_vector = *function_4dd70(&decoded_vector, *(dword *)(vertex + 0x10));
             dword coordinates = *(dword *)(vertex + 4);
-            point3f position;
-            function_3f220(coordinates & 0x3ff, (coordinates >> 10) & 0x3ff, coordinates >> 20, &position);
+            point3f decoded_position;
+            point3f position = *function_3f220(coordinates & 0x3ff, (coordinates >> 10) & 0x3ff, coordinates >> 20, &decoded_position);
             real fraction = ((packed >> 16) & 0xf) * (1.0f / 15.0f);
-            real alpha = (*(real *)(vertex + 0x14) - local_opacity_min_opacity_scale_record.a) * local_opacity_min_opacity_scale_record.b;
+            real alpha = (*(real *)(vertex + 0x14) - local_0) * local_1;
             color3f light, color;
             function_4ca00((s_4ca40_colors *)settings, vertex, &light, &color);
             light.red *= color.red; light.green *= color.green; light.blue *= color.blue;
@@ -4958,7 +4987,8 @@ void __stdcall function_4e260(long tag, long context, long first, long second,
             if (settings[8] & 1)
             {
                 real sine = (real)sin(angle), cosine = (real)cos(angle);
-                function_4dcd0(&direction, packed >> 20);
+                vector3f decoded_direction;
+                direction = *function_4dcd0(&decoded_direction, packed >> 20);
                 vector3f perpendicular, cross;
                 function_11d000(&direction, &perpendicular);
                 cross.i = direction.j * perpendicular.k - direction.k * perpendicular.j;
@@ -4981,11 +5011,11 @@ void __stdcall function_4e260(long tag, long context, long first, long second,
                 direction = rotation.up;
             }
             alpha = alpha < 0.0f ? 0.0f : alpha > 1.0f ? 1.0f : alpha;
-            D3DDevice_SetVertexData4f(7, packed_vector.i, packed_vector.j, packed_vector.k, alpha);
-            D3DDevice_SetVertexData4f(8, horizontal.i * size, vertical.i * size, direction.i * size, position.x);
-            D3DDevice_SetVertexData4f(9, horizontal.j * size, vertical.j * size, direction.j * size, position.y);
-            D3DDevice_SetVertexData4f(10, horizontal.k * size, vertical.k * size, direction.k * size, position.z);
-            D3DDevice_SetVertexData4f(11, light.red, light.green, light.blue, 1.0f);
+            D3DDevice::SetVertexData4f(7, packed_vector.i, packed_vector.j, packed_vector.k, alpha);
+            D3DDevice::SetVertexData4f(8, horizontal.i * size, vertical.i * size, direction.i * size, position.x);
+            D3DDevice::SetVertexData4f(9, horizontal.j * size, vertical.j * size, direction.j * size, position.y);
+            D3DDevice::SetVertexData4f(10, horizontal.k * size, vertical.k * size, direction.k * size, position.z);
+            D3DDevice::SetVertexData4f(11, light.red, light.green, light.blue, 1.0f);
             long count = *(word *)(draw + 6);
             word const *vertices = indices + *(word *)(draw + 4);
             function_1cf50();
@@ -5144,13 +5174,14 @@ void __stdcall function_35b90(void *material)
     real *offset = *(real **)(source + 4);
     real x = offset ? offset[0] * 2.0f / width : 0.0f;
     real y = offset ? offset[1] * -2.0f / height : 0.0f;
-    real inverse_x = 1.0f / width, inverse_y = 1.0f / height;
+    real inverse_x = 1.0f / width;
     real transform[20];
     transform[0] = inverse_x * 2.0f;
     transform[1] = 0.0f;
     transform[2] = 0.0f;
     transform[3] = x - (inverse_x + 1.0f);
     transform[4] = 0.0f;
+    real inverse_y = 1.0f / height;
     transform[5] = inverse_y * -2.0f;
     transform[6] = 0.0f;
     transform[7] = inverse_y + y + 1.0f;
@@ -5167,21 +5198,37 @@ void __stdcall function_35b90(void *material)
     transform[18] = 0.0f;
     transform[19] = 1.0f;
     real constants[24];
-    memcpy(constants, source + 0x48, 16);
+    constants[0] = *(real *)(source + 0x48);
+    constants[1] = *(real *)(source + 0x4c);
+    constants[2] = *(real *)(source + 0x50);
+    constants[3] = *(real *)(source + 0x54);
     constants[4] = source[8] ? 1.0f : 0.0f;
     constants[5] = source[8] ? 0.0f : 1.0f;
     constants[6] = source[9] ? 1.0f : 0.0f;
     constants[7] = source[9] ? 0.0f : 1.0f;
     constants[8] = source[0xa] ? 1.0f : 0.0f;
     constants[9] = source[0xa] ? 0.0f : 1.0f;
-    { long pair = 0; if (pair < 3) do {
-        real *coordinates = *(real **)(source + 0x1c + pair * 4);
-        constants[10 + pair * 2] = coordinates ? coordinates[0] : 0.0f;
-        constants[11 + pair * 2] = coordinates ? coordinates[1] : 0.0f;
-    
-++pair;
-} while (pair < 3); }
-    memcpy(constants + 16, source + 0x28, 24);
+    {
+        real *coordinates = *(real **)(source + 0x1c);
+        constants[10] = coordinates ? coordinates[0] : 0.0f;
+        constants[11] = coordinates ? coordinates[1] : 0.0f;
+    }
+    {
+        real *coordinates = *(real **)(source + 0x20);
+        constants[12] = coordinates ? coordinates[0] : 0.0f;
+        constants[13] = coordinates ? coordinates[1] : 0.0f;
+    }
+    {
+        real *coordinates = *(real **)(source + 0x24);
+        constants[14] = coordinates ? coordinates[0] : 0.0f;
+        constants[15] = coordinates ? coordinates[1] : 0.0f;
+    }
+    constants[16] = *(real *)(source + 0x28);
+    constants[17] = *(real *)(source + 0x2c);
+    constants[18] = *(real *)(source + 0x30);
+    constants[19] = *(real *)(source + 0x34);
+    constants[20] = *(real *)(source + 0x38);
+    constants[21] = *(real *)(source + 0x3c);
     constants[22] = constants[23] = 0.0f;
     D3DDevice_SetVertexShaderConstant(81, transform, 5);
     D3DDevice_SetVertexShaderConstant(86, constants, 6);
@@ -5214,10 +5261,10 @@ void __stdcall function_35b90(void *material)
         for (long i = 0; i < 3; ++i)
         {
             color3f const *color = *(color3f **)(source + 0x58 + i * 8);
-            color3f selected_color = color ? *color : *(color3f *)g_468710;
-            colors[i].red = selected_color.red;
-            colors[i].green = selected_color.green;
-            colors[i].blue = selected_color.blue;
+            *(color3f *)&colors[i].red = color ? *color : *(color3f *)g_468710;
+        }
+        for (long i = 0; i < 3; ++i)
+        {
             real *alpha = *(real **)(source + 0x84 + i * 4);
             colors[i].alpha = alpha ? *alpha : 1.0f;
         }
@@ -6381,8 +6428,11 @@ void __stdcall function_4f010(void *payload)
     direction.k = g_4b9da0.z - state->position.z;
     real distance = function_30bf0(&direction);
     if (*(real *)(definition + 4) > *(real *)definition)
-        fade = clamp_callback((*(real *)(definition + 4) - distance) /
-            (*(real *)(definition + 4) - *(real *)definition), 0.0f, 1.0f);
+    {
+        if (0.0f > ((*(real *)(definition + 4) - distance) / (*(real *)(definition + 4) - *(real *)definition))) fade = 0.0f;
+        else if (((*(real *)(definition + 4) - distance) / (*(real *)(definition + 4) - *(real *)definition)) > 1.0f) fade = 1.0f;
+        else fade = ((*(real *)(definition + 4) - distance) / (*(real *)(definition + 4) - *(real *)definition));
+    }
     fade *= state->width;
     if (!(fade > 0.0f)) return;
     g_46713c = true;
@@ -6391,14 +6441,14 @@ void __stdcall function_4f010(void *payload)
     for (long group = 0; group < *(long *)(definition + 8); ++group)
     {
         byte *entry = *(byte **)(definition + 0xc) + group * 0x98;
-        long count = *(long *)(entry + 0xc);
-        if (count > 0)
+        if (*(long *)(entry + 0xc) > 0)
         {
             bool filtered = (bool)((*(dword *)entry >> 3) & 1);
             real facing = (real)fabs((double)direction.k * state->first.k +
                 (double)direction.j * state->first.j + (double)direction.i * state->first.i);
             real angle = clamp_callback(1.0f - facing, 0.0f, 1.0f);
             real time = 1.0f - function_13b390(entry + 0x30, angle, 0.0f);
+            long count = *(long *)(entry + 0xc);
             real step = 1.0f / (real)(count - 1);
             real strength = 0.0f, horizontal = 1.0f, vertical = 0.0f;
             real output[2] = {1.0f, 1.0f};
@@ -6444,9 +6494,11 @@ void __stdcall function_4f010(void *payload)
                 colour.green = clamp_callback(state->third.j * colour.green, 0.0f, 1.0f);
                 colour.blue = clamp_callback(state->third.k * colour.blue, 0.0f, 1.0f);
                 colour.alpha = clamp_callback(opacity * fade, 0.0f, 1.0f);
-                points[i].field_0.x = state->first.i * length + state->position.x;
-                points[i].field_0.y = state->first.j * length + state->position.y;
-                points[i].field_0.z = state->first.k * length + state->position.z;
+                point3f point;
+                point.x = state->first.i * length + state->position.x;
+                point.y = state->first.j * length + state->position.y;
+                point.z = state->first.k * length + state->position.z;
+                points[i].field_0 = point;
                 points[i].field_c = width * output[0];
                 points[i].field_10 = width * output[1];
                 points[i].field_14 = pack_color4f(&colour);
