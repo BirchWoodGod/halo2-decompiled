@@ -618,9 +618,9 @@ bool function_1f9490(long actor_index, s_reference reference, s_actor_move_reque
 bool function_1f9760(long actor_index, long object_index, point3f const *point, real distance,
 	bool *last_out, bool *direction_valid_out, vector3f *direction_out)
 {
+	bool reached = false;
 	s_actor_view *actor = actor_get(actor_index);
 	byte *definition = g_4e3b44[moving_object_get(object_index)->tag_index & 0xffff].bytes;
-	bool reached = false;
 	bool last = actor->unknown53a + 1 >= actor->unknown539;
 	bool direction_valid = false;
 	vector3f direction;
@@ -829,13 +829,13 @@ void __stdcall function_1f5ab0(long actor_index, vector3f const *input, vector3f
     short *type_out, vector3f *facing_out, bool *blocked)
 {
     byte *actor = (byte *)actor_get(actor_index);
+    byte *entry = NULL;
+    byte *surface = NULL;
     vector3f movement;
     vector3f facing = *(vector3f *)(actor + 0x290);
     movement = *g_4687a4;
     point3f position = *(point3f *)(actor + 0x238);
     real distance = 3.402823466e38f;
-    byte *entry = NULL;
-    byte *surface = NULL;
     actor[0x6d1] = false;
     long const &unit_index = *(long *)(actor + 0x18);
     if (unit_index != NONE)

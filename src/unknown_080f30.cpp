@@ -157,7 +157,7 @@ static __forceinline void function_81051(word *arg_0, word arg_1, bool arg_2)
 }
 
 // @retail 0x81050
-void function_81050(long result, s_pending_message_header *header)
+void function_81050(s_pending_message_header *header, long result)
 {
 	*(short *)&header->unknown0c = header->state;
 	bool completed = false;

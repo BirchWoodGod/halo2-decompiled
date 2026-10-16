@@ -174,7 +174,7 @@ struct s_network_observer : public c_network_connection_listener
 long function_75870(void);
 long function_75890(long time);
 
-void network_observer_set_owner_key(s_network_observer *observer, long owner, const s_network_session_id *id, const byte *key, long key_index, long local);
+void network_observer_set_owner_key(s_network_observer *observer, long owner, long key_index, const byte *key, const s_network_session_id *id, long local);
 long network_observer_find_channel(s_network_observer *observer, long owner, long remote_index);
 void network_observer_close_channel(s_network_observer *observer, long channel_index);
 void network_observer_send_message(s_network_observer *observer, long owner, long channel_index, bool out_of_band, long message_type, long message_size, const void *message);
