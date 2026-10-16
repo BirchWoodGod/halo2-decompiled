@@ -4145,12 +4145,18 @@ void function_47930(word flags, long format, long mode)
         g_484f68.PSCombinerCount = 1;
         g_484f68.PSFinalCombinerInputsABCD = 0x20;
     } else {
-        if (mode == 1 || mode == 2 || mode == 3)
+        switch (mode)
+        {
+        case 1:
+        case 2:
+        case 3:
         {
             g_4b82e8 = 0;
             D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
         }
-        else if (mode == 4 || mode == 5)
+        break;
+        case 4:
+        case 5:
         {
             g_4b82e8 = 1;
             D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
@@ -4160,12 +4166,15 @@ void function_47930(word flags, long format, long mode)
             D3DDevice_SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
             function_0222d0(D3DRS_BLENDOP, D3DBLENDOP_ADD);
         }
-        else
+        break;
+        default:
         {
             function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
             function_0222d0(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
             function_0222d0(D3DRS_DESTBLEND, D3DBLEND_ONE);
             function_0222d0(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+        }
+        break;
         }
         function_0222d0(D3DRS_ALPHATESTENABLE, 0);
         memset(&g_484f68, 0, sizeof(g_484f68));
