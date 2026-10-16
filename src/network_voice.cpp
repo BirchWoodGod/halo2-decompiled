@@ -1563,6 +1563,14 @@ static inline dword voice_get_player_mask_inlined(void)
 	return result;
 }
 
+static inline bool voice_has_remote_talker_inlined(long id)
+{
+	bool result = false;
+	if (voice_available())
+		result = voice_xhv_has_remote_talker(&g_476fc8, id);
+	return result;
+}
+
 // @retail 0x56990
 dword voice_get_members_of_players(dword players_wanted)
 {
@@ -2634,7 +2642,7 @@ void function_54030(void)
    {
     if (local & (1 << i))
     {
-     if (voice_has_remote_talker(i) &&
+     if (voice_has_remote_talker_inlined(i) &&
       g_476fc8.initialized && (g_476fc8.unknown0c & 4))
       g_476fc8.engine->UnregisterRemoteTalker(voice_xuid(i));
      function_541a0(i);
@@ -2644,7 +2652,7 @@ void function_54030(void)
    }
    else
    {
-    if (voice_has_remote_talker(i) &&
+    if (voice_has_remote_talker_inlined(i) &&
      g_476fc8.initialized && (g_476fc8.unknown0c & 4))
      g_476fc8.engine->UnregisterRemoteTalker(voice_xuid(i));
     g_4c9878.unknownEE &= ~(1 << i);
@@ -2712,7 +2720,7 @@ struct s_voice_route_choice
 void function_57eb0(s_voice_player_settings *settings, long talker,
 	const s_voice_route_choice *choices, long count)
 {
-	bool radio = false;
+	long radio = 0;
 	long nearest = NONE;
 	dword headset = 0;
 	for (long i = 0; i < count; i++)
