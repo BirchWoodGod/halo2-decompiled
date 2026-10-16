@@ -107,56 +107,62 @@ long pending_message_add_received(s_pending_message_header *header, void *data, 
 }
 
 void function_6b640(long task_index);
-void function_81050(long result, s_pending_message_header *header);
+void function_81050(s_pending_message_header *header, long result);
 void function_12d520(long memory);
 void __stdcall function_812d0(void *allocation, s_pending_message_header *header);
 
 void __stdcall function_8e0f0(long index, long result);
 #pragma optimize("g", off)
-PRIVATE __forceinline void function_8e0f1(s_pending_message_header *arg_0, long arg_1)
+PRIVATE __forceinline void function_8e0f1(long offset)
 {
- if (arg_0->kind && arg_1 != NONE)
-  function_8e0f0(arg_1, 13);
- void *local_0 = arg_0->data;
- if (local_0)
+ s_pending_message_header *header = ((s_pending_message_header **)g_4d8c28)[offset];
+ if (header->kind && header->pending_index != NONE)
+  function_8e0f0(header->pending_index, 13);
+ header = ((s_pending_message_header **)g_4d8c28)[offset];
+ void *allocation = header->data;
+ if (allocation)
  {
-  function_12d520((long)local_0);
-  arg_0->data = 0;
-  arg_0->size = 0;
+  function_12d520((long)allocation);
+  header->data = 0;
+  header->size = 0;
  }
 }
 #pragma optimize("", on)
 // @retail 0x8e0f0
 void __stdcall function_8e0f0(long index, long result)
 {
- if (g_4d8c28[index].header)
+ long offset = index * 5;
+ if (((s_pending_message_header **)g_4d8c28)[offset])
  {
-  if (g_4d8c28[index].task_index != NONE)
-   function_6b640(g_4d8c28[index].task_index);
-  function_81050(result, g_4d8c28[index].header);
-  s_pending_message_header *header = g_4d8c28[index].header;
+  if (((long *)g_4d8c28)[offset + 1] != NONE)
+   function_6b640(((long *)g_4d8c28)[offset + 1]);
+  function_81050(((s_pending_message_header **)g_4d8c28)[offset], result);
+  s_pending_message_header *header = ((s_pending_message_header **)g_4d8c28)[offset];
   if (header->kind == 4)
   {
    long local_0 = header->pending_index;
    if (local_0 == NONE)
-    function_8e0f1(header, local_0);
+    function_8e0f1(offset);
   }
-  g_4d8c28[index].header = 0;
-  g_4d8c28[index].task_index = NONE;
-  g_4d8c28[index].size = 0;
-  g_4d8c28[index].data = 0;
-  for (long queue = 0; queue < 2; queue++)
+  ((s_pending_message_header **)g_4d8c28)[offset] = 0;
+  ((long *)g_4d8c28)[offset + 1] = NONE;
+  ((long *)g_4d8c28)[offset + 2] = 0;
+  ((void **)g_4d8c28)[offset + 3] = 0;
+  for (long row = 0; row < 2; row++)
   {
-   for (long slot = 0; slot < 16; slot++)
+   long *queue = g_4d8ba8[row];
+   long slot = 0;
+   do
    {
-    if (g_4d8ba8[queue][slot] == index)
-     g_4d8ba8[queue][slot] = NONE;
-    if (slot > 0 && g_4d8ba8[queue][slot - 1] == NONE)
+    if (queue[slot] == index)
+     queue[slot] = NONE;
+    if (slot > 0 && queue[slot - 1] == NONE)
     {
-     g_4d8ba8[queue][slot - 1] = g_4d8ba8[queue][slot];
-     g_4d8ba8[queue][slot] = NONE;
+     queue[slot - 1] = queue[slot];
+     queue[slot] = NONE;
     }
-   }
+    slot++;
+   } while (slot < 16);
   }
  }
 }

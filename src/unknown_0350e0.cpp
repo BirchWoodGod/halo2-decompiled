@@ -2194,12 +2194,13 @@ void function_4a7c0(s_cached_input_list *state, s_cached_input const *inputs, lo
     dword volatile used = 0;
     for (long i = 0; i < state->count; ++i)
     {
+        s_cached_input_entry *entry = &state->entries[i];
         for (long j = 0; j < count; ++j)
         {
-            if (state->entries[i].input.data[1] == inputs[j].data[1])
+            if (entry->input.data[1] == inputs[j].data[1])
             {
-                state->entries[i].input = inputs[j];
-                state->entries[i].last_seen = g_4ba034;
+                entry->input = inputs[j];
+                entry->last_seen = g_4ba034;
                 used |= 1 << j;
                 break;
             }
@@ -3105,7 +3106,7 @@ void function_36b50()
     for (long i = 0; i < count; ++i)
     {
         long cluster = indices[(short)i];
-        short fog = *(short *)(clusters + cluster * 0xb0 + 0x76);
+        long fog = *(short *)(clusters + cluster * 0xb0 + 0x76);
         if (fog == NONE || *(long *)(*(byte **)(structure + 0x88) + fog * 0x88 + 0x24) == NONE) continue;
         selected[fog] = true;
         if (cluster == g_547f88.location.cluster_index) distance[fog] = -1.0f;
@@ -3654,7 +3655,7 @@ PRIVATE __forceinline void draw_light_source_pass(long group, long mode, bool ex
 // @retail 0x31170
 void function_31170(long tag, s_view_camera *camera, long resource, s_view_source *source, bool special, real scale)
 {
-    bool enabled = special;
+    bool &enabled = special;
     byte *definition = g_4e3b44[tag & 0xffff].bytes;
     function_40e90(0);
     if (enabled) enabled = (g_4c1a48[2].flags & 0x400) != 0;
@@ -3664,17 +3665,17 @@ void function_31170(long tag, s_view_camera *camera, long resource, s_view_sourc
     if ((!g_510c50 || !((byte *)g_510c50)[5]) && *(short *)(definition + 4) == 0)
         g_485950.i = g_485950.j = g_485950.k = 0.0f;
     s_view_camera *const *camera_home = &camera;
-    dword flags = *(short *)*camera_home == 0 ? 1 : 0;
-    if (g_485950.i > 0.009999999776482582f || g_485950.j > 0.009999999776482582f || g_485950.k > 0.009999999776482582f) flags |= 2;
-    else flags &= ~2;
-    if (enabled && !(flags & 1))
+    g_4ba014 = *(short *)*camera_home == 0 ? 1 : 0;
+    if (g_485950.i > 0.009999999776482582f || g_485950.j > 0.009999999776482582f || g_485950.k > 0.009999999776482582f) g_4ba014 |= 2;
+    else g_4ba014 &= ~2;
+    if (enabled && !(g_4ba014 & 1))
     {
-        flags |= 0x24;
-        if (g_485a40 > 0.0f && *(short *)(definition + 0x14) != 2) flags |= 8;
-        else flags &= ~8;
+        g_4ba014 |= 0x24;
+        if (g_485a40 > 0.0f && *(short *)(definition + 0x14) != 2) g_4ba014 |= 8;
+        else g_4ba014 &= ~8;
     }
-    else flags &= ~0x2c;
-    g_4ba014 = flags & ~0x10;
+    else g_4ba014 &= ~0x2c;
+    g_4ba014 = g_4ba014 & ~0x10;
     if ((bool)((g_4ba014 >> 2) & 1))
     {
         function_48ee0((byte const *)source, (byte const *)camera, definition);

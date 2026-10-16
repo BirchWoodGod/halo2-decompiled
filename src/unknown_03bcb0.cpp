@@ -1116,7 +1116,7 @@ void function_41040(short index, long part_index, long group, byte weight,
     real priority = weight * context->priority * g_4670e4 * 4.0f;
     word kind = *(word const *)part;
     if (kind == 0 || kind == 5 || context->material == NONE) return;
-    long material = material_override == NONE ? context->material : material_override;
+    long material = material_override != NONE ? material_override : context->material;
     byte const *definition = g_4e3b44[material & 0xffff].bytes;
     long pass;
     function_1bf50(*(word const *)(definition + 0x3c), material, priority, &pass);
@@ -1133,7 +1133,8 @@ void function_41040(short index, long part_index, long group, byte weight,
     if ((flags & 0xffff7fff) || force)
     {
         bool first = (entry->unknown00 & 2) != 0;
-        bool second = (entry->unknown00 & 4) != 0 && group != 3;
+        bool second = false;
+        if (entry->unknown00 & 4) second = group != 3;
         if (first && second && group != 0)
             function_40e30(2, material, priority, *(word const *)(definition + 0x3c), kind,
                 and_mask, or_mask, (t_record_fill)function_4cbf0, (dword)function_4d0b0, (void *)handle);
@@ -1170,13 +1171,13 @@ void function_41040(short index, long part_index, long group, byte weight,
 bool __stdcall function_4cbf0(long tag, long context, long pass, long stage,
     long entry_index, long handle, void *record)
 {
+    volatile bool result = false;
     s_sort_record *out = (s_sort_record *)record;
     tag = *(long volatile *)&tag;
     short key = (byte)handle;
     short index = (short)(handle >> 8);
     s_44940_entry *source = &g_4ba138[index];
     byte *object = *(byte **)source->unknown10;
-    volatile bool result = false;
     long mode = function_15d70(tag, stage, pass, source->tag != NONE,
         (bool)((source->unknown00 >> 10) & 1));
     switch (stage)

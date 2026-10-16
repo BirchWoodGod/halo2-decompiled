@@ -664,15 +664,6 @@ struct s_221e32
 	byte field_7c[0x34];
 };
 
-struct s_221e33
-{
-	union
-	{
-		struct { vector3f field_0, field_c; } field_0;
-		real field_18[2];
-	};
-};
-
 struct s_collision_bsp_test_vector_result;
 struct s_slot_entry_list;
 extern s_slot_entry_list *g_4e0340;
@@ -688,36 +679,36 @@ void function_221e30(s_221e30 *arg_0, real const *arg_1, s_local_camera const *a
 	(void)&arg_1; (void)&arg_2;
 	if (*(long const *)arg_2->unknown00 != arg_0->field_40)
 	{
-		s_221e33 local_10;
-		s_structure_bsp_view *volatile local_13 = (s_structure_bsp_view *)g_4e0348;
 		real local_0 = 0.0f;
+		s_structure_bsp_view *volatile local_13 = (s_structure_bsp_view *)g_4e0348;
 		if (!arg_0->field_47)
 		{
 			s_221e31 local_1, local_2;
+			vector3f ray, reverse_ray;
 			byte const *local_5 = g_4ed280 + g_4686c4 * 0x20 + 1;
-			local_10.field_0.field_0.i = arg_0->field_24.x - arg_2->position.x;
-			local_10.field_0.field_0.j = arg_0->field_24.y - arg_2->position.y;
-			local_10.field_0.field_0.k = arg_0->field_24.z - arg_2->position.z;
+			ray.i = arg_0->field_24.x - arg_2->position.x;
+			ray.j = arg_0->field_24.y - arg_2->position.y;
+			ray.k = arg_0->field_24.z - arg_2->position.z;
 			if (function_1de630(1, g_4e0340, (s_collision_bsp_test_vector_result *)&local_1,
-				1.0f, 0x100, local_5, &arg_2->position, &local_10.field_0.field_0))
+				1.0f, 0x100, local_5, &arg_2->position, &ray))
 			{
-				local_10.field_0.field_c.i = 0.0f - local_10.field_0.field_0.i;
-				local_10.field_0.field_c.j = 0.0f - local_10.field_0.field_0.j;
-				local_10.field_0.field_c.k = 0.0f - local_10.field_0.field_0.k;
+				reverse_ray.i = 0.0f - ray.i;
+				reverse_ray.j = 0.0f - ray.j;
+				reverse_ray.k = 0.0f - ray.k;
 				if (function_1de630(1, g_4e0340, (s_collision_bsp_test_vector_result *)&local_2,
-					1.0f, 0x100, local_5, &arg_0->field_24, &local_10.field_0.field_c))
+					1.0f, 0x100, local_5, &arg_0->field_24, &reverse_ray))
 				{
 					local_0 = PIN(1.0f - local_2.field_0 - local_1.field_0, 0.0f, 1.0f);
 					if (local_0 > 0.0f)
 					{
 						arg_0->field_45 = true;
-						arg_0->field_4.x = local_10.field_0.field_0.i * local_1.field_0 + arg_2->position.x;
-						arg_0->field_4.y = local_10.field_0.field_0.j * local_1.field_0 + arg_2->position.y;
-						arg_0->field_4.z = local_10.field_0.field_0.k * local_1.field_0 + arg_2->position.z;
+						arg_0->field_4.x = ray.i * local_1.field_0 + arg_2->position.x;
+						arg_0->field_4.y = ray.j * local_1.field_0 + arg_2->position.y;
+						arg_0->field_4.z = ray.k * local_1.field_0 + arg_2->position.z;
 						arg_0->field_1c = local_1.field_0;
-						arg_0->field_10.x = local_10.field_0.field_c.i * local_2.field_0 + arg_0->field_24.x;
-						arg_0->field_10.y = local_10.field_0.field_c.j * local_2.field_0 + arg_0->field_24.y;
-						arg_0->field_10.z = local_10.field_0.field_c.k * local_2.field_0 + arg_0->field_24.z;
+						arg_0->field_10.x = reverse_ray.i * local_2.field_0 + arg_0->field_24.x;
+						arg_0->field_10.y = reverse_ray.j * local_2.field_0 + arg_0->field_24.y;
+						arg_0->field_10.z = reverse_ray.k * local_2.field_0 + arg_0->field_24.z;
 						arg_0->field_20 = local_2.field_0;
 					}
 				}
@@ -740,13 +731,14 @@ void function_221e30(s_221e30 *arg_0, real const *arg_1, s_local_camera const *a
 			}
 			else
 			{
+				real values[2];
 				function_222150(arg_0->field_3c, &arg_0->field_24, arg_1,
-					&arg_2->position, arg_0->field_3c, local_10.field_18);
+					&arg_2->position, arg_0->field_3c, values);
 				s_221e32 const *local_9 = *(s_221e32 const **)((byte *)g_4e0348 + 0xa0);
 				if (local_9[arg_2->index].field_7a == local_9[arg_0->field_3c].field_7a)
-					local_10.field_18[0] = 0.0f;
-				arg_0->field_34 = local_10.field_18[0];
-				arg_0->field_38 = local_10.field_18[1];
+					values[0] = 0.0f;
+				arg_0->field_34 = values[0];
+				arg_0->field_38 = values[1];
 			}
 		}
 		arg_0->field_30 += local_0;

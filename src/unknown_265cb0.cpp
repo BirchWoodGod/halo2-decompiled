@@ -522,8 +522,9 @@ void function_2662f0(long actor_index)
 			desired = 0;
 		if (actor->unknown358 > 0)
 			recent_minimum = 2;
-		short maximum = clump_minimum > recent_minimum ? clump_minimum : recent_minimum;
-		desired = desired > maximum ? desired : maximum;
+		short maximum = clump_minimum;
+		if (recent_minimum > maximum) maximum = recent_minimum;
+		if (maximum > desired) desired = maximum;
 	}
 	if (desired < 3)
 	{
@@ -585,32 +586,6 @@ update:
 		++*(long *)actor->unknown088;
 	if (actor->unknown086 >= 7)
 		*(bool *)((byte *)actor + 0x8c) = true;
-}
-
-// @retail 0x265cb0
-void function_265cb0(long actor_index)
-{
-	long prop_index = actor_get(actor_index)->first_prop_index;
-
-	for (;;)
-	{
-		s_prop_node_view *node;
-		long current_index;
-		s_prop_view_fields *view;
-
-		if (prop_index == NONE)
-		{
-			break;
-		}
-		node = prop_node_get(prop_index);
-		current_index = prop_index;
-		prop_index = node->next_index;
-		view = prop_node_view(node);
-		if (view)
-		{
-			view->unknown3c = function_265d30(actor_index, current_index);
-		}
-	}
 }
 
 // @retail 0x263d30
@@ -751,6 +726,20 @@ PRIVATE __forceinline s_prop_node_view *actor_next_prop(s_actor_prop_iterator *i
 		iterator->next = node->next_index;
 	}
 	return node;
+}
+
+// @retail 0x265cb0
+void function_265cb0(long actor_index)
+{
+	s_actor_prop_iterator iterator;
+	iterator.next = actor_get(actor_index)->first_prop_index;
+	s_prop_node_view *node;
+	while ((node = actor_next_prop(&iterator)) != NULL)
+	{
+		s_prop_view_fields *view = prop_node_view(node);
+		if (view)
+			view->unknown3c = function_265d30(actor_index, iterator.index);
+	}
 }
 
 // @retail 0x265bb0
