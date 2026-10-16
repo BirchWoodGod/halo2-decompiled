@@ -867,29 +867,20 @@ static inline bool session_is_leader(c_class_58d20 *session)
 	return result;
 }
 
-PRIVATE __forceinline bool function_63f51(const char *arg_0, c_class_58d20 *arg_1, long arg_2, long arg_3)
-{
- return network_session_parameters_set_value4d08(arg_1, arg_0, arg_2, arg_3);
-}
-
-extern "C" void _ReadWriteBarrier(void);
-#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x63f50
 bool network_session_interface_set_value4d08(long value4d08, long value4d0c, const char *string)
 {
 	bool result = false;
 	c_class_58d20 *session = network_session_get_current();
-	if (session && session_is_established(session))
+	if (session && session_state_is_live(session))
 	{
-		_ReadWriteBarrier();
-		result = true;
-		if (session_is_leader(session))
-			result = function_63f51(string, session, value4d08, value4d0c);
+		if (function_058d50(session))
+			result = network_session_parameters_set_value4d08(session, string, value4d08, value4d0c);
+		else
+			result = true;
 	}
-local_0:
 	return result;
 }
-#pragma function(_ReadWriteBarrier)
 
 // @retail 0x63fb0
 bool network_session_interface_set_value49a4(long value)
@@ -907,10 +898,7 @@ bool network_session_interface_set_value4d08_and_stop_countdown(long value4d08, 
 	if (network_session_interface_local_machine_is_host())
 	{
 		c_class_58d20 *session = network_session_get_current();
-		if (network_session_parameters_set_value4d08(session, string, value4d08, value4d0c) && network_session_start_countdown(session, false, 0, 0, 0))
-			result = true;
-		else
-			return false;
+		result = network_session_parameters_set_value4d08(session, string, value4d08, value4d0c) && network_session_start_countdown(session, false, 0, 0, 0);
 	}
 	return result;
 }
