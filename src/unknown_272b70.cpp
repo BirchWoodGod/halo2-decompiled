@@ -314,7 +314,7 @@ long __stdcall function_272ea0(long ai_index)
 					s_ai_object_iterator object_iterator;
 					object_iterator.next_index = perception_get(actor->perception_index)->object_index;
 					object_iterator.index = NONE;
-					while (function_290c80(&object_iterator))
+					while (swarm_creature_iterator_next(&object_iterator))
 						ai_script_object_list_add(list_index, object_iterator.index);
 				}
 			}
@@ -428,7 +428,7 @@ void function_273200(long ai_index, bool flag)
 
 			object_iterator.next_index = perception_get(actor->perception_index)->object_index;
 			object_iterator.index = NONE;
-			while (function_290c80(&object_iterator))
+			while (swarm_creature_iterator_next(&object_iterator))
 				ai_script_object_set_flag10a_14(object_iterator.index, flag);
 		}
 	}
@@ -461,7 +461,7 @@ bool function_2732e0(long ai_index)
 
 			object_iterator.next_index = perception_get(actor->perception_index)->object_index;
 			object_iterator.index = NONE;
-			while (function_290c80(&object_iterator))
+			while (swarm_creature_iterator_next(&object_iterator))
 			{
 				result = function_dc310(object_iterator.index);
 				if (!result)
@@ -1027,14 +1027,14 @@ struct s_actor_274e70
 	short value084;
 };
 
-void function_290040(long field_1c);
+void swarm_reset_orientations(long field_1c);
 void function_1e31b0(long unit_index);
 
 inline void actor_274e70_erase(long actor_index)
 {
 	s_actor_274e70 *actor = (s_actor_274e70 *)actor_datum_get(actor_index);
 	if (actor->flag007 && actor->field_1c != NONE)
-		function_290040(actor->field_1c);
+		swarm_reset_orientations(actor->field_1c);
 	else
 		function_1e31b0(actor->unit_index);
 	actor->flag008 = true;
@@ -1240,7 +1240,7 @@ struct s_object_275b60
 	short team;
 };
 
-void function_290bf0(long field_1c, short team);
+void swarm_set_team(long field_1c, short team);
 void function_1c9a00(void);
 
 /* sets the team of the squads an ai index names and of their actors */
@@ -1266,7 +1266,7 @@ void function_275b60(long ai_index, short team)
 				actor_view->team = team;
 				if (actor_view->flag007)
 				{
-					function_290bf0(actor_view->field_1c, team);
+					swarm_set_team(actor_view->field_1c, team);
 				}
 				else if (actor_view->unit_index != NONE)
 				{
@@ -2960,7 +2960,7 @@ void __stdcall function_273ac0(long ai_index, long target_ai_index)
 
 void function_1e2a90(long arg_0);
 void __stdcall function_b8540(long arg_0);
-void __stdcall function_28e200(long arg_0);
+void __stdcall swarm_delete(long arg_0);
 bool __stdcall function_beb30(long arg_0);
 
 struct s_2736c0
@@ -2997,7 +2997,7 @@ void __stdcall function_2736c0(long arg_0)
 				if (local_3 != NONE)
 					function_b8540(local_3);
 				else if (local_4 != NONE)
-					function_28e200(local_4);
+					swarm_delete(local_4);
 			}
 		}
 		s_squad_datum *local_6;

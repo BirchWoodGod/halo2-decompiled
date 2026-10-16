@@ -42,7 +42,7 @@ void function_149f49(s_message *message, word a, dword *id, short b, long c, lon
 #include "unknown_19d220.h"
 #include <wchar.h>
 long function_216ab0(long index);
-void function_1489b5(long type, s_game_variant *variant);
+void ui_game_variant_build_default(long type, s_game_variant *variant);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 void function_2373be(long index, void *base, long value);
 bool function_19d650(s_game_variant *variant);
@@ -78,7 +78,7 @@ void __stdcall function_149f88(void *screen)
             s_game_variant variant;
             long type = function_216ab0(entry->type);
             long const *type_reference = &type;
-            function_1489b5(*type_reference, &variant);
+            ui_game_variant_build_default(*type_reference, &variant);
             word name[0x100];
             name[0] = 0;
             function_1a0180(list->string_tag, entry->name, name);

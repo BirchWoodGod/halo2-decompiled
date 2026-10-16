@@ -52,7 +52,7 @@ void function_18ef00(s_saved_game_header const *arg_0);
 void function_18f170(s_game_options *arg_0, long arg_1);
 void function_12bf00(void);
 bool main_play_intro_movie(void);
-bool window_manager_has_pause_screen(void);
+bool window_manager_has_listed_dialog(void);
 void function_14bac0(void);
 bool __stdcall function_11c1b0(short arg_0, bool arg_1);
 void function_137da0(void);
@@ -186,7 +186,7 @@ void function_18e810(void)
     bool local_0 = g_4ed39d;
     if (g_4ed39d && !g_4ed39e && g_51ea10 > 0)
         local_0 = false;
-    if (!window_manager_has_pause_screen() && local_0)
+    if (!window_manager_has_listed_dialog() && local_0)
     {
         if (g_4ed39e)
         {

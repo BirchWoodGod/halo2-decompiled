@@ -758,7 +758,7 @@ long c_class_1a2c81::new_widget_id()
 // @retail 0x22e65e
 void c_class_1a2c81::build_animation(s_type_0cfb31 *animation, short index, long type)
 {
-	s_type_954545 *globals = function_148350();
+	s_type_954545 *globals = ui_definition_get();
 
 	if (globals)
 	{
@@ -1430,7 +1430,7 @@ struct s_text_cursor_settings
 };
 
 struct s_type_954545;
-s_type_954545 *function_148350(void);
+s_type_954545 *ui_definition_get(void);
 word *unicode_string_upper(word *string, long maximum_count);
 void function_13eb20(short const *tab_stops, short count);
 void function_13ec70(color4f const *color);
@@ -1463,7 +1463,7 @@ void function_22cd48(c_class_22cc8e *text, short_rectangle2d const *bounds,
 	{
 		word buffer[0x400];
 		{
-		s_text_cursor_settings *settings = (s_text_cursor_settings *)function_148350();
+		s_text_cursor_settings *settings = (s_text_cursor_settings *)ui_definition_get();
 		word cursor_character = settings ? settings->character : 0xdb;
 		unicode_string_copy(buffer, string, 0x400);
 		short const cursor_position = text->cursor;

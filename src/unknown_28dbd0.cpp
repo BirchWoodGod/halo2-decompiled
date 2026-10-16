@@ -35,9 +35,9 @@ long __stdcall function_b7b40(void *arg_0);
 void __stdcall function_b8540(long arg_0);
 void function_141ce0(real arg_0, real arg_1, real arg_2, transform4x3f *arg_3);
 long function_1e06b0(long arg_0);
-void function_28da50(s_object_ai_data *arg_0);
+void swarm_creature_initialize(s_object_ai_data *arg_0);
 bool function_28e320(long arg_0, long arg_1);
-void function_28f890(long arg_0, s_object_ai_data *arg_1);
+void swarm_creature_reset_position(long arg_0, s_object_ai_data *arg_1);
 
 __forceinline real function_28dbd1()
 {
@@ -142,10 +142,10 @@ long function_28dbd0(long arg_0, long arg_1, long arg_2, s_28dab2 const *arg_3, 
 		s_object_ai_data *local_3 = function_28dbd5(local_2);
 		if (local_3)
 		{
-			function_28da50(local_3);
+			swarm_creature_initialize(local_3);
 			if (function_28e320(arg_0, local_1))
 			{
-				function_28f890(local_1, local_3);
+				swarm_creature_reset_position(local_1, local_3);
 				goto local_6;
 			}
 		}

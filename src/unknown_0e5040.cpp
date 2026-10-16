@@ -46,14 +46,16 @@ void __stdcall function_e4d90(long arg_159e6d, long type, real scale, long marke
    0 and 1), 9 and 10 other footsteps at marker 2. A slow biped (moving at
    most 1.5 a second, or mostly blended out of its animation) plays kind 0.
 
-   Near: retail reads g_4e0300's data pointer and the biped again after the
-   animation state test (0xe5063) where this build reuses them. Reading the
-   first one through a volatile pool pointer reproduces everything but the
-   operand order of those two loads; no plain form found yet. */
+   local_header is never read. With it the build reads g_4e0300's data
+   pointer and the biped again after the animation state test (0xe5063), as
+   retail does; without it the second lookup reuses the first. */
 // @retail 0xe5040
 void __stdcall function_e5040(long arg_159e6d_4, s_animation_frame_event const *event)
 {
-	if (FOOTSTEP_BIPED_GET(arg_159e6d_4)->animation_state_offset != NONE)
+	s_footstep_biped *local_biped = FOOTSTEP_BIPED_GET(arg_159e6d_4);
+	s_footstep_biped_header *local_header = &((s_footstep_biped_header *)g_4e0300->data)[arg_159e6d_4 & 0xffff];
+
+	if (local_biped->animation_state_offset != NONE)
 	{
 		s_footstep_biped *biped = FOOTSTEP_BIPED_GET(arg_159e6d_4);
 		vector3f const *velocity = &biped->linear_velocity;

@@ -121,24 +121,52 @@ void function_118e80(long object_index, vector3f *forward);
 real function_30bf0(vector3f *vector);
 bool __stdcall function_cd7b0(long unit_index, long weapon_index, bool *modes);
 
+/* an object, with its header's address formed as well although nothing
+   reads it: that keeps a later lookup of the same object from reusing this
+   one, as in retail (see function_e5470) */
+PRIVATE inline s_e5300_object *e5470_object_get(long object_index)
+{
+	s_e5300_object *object = E5300_OBJECT_GET(object_index);
+	s_e5300_object_header *local_header = E5300_OBJECT_HEADER_GET(object_index);
+
+	return object;
+}
+
+/* the weapon a unit holds (unit_get_current_weapon through
+   e5470_object_get) */
+PRIVATE inline long e5470_unit_current_weapon(long unit_index)
+{
+	s_unit_weapon_view *unit = (s_unit_weapon_view *)e5470_object_get(unit_index);
+	short weapon = unit->current_weapon_index;
+	long result = NONE;
+
+	if (weapon != NONE)
+	{
+		result = unit->weapon_indices[weapon];
+	}
+	return result;
+}
+
 /* whether a player's unit and an AI unit next to it could swap the weapons
    they hold: both hold one, they stand less than 1.0 apart, the player's
    unit aims at the other and the other faces it, and each accepts the
    other's weapon (inferred).
 
-   Near: as in 0xe5040, retail reads g_4e0300's data pointer again for each
-   object it reads (0xe54bc, 0xe54e2) where this build reuses it, and reads
-   the player's unit again before 0xe5526. */
+   Near: the object lookups go through e5470_object_get, which reads
+   g_4e0300's data pointer again for each object (0xe54bc, 0xe54e2) as
+   retail does. Retail also reads the player's unit again for each use
+   (0xe551f, 0xe5595, 0xe5638), which only a volatile player pointer
+   reproduces here (11 instructions left with it); not kept. */
 // @retail 0xe5470
 bool __stdcall function_e5470(long player_index, long unit_index)
 {
 	bool result = false;
 
-	if (E5300_OBJECT_GET(unit_index)->actor_index != NONE)
+	if (e5470_object_get(unit_index)->actor_index != NONE)
 	{
 		s_e5470_player *player = (s_e5470_player *)g_4e8c24->data + (player_index & 0xffff);
-		long unit_weapon_index = unit_get_current_weapon(unit_index);
-		long player_weapon_index = unit_get_current_weapon(player->unit_index);
+		long unit_weapon_index = e5470_unit_current_weapon(unit_index);
+		long player_weapon_index = e5470_unit_current_weapon(player->unit_index);
 
 		if (unit_weapon_index != NONE && player_weapon_index != NONE)
 		{

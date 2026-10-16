@@ -202,7 +202,7 @@ void function_22facd(c_class_1473c9 *screen, short set_index)
 
 	if (set_index >= 0 && set_index < 0x20)
 	{
-		s_type_954545 *globals = function_148350();
+		s_type_954545 *globals = ui_definition_get();
 
 		if (globals && set_index < globals->widget_set_count)
 		{
@@ -307,7 +307,7 @@ configure_list:
 // @retail 0x22fda6
 void __stdcall function_22fda6(c_class_1473c9 *screen)
 {
-	s_type_954545 *globals = function_148350();
+	s_type_954545 *globals = ui_definition_get();
 	s_screen_definition *definition = function_22f871(screen);
 	word name[0x100];
 	short pane_value;
@@ -371,7 +371,7 @@ void __stdcall function_22fda6(c_class_1473c9 *screen)
 // @retail 0x22ff53
 void __stdcall function_22ff53(c_class_1473c9 *screen)
 {
-	s_type_954545 *globals = function_148350();
+	s_type_954545 *globals = ui_definition_get();
 	s_screen_definition *definition = function_22f871(screen);
 	short pane_value = screen->get_first_pane_value();
 	word name[0x100];

@@ -8,10 +8,10 @@
    The families, in retail order, one source file per region:
      0xac490-0xacb10  discovery and connection    src/unknown_0ac490.cpp
      0xacc20-0xadab0  session protocol            src/unknown_0acc20.cpp
-     0xadef0-0xaf680  session membership          src/unknown_0adef0.cpp
+     0xadef0-0xaf680  session membership          src/network_messages_membership.cpp
      0xaf890-0xb23d0  session parameters          src/unknown_0af890.cpp
      0xb2440-0xb2de0  view establishment, synchronous, results and test
-                                                  src/unknown_0b2440.cpp */
+                                                  src/simulation_message_codecs.cpp */
 
 #ifndef NETWORK_MESSAGE_TYPES_H
 #define NETWORK_MESSAGE_TYPES_H

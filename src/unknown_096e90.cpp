@@ -113,7 +113,7 @@ long c_vtable_450d1c::v1(long a1, long max_count, void *entries)
 	return count;
 }
 
-void function_b5650(long identifier, s_bitstream *stream);
+void simulation_write_entity_identifier(long identifier, s_bitstream *stream);
 void function_194710(s_bitstream *stream, bool discard);
 
 static __forceinline void sender_write_type(s_bitstream *stream, dword type)
@@ -192,7 +192,7 @@ void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bits
 					long item = *items;
 					stream_write_bit(stream, item != NONE);
 					if (item != NONE)
-						function_b5650(item, stream);
+						simulation_write_entity_identifier(item, stream);
 					items++;
 					local_8 = *(long volatile *)&remaining - 1;
 					*(long volatile *)&remaining = local_8;

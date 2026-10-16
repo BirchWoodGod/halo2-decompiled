@@ -59,7 +59,7 @@ void function_b7360(long object_index);
 void function_b58c0(long index, dword mask);
 void function_d0e00(long unit_index, real rate);
 void __stdcall function_1e1a00(long index, long value);
-void function_28e2b0(long field_1c, bool flag);
+void swarm_creatures_set_object_flag(long field_1c, bool flag);
 void function_203360(long squad_index);
 
 // @retail 0x1e1de0
@@ -89,7 +89,7 @@ void function_1e2a00(long actor_index, bool flag, bool keep)
 	if (actor->flag007)
 	{
 		if (actor->field_1c != NONE)
-			function_28e2b0(actor->field_1c, flag);
+			swarm_creatures_set_object_flag(actor->field_1c, flag);
 	}
 	else
 	{

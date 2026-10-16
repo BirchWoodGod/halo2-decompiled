@@ -321,7 +321,7 @@ void c_widget::v12(long a)
 	{
 		return;
 	}
-	s_sprite_placement *placement = function_14837a(function_24c0b3(this));
+	s_sprite_placement *placement = ui_definition_get_skin(function_24c0b3(this));
 	if (!placement)
 	{
 		return;
