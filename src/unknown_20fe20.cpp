@@ -288,6 +288,11 @@ struct s_audio_weighted_entry
 	real weight;
 };
 
+static inline void accumulate_20f0a0(real *sum, real value)
+{
+	*sum += value;
+}
+
 // @retail 0x20f0a0
 short function_20f0a0(s_audio_weighted_entry *entries, short count)
 {
@@ -308,7 +313,7 @@ short function_20f0a0(s_audio_weighted_entry *entries, short count)
 		for (short j = 0; j < count; j++)
 		{
 			if (entries[j].weight >= maximum * 0.8f)
-				total += entries[j].weight;
+				accumulate_20f0a0(&total, entries[j].weight);
 			else
 				entries[j].weight = 0.0f;
 		}
@@ -319,9 +324,7 @@ short function_20f0a0(s_audio_weighted_entry *entries, short count)
 		{
 			if (entries[k].weight > 0.0f)
 			{
-				real weight = entries[k].weight;
-				weight += cumulative;
-				cumulative = weight;
+				cumulative += entries[k].weight;
 				if (cumulative >= choice)
 				{
 					result = k;
@@ -2086,13 +2089,13 @@ long function_20e460(long ai_index, s_audio_priority_table *table, byte const *r
     return chosen;
 }
 
-static inline byte *clump_actor_next_20eeb0(long *index)
+static inline bool clump_actor_step_20eeb0(long *index, byte **actor)
 {
     if (*index == NONE)
-        return NULL;
-    byte *actor = g_4f55f0->data + (*index & 0xffff) * 0x888;
-    *index = *(long *)(actor + 0x80);
-    return actor;
+        return false;
+    *actor = g_4f55f0->data + (*index & 0xffff) * 0x888;
+    *index = *(long *)(*actor + 0x80);
+    return true;
 }
 
 // @retail 0x20eeb0
@@ -2118,7 +2121,7 @@ long function_20eeb0(s_audio_priority_table *table, byte const *request, long ta
             if (clump_index != NONE)
             {
                 long index = *(long *)(g_502420->data + (clump_index & 0xffff) * 0x50 + 0x18);
-                while ((actor = clump_actor_next_20eeb0(&index)) != NULL)
+                while (clump_actor_step_20eeb0(&index, &actor))
                 {
                     long unit_index = *(long *)(actor + 0x18);
                     if (unit_index != NONE)
