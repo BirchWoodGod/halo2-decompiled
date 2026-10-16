@@ -126,9 +126,13 @@ void __stdcall function_46230(short target, real const *bounds)
     D3DDevice_SetVertexData4f(0, 0.53125f, 0.53125f, 16777215.0f, 16777215.0f);
     D3DDevice_SetVertexData2s(3, 1, 0);
     D3DDevice_SetVertexData4f(0, 64.53125f, 0.53125f, 16777215.0f, 16777215.0f);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData2s(3, 1, 1);
+#pragma inline_depth()
     D3DDevice_SetVertexData4f(0, 64.53125f, 64.53125f, 16777215.0f, 16777215.0f);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData2s(3, 0, 1);
+#pragma inline_depth()
     D3DDevice_SetVertexData4f(0, 0.53125f, 64.53125f, 16777215.0f, 16777215.0f);
     D3DDevice_End();
     function_14bc0((short)g_4858b8, 0, true);
@@ -2430,21 +2434,24 @@ void function_4d830(s_render_transform_record const *record)
 		constants[9] = matrix[6];
 		constants[10] = matrix[9];
 		constants[11] = matrix[12];
-		D3DDevice_SetVertexShaderConstant(-46, constants, 3);
+		D3DDevice_SetVertexShaderConstantFast(-46, constants, 3);
 		g_5093d8 = 0;
 	}
 	else if (record->handle != NONE)
 	{
 		byte *data = (byte *)table_entry_data(record->handle);
+		long entry_count = *(word *)data;
 		long size = 0;
-		if (*(word *)data > 0)
-			size = *(word *)data * 48 + 0x44;
+		if (entry_count > 0)
+			size = entry_count * 48 + 0x44;
 		for (long i = size / 32; i > 0; --i, data += 32)
 			_mm_prefetch((char const *)data, _MM_HINT_T0);
 		dword flags = record->flags;
 		if ((flags & 0xe0000000) == 0x20000000)
 		{
+#pragma inline_depth(0)
 			long index = function_4cb80((flags >> 9) & 0x1ff, record->tag);
+#pragma inline_depth()
 			if (index != NONE)
 			{
 				s_shader_transform_table *table = (s_shader_transform_table *)table_entry_data(record->handle);
@@ -2455,7 +2462,7 @@ void function_4d830(s_render_transform_record const *record)
 					constants = table->transforms[index];
 				if (constants)
 				{
-					D3DDevice_SetVertexShaderConstant(-46, constants, 3);
+					D3DDevice_SetVertexShaderConstantFast(-46, constants, 3);
 					g_5093d8 = 0;
 					return;
 				}
@@ -3434,16 +3441,16 @@ short __stdcall function_467c0(short first, short second, short count)
             for (short stage = 0; stage < 4; ++stage)
             {
                 function_14f60(stage, source);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, 4);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, 4);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, 2);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, 2);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MIPFILTER, 1);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_ADDRESSU, 4);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_ADDRESSV, 4);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MAGFILTER, 2);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MINFILTER, 2);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MIPFILTER, 1);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
             }
             function_14bc0(target, 0, false);
             program.PSConstant0[0] = (i > 0 ? 0x7fu : 0xffu) << 24;
