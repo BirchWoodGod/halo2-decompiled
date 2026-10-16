@@ -135,14 +135,13 @@ void function_1515e0(long object_index, long player_index, s_target_candidate *b
 {
 	long const *player_reference = &player_index;
 	s_target_candidate *const *best_reference = &best;
+	s_tail_player *player = tail_player_get(*player_reference);
 	s_1515e0_object *object = (s_1515e0_object *)tail_object_get(object_index);
-	byte *player = (byte *)tail_player_get(*player_reference);
-	long unit_index = *(long *)(player + 0x2c);
-	byte type = ((s_tail_object_header *)g_4e0300->data)[unit_index & 0xffff].type;
+	byte type = ((s_tail_object_header *)g_4e0300->data)[player->unit_index & 0xffff].type;
 	if (((1 << type) & 1) && !TEST_FIELD_BIT(object->unknown10a_2))
 	{
-		if (function_1df560(object->team, (short)*(char *)(player + 0xc0)))
-			*(long *)((byte *)*best_reference + 8) = function_e5bc0(unit_index, object_index, *(long *)((byte *)*best_reference + 8));
+		if (function_1df560((short)*((char *)player + 0xc0), object->team))
+			*(long *)((byte *)*best_reference + 8) = function_e5bc0(player->unit_index, object_index, *(long *)((byte *)*best_reference + 8));
 		else if (function_e5470(*player_reference, object_index))
 		{
 			s_target_candidate candidate;
@@ -165,6 +164,20 @@ void function_a89c0(long unit_index, long definition_index);
 void function_f8110(long object_index);
 void __stdcall function_b8540(long object_index);
 
+/* game ticks in the given number of seconds, rounded */
+static inline long game_seconds_to_ticks_round(real seconds)
+{
+	real ticks = g_510c54->field_2_3 * seconds;
+	long result;
+
+	__asm
+	{
+		fld ticks
+		fistp result
+	}
+	return result;
+}
+
 // @retail 0x151ea0
 void function_151ea0(long player_index, long object_index)
 {
@@ -174,32 +187,31 @@ void function_151ea0(long player_index, long object_index)
 	s_tail_object_header *header = (s_tail_object_header *)g_4e0300->data + (*object_reference & 0xffff);
 	byte *object = (byte *)header->object;
 	byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
-	real duration = *(real *)(definition + 0x130) * g_510c54->field_2_3;
-	long ticks;
-	bool unavailable = (header->flags & 0x10) != 0;
-	__asm
-	{
-		fld duration
-		fistp ticks
-	}
+	long ticks = game_seconds_to_ticks_round(*(real *)(definition + 0x130));
+	bool unavailable = false;
+	if (header->flags & 0x10)
+		unavailable = true;
 	if ((short)ticks > 0 && !unavailable)
 	{
 		short kind = *(short *)(definition + 0x12c);
-		if (kind == 2)
+		if (kind != 1)
 		{
-			if (!function_d6af0(player->unit_index)) return;
-			player_speed_request_14ea20(*player_reference);
-		}
-		else if (kind == 5)
-		{
-			if (!function_d6790(player->unit_index)) return;
-			player_speed_request_14ec00(*player_reference);
-		}
-		else if (kind != 1)
-		{
-			short effect = kind == 3 ? 0 : 1;
-			if (!function_152000(*player_reference, effect, (short)ticks)) return;
-			if (effect == 0) player_speed_request_14eb10(*player_reference);
+			if (kind == 2)
+			{
+				if (!function_d6af0(player->unit_index)) return;
+				player_speed_request_14ea20(*player_reference);
+			}
+			else if (kind == 5)
+			{
+				if (!function_d6790(player->unit_index)) return;
+				player_speed_request_14ec00(*player_reference);
+			}
+			else
+			{
+				short effect = kind == 3 ? 0 : 1;
+				if (!function_152000(*player_reference, effect, (short)ticks)) return;
+				if (effect == 0) player_speed_request_14eb10(*player_reference);
+			}
 		}
 		long definition_index = *(long *)tail_object_get(*object_reference);
 		function_191fab(definition_index, player->local_index);
@@ -948,11 +960,13 @@ void function_152660(s_tail_transfer_options *options)
 				else
 				{
 					s_tail_transfer_unit *first = (s_tail_transfer_unit *)tail_object_get(unit_index);
-					if (first->primary_slot != NONE)
-						primary = first->weapons[first->primary_slot];
+					short primary_slot = first->primary_slot;
+					if (primary_slot != NONE)
+						primary = first->weapons[primary_slot];
 					s_tail_transfer_unit *second = (s_tail_transfer_unit *)tail_object_get(unit_index);
-					if (second->secondary_slot != NONE)
-						secondary = second->weapons[second->secondary_slot];
+					short secondary_slot = second->secondary_slot;
+					if (secondary_slot != NONE)
+						secondary = second->weapons[secondary_slot];
 					other = function_cbe60(unit_index);
 				}
 				if (primary != NONE)
@@ -1208,7 +1222,9 @@ bool function_151940(long player_index, s_target_candidate *candidate, bool prim
 				else if (modes[3]) mode = 6;
 				else goto done;
 			}
+#pragma inline_depth(0)
 			if (function_138880())
+#pragma inline_depth()
 			{
 				function_a8f10(player->unit_index, weapon_index, mode);
 				result = true;
@@ -1584,14 +1600,14 @@ void function_150400(long player_index, vector3f const *forward, vector3f const 
         vector3f const *axis_forward = &axes.forward;
         vector3f const *axis_left = &axes.left;
         real move_i = movement->i;
-        real move_j = movement->j;
-        real scaled_i = axis_forward->i * move_i;
-        real scaled_j = axis_forward->j * move_i;
-        real scaled_k = axis_forward->k * move_i;
         vector3f world;
-        world.i = axis_left->i * move_j + scaled_i;
-        world.j = axis_left->j * move_j + scaled_j;
-        world.k = axis_left->k * move_j + scaled_k;
+        world.i = axis_forward->i * move_i;
+        world.j = axis_forward->j * move_i;
+        world.k = axis_forward->k * move_i;
+        real move_j = movement->j;
+        world.i += axis_left->i * move_j;
+        world.j += axis_left->j * move_j;
+        world.k += axis_left->k * move_j;
         function_e64e0(&world, *local_41f0cc_2, (vector3f const *)(unit + 0x70), false, &facing, NULL);
         function_1502e0(&facing, (vector3f const *)(unit + 0x70), &axes);
         xy.i = axes.forward.j * world.j + axes.forward.k * world.k + axes.forward.i * world.i;
@@ -1669,10 +1685,12 @@ void function_1505f0(long player_index, long unit_index, byte const *input)
     *(vector3f *)(control + 0x28) = projected_facing;
     *(vector3f *)(control + 0x34) = facing;
     *(vector3f *)(control + 0x40) = facing;
-    memcpy(control + 6, input + 0x1e, 8);
-    memcpy(control + 0x58, input + 0x34, 0x24);
+    *(dword *)(control + 6) = *(dword const *)(input + 0x1e);
+    *(word *)(control + 0xa) = *(word const *)(input + 0x22);
+    *(word *)(control + 0xc) = *(word const *)(input + 0x24);
     *(dword *)control = 0x06000086;
     *(word *)(control + 4) = 0;
+    memcpy(control + 0x58, input + 0x34, 0x24);
     dword *flags = (dword *)((byte *)tail_object_get(unit_index) + 0x134);
     if (input[0x58]) *flags |= 0x40000000;
     else *flags &= ~0x40000000;
@@ -1789,13 +1807,13 @@ void __stdcall function_150e30(long player_index, long object_index)
     {
         byte *definition = g_4e3b44[*(long *)pickup & 0xffff].bytes;
         short kind = *(short *)(definition + 0x12c);
-        if (kind != 6)
+        if (kind == 6)
         {
-            if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
-                function_151ea0(player_index, object_index);
+            if (function_ccba0(player->unit_index, object_index))
+                function_191e51(*(long *)pickup, player->local_index);
         }
-        else if (function_ccba0(player->unit_index, object_index))
-            function_191e51(*(long *)pickup, player->local_index);
+        else if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
+            function_151ea0(player_index, object_index);
     }
     byte type = ((s_tail_object_header *)g_4e0300->data)[object_index & 0xffff].type;
     if ((1 << type) & 4)
