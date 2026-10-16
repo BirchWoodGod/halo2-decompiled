@@ -22,8 +22,8 @@ struct s_1a8c30
 // @retail 0x1a8c30
 short __stdcall function_1a8c30(long arg_0, s_slot *arg_1)
 {
-    s_actor_view *local_0 = (s_actor_view *)(g_4f55f0->data + (arg_0 & 0xffff) * sizeof(s_actor_view));
     volatile short local_1 = g_46fbe4;
+    s_actor_view *local_0 = (s_actor_view *)(g_4f55f0->data + (arg_0 & 0xffff) * sizeof(s_actor_view));
     if (local_0->unknown358 == 0 ||
         ((s_prop_node_view *)g_502418->data)[local_0->unknown368 & 0xffff].unknown24 < 1 || local_0->unknown35e)
         return (short)local_1;
