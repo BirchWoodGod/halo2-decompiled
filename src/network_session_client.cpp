@@ -968,14 +968,16 @@ void function_6fa60(c_session_state_joining *self)
    {
     long local = current->current_member;
     state->entry_count = 0;
-    for (long i = 0; i < 16; i++)
+    long i = 0;
+    do
     {
      if ((current->player_mask & (1 << i)) && current->players[i].member_index == local)
      {
       memcpy(state->entries + state->entry_count * 12, &current->players[i], 12);
       state->entry_count++;
      }
-    }
+     i++;
+    } while (i < 16);
     state->unknown68 = true;
     function_6fe90(self, false, false);
    }
