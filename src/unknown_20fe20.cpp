@@ -869,12 +869,17 @@ void function_210e80(void)
 		object->value1dc = 0;
 	}
 }
-struct s_object_mapping_entry
+struct s_object_mapping_key
 {
 	long identifier;
 	short index;
 	byte type;
 	byte source;
+};
+
+struct s_object_mapping_entry
+{
+	s_object_mapping_key key;
 	short value1da;
 	short value1dc;
 };
@@ -894,10 +899,7 @@ struct s_object_mapping_root
 struct s_mapped_object_view
 {
 	byte unknown000[0xa4];
-	long identifier;
-	short index;
-	byte type;
-	byte source;
+	s_object_mapping_key key;
 	byte unknown0ac[0x1da - 0xac];
 	short value1da;
 	short value1dc;
@@ -920,14 +922,15 @@ void function_210f00(void)
 		while ((state.object = function_baeb0(&state.iterator)) != NULL)
 		{
 			s_mapped_object_view *object = (s_mapped_object_view *)OBJECT_FROM_INDEX(state.iterator.object_index);
+			s_object_mapping_key const *key = &object->key;
 			bool matches = true;
-			matches &= entry->type == object->type;
-			matches &= entry->source == object->source;
-			matches &= object->identifier == entry->identifier;
+			matches &= entry->key.type == key->type;
+			matches &= entry->key.source == key->source;
+			matches &= entry->key.identifier == key->identifier;
 			if (matches)
 			{
-				if (entry->source == 0)
-					matches &= entry->index == object->index;
+				if (entry->key.source == 0)
+					matches &= entry->key.index == key->index;
 				if (matches)
 				{
 					object->value1da = entry->value1da;
@@ -1575,6 +1578,11 @@ static __forceinline byte *datum_iterator_next_20e190(s_data_datum_iterator *ite
     return result;
 }
 
+static inline real clamp_20e190(real value, real lower, real upper)
+{
+    return value < lower ? lower : value > upper ? upper : value;
+}
+
 // @retail 0x20e190
 real function_20e190(long object_index)
 {
@@ -1624,9 +1632,7 @@ real function_20e190(long object_index)
                         real dot = forward.k * direction.k + forward.j * direction.j + forward.i * direction.i;
                         if (dot < 0.0f)
                         {
-                            real fraction = dot + 1.0f;
-                            fraction = fraction < 0.0f ? 0.0f : fraction > 1.0f ? 1.0f : fraction;
-                            weight = (fraction + 1.0f) * weight * 0.5f;
+                            weight = (clamp_20e190(dot + 1.0f, 0.0f, 1.0f) + 1.0f) * weight * 0.5f;
                         }
                         long reference_index = function_25d810(unit_index, *(long *)(object + 0x12c), false);
                         if (reference_index != NONE && (signed char)g_502418->data[(reference_index & 0xffff) * 0x3c + 0x27] < 1)
@@ -2080,14 +2086,23 @@ long function_20e460(long ai_index, s_audio_priority_table *table, byte const *r
     return chosen;
 }
 
+static inline byte *clump_actor_next_20eeb0(long *index)
+{
+    if (*index == NONE)
+        return NULL;
+    byte *actor = g_4f55f0->data + (*index & 0xffff) * 0x888;
+    *index = *(long *)(actor + 0x80);
+    return actor;
+}
+
 // @retail 0x20eeb0
 long function_20eeb0(s_audio_priority_table *table, byte const *request, long target_index,
     long source_index, long previous_index, long *tag_index, short *type, real *weight, real *distance_weight)
 {
     (void)&table; (void)&request; (void)&target_index; (void)&source_index; (void)&previous_index;
     (void)&tag_index; (void)&type; (void)&weight; (void)&distance_weight;
-    real best = 0.0f;
     long chosen = NONE;
+    real best = 0.0f;
     real chosen_weight = 0.0f;
     real chosen_distance = 0.0f;
     short chosen_type = NONE;
@@ -2103,11 +2118,9 @@ long function_20eeb0(s_audio_priority_table *table, byte const *request, long ta
             if (clump_index != NONE)
             {
                 long index = *(long *)(g_502420->data + (clump_index & 0xffff) * 0x50 + 0x18);
-                while (index != NONE)
+                while ((actor = clump_actor_next_20eeb0(&index)) != NULL)
                 {
-                    actor = g_4f55f0->data + (index & 0xffff) * 0x888;
                     long unit_index = *(long *)(actor + 0x18);
-                    index = *(long *)(actor + 0x80);
                     if (unit_index != NONE)
                     {
                         real candidate_weight;
@@ -2474,6 +2487,17 @@ struct s_audio_selection
     real weight;
 };
 
+static inline real distance_squared3d_20c440(point3f const *a, point3f const *b)
+{
+	real dz = a->z - b->z;
+	real dx = a->x - b->x;
+	real dy = a->y - b->y;
+	real sum = dz * dz;
+	sum += dy * dy;
+	sum += dx * dx;
+	return sum;
+}
+
 // @retail 0x20c440
 void function_20c440(byte const *request, s_audio_priority_table *table, long target_index,
     long source_index, long previous_index, long ai_index, short category, short first_state,
@@ -2557,10 +2581,10 @@ void function_20c440(byte const *request, s_audio_priority_table *table, long ta
             function_b9dd0(target_index, &target_position);
             function_b9dd0((*source_reference), &source_position);
             short distance_test = *(short const *)(request + 0x2c);
+            real squared = distance_squared3d_20c440(&source_position, &target_position);
             real x = source_position.x - target_position.x;
             real y = source_position.y - target_position.y;
             real z = source_position.z - target_position.z;
-            real squared = (z * z + y * y) + x * x;
             switch (distance_test)
             {
             case 1: eligible = squared <= 1.0f; break;
