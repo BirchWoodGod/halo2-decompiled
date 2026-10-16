@@ -615,8 +615,9 @@ void function_020f30(real b, real a)
         g_484f68.PSAlphaOutputs[2] = full;
     }
 
+    dword outputs = full;
     g_484f68.PSAlphaInputs[0] = 0x18201920;
-    g_484f68.PSAlphaOutputs[0] = full;
+    g_484f68.PSAlphaOutputs[0] = outputs;
     g_484f68.PSAlphaInputs[1] = 0x1a201b20;
     g_484f68.PSAlphaOutputs[1] = 0x30d00;
     g_484f68.PSFinalCombinerInputsEFG = 0x1c00;
@@ -636,7 +637,7 @@ void function_020f30(real b, real a)
         g_484f68.PSRGBInputs[0] = 0x8200940;
         g_484f68.PSRGBOutputs[0] = 0x20c00;
         g_484f68.PSRGBInputs[1] = 0xcc012020;
-        g_484f68.PSRGBOutputs[1] = full;
+        g_484f68.PSRGBOutputs[1] = outputs;
         g_484f68.PSRGBInputs[2] = 0xc082c09;
         g_484f68.PSRGBOutputs[2] = half;
         g_484f68.PSRGBInputs[3] = 0xa200b40;
@@ -655,11 +656,11 @@ void function_020f30(real b, real a)
     else
     {
         g_484f68.PSRGBInputs[0] = 0x8200920;
-        g_484f68.PSRGBOutputs[0] = full;
+        g_484f68.PSRGBOutputs[0] = outputs;
         g_484f68.PSRGBInputs[1] = 0xa200b20;
         g_484f68.PSRGBOutputs[1] = 0x30d00;
         g_484f68.PSRGBInputs[2] = 0xc200d20;
-        g_484f68.PSRGBOutputs[2] = full;
+        g_484f68.PSRGBOutputs[2] = outputs;
         g_484f68.PSFinalCombinerInputsABCD = 0xc;
     }
 
