@@ -90,7 +90,7 @@ bool network_connection_get_address(s_network_connection *connection, s_type_99a
 }
 
 // @retail 0x75a90
-void network_observer_set_owner_key(s_network_observer *observer, long owner, const s_network_session_id *id, const byte *key, long key_index, long local)
+void network_observer_set_owner_key(s_network_observer *observer, long owner, long key_index, const byte *key, const s_network_session_id *id, long local)
 {
 	if (key_index != NONE)
 	{
