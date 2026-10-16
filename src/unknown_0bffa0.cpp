@@ -1405,10 +1405,11 @@ void __stdcall function_c0c80(long light_index)
         pair_first.alpha = 1.0f;
         *(color3f *)&pair_second.red = *(color3f *)(definition + 0x4c);
         pair_second.alpha = 1.0f;
-        function_bab40(object_index, light->name, &light->fraction);
+        real *fraction = &light->fraction;
+        function_bab40(object_index, light->name, fraction);
         function_bad50(object_index, light->colour_index, (point3f *)&tint);
         function_131d60(&first, &second, *(dword *)(definition + 0x34),
-            light->fraction, &tint, &light->colour);
+            *fraction, &tint, &light->colour);
         function_131d60(&pair_first, &pair_second, *(dword *)(definition + 0x34),
             light->fraction, &tint, &light->pair_colour);
         real blend = light->fraction;
@@ -1458,7 +1459,8 @@ void __stdcall function_c0c80(long light_index)
     real red = clamp_light(light->colour.red, 0.0f, 1.0f);
     real green = clamp_light(light->colour.green, 0.0f, 1.0f);
     light->colour.red = red;
-    real blue = clamp_light(light->colour.blue, 0.0f, 1.0f);
+    real blue = light->colour.blue;
+    blue = clamp_light(blue, 0.0f, 1.0f);
     light->colour.green = green;
     real pair_red = clamp_light(light->pair_colour.red, 0.0f, 1.0f);
     light->colour.blue = blue;
