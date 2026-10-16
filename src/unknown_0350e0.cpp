@@ -2299,11 +2299,11 @@ long __stdcall function_4ac30(s_cached_input_list *state, s_cached_input *output
 {
 	if (state->count > 0 && (!g_510c50 || !((byte *)g_510c50)[5]))
 	{
+		long first = 0;
+		long last = state->count - 1;
 		long requested = limit;
 		if (limit > state->count) limit = state->count;
 		bool found = false;
-		long first = 0;
-		long last = state->count - 1;
 		long i;
 		for (i = 0; i <= last; ++i)
 		{
@@ -2366,16 +2366,19 @@ long __stdcall function_4ac30(s_cached_input_list *state, s_cached_input *output
 				else entry->elapsed = 0.0f;
 			}
 		}
-		for (i = 0; i < limit; ++i)
+		if (limit > 0)
 		{
-			s_cached_input_entry *entry = &state->entries[i];
-			if (*(real *)&entry->input.data[3] > *(real *)&entry->initial)
+			s_cached_input_entry *end = state->entries + limit;
+			for (s_cached_input_entry *entry = state->entries; entry != end; ++entry)
 			{
-				entry->elapsed += step;
-				*(real *)&entry->initial += entry->elapsed;
-				clamp_cached_input(entry);
+				if (*(real *)&entry->input.data[3] > *(real *)&entry->initial)
+				{
+					entry->elapsed += step;
+					*(real *)&entry->initial += entry->elapsed;
+					clamp_cached_input(entry);
+				}
+				else entry->elapsed = 0.0f;
 			}
-			else entry->elapsed = 0.0f;
 		}
 	}
 	for (long i = 0; i < state->count; ++i)
@@ -3139,7 +3142,10 @@ void function_36b50()
         real step = g_509418;
         bool updated = true;
         for (long j = 0; j < *(long *)(definition + 8); ++j)
-            updated = updated && function_37260(*(byte **)(definition + 0xc) + j * 0x3a8, step, definition);
+        {
+            byte *state = *(byte **)(definition + 0xc) + j * 0x3a8;
+            updated = updated && function_37260(state, step, definition);
+        }
         for (long j = 0; j < *(long *)definition; ++j)
             updated = updated && function_38450(*(byte **)(definition + 4) + j * 0x8c, definition, fog_distance);
         bool rendered = true;

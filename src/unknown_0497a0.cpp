@@ -421,7 +421,9 @@ bool __stdcall function_42cf0(s_ribbon_vertex *vertices, long unknown, s_ribbon_
         vertices[0].u = vertices[1].u = u;
         vertices[0].v = v;
         vertices[1].v = v_width;
-        point3f first = point->position, second = point->position;
+        point3f first, second;
+        first.x = point->position.x; first.y = point->position.y; first.z = point->position.z;
+        second.x = point->position.x; second.y = point->position.y; second.z = point->position.z;
         vector3f normal;
         switch (definition->mode)
         {

@@ -267,30 +267,28 @@ long function_26b230(long clump_index, long prop_index)
 	return result;
 }
 
+PRIVATE __forceinline s_actor_view *clump_next_actor(s_iterator *iterator);
+
 // @retail 0x26b290
 void function_26b290(long clump_index)
 {
 	s_clump *clump = (s_clump *)(g_502420->data + (clump_index & 0xffff) * sizeof(s_clump));
 	real a[13];
 	real b[13];
-	volatile long object_index = clump->first_object;
+	s_iterator objects;
 	long i;
 
 	for (i = 0; i < 13; i++)
 	{
-		a[i] = 0.0f;
 		b[i] = 0.0f;
+		a[i] = 0.0f;
 	}
 
-	for (;;)
+	function_26bda0(clump_index, &objects);
+	s_actor_view *actor;
+	while ((actor = clump_next_actor(&objects)) != NULL)
 	{
-		if (object_index == NONE)
-		{
-			break;
-		}
-		s_clump_object *object = (s_clump_object *)(g_4f55f0->data + (object_index & 0xffff) * sizeof(s_clump_object));
-		object_index = object->next;
-		short count = object->count;
+		short count = ((s_clump_object *)actor)->count;
 
 		for (i = 0; i <= count; i++)
 		{
@@ -308,9 +306,9 @@ void function_26b290(long clump_index)
 		}
 	}
 
-	short state;
+	long state;
 	short new_state = NONE;
-	for (state = 3; clump->state < state; state--)
+	for (state = 3; state > clump->state; state--)
 	{
 		t_transition_test test = g_470fac[state].test;
 		if (test && test(clump_index, b, a))
@@ -2128,28 +2126,37 @@ void function_269870(long clump_index)
                 if (existing->type != candidate->type)
                 {
                     s_type_5cfb45 *state = NULL;
-                    if (g_470f10[candidate->type].unknown4 == 0)
-                        existing->state = 1;
-                    else if (g_470f10[candidate->type].unknown4 == 1)
+                    switch (g_470f10[candidate->type].unknown4)
                     {
-                        s_iterator nodes;
-                        nodes.next = ((s_clump_prop *)prop_get(candidate->prop_index))->first_node;
-                        s_clump_node *node;
-                        while ((node = clump_next_node(&nodes)) != NULL)
+                    case 0:
+                        break;
+                    case 1:
                         {
-                            if (node->state >= 1)
+                            s_iterator nodes;
+                            nodes.next = ((s_clump_prop *)prop_get(candidate->prop_index))->first_node;
+                            s_clump_node *node;
+                            while ((node = clump_next_node(&nodes)) != NULL)
                             {
-                                if (*(long *)((byte *)node + 0x14) != NONE)
-                                    state = function_25d690((s_prop_datum *)node);
-                                break;
+                                if (node->state >= 1)
+                                {
+                                    if (*(long *)((byte *)node + 0x14) != NONE)
+                                        state = function_25d690((s_prop_datum *)node);
+                                    break;
+                                }
                             }
+                            if (!node)
+                                goto type_ready;
                         }
-                        existing->state = 1;
+                        break;
+                    default:
+                        goto type_ready;
                     }
+                    existing->state = 1;
                     if (state)
                         existing->observed = *state;
-                    else if (g_470f10[candidate->type].unknown4 == 0 || g_470f10[candidate->type].unknown4 == 1)
+                    else
                         function_25ccd0(&existing->observed, existing->object_index, NONE, NULL);
+                type_ready:
                     existing->type = candidate->type;
                 }
                 ++selected;

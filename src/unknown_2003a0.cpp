@@ -2124,6 +2124,11 @@ void function_26b290(long arg_0);
 // @retail 0x202e90
 void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
 {
+    struct s_entry_view
+    {
+        long field_0;
+        long field_4;
+    };
     long const *local_0 = &arg_0;
     long const *local_1 = &arg_2;
     long local_2 = g_510c54->game_time;
@@ -2133,32 +2138,22 @@ void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
     *(short *)(local_3 + 0x64) = NONE;
     local_3[0x60] = false;
     if (*(short *)(local_3 + 0x2a) != (short)arg_1 ||
-        (byte)(((dword)local_3[2] & 0x40) >> 6) != (byte)*local_1)
+        ((*(word *)(local_3 + 2) & 0x40) >> 6) != (byte)*local_1)
     {
         byte *local_4 = NULL;
         if ((short)arg_1 >= 0 && (short)arg_1 < *(long *)((byte *)g_4e0350 + 0x240))
             local_4 = *(byte **)((byte *)g_4e0350 + 0x244) + (short)arg_1 * 0x7c;
         *(short *)(local_3 + 0x2a) = (short)arg_1;
         if ((byte)*local_1)
-            local_3[2] |= 0x40;
+            *(word *)(local_3 + 2) |= 0x40;
         else
-            local_3[2] &= ~0x40;
+            *(word *)(local_3 + 2) &= ~0x40;
         *(long *)(local_3 + 0x80) = NONE;
         s_squad_actor_iterator local_5;
-        if (g_4f55d0->active)
-        {
-            if (*local_0 == NONE)
-                local_5.next_actor_index = g_4f55d0->unknown14;
-            else
-                local_5.next_actor_index = squad_get(*local_0)->first_actor_index;
-        }
-        while (g_4f55d0->active && local_5.next_actor_index != NONE)
-        {
-            long local_6 = local_5.next_actor_index;
-            s_actor_datum *local_7 = actor_datum_get(local_6);
-            local_5.next_actor_index = local_7->next_actor_index;
-            function_1e4570(local_6, (s_actor_options const *)local_4);
-        }
+        squad_actors_begin(&local_5, *local_0);
+        s_actor_datum *actor;
+        while ((actor = squad_actors_next(&local_5)) != NULL)
+            function_1e4570(local_5.actor_index, (s_actor_options const *)local_4);
         if (local_4)
         {
             if (local_4[0x24] & 0x10)
@@ -2167,23 +2162,22 @@ void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
             short local_8 = *(short *)(local_4 + 0x20);
             if (local_8 == NONE)
             {
-                for (long local_9 = 0; local_9 < 5; local_9++)
-                    ((s_flag_bits *)(local_3 + 0x84))->d[local_9] = NONE;
+                memset(local_3 + 0x84, 0xff, sizeof(s_flag_bits));
             }
             else if (local_8 >= 0 && local_8 < *(long *)((byte *)g_4e0350 + 0x150))
             {
-                long local_10 = *(long *)(*(byte **)((byte *)g_4e0350 + 0x154) + local_8 * 8 + 4);
+                s_entry_view const *const &entry = (s_entry_view const *)*(byte **)((byte *)g_4e0350 + 0x154) + local_8;
+                long local_10 = entry->field_4;
                 if (local_10 != NONE)
-                    *(s_flag_bits *)(local_3 + 0x84) = *(s_flag_bits *)(g_4e3b44[local_10 & 0xffff].bytes + 0x38);
+                    *(s_flag_bits *)(local_3 + 0x84) = *(s_flag_bits const *)(g_4e3b44[local_10 & 0xffff].bytes + 0x38);
             }
             if (*(short *)(local_4 + 0x28) > 0)
             {
-                function_204d30(&local_5, *local_0);
                 long local_11 = NONE;
-                while (g_4f55d0->active && local_5.next_actor_index != NONE)
+                function_204d30(&local_5, *local_0);
+                s_actor_datum *local_12;
+                while ((local_12 = squad_actors_next(&local_5)) != NULL)
                 {
-                    s_actor_datum *local_12 = actor_datum_get(local_5.next_actor_index);
-                    local_5.next_actor_index = local_12->next_actor_index;
                     long local_13 = local_12->clump_object_index;
                     if (local_13 != NONE && local_13 != local_11)
                     {
@@ -2350,7 +2344,8 @@ bool function_1fb8a0(long arg_0, short arg_1);
 void function_202be0(long arg_0, long arg_1)
 {
     long const *local_0 = &arg_1;
-    long const *choice = &arg_0;
+    long selected_choice = arg_0;
+    long const *choice = &selected_choice;
     byte *local_1 = (byte *)squad_get(*local_0);
     if (*choice != NONE && (!(local_1[2] & 0x40) ||
         *(short *)(local_1 + 0x2a) == NONE ||

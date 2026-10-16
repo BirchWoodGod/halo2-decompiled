@@ -663,7 +663,8 @@ void function_114330(long unit_index)
 // @retail 0x113410
 void function_113410(long unit_index)
 {
-	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
+	long const *index_reference = &unit_index;
+	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(*index_reference);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
 	s_animation_state *state = UNIT_ANIMATION_STATE(unit);
 

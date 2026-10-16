@@ -214,6 +214,8 @@ void __stdcall function_ba590(long object_index, dword fixed_region_mask)
 
 #define OBJECT_HEADER(index) ((s_object_header *)(g_4e0300->data + g_4e0300->size * (index)))
 
+__declspec(noinline) bool function_bad50(long object_index, long index, point3f *out);
+
 // @retail 0xbad50
 bool function_bad50(long object_index, long index, point3f *out)
 {
