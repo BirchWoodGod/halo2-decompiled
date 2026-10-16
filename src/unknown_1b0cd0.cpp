@@ -48,7 +48,7 @@ struct s_4e0350_point_view
 	s_point_globals *points;
 };
 
-inline point2f *point_get(long reference)
+__forceinline point2f *point_get(long reference)
 {
 	s_point_block *block = &((s_4e0350_point_view *)g_4e0350)->points->blocks[(reference >> 16) & 0xffff];
 
@@ -563,144 +563,148 @@ void function_210be0(s_type_c3b527 const *arg_0, s_type_c3b527 const *arg_1, vec
 // @retail 0x1b13b0
 bool __stdcall function_1b13b0(long arg_0, s_slot *arg_1, long arg_2)
 {
-    s_actor_view *local_0 = actor_get(arg_0);
-    s_slot_7e *local_1 = (s_slot_7e *)arg_1;
-    s_slot_target_list *local_2 = (s_slot_target_list *)arg_2;
     bool local_3 = true;
-    long local_4 = local_2->entries[0].actor_index;
-    if (local_4 == NONE)
-        return false;
-    if (local_2->count != 1)
-        return local_3;
-    if (local_2->unknown80)
     {
-        if (!local_1->unknown0c || !local_0->unknown040)
-            return local_3;
-        if (function_25ab50(local_2->unknown88))
+        s_actor_view *local_0 = actor_get(arg_0);
+        s_slot_7e *local_1 = (s_slot_7e *)arg_1;
+        s_slot_target_list *local_2 = (s_slot_target_list *)arg_2;
+        long local_4 = local_2->entries[0].actor_index;
+        if (local_4 == NONE)
+            { local_3 = false; goto done; }
+        if (local_2->count != 1)
+            goto done;
+        if (local_2->unknown80)
         {
-            s_type_c3b527 *local_5 = (s_type_c3b527 *)point_get(local_2->unknown88);
-            return function_1f4460(arg_0, local_5, *(long *)((byte *)local_5 + 0x10), NONE, false);
-        }
-        if (!REFERENCE_EQUAL(local_0->unknown418, g_470fa0) && function_1f86f0(arg_0))
-            function_262800(arg_0, local_0->unknown418, false);
-        s_2605d0_request local_6;
-        memset(&local_6, 0, sizeof(local_6));
-        local_6.type = 4;
-        local_6.unknown015 = true;
-        local_6.unknown05b = true;
-        *(real *)((byte *)&local_6 + 0x1c) = 50.0f;
-        byte *local_7 = ai_scratch_buffer_get();
-        long local_8;
-        bool local_9;
-        s_reference local_10 = function_2605d0(arg_0, &local_6, 0, (long)&local_8, local_7, &local_9);
-        local_10 = function_2626b0(arg_0, local_10, local_8, local_7, local_9, true);
-        if (REFERENCE_EQUAL(local_10, g_470fa0))
-            local_3 = false;
-        ai_scratch_buffer_release(local_7);
-        return local_3;
-    }
-    s_actor_view *local_11 = actor_get(local_4);
-    s_type_c3b527 local_12;
-    vector2f local_13;
-    long local_14;
-    bool local_15 = false;
-    if (local_2->unknown84 != NONE && function_25ab50(local_2->unknown84) &&
-        function_25ab50(local_2->unknown88))
-    {
-        s_type_c3b527 *local_16 = (s_type_c3b527 *)point_get(local_2->unknown84);
-        s_type_c3b527 *local_17 = (s_type_c3b527 *)point_get(local_2->unknown88);
-        vector3f local_18;
-        function_210be0(local_16, local_17, &local_18);
-        local_13.i = local_18.i;
-        local_13.j = local_18.j;
-        if (normalize2d((point2f *)&local_13) == 0.0f)
-            local_13 = *g_468778;
-        local_12 = *local_16;
-        local_14 = *(long *)((byte *)local_16 + 0x10);
-        local_15 = true;
-    }
-    else
-    {
-        function_26c180(local_4);
-        local_12 = local_11->unknown27c.point;
-        local_13.i = local_11->unknown290.i;
-        local_13.j = local_11->unknown290.j;
-        if (normalize2d((point2f *)&local_13) == 0.0f)
-            local_13 = *g_468778;
-        local_14 = NONE;
-    }
-    point3f local_19;
-    function_210850(&local_12, &local_19);
-    vector2f local_20;
-    local_20.i = 0.0f - local_13.j;
-    local_20.j = local_13.i;
-    if (local_1->unknown0c)
-    {
-        bool local_21 = true;
-        if (local_15)
-        {
-            real local_22 = local_11->position.x - local_19.x;
-            real local_23 = local_11->position.y - local_19.y;
-            if (local_23 * local_23 + local_22 * local_22 > 0.2f ||
-                1.0 - ((double)local_13.j * local_11->unknown290.j +
-                    (double)local_13.i * local_11->unknown290.i) > 0.05000000074505806)
+            if (!local_1->unknown0c || !local_0->unknown040)
+                goto done;
+            if (function_25ab50(local_2->unknown88))
             {
-                local_21 = false;
-                if (local_0->unknown040 && !function_1f4460(arg_0, &local_12, local_14, NONE, false))
-                    local_3 = false;
-                local_2->unknown80 = local_21;
-                return local_3;
+                s_type_c3b527 *local_5 = (s_type_c3b527 *)point_get(local_2->unknown88);
+                { local_3 = function_1f4460(arg_0, local_5, *(long *)((byte *)local_5 + 0x10), NONE, false); goto done; }
             }
+            if (!REFERENCE_EQUAL(local_0->unknown418, g_470fa0) && function_1f86f0(arg_0))
+                function_262800(arg_0, local_0->unknown418, false);
+            s_2605d0_request local_6;
+            memset(&local_6, 0, sizeof(local_6));
+            local_6.type = 4;
+            local_6.unknown015 = true;
+            local_6.unknown05b = true;
+            *(real *)((byte *)&local_6 + 0x1c) = 50.0f;
+            byte *local_7 = ai_scratch_buffer_get();
+            long local_8;
+            bool local_9;
+            s_reference local_10 = function_2605d0(arg_0, &local_6, 0, (long)&local_8, local_7, &local_9);
+            local_10 = function_2626b0(arg_0, local_10, local_8, local_7, local_9, true);
+            if (REFERENCE_EQUAL(local_10, g_470fa0))
+                local_3 = false;
+            ai_scratch_buffer_release(local_7);
+            goto done;
         }
-        for (short local_24 = 0; local_24 < 10; ++local_24)
+        s_actor_view *local_11 = actor_get(local_4);
+        s_type_c3b527 local_12;
+        vector2f local_13;
+        long local_14;
+        bool local_15 = false;
+        if (local_2->unknown84 != NONE && function_25ab50(local_2->unknown84) &&
+            function_25ab50(local_2->unknown88))
         {
-            s_slot_target_entry *local_25 = &local_2->entries[local_24];
-            if (local_25->type == 3 && local_25->actor_index != arg_0)
+            s_type_c3b527 *local_16 = (s_type_c3b527 *)point_get(local_2->unknown84);
+            s_type_c3b527 *local_17 = (s_type_c3b527 *)point_get(local_2->unknown88);
+            vector3f local_18;
+            function_210be0(local_16, local_17, &local_18);
+            local_13.i = local_18.i;
+            local_13.j = local_18.j;
+            if (normalize2d((point2f *)&local_13) == 0.0f)
+                local_13 = *g_468778;
+            local_12 = *local_16;
+            local_14 = *(long *)((byte *)local_16 + 0x10);
+            local_15 = true;
+        }
+        else
+        {
+            function_26c180(local_4);
+            local_12 = local_11->unknown27c.point;
+            local_13.i = local_11->unknown290.i;
+            local_13.j = local_11->unknown290.j;
+            if (normalize2d((point2f *)&local_13) == 0.0f)
+                local_13 = *g_468778;
+            local_14 = NONE;
+        }
+        point3f local_19;
+        function_210850(&local_12, &local_19);
+        vector2f local_20;
+        local_20.i = 0.0f - local_13.j;
+        local_20.j = local_13.i;
+        if (local_1->unknown0c)
+        {
+            bool local_21 = true;
+            if (local_15)
             {
-                short local_26 = function_1b10e0(local_24, local_2);
-                if (local_26 == NONE)
+                real local_22 = local_11->position.x - local_19.x;
+                real local_23 = local_11->position.y - local_19.y;
+                if (local_23 * local_23 + local_22 * local_22 > 0.2f ||
+                    1.0 - ((double)local_13.j * local_11->unknown290.j +
+                        (double)local_13.i * local_11->unknown290.i) > 0.05000000074505806)
                 {
                     local_21 = false;
-                    break;
+                    if (local_0->unknown040 && !function_1f4460(arg_0, &local_12, local_14, NONE, false))
+                        local_3 = false;
+                    local_2->unknown80 = local_21;
+                    goto done;
                 }
-                s_actor_view *local_27 = actor_get(local_25->actor_index);
-                point2f local_28;
-                if (function_1b0e40(&local_28, (point2f *)&local_19, &local_13,
-                    local_26, local_2->mode, &local_20))
+            }
+            for (short local_24 = 0; local_24 < 10; ++local_24)
+            {
+                s_slot_target_entry *local_25 = &local_2->entries[local_24];
+                if (local_25->type == 3 && local_25->actor_index != arg_0)
                 {
-                    real local_29 = local_27->position.x - local_28.x;
-                    real local_30 = local_27->position.y - local_28.y;
-                    if (local_30 * local_30 + local_29 * local_29 > 0.2f ||
-                        1.0 - ((double)local_13.j * local_27->unknown290.j +
-                            (double)local_13.i * local_27->unknown290.i) > 0.05000000074505806)
+                    short local_26 = function_1b10e0(local_24, local_2);
+                    if (local_26 == NONE)
                     {
                         local_21 = false;
                         break;
                     }
+                    s_actor_view *local_27 = actor_get(local_25->actor_index);
+                    point2f local_28;
+                    if (function_1b0e40(&local_28, (point2f *)&local_19, &local_13,
+                        local_26, local_2->mode, &local_20))
+                    {
+                        real local_29 = local_27->position.x - local_28.x;
+                        real local_30 = local_27->position.y - local_28.y;
+                        if (local_30 * local_30 + local_29 * local_29 > 0.2f ||
+                            1.0 - ((double)local_13.j * local_27->unknown290.j +
+                                (double)local_13.i * local_27->unknown290.i) > 0.05000000074505806)
+                        {
+                            local_21 = false;
+                            break;
+                        }
+                    }
                 }
             }
+            local_2->unknown80 = local_21;
+            goto done;
         }
-        local_2->unknown80 = local_21;
-        return local_3;
+        if (!local_0->unknown040)
+            goto done;
+        point2f local_31;
+        if (local_1->position_index == NONE)
+        {
+            if (function_1b1100(arg_0, &local_13, local_1, local_2, (point2f *)&local_19,
+                &local_20, &local_31) == NONE)
+                { local_3 = false; goto done; }
+        }
+        else if (!function_1b0e40(&local_31, (point2f *)&local_19, &local_13,
+            local_1->position_index, local_2->mode, &local_20))
+            { local_3 = false; goto done; }
+        point3f local_32;
+        local_32.x = local_31.x;
+        local_32.y = local_31.y;
+        local_32.z = local_0->position.z;
+        long local_33 = function_26d0e0(&local_32, &local_12, function_1fa7f0());
+        if (local_33 == NONE)
+            { local_3 = false; goto done; }
+        { local_3 = function_1f4460(arg_0, &local_12, local_33, NONE, false); goto done; }
     }
-    if (!local_0->unknown040)
-        return local_3;
-    point2f local_31;
-    if (local_1->position_index == NONE)
-    {
-        if (function_1b1100(arg_0, &local_13, local_1, local_2, (point2f *)&local_19,
-            &local_20, &local_31) == NONE)
-            return false;
-    }
-    else if (!function_1b0e40(&local_31, (point2f *)&local_19, &local_13,
-        local_1->position_index, local_2->mode, &local_20))
-        return false;
-    point3f local_32;
-    local_32.x = local_31.x;
-    local_32.y = local_31.y;
-    local_32.z = local_0->position.z;
-    long local_33 = function_26d0e0(&local_32, &local_12, function_1fa7f0());
-    if (local_33 == NONE)
-        return false;
-    return function_1f4460(arg_0, &local_12, local_33, NONE, false);
+done:
+    return local_3;
 }
