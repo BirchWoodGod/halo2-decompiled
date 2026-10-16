@@ -648,9 +648,8 @@ void function_6d270(void)
   id = 0xb8;
   accept = function_2323ab;
  }
- c_window_channel *channel = &g_54d598.windows_1[4];
- bool present = session_dialog_is(channel->current, id);
- if (!session_dialog_is(channel->next, id) && !present)
+ bool present = session_dialog_is(g_54d598.windows_1[4].current, id);
+ if (!session_dialog_is(g_54d598.windows_1[4].next, id) && !present)
  {
   if (choice)
    dialog_choice_show(1, id, 4, (word)-1, accept, function_236953, 0);

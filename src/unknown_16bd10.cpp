@@ -579,7 +579,7 @@ bool camera_scripting_animation_matrix_get(transform4x3f *matrix, real *seconds_
 	if (animation_id.index != NONE)
 	{
 		long unit_index;
-		real seconds = 0.0f;
+		real seconds;
 		transform4x3f animation_matrix;
 
 		function_1daea0(graph_tag_get(state.graph_tag_index), animation_id);
@@ -592,6 +592,10 @@ bool camera_scripting_animation_matrix_get(transform4x3f *matrix, real *seconds_
 			if (unit_animation->graph_tag_index != NONE && unit_animation->animation_index != NONE)
 			{
 				seconds = unit_animation->frame * (1.0f / 30.0f);
+			}
+			else
+			{
+				seconds = 0.0f;
 			}
 		}
 		else
