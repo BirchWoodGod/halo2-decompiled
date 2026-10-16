@@ -896,7 +896,7 @@ struct s_effect_owner;
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
 long __stdcall function_b7b40(void *creation);
 void __stdcall function_b8540(long object_index);
-void *character_get_grenade_properties(long character_index, short key);
+void *character_grenade_settings_get(long character_index, short key);
 struct s_203780;
 union vector2f;
 struct s_28dab2;
@@ -1106,7 +1106,7 @@ void function_1e04a0(long primary_tag, long character_index, long unit_index, lo
 	}
 	if (grenade_type != NONE)
 	{
-		byte *settings = (byte *)character_get_grenade_properties(character_index, grenade_type);
+		byte *settings = (byte *)character_grenade_settings_get(character_index, grenade_type);
 		if (settings)
 		{
 			short lower = *(short *)(settings + 0x34);
@@ -1435,7 +1435,7 @@ extern bool g_4f55e5;
 extern bool g_4f55e0;
 real function_259a0(dword *seed);
 long function_1469f0(real seconds);
-void *character_get_grenade_properties(long character_index, short key);
+void *character_grenade_settings_get(long character_index, short key);
 long function_cbd50(long unit_index, short weapon_index);
 void __stdcall function_c6f80(long unit_index, long ticks, long flags);
 void function_101a10(long weapon_index, real fraction);
@@ -1514,7 +1514,7 @@ void function_1e2a90(long actor_index)
 	if (actor->unknown018 != NONE)
 	{
 		byte *unit = (byte *)ai_object_get(actor->unknown018);
-		byte *grenade_options = (byte *)character_get_grenade_properties(actor->unknown054,
+		byte *grenade_options = (byte *)character_grenade_settings_get(actor->unknown054,
 			*(signed char *)(unit + 0x23c));
 		long weapons[2];
 		weapons[0] = equipment_current_weapon_r21(actor->unknown018);

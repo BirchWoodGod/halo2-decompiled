@@ -78,29 +78,29 @@ bool actor_update_bsp_locations(long actor_index)
   s_prop_node_view *prop;
   while ((prop = prop_step::next(&prop_index)) != NULL)
   {
-   s_type_5cfb45 *prop_state = function_25d690((s_prop_datum *)prop);
+   s_type_5cfb45 *known_prop = function_25d690((s_prop_datum *)prop);
    s_type_f95cd3 *view = NULL;
    if (prop->view_index != NONE)
    {
     s_type_e5ff81 *tracking = tracking_get(prop->view_index);
     if (tracking) view = &tracking->view;
    }
-   point.x = prop_state->position.x + g_4687b0->i * 0.1f;
-   point.y = prop_state->position.y + g_4687b0->j * 0.1f;
-   point.z = prop_state->position.z + g_4687b0->k * 0.1f;
+   point.x = known_prop->position.x + g_4687b0->i * 0.1f;
+   point.y = known_prop->position.y + g_4687b0->j * 0.1f;
+   point.z = known_prop->position.z + g_4687b0->k * 0.1f;
    if (g_4686c4 == NONE)
    {
-    prop_state->location.leaf_index = NONE;
-    prop_state->location.cluster_index = NONE;
+    known_prop->location.leaf_index = NONE;
+    known_prop->location.cluster_index = NONE;
    }
    else
    {
     long leaf = function_14a280(g_4e033c, 0, &point);
-    prop_state->location.leaf_index = leaf;
-    prop_state->location.cluster_index = leaf != NONE ? ((s_actor_structure_bsp *)g_4e0348)->leaves[leaf].cluster_index : NONE;
+    known_prop->location.leaf_index = leaf;
+    known_prop->location.cluster_index = leaf != NONE ? ((s_actor_structure_bsp *)g_4e0348)->leaves[leaf].cluster_index : NONE;
    }
-   prop_state->location.bsp_index = g_4686c4;
-   prop_state->unknown44 = NONE;
+   known_prop->location.bsp_index = g_4686c4;
+   known_prop->unknown44 = NONE;
    if (view && view->unknown70 == 1)
    {
     view->unknown68 = false;

@@ -1,6 +1,6 @@
 // @flags /O2 /Gr
-/* CHARACTER_DEFINITIONS.CPP: the accessors of an actor's character tag
-   (include/character_definitions.h). Each walks the character and the
+/* CHARACTER_TAG_ACCESSORS.CPP: the accessors of an actor's character tag
+   (include/character_tag_accessors.h). Each walks the character and the
    characters it inherits from, and returns the first non-empty block's
    element: the first, the one the actor's variant picks, or the one keyed
    by a weapon, grenade type or object definition */
@@ -11,9 +11,9 @@
 #include "ai_actor.h"
 #include "unknown_2729b0.h"
 #include "squads.h"
-#include "character_definitions.h"
+#include "character_tag_accessors.h"
 
-void *character_get_grenade_properties(long character_index, short grenade_type);
+void *character_grenade_settings_get(long character_index, short grenade_type);
 
 /* the elements of the character's first block (+0x34; its first byte holds flags) */
 // @retail 0x1e4990
@@ -122,7 +122,7 @@ long function_1e4a90(long character_index)
 
 /* the character's vehicle properties */
 // @retail 0x1e4ad0
-long character_get_vehicle_properties(long character_index)
+long character_vehicle_settings_get(long character_index)
 {
 	long result = 0;
 	if (character_index != NONE)
@@ -130,9 +130,9 @@ long character_get_vehicle_properties(long character_index)
 		do
 		{
 			s_character_definition *character = character_definition_get(character_index);
-			if (character->vehicle_properties.count > 0)
+			if (character->vehicle_settings.count > 0)
 			{
-				result = (long)character->vehicle_properties.address;
+				result = (long)character->vehicle_settings.address;
 				break;
 			}
 			character_index = character->parent_index;
@@ -565,7 +565,7 @@ void *function_1e5280(long actor_index, long weapon_tag_index)
 
 		while (i < character->weapons.count)
 		{
-			s_character_weapon_properties *entry = &((s_character_weapon_properties *)character->weapons.address)[i];
+			s_character_weapon_settings *entry = &((s_character_weapon_settings *)character->weapons.address)[i];
 			if (entry->weapon_tag_index == weapon_tag_index)
 			{
 				result = entry;
@@ -591,14 +591,14 @@ void *function_1e5380(long actor_index)
 	{
 		short grenade_type = ai_object_get(unit_index)->unknown23c;
 		if (grenade_type != NONE)
-			result = character_get_grenade_properties(actor->character_index, grenade_type);
+			result = character_grenade_settings_get(actor->character_index, grenade_type);
 	}
 	return result;
 }
 
 /* a character's properties for a grenade type */
 // @retail 0x1e53e0
-void *character_get_grenade_properties(long character_index, short grenade_type)
+void *character_grenade_settings_get(long character_index, short grenade_type)
 {
 	void *result = NULL;
 
@@ -609,7 +609,7 @@ void *character_get_grenade_properties(long character_index, short grenade_type)
 
 		while (i < character->grenades.count)
 		{
-			s_character_grenade_properties *entry = &((s_character_grenade_properties *)character->grenades.address)[i];
+			s_character_grenade_settings *entry = &((s_character_grenade_settings *)character->grenades.address)[i];
 			if (entry->grenade_type == grenade_type)
 			{
 				result = entry;
@@ -635,9 +635,9 @@ s_actor_looking_properties *function_1e5160(long character_index)
 		do
 		{
 			s_character_definition *character = character_definition_get(character_index);
-			if (character->looking_properties.count > 0)
+			if (character->looking_settings.count > 0)
 			{
-				result = (s_actor_looking_properties *)character->looking_properties.address;
+				result = (s_actor_looking_properties *)character->looking_settings.address;
 				break;
 			}
 			character_index = character->parent_index;

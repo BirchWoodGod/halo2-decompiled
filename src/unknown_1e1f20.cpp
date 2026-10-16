@@ -888,7 +888,7 @@ extern bool g_4f55e5;
 bool g_4f55e0;
 real function_259a0(dword *seed);
 long function_1469f0(real seconds);
-void *character_get_grenade_properties(long character_index, short key);
+void *character_grenade_settings_get(long character_index, short key);
 long function_cbd50(long unit_index, short weapon_index);
 void __stdcall function_c6f80(long unit_index, long ticks, long flags);
 void function_101a10(long weapon_index, real fraction);

@@ -21,7 +21,7 @@ typedef char assert_player_request_state_size[(sizeof(s_player_request_state) ==
 /* the name other files declare g_51e9c0's type by */
 struct s_unknown_1e6a40
 {
-	s_player_request_state local_players[4];
+	s_player_request_state signed_in_players[4];
 	long unknown6c0;
 	byte unknown6c4;
 	byte unknown6c5;
@@ -48,8 +48,8 @@ void player_request_state_initialize_for_new_map(void)
 	state->unknown6c5 = 1;
 	for (long i = 0; i < 4; i++)
 	{
-		state->local_players[i].unknown080 = NONE;
-		state->local_players[i].profile_index = NONE;
+		state->signed_in_players[i].unknown080 = NONE;
+		state->signed_in_players[i].profile_index = NONE;
 	}
 	state->unknown6c0 = 0;
 	state->unknown6c4 = 0;

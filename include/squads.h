@@ -72,7 +72,7 @@ struct s_actor_datum
 	byte unknown03c[0x3e - 0x3c];
 	short bsp_index;               /* the structure bsp its locations are in */
 	byte unknown040[0x54 - 0x40];
-	long character_index;           /* its character tag (character_definitions.h) */
+	long character_index;           /* its character tag (character_tag_accessors.h) */
 	byte unknown058[0x7c - 0x58];
 	long clump_object_index;
 	byte unknown080[0x86 - 0x80];
