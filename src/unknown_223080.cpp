@@ -128,7 +128,7 @@ extern s_unknown_485a88 g_unknown_485a88;
 #define g_485a8a (g_unknown_485a88.rects)
 extern long g_4e64a0;
 
-long function_14a250(void);
+long window_manager_away_from_main_menu(void);
 void function_2f600(long arg_0, long arg_1, s_grid_pair *arg_2);
 void function_2f640(long arg_0, s_grid_pair *arg_1, s_grid_pair const *arg_2,
 	long arg_3, long arg_4, s_grid_pair *arg_5);
@@ -151,7 +151,7 @@ void function_223080(long arg_0, long arg_1, long arg_2, s_223080 *arg_3,
 	if (!arg_0)
 	{
 		s_223081 const *local_4 = arg_6;
-		if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 3 && (byte)function_14a250())
+		if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 3 && (byte)window_manager_away_from_main_menu())
 		{
 			local_0 = *arg_6;
 			local_0.field_0 = *g_468788;
