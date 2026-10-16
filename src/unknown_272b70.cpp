@@ -2641,15 +2641,16 @@ void function_2769d0(long point_reference)
 		s_scenario_scripting_view *scenario = (s_scenario_scripting_view *)g_4e0350;
 		if (scenario->scripting_data_count > 0)
 		{
-			s_scenario_scripting_data *local_0 = scenario->scripting_data;
+			short point_index = 0;
 			s_actor_datum *actor = actor_datum_get(g_50240c);
+			s_scenario_scripting_data *local_0 = scenario->scripting_data;
 			short point_set_index = (short)(point_reference >> 16);
 			if (point_set_index >= 0 && point_set_index < local_0->point_set_count)
 			{
 				s_scenario_point_set *point_set = &local_0->point_sets[point_set_index];
 				volatile real best_distance = 3.4028235e38f;
 				short best_index = NONE;
-				for (short point_index = 0; point_index < point_set->point_count; point_index++)
+				for (; point_index < point_set->point_count; point_index++)
 				{
 					s_type_c3b527 *point = (s_type_c3b527 *)((byte *)point_set->points + point_index * 0x3c + 0x20);
 					vector3f vector;
