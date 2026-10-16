@@ -3167,17 +3167,18 @@ void function_12d50(real const *projection, bool scaled, real *output)
     if (!output)
         output = constants;
     real scale = 16777215.0f / g_48565c;
+    real *next = output;
     for (long i = 0; i < 4; ++i)
     {
-        output[i * 4] = (projection[38 + i] * projection[3] + projection[1] * projection[30 + i]
+        *next++ = (projection[38 + i] * projection[3] + projection[1] * projection[30 + i]
             + projection[34 + i] * projection[2]) * scale;
-        output[i * 4 + 1] = (projection[38 + i] * projection[6] + projection[30 + i] * projection[4]
+        *next++ = (projection[38 + i] * projection[6] + projection[30 + i] * projection[4]
             + projection[34 + i] * projection[5]) * scale;
-        output[i * 4 + 2] = (projection[38 + i] * projection[9] + projection[8] * projection[34 + i]
+        *next++ = (projection[38 + i] * projection[9] + projection[8] * projection[34 + i]
             + projection[30 + i] * projection[7]) * scale;
-        output[i * 4 + 3] = (projection[38 + i] * projection[12] + projection[11] * projection[34 + i]
+        *next++ = (projection[38 + i] * projection[12] + projection[11] * projection[34 + i]
             + projection[30 + i] * projection[10]) * scale;
-        output[i * 4 + 3] += projection[42 + i] * scale;
+        next[-1] += projection[42 + i] * scale;
     }
     if (scaled)
         for (long j = 0; j < 16; ++j)
@@ -3741,7 +3742,8 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     constants[29] = ((real const *)camera)[1];
     constants[30] = ((real const *)camera)[2];
     constants[31] = 767.8125f;
-    constants[32] = width * 0.5f * scale;
+    real half_width = width * 0.5f;
+    constants[32] = half_width * scale;
     constants[33] = 0.0f;
     constants[34] = 0.0f;
     constants[35] = ((width + 1.0f) * 0.5f + left) * scale + bias;
@@ -3749,11 +3751,11 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     constants[37] = height * -0.5f * scale;
     constants[38] = 0.0f;
     constants[39] = ((height + 1.0f) * 0.5f + top) * scale + bias;
-    constants[40] = width * 0.5f * scale;
+    constants[40] = half_width * scale;
     constants[41] = height * -0.5f * scale;
     constants[42] = 16777215.0f;
     constants[43] = 0.0f;
-    constants[44] = (width * 0.5f + left) * scale + 0.5f;
+    constants[44] = (half_width + left) * scale + 0.5f;
     constants[45] = (height * 0.5f + top) * scale + 0.5f;
     constants[46] = 0.0f;
     constants[47] = 0.0f;
@@ -6474,6 +6476,7 @@ void __stdcall function_4f010(void *payload)
             }
             for (long i = 0; i < *(long *)(entry + 0xc); ++i)
             {
+                s_501e0 *point_out = points + i;
                 real position;
                 if (*(dword *)(entry + 0x5c) & 2) position = (real)i * step;
                 else if (*(dword *)(entry + 0x5c) & 1)
@@ -6495,20 +6498,20 @@ void __stdcall function_4f010(void *payload)
                     unpack_color3f(function_13bc00((s_tag_data *)(entry + 0x28), colour_time), (color3f *)&colour.red);
                 else *(color3f *)&colour.red = *(color3f *)&g_4686cc->red;
                 real red = state->third.i * colour.red;
-                real green = state->third.j * colour.green;
-                real blue = state->third.k * colour.blue;
                 colour.red = clamp_callback(red, 0.0f, 1.0f);
+                real green = state->third.j * colour.green;
                 colour.green = clamp_callback(green, 0.0f, 1.0f);
+                real blue = state->third.k * colour.blue;
                 colour.blue = clamp_callback(blue, 0.0f, 1.0f);
                 colour.alpha = clamp_callback(opacity * fade, 0.0f, 1.0f);
                 point3f point;
                 point.x = state->first.i * length + state->position.x;
                 point.y = state->first.j * length + state->position.y;
                 point.z = state->first.k * length + state->position.z;
-                points[i].field_0 = point;
-                points[i].field_c = width * output[0];
-                points[i].field_10 = width * output[1];
-                points[i].field_14 = pack_color4f(&colour);
+                point_out->field_0 = point;
+                point_out->field_c = width * output[0];
+                point_out->field_10 = width * output[1];
+                point_out->field_14 = pack_color4f(&colour);
             }
             function_4f7e0(*(long *)(entry + 8), points, *(long *)(entry + 0xc), 0,
                 horizontal, vertical, false, false, filtered);
