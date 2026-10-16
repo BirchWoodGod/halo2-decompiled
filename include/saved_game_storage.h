@@ -10,25 +10,25 @@
 
 /* what a saved game file holds; the low nibble of a file index. The values
    index the file-name and type-name tables. */
-enum e_saved_game_file_type
+enum e_saved_game_type
 {
-	_saved_game_file_type_profile,
-	_saved_game_file_type_slayer,
-	_saved_game_file_type_king_of_the_hill,
-	_saved_game_file_type_race,
-	_saved_game_file_type_oddball,
-	_saved_game_file_type_juggernaut,
-	_saved_game_file_type_headhunter,
-	_saved_game_file_type_capture_the_flag,
-	_saved_game_file_type_assault,
-	_saved_game_file_type_territories,
-	_saved_game_file_type_playlist,
+	_saved_game_type_profile,
+	_saved_game_type_slayer,
+	_saved_game_type_king_of_the_hill,
+	_saved_game_type_race,
+	_saved_game_type_oddball,
+	_saved_game_type_juggernaut,
+	_saved_game_type_headhunter,
+	_saved_game_type_capture_the_flag,
+	_saved_game_type_assault,
+	_saved_game_type_territories,
+	_saved_game_type_playlist,
 
 	k_saved_game_file_type_count,
 
 	/* the game variant types run from slayer to territories */
-	k_saved_game_file_first_variant_type = _saved_game_file_type_slayer,
-	k_saved_game_file_last_variant_type = _saved_game_file_type_territories
+	k_saved_game_file_first_variant_type = _saved_game_type_slayer,
+	k_saved_game_file_last_variant_type = _saved_game_type_territories
 };
 
 /* one saved game found on a storage device: its directory and display name
@@ -139,20 +139,20 @@ void saved_game_storage_update(void);
 bool saved_game_file_read_synchronous(long file_index, void *buffer, long size, wchar_t *display_name);
 bool __stdcall saved_game_storage_ensure_directory(char const *path);
 void saved_game_storage_remove_location(long file_index);
-const char *saved_game_file_type_get_file_name(long type);
-long saved_game_file_type_get_name_id(long type);
+const char *saved_game_type_get_file_name(long type);
+long saved_game_type_get_name_id(long type);
 bool saved_game_file_write_save_image(long type, s_saved_game_file_location *location);
 wchar_t const *saved_game_storage_get_default_profile_name(long language);
-wchar_t const *saved_game_file_type_get_profile_name(long language);
-wchar_t const *saved_game_file_type_get_slayer_name(long language);
-wchar_t const *saved_game_file_type_get_king_of_the_hill_name(long language);
-wchar_t const *saved_game_file_type_get_race_name(long language);
-wchar_t const *saved_game_file_type_get_oddball_name(long language);
-wchar_t const *saved_game_file_type_get_juggernaut_name(long language);
-wchar_t const *saved_game_file_type_get_headhunter_name(long language);
-wchar_t const *saved_game_file_type_get_capture_the_flag_name(long language);
-wchar_t const *saved_game_file_type_get_assault_name(long language);
-wchar_t const *saved_game_file_type_get_territories_name(long language);
-wchar_t const *saved_game_file_type_get_playlist_name(long language);
+wchar_t const *saved_game_type_get_profile_name(long language);
+wchar_t const *saved_game_type_get_slayer_name(long language);
+wchar_t const *saved_game_type_get_king_of_the_hill_name(long language);
+wchar_t const *saved_game_type_get_race_name(long language);
+wchar_t const *saved_game_type_get_oddball_name(long language);
+wchar_t const *saved_game_type_get_juggernaut_name(long language);
+wchar_t const *saved_game_type_get_headhunter_name(long language);
+wchar_t const *saved_game_type_get_capture_the_flag_name(long language);
+wchar_t const *saved_game_type_get_assault_name(long language);
+wchar_t const *saved_game_type_get_territories_name(long language);
+wchar_t const *saved_game_type_get_playlist_name(long language);
 
 #endif

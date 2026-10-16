@@ -293,7 +293,7 @@ must still match.
   show.
 - **Functions:** `subsystem_object_verb` in lower snake case, with one prefix
   per subsystem: `saved_game_storage_update` acts on the whole store,
-  `saved_game_file_type_get_file_name` on one file type.
+  `saved_game_type_get_file_name` on one file type.
 - **Types:** `s_name` for structs, `c_name` for classes, `e_name` for enums with
   `_name_value` members, `k_name` for constants and counts. Grep `src/` and
   `include/` for a name before adding it to a shared header.

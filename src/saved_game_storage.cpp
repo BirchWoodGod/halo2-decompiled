@@ -113,7 +113,7 @@ bool __stdcall saved_game_storage_ensure_directory(char const *path)
 /* the name of the file a saved game of a type is stored in, inside the
    saved game's directory */
 // @retail 0x216b60
-const char *saved_game_file_type_get_file_name(long type)
+const char *saved_game_type_get_file_name(long type)
 {
 	const char *name = "unknown";
 	const char *names[k_saved_game_file_type_count] =
@@ -141,7 +141,7 @@ const char *saved_game_file_type_get_file_name(long type)
 /* the string id of a type's localized name, which prefixes the display
    names of its files (0x217a80 turns it into text) */
 // @retail 0x216bd0
-long saved_game_file_type_get_name_id(long type)
+long saved_game_type_get_name_id(long type)
 {
 	long name_id = 0;
 	long name_ids[k_saved_game_file_type_count] =
@@ -449,10 +449,10 @@ bool saved_game_file_write_save_image(long type, s_saved_game_file_location *loc
 }
 
 /* the types' names in each language; 0x217a80 picks one by the string id
-   saved_game_file_type_get_name_id gives */
+   saved_game_type_get_name_id gives */
 
 // @retail 0x00217620
-wchar_t const *saved_game_file_type_get_profile_name(long language)
+wchar_t const *saved_game_type_get_profile_name(long language)
 {
 	switch (language)
 	{
@@ -478,7 +478,7 @@ wchar_t const *saved_game_file_type_get_profile_name(long language)
 }
 
 // @retail 0x00217680
-wchar_t const *saved_game_file_type_get_slayer_name(long language)
+wchar_t const *saved_game_type_get_slayer_name(long language)
 {
 	switch (language)
 	{
@@ -504,7 +504,7 @@ wchar_t const *saved_game_file_type_get_slayer_name(long language)
 }
 
 // @retail 0x002176e0
-wchar_t const *saved_game_file_type_get_king_of_the_hill_name(long language)
+wchar_t const *saved_game_type_get_king_of_the_hill_name(long language)
 {
 	switch (language)
 	{
@@ -530,7 +530,7 @@ wchar_t const *saved_game_file_type_get_king_of_the_hill_name(long language)
 }
 
 // @retail 0x00217740
-wchar_t const *saved_game_file_type_get_race_name(long language)
+wchar_t const *saved_game_type_get_race_name(long language)
 {
 	switch (language)
 	{
@@ -556,7 +556,7 @@ wchar_t const *saved_game_file_type_get_race_name(long language)
 }
 
 // @retail 0x002177a0
-wchar_t const *saved_game_file_type_get_oddball_name(long language)
+wchar_t const *saved_game_type_get_oddball_name(long language)
 {
 	switch (language)
 	{
@@ -582,7 +582,7 @@ wchar_t const *saved_game_file_type_get_oddball_name(long language)
 }
 
 // @retail 0x002177f0
-wchar_t const *saved_game_file_type_get_juggernaut_name(long language)
+wchar_t const *saved_game_type_get_juggernaut_name(long language)
 {
 	switch (language)
 	{
@@ -608,7 +608,7 @@ wchar_t const *saved_game_file_type_get_juggernaut_name(long language)
 }
 
 // @retail 0x00217840
-wchar_t const *saved_game_file_type_get_headhunter_name(long language)
+wchar_t const *saved_game_type_get_headhunter_name(long language)
 {
 	switch (language)
 	{
@@ -634,7 +634,7 @@ wchar_t const *saved_game_file_type_get_headhunter_name(long language)
 }
 
 // @retail 0x002178a0
-wchar_t const *saved_game_file_type_get_capture_the_flag_name(long language)
+wchar_t const *saved_game_type_get_capture_the_flag_name(long language)
 {
 	switch (language)
 	{
@@ -660,7 +660,7 @@ wchar_t const *saved_game_file_type_get_capture_the_flag_name(long language)
 }
 
 // @retail 0x00217900
-wchar_t const *saved_game_file_type_get_assault_name(long language)
+wchar_t const *saved_game_type_get_assault_name(long language)
 {
 	switch (language)
 	{
@@ -686,7 +686,7 @@ wchar_t const *saved_game_file_type_get_assault_name(long language)
 }
 
 // @retail 0x00217960
-wchar_t const *saved_game_file_type_get_territories_name(long language)
+wchar_t const *saved_game_type_get_territories_name(long language)
 {
 	switch (language)
 	{
@@ -712,7 +712,7 @@ wchar_t const *saved_game_file_type_get_territories_name(long language)
 }
 
 // @retail 0x002179c0
-wchar_t const *saved_game_file_type_get_playlist_name(long language)
+wchar_t const *saved_game_type_get_playlist_name(long language)
 {
 	switch (language)
 	{

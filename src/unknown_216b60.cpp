@@ -93,7 +93,7 @@ long function_217480(long type)
 
 extern long g_55c158;
 word const *g_470054 = L": ";
-long saved_game_file_type_get_name_id(long type);
+long saved_game_type_get_name_id(long type);
 bool unicode_string_list_has_string(long tag_index, long string_handle);
 void function_217a80(long string_handle_2, long language, word *buffer);
 word *unicode_string_append(word *destination, word const *source, long maximum_count);
@@ -108,7 +108,7 @@ bool function_216da0(long type, wchar_t *name, wchar_t const *display_name, long
 	text[0] = 0;
 	if (language != NONE && g_55c158 != NONE)
 	{
-		long string_handle = saved_game_file_type_get_name_id(type);
+		long string_handle = saved_game_type_get_name_id(type);
 		if (unicode_string_list_has_string(g_55c158, string_handle))
 		{
 			function_217a80(string_handle, language, text);
@@ -136,7 +136,7 @@ void __stdcall function_216e50(word const *display_name, long type, char *langua
 	*language = -1;
 	wcsncpy(name, display_name, 16);
 	name[16] = 0;
-	long string_handle = saved_game_file_type_get_name_id(type);
+	long string_handle = saved_game_type_get_name_id(type);
 	long first_language = g_55c280;
 	for (long i = 0; i < 9; i++)
 	{

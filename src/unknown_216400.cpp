@@ -7,7 +7,7 @@
 bool function_1249f0(long memory_unit, char *drive_letter);
 char *function_11c9c0(char *buffer, long maximum_count, const char *format, ...);
 char *function_122810(char *string, const char *suffix);
-const char *saved_game_file_type_get_file_name(long type);
+const char *saved_game_type_get_file_name(long type);
 bool function_1368f0(s_type_acf665 *file);
 
 // @retail 0x216400
@@ -26,7 +26,7 @@ bool function_216d70(char *path, const char *directory, long type)
 {
 	strncpy(path, directory, 0x100);
 	path[0xff] = 0;
-	function_122810(path, saved_game_file_type_get_file_name(type));
+	function_122810(path, saved_game_type_get_file_name(type));
 	return true;
 }
 
@@ -126,7 +126,7 @@ void function_2164c0(long memory_unit, s_save_list_2164c0 *list)
                     path[0] = 0;
                     strncpy(path, entry.directory, sizeof(path));
                     path[255] = 0;
-                    function_122810(path, saved_game_file_type_get_file_name(type));
+                    function_122810(path, saved_game_type_get_file_name(type));
                     s_storage_file_reference file;
                     memset(&file, 0, sizeof(file));
                     file.signature = FILE_REFERENCE_SIGNATURE;
