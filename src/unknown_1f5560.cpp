@@ -953,10 +953,10 @@ real function_1f9e70(long actor_index, long object_index, point2f const *positio
     speed_scale = *(real *)(actor + 0x4b4) != 0.0f ? *(real *)(actor + 0x4b4) : 1.0f;
     if (!ignore_facing)
     {
+        real minimum = *(real *)(settings + 0x5c);
         real dot = facing->j * desired->j + facing->i * desired->i;
         if (dot < 0.0f)
             dot = 0.0f;
-        real minimum = *(real *)(settings + 0x5c);
         facing_scale = (1.0f - minimum) * dot + minimum;
         vector2f velocity;
         velocity.i = object->velocity.i;
@@ -975,22 +975,35 @@ real function_1f9e70(long actor_index, long object_index, point2f const *positio
     {
         real minimum = *(real *)(settings + 0x58);
         double dot = (double)desired->j * next_direction->j + (double)desired->i * next_direction->i;
-        dot = dot < -1.0 ? -1.0 : dot > 1.0 ? 1.0 : dot;
+        if (dot < -1.0) dot = -1.0;
+        else if (dot > 1.0) dot = 1.0;
         real value = (real)dot;
-        value = value < -1.0f ? -1.0f : value > 1.0f ? 1.0f : value;
+        if (value < -1.0f) value = -1.0f;
+        else if (value > 1.0f) value = 1.0f;
         real angle = (real)(acos(value) * 0.31830987334251404f);
         real fraction = 1.0f - (angle > 1.0f ? 1.0f : angle);
         real scale = (1.0f - minimum) * fraction * fraction + minimum;
         turning_scale = (1.0f - scale) * distance / (radius * 2.0f) + scale;
     }
-    if (!actor[0x4ae] || *(real *)(actor + 0x4b0) != 0.0f)
+    if (!actor[0x4ae])
     {
         double x = (double)*(real *)(actor + 0x510) - position->x;
         double y = (double)*(real *)(actor + 0x514) - position->y;
         real remaining = (real)sqrt(y * y + x * x);
         if (radius > remaining)
         {
-            real minimum = actor[0x4ae] ? *(real *)(actor + 0x4b0) / speed_scale : *(real *)(settings + 0x54);
+            real minimum = *(real *)(settings + 0x54);
+            approach_scale = (1.0f - minimum) / radius * remaining + minimum;
+        }
+    }
+    else if (*(real *)(actor + 0x4b0) != 0.0f)
+    {
+        double x = (double)*(real *)(actor + 0x510) - position->x;
+        double y = (double)*(real *)(actor + 0x514) - position->y;
+        real remaining = (real)sqrt(y * y + x * x);
+        if (radius > remaining)
+        {
+            real minimum = *(real *)(actor + 0x4b0) / speed_scale;
             approach_scale = (1.0f - minimum) / radius * remaining + minimum;
         }
     }
