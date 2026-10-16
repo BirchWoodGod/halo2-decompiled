@@ -3720,8 +3720,8 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     real bias = 0.03125f;
     if (mode == 2)
     {
-        width = height = 128.0f;
-        left = top = 0.0f;
+        height = width = 128.0f;
+        top = left = 0.0f;
         scale = 1.0f;
         bias = 0.0f;
     }
@@ -3737,6 +3737,7 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     constants[23] = 0.5f;
     constants[24] = projection[20];
     constants[25] = projection[21];
+    constants[33] = 0.0f;
     constants[26] = projection[22];
     constants[27] = 2.0f;
     constants[28] = ((real const *)camera)[0];
@@ -3745,7 +3746,6 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     constants[31] = 767.8125f;
     real half_width = width * 0.5f;
     constants[32] = half_width * scale;
-    constants[33] = 0.0f;
     constants[34] = 0.0f;
     constants[35] = ((width + 1.0f) * 0.5f + left) * scale + bias;
     constants[36] = 0.0f;
