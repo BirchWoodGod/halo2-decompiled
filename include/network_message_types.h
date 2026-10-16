@@ -11,7 +11,7 @@
      0xadef0-0xaf680  session membership          src/network_messages_membership.cpp
      0xaf890-0xb23d0  session parameters          src/unknown_0af890.cpp
      0xb2440-0xb2de0  view establishment, synchronous, results and test
-                                                  src/network_messages_simulation.cpp */
+                                                  src/simulation_message_codecs.cpp */
 
 #ifndef NETWORK_MESSAGE_TYPES_H
 #define NETWORK_MESSAGE_TYPES_H

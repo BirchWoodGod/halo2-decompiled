@@ -1,5 +1,5 @@
 // @flags /O2 /Gr
-/* NETWORK_MESSAGES_SIMULATION.CPP: the view establishment (view-establishment,
+/* SIMULATION_MESSAGE_CODECS.CPP: the view establishment (view-establishment,
    player-acknowledge), synchronous (synchronous-update, -actions, -join,
    -gamestate), game results and test message codecs, and the functions
    that register them. A decoder returns whether the message it read is

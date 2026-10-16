@@ -1,5 +1,5 @@
 // @flags /O2 /arch:SSE /Gr
-/* TRANSPORT_ENDPOINT_CREATE.CPP: allocates a transport endpoint
+/* TRANSPORT_ENDPOINT_ALLOCATE.CPP: allocates a transport endpoint
    (include/unknown_0b4da0.h), with no socket yet, while the transport is up */
 
 #include "unknown_11c920.h"
@@ -36,7 +36,7 @@ PRIVATE s_transport_endpoint *transport_endpoint_allocate()
 /* a new endpoint of a type, or none when the transport is not started or
    the allocation fails */
 // @retail 0xb4d50
-s_transport_endpoint *transport_endpoint_create(word type)
+s_transport_endpoint *transport_endpoint_allocate(word type)
 {
 	s_transport_endpoint *endpoint = 0;
 

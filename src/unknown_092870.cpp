@@ -23,7 +23,7 @@ static inline dword network_time_now(void)
 }
 
 struct s_block_header;
-s_transport_endpoint *transport_endpoint_create(word tag);
+s_transport_endpoint *transport_endpoint_allocate(word tag);
 
 static inline void transport_endpoint_free(s_transport_endpoint *endpoint)
 {
@@ -192,7 +192,7 @@ void network_samples_add(s_network_samples *samples, long value)
 // @retail 0x92ae0
 bool network_link_open_endpoint(long type, word port, bool broadcast, s_transport_endpoint **endpoint_out)
 {
-	s_transport_endpoint *endpoint = (s_transport_endpoint *)transport_endpoint_create((word)type);
+	s_transport_endpoint *endpoint = (s_transport_endpoint *)transport_endpoint_allocate((word)type);
 	if (endpoint)
 	{
 		s_type_99af70 address;
