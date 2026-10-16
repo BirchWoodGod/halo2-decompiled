@@ -123,8 +123,13 @@ bool function_1c0b80(long actor_index, long const *excluded, short excluded_coun
 							continue;
 						}
 						position = &zone->positions[position_index];
-						actor_point_target_position(&position->target, &point);
-						vector3d_from_points3d(&point, &actor->position, &vector);
+						if (position->target.output_index == NONE)
+							vector3d_from_points3d(&position->target.point, &actor->position, &vector);
+						else
+						{
+							actor_point_target_position(&position->target, &point);
+							vector3d_from_points3d(&point, &actor->position, &vector);
+						}
 						if (!(g_46fbdc * g_46fbdc > length_sq3f(&vector)))
 						{
 							continue;
@@ -135,12 +140,18 @@ bool function_1c0b80(long actor_index, long const *excluded, short excluded_coun
 							real distance;
 							real cost;
 							vector3f direction;
+							point3f cost_point, direction_point;
 
-							actor_point_target_position(&position->target, &point);
-							vector3d_from_points3d(&point, prop_position, &vector);
+							actor_point_target_position(&position->target, &cost_point);
+							vector3d_from_points3d(&cost_point, prop_position, &vector);
 							distance = (real)sqrt(length_sq3f(&vector)) + path_distance;
-							actor_point_target_position(&position->target, &point);
-							vector3d_from_points3d(prop_position, &point, &direction);
+							if (position->target.output_index == NONE)
+								vector3d_from_points3d(prop_position, &position->target.point, &direction);
+							else
+							{
+								actor_point_target_position(&position->target, &direction_point);
+								vector3d_from_points3d(prop_position, &direction_point, &direction);
+							}
 							cost = 3.4028235e38f;
 							if (normalize_inline(&direction) > 0.0f)
 							{

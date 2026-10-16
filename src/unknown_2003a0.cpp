@@ -1935,19 +1935,19 @@ PRIVATE inline long squad_tick_round(real ticks)
 // @retail 0x201ea0
 void function_201ea0(void)
 {
-    long elapsed = squad_tick_round((real)g_510c54->field_2_3);
+    short elapsed = (short)squad_tick_round((real)g_510c54->field_2_3);
     dword const *clusters = (dword const *)((byte *)g_4e6948 + 0x1138);
     byte *structure = (byte *)g_4e0348;
-    s_record_pool_iterator squads;
+    s_squad_record_iterator squads;
     if (g_4f55d0->active)
     {
-        squads.data = g_51e9d8;
-        squads.index = NONE;
+        squads.records.data = g_51e9d8;
+        squads.records.index = NONE;
     }
     while (g_4f55d0->active)
     {
-        byte *squad = data_iterator_next_inlined(&squads);
-        short squad_index = (word)squads.datum_index;
+        byte *squad = (byte *)function_200d83(&squads);
+        short squad_index = (word)squads.squad_index;
         if (!squad)
             break;
         bool wake = false;
