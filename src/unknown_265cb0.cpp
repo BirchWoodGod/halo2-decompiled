@@ -1508,10 +1508,7 @@ void function_266640(long actor_index)
 	long best_node = NONE, strongest_node = NONE;
 	short best_level = 0;
 	real strongest = 0.0f;
-	*(long *)(data + 0x324) = 0;
-	*(long *)(data + 0x328) = 0;
-	*(long *)(data + 0x32c) = 0;
-	*(long *)(data + 0x330) = 0;
+	memset(data + 0x324, 0, 0x10);
 	long next = actor_get(actor_index)->first_prop_index;
 	while (next != NONE)
 	{
