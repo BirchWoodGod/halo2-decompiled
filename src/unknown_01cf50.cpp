@@ -3158,8 +3158,9 @@ bool g_55e6bc;
 void function_12d50(real const *projection, bool scaled, real *output)
 {
     real constants[16];
-    real near_plane = (scaled ? 0.15f : 1.0f) * g_485adc;
+    real near_plane = scaled ? 0.15f : 1.0f;
     real far_plane = g_485ae0;
+    near_plane *= g_485adc;
     D3DDevice_SetDepthClipPlanes(near_plane, far_plane,
         D3DSDCP_SET_VERTEXPROGRAM_PLANES);
     if (!projection)
@@ -5352,7 +5353,7 @@ void function_1f070(short_rectangle2d const *bounds, short_rectangle2d const *cl
         long right = window->right - window->left;
         if (right > clip->right) right = clip->right;
         long top = clip->top < 0 ? 0 : clip->top;
-        long left = clip->left < 0 ? 0 : clip->left;
+        short left = clip->left < 0 ? 0 : clip->left;
         wanted_clip.left = (short)left;
         wanted_clip.top = (short)top;
         wanted_clip.right = (short)right;
