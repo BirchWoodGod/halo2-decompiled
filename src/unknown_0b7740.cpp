@@ -337,19 +337,7 @@ long function_b8940(short cluster_index, s_object_cluster_reference **record, s_
 // @retail 0xb89b0
 long function_b89b0(s_object_cluster_reference **record, s_object_cluster_iterator *iterator)
 {
-	if (iterator->next == NONE) return NONE;
-	{
-		s_record_pool *array = (s_record_pool *)g_4de2e4;
-		long *size = &array->size;
-		byte **data = &array->data;
-		s_partition_object_link_ab *link = (s_partition_object_link_ab *)(*data + (iterator->next & 0xffff) * *size);
-		long next = link->next;
-		*record = (s_object_cluster_reference *)&link->record;
-		if (next != NONE)
-			_mm_prefetch((char const *)(*data + (next & 0xffff) * *size), _MM_HINT_T0);
-		iterator->next = next;
-		return link->object_index;
-	}
+    return object_cluster_next_ab((s_record_pool *)g_4de2e4, iterator, record);
 }
 
 // @retail 0xb8a10
