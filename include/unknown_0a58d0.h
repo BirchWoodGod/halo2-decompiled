@@ -210,7 +210,7 @@ real function_aa4d0(long count, long const *entity_indices, real maximum_distanc
 	s_relevance_observers const *observers, bool *exact);
 char *function_11c9c0(char *buffer, long size, const char *format, ...);
 void __stdcall function_a6660(s_entity_info const *info, s_bitstream *stream);
-void function_b5650(long identifier, s_bitstream *stream);
+void simulation_write_entity_identifier(long identifier, s_bitstream *stream);
 bool function_a6810(s_entity_info *info, s_bitstream *stream);
 bool function_a69a0(long a, long b, long c, long d, long e, bool f, long g);
 bool function_a7180(long a, long b);

@@ -68,7 +68,7 @@ void function_b4020(void)
 }
 
 /* built with SSE in its own file, unknown_0b4050.cpp */
-void function_b4050(void);
+void online_result_upload_record_failure(void);
 
 
 // @retail 0xb45f0
@@ -189,13 +189,13 @@ void function_b3fc0()
     if (!((s_http_connection_ab *)g_546a8c)->state)
     {
         if (!g_510580 || !function_b40b0())
-            function_b4050();
+            online_result_upload_record_failure();
     }
     else
     {
         bool complete = false;
         if (!function_b5e90((s_http_connection_ab *)g_546a8c, &complete) || GetTickCount() >= g_547624)
-            function_b4050();
+            online_result_upload_record_failure();
         else if (complete)
             function_b4020();
     }
@@ -231,12 +231,12 @@ void function_b3de0()
             if (g_510584 != NONE || g_510580)
                 return;
         }
-        function_b4050();
+        online_result_upload_record_failure();
     }
     else if (g_54761c)
     {
         if (!connected)
-            function_b4050();
+            online_result_upload_record_failure();
         else if (!g_510580)
             online_result_cache_start();
         else

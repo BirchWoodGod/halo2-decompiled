@@ -520,7 +520,7 @@ struct s_0b35e0_entry
 	byte unknown00[0x44];
 	bool value44;
 };
-s_0b35e0_entry *function_b35e0(long index);
+s_0b35e0_entry *session_search_results_get(long index);
 struct s_type_99af70;
 bool function_07aaa0(XNADDR *xnaddr, s_type_99af70 *address);
 
@@ -572,7 +572,7 @@ void __stdcall function_252ed8(c_class_252b72 *list)
 				if (function_199ba5(index))
 				{
 					squad = (s_network_squad_address_view *)function_199bbf(index);
-					entry = function_b35e0(index);
+					entry = session_search_results_get(index);
 				}
 				else
 				{
@@ -883,7 +883,7 @@ short function_1900ff(long controller);
 long function_199f34(void);
 bool function_19a179(long player_index);
 bool function_19a7e9(long controller, long value);
-c_class_1473c9 *function_149ef3(word user_flags, long load);
+c_class_1473c9 *window_manager_open_channel_3_screen(word user_flags, long load);
 c_class_1473c9 *__stdcall function_2b8536(s_screen_parameters *parameters);
 
 /* a session entry: per-mode counts at +0xc54 */
@@ -1073,7 +1073,7 @@ void function_2512f8(long controller, bool choice)
 	}
 	else
 	{
-		function_149ef3((word)(1 << controller), (long)function_2b8536);
+		window_manager_open_channel_3_screen((word)(1 << controller), (long)function_2b8536);
 	}
 }
 
@@ -1236,7 +1236,7 @@ byte *function_19ab0e(long player_index);
 void function_24c0c4(c_widget *widget);
 void function_2b01a2(long value, s_widget_item *item);
 void function_2b01b5(s_widget_item *item, short value);
-long function_149ead(long value);
+long ui_definition_find_range(long value);
 void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
 
 /* a player as the matchmaking list shows it */
@@ -1539,7 +1539,7 @@ void show_player(c_matchmaking_list *list, c_class_1a2c81 *item, long player_ind
 		}
 		else
 		{
-			function_2b01b5(&definition, (short)function_149ead(NONE));
+			function_2b01b5(&definition, (short)ui_definition_find_range(NONE));
 		}
 		memcpy(definition.value48, player->value40, sizeof(definition.value48));
 		definition.flags |= 2;

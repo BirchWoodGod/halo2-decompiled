@@ -338,7 +338,7 @@ void function_199c94(const void *target, long controller, bool flag);
 bool function_19a1bd(void);
 void function_199e2e(bool close);
 void function_148523();
-c_class_1473c9 *function_149ef3(word user_flags, long load);
+c_class_1473c9 *window_manager_open_channel_3_screen(word user_flags, long load);
 c_class_1473c9 *__stdcall function_2b8536(s_screen_parameters *parameters);
 
 /* the screen that joins a friend's game, set to come along with the squad */
@@ -408,7 +408,7 @@ void __stdcall function_2395dc(XONLINE_FRIEND *friend_, long controller_index, l
 			}
 			else if (mode == 3)
 			{
-				((s_join_screen_view *)function_149ef3((word)(1 << controller_index), (long)function_2b8536))->value898 = true;
+				((s_join_screen_view *)window_manager_open_channel_3_screen((word)(1 << controller_index), (long)function_2b8536))->value898 = true;
 				return;
 			}
 			else
@@ -443,7 +443,7 @@ void __stdcall function_2395dc(XONLINE_FRIEND *friend_, long controller_index, l
 		function_148523();
 		if (state == 3)
 		{
-			g_54d598.m0c = join_type;
+			g_54d598.pending_join_type = join_type;
 			if (in_session && join_type == 3)
 			{
 				function_19a1bd();
@@ -661,7 +661,7 @@ bool function_1a334a(long index, XUID const *xuid);
 bool player_slot_get_identity(long index, s_player_identity *identity);
 void function_18ff47(long player, dword *out);
 void online_task_screen_finish(c_online_task_screen *screen);
-dword function_0b4a20(dword key);
+dword online_result_get_error_string(dword key);
 void function_190728(long index);
 const char *function_148956(s_window_manager_text *text);
 void function_14896e(s_window_manager_754 *a, s_window_manager_df6 *b);
@@ -772,7 +772,7 @@ void __stdcall function_239968(c_online_task_screen *screen)
 	online_task_screen_finish(screen);
 	if (failed)
 	{
-		dialog_ok_show(1, function_0b4a20(view->result), 4, widget->user_flags, 0, 0);
+		dialog_ok_show(1, online_result_get_error_string(view->result), 4, widget->user_flags, 0, 0);
 	}
 	else
 	{

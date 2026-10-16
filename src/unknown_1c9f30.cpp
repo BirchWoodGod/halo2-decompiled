@@ -40,7 +40,7 @@ void function_210020(long object_index);
 void function_2103d0(long object_index);
 void joint_clear_references(long joint_index);
 void function_1e17d0(long actor_index, long object_index);
-void function_290b90(long key);
+void swarm_spawn_slots_clear_object(long key);
 void ai_players_unit_deleted(long unit_index);
 extern s_record_pool *g_502414;
 
@@ -106,7 +106,7 @@ void __stdcall function_1c9f30(long arg_0)
    function_x66da2b(&local_9, false);
    while (function_1e46c0(&local_9))
     function_1e17d0(local_9.actor_index, arg_0);
-   function_290b90(arg_0);
+   swarm_spawn_slots_clear_object(arg_0);
   }
   ai_players_unit_deleted(arg_0);
  }

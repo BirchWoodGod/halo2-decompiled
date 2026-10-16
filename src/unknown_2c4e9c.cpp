@@ -2039,7 +2039,7 @@ c_class_1473c9 *__stdcall function_2b46a6(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2b47a7(s_screen_parameters *parameters);
 
 /* loads a screen for these controllers (not decompiled yet) */
-c_class_1473c9 *function_149ef3(word user_flags, long load); /* unknown_1490ec.cpp */
+c_class_1473c9 *window_manager_open_channel_3_screen(word user_flags, long load); /* window_manager_events.cpp */
 
 // @retail 0x2c5b35
 c_xbox_live_appear_offline_list::c_xbox_live_appear_offline_list(word user_flags) :
@@ -2223,25 +2223,25 @@ void c_multiplayer_settings_edit_list::handle_item(s_controller_reference **cont
 		switch (*(short *)item)
 		{
 		case 0:
-			function_149ef3(1 << (*controller)->controller_index, (long)function_2c8a8f);
+			window_manager_open_channel_3_screen(1 << (*controller)->controller_index, (long)function_2c8a8f);
 			break;
 		case 1:
-			function_149ef3(1 << (*controller)->controller_index, (long)function_2c8998);
+			window_manager_open_channel_3_screen(1 << (*controller)->controller_index, (long)function_2c8998);
 			break;
 		case 2:
-			function_149ef3(1 << (*controller)->controller_index, (long)function_2c89a8);
+			window_manager_open_channel_3_screen(1 << (*controller)->controller_index, (long)function_2c89a8);
 			break;
 		case 3:
-			function_149ef3(1 << (*controller)->controller_index, (long)function_2c89b9);
+			window_manager_open_channel_3_screen(1 << (*controller)->controller_index, (long)function_2c89b9);
 			break;
 		case 4:
-			function_149ef3(1 << (*controller)->controller_index, (long)function_2c89ca);
+			window_manager_open_channel_3_screen(1 << (*controller)->controller_index, (long)function_2c89ca);
 			break;
 		case 5:
-			function_149ef3(1 << (*controller)->controller_index, (long)function_2c8858);
+			window_manager_open_channel_3_screen(1 << (*controller)->controller_index, (long)function_2c8858);
 			break;
 		default:
-			function_149ef3(1 << (*controller)->controller_index, (long)function_2c8896);
+			window_manager_open_channel_3_screen(1 << (*controller)->controller_index, (long)function_2c8896);
 			break;
 		}
 	}
@@ -3905,7 +3905,7 @@ struct s_player_color
 	char index;
 };
 
-long function_14986f(s_player_color color);
+long player_color_get_string_id(s_player_color color);
 
 /* shows the color's name */
 // @retail 0x2cb2d5
@@ -3918,11 +3918,11 @@ void c_choose_player_color_list::v20(c_class_1a2c81 *widget, long index)
 		s_player_color color;
 
 		color.index = (char)widget_item(widget)->value70;
-		text->function_253b1a(function_14986f(color));
+		text->function_253b1a(player_color_get_string_id(color));
 	}
 }
 
-long function_14990f(byte index);
+long player_emblem_list_get_string_id(byte index);
 long function_2365e0(long type);
 
 // @retail 0x2cb0d3
@@ -3932,7 +3932,7 @@ void c_choose_emblem_list::v20(c_class_1a2c81 *widget, long index)
 
 	if (text)
 	{
-		text->function_253b1a(function_14990f((byte)widget_item(widget)->value70));
+		text->function_253b1a(player_emblem_list_get_string_id((byte)widget_item(widget)->value70));
 	}
 }
 
@@ -4070,8 +4070,8 @@ void c_controller_settings_edit_list::v20(c_class_1a2c81 *widget, long index)
 	}
 }
 
-long function_149b5a(byte index);
-long function_149da5(byte index);
+long player_emblem_foreground_get_string_id(byte index);
+long player_emblem_background_get_string_id(byte index);
 
 /* shows the setting's name and the edited profile's value of it */
 // @retail 0x2c8bf5
@@ -4090,27 +4090,27 @@ void c_multiplayer_settings_edit_list::v20(c_class_1a2c81 *widget, long index)
 			break;
 		case 4:
 			name->function_253b1a(0x120002fc);
-			value->function_253b1a(function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[3]));
+			value->function_253b1a(player_color_get_string_id(*(s_player_color *)&g_54e5d0.settings.colors[3]));
 			break;
 		case 3:
 			name->function_253b1a(0x120002fb);
-			value->function_253b1a(function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[2]));
+			value->function_253b1a(player_color_get_string_id(*(s_player_color *)&g_54e5d0.settings.colors[2]));
 			break;
 		case 2:
 			name->function_253b1a(0x120002fa);
-			value->function_253b1a(function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[1]));
+			value->function_253b1a(player_color_get_string_id(*(s_player_color *)&g_54e5d0.settings.colors[1]));
 			break;
 		case 1:
 			name->function_253b1a(0x120002f9);
-			value->function_253b1a(function_14986f(*(s_player_color *)&g_54e5d0.settings.colors[0]));
+			value->function_253b1a(player_color_get_string_id(*(s_player_color *)&g_54e5d0.settings.colors[0]));
 			break;
 		case 5:
 			name->function_253b1a(0x110002fd);
-			value->function_253b1a(function_149b5a(g_54e5d0.settings.unknown11d[0]));
+			value->function_253b1a(player_emblem_foreground_get_string_id(g_54e5d0.settings.unknown11d[0]));
 			break;
 		case 6:
 			name->function_253b1a(0x110002fe);
-			value->function_253b1a(function_149da5(g_54e5d0.settings.unknown11d[1]));
+			value->function_253b1a(player_emblem_background_get_string_id(g_54e5d0.settings.unknown11d[1]));
 			break;
 		}
 	}

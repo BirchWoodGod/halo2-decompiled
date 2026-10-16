@@ -278,7 +278,7 @@ struct s_qos_handle
 };
 
 struct s_online_match_session_info;
-void function_b3500(s_online_match_session_info const *record, s_0b35e0_entry *entry);
+void session_search_result_initialize(s_online_match_session_info const *record, s_0b35e0_entry *entry);
 void function_8fb30(long task_index, s_online_match_result *output, word *capacity);
 long online_task_poll(long task_index);
 long qos_lookup(long kind, long count, long bits_per_second, s_qos_target *targets);
@@ -326,7 +326,7 @@ void function_b3200(void)
 			memset(g_4d8efc, 0, g_4d8ef8 * 0x784);
 			long count = (word)capacity;
 			for (long i = 0; i < count; i++)
-				function_b3500((s_online_match_session_info const *)&buffer.results[i],
+				session_search_result_initialize((s_online_match_session_info const *)&buffer.results[i],
 					(s_0b35e0_entry *)((byte *)g_4d8efc + i * 0x784));
 			if (g_4d8ef4 != NONE)
 			{

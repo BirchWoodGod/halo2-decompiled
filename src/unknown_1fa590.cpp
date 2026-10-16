@@ -372,9 +372,11 @@ long function_1fa3a0(long structure_index, long surface_index, long object_index
     long const *node_reference = &node_index;
     long result = NONE;
     long type = object_index != NONE ? 4 : (structure_index != NONE ? 3 : 1);
+    byte *globals = (byte *)g_4e0348;
+    long table_count = *(long *)(globals + 0xc4);
     s_contact_surface_table *table = NULL;
-    if (*(long *)((byte *)g_4e0348 + 0xc4) > 0)
-        table = *(s_contact_surface_table **)((byte *)g_4e0348 + 0xc8);
+    if (table_count > 0)
+        table = *(s_contact_surface_table **)(globals + 0xc8);
     if (table)
     {
         switch (type)

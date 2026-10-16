@@ -26,12 +26,12 @@ extern short g_470c40, g_470c44;
 extern point2f *g_468778;
 real function_30bf0(vector3f *vector);
 long function_1e4990(long index);
-void function_290c50(s_290c50_iterator *iterator);
+void swarm_iterator_new(s_290c50_iterator *iterator);
 long function_28dbd0(long character_index, long perception_index, long definition_index, s_28dab2 const *placement, bool flag);
 long __stdcall function_1e0850(long character_index, long squad_index, s_203780 const *placement, bool substitute);
 bool function_1e11b0(long actor_index, bool active);
 void __stdcall function_b77d0(long object_index, vector3f const *linear, vector3f const *angular);
-void function_28e2b0(long perception_index, bool flag);
+void swarm_creatures_set_object_flag(long perception_index, bool flag);
 void function_b7360(long object_index);
 
 static inline byte *perception_iterator_next_256bd0(s_290c50_iterator *iterator)
@@ -103,7 +103,7 @@ short __stdcall function_256bd0(long actor_index, s_slot *slot, bool active)
 				{
 					real minimum = 25.0f;
 					s_290c50_iterator iterator;
-					function_290c50(&iterator);
+					swarm_iterator_new(&iterator);
 					byte *entry;
 					while ((entry = perception_iterator_next_256bd0(&iterator)) != NULL)
 					{
@@ -148,7 +148,7 @@ short __stdcall function_256bd0(long actor_index, s_slot *slot, bool active)
 		{
 			long perception = *(long *)(actor + 0x1c);
 			if (perception != NONE)
-				function_28e2b0(perception, true);
+				swarm_creatures_set_object_flag(perception, true);
 		}
 		else
 		{

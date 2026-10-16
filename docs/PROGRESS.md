@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-16: 8898 functions match
+
+```
+matched 8898 of 11321 game functions (1228395 of 2784283 bytes, 44.12%)
+```
+
+1 new matches, none lost:
+- @BirchWoodGod's #510: `0xe5040` match.
+
+## 2026-10-16: 8897 functions match
+
+```
+matched 8897 of 11321 game functions (1227891 of 2784283 bytes, 44.10%)
+```
+
+1 new matches, none lost:
+- Our key lane's round 40 (machine 3's loan): `0xf1070` match.
+
 ## 2026-10-16: 8896 functions match
 
 ```
