@@ -474,7 +474,7 @@ bool game_variants_file_write(s_game_variants_file *variants_file)
 		}
 
 		if (!result)
-			function_136860(&file);
+			file_delete(&file);
 		else
 			memcpy(g_551ae8, variants_file->variants, sizeof(g_551ae8));
 	}
@@ -495,8 +495,8 @@ bool game_variant_block_read(long index, s_game_variant_block *block)
 		function_193fa0(&file);
 		if (function_136970(&file, 1, &error))
 		{
-			if (function_136bf0(&file, sizeof(g_551ae8) + index * sizeof(s_game_variant_block), true) &&
-				function_136ca0(&file, sizeof(*block), block, true))
+			if (file_set_position(&file, sizeof(g_551ae8) + index * sizeof(s_game_variant_block), true) &&
+				file_read(&file, sizeof(*block), block, true))
 			{
 				result = true;
 			}

@@ -66,7 +66,7 @@ long const g_448fd4[7] = {0, 2, 2, 2, 2, 2, 2};
 long const g_448ff0[7] = {0x40000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000};
 
 bool cache_header_verify(s_cache_header const *header);
-void function_136e70(FILETIME *time);
+void file_get_current_time(FILETIME *time);
 dword __stdcall checksum_buffer_mmx(void const *buffer, dword buffer_size);
 bool cache_copy_complete(char const *map_name);
 long map_location_get(char const *map_name);
@@ -120,7 +120,7 @@ bool function_2141f0(void)
 		break;
 	case 4:
 		{
-			function_136e70(&g_55b4f0.last_used);
+			file_get_current_time(&g_55b4f0.last_used);
 			strncpy(g_55b4f0.path, g_55bd21, 0x100);
 			g_55b4f0.path[0xff] = 0;
 			success = g_55bcf0 == 0x800 && cache_header_verify((s_cache_header const *)&g_55b4f0);
@@ -215,7 +215,7 @@ bool function_2141f0(void)
 	case 14:
 		{
 			s_cache_file *file = &g_557c90[g_55bd10];
-			function_136e70(&g_55b4f0.last_used);
+			file_get_current_time(&g_55b4f0.last_used);
 			g_55bd00 = function_1a1050(*(s_file_handle *)&file->handle, &g_55b4f0, 0x800, 0, 0, 1, 0, &g_55bcf0, &g_55bd0c);
 			state = 15;
 		}

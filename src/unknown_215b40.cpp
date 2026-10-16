@@ -579,7 +579,7 @@ void __stdcall function_215e60(long file_index)
 extern long g_55c154;
 long function_217590(long memory_unit);
 bool function_216d70(char *path, const char *directory, long type);
-s_type_acf665 *function_136710(s_type_acf665 *file, bool replace, const char *name);
+s_type_acf665 *file_reference_create(s_type_acf665 *file, bool replace, const char *name);
 bool saved_game_file_write_save_image(long type, s_saved_game_file_location *location);
 long saved_game_file_type_size_in_blocks(long type);
 bool saved_game_storage_has_free_blocks(long blocks);
@@ -628,7 +628,7 @@ long function_215c00(long type, wchar_t const *display_name)
                         char path[256];
                         __int64 state;
                     } file;
-                    if (function_136710((s_type_acf665 *)&file, false, path) &&
+                    if (file_reference_create((s_type_acf665 *)&file, false, path) &&
                         function_1367d0((s_type_acf665 *)&file) &&
                         saved_game_file_write_save_image(type, (s_saved_game_file_location *)directory) &&
                         function_216990(0, (c_location_record const *)&location, &index))

@@ -1,58 +1,49 @@
 // @flags /O2 /Ob1 /arch:SSE /Gr
-/* UNKNOWN_134D20.CPP: the scenario's named interpolators (the block at
-   +0x3c0 of g_4e0350) and their state in g_4e6740 (unknown_134d90.cpp) */
+/* INTERPOLATORS.CPP: the scenario's named interpolators (the block at +0x3c0
+   of g_4e0350) and their state in g_4e6740 (interpolator_globals.cpp) */
 
 #include "unknown_11c920.h"
+#include "unknown_0259d0.h"
 #include "globals.h"
-#include "unknown_134d20.h"
+#include "interpolators.h"
 
-struct s_tag_data
+/* the head of a tag function's data, as in unknown_13b390.cpp: its type, its
+   flags (the high nibble: the output kind) and its output bounds */
+struct s_function_header
 {
-	long size;
-	byte *address;
+	byte type;
+	byte flags;
+	byte function_type[2];
+	union
+	{
+		real_bounds bounds;
+		dword colors[4];
+	};
 };
 
-/* the scenario's interpolators, 0x18 bytes each */
-struct s_scenario_interpolator
+/* the function type of a periodic function (unknown_13b390.cpp) */
+enum
 {
-	long name;
-	byte unknown04[8];
-	s_tag_data function;
-	short input_index;
-	short scale_index;
+	_function_periodic = 3
 };
 
-struct s_scenario_interpolators_view
-{
-	byte unknown000[0x3c0];
-	long interpolator_count;
-	s_scenario_interpolator *interpolators;
-};
+real function_134c50(real value); /* unknown_1321f0.cpp: a clamped cosine transition */
+real game_time_get_seconds(void); /* unknown_146240.cpp */
+real function_13b390(void const *function, real input, real range); /* unknown_13b390.cpp: a tag function at an input */
+real function_13bb90(s_tag_data const *function, real input, real range); /* unknown_13b390.cpp: the same, mapped to its bounds */
 
-/* g_4e6740: the name last looked up, then the state of each interpolator */
-struct s_unknown_134d90;
-extern s_unknown_134d90 *g_4e6740;
-
-struct s_interpolator_globals
-{
-	long last_name;
-	s_interpolator_state states[16];
-};
-
-real function_13b390(void const *function, real input, real range);
-real function_13bb90(s_tag_data const *function, real input, real range);
-
+/* an interpolator's function at a value plus its accumulated input, scaled by
+   its scale interpolator's own output and mapped to the function's bounds */
 // @retail 0x134fe0
-real __stdcall function_134fe0(long index, real value)
+real __stdcall interpolator_evaluate(long index, real value)
 {
-	long local_1 = *(long volatile *)&index;
-	s_interpolator_globals *globals = (s_interpolator_globals *)g_4e6740;
-	s_interpolator_state *state = &globals->states[local_1];
+	s_interpolator_globals *globals = g_4e6740;
+	s_interpolator_state *state = &globals->states[index];
 	real result = 0.0f;
 	if (state)
 	{
-		s_scenario_interpolator *definition = &((s_scenario_interpolators_view *)g_4e0350)->interpolators[local_1];
-		value += state->value18;
+		s_scenario_interpolator *definition = &((s_scenario_interpolators_view *)g_4e0350)->interpolators[index];
+		value += state->accumulated_input;
 		short scale_index = definition->scale_index;
 		long clamped = scale_index < 0 ? 0 : (scale_index > ((s_scenario_interpolators_view *)g_4e0350)->interpolator_count - 1 ? ((s_scenario_interpolators_view *)g_4e0350)->interpolator_count - 1 : scale_index);
 		if (clamped == scale_index)
@@ -64,13 +55,13 @@ real __stdcall function_134fe0(long index, real value)
 				s_interpolator_state *scale_state = &globals->states[definition->scale_index];
 				real scale = 0.0f;
 				if (scale_state)
-					scale = function_134fe0(definition->scale_index, scale_state->value);
+					scale = interpolator_evaluate(definition->scale_index, scale_state->value);
 				result = scale * output;
-				byte *function = function_data->address;
-				if (!(function[1] & 0xf0))
+				s_function_header const *header = (s_function_header const *)function_data->address;
+				if (!(header->flags & 0xf0))
 				{
-					real lo = *(real *)(function + 4);
-					real hi = *(real *)(function + 8);
+					real lo = header->bounds.lo;
+					real hi = header->bounds.hi;
 					result = result < 0.0f ? 0.0f : (result > 1.0f ? 1.0f : result);
 					result = (hi - lo) * result + lo;
 				}
@@ -82,20 +73,20 @@ real __stdcall function_134fe0(long index, real value)
 	return result;
 }
 
-real function_134c50(real value);
-
+/* an interpolator's function at its current value */
 // @retail 0x134fc0
-inline real function_134fc0(long index)
+inline real interpolator_evaluate_current(long index)
 {
-	s_interpolator_state *state = &((s_interpolator_globals *)g_4e6740)->states[index];
+	s_interpolator_state *state = &g_4e6740->states[index];
 	real result = 0.0f;
 	if (state)
-		result = function_134fe0(index, state->value);
+		result = interpolator_evaluate(index, state->value);
 	return result;
 }
 
+/* an interpolator's current value, or its function's output there */
 // @retail 0x1352e0
-real function_1352e0(long name, bool flag)
+real interpolator_get_current_value(long name, bool evaluate)
 {
 	long index = NONE;
 	s_interpolator_state *state = interpolator_get(name, &index);
@@ -103,8 +94,8 @@ real function_1352e0(long name, bool flag)
 	if (state)
 	{
 		real value = state->value;
-		if (flag)
-			result = function_134fc0(index);
+		if (evaluate)
+			result = interpolator_evaluate_current(index);
 		else
 			result = value;
 	}
@@ -113,15 +104,16 @@ real function_1352e0(long name, bool flag)
 
 __forceinline real interpolator_sample(s_interpolator_state *state, real value)
 {
-	if (state->flag1)
+	if (state->smooth)
 		value = function_134c50(value);
 	else
 		value = value < 0.0f ? 0.0f : (value > 1.0f ? 1.0f : value);
 	return (1.0f - value) * state->start_value + state->target_value * value;
 }
 
+/* the value a fraction of the way from the start to the target value */
 // @retail 0x135530
-real function_135530(long name, real value, bool flag)
+real interpolator_get_value_at_fraction(long name, real value, bool evaluate)
 {
 	long index = NONE;
 	s_interpolator_state *state = interpolator_get(name, &index);
@@ -130,69 +122,58 @@ real function_135530(long name, real value, bool flag)
 	{
 		result = interpolator_sample(state, value);
 		value = result;
-		if (flag)
-			result = function_134fe0(index, value);
+		if (evaluate)
+			result = interpolator_evaluate(index, value);
 	}
 	return result;
 }
 
+/* the value at a game time */
 // @retail 0x1355b0
-real function_1355b0(long name, real value, bool flag)
+real interpolator_get_value_at_time(long name, real value, bool evaluate)
 {
 	long index = NONE;
 	s_interpolator_state *state = interpolator_get(name, &index);
 	real result = 0.0f;
-	if (state && state->end_time > state->time10)
+	if (state && state->end_time > state->start_time)
 	{
-		value = 0.0f > (value - state->time10) / (state->end_time - state->time10) ?
-			0.0f : (value - state->time10) / (state->end_time - state->time10);
+		value = 0.0f > (value - state->start_time) / (state->end_time - state->start_time) ?
+			0.0f : (value - state->start_time) / (state->end_time - state->start_time);
 		result = interpolator_sample(state, value);
 		value = result;
-		if (flag)
-			result = function_134fe0(index, value);
+		if (evaluate)
+			result = interpolator_evaluate(index, value);
 	}
 	return result;
 }
 
+/* the value some seconds after the interpolator's current time */
 // @retail 0x135680
-real function_135680(long name, real value, bool flag)
+real interpolator_get_value_after(long name, real value, bool evaluate)
 {
 	long index = NONE;
 	s_interpolator_state *state = interpolator_get(name, &index);
 	real result = 0.0f;
-	if (state && state->end_time > state->time10)
+	if (state && state->end_time > state->start_time)
 	{
-		value += state->start_time;
-		value = 0.0f > (value - state->time10) / (state->end_time - state->time10) ?
-			0.0f : (value - state->time10) / (state->end_time - state->time10);
+		value += state->current_time;
+		value = 0.0f > (value - state->start_time) / (state->end_time - state->start_time) ?
+			0.0f : (value - state->start_time) / (state->end_time - state->start_time);
 		result = interpolator_sample(state, value);
 		value = result;
-		if (flag)
-			result = function_134fe0(index, value);
+		if (evaluate)
+			result = interpolator_evaluate(index, value);
 	}
 	return result;
 }
 
-struct s_interpolator_tick_state
-{
-	real value;
-	real start_value;
-	real target_value;
-	real start_time;
-	real time10;
-	real end_time;
-	real value18;
-	byte active : 1;
-	byte flag1 : 1;
-	byte flag2 : 1;
-	byte : 5;
-	byte unknown1d[3];
-};
 
+/* moves each active interpolator to the game time, then adds each input
+   interpolator's value over the tick to the accumulated inputs */
 // @retail 0x134e00
-void function_134e00(real delta)
+void interpolators_update(real delta)
 {
-	s_interpolator_globals *globals = (s_interpolator_globals *)g_4e6740;
+	s_interpolator_globals *globals = g_4e6740;
 	if (globals)
 	{
 		s_scenario_interpolators_view *scenario = (s_scenario_interpolators_view *)g_4e0350;
@@ -201,33 +182,33 @@ void function_134e00(real delta)
 			real time = g_510c54 && g_510c54->active ? g_510c54->game_time * g_510c54->rate : 0.0f;
 			for (long i = 0; i < scenario->interpolator_count; i++)
 			{
-				s_interpolator_tick_state *state = (s_interpolator_tick_state *)&globals->states[i];
+				s_interpolator_state *state = &globals->states[i];
 				s_scenario_interpolator *definition = &scenario->interpolators[i];
 				if (state->active)
 				{
 					real value = 0.0f;
-					if (state->end_time > state->time10)
+					if (state->end_time > state->start_time)
 					{
-						real fraction = (time - state->time10) / (state->end_time - state->time10);
+						real fraction = (time - state->start_time) / (state->end_time - state->start_time);
 						if (fraction < 0.0f)
 							fraction = 0.0f;
-						if (state->flag1)
+						if (state->smooth)
 							fraction = function_134c50(fraction);
 						else
 							fraction = fraction < 0.0f ? 0.0f : (fraction > 1.0f ? 1.0f : fraction);
 						value = (1.0f - fraction) * state->start_value + state->target_value * fraction;
 					}
-					state->start_time = time;
+					state->current_time = time;
 					state->value = value;
 				}
-				if (definition->function.address[0] == 3)
-					state->flag2 = true;
+				if (((s_function_header const *)definition->function.address)->type == _function_periodic)
+					state->periodic = true;
 				else
-					state->flag2 = false;
+					state->periodic = false;
 			}
 			for (long j = 0; j < scenario->interpolator_count; j++)
 			{
-				s_interpolator_state *state = &((s_interpolator_globals *)g_4e6740)->states[j];
+				s_interpolator_state *state = &g_4e6740->states[j];
 				s_scenario_interpolator *definition = &scenario->interpolators[j];
 				if (state->active)
 				{
@@ -237,7 +218,7 @@ void function_134e00(real delta)
 					{
 						s_scenario_interpolator *source = &scenario->interpolators[definition->input_index];
 						if (source->input_index == NONE && source->scale_index == NONE)
-							state->value18 += ((s_interpolator_globals *)g_4e6740)->states[definition->input_index].value * delta;
+							state->accumulated_input += g_4e6740->states[definition->input_index].value * delta;
 					}
 				}
 			}
@@ -245,9 +226,7 @@ void function_134e00(real delta)
 	}
 }
 
-/* unknown_146240.cpp */
-real game_time_get_seconds(void);
-
+/* the state of the interpolator with a name, and its index */
 // @retail 0x134d20
 s_interpolator_state *interpolator_get(long name, long *index_out)
 {
@@ -261,7 +240,7 @@ s_interpolator_state *interpolator_get(long name, long *index_out)
 			long interpolator_name = scenario->interpolators[i].name;
 			if (interpolator_name && interpolator_name == name)
 			{
-				((s_interpolator_globals *)g_4e6740)->last_name = name;
+				g_4e6740->last_name = name;
 				index = i;
 				break;
 			}
@@ -271,12 +250,13 @@ s_interpolator_state *interpolator_get(long name, long *index_out)
 	{
 		if (index_out)
 			*index_out = index;
-		result = &((s_interpolator_globals *)g_4e6740)->states[index];
+		result = &g_4e6740->states[index];
 	}
 	else if (index_out)
 		*index_out = NONE;
 	return result;
 }
+/* moves an interpolator from its value to a target over some seconds */
 // @retail 0x135110
 long interpolator_start(long name, real target, real seconds)
 {
@@ -285,18 +265,19 @@ long interpolator_start(long name, real target, real seconds)
 	if (state)
 	{
 		real time = game_time_get_seconds();
-		state->flag1 = false;
+		state->smooth = false;
 		state->active = true;
+		state->current_time = time;
 		state->start_time = time;
-		state->time10 = time;
 		state->start_value = state->value;
 		state->target_value = target;
 		state->end_time = time + seconds;
-		state->value18 = 0.0f;
+		state->accumulated_input = 0.0f;
 	}
 	return index;
 }
 
+/* restarts a stopped interpolator where it stopped */
 // @retail 0x135210
 long interpolator_resume(long name)
 {
@@ -305,19 +286,20 @@ long interpolator_resume(long name)
 	if (state && !TEST_FIELD_BIT(state->active))
 	{
 		real time = game_time_get_seconds();
-		real elapsed = time - state->start_time;
-		state->time10 += elapsed;
+		real elapsed = time - state->current_time;
+		state->start_time += elapsed;
 		state->end_time += elapsed;
-		state->start_time = time;
+		state->current_time = time;
 		state->active = true;
 	}
 	return index;
 }
 
+/* looks an interpolator up; the result is always false */
 // @retail 0x135290
 bool interpolator_exists(long name)
 {
-	s_interpolator_globals *globals = (s_interpolator_globals *)g_4e6740;
+	s_interpolator_globals *globals = g_4e6740;
 	if (globals && g_4e0350 && name)
 	{
 		s_scenario_interpolators_view *scenario = (s_scenario_interpolators_view *)g_4e0350;
@@ -347,47 +329,50 @@ __forceinline s_interpolator_state *interpolator_find(long name)
 			long interpolator_name = scenario->interpolators[i].name;
 			if (interpolator_name && interpolator_name == name)
 			{
-				((s_interpolator_globals *)g_4e6740)->last_name = name;
+				g_4e6740->last_name = name;
 				index = i;
 				break;
 			}
 		}
 	}
 	if (index != NONE)
-		result = &((s_interpolator_globals *)g_4e6740)->states[index];
+		result = &g_4e6740->states[index];
 	return result;
 }
 
-/* starts an interpolator that stops at its target */
+/* starts an interpolator that eases along a cosine curve */
 // @retail 0x135180
-long function_135180(long name, real target, real seconds)
+long interpolator_start_smooth(long name, real target, real seconds)
 {
 	long index = interpolator_start(name, target, seconds);
 	if (index != NONE)
-		interpolator_find(name)->flag1 = true;
+		interpolator_find(name)->smooth = true;
 	return index;
 }
 
+/* an interpolator's accumulated input */
 // @retail 0x135330
-real interpolator_get_value18(long name)
+real interpolator_get_accumulated_input(long name)
 {
 	s_interpolator_state *state = interpolator_find(name);
 	real result = 0.0f;
 	if (state)
-		result = state->value18;
+		result = state->accumulated_input;
 	return result;
 }
 
+/* the game time an interpolator started */
 // @retail 0x135450
-real interpolator_get_time10(long name)
+real interpolator_get_start_time(long name)
 {
 	s_interpolator_state *state = interpolator_find(name);
 	real result = 0.0f;
 	if (state)
-		result = state->time10;
+		result = state->start_time;
 	return result;
 }
 
+/* the game time an interpolator reaches its target */
 // @retail 0x1354c0
 real interpolator_get_end_time(long name)
 {
@@ -398,10 +383,11 @@ real interpolator_get_end_time(long name)
 	return result;
 }
 
+/* stops every interpolator */
 // @retail 0x135750
-void function_135750(void)
+void interpolators_stop_all(void)
 {
-	s_interpolator_globals *globals = (s_interpolator_globals *)g_4e6740;
+	s_interpolator_globals *globals = g_4e6740;
 	if (globals && g_4e0350)
 	{
 		s_scenario_interpolators_view *scenario = (s_scenario_interpolators_view *)g_4e0350;
@@ -410,10 +396,11 @@ void function_135750(void)
 	}
 }
 
+/* restarts every stopped interpolator where it stopped */
 // @retail 0x135790
-void function_135790(void)
+void interpolators_resume_all(void)
 {
-	s_interpolator_globals *globals = (s_interpolator_globals *)g_4e6740;
+	s_interpolator_globals *globals = g_4e6740;
 	if (globals)
 	{
 		s_scenario_interpolators_view *scenario = (s_scenario_interpolators_view *)g_4e0350;
@@ -425,14 +412,14 @@ void function_135790(void)
 				s_interpolator_state *state = &globals->states[i];
 				if (!state->active)
 				{
-					real shifted = state->time10;
-					real elapsed = time - state->start_time;
+					real shifted = state->start_time;
+					real elapsed = time - state->current_time;
 					shifted += elapsed;
-					state->time10 = shifted;
+					state->start_time = shifted;
 					shifted = state->end_time;
 					shifted += elapsed;
 					state->end_time = shifted;
-					state->start_time = time;
+					state->current_time = time;
 					state->active = true;
 				}
 			}
@@ -440,26 +427,29 @@ void function_135790(void)
 	}
 }
 
-static __forceinline real function_135821(s_interpolator_state const *arg_1)
+static __forceinline real interpolator_state_get_value(s_interpolator_state const *state)
 {
 	real result = 0.0f;
-	if (arg_1)
-		result = arg_1->value;
+	if (state)
+		result = state->value;
 	return result;
 }
 
-static __forceinline real function_135822(real arg_1)
+/* 1 for a value below one half, else 0 */
+static __forceinline real interpolator_toggle_target(real value)
 {
 	real result = 0.0f;
-	if (arg_1 < 0.5f)
+	if (value < 0.5f)
 		result = 1.0f;
 	return result;
 }
 
+/* moves the interpolator last looked up to 1 if it is below one half, else
+   to 0, over two seconds */
 // @retail 0x135820
-void function_135820(void)
+void interpolators_toggle_last_used(void)
 {
-	s_interpolator_globals *globals = (s_interpolator_globals *)g_4e6740;
+	s_interpolator_globals *globals = g_4e6740;
 	if (globals && g_4e0350)
 	{
 		long name = globals->last_name;
@@ -467,26 +457,24 @@ void function_135820(void)
 		{
 			long index;
 			s_interpolator_state *state = interpolator_get(name, &index);
-			real value = function_135821(state);
-			real target = function_135822(value);
+			real value = interpolator_state_get_value(state);
+			real target = interpolator_toggle_target(value);
 			interpolator_start(name, target, 2.0f);
 		}
 	}
 }
 
-real function_134c50(real value);
-
-
+/* how far an interpolator is from its start to its end time, from 0 */
 // @retail 0x1353a0
-real function_1353a0(long name)
+real interpolator_get_progress(long name)
 {
 	s_interpolator_state *state = interpolator_find(name);
 	real result = 0.0f;
-	if (state && state->end_time > state->time10)
+	if (state && state->end_time > state->start_time)
 	{
-		result = 0.0f > (state->start_time - state->time10) / (state->end_time - state->time10) ?
-			0.0f : (state->start_time - state->time10) / (state->end_time - state->time10);
-		if (state->flag1)
+		result = 0.0f > (state->current_time - state->start_time) / (state->end_time - state->start_time) ?
+			0.0f : (state->current_time - state->start_time) / (state->end_time - state->start_time);
+		if (state->smooth)
 			result = function_134c50(result);
 	}
 	return result;

@@ -5368,9 +5368,9 @@ void function_1257b0(void);
 void sound_update_locations(void);
 void function_131ff0(void);
 void function_1320b0(void);
-void function_134d90(void);
-void function_134dd0(void);
-void function_134de0(void);
+void interpolators_initialize(void);
+void interpolators_dispose(void);
+void interpolators_initialize_for_new_map(void);
 void function_13bf00(void);
 void function_13bf60(void);
 void function_13bfc0(void);
@@ -5558,7 +5558,7 @@ s_subsystem_440dd8 const g_440dd8[68] =
     { function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL },
     { function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL },
     { function_210db0, function_175f40, function_175f40, function_175f40, function_210df0, function_210e10, NULL, NULL, NULL },
-    { function_134d90, function_134dd0, function_134de0, function_175f40, NULL, NULL, NULL, NULL, NULL },
+    { interpolators_initialize, interpolators_dispose, interpolators_initialize_for_new_map, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL },
     { function_225f80, function_175f40, function_225fc0, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL },
