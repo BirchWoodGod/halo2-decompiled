@@ -837,7 +837,7 @@ void function_3d000(real const *state)
         local_low_high_record.b = (real)(inverse * state[41] * 16777215.0);
         real inverse_range = 1.0f / (local_low_high_record.b - local_low_high_record.a);
         direction[0] = inverse_range;
-        direction[1] = 0.0f - direction[0] * local_low_high_record.a;
+        direction[1] = 0.0f - inverse_range * local_low_high_record.a;
         direction[2] = 0.0f;
         direction[3] = 0.0f;
     }
