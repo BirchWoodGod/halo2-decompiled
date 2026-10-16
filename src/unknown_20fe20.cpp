@@ -1256,63 +1256,51 @@ void function_212100(point3f *out, point3f const *p0, point3f const *p1, point3f
 // @retail 0x210a30
 real function_210a30(s_type_c3b527 const *a, s_type_c3b527 const *b)
 {
-	real local_0;
-	real local_1;
-	real local_2;
+	real distance_squared;
 
 	if (a->output_index == b->output_index)
 	{
-		local_0 = b->point.x - a->point.x;
-		local_0 *= local_0;
-		local_1 = b->point.y - a->point.y;
-		local_2 = b->point.z - a->point.z;
+		vector3f v;
+		vector3d_from_points3d(&a->point, &b->point, &v);
+		distance_squared = (v.k * v.k + v.i * v.i) + v.j * v.j;
 	}
 	else
 	{
+		vector3f v;
 		point3f pa;
 		point3f pb;
 
 		function_210850(a, &pa);
 		function_210850(b, &pb);
-		local_1 = pb.x - pa.x;
-		local_2 = pb.y - pa.y;
-		local_0 = pb.z - pa.z;
-		local_0 *= local_0;
+		vector3d_from_points3d(&pa, &pb, &v);
+		distance_squared = (v.j * v.j + v.k * v.k) + v.i * v.i;
 	}
 
-	local_0 += local_2 * local_2;
-	local_0 += local_1 * local_1;
-	return local_0;
+	return distance_squared;
 }
 
 // @retail 0x210b60
 real function_210b60(s_type_c3b527 const *a, point3f const *b)
 {
-	real local_0;
-	real local_1;
-	real local_2;
+	real distance_squared;
 
 	if (a->output_index == NONE)
 	{
-		local_0 = b->x - a->point.x;
-		local_0 *= local_0;
-		local_1 = b->y - a->point.y;
-		local_2 = b->z - a->point.z;
+		vector3f v;
+		vector3d_from_points3d(&a->point, b, &v);
+		distance_squared = (v.k * v.k + v.i * v.i) + v.j * v.j;
 	}
 	else
 	{
 		point3f point;
+		vector3f v;
 
 		function_210850(a, &point);
-		local_1 = b->x - point.x;
-		local_2 = b->y - point.y;
-		local_0 = b->z - point.z;
-		local_0 *= local_0;
+		vector3d_from_points3d(&point, b, &v);
+		distance_squared = (v.j * v.j + v.k * v.k) + v.i * v.i;
 	}
 
-	local_0 += local_2 * local_2;
-	local_0 += local_1 * local_1;
-	return local_0;
+	return distance_squared;
 }
 
 /* ---- vectors and distances between node points ---- */
@@ -1446,24 +1434,16 @@ bool function_210770(short output_index, vector3f const *vector, vector3f *out)
 	return success;
 }
 
-PRIVATE __forceinline real function_210ac1(real arg_0)
-{
-	__asm
-	{
-		fld arg_0
-		fsqrt
-	}
-}
-
 // @retail 0x210970
 real function_210970(s_type_c3b527 const *a, s_type_c3b527 const *b)
 {
+	real distance_squared;
 
 	if (a->output_index == b->output_index)
 	{
 		vector3f v;
 		vector3d_from_points3d(&a->point, &b->point, &v);
-		return function_210ac1((v.k * v.k + v.i * v.i) + v.j * v.j);
+		distance_squared = (v.k * v.k + v.i * v.i) + v.j * v.j;
 	}
 	else
 	{
@@ -1474,30 +1454,34 @@ real function_210970(s_type_c3b527 const *a, s_type_c3b527 const *b)
 		function_210850(a, &pa);
 		function_210850(b, &pb);
 		vector3d_from_points3d(&pa, &pb, &v);
-		return function_210ac1((v.j * v.j + v.k * v.k) + v.i * v.i);
+		distance_squared = (v.j * v.j + v.k * v.k) + v.i * v.i;
 	}
 
+	return (real)sqrt(distance_squared);
 }
 
 
 // @retail 0x210ac0
 real function_210ac0(s_type_c3b527 const *a, point3f const *b)
 {
-	vector3f v;
-	real local_0;
+	real distance_squared;
+
 	if (a->output_index == NONE)
 	{
+		vector3f v;
 		vector3d_from_points3d(&a->point, b, &v);
-		local_0 = v.k * v.k + v.i * v.i;
+		distance_squared = (v.k * v.k + v.i * v.i) + v.j * v.j;
 	}
 	else
 	{
 		point3f point;
+		vector3f v;
 		function_210850(a, &point);
 		vector3d_from_points3d(&point, b, &v);
-		local_0 = v.i * v.i + v.k * v.k;
+		distance_squared = (v.i * v.i + v.k * v.k) + v.j * v.j;
 	}
-	return function_210ac1(local_0 + v.j * v.j);
+
+	return (real)sqrt(distance_squared);
 }
 
 
@@ -2453,7 +2437,7 @@ long function_20e720(bool same_team, long ai_index, s_audio_priority_table *tabl
                 real y = position.y - *(real *)(candidate_actor + 0x23c);
                 real z = position.z - *(real *)(candidate_actor + 0x240);
                 real score = distance * candidate_weight;
-                real squared = z * z + x * x + y * y;
+                real squared = (z * z + x * x) + y * y;
                 if (squared < 0.0f)
                     squared = 0.0f;
                 else if (squared > 64.0f)
