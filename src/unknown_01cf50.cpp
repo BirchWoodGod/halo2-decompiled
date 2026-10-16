@@ -3876,6 +3876,7 @@ void function_40890(void)
 	inverse.blue = (1.0f - g_485884) * g_485874;
 	dword packed = pack_color4f(&color);
 	dword constant = pack_color4f(&inverse);
+#pragma inline_depth(255)
 	function_0222d0(D3DRS_CULLMODE, 0x901);
 	function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
 	function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
@@ -3911,6 +3912,7 @@ void function_40890(void)
 		function_0222d0(D3DRS_SRCBLEND, 0x307);
 		function_0222d0(D3DRS_DESTBLEND, 0x8002);
 		function_0222d0(D3DRS_BLENDOP, 0x8007);
+#pragma inline_depth(0)
 		function_0222d0(D3DRS_BLENDCOLOR, packed);
 		constant = packed;
 		rgb_inputs = 0x1201120;
@@ -5238,8 +5240,10 @@ void __stdcall function_35b90(void *material)
         byte *bitmap = *(byte **)(source + 0xc + stage * 4);
         if (!bitmap) break;
         g_51f3c8[1][stage] = function_12310((s_bitmap_view *)bitmap, 0.0f);
-        g_485af4[stage] = *(short *)(bitmap + 4);
-        g_485b04[stage] = *(short *)(bitmap + 6);
+        short bitmap_width = *(short *)(bitmap + 4);
+        short bitmap_height = *(short *)(bitmap + 6);
+        g_485af4[stage] = bitmap_width;
+        g_485b04[stage] = bitmap_height;
         D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, source[0x18 + stage] ? 1 : 3);
         D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, source[0x18 + stage] ? 1 : 3);
         D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, source[0x96] ? 1 : 2);
@@ -6490,9 +6494,12 @@ void __stdcall function_4f010(void *payload)
                 if (*(byte **)(entry + 0x2c) && *(long *)(entry + 0x28) > 0)
                     unpack_color3f(function_13bc00((s_tag_data *)(entry + 0x28), colour_time), (color3f *)&colour.red);
                 else *(color3f *)&colour.red = *(color3f *)&g_4686cc->red;
-                colour.red = clamp_callback(state->third.i * colour.red, 0.0f, 1.0f);
-                colour.green = clamp_callback(state->third.j * colour.green, 0.0f, 1.0f);
-                colour.blue = clamp_callback(state->third.k * colour.blue, 0.0f, 1.0f);
+                real red = state->third.i * colour.red;
+                real green = state->third.j * colour.green;
+                real blue = state->third.k * colour.blue;
+                colour.red = clamp_callback(red, 0.0f, 1.0f);
+                colour.green = clamp_callback(green, 0.0f, 1.0f);
+                colour.blue = clamp_callback(blue, 0.0f, 1.0f);
                 colour.alpha = clamp_callback(opacity * fade, 0.0f, 1.0f);
                 point3f point;
                 point.x = state->first.i * length + state->position.x;
