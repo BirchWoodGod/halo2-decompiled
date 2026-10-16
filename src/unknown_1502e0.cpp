@@ -165,6 +165,20 @@ void function_a89c0(long unit_index, long definition_index);
 void function_f8110(long object_index);
 void __stdcall function_b8540(long object_index);
 
+/* game ticks in the given number of seconds, rounded */
+static inline long game_seconds_to_ticks_round(real seconds)
+{
+	real ticks = g_510c54->field_2_3 * seconds;
+	long result;
+
+	__asm
+	{
+		fld ticks
+		fistp result
+	}
+	return result;
+}
+
 // @retail 0x151ea0
 void function_151ea0(long player_index, long object_index)
 {
@@ -174,32 +188,31 @@ void function_151ea0(long player_index, long object_index)
 	s_tail_object_header *header = (s_tail_object_header *)g_4e0300->data + (*object_reference & 0xffff);
 	byte *object = (byte *)header->object;
 	byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
-	real duration = *(real *)(definition + 0x130) * g_510c54->field_2_3;
-	long ticks;
-	bool unavailable = (header->flags & 0x10) != 0;
-	__asm
-	{
-		fld duration
-		fistp ticks
-	}
+	long ticks = game_seconds_to_ticks_round(*(real *)(definition + 0x130));
+	bool unavailable = false;
+	if (header->flags & 0x10)
+		unavailable = true;
 	if ((short)ticks > 0 && !unavailable)
 	{
 		short kind = *(short *)(definition + 0x12c);
-		if (kind == 2)
+		if (kind != 1)
 		{
-			if (!function_d6af0(player->unit_index)) return;
-			player_speed_request_14ea20(*player_reference);
-		}
-		else if (kind == 5)
-		{
-			if (!function_d6790(player->unit_index)) return;
-			player_speed_request_14ec00(*player_reference);
-		}
-		else if (kind != 1)
-		{
-			short effect = kind == 3 ? 0 : 1;
-			if (!function_152000(*player_reference, effect, (short)ticks)) return;
-			if (effect == 0) player_speed_request_14eb10(*player_reference);
+			if (kind == 2)
+			{
+				if (!function_d6af0(player->unit_index)) return;
+				player_speed_request_14ea20(*player_reference);
+			}
+			else if (kind == 5)
+			{
+				if (!function_d6790(player->unit_index)) return;
+				player_speed_request_14ec00(*player_reference);
+			}
+			else
+			{
+				short effect = kind == 3 ? 0 : 1;
+				if (!function_152000(*player_reference, effect, (short)ticks)) return;
+				if (effect == 0) player_speed_request_14eb10(*player_reference);
+			}
 		}
 		long definition_index = *(long *)tail_object_get(*object_reference);
 		function_191fab(definition_index, player->local_index);
@@ -1208,7 +1221,9 @@ bool function_151940(long player_index, s_target_candidate *candidate, bool prim
 				else if (modes[3]) mode = 6;
 				else goto done;
 			}
+#pragma inline_depth(0)
 			if (function_138880())
+#pragma inline_depth()
 			{
 				function_a8f10(player->unit_index, weapon_index, mode);
 				result = true;
@@ -1789,13 +1804,13 @@ void __stdcall function_150e30(long player_index, long object_index)
     {
         byte *definition = g_4e3b44[*(long *)pickup & 0xffff].bytes;
         short kind = *(short *)(definition + 0x12c);
-        if (kind != 6)
+        if (kind == 6)
         {
-            if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
-                function_151ea0(player_index, object_index);
+            if (function_ccba0(player->unit_index, object_index))
+                function_191e51(*(long *)pickup, player->local_index);
         }
-        else if (function_ccba0(player->unit_index, object_index))
-            function_191e51(*(long *)pickup, player->local_index);
+        else if (kind != 0 && function_ccb80(player->unit_index) == NONE && !function_138880())
+            function_151ea0(player_index, object_index);
     }
     byte type = ((s_tail_object_header *)g_4e0300->data)[object_index & 0xffff].type;
     if ((1 << type) & 4)
