@@ -424,7 +424,7 @@ void network_session_release_key(c_class_58d20 *session)
 }
 
 // @retail 0x5fb00
-void network_session_set_key(c_class_58d20 *session, const XNKID *kid, const XNKEY *key, long local)
+void network_session_set_key(c_class_58d20 *session, long local, const XNKID *kid, const XNKEY *key)
 {
 	XNKID *local_0 = (XNKID *)&session->unknown1c;
 	session->flag24 = true;
@@ -452,7 +452,7 @@ bool network_session_create_key(c_class_58d20 *session, long local, long mode)
 		{
 			XNKID kid = entry->kid;
 			XNKEY key = entry->key;
-			network_session_set_key(session, &kid, &key, local_value);
+			network_session_set_key(session, local_value, &kid, &key);
 			return true;
 		}
 	}
@@ -460,12 +460,15 @@ bool network_session_create_key(c_class_58d20 *session, long local, long mode)
 }
 
 // @retail 0x5fac0
-bool network_session_join_key(const XNKEY *key, long mode, const XNKID *kid, c_class_58d20 *session, long local)
+bool network_session_join_key(c_class_58d20 *session, long mode, const XNKID *kid, const XNKEY *key, long local)
 {
+	const long *mode_reference = &mode;
+	long mode_value = *mode_reference;
+	(void)mode_value;
 	network_session_release_key(session);
 	if (transport_security_register_key(session->value38, local, false, kid, key))
 	{
-		network_session_set_key(session, kid, key, local);
+		network_session_set_key(session, local, kid, key);
 		return true;
 	}
 	return false;
@@ -1961,9 +1964,9 @@ bool __stdcall network_session_handle_time_synchronize(const s_session_id *data,
 		}
 		else if (network_session_address_is_peer(session, address) && message->type == 1)
 		{
-			long local_0 = message->times[2] - message->times[0];
-			long local_1 = message->times[3] - message->times[1];
-			session->time78b0 = (local_0 + local_1) / 2;
+			const long &first = message->times[2] - message->times[0];
+			const long &second = message->times[3] - message->times[1];
+			session->time78b0 = (first + second) / 2;
 			session->flag78ac = true;
 			session->value7654 = network_session_time_now();
 			result = true;
@@ -3300,7 +3303,7 @@ bool __stdcall network_session_host(c_class_58d20 *session, long mode, long loca
 			return false;
 		if (kid && key)
 		{
-			if (!network_session_join_key(key, mode, kid, session, local))
+			if (!network_session_join_key(session, mode, kid, key, local))
 				return false;
 		}
 		else
@@ -3674,7 +3677,7 @@ bool __stdcall function_59e50(c_class_58d20 *session, long mode, long local,
   network_session_release_key(session);
   if (transport_security_register_key(session->value38, local, false, kid, key))
   {
-   network_session_set_key(session, kid, key, local);
+   network_session_set_key(session, local, kid, key);
    s_type_99af70 address;
    if (function_07ab10(session->value38, &address, local, 0x3e9, (const XNADDR *)host))
    {
