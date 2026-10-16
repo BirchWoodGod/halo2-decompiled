@@ -358,7 +358,7 @@ void function_199a03(long mode);
 bool network_session_interface_set_value49a4(long value);
 void function_148cfc(long value);
 void function_19a0af(long value);
-c_class_1473c9 *function_149f1e(short user_flags, long load);
+c_class_1473c9 *window_manager_open_channel_5_screen(short user_flags, long load);
 c_class_1473c9 *__stdcall function_230c8d(s_screen_parameters *parameters);
 void function_22387b(void);
 
@@ -412,7 +412,7 @@ void c_xbox_live_menu_list::handle_item(s_controller_reference **controller, lon
 		case 1:
 			if (function_193f50())
 			{
-				function_149f1e(1 << (*controller)->controller_index, (long)function_230c8d);
+				window_manager_open_channel_5_screen(1 << (*controller)->controller_index, (long)function_230c8d);
 			}
 			else
 			{

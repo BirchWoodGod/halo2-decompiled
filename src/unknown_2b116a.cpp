@@ -217,7 +217,7 @@ color4f const *g_4686f8;
 // @retail 0x2b07e2
 void __stdcall function_2b07e2(c_class_2b01eb *widget, long frame)
 {
-    s_type_954545 *globals = function_148350();
+    s_type_954545 *globals = user_interface_globals_get();
     dword alpha = (long)(globals ? *(real *)((byte *)globals + 0x50) * 255.0f : 255.0f);
     dword red = (long)(globals ? *(real *)((byte *)globals + 0x54) * 255.0f : 255.0f);
     dword green = (long)(globals ? *(real *)((byte *)globals + 0x58) * 255.0f : 255.0f);
@@ -4168,7 +4168,7 @@ void c_player_profile_edit_list::v20(c_class_1a2c81 *item, long unused)
 	}
 }
 
-c_class_1473c9 *function_149f1e(short user_flags, long load);
+c_class_1473c9 *window_manager_open_channel_5_screen(short user_flags, long load);
 
 /* opens the chosen part of the profile editor */
 // @retail 0x2b79f9
@@ -4182,10 +4182,10 @@ void c_player_profile_edit_list::handle_item(s_controller_reference **controller
 		switch ((short)*item)
 		{
 		case 0:
-			function_149f1e(1 << (*controller)->controller_index, (long)function_2b7714);
+			window_manager_open_channel_5_screen(1 << (*controller)->controller_index, (long)function_2b7714);
 			break;
 		case 1:
-			function_149f1e(1 << (*controller)->controller_index, (long)function_2b77a8);
+			window_manager_open_channel_5_screen(1 << (*controller)->controller_index, (long)function_2b77a8);
 			break;
 		case 2:
 			parameters.field_c = 0;
@@ -5538,7 +5538,7 @@ void __stdcall function_2c52e7(char const *map_name)
 	}
 	else progress = 1.0f;
 	// Read music through the existing canonical member const view at its later use.
-	real target = main_menu_music_silence_fraction((s_main_menu_music const *)&g_54d598.m1248) * 0.3f + progress * 0.7f;
+	real target = main_menu_music_silence_fraction((s_main_menu_music const *)&g_54d598.main_menu_music) * 0.3f + progress * 0.7f;
 	if (target >= g_509334)
 	{
 		g_509334 += step;
@@ -5795,14 +5795,14 @@ public:
     bool dialog_shown;
 };
 
-bool window_manager_channel_has_pause_screen(long channel);
+bool window_manager_channel_has_dialog(long channel);
 word function_1901fc();
 bool __stdcall function_2c55c4(long unused);
 bool __stdcall function_163890(char const *map_name, long mode);
 long map_location_progress_get(char const *map_name);
 struct s_entry_a;
 s_entry_a *function_148d61();
-bool function_14a217();
+bool window_manager_main_menu_music_silence_done();
 void function_23643f();
 void __stdcall function_2c52e7(char const *map_name);
 extern real g_509334;
@@ -5813,9 +5813,9 @@ void c_load_progress_screen::v3()
     c_class_1a2c81::v3();
     if (!ANIMATION_FLAG(animation, 1))
     {
-        if (window_manager_channel_has_pause_screen(0) ||
-            window_manager_channel_has_pause_screen(1) ||
-            window_manager_channel_has_pause_screen(3))
+        if (window_manager_channel_has_dialog(0) ||
+            window_manager_channel_has_dialog(1) ||
+            window_manager_channel_has_dialog(3))
         {
             if (!dialog_shown)
             {
@@ -5837,7 +5837,7 @@ void c_load_progress_screen::v3()
             switch (progress)
             {
             case 2:
-                if (function_14a217() && fabs(g_509334 - 1.0f) < 0.0001f)
+                if (window_manager_main_menu_music_silence_done() && fabs(g_509334 - 1.0f) < 0.0001f)
                 {
                     function_23643f();
                     start_animation(3);

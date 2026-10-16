@@ -55,7 +55,7 @@ struct s_sound_play
 };
 
 struct s_type_954545;
-s_type_954545 *function_148350(void);
+s_type_954545 *user_interface_globals_get(void);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 
 struct s_user_interface_globals_strings
@@ -93,7 +93,7 @@ void function_23620d(long string_handle, word *buffer)
 	buffer[0] = 0;
 	if (string_handle != NONE)
 	{
-		s_user_interface_globals_strings *globals = (s_user_interface_globals_strings *)function_148350();
+		s_user_interface_globals_strings *globals = (s_user_interface_globals_strings *)user_interface_globals_get();
 		if (globals && globals->string_list_index != NONE)
 		{
 			function_1a0180(globals->string_list_index, string_handle, buffer);
@@ -124,7 +124,7 @@ void function_236299(long sound)
 {
 	s_sound_play play;
 	byte set[2];
-	s_interface_sound_globals *globals = (s_interface_sound_globals *)function_148350();
+	s_interface_sound_globals *globals = (s_interface_sound_globals *)user_interface_globals_get();
 	if (globals)
 	{
 		long tag_index = sound < 13 ? globals->sounds[sound].index : NONE;
@@ -206,7 +206,7 @@ struct s_user_interface_globals_cursor
 s_type_7ba8e9 *function_236235(short frame_index, short sequence_index)
 {
 	s_type_7ba8e9 *result = 0;
-	s_user_interface_globals_cursor *globals = (s_user_interface_globals_cursor *)function_148350();
+	s_user_interface_globals_cursor *globals = (s_user_interface_globals_cursor *)user_interface_globals_get();
 
 	if (globals && globals->cursor_bitmap_index != NONE)
 	{
@@ -499,7 +499,7 @@ struct s_dialog_globals_view
 void function_23661f(s_dialog_definition *definition, long dialog_id)
 {
 	bool found = false;
-	s_dialog_globals_view *globals = (s_dialog_globals_view *)function_148350();
+	s_dialog_globals_view *globals = (s_dialog_globals_view *)user_interface_globals_get();
 
 	memset(definition, 0, sizeof(*definition));
 	definition->dialog_id = dialog_id;

@@ -84,11 +84,11 @@ void *c_class_1474e8::get_item_animation(long index)
 
 	if (definition)
 	{
-		skin = function_14837a(definition->skin_index);
+		skin = user_interface_globals_get_skin(definition->skin_index);
 	}
 	else
 	{
-		skin = function_14837a(0);
+		skin = user_interface_globals_get_skin(0);
 	}
 	return skin->item_animations + index * 16;
 }
@@ -587,7 +587,7 @@ void function_24bc12(c_class_1474e8 *list, bool remove_extra)
 	{
 		short width = 0;
 		short height = 0;
-		s_widget_group_definition *skin = (s_widget_group_definition *)function_14837a(definition->skin_index);
+		s_widget_group_definition *skin = (s_widget_group_definition *)user_interface_globals_get_skin(definition->skin_index);
 		s_widget_point point;
 		s_widget_bounds bounds;
 		long i;

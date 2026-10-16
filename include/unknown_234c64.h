@@ -223,9 +223,11 @@ public:
 	/* the game variant screens leave out two engines while this is set */
 	bool value08;
 	byte unknown09[0xc - 0x09];
-	/* a pending message for the first signed in user (0x14a08f) */
-	long m0c;
-	char m10;
+	/* the kind of join to start for the first signed in user (set by 0x2395dc,
+	   sent by 0x14a08f) */
+	long pending_join_type;
+	/* the e_game_mode whose event handler 0x14954a runs */
+	char game_mode;
 	byte unknown11[0x14 - 0x11];
 	color3f color14;
 	long m20;
@@ -244,9 +246,9 @@ public:
 	s_screen_settings_54dc6c settings;
 	/* the online tasks that look up the selected player's clans (0x148893) */
 	long team_task;
-	long task750;
-	s_window_manager_754 m754;
-	s_window_manager_df6 mdf6;
+	long team_members_task;
+	s_window_manager_754 team_details;
+	s_window_manager_df6 team_member_details;
 	byte unknowne88[0xe94 - 0xe88];
 	s_window_manager_e94 me94;
 	long mf04;
@@ -260,7 +262,7 @@ public:
 	long m122c;
 	long m1230;
 	byte unknown1234[0x1248 - 0x1234];
-	s_window_manager_1248 m1248;
+	s_window_manager_1248 main_menu_music;
 };
 
 extern c_window_manager g_54d598;
@@ -339,8 +341,8 @@ struct s_type_954545
 	long skin_count;
 	s_tag_reference_8 *skins;
 	byte unknown140[0x144 - 0x140];
-	/* a unicode string list (0x1496f6) */
-	long string_list_index_144;
+	/* the subtitles' unicode string list (0x1496f6) */
+	long subtitle_string_list_index;
 	byte unknown148[0x158 - 0x148];
 	long range_count;
 	struct s_user_interface_globals_range
@@ -358,8 +360,8 @@ struct s_type_954545
 	} title_bounds[4];
 };
 
-/* the user interface globals tag (unknown_1482e8.cpp) */
-s_type_954545 *function_148350(void);
+/* the user interface globals tag (user_interface_globals.cpp) */
+s_type_954545 *user_interface_globals_get(void);
 
 /* the render window passed down to the screens */
 class c_render_window

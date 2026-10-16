@@ -25,7 +25,7 @@ real g_54d5b4;
 
 bool function_6c7e0();
 long function_147f4f(void);
-s_type_954545 *function_148350(void);
+s_type_954545 *user_interface_globals_get(void);
 long function_199d7c(void);
 word function_19022f(void);
 c_class_1473c9 *__stdcall function_2b72e6(s_screen_parameters *request);
@@ -140,7 +140,7 @@ void c_window_channel::update()
 // @retail 0x234f8c
 void c_window_channel::render(long window)
 {
-	s_type_954545 *globals = function_148350();
+	s_type_954545 *globals = user_interface_globals_get();
 	bool fading = false;
 	real fade = 0.f;
 	short mode = g_54d5a8;

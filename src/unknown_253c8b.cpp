@@ -25,7 +25,7 @@ struct s_bitmap_group_view_2541
 	byte unknown00[0x44];
 	long bitmap_count;
 };
-void function_1496f6(long type, word *buffer);
+void user_interface_globals_get_subtitle_text(long type, word *buffer);
 
 // @retail 0x253c8b
 c_class_19b8b1::c_class_19b8b1(short valuef8, word user_flags) :
@@ -99,7 +99,7 @@ void function_253765(c_text_widget_45a5e0 *widget, short index, s_text_block con
 	widget->function_22f52e()->setup(buffer, font, &color, (short)value14, NONE, justification, NONE);
 	if (definition->flags & 8)
 	{
-		s_type_954545 *globals = function_148350();
+		s_type_954545 *globals = user_interface_globals_get();
 
 		widget->function_22f52e()->value14 = widget->function_22f52e()->value14 | 4;
 		if (globals)
@@ -133,12 +133,12 @@ void function_2538a6(c_text_widget_45a5e0 *widget, short value04, short font, sh
 // @retail 0x253bc9
 void function_253bc9(c_text_widget_458940 *widget, long subtitle_type)
 {
-	if (function_148350())
+	if (user_interface_globals_get())
 	{
 		word buffer[0x100];
 
 		buffer[0] = 0;
-		function_1496f6(subtitle_type, buffer);
+		user_interface_globals_get_subtitle_text(subtitle_type, buffer);
 		widget->function_22f52e()->set_text(buffer);
 	}
 }
@@ -304,7 +304,7 @@ void c_class_19b8b1::v3()
 
 	if (is_in_window())
 	{
-		s_type_954545 *globals = function_148350();
+		s_type_954545 *globals = user_interface_globals_get();
 
 		if (globals)
 		{

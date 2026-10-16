@@ -45,7 +45,7 @@ struct s_variant_item
 bool function_212bc0(long file_index, s_game_variant *variant);
 bool __stdcall function_215f40(long type, byte *buffer);
 long function_212380(long type, long controller_index, byte *buffer);
-void function_1489b5(long type, s_game_variant *variant);
+void user_interface_game_variant_build_default(long type, s_game_variant *variant);
 void function_148aa3(long error, word controller_flags);
 long saved_game_file_type_from_variant(s_game_variant *variant);
 void function_238c69(long mode, long type, word *name, long maximum_count, long controller);
@@ -115,7 +115,7 @@ void c_class_2c9e69::handle_item(s_controller_reference **controller, long *item
 				{
 					g_54e49c = saved;
 					g_54e4a0 = variant;
-					function_1489b5(game_type, &g_54e4a0);
+					user_interface_game_variant_build_default(game_type, &g_54e4a0);
 					unicode_string_copy(g_54e4a0.name, variant.name, 0x20);
 					function_238c69(5, saved_game_file_type_from_variant(&g_54e4a0),
 						g_54e4a0.name, 0x20, (*controller)->controller_index);
