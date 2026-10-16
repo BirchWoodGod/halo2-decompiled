@@ -2688,7 +2688,7 @@ void __stdcall function_41980(short type, long object_index)
 
 void function_30c60(dword handle, point3f *position, long *out);
 
-PRIVATE inline real object_view_distance(point3f const *position)
+PRIVATE __forceinline real object_view_distance(point3f const *position)
 {
     double x = (double)position->x - g_4b9da0.x;
     double y = (double)position->y - g_4b9da0.y;
@@ -2889,8 +2889,11 @@ void function_41640(void)
                 {
                     handle.fields.record = *(long *)(range + 0x14) + i;
                     handle.fields.distance = distance_class;
+                    long callback_index = part[4];
+                    t_41640_fill selected_fill = fill[callback_index];
+                    t_41640_draw selected_draw = draw[callback_index];
                     function_40e30(0, material, 10000.0f, 0, 0xffff, NONE, 0,
-                        fill[part[4]], (dword)draw[part[4]], (void *)handle.value);
+                        selected_fill, (dword)selected_draw, (void *)handle.value);
                 }
             }
         }
