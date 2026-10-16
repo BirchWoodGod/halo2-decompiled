@@ -141,11 +141,10 @@ long c_handle_table_450cd0::v1(long a1, long max_count, void *output)
 bool function_991d0(c_handle_table_450cd0 *self, long handle, long size, void const *data)
 {
 	long index = handle & 0x3ff;
-	s_handle_entry const &entry = self->entries[index];
 	bool result = false;
-	if (entry.state)
+	if (self->entries[index].state)
 	{
-		long old_handle = entry.handle;
+		long old_handle = self->entries[index].handle;
 		long difference = ((dword)handle >> 28) - ((dword)old_handle >> 28) + 16;
 		if (difference > 8)
 			difference -= 16;
@@ -154,12 +153,11 @@ bool function_991d0(c_handle_table_450cd0 *self, long handle, long size, void co
 			self->table->owner->v11(old_handle, handle, size, data);
 			s_handle_peers *peers = self->table;
 			byte flags = peers->peers[old_handle & 0x3ff].flags;
-			result = (bool)((flags >> 3) & 1);
-			if (result || (flags & 0x10))
+			if ((bool)((flags >> 3) & 1) || (flags & 0x10))
 			{
 				long handles[4];
 				long count;
-				if (result)
+				if ((bool)((flags >> 3) & 1))
 					count = replication_table_get_chain(peers, old_handle, handles);
 				else
 					count = replication_table_find_in_chains(peers, handles, old_handle);

@@ -293,7 +293,6 @@ void __stdcall function_25dd50(
 		if (context->sphere_count > 0)
 		{
 			real nearest = 1.f;
-			real bonus = 10.f;
 
 			for (short j = 0; j < context->sphere_count; j++)
 			{
@@ -311,6 +310,7 @@ void __stdcall function_25dd50(
 				}
 			}
 
+			real bonus = 10.f;
 			if (1.f > nearest)
 			{
 				bonus = (real)sqrt(nearest) * 10.f;
