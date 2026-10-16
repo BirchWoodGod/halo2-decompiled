@@ -5,6 +5,8 @@
 #include "unknown_0259d0.h"
 #include <math.h>
 
+__declspec(noinline) short function_120850(vector3f const *v);
+
 // @retail 0x120850
 inline short function_120850(vector3f const *v)
 {

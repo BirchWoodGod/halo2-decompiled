@@ -579,8 +579,8 @@ long __stdcall function_74800(const s_match_player_rating_collection *collection
 					other_rank = entry->rank;
 				if (i != selected && other_team != team)
 				{
-					total += function_746b0(other_skill, skill, rank, other_rank);
 					count++;
+					total += function_746b0(other_skill, skill, rank, other_rank);
 				}
 			}
 		}

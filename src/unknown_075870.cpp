@@ -90,7 +90,7 @@ bool network_connection_get_address(s_network_connection *connection, s_type_99a
 }
 
 // @retail 0x75a90
-void network_observer_set_owner_key(s_network_observer *observer, long owner, const s_network_session_id *id, const byte *key, long key_index, long local)
+void network_observer_set_owner_key(s_network_observer *observer, long owner, long key_index, const byte *key, const s_network_session_id *id, long local)
 {
 	if (key_index != NONE)
 	{
@@ -1984,8 +1984,9 @@ void function_79260(s_network_observer *observer)
 			if (count > 0)
 			{
 				if (observer->value4e0c != NONE)
-					total = observer->value4e0c + ((total - observer->value4e0c) >> observer->configuration->shift1b4);
-				observer->value4e0c = total;
+					observer->value4e0c = observer->value4e0c + ((total - observer->value4e0c) >> observer->configuration->shift1b4);
+				else
+					observer->value4e0c = total;
 			}
 		}
 		function_79480(observer);

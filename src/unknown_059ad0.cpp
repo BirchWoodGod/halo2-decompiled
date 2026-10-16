@@ -427,12 +427,12 @@ void network_session_release_key(c_class_58d20 *session)
 void network_session_set_key(c_class_58d20 *session, const XNKID *kid, const XNKEY *key, long local)
 {
 	XNKID *local_0 = (XNKID *)&session->unknown1c;
-	XNKEY *local_1 = (XNKEY *)session->data25;
 	session->flag24 = true;
 	*local_0 = *kid;
+	XNKEY *local_1 = (XNKEY *)session->data25;
 	*local_1 = *key;
 	session->value3c = local;
-	network_observer_set_owner_key(session->observer, session->value10, (const s_network_session_id *)local_0, (const byte *)local_1, session->value38, local);
+	network_observer_set_owner_key(session->observer, session->value10, session->value38, (const byte *)local_1, (const s_network_session_id *)local_0, local);
 	if (g_4cf8d4)
 		XNetQosListen(local_0, 0, 0, 0, XNET_QOS_LISTEN_ENABLE);
 }
