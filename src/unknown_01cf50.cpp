@@ -3962,37 +3962,29 @@ void __stdcall function_484b0(point3f const *point, real depth, real width, real
         if (w < 0.0f) w = 0.0f;
         else if (w > 16777215.0f) w = 16777215.0f;
         function_1cf50();
-        D3DDevice_Begin(D3DPT_TRIANGLEFAN);
-        D3DDevice_SetVertexDataColor(5, color);
-        D3DDevice_SetVertexData2f(2, 1.0f, 0.0f);
+        D3DDevice::Begin(D3DPT_TRIANGLEFAN);
+        D3DDevice::SetVertexDataColor(5, color);
+        D3DDevice::SetVertexData2f(2, 1.0f, 0.0f);
         real wc = width * cosine;
         real hs = height * sine;
         real ws = width * sine;
         real hc = height * cosine;
         real a = (wc - hs) * extent[0];
         real b = (ws + hc) * extent[1];
-        real x = screen[0] + a;
-        real y = screen[1] - b;
-        D3DDevice_SetVertexData2f(1, x, y);
-        D3DDevice_SetVertexData4f(0, x, y, z, w);
+        D3DDevice::SetVertexData2f(1, screen[0] + a, screen[1] - b);
+        D3DDevice::SetVertexData4f(0, screen[0] + a, screen[1] - b, z, w);
         real c = (hs + wc) * extent[0];
         real d = (ws - hc) * extent[1];
-        D3DDevice_SetVertexData2f(2, 1.0f, 1.0f);
-        x = screen[0] + c;
-        y = screen[1] - d;
-        D3DDevice_SetVertexData2f(1, x, y);
-        D3DDevice_SetVertexData4f(0, x, y, z, w);
-        D3DDevice_SetVertexData2f(2, 0.0f, 1.0f);
-        x = screen[0] - a;
-        y = screen[1] + b;
-        D3DDevice_SetVertexData2f(1, x, y);
-        D3DDevice_SetVertexData4f(0, x, y, z, w);
-        D3DDevice_SetVertexData2f(2, 0.0f, 0.0f);
-        x = screen[0] - c;
-        y = screen[1] + d;
-        D3DDevice_SetVertexData2f(1, x, y);
-        D3DDevice_SetVertexData4f(0, x, y, z, w);
-        D3DDevice_End();
+        D3DDevice::SetVertexData2f(2, 1.0f, 1.0f);
+        D3DDevice::SetVertexData2f(1, screen[0] + c, screen[1] - d);
+        D3DDevice::SetVertexData4f(0, screen[0] + c, screen[1] - d, z, w);
+        D3DDevice::SetVertexData2f(2, 0.0f, 1.0f);
+        D3DDevice::SetVertexData2f(1, screen[0] - a, screen[1] + b);
+        D3DDevice::SetVertexData4f(0, screen[0] - a, screen[1] + b, z, w);
+        D3DDevice::SetVertexData2f(2, 0.0f, 0.0f);
+        D3DDevice::SetVertexData2f(1, screen[0] - c, screen[1] + d);
+        D3DDevice::SetVertexData4f(0, screen[0] - c, screen[1] + d, z, w);
+        D3DDevice::End();
     }
 }
 
@@ -4273,7 +4265,7 @@ void function_4fe20(void)
 }
 #pragma function(_ReadWriteBarrier)
 
-PRIVATE inline void texture_surface_dimensions(long index, long *width, long *height)
+PRIVATE __forceinline void texture_surface_dimensions(long index, long *width, long *height)
 {
     if (g_4b4b58[index].data && !g_4b4b58[index].flag95)
     {
@@ -4288,27 +4280,28 @@ PRIVATE inline void texture_surface_dimensions(long index, long *width, long *he
 }
 
 // @retail 0x19530
-void function_19530(long mode, byte const *context, short stage, long *width, long *height)
+void function_19530(long mode, byte const *context, long stage, long *width, long *height)
 {
-    (void)&context; (void)&stage; (void)&width; (void)&height;
+    long const *stage_reference = &stage;
+    (void)&context; (void)&width; (void)&height;
 again:
     *width = 1;
     *height = 1;
     switch (mode)
     {
-    case 1: function_143c0(*(long *)(g_485a80 + 0xc), 0, stage, 0.0f); return;
-    case 2: function_14f60(stage, 1); return;
+    case 1: function_143c0(*(long *)(g_485a80 + 0xc), 0, *stage_reference, 0.0f); return;
+    case 2: function_14f60(*stage_reference, 1); return;
     case 3:
-        function_14f60(stage, 1);
+        function_14f60(*stage_reference, 1);
         texture_surface_dimensions(1, width, height);
         return;
-    case 4: g_51f3c8[1][stage] = NULL; return;
+    case 4: g_51f3c8[1][*stage_reference] = NULL; return;
     case 5:
-        function_14f60(stage, (short)g_4858b8);
+        function_14f60(*stage_reference, (short)g_4858b8);
         function_01dd60(g_4858b8, width, height);
         return;
     case 6:
-        function_14f60(stage, 3);
+        function_14f60(*stage_reference, 3);
         if (g_4b4b58[3].data && !g_4b4b58[3].flag95)
         {
             *width = g_4b4b58[3].width;
@@ -4317,18 +4310,18 @@ again:
         else { *width = 640; *height = 480; }
         return;
     case 8:
-        function_14f60(stage, 10);
+        function_14f60(*stage_reference, 10);
         texture_surface_dimensions(10, width, height);
         return;
-    case 9: function_143c0(*(long *)(g_485a80 + 4), 0, stage, 0.0f); return;
+    case 9: function_143c0(*(long *)(g_485a80 + 4), 0, *stage_reference, 0.0f); return;
     case 10:
         if (g_4858c8 && g_4858c4)
         {
             if (*(dword *)g_4858c4 & 0x80000) { mode = 18; goto again; }
             if (*(long *)(g_4858c4 + 0xe0) != NONE && !g_485a77)
-                function_14f60(stage, 13);
+                function_14f60(*stage_reference, 13);
             else
-                function_144f0(*(long *)(g_4858c4 + 0x7c), stage, 1, 0, 0, 0.0f);
+                function_144f0(*(long *)(g_4858c4 + 0x7c), *stage_reference, 1, 0, 0, 0.0f);
         }
         else
         {
@@ -4337,22 +4330,22 @@ again:
             if (tag != NONE)
             {
                 s_type_7ba8e9 *bitmap = function_137550(tag, 1);
-                if (bitmap) function_14390(stage, bitmap, 0.0f);
+                if (bitmap) function_14390(*stage_reference, bitmap, 0.0f);
             }
         }
         return;
     case 12:
-        if (!g_4858c8) function_143c0(*(long *)(g_485a80 + 4), 0, stage, 0.0f);
-        else function_144f0(*(long *)(g_4858c4 + 0x7c), stage, 1, 0, 0, 0.0f);
+        if (!g_4858c8) function_143c0(*(long *)(g_485a80 + 4), 0, *stage_reference, 0.0f);
+        else function_144f0(*(long *)(g_4858c4 + 0x7c), *stage_reference, 1, 0, 0, 0.0f);
         return;
     case 13:
-        function_14f60(stage, 9);
+        function_14f60(*stage_reference, 9);
         texture_surface_dimensions(9, width, height);
         return;
-    case 14: function_143c0(*(long *)(g_485a80 + 0x14), 0, stage, 0.0f); return;
-    case 15: function_143c0(*(long *)(g_485a80 + 0x14), 1, stage, 0.0f); return;
+    case 14: function_143c0(*(long *)(g_485a80 + 0x14), 0, *stage_reference, 0.0f); return;
+    case 15: function_143c0(*(long *)(g_485a80 + 0x14), 1, *stage_reference, 0.0f); return;
     case 16:
-        function_143c0(g_4e6978, (short)g_4e697c, stage, 0.0f);
+        function_143c0(g_4e6978, (short)g_4e697c, *stage_reference, 0.0f);
         if (g_4e6978 != NONE)
         {
             byte *definition = g_4e3b44[g_4e6978 & 0xffff].bytes;
@@ -4366,7 +4359,7 @@ again:
         }
         return;
     case 17:
-        function_14f60(stage, 19);
+        function_14f60(*stage_reference, 19);
         texture_surface_dimensions(19, width, height);
         return;
     case 18:
@@ -4375,25 +4368,29 @@ again:
             long surface = function_25960();
             if (surface != NONE)
             {
-                function_14f60(stage, (short)surface);
+                function_14f60(*stage_reference, (short)surface);
                 function_01dd60(surface, width, height);
                 return;
             }
         }
-        function_143c0(*(long *)(g_485a80 + 0x64), 0, stage, 0.0f);
+        function_143c0(*(long *)(g_485a80 + 0x64), 0, *stage_reference, 0.0f);
         return;
-    case 19: function_14f60(stage, 21); texture_surface_dimensions(21, width, height); return;
-    case 20: function_14f60(stage, 22); texture_surface_dimensions(22, width, height); return;
-    case 21: function_14f60(stage, 13); texture_surface_dimensions(13, width, height); return;
-    case 22: function_14f60(stage, 17); texture_surface_dimensions(17, width, height); return;
-    case 23: function_14f60(stage, 23); texture_surface_dimensions(23, width, height); return;
+    case 19: function_14f60(*stage_reference, 21); texture_surface_dimensions(21, width, height); return;
+    case 20: function_14f60(*stage_reference, 22); texture_surface_dimensions(22, width, height); return;
+    case 21: function_14f60(*stage_reference, 13); texture_surface_dimensions(13, width, height); return;
+    case 22: function_14f60(*stage_reference, 17); texture_surface_dimensions(17, width, height); return;
+    case 23: function_14f60(*stage_reference, 23); texture_surface_dimensions(23, width, height); return;
     case 24:
     case 25:
         {
             long surface = mode == 24 ? g_485a78[0] : g_485a78[1];
-            function_14f60(stage, (short)surface);
             if (surface == 25 || surface == 26 || surface == 27)
+            {
+                function_14f60(*stage_reference, (short)surface);
                 function_01dd60(surface, width, height);
+            }
+            else
+                function_14f60(*stage_reference, (short)surface);
             return;
         }
     case 26:
@@ -4408,13 +4405,13 @@ again:
                 index = *(short *)(*(byte **)(parameters + 0x60) + 0x10);
             }
             byte *bitmap = *(byte **)(parameters + 8) + index * 12;
-            function_143c0(*(long *)bitmap, *(short *)(bitmap + 4), stage, 0.0f);
+            function_143c0(*(long *)bitmap, *(short *)(bitmap + 4), *stage_reference, 0.0f);
             return;
         }
     case 27:
         if (g_485a76)
         {
-            function_14f60(stage, 16);
+            function_14f60(*stage_reference, 16);
             texture_surface_dimensions(16, width, height);
         }
         else
@@ -4423,7 +4420,7 @@ again:
             if (tag != NONE)
             {
                 s_type_7ba8e9 *bitmap = function_137550(tag, 0);
-                if (bitmap) function_14390(stage, bitmap, 0.0f);
+                if (bitmap) function_14390(*stage_reference, bitmap, 0.0f);
             }
             *width = 4;
             *height = 4;
@@ -7370,7 +7367,7 @@ bool __stdcall function_44370(long mode)
         g_467138 = sources;
         long target = settings->target;
         if (target == NONE)
-            target = mode == 10 ? ((g_4ba014 & 0x10) && !(g_4ba014 & 0x20) ? 10 : 9) : g_4858b8;
+            target = mode == 10 ? ((bool)((g_4ba014 >> 4) & 1) && !(bool)((g_4ba014 >> 5) & 1) ? 10 : 9) : g_4858b8;
         g_4858b4 = target;
         function_14bc0((short)target, 0, true);
         if (settings->clear_flags)
@@ -7380,7 +7377,7 @@ bool __stdcall function_44370(long mode)
         }
         else if (mode == 10)
         {
-            if ((g_4ba014 & 0x10) && !(g_4ba014 & 0x20)) function_14b60(1, 0xffffff, 0.0f, 0);
+            if ((bool)((g_4ba014 >> 4) & 1) && !(bool)((g_4ba014 >> 5) & 1)) function_14b60(1, 0xffffff, 0.0f, 0);
             else function_14b60(0x60, 0, 1.0f, 0);
         }
         function_15680(g_485898 >= 4 && g_485898 <= 7 ? 0 : settings->cull_mode);
