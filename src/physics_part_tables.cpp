@@ -1,64 +1,17 @@
 // @flags /O2 /Gr
-/* UNKNOWN_1C22C0.CPP: clump object fix-up, bit-vector and, element tables */
+/* PHYSICS_PART_TABLES.CPP: the shape objects that biped ('bipd', at +0x264)
+   and creature ('crea', at +0xd4) tags hold in place in three blocks
+   (unknown_11c840.cpp constructs them after the tags load). The objects
+   have virtual functions, so they must be constructed where they lie;
+   unknown_0a9ef0.cpp asks the first one for its shape type (7) and its
+   radius at +0xc. */
 
 #include "unknown_11c920.h"
 #include "unknown_26b230.h"
 #include "globals.h"
 #include <new>
 
-
-struct s_clump_object_view
-{
-	byte unknown000[0x338];
-	long node_index;
-	byte unknown33c[0xe0];
-	short state41c;
-	byte unknown41e[2];
-	short state420;
-	byte unknown422[0x66];
-	byte flag488;
-	byte unknown489[0x3ff];
-};
-
-struct s_node_state_view
-{
-	byte unknown00[0x24];
-	short type;
-	byte unknown26[0x16];
-};
-
-/* slot handler 0x81 (g_47eff8, unknown_1c20f0.cpp) holds this function as
-   its update48, at 0x47f040 */
-// @retail 0x1c22c0
-void __stdcall function_1c22c0(long object_index, long unused)
-{
-	s_clump_object_view *object = (s_clump_object_view *)(g_4f55f0->data + (object_index & 0xffff) * sizeof(s_clump_object_view));
-
-	if (object->node_index != NONE)
-	{
-		s_node_state_view *node = (s_node_state_view *)(g_502418->data + (object->node_index & 0xffff) * sizeof(s_node_state_view));
-
-		if (node->type >= 1 && node->type <= 2)
-		{
-			object->state41c = 4;
-			object->state420 = 2;
-			object->flag488 = 1;
-		}
-	}
-}
-
-// @retail 0x1c2330
-void function_1c2330(long bit_count, dword *a, dword *b, dword *result)
-{
-	long count = (bit_count + 31) >> 5;
-	long i;
-
-	for (i = 0; i < count; i++)
-	{
-		result[i] = a[i] & b[i];
-	}
-}
-
+/* a shape object: a virtual table, the value 0x80 at +6 and 0 at +8 */
 class c_part
 {
 public:
@@ -69,6 +22,7 @@ public:
 	long value08;
 };
 
+/* the first shape of a pair */
 class c_part_a : public c_part
 {
 public:
@@ -77,6 +31,7 @@ public:
 	byte unknown0c[4];
 };
 
+/* a shape that points at another */
 class c_part_linked : public c_part
 {
 public:
@@ -84,6 +39,7 @@ public:
 	c_part_a *owner;
 };
 
+/* the second shape of a pair, pointing at the first */
 class c_part_b : public c_part_linked
 {
 public:
@@ -91,6 +47,7 @@ public:
 	c_part_b(c_part_a *a) : c_part_linked(a) { value06 = 0x80; }
 };
 
+/* the shape of a single element */
 class c_part_c : public c_part
 {
 public:
@@ -99,6 +56,7 @@ public:
 	byte unknown0c[0x24];
 };
 
+/* the destructors are never called: the objects live in tag data */
 // @retail 0x1c2370
 c_part_a::~c_part_a()
 {
@@ -117,6 +75,7 @@ c_part_c::~c_part_c()
 	__assume(0);
 }
 
+/* an element of the first and third blocks (0x80 bytes): a pair of shapes */
 struct s_pair_element
 {
 	byte unknown00[0x20];
@@ -125,12 +84,17 @@ struct s_pair_element
 	byte unknown40[0x40];
 };
 
+/* an element of the second block (0x50 bytes): one shape */
 struct s_single_element
 {
 	byte unknown00[0x20];
 	c_part_c c;
 };
 
+typedef char assert_pair_element_size[(sizeof(s_pair_element) == 0x80) ? 1 : -1];
+typedef char assert_single_element_size[(sizeof(s_single_element) == 0x50) ? 1 : -1];
+
+/* the three blocks, at +0x20 of the tag's physics data */
 struct s_part_table
 {
 	byte unknown00[0x20];
@@ -141,12 +105,13 @@ struct s_part_table
 	long pair_b_count;
 	s_pair_element *pairs_b;
 
-	void function_1c2390();
-	c_part *function_1c2460(long index);
+	void construct_shapes();
+	c_part *get_shape(long index);
 };
 
+/* constructs every shape of the three blocks in place */
 // @retail 0x1c2390
-void s_part_table::function_1c2390()
+void s_part_table::construct_shapes()
 {
 	long i;
 
@@ -168,8 +133,10 @@ void s_part_table::function_1c2390()
 	}
 }
 
+/* the shape of the given element: from the second block when it has any,
+   otherwise the second shape of the third block's pair */
 // @retail 0x1c2460
-c_part *s_part_table::function_1c2460(long index)
+c_part *s_part_table::get_shape(long index)
 {
 	if (single_count)
 	{

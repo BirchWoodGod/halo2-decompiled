@@ -1,7 +1,7 @@
 /* UNKNOWN_1A58B0.H: the candidate lists of unknown_1a58b0.cpp (guessed
    layouts; only the fields used are named). The slot owner (s_actor_view), the
    handlers and the tag element are in slot_handler.h; the handler table
-   g_46eeb8 is defined in unknown_1a8080.cpp. */
+   g_46eeb8 is defined in actor_behavior.cpp. */
 
 #ifndef UNKNOWN_1A58B0_H
 #define UNKNOWN_1A58B0_H

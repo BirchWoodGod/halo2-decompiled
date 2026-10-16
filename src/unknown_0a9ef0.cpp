@@ -30,8 +30,8 @@ struct s_part_table
 	s_single_element *singles;
 	long pair_b_count;
 	s_pair_element *pairs_b;
-	void function_1c2390();
-	c_part *function_1c2460(long index);
+	void construct_shapes();
+	c_part *get_shape(long index);
 };
 
 class c_z_shape_view
@@ -118,7 +118,7 @@ collision:
 		{
 			object = *(byte **)(header + 8);
 			byte *definition = *(byte **)((byte *)g_4e3b44 + (*(long *)object & 0xffff) * 16 + 8);
-			c_z_shape_view *shape = (c_z_shape_view *)((s_part_table *)(definition + 0x264))->function_1c2460(0);
+			c_z_shape_view *shape = (c_z_shape_view *)((s_part_table *)(definition + 0x264))->get_shape(0);
 			if (shape->v5() == 7)
 			{
 				real radius = *(real *)((byte *)shape + 0xc) - (g_47f05c + 0.001f);

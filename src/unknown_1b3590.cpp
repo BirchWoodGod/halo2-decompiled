@@ -38,12 +38,12 @@ struct s_slot_66
 
 short __stdcall function_1b3820(long actor_index, s_slot *slot, bool active);
 bool __stdcall function_1b36e0(long actor_index, s_slot *slot);
-void __stdcall function_1c1990(long actor_index, s_slot *slot, long index);
+void __stdcall actor_behavior_release_prop(long actor_index, s_slot *slot, long index);
 void __stdcall function_1c1520(long actor_index, s_slot *slot, long index);
 bool __stdcall function_1b3600(long actor_index, s_slot *slot);
 void __stdcall function_1b3880(long actor_index, s_slot *slot);
 bool __stdcall function_1b3a80(long actor_index, s_slot *slot);
-void __stdcall function_1b3c60(long actor_index, s_slot *slot);
+void __stdcall actor_behavior_64_update48(long actor_index, s_slot *slot);
 short __stdcall function_1b3f60(long actor_index, s_slot *slot, bool active);
 bool __stdcall function_1b3fd0(long actor_index, s_slot *slot);
 bool __stdcall function_1b4240(long actor_index, s_slot *slot);
@@ -491,7 +491,7 @@ s_slot_handler_2 g_47e210 =
 	{
 		0x65, 2, 0, -2, 0,
 		function_1b3670, function_1b3820, function_1b36e0, 0, NONE, {0},
-		0, function_1c1990, 0, 0, 0, 0, 0
+		0, actor_behavior_release_prop, 0, 0, 0, 0, 0
 	},
 	(t_slot_proc)function_1b3600, 0, function_1b3880
 };
@@ -501,9 +501,9 @@ s_slot_handler_2 g_47e260 =
 	{
 		0x64, 2, 0, -2, 0,
 		function_1b39e0, function_1b3590, function_1b3a80, 0, NONE, {0},
-		0, function_1c1990, 0, 0, 0, 0, 0
+		0, actor_behavior_release_prop, 0, 0, 0, 0, 0
 	},
-	(t_slot_proc)function_1b3600, 0, function_1b3c60
+	(t_slot_proc)function_1b3600, 0, actor_behavior_64_update48
 };
 
 s_slot_handler_2 g_47e2b0 =
@@ -528,7 +528,7 @@ s_slot_handler_1 g_47e300 =
 	{
 		0x62, 1, 0, -2, 0,
 		function_1b4330, function_1b4310, function_1b4240, 0, NONE, {0},
-		0, function_1c1990, 0, function_1b4480, 0, 0, 0
+		0, actor_behavior_release_prop, 0, function_1b4480, 0, 0, 0
 	},
 	function_1b4390, 2, g_46f6e4
 };
@@ -546,7 +546,7 @@ s_slot_handler_1 g_47e350 =
 	{
 		0x63, 1, 0, -2, 0,
 		0, 0, function_1b4490, 0, NONE, {0},
-		0, function_1c1990, 0, function_1b4480, 0, 0, 0
+		0, actor_behavior_release_prop, 0, function_1b4480, 0, 0, 0
 	},
 	function_1b3e20, 3, g_46f710
 };
@@ -563,7 +563,7 @@ s_slot_handler_0 g_47e3b0 =
 
 long function_1e4a50(long index);
 void function_26c180(long actor_index);
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 
 // @retail 0x1b3fd0
 bool __stdcall function_1b3fd0(long actor_index, s_slot *slot)
@@ -602,7 +602,7 @@ bool __stdcall function_1b3fd0(long actor_index, s_slot *slot)
 				long current_index = member_index;
 				s_actor_view *member = actor_get(current_index);
 				member_index = member->next_index;
-				if (member != actor && function_1a6fe0(current_index, 0x66) == NONE)
+				if (member != actor && actor_behavior_find_level(current_index, 0x66) == NONE)
 				{
 					function_26c180(current_index);
 					real distance;
