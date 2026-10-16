@@ -1,7 +1,7 @@
 // @flags /O2 /arch:SSE /Gr
-/* UNKNOWN_0B5650.CPP: writes a simulation entity identifier (10 bits of
-   index, 4 bits of salt) to a bitstream, and the writer of optional fields
-   (include/flags_writer.h) */
+/* FLAGS_WRITER.CPP: the writer of optional fields (include/flags_writer.h):
+   each field is preceded by a bit saying whether it follows, and a field
+   that was discarded or no longer fits is rewound */
 
 #include "unknown_11c920.h"
 #include "bitstream.h"
@@ -9,15 +9,8 @@
 
 void function_194710(s_bitstream *stream, bool discard);
 
-// @retail 0xb5650
-void function_b5650(long identifier, s_bitstream *stream)
-{
-	long index = identifier & 0x3ff;
-	byte salt = (dword)identifier >> 28;
-	stream_write_checked(stream, index, 10);
-	stream_write_checked(stream, (byte)salt, 4);
-}
-
+/* starts a field: marks the stream's position and writes the field's bit,
+   set when the field was requested; returns whether the field follows */
 // @retail 0xb56e0
 bool flags_writer_begin(s_flags_writer *writer, long index, char const *name)
 {
@@ -37,6 +30,8 @@ bool flags_writer_begin(s_flags_writer *writer, long index, char const *name)
 	return flag_slot_requested;
 }
 
+/* ends the current field: rewinds it when it was discarded or the stream
+   no longer has room for the bits reserved, and reserves one bit less */
 // @retail 0xb5760
 void flags_writer_end(s_flags_writer *writer)
 {

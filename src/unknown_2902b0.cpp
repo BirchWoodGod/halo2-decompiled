@@ -129,8 +129,8 @@ struct s_2902b0_object_header
 	byte *object;
 };
 
-struct s_290b90_entry;
-extern s_290b90_entry *g_5044c4;
+struct s_swarm_spawn_slot;
+extern s_swarm_spawn_slot *g_5044c4;
 extern s_record_pool *g_5044c8;
 
 bool function_2907d0(long arg_0, short arg_1, transform4x3f const *arg_2, s_actor_position_state *arg_3);
@@ -144,7 +144,7 @@ void function_1e04a0(long primary_tag, long character_index, long unit_index, lo
 void function_b7930(void *data, long tag_index, long object_index, s_effect_owner const *owner);
 long __stdcall function_b7b40(void *creation);
 void __stdcall function_b8540(long object_index);
-void __stdcall function_28e200(long arg_0);
+void __stdcall swarm_delete(long arg_0);
 long function_1e06b0(long tag_index);
 void function_11dfb0(vector2f const *rotation, vector3f *forward, vector3f *up);
 bool function_1f34b0(long actor_index, vector3f const *normal, point3f const *point, real distance, short ticks);
@@ -324,7 +324,7 @@ void __stdcall function_2902b0(long arg_0, long arg_1, long arg_2, long arg_3,
 	else if (object_index != NONE)
 		function_b8540(object_index);
 	else if (record_index != NONE)
-		function_28e200(record_index);
+		swarm_delete(record_index);
 }
 
 #endif

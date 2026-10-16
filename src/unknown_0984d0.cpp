@@ -10,7 +10,7 @@
 void function_98ac0(c_handle_table_450cd0 *self, long handle);
 void function_98b60(c_handle_table_450cd0 *self, long handle);
 void function_98bf0(long handle, c_handle_table_450cd0 *self, dword mask);
-void function_b5650(long identifier, s_bitstream *stream);
+void simulation_write_entity_identifier(long identifier, s_bitstream *stream);
 void function_194710(s_bitstream *stream, bool discard);
 
 /* the handle-table messages each start with a 3-bit kind; the stream keeps
@@ -34,7 +34,7 @@ bool function_98620(c_handle_table_450cd0 *self, s_bitstream *stream, long index
 	long released = 0;
 	stream_push_position(stream);
 	function_195720(stream, 1, 3);
-	function_b5650(handle, stream);
+	simulation_write_entity_identifier(handle, stream);
 	dword local_1 = self->entries[index].unknown04;
 	if (self->table->owner->v0(handle, local_1, a3, stream, reserved_bits, &released) &&
 		(stream->size_in_bytes << 3) - stream->bit_position >= reserved_bits)
@@ -58,7 +58,7 @@ bool function_986d0(c_handle_table_450cd0 *self, long index, s_bitstream *stream
 	stream->checkpoints[stream->checkpoint_count] = stream->bit_position;
 	stream->checkpoint_count++;
 	function_195720(stream, 2, 3);
-	function_b5650(handle, stream);
+	simulation_write_entity_identifier(handle, stream);
 	if (stream_has_room(stream, reserved_bits))
 	{
 		stream->checkpoint_count--;
@@ -98,7 +98,7 @@ bool function_98750(c_handle_table_450cd0 *self, s_bitstream *stream, long index
 		if (i >= count)
 			goto local_1;
 		handle = handles[i];
-		function_b5650(handle, stream);
+		simulation_write_entity_identifier(handle, stream);
 		if (result && self->table->owner->v0(handle, self->entries[handle & 0x3ff].unknown04, a3, stream, reserved_bits, &released[i]))
 			result = true;
 		else
@@ -145,7 +145,7 @@ bool function_988f0(c_handle_table_450cd0 *self, long index, s_bitstream *stream
 	stream_write_checked(stream, count - 2, 2);
 	long i;
 	for (i = 0; i < count; i++)
-		function_b5650(handles[i], stream);
+		simulation_write_entity_identifier(handles[i], stream);
 	if (stream_has_room(stream, reserved_bits))
 	{
 		stream->checkpoint_count--;
@@ -168,7 +168,7 @@ bool function_989f0(c_handle_table_450cd0 *self, long index, s_bitstream *stream
 	stream->checkpoints[stream->checkpoint_count] = local_3;
 	stream->checkpoint_count++;
 	function_195720(stream, 5, 3);
-	function_b5650(handle, stream);
+	simulation_write_entity_identifier(handle, stream);
 	dword local_1 = *(volatile dword *)&self->entries[index].unknown04;
 	if (self->table->owner->v5(handle, local_1, a3, stream, reserved_bits, &released) &&
 		(stream->size_in_bytes << 3) - stream->bit_position >= reserved_bits)

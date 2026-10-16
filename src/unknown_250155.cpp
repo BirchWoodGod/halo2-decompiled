@@ -520,7 +520,7 @@ struct s_0b35e0_entry
 	byte unknown00[0x44];
 	bool value44;
 };
-s_0b35e0_entry *function_b35e0(long index);
+s_0b35e0_entry *session_search_results_get(long index);
 struct s_type_99af70;
 bool function_07aaa0(XNADDR *xnaddr, s_type_99af70 *address);
 
@@ -572,7 +572,7 @@ void __stdcall function_252ed8(c_class_252b72 *list)
 				if (function_199ba5(index))
 				{
 					squad = (s_network_squad_address_view *)function_199bbf(index);
-					entry = function_b35e0(index);
+					entry = session_search_results_get(index);
 				}
 				else
 				{
