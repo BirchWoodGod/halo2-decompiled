@@ -2817,19 +2817,18 @@ bool function_1c8c0(byte const *definition, dword mask,
 bool function_1caa0(long tag, byte const *selection, word const *kind, byte const *definition,
     s_1c8c0_stream const *third, s_1c8c0_stream const *second, s_1c8c0_stream const *first)
 {
-    long mode = *(word const volatile *)(selection + 0x14);
-    long offset;
-    word const *const &kind_reference = kind;
-    switch (*kind_reference)
+    word type = *kind;
+    word mode = *(word const *)(selection + 0x14);
+    signed char index;
+    switch (type)
     {
-    case 1: offset = 0x10; break;
-    case 2: offset = 0x10; break;
-    case 3: offset = 0x10; break;
-    case 4: offset = 0x11; break;
-    case 5: offset = 0x11; break;
-    default: offset = 0x10; break;
+    case 1: index = (signed char)selection[0x10]; break;
+    case 2: index = (signed char)selection[0x10]; break;
+    case 3: index = (signed char)selection[0x10]; break;
+    case 4: index = (signed char)selection[0x11]; break;
+    case 5: index = (signed char)selection[0x11]; break;
+    default: index = (signed char)selection[0x10]; break;
     }
-    long index = (signed char)selection[offset];
     long shader = function_1cb20(mode, index, tag);
     function_1c590((s_shader_cache *)g_51f0f0, tag, shader);
     dword mask = function_1cb70(tag, shader);
@@ -5075,10 +5074,11 @@ void __stdcall function_4ebd0(long tag, long context, long first, long second,
     }
     byte *table = *(byte **)((byte *)g_4e0348 + 0x238);
     byte *record = *(byte **)(table + 0x1c) + ((handle >> 8) & 0x3fffff) * 24;
-    byte *block = *(byte **)(table + 0x14) + *(short *)(record + 6) * 0x2c;
+    long block_offset = *(short *)(record + 6) * 0x2c;
     volatile long record_tag = (*(long **)((byte *)g_4e0350 + 0x37c))[(signed char)record[0] * 2 + 1];
     byte *definition = g_4e3b44[record_tag & 0xffff].bytes;
     byte *part = *(byte **)(definition + 0x14) + record[1] * 20;
+    byte *block = *(byte **)(table + 0x14) + block_offset;
     if (function_12de70((s_geometry_block_info *)block, 3))
     {
         byte *geometry = *(byte **)(block + 0x28);

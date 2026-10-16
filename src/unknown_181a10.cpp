@@ -120,7 +120,10 @@ void c_nearest_query_callback::query(s_node *node, s_query_hit const *hit)
 				if (last->type == 1)
 					entity = last->entity;
 			}
-			if (!entity || havok_entity_component_index_get(entity) != excluded)
+			bool include = true;
+			if (entity)
+				include = havok_entity_component_index_get(entity) != excluded;
+			if (include)
 			{
 				vector3f normal;
 				normal.i = hit->normal.i;
