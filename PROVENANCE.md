@@ -121,11 +121,10 @@ and remediated as described below; item 3 is still under review.
 
    Since 2026-10-16 every merge is also checked for close variants of those
    names: the same name with a prefix or suffix added or dropped, the same
-   words in another order, or mostly the same words. A sweep of the names
-   already in the repository found several hundred candidates, many of them
-   generic idioms or names from public sources. They are being reviewed, and
-   renamed from what the code does as each part of the code is reworked for
-   readability. Please report any name the checks have missed.
+   words in another order, or mostly the same words. Names already in the
+   repository are being reviewed against the same check, and renamed from
+   what the code does as each part of the code is reworked for readability.
+   Please report any name the checks have missed.
 3. **Halo CE reference names.** Some names follow the public Halo: Combat
    Evolved decompilation (punpckhdq/halo). How that project derived its names
    is being reviewed.
