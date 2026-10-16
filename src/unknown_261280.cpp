@@ -1036,7 +1036,9 @@ void __stdcall function_261510(long actor_index, s_2605d0_request const *request
  }
  else
  {
-  long prop_index = *(long *)(actor + (type == 1 ? 0x344 : 0x338));
+  long prop_index;
+  if (type == 1) prop_index = *(long *)(actor + 0x344);
+  else prop_index = *(long *)(actor + 0x338);
   if (prop_index != NONE)
   {
    s_prop_node *node = (s_prop_node *)(g_502418->data + (prop_index & 0xffff) * 0x3c);
