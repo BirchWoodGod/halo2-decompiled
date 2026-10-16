@@ -267,30 +267,28 @@ long function_26b230(long clump_index, long prop_index)
 	return result;
 }
 
+PRIVATE __forceinline s_actor_view *clump_next_actor(s_iterator *iterator);
+
 // @retail 0x26b290
 void function_26b290(long clump_index)
 {
 	s_clump *clump = (s_clump *)(g_502420->data + (clump_index & 0xffff) * sizeof(s_clump));
 	real a[13];
 	real b[13];
-	volatile long object_index = clump->first_object;
+	s_iterator objects;
 	long i;
 
 	for (i = 0; i < 13; i++)
 	{
-		a[i] = 0.0f;
 		b[i] = 0.0f;
+		a[i] = 0.0f;
 	}
 
-	for (;;)
+	function_26bda0(clump_index, &objects);
+	s_actor_view *actor;
+	while ((actor = clump_next_actor(&objects)) != NULL)
 	{
-		if (object_index == NONE)
-		{
-			break;
-		}
-		s_clump_object *object = (s_clump_object *)(g_4f55f0->data + (object_index & 0xffff) * sizeof(s_clump_object));
-		object_index = object->next;
-		short count = object->count;
+		short count = ((s_clump_object *)actor)->count;
 
 		for (i = 0; i <= count; i++)
 		{
@@ -308,9 +306,9 @@ void function_26b290(long clump_index)
 		}
 	}
 
-	short state;
+	long state;
 	short new_state = NONE;
-	for (state = 3; clump->state < state; state--)
+	for (state = 3; state > clump->state; state--)
 	{
 		t_transition_test test = g_470fac[state].test;
 		if (test && test(clump_index, b, a))
