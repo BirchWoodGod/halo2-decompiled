@@ -3062,47 +3062,54 @@ extern D3DResource *g_485ae4, *g_485ae8, *g_485aec;
 // @retail 0x1d0e0
 bool function_1d0e0()
 {
-    D3DTexture *texture;
-    if (!function_0158f0(9, 0, 4, 4, 0, 0, &texture))
+    bool result = function_0158f0(9, 0, 4, 4, 0, 0, (D3DTexture **)&g_485ae4) &&
+        function_015a60(9, 4, 4, 4, 0, 0, (D3DVolumeTexture **)&g_485ae8) &&
+        function_0159b0(4, 9, 0, 0, (D3DCubeTexture **)&g_485aec);
+    if (result)
     {
-        g_485ae4 = texture;
-        return false;
-    }
-    g_485ae4 = texture;
-    D3DVolumeTexture *volume;
-    if (!function_015a60(9, 4, 4, 4, 0, 0, &volume))
-    {
-        g_485ae8 = volume;
-        return false;
-    }
-    g_485ae8 = volume;
-    D3DCubeTexture *cube;
-    if (!function_0159b0(4, 9, 0, 0, &cube))
-    {
-        g_485aec = cube;
-        return false;
-    }
-    g_485aec = cube;
-    bool result = true;
-    if (!g_485ae4 || !g_485ae8 || !g_485aec)
-        return false;
-    word colors[2] = { 0x0f00, 0xf0f0 };
-    D3DLOCKED_RECT rectangle;
-    D3DTexture_LockRect((D3DTexture *)g_485ae4, 0, &rectangle, NULL, 0);
-    for (long i = 0; i < 16; ++i)
-        ((word *)rectangle.pBits)[i] = colors[i & 1];
-    D3DTexture_UnlockRect((D3DTexture *)g_485ae4, 0);
-    D3DLOCKED_BOX box;
-    D3DVolumeTexture_LockBox((D3DVolumeTexture *)g_485ae8, 0, &box, NULL, 0);
-    for (long j = 0; j < 64; ++j)
-        ((word *)box.pBits)[j] = colors[j & 1];
-    D3DVolumeTexture_UnlockBox((D3DVolumeTexture *)g_485ae8, 0);
-    for (long face = 0; face < 6; ++face)
-    {
-        D3DCubeTexture_LockRect((D3DCubeTexture *)g_485aec, (D3DCUBEMAP_FACES)face, 0, &rectangle, NULL, 0);
-        for (long k = 0; k < 16; ++k)
-            ((word *)rectangle.pBits)[k] = colors[k & 1];
-        D3DCubeTexture_UnlockRect((D3DCubeTexture *)g_485aec, (D3DCUBEMAP_FACES)face, 0);
+        if (!g_485ae4 || !g_485ae8 || !g_485aec)
+            result = false;
+        else
+        {
+            word colors[2] = { 0x0f00, 0xf0f0 };
+            D3DLOCKED_RECT rectangle;
+            D3DTexture_LockRect((D3DTexture *)g_485ae4, 0, &rectangle, NULL, 0);
+            long i = 0;
+            word *i_out = (word *)rectangle.pBits;
+            for (long i_remaining = 16; i_remaining; --i_remaining)
+            {
+                *i_out = colors[i & 1];
+                ++i;
+                ++i_out;
+            }
+            D3DTexture_UnlockRect((D3DTexture *)g_485ae4, 0);
+            D3DLOCKED_BOX box;
+            D3DVolumeTexture_LockBox((D3DVolumeTexture *)g_485ae8, 0, &box, NULL, 0);
+            long j = 0;
+            word *j_out = (word *)box.pBits;
+            for (long j_remaining = 64; j_remaining; --j_remaining)
+            {
+                *j_out = colors[j & 1];
+                ++j;
+                ++j_out;
+            }
+            D3DVolumeTexture_UnlockBox((D3DVolumeTexture *)g_485ae8, 0);
+            long face = 0;
+            for (long faces_left = 6; faces_left; --faces_left)
+            {
+                D3DCubeTexture_LockRect((D3DCubeTexture *)g_485aec, (D3DCUBEMAP_FACES)face, 0, &rectangle, NULL, 0);
+                long k = 0;
+                word *k_out = (word *)rectangle.pBits;
+                for (long k_remaining = 16; k_remaining; --k_remaining)
+                {
+                    *k_out = colors[k & 1];
+                    ++k;
+                    ++k_out;
+                }
+                D3DCubeTexture_UnlockRect((D3DCubeTexture *)g_485aec, (D3DCUBEMAP_FACES)face, 0);
+                ++face;
+            }
+        }
     }
     return result;
 }
@@ -3969,7 +3976,7 @@ void function_40890(void)
 	short width = g_48564e - g_48564a;
 	short height = g_48564c - g_485648;
 	function_1cf50();
-	D3DDevice_Begin(D3DPT_QUADLIST);
+	D3DDevice_Begin(D3DPT_TRIANGLEFAN);
 	D3DDevice_SetVertexData2s(0, 0, 0);
 	D3DDevice_SetVertexData2s(0, width, 0);
 	D3DDevice_SetVertexData2s(0, width, height);
@@ -5693,7 +5700,7 @@ void function_46ea0(long tag, point3f const *position)
     g_484f68.PSFinalCombinerInputsEFG = 0x1100;
     function_1ccf0(&g_484f68);
     function_1cf50();
-    D3DDevice::Begin(D3DPT_QUADLIST);
+    D3DDevice::Begin(D3DPT_TRIANGLEFAN);
     D3DDevice_SetVertexData4f(0, left, top, 16777215.0f, 16777215.0f);
     D3DDevice_SetVertexData4f(0, right, top, 16777215.0f, 16777215.0f);
     D3DDevice_SetVertexData4f(0, right, bottom, 16777215.0f, 16777215.0f);
@@ -5730,7 +5737,7 @@ void function_46ea0(long tag, point3f const *position)
     g_484f68.PSFinalCombinerInputsEFG = 0x1c00;
     function_1ccf0(&g_484f68);
     function_1cf50();
-    D3DDevice::Begin(D3DPT_QUADLIST);
+    D3DDevice::Begin(D3DPT_TRIANGLEFAN);
     draw_filter_quad(left, right, top, bottom);
     D3DDevice::End();
     function_46230(16, bounds);
@@ -5779,7 +5786,7 @@ void function_46ea0(long tag, point3f const *position)
     {
         real offset = (real)i * 0.0625f * 80.0f - 4.0f;
         function_1cf50();
-        D3DDevice::Begin(D3DPT_QUADLIST);
+        D3DDevice::Begin(D3DPT_TRIANGLEFAN);
         ++i;
         D3DDevice_SetVertexData4f(9, 0.0f, 0.0f, 0.0f, strength / i);
         D3DDevice_SetVertexData2s(3, 0, 0);
