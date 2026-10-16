@@ -578,9 +578,10 @@ void network_session_interface_update_session(c_class_58d20 *session);
 // @retail 0x59890 standard
 bool __stdcall network_session_manager_host_session(long mode, const XNKID *kid, const XNKEY *key)
 {
+	long state = session_manager_session_a()->state;
 	c_class_58d20 *session = session_manager_session_a();
 	bool result = false;
-	if (!session->state)
+	if (!state)
 	{
 		s_session_id id;
 		memset(&id, 0, sizeof(id));

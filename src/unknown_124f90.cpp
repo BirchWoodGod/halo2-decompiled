@@ -1808,9 +1808,9 @@ void function_128500(long sound_index, s_looping_voice_counts *counts)
 struct s_sound_class_flags_view
 {
 	byte unknown00[8];
-	byte flag0 : 1;
-	byte shares_object_voice : 1;
-	byte unknown08 : 6;
+	word flag0 : 1;
+	word shares_object_voice : 1;
+	word unknown08 : 14;
 };
 
 /* finds a voice for a playing sound: the one it already has; for a class
@@ -1818,6 +1818,13 @@ struct s_sound_class_flags_view
    the same object (reason 13, stopping that sound); otherwise within its
    class's voice limits (reasons 5 and 6 when it must take over one of its
    definition's or its source's voices) */
+#pragma inline_depth(0)
+PRIVATE __forceinline bool function_128701(short index)
+{
+	return TEST_FIELD_BIT(((s_sound_class_flags_view *)function_221810(index))->shares_object_voice);
+}
+#pragma inline_depth()
+
 // @retail 0x128700
 short sound_voice_acquire(long sound_index, long *reason)
 {
@@ -1828,7 +1835,7 @@ short sound_voice_acquire(long sound_index, long *reason)
 	if (sound->value_ac != NONE)
 		return sound->value_ac;
 	definition = sound_definition_get(sound->definition_index);
-	if (TEST_FIELD_BIT(((s_sound_class_flags_view *)function_221810(definition->promotion_index))->shares_object_voice) && sound->object_index != NONE)
+	if (function_128701(definition->promotion_index) && sound->object_index != NONE)
 	{
 		long taken_sound_index = NONE;
 		short taken_voice_index = NONE;
@@ -1845,7 +1852,7 @@ short sound_voice_acquire(long sound_index, long *reason)
 				s_sound_playback *other = SOUND_PLAYBACK_GET(other_index);
 
 				if (other->object_index == sound->object_index &&
-					TEST_FIELD_BIT(((s_sound_class_flags_view *)function_221810(sound_definition_get(other->definition_index)->promotion_index))->shares_object_voice))
+					function_128701(sound_definition_get(other->definition_index)->promotion_index))
 				{
 					if (definition->type == voice->definition_type)
 					{

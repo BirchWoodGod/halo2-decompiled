@@ -2299,11 +2299,11 @@ long __stdcall function_4ac30(s_cached_input_list *state, s_cached_input *output
 {
 	if (state->count > 0 && (!g_510c50 || !((byte *)g_510c50)[5]))
 	{
+		long first = 0;
 		long last = state->count - 1;
 		long requested = limit;
 		if (limit > state->count) limit = state->count;
 		bool found = false;
-		long first = 0;
 		long i;
 		for (i = 0; i <= last; ++i)
 		{

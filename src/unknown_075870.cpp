@@ -1391,19 +1391,20 @@ void function_78e60(s_network_observer *observer, long index)
 	} while ((const byte *)local_0 != local_1);
 	long budget = *(long *)((byte *)observer->configuration + 0x158);
 	long requested = budget + total;
-	long limit;
+	long cap;
 	long available;
 	if (observer->unknown4e01[0])
 	{
-		limit = *(long *)((byte *)observer->configuration + 0x160);
+		cap = *(long *)((byte *)observer->configuration + 0x160);
 		available = observer->value4e04 * 3 / 4;
 	}
 	else
 	{
-		limit = *(long *)((byte *)observer->configuration + 0x15c);
+		cap = *(long *)((byte *)observer->configuration + 0x15c);
 		available = observer->value4e04 / 2;
 	}
-	if (available <= limit) limit = available;
+	long limit = available;
+	if (available > cap) limit = cap;
 	long last = observer->time4f2c;
 	if (observer_time_get() - last <= *(long *)((byte *)observer->configuration + 0x154))
 	{
@@ -1451,7 +1452,7 @@ void function_78e60(s_network_observer *observer, long index)
 		delay = *(long *)((byte *)network_reliable_stream_get(connection->reliable_stream_index) + 0x96c);
 	channel->baseline_delay = delay;
 	long minimum_delay = *(long *)((byte *)observer->configuration + 0x16c);
-	if (minimum_delay < delay) minimum_delay = delay;
+	if (delay > minimum_delay) minimum_delay = delay;
 	channel->baseline_delay = minimum_delay;
 	channel->probe_failures = 0;
 	channel->smoothed_delay = minimum_delay;
@@ -2512,18 +2513,18 @@ void __stdcall function_0785d0(void *unknown10, s_type_99af70 const *address, vo
 		dword flags = request[1];
 		if (flags & 0xc0)
 			goto local_3;
-		dword connection_flags = ((byte)flags >> 1) & 1;
+		dword connection_flags = (flags >> 1) & 1;
 		if (flags & 1) connection_flags |= 2; else connection_flags &= ~2;
 		if (flags & 4) connection_flags |= 4; else connection_flags &= ~4;
 		if (flags & 8) connection_flags |= 8; else connection_flags &= ~8;
 		if (flags & 16) connection_flags |= 16; else connection_flags &= ~16;
 		if (flags & 32) connection_flags |= 32; else connection_flags &= ~32;
-		if (network_connection_flags_valid(connection_flags))
-			goto local_4;
+		if (!network_connection_flags_valid(connection_flags))
+		{
 local_3:
-		failure = 1;
-		goto local_1;
-local_4:
+			failure = 1;
+			goto local_1;
+		}
 		long key_index;
 		XNKEY key;
 		XNADDR remote;
