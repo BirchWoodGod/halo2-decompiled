@@ -875,7 +875,7 @@ bool network_session_interface_set_value4d08(long value4d08, long value4d0c, con
 	if (session && session_state_is_live(session))
 	{
 		if (function_058d50(session))
-			result = network_session_parameters_set_value4d08(session, string, value4d08, value4d0c);
+			result = network_session_parameters_set_value4d08(session, value4d08, value4d0c, string);
 		else
 			result = true;
 	}
@@ -898,7 +898,7 @@ bool network_session_interface_set_value4d08_and_stop_countdown(long value4d08, 
 	if (network_session_interface_local_machine_is_host())
 	{
 		c_class_58d20 *session = network_session_get_current();
-		result = network_session_parameters_set_value4d08(session, string, value4d08, value4d0c) && network_session_start_countdown(session, false, 0, 0, 0);
+		result = network_session_parameters_set_value4d08(session, value4d08, value4d0c, string) && network_session_start_countdown(session, false, 0, 0, 0);
 	}
 	return result;
 }

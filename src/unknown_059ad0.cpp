@@ -1372,7 +1372,7 @@ static inline char *function_x91aa57(char *destination, const char *source, dwor
 }
 
 // @retail 0x5b790
-bool network_session_parameters_set_value4d08(c_class_58d20 *session, const char *string, long value4d08, long value4d0c)
+bool network_session_parameters_set_value4d08(c_class_58d20 *session, long value4d08, long value4d0c, const char *string)
 {
 	bool result = false;
 

@@ -1641,7 +1641,7 @@ bool function_71480(c_session_state_matchmaking *state)
 						network_session_parameters_set_value49c8(other, *(long *)((byte *)state + 0x18));
 						network_session_parameters_set_language(other, network_session_get_language(session));
 						other->set_value_4994(*(long *)((byte *)state + 0x938));
-						network_session_parameters_set_value4d08(other, (const char *)map + 0xb4c, NONE, map_id);
+						network_session_parameters_set_value4d08(other, NONE, map_id, (const char *)map + 0xb4c);
 						network_session_host_set_summary(other, (const s_session_summary *)((byte *)state + 0x630));
 						network_session_parameters_set_value4dac(other, value);
 						network_session_parameters_set_data4db0(other, (const s_session_data4db0 *)settings);
