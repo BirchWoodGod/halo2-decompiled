@@ -138,7 +138,7 @@ void function_25ac00(long prop_ref_index, long actor_index)
 	}
 }
 
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 bool function_26ba40(long clump_index, long actor_index, long prop_index);
 bool __stdcall function_20ba60(short type, long unit_index, long target_index, long unknown, long unknown2, s_1fb7e0_data const *data);
 real normalize2d(point2f *v);
@@ -250,14 +250,14 @@ void function_25af70(long arg_0, long arg_1)
 	if ((g_510c54->game_time - local_2->unknownb0) * g_510c54->rate > 2.f &&
 		arg_1 == *(long *)((byte *)local_0 + 0x338))
 	{
-		if (function_1a6fe0(arg_0, 0x2b) != NONE)
+		if (actor_behavior_find_level(arg_0, 0x2b) != NONE)
 		{
 			if (local_2->unknown39 <= 2)
 			{
 				function_1fb7e0(0x1a, arg_0, NULL, local_1->object_index, NONE);
 			}
 		}
-		else if (function_1a6fe0(arg_0, 0x38) != NONE)
+		else if (actor_behavior_find_level(arg_0, 0x38) != NONE)
 		{
 			if (local_2->unknown39 <= 2)
 			{
@@ -270,7 +270,7 @@ void function_25af70(long arg_0, long arg_1)
 			{
 				function_1fb7e0(0x19, arg_0, NULL, local_1->object_index, NONE);
 			}
-			else if (function_1a6fe0(arg_0, 0x1b) != NONE)
+			else if (actor_behavior_find_level(arg_0, 0x1b) != NONE)
 			{
 				function_1fb7e0(0x18, arg_0, NULL, local_1->object_index, NONE);
 			}
@@ -1377,7 +1377,7 @@ bool function_25ccd0(s_type_5cfb45 *arg_0, long arg_1, short arg_2, s_2640c0 *ar
 	{
 		local_6 = actor_get(local_4)->unknown084 < 4;
 		local_10 = function_1e1de0(local_4);
-		local_11 = function_1a6fe0(local_4, 14) != NONE;
+		local_11 = actor_behavior_find_level(local_4, 14) != NONE;
 	}
 	arg_0->unknown60 = local_6;
 	arg_0->unknown62 = local_11;

@@ -3311,11 +3311,10 @@ dword __cdecl pack_color4f(color4f const *color);
 // @retail 0x26e50
 bool __stdcall function_26e50(void *context)
 {
-    union { byte configuration[0x20]; dword words[60]; } scratch;
     bool separate = !g_5093fe;
     if (!g_4b9d9c)
     {
-        byte *configuration = scratch.configuration;
+        byte configuration[0x20];
         *(real *)(configuration + 0) = g_4857d4;
         *(real *)(configuration + 4) = g_4857d8;
         *(color3f *)(configuration + 8) = g_4857bc;
@@ -3403,10 +3402,8 @@ bool __stdcall function_26e50(void *context)
     colors[2][1] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
     colors[2][2] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
     colors[2][3] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
-    dword *words = scratch.words;
-    memset(words, 0, sizeof(scratch.words));
-    D3DPIXELSHADERDEF const *program = (D3DPIXELSHADERDEF const *)words;
-    dword *fields = words;
+    memset(&g_484f68, 0, sizeof(g_484f68));
+    dword *fields = (dword *)&g_484f68;
     fields[0xd8 / 4] = 0xa621;
     fields[0xdc / 4] = 0x44;
     fields[0xd4 / 4] = 0x11006;
@@ -3442,13 +3439,11 @@ bool __stdcall function_26e50(void *context)
     }
     else
     {
-        color3f color = g_4857bc;
-        fields[0xac / 4] = pack_color3f(&color);
+        fields[0xac / 4] = pack_color3f(&g_4857bc);
         fields[0x20 / 4] = 0xc010000;
         fields[0x24 / 4] = 0xc00;
     }
-    g_484f68 = *program;
-    function_1ccf0(program);
+    function_1ccf0(&g_484f68);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
     function_1c710(g_51f0f0);
     return true;

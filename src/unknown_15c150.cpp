@@ -17,7 +17,7 @@ struct s_transition_player_iterator
 
 void __stdcall function_a7810(dword mask);
 void function_b58c0(long index, dword mask);
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 void function_157ae0();
 long function_15b330(bool teams);
 void function_15b3a0(long player_or_team, bool value);
@@ -89,7 +89,7 @@ void function_15c150()
 		iterator.datum_index = NONE;
 		iterator.absolute_index = NONE;
 		long count = 0;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 		{
 			long index = iterator.datum_index;
 			++count;
@@ -208,7 +208,7 @@ void function_15c550()
 				iterator.data = g_4e8c24;
 				iterator.absolute_index = NONE;
 				iterator.datum_index = NONE;
-				while (function_19f240((long *)&iterator))
+				while (player_iterator_next((long *)&iterator))
 				{
 					long index = iterator.datum_index & 0xffff;
 					long lives = options->value1b8;

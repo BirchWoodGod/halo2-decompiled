@@ -1425,7 +1425,7 @@ point3f *function_b9dd0(long object_index, point3f *result);
 s_object *function_badc0(long object_index, dword type_mask);
 long function_1b8c80(long object_index);
 long function_2116f0(long unit_index, long filter_range, long seat_type, long occupancy, s_object_seat *results, long maximum_count);
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 bool function_1a80e0(long index, short type, s_slot *data, short slot);
 bool function_e68c0(long type, long unit_index);
 
@@ -1522,7 +1522,7 @@ void function_274a50(long ai_index, long vehicle_index, long filter_range, bool 
 					candidates[candidate_count].actor_index = iterator.actor_index;
 					vector3d_from_points3d(&actor->position, &position, &vector);
 					candidates[candidate_count].distance_squared = length_sq3f(&vector);
-					candidates[candidate_count].busy = function_1a6fe0(iterator.actor_index, 0x4c) != NONE;
+					candidates[candidate_count].busy = actor_behavior_find_level(iterator.actor_index, 0x4c) != NONE;
 					candidate_count++;
 				}
 			}
@@ -2641,15 +2641,16 @@ void function_2769d0(long point_reference)
 		s_scenario_scripting_view *scenario = (s_scenario_scripting_view *)g_4e0350;
 		if (scenario->scripting_data_count > 0)
 		{
-			s_scenario_scripting_data *local_0 = scenario->scripting_data;
+			short point_index = 0;
 			s_actor_datum *actor = actor_datum_get(g_50240c);
+			s_scenario_scripting_data *local_0 = scenario->scripting_data;
 			short point_set_index = (short)(point_reference >> 16);
 			if (point_set_index >= 0 && point_set_index < local_0->point_set_count)
 			{
 				s_scenario_point_set *point_set = &local_0->point_sets[point_set_index];
 				volatile real best_distance = 3.4028235e38f;
 				short best_index = NONE;
-				for (short point_index = 0; point_index < point_set->point_count; point_index++)
+				for (; point_index < point_set->point_count; point_index++)
 				{
 					s_type_c3b527 *point = (s_type_c3b527 *)((byte *)point_set->points + point_index * 0x3c + 0x20);
 					vector3f vector;
@@ -3084,7 +3085,7 @@ short __stdcall function_274470(long arg_0)
 
 	ai_actor_iterator_new(arg_0, &local_40.field_40);
 	while (ai_actor_iterator_next(&local_40.field_40))
-		if (function_1a6fe0(local_40.field_40.actor_index, 0x4c) == NONE) local_4++;
+		if (actor_behavior_find_level(local_40.field_40.actor_index, 0x4c) == NONE) local_4++;
 	for (;;)
 	{
 		real local_12 = 0.0f;
@@ -3132,7 +3133,7 @@ short __stdcall function_274470(long arg_0)
 		s_actor_datum *local_26;
 		while ((local_26 = ai_actor_iterator_next(&local_25)) != NULL)
 		{
-			if (function_1a6fe0(local_25.actor_index, 0x4c) == NONE && local_26->unknown26c == NONE)
+			if (actor_behavior_find_level(local_25.actor_index, 0x4c) == NONE && local_26->unknown26c == NONE)
 			{
 				vector3f local_27;
 				vector3d_from_points3d(&local_26->position, &local_24, &local_27);

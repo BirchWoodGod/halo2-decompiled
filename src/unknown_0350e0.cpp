@@ -1655,8 +1655,8 @@ PRIVATE inline real clamp_2e9e0(real value)
 // @retail 0x2e9e0
 long __stdcall function_2e9e0(byte const *context, s_2e3f0_record const *record)
 {
-    real time = g_510c54 && g_510c54->active ? g_510c54->game_time * g_510c54->rate : 0.0f;
     long tag = NONE;
+    real time = g_510c54 && g_510c54->active ? g_510c54->game_time * g_510c54->rate : 0.0f;
     point3f position;
     vector3f direction;
     color3f color;

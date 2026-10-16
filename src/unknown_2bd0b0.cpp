@@ -151,7 +151,7 @@ void c_game_engine_45c878::v28(long a)
 }
 
 void hill_marker(long local_player, s_polygon_2be *hill);
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 
 /* a player iterator: the current player before the iterator (0x19f240) */
 struct s_player_iterator_2bd0
@@ -198,7 +198,7 @@ void c_game_engine_45c878::v36(long local_player)
 			iterator.data = g_4e8c24;
 			iterator.absolute_index = NONE;
 			iterator.index = NONE;
-			while (function_19f240((long *)&iterator))
+			while (player_iterator_next((long *)&iterator))
 			{
 				long other = iterator.index;
 
@@ -256,7 +256,7 @@ long function_2bd330(word player_mask)
 	return team_mask;
 }
 
-bool function_19f300(long *iterator);
+bool player_iterator_next_with_unit(long *iterator);
 bool function_15eaf0();
 
 PRIVATE __forceinline long find_hill_team_player_2bd(word team_mask)
@@ -265,7 +265,7 @@ PRIVATE __forceinline long find_hill_team_player_2bd(word team_mask)
     iterator.data = g_4e8c24;
     iterator.absolute_index = NONE;
     iterator.index = NONE;
-    while (function_19f300((long *)&iterator))
+    while (player_iterator_next_with_unit((long *)&iterator))
     {
         if (iterator.player->time_inside && iterator.player->team != NONE &&
             (team_mask & (1 << iterator.player->team)))
@@ -336,7 +336,7 @@ void c_game_engine_45c878::v40()
         iterator.data = g_4e8c24;
         iterator.absolute_index = NONE;
         iterator.index = NONE;
-        while (function_19f300((long *)&iterator))
+        while (player_iterator_next_with_unit((long *)&iterator))
         {
             if (iterator.player->time_inside)
                 occupants |= 1 << (byte)iterator.index;

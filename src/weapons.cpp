@@ -2727,7 +2727,6 @@ bool __stdcall function_ff5f0(long weapon_index, long name, real *value, bool *a
 	case 0x0d0006e7:
 	case 0x0e0006e6:
 	case 0x0f0006e5:
-	case 0x120006e4:
 		if (g_4e6948->state == 2 && *(short *)((byte *)weapon + 0x17e) != NONE && function_162b10(weapon_index))
 		{
 			real progress = function_162b70(weapon_index);
@@ -2740,6 +2739,10 @@ bool __stdcall function_ff5f0(long weapon_index, long name, real *value, bool *a
 			else
 				result = progress;
 		}
+		break;
+	case 0x120006e4:
+		if (g_4e6948->state == 2 && *(short *)((byte *)weapon + 0x17e) != NONE && function_162b10(weapon_index))
+			result = function_162b70(weapon_index);
 		break;
 	case 0x0e000572:
 	case 0x10000573:
