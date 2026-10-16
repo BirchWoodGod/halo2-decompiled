@@ -104,7 +104,7 @@ struct s_player_iterator
 	long absolute_index;
 };
 
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 long function_19e1c0(s_event *event, long token_length, word const *token, word *destination, long remaining);
 void function_19e890(long player_index, s_event_response *response, s_event *event);
 void function_19ea60(long player_index, word *buffer);
@@ -598,7 +598,7 @@ void function_19eb30(s_event *event)
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 			function_19de80(event, iterator.index);
 	}
 	else

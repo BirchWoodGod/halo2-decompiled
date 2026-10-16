@@ -30,7 +30,7 @@ struct s_slot_0b
 	byte unknown14[0x40 - 0x14];
 };
 
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 short __stdcall function_1b7920(long actor_index);
 
 short __stdcall function_1bef40(long actor_index);
@@ -242,7 +242,7 @@ bool function_1bf3f0(long actor_index, long other_index, short type)
 
 		if (other->prop_index != NONE && actor->prop_index != NONE &&
 			prop_node_get(actor->prop_index)->unknown08 == prop_node_get(other->prop_index)->unknown08 &&
-			function_1a6fe0(other_index, type) != NONE)
+			actor_behavior_find_level(other_index, type) != NONE)
 		{
 			result = true;
 		}
