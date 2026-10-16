@@ -1687,10 +1687,11 @@ PRIVATE inline transform4x3f *component_node_matrices(long object_index)
  return (transform4x3f *)((byte *)object + object->matrices_offset);
 }
 
-// @retail 0x1d3d20
-void function_1d3d20(s_havok_component *component, long node_index, dword *updated, dword const *restore,
+// @retail 0x1d3d20 standard
+void s_havok_component::function_1d3d20(long node_index, dword *updated, dword const *restore,
  rigid_transform_scaled *orientations, long unknown)
 {
+ s_havok_component *component = this;
  s_component_node_object *object = (s_component_node_object *)havok_object_get(component->object_index);
  s_component_transform_definition *definition = (s_component_transform_definition *)g_4e3b44[object->definition_index & 0xffff].bytes;
  s_component_transform_model *model = (s_component_transform_model *)g_4e3b44[definition->model_index & 0xffff].bytes;
@@ -1739,7 +1740,7 @@ void function_1d3d20(s_havok_component *component, long node_index, dword *updat
  while (child != NONE)
  {
   s_component_node_link *next = &physics->nodes[child];
-  function_1d3d20(component, child, updated, restore, orientations, unknown);
+  component->function_1d3d20(child, updated, restore, orientations, unknown);
   child = next->sibling;
  }
 }
