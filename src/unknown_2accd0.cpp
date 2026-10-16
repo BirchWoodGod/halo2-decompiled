@@ -68,7 +68,7 @@ struct s_saved_game_file_read_parameters
 #define FILE_COPY_CHUNK_SIZE 0x20000
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 
-const char *saved_game_type_get_file_name(long type);
+const char *saved_game_type_get_storage_name(long type);
 long function_217480(long type);
 char *function_122810(char *path, const char *name);
 char *function_11c9c0(char *buffer, long maximum_count, const char *format, ...);
@@ -320,7 +320,7 @@ bool saved_game_file_copy_create(s_saved_game_file *file)
 		file_path[0] = 0;
 		function_x91aa57(id.data, path, sizeof(id.data));
 		function_x91aa57(file_path, id.data, sizeof(file_path));
-		function_122810(file_path, saved_game_type_get_file_name(type));
+		function_122810(file_path, saved_game_type_get_storage_name(type));
 		function_xbb02d2(&s_type_acf665, file_path);
 		if (function_1367d0(&s_type_acf665) && function_136970(&s_type_acf665, 2, &error))
 		{
@@ -554,7 +554,7 @@ inline void saved_game_file_build_path(char *path, const char *folder, long type
 {
 	strncpy(path, folder, 0x100);
 	path[0xff] = 0;
-	function_122810(path, saved_game_type_get_file_name(type));
+	function_122810(path, saved_game_type_get_storage_name(type));
 }
 
 // @retail 0x2ad760

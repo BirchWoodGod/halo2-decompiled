@@ -113,7 +113,7 @@ bool __stdcall saved_game_storage_ensure_directory(char const *path)
 /* the name of the file a saved game of a type is stored in, inside the
    saved game's directory */
 // @retail 0x216b60
-const char *saved_game_type_get_file_name(long type)
+const char *saved_game_type_get_storage_name(long type)
 {
 	const char *name = "unknown";
 	const char *names[k_saved_game_file_type_count] =

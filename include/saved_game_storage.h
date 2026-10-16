@@ -139,7 +139,7 @@ void saved_game_storage_update(void);
 bool saved_game_file_read_synchronous(long file_index, void *buffer, long size, wchar_t *display_name);
 bool __stdcall saved_game_storage_ensure_directory(char const *path);
 void saved_game_storage_remove_location(long file_index);
-const char *saved_game_type_get_file_name(long type);
+const char *saved_game_type_get_storage_name(long type);
 long saved_game_type_get_name_id(long type);
 bool saved_game_file_write_save_image(long type, s_saved_game_file_location *location);
 wchar_t const *saved_game_storage_get_default_profile_name(long language);
