@@ -160,7 +160,7 @@ struct s_match_result_data
 	s_long7 properties;
 };
 
-void function_0b4a40(s_long7 *out, const __int64 *in);
+void online_match_properties_from_attributes(s_long7 *out, const __int64 *in);
 long online_match_search(s_range_input const *input);
 
 // @retail 0x90160
@@ -187,7 +187,7 @@ bool function_90160(long task_index, s_match_result_data *result)
 			{
 				__int64 properties[7];
 				if (SUCCEEDED(XOnlineMatchSearchParse(results[0], results[0]->dwNumAttributes, g_44050c, properties)))
-					function_0b4a40(&result->properties, properties);
+					online_match_properties_from_attributes(&result->properties, properties);
 			}
 		}
 	}

@@ -618,7 +618,7 @@ bool function_06e720(c_class_58d20 *session)
 }
 
 void function_148823();
-void function_14a152();
+void window_manager_reset_all_windows();
 bool __stdcall function_236917(long controller);
 bool __stdcall function_236953(long controller);
 bool __stdcall function_2323ab(long controller);
@@ -638,7 +638,7 @@ static inline bool session_dialog_is(c_class_1473c9 *screen, long id)
 void function_6d270(void)
 {
  function_148823();
- function_14a152();
+ window_manager_reset_all_windows();
  long id = 0x38;
  dialog_choice_callback accept = function_236917;
  bool choice = true;

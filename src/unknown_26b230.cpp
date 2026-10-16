@@ -20,7 +20,7 @@ void function_1e2a90(long actor_index);
 void __stdcall function_b83b0(long object_index, bool flag);
 void __stdcall function_b8460(long object_index, bool flag);
 void __stdcall function_b8540(long object_index);
-void __stdcall function_28e200(long index);
+void __stdcall swarm_delete(long index);
 bool function_bba80(long object_index);
 point3f *function_b9dd0(long object_index, point3f *position);
 void function_2691b0(long clump_index);
@@ -190,7 +190,7 @@ void function_268c90()
 					function_b83b0(unit, true);
 					function_b8460(unit, true);
 				}
-				else if (proxy != NONE) function_28e200(proxy);
+				else if (proxy != NONE) swarm_delete(proxy);
 				if (extra != NONE)
 				{
 					byte *object = NULL;
@@ -932,7 +932,7 @@ short function_269e60(long object_index, s_clump_activity_view const *clump, lon
 						s_ai_object_iterator iterator;
 						iterator.index = NONE;
 						iterator.next_index = perception_get(index)->object_index;
-						while (function_290c80(&iterator))
+						while (swarm_creature_iterator_next(&iterator))
 							function_bec70(iterator.index);
 					}
 				}

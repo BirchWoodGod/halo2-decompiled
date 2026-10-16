@@ -47,13 +47,13 @@ struct s_indexed_block
 	s_indexed_entry *entries;
 };
 
-void *function_1482e8(void);
+struct s_user_interface_shared_globals *ui_mode_definition_get(void);
 
 // @retail 0x236a7f
 s_interface_tag *function_236a7f(void)
 {
 	s_interface_tag *result = 0;
-	s_interface_globals *globals = (s_interface_globals *)function_1482e8();
+	s_interface_globals *globals = (s_interface_globals *)ui_mode_definition_get();
 
 	if (globals && globals->tag_index != NONE)
 		result = (s_interface_tag *)g_4e3b44[globals->tag_index & 0xffff].bytes;

@@ -261,7 +261,7 @@ done:
 // @retail 0x22d456
 void __stdcall parse_gametype(long string_handle, word *buffer)
 {
-	s_type_954545 *globals = function_148350();
+	s_type_954545 *globals = ui_definition_get();
 
 	if (globals)
 	{

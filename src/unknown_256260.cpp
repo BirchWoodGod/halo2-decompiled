@@ -161,7 +161,7 @@ short __stdcall function_256300(long actor_index, s_slot *slot, bool active)
 				iterator.index = NONE;
 				iterator.next_index = ((s_perception_datum *)(g_5044c8->data + (((s_handler_actor_view *)actor)->perception_index & 0xffff) * sizeof(s_perception_datum)))->object_index;
 
-				while ((object = function_290c80(&iterator)) != NULL)
+				while ((object = swarm_creature_iterator_next(&iterator)) != NULL)
 				{
 					byte *data;
 					if (!object->flags134 && (data = (byte *)object + object->ai_offset) != NULL)
@@ -482,7 +482,7 @@ short __stdcall function_256810(long actor_index, s_slot *slot)
 			iterator.next_index = perception_get(((s_handler_actor_view *)actor)->perception_index)->object_index;
 			function_b9dd0(prop_ref->object_index, &origin);
 			best_object_index = NONE;
-			while ((object = function_290c80(&iterator)) != NULL)
+			while ((object = swarm_creature_iterator_next(&iterator)) != NULL)
 			{
 				s_object_ai_256810_view *data;
 

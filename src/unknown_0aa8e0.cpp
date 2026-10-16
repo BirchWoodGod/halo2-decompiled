@@ -118,7 +118,7 @@ PRIVATE inline void z_write_blend_fraction(s_bitstream *stream, real value)
  function_195720(stream, quantized, 4);
 }
 
-void function_b5650(long identifier, s_bitstream *stream);
+void simulation_write_entity_identifier(long identifier, s_bitstream *stream);
 void function_194830(s_bitstream *stream, bool value);
 
 // @retail 0xab5e0
@@ -131,7 +131,7 @@ void function_ab5e0(s_z_blend_state const *state, s_bitstream *stream)
   real second = state->second > 0.0f ? state->second : 0.0f;
   z_write_blend_fraction(stream, first);
   z_write_blend_fraction(stream, second);
-  function_b5650(state->identifier, stream);
+  simulation_write_entity_identifier(state->identifier, stream);
   function_194830(stream, state->slot != NONE);
   if (state->slot != NONE)
    stream_write_checked(stream, state->slot, 5);
@@ -160,7 +160,7 @@ PRIVATE __forceinline void transform_angular_cap(vector3f *vector, real maximum)
 // @retail 0xab7f0
 void function_ab7f0(s_bitstream *stream, s_z_transform_state const *state)
 {
- function_b5650(state->identifier, stream);
+ simulation_write_entity_identifier(state->identifier, stream);
  simulation_write_position(16, stream, (real const *)&state->position, false);
  function_194d30(stream, &state->up, &state->forward);
  vector3f velocity = state->linear_velocity;

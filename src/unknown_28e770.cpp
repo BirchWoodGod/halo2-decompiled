@@ -80,8 +80,8 @@ struct s_28e773
 struct s_object_ai_data;
 struct s_28f0e0;
 void *function_1e4b50(long arg_0);
-void function_28e5c0(long arg_0, s_object_ai_data *arg_1);
-bool function_28e4b0(long arg_0, short arg_1, long *arg_2, point3f *arg_3, vector3f *arg_4);
+void swarm_creature_update_countdown(long arg_0, s_object_ai_data *arg_1);
+bool swarm_target_get_location(long arg_0, short arg_1, long *arg_2, point3f *arg_3, vector3f *arg_4);
 real function_30bf0(vector3f *arg_0);
 bool function_2900b0(long arg_0, point3f const *arg_1, real arg_2, real arg_3, vector3f *arg_4);
 long function_1469f0(real arg_0);
@@ -112,7 +112,7 @@ void __stdcall function_28e770(long arg_0, long arg_1)
 		if (local_3 && local_2)
 		{
 			s_28e771 *local_4 = (s_28e771 *)perception_get(local_0->field_1c);
-			function_28e5c0(arg_1, (s_object_ai_data *)local_3);
+			swarm_creature_update_countdown(arg_1, (s_object_ai_data *)local_3);
 			short local_5 = local_0->field_4a4;
 			short local_6 = local_0->field_4a5;
 			long local_7 = local_0->field_4a8;
@@ -131,7 +131,7 @@ void __stdcall function_28e770(long arg_0, long arg_1)
 			point3f local_8;
 			vector3f local_9;
 			long local_10;
-			bool local_11 = function_28e4b0(local_7, local_6, &local_10, &local_8, &local_9);
+			bool local_11 = swarm_target_get_location(local_7, local_6, &local_10, &local_8, &local_9);
 			s_28e772 *local_12 = (s_28e772 *)local_1;
 			vector3f *local_14 = &local_12->field_70;
 			vector3f *local_29 = &local_3->field_80;

@@ -379,7 +379,7 @@ s_long_pair *network_session_interface_get_data_4999(void);
 HRESULT online_task_continue(s_type_9df9da *task);
 
 /* unknown_0b49a0.cpp: the error string of a Live result */
-dword function_0b4a20(dword key);
+dword online_result_get_error_string(dword key);
 
 /* unknown_18f576.cpp */
 bool player_slot_get_identity(long index, s_player_identity *identity);
@@ -764,7 +764,7 @@ void __stdcall online_message_block_send_finished(c_online_task_screen *screen)
 				return;
 			s_type_9df9da *task = function_6b910(task_index);
 			if (task)
-				error = function_0b4a20(online_task_continue(task));
+				error = online_result_get_error_string(online_task_continue(task));
 			local_0 = true;
 		}
 	}
@@ -802,7 +802,7 @@ void online_message_block_send(s_state_block *block, long controller_index, cons
 	}
 	if (block->unknown218 == NONE)
 	{
-		dialog_ok_show(1, function_0b4a20(result), 4, 1 << controller_index, 0, 0);
+		dialog_ok_show(1, online_result_get_error_string(result), 4, 1 << controller_index, 0, 0);
 	}
 	else
 	{

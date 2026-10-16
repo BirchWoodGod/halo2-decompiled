@@ -57,7 +57,7 @@ void function_1905bf(long controller, bool flag);
 bool __stdcall function_23699f(long controller);
 void function_6cb60(void);
 void function_1906b4(void);
-void function_14a1c3(void);
+void window_manager_reset_windows_except_channels_1_and_5(void);
 c_class_1473c9 *__stdcall function_14752c(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_252481(s_screen_parameters *parameters);
 
@@ -184,7 +184,7 @@ void c_press_start_screen::v18(void *parameters)
 	function_6cb60();
 	function_1906b4();
 	g_51ebec = g_54d5b8;
-	function_14a1c3();
+	window_manager_reset_windows_except_channels_1_and_5();
 }
 
 /* a signed in user leaves for the main menu; the screen's bitmaps stay

@@ -4,7 +4,7 @@
 
 void function_295210(long arg_0);
 void function_28fc50(long arg_0, word arg_1);
-void function_28fd00(long object_index);
+void swarm_creature_dispose(long object_index);
 void function_2952e0(long object_index);
 
 // @retail 0x211600
@@ -30,7 +30,7 @@ void function_211640(long object_index)
     switch (*(long *)(object + 0x134))
     {
     case 0:
-        function_28fd00(object_index);
+        swarm_creature_dispose(object_index);
         break;
     case 1:
         function_2952e0(object_index);
