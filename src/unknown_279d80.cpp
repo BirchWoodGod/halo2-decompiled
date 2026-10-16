@@ -118,7 +118,7 @@ void function_2798a0(s_animation_data *data, real frame, real weight, s_graph_ta
 {
 	if (weight > 0.0001f)
 	{
-		long frame_index = _mm_cvtt_ss2si(_mm_set_ss(frame));
+		long frame_index = real_truncate(frame);
 		long last_frame = animation->frame_count - 1;
 
 		node_mask_clear(g_55e530);
@@ -145,7 +145,7 @@ void function_2798a0(s_animation_data *data, real frame, real weight, s_graph_ta
 		g_sampling_settings.blend_frames = blend;
 		if (blend)
 		{
-			long blend_frame_index = _mm_cvtt_ss2si(_mm_set_ss(blend_frame));
+			long blend_frame_index = real_truncate(blend_frame);
 
 			g_sampling_settings.blend_frame_index = PIN(blend_frame_index, 0, last_frame);
 			g_sampling_settings.blend_frame_fraction = blend_frame - (real)g_sampling_settings.blend_frame_index;
@@ -159,17 +159,15 @@ void function_2798a0(s_animation_data *data, real frame, real weight, s_graph_ta
 			if (frame_index != last_frame)
 			{
 				long next_frame_index = frame_index + 1;
-				real fraction;
 
 				g_sampling_settings.next_frame_index = PIN(next_frame_index, 0, last_frame);
-				fraction = frame - (real)frame_index;
-				g_sampling_settings.frame_fraction = fraction;
-				if (fraction < 0.0001f)
+				g_sampling_settings.frame_fraction = frame - (real)frame_index;
+				if (g_sampling_settings.frame_fraction < 0.0001f)
 				{
 					g_sampling_settings.frame_fraction = 0.0f;
 					interpolate = false;
 				}
-				else if (fraction > 0.9999f)
+				else if (g_sampling_settings.frame_fraction > 0.9999f)
 				{
 					g_sampling_settings.frame_index = next_frame_index;
 					g_sampling_settings.frame_fraction = 0.0f;

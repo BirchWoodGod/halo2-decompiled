@@ -133,7 +133,9 @@ void __stdcall function_28e770(long arg_0, long arg_1)
 			long local_10;
 			bool local_11 = function_28e4b0(local_7, local_6, &local_10, &local_8, &local_9);
 			s_28e772 *local_12 = (s_28e772 *)local_1;
-			local_3->field_80 = local_12->field_70;
+			vector3f *local_14 = &local_12->field_70;
+			vector3f *local_29 = &local_3->field_80;
+			*local_29 = *local_14;
 			local_3->field_8c = local_12->field_7c;
 			local_3->field_98 = *g_4687a4;
 			if (local_5 != local_3->field_24)
@@ -164,7 +166,7 @@ void __stdcall function_28e770(long arg_0, long arg_1)
 						function_28e774(&local_4->field_24, &local_3->field_14, &local_9);
 						if (function_30bf0(&local_9) > 0.0f)
 						{
-							local_3->field_80 = local_9;
+							*local_29 = local_9;
 							local_3->field_98 = *g_4687a8;
 						}
 						local_3->field_56 = true;
@@ -181,9 +183,9 @@ void __stdcall function_28e770(long arg_0, long arg_1)
 					{
 						if (local_3->field_4c > 0)
 							goto local_21;
-						local_3->field_80 = local_13;
+						*local_29 = local_13;
 						local_3->field_98 = *g_4687a8;
-						if (local_3->field_80.k * local_12->field_70.k + local_3->field_80.j * local_12->field_70.j + local_12->field_70.i * local_3->field_80.i > 0.95f)
+						if (local_29->k * local_14->k + local_29->j * local_14->j + local_14->i * local_29->i > 0.95f)
 						{
 							if (function_2900b0(arg_1, &local_8, 0.9f, 2.7f, (vector3f *)&local_3->field_58))
 							{
@@ -203,7 +205,7 @@ void __stdcall function_28e770(long arg_0, long arg_1)
 					real local_22 = function_30bf0(&local_13);
 					if (local_22 > 0.0f)
 					{
-						local_3->field_80 = local_13;
+						*local_29 = local_13;
 						if (local_22 > local_2->field_10)
 						{
 							local_3->field_98 = *g_4687a8;
@@ -256,7 +258,7 @@ void __stdcall function_28e770(long arg_0, long arg_1)
 						real local_24 = function_30bf0(&local_9);
 						if (local_24 > 0.0f)
 						{
-							local_3->field_80 = local_9;
+							*local_29 = local_9;
 							local_3->field_98 = *g_4687a8;
 							if (local_24 < 0.2f)
 								function_28f0e0(&local_9, (s_28f0e0 const *)&local_15, arg_1, local_10);
@@ -280,7 +282,7 @@ void __stdcall function_28e770(long arg_0, long arg_1)
 					{
 						if (local_26 < local_2->field_4)
 						{
-							local_3->field_80 = local_13;
+							*local_29 = local_13;
 							local_3->field_98 = *g_4687a8;
 							function_28e774(&local_3->field_14, &local_4->field_8, &local_9);
 							if (function_30bf0(&local_9) > 0.0f)
@@ -288,25 +290,25 @@ void __stdcall function_28e770(long arg_0, long arg_1)
 								real local_27 = (real)local_3->field_26 * g_510c54->rate;
 								local_27 = local_27 < 0.0f ? 0.0f : local_27 > 5.0f ? 5.0f : local_27;
 								real local_28 = (1.0f - local_27 * (1.0f / 3.0f)) * 2.0f;
-								local_3->field_80.i += local_28 * local_9.i;
-								local_3->field_80.j += local_9.j * local_28;
-								local_3->field_80.k += local_9.k * local_28;
-								if (function_30bf0(&local_3->field_80) == 0.0f)
-									local_3->field_80 = local_13;
+								local_29->i += local_28 * local_9.i;
+								local_29->j += local_9.j * local_28;
+								local_29->k += local_9.k * local_28;
+								if (function_30bf0(local_29) == 0.0f)
+									*local_29 = local_13;
 							}
 						}
 						else
 						{
-							local_3->field_80.i = local_13.i * -1.0f;
-							local_3->field_80.j = local_13.j * -1.0f;
-							local_3->field_80.k = local_13.k * -1.0f;
+							local_29->i = local_13.i * -1.0f;
+							local_29->j = local_13.j * -1.0f;
+							local_29->k = local_13.k * -1.0f;
 							local_3->field_98 = *g_4687a4;
 						}
 					}
 				}
 				break;
 			case 7:
-				function_28f290(arg_1, &local_3->field_80, &local_3->field_98);
+				function_28f290(arg_1, local_29, &local_3->field_98);
 				break;
 			}
 			local_3->field_24 = local_5;

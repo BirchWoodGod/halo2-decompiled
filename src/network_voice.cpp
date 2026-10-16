@@ -2801,10 +2801,10 @@ void __stdcall function_56df0(s_voice_player_settings *settings, long talker, lo
 {
 	// The retail entry reads the talker from its stack argument slot.
 	long const *talker_reference = &talker;
-	long current_mode = 0;
+	long voice_mode = 0;
 	if (settings->initialized && voice_available())
-		current_mode = g_4c9878.mode;
-	bool active = current_mode == 1;
+		voice_mode = g_4c9878.mode;
+	bool active = voice_mode == 1;
 	if (active && voice_xhv_has_remote_talker(&g_476fc8, *talker_reference))
 	{
 		dword local = voice_get_local_player_mask();
