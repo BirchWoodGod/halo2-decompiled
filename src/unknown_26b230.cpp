@@ -2111,28 +2111,37 @@ void function_269870(long clump_index)
                 if (existing->type != candidate->type)
                 {
                     s_type_5cfb45 *state = NULL;
-                    if (g_470f10[candidate->type].unknown4 == 0)
-                        existing->state = 1;
-                    else if (g_470f10[candidate->type].unknown4 == 1)
+                    switch (g_470f10[candidate->type].unknown4)
                     {
-                        s_iterator nodes;
-                        nodes.next = ((s_clump_prop *)prop_get(candidate->prop_index))->first_node;
-                        s_clump_node *node;
-                        while ((node = clump_next_node(&nodes)) != NULL)
+                    case 0:
+                        break;
+                    case 1:
                         {
-                            if (node->state >= 1)
+                            s_iterator nodes;
+                            nodes.next = ((s_clump_prop *)prop_get(candidate->prop_index))->first_node;
+                            s_clump_node *node;
+                            while ((node = clump_next_node(&nodes)) != NULL)
                             {
-                                if (*(long *)((byte *)node + 0x14) != NONE)
-                                    state = function_25d690((s_prop_datum *)node);
-                                break;
+                                if (node->state >= 1)
+                                {
+                                    if (*(long *)((byte *)node + 0x14) != NONE)
+                                        state = function_25d690((s_prop_datum *)node);
+                                    break;
+                                }
                             }
+                            if (!node)
+                                goto type_ready;
                         }
-                        existing->state = 1;
+                        break;
+                    default:
+                        goto type_ready;
                     }
+                    existing->state = 1;
                     if (state)
                         existing->observed = *state;
-                    else if (g_470f10[candidate->type].unknown4 == 0 || g_470f10[candidate->type].unknown4 == 1)
+                    else
                         function_25ccd0(&existing->observed, existing->object_index, NONE, NULL);
+                type_ready:
                     existing->type = candidate->type;
                 }
                 ++selected;
