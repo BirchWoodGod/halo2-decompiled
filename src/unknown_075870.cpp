@@ -2510,10 +2510,12 @@ void __stdcall function_0785d0(void *unknown10, s_type_99af70 const *address, vo
 	{
 		if (function_785f7(address))
 			goto local_3;
-		dword flags = request[1];
+		short flags = request[1];
 		if (flags & 0xc0)
 			goto local_3;
-		dword connection_flags = (flags >> 1) & 1;
+		struct s_flag_view { long sequence; unsigned short low : 1; unsigned short first : 1; unsigned short rest : 14; };
+		s_flag_view const *bits = (s_flag_view const *)message;
+		dword connection_flags = bits->first;
 		if (flags & 1) connection_flags |= 2; else connection_flags &= ~2;
 		if (flags & 4) connection_flags |= 4; else connection_flags &= ~4;
 		if (flags & 8) connection_flags |= 8; else connection_flags &= ~8;

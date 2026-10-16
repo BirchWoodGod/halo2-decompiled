@@ -456,12 +456,14 @@ void function_199540(dword flags);
    src/stubs/lane_d.cpp) */
 bool __stdcall function_199740(byte *buffer, long size, byte *destination, long *decompressed_size);
 
+#include "unknown_080e10.h"
+
 // @retail 0x6a8a0
 bool world_buffer_allocate(c_class_6a600 *world)
 {
 	bool result = false;
 	byte *buffer;
-	buffer = (byte *)function_12d400(1, 0x40000, 0, 0, 0);
+	buffer = (byte *)function_80e14(0x40000, 0, 0, 0, 30, 0.1f);
 	world->buffer = buffer;
 	if (buffer != NULL)
 	{
@@ -646,13 +648,14 @@ void function_6a2e0(c_class_6a600 *world)
 		s_simulation_world_player *player = &world->players[i];
 		if (player->player_index != NONE && !player->flag25)
 		{
-			s_simulation_owner_player *owner_player = &world->owner->players.players[i];
 			dword key[3];
-			key[0] = player->key[0];
-			key[1] = player->key[1];
-			key[2] = player->key[2];
-			if ((world->owner->players.player_mask & (1 << i)) && !memcmp(key, owner_player->key, sizeof(key)) && !owner_player->flag0c && (established & (1 << i)) && !player->flag24)
-				player->flag25 = true;
+			memcpy(key, player->key, sizeof(key));
+			if (world->owner->players.player_mask & (1 << i))
+			{
+				s_simulation_owner_player *owner_player = &world->owner->players.players[i];
+				if (!memcmp(key, owner_player->key, sizeof(key)) && !owner_player->flag0c && (established & (1 << i)) && !player->flag24)
+					player->flag25 = true;
+			}
 		}
 	}
 }
@@ -1309,7 +1312,7 @@ bool simulation_world_queue_block(c_class_6a600 *world, const s_simulation_block
 
 	if (world_receiving_join_data(world))
 		goto invalid;
-	if (data->size < expected)
+	if (expected > data->size)
 		goto done;
 	if (data->size != expected || (world->unknown18 != 4 && !world->flag25))
 		goto invalid;
@@ -1320,7 +1323,11 @@ invalid:
 	goto done;
 
 valid:
-	if (function_6ab90(world, data))
+	if (!(function_6ab90(world, data)))
+	{
+		g_4cf771 = true;
+	}
+	else
 	{
 		while (world->flag25 && g_4e6948 && g_4e6948->flag1120 && !(g_4cf770 && g_4cf772) && !world->flag2c)
 		{
@@ -1330,10 +1337,6 @@ valid:
 			function_137fe0();
 		}
 		result = true;
-	}
-	else
-	{
-		g_4cf771 = true;
 	}
 
 done:

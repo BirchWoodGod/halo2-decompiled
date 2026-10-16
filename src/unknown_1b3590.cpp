@@ -239,20 +239,25 @@ void __stdcall function_1b3880(long actor_index, s_slot *slot)
 // @retail 0x1b39e0
 short __stdcall function_1b39e0(long actor_index)
 {
+	long result = 0;
+	s_record_pool *object_pool = g_4e0300;
+	s_record_pool *node_pool = g_502418;
+
 	long prop_index = actor_get(actor_index)->first_prop_index;
 
 	while (prop_index != NONE)
 	{
-		s_prop_node_view *node = prop_node_get(prop_index);
+		s_prop_node_view *node = (s_prop_node_view *)(node_pool->data + (prop_index & 0xffff) * sizeof(s_prop_node_view));
 
 		prop_index = node->next_index;
-		if (node->type == 7 && node->unknown28 < 3.5f && prop_node_state(node)->unknown00 != NONE &&
-			!(object_get(node->object_index)->unknownb2 & 1))
-		{
-			return 3;
-		}
+		if (node->type != 7) continue;
+		if (!(node->unknown28 < 3.5f)) continue;
+		if (prop_node_state(node)->unknown00 == NONE) continue;
+		if (((s_slot_object_view *)((s_object_header_view *)object_pool->data)[node->object_index & 0xffff].object)->unknownb2 & 1) continue;
+		result = 3;
+		break;
 	}
-	return 0;
+	return (short)result;
 }
 
 PRIVATE __forceinline s_prop_node_view *function_1b3a82(s_record_pool *arg_0, long arg_1)

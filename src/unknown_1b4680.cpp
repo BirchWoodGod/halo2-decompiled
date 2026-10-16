@@ -392,18 +392,18 @@ short __stdcall function_1b52a0(long actor_index, s_slot *slot)
 	{
 		s_character_ef0 *character = (s_character_ef0 *)function_1e4ef0(actor_index);
 
-		if (!character || character->unknown2c > function_1b52a1())
+		bool accepted = true;
+		if (character)
+			accepted = character->unknown2c > function_1b52a1();
+		if (accepted)
 		{
 			s_slot_38 *state = (s_slot_38 *)slot;
-
 			state->unknown10 = actor->prop_index;
 			state->unknown14 = 0x3f;
 			state->unknown0c = true;
 		}
 		else
-		{
 			result = g_46fbe4;
-		}
 	}
 done:
 	return result;
