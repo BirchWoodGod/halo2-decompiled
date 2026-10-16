@@ -66,11 +66,11 @@ bool function_1be9e0(long actor_index, long other_index, real *distance, short *
 	s_actor_view *actor = actor_get(actor_index);
 	s_actor_view *other = actor_get(other_index);
 
-	real magnitude = function_1be9e2(&other->position, &actor->position);
+	real magnitude = function_1be9e2(&actor->position, &other->position);
 
 	if (magnitude < 4.0f)
 	{
-		slot_ticks = function_1b6e50(actor_index);
+		slot_ticks = function_1b6e50(other_index);
 		if (slot_ticks * g_510c54->rate < 4.0f)
 			result = true;
 	}
