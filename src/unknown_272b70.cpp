@@ -1762,7 +1762,7 @@ void function_275a50(long ai_index, bool flag)
 		s_ai_squad_iterator iterator;
 		ai_squad_iterator_new(&iterator, ai_index);
 		s_squad_datum *squad;
-		while ((squad = ai_squad_iterator_next(&iterator)) != NULL)
+		while ((squad = function_273481(&iterator)) != NULL)
 		{
 			if (flag)
 				squad->flag9 = true;

@@ -64,13 +64,13 @@ void __stdcall function_189cd0(long tag_index, long object_index, real scale, lo
 			if (object == NONE && !positioned)
 			{
 				s_sound_request request;
-				request.object_index = NONE;
 				request.location.unknown02 = 0;
 				request.location.flags = 0x400;
 				request.location.audible = 0;
 				request.location.requested_audible = 0;
 				request.location.scale = scale;
 				request.location.unknown08 = 0;
+				request.object_index = NONE;
 				request.platform_playback = function_18d5b0(label);
 				request.variant = (char const *)&slot->permutation;
 				request.marker = NULL;
@@ -92,12 +92,13 @@ void __stdcall function_189cd0(long tag_index, long object_index, real scale, lo
 					description.flags |= 1;
 				else
 					description.flags &= ~1;
-				object = *object_reference;
-				sound_index = function_189340(object, tag_index, positioned ? 2 : 1, (s_sound_marker *)&description,
-					&g_444b3c, scale, function_18d5b0(label), (char const *)&slot->permutation);
-				if (sound_index != NONE && object != NONE)
+				long playback = function_18d5b0(label);
+				long request_object = *object_reference;
+				sound_index = function_189340(request_object, tag_index, positioned ? 2 : 1, (s_sound_marker *)&description,
+					&g_444b3c, scale, playback, (char const *)&slot->permutation);
+				if (sound_index != NONE && request_object != NONE)
 				{
-					function_109220(object, tag_index, sound_index);
+					function_109220(request_object, tag_index, sound_index);
 				}
 			}
 			slot->source_index = sound_index;

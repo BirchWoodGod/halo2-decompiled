@@ -25,12 +25,13 @@ struct s_sphere_frustum
 // @retail 0x181800
 long function_181800(s_sphere_frustum const *frustum, point3f const *center, real radius)
 {
-	if (center->x - radius > frustum->bounds.x1 ||
-		center->y - radius > frustum->bounds.y1 ||
-		center->z - radius > frustum->bounds.z1 ||
-		frustum->bounds.x0 > center->x + radius ||
-		frustum->bounds.y0 > radius + center->y ||
-		frustum->bounds.z0 > radius + center->z)
+	s_frustum_bounds const &bounds = frustum->bounds;
+	if (center->x - radius > bounds.x1 ||
+		center->y - radius > bounds.y1 ||
+		center->z - radius > bounds.z1 ||
+		bounds.x0 > center->x + radius ||
+		bounds.y0 > radius + center->y ||
+		bounds.z0 > radius + center->z)
 	{
 		return 0;
 	}
