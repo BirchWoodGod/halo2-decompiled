@@ -86,11 +86,10 @@ struct s_z_initial_state
 // @retail 0xa5bd0
 bool function_a5bd0(s_entity_info const *info, s_z_initial_state *state)
 {
-	long definition_index = info->definition_index;
     bool volatile result = false;
-	if (function_122c10(0x6f626a65, definition_index))
+	if (function_122c10(0x6f626a65, info->definition_index))
 	{
-		byte *definition = g_4e3b44[definition_index & 0xffff].bytes;
+		byte *definition = g_4e3b44[info->definition_index & 0xffff].bytes;
 		state->position = *g_468788;
 		state->forward = *g_4687a8;
 		state->up = *g_4687b0;
@@ -100,16 +99,13 @@ bool function_a5bd0(s_entity_info const *info, s_z_initial_state *state)
 			s_z_initial_placement_type *type = (s_z_initial_placement_type *)g_468630[*(short *)definition];
 			if (type->placements_offset != NONE && type->palette_offset != NONE)
 			{
-				long placement_size = type->placement_size;
-				s_z_initial_placement_block *block = (s_z_initial_placement_block *)((byte *)g_4e0350 + type->placements_offset);
+				s_z_initial_placement_type *placement_type = (s_z_initial_placement_type *)g_468630[*(short *)definition];
+				long placement_size = placement_type->placement_size;
+				s_z_initial_placement_block *block = (s_z_initial_placement_block *)((byte *)g_4e0350 + placement_type->placements_offset);
 				long index = info->field0;
-				long clamped;
-				if (index < 0)
-					clamped = 0;
-				else if (index > block->count - 1)
+				long clamped = index < 0 ? 0 : index;
+				if (block->count - 1 < clamped)
 					clamped = block->count - 1;
-				else
-					clamped = index;
 				if (clamped == index)
 				{
 					s_z_initial_placement *placement = (s_z_initial_placement *)(block->data + index * placement_size);
