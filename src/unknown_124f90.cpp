@@ -2744,6 +2744,10 @@ void function_129380(vector3f const *const *voice_values, vector3f const *const 
 	}
 }
 
+__declspec(noinline) bool sound_playback_update_location(long sound_index);
+
+__declspec(noinline) void function_126df0(long fade_in_index, long fade_out_index, short curve, real duration);
+
 // @retail 0x128020
 void function_128020(void)
 {
@@ -2785,7 +2789,11 @@ void function_128020(void)
 			{
 				s_sound_definition *current = sound_definition_get(sound->definition_index);
 				if (current->flags & 0x800)
+				{
+#pragma inline_depth(0)
 					maximum = *(real *)((byte *)function_221810(current->promotion_index) + 0x1c);
+#pragma inline_depth(255)
+				}
 				else
 					maximum = function_xaa8231(current->class_index)->maximum_distance;
 			}
