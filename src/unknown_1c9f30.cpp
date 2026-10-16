@@ -50,7 +50,7 @@ void __stdcall function_1c9f30(long arg_0)
  if (g_4f55d0->active)
  {
   s_1c9f30 *local_0 = (s_1c9f30 *)object_get(arg_0);
-  short local_1 = local_0->field_aa;
+  long local_1 = local_0->field_aa;
   long local_2 = 1 << local_1;
   if ((local_2 & 0x1003) || (local_0->field_b2 & 2))
   {

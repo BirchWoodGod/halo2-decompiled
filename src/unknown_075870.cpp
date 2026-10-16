@@ -77,6 +77,8 @@ long network_connection_owner_active(s_network_connection *connection)
 	return 0;
 }
 
+inline __declspec(noinline) bool network_connection_get_address(s_network_connection *connection, s_type_99af70 *address);
+
 // @retail 0x75930
 bool network_connection_get_address(s_network_connection *connection, s_type_99af70 *address)
 {

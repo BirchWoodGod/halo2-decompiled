@@ -508,9 +508,9 @@ void __stdcall function_1ddea0(s_1de2c0 *arg_0, long arg_1)
  {
   s_1de6d1 const *local_1 = &local_0->field_4[arg_1];
   long local_2 = *(long const *)&local_1->field_2[-1] >> 8;
-  long local_3 = *(long const *)&local_1->field_2[2] >> 8;
   if (!(local_2 & 0x800000)) _mm_prefetch((char const *)&local_0->field_4[local_2], _MM_HINT_NTA);
   else if (local_2 != NONE) _mm_prefetch((char const *)&local_0->field_14[local_2 & 0x7fffff], _MM_HINT_NTA);
+  long local_3 = *(long const *)&local_1->field_2[2] >> 8;
   if (!(local_3 & 0x800000)) _mm_prefetch((char const *)&local_0->field_4[local_3], _MM_HINT_NTA);
   else if (local_3 != NONE) _mm_prefetch((char const *)&local_0->field_14[local_3 & 0x7fffff], _MM_HINT_NTA);
   long local_4 = local_1->field_0;
