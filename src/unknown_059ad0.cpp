@@ -3264,7 +3264,13 @@ void __stdcall function_061570(c_class_58d20 *session, bool flag)
 		transition.mask10 = transition.sent_mask;
 		transition.mask14 = 0;
 		memset(&session->value7420, 0, SESSION_STATE_DATA_SIZE);
-		*(s_session_transition_state *)&session->value7420 = transition;
+		s_session_transition_state *target = (s_session_transition_state *)&session->value7420;
+		target->unknown00 = transition.unknown00;
+		target->host_index = transition.host_index;
+		target->time = transition.time;
+		target->sent_mask = transition.sent_mask;
+		target->mask10 = transition.mask10;
+		target->mask14 = transition.mask14;
 		session->state = 8;
 		for (long i = 0; i < session->member_count; i++)
 		{
