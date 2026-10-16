@@ -60,14 +60,14 @@ long c_aggregate_450cf4::function_97d80(dword *source, s_request *request)
 	long error = 0;
 	long total = 0;
 
-	c_child **child = (c_child **)children;
-	for (long i = 0; i < 3; i++, child++)
+	for (long i = 0; i < 3; i++)
 	{
+		c_child *child = ((c_child **)children)[i];
 		starts[i] = total;
-		if (*child != 0 && error == 0)
+		if (child != 0 && error == 0)
 		{
 			long produced = 0;
-			error = (*child)->v5(*source, request, 256 - total, &blocks[total], &produced);
+			error = child->v5(*source, request, 256 - total, &blocks[total], &produced);
 			total += produced;
 		}
 	}
@@ -75,7 +75,7 @@ long c_aggregate_450cf4::function_97d80(dword *source, s_request *request)
 
 	if (error == 0 && request->type != 4)
 	{
-		child = (c_child **)children;
+		c_child **child = (c_child **)children;
 		for (long i = 0; i < 3; i++, child++)
 		{
 			c_child *object = *child;
