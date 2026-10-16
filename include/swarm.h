@@ -45,9 +45,9 @@ typedef char assert_swarm_size[(sizeof(s_swarm) == 0x34) ? 1 : -1];
 typedef char assert_swarm_first_creature[(offsetof(s_swarm, first_creature_index) == 0x18) ? 1 : -1];
 typedef char assert_swarm_spawn_slot_reference[(offsetof(s_swarm, spawn_slot_reference) == 0x31) ? 1 : -1];
 
-inline s_swarm *swarm_get(long swarm_index)
+inline s_swarm *swarm_get(long swarm_handle)
 {
-	return (s_swarm *)(g_5044c8->data + (swarm_index & 0xffff) * sizeof(s_swarm));
+	return (s_swarm *)(g_5044c8->data + (swarm_handle & 0xffff) * sizeof(s_swarm));
 }
 
 /* a slot of the table at g_5044c4 (0x50 bytes): a swarm spawned at a marker
@@ -56,7 +56,7 @@ struct s_swarm_spawn_slot
 {
 	long object_index;
 	byte unknown04[0x48 - 4];
-	long swarm_index;
+	long swarm_handle;
 	short count;
 	byte unknown4e[2];
 };
@@ -81,7 +81,7 @@ struct s_object_ai_data
 	};
 	byte unknown02[2];
 	long actor_index;
-	long swarm_index;
+	long swarm_handle;
 	long next_creature_index;
 	long prop_index;                  /* forgotten with swarm_forget_prop */
 	point3f position;
@@ -89,7 +89,7 @@ struct s_object_ai_data
 	byte unknown24[0x4c - 0x24];
 	short countdown;
 	byte unknown4e[2];
-	long target_prop_index;           /* the prop_ref the creature heads for */
+	long goal_prop_ref;           /* the prop_ref the creature heads for */
 	short target_state;
 	bool flag56;
 	bool velocity_pending;
@@ -106,7 +106,7 @@ struct s_object_ai_data
 	long animation_name4;
 	long animation_name0;
 };
-typedef char assert_object_ai_data_target_prop[(offsetof(s_object_ai_data, target_prop_index) == 0x50) ? 1 : -1];
+typedef char assert_object_ai_data_target_prop[(offsetof(s_object_ai_data, goal_prop_ref) == 0x50) ? 1 : -1];
 typedef char assert_object_ai_data_pending_velocity[(offsetof(s_object_ai_data, pending_velocity) == 0x58) ? 1 : -1];
 typedef char assert_object_ai_data_forward[(offsetof(s_object_ai_data, forward) == 0x80) ? 1 : -1];
 typedef char assert_object_ai_data_size[(sizeof(s_object_ai_data) == 0xb0) ? 1 : -1];
@@ -180,13 +180,13 @@ inline s_swarm_object_header *swarm_object_header_get(long object_index)
 }
 
 /* the actor fields the swarm code reads (an actor of g_4f55f0, 0x888 bytes) */
-struct s_swarm_actor
+struct s_swarm_leader
 {
 	byte unknown000[0xc];
 	bool flag00c;
 	byte unknown00d[0x18 - 0xd];
 	long unit_index;
-	long swarm_index;
+	long swarm_handle;
 	byte unknown020[0x30 - 0x20];
 	dword squad_index : 16;
 	dword : 16;
@@ -199,13 +199,13 @@ struct s_swarm_actor
 	long prop_index;
 	byte unknown33c[0x888 - 0x33c];
 };
-typedef char assert_swarm_actor_size[(sizeof(s_swarm_actor) == 0x888) ? 1 : -1];
-typedef char assert_swarm_actor_position[(offsetof(s_swarm_actor, position) == 0x238) ? 1 : -1];
-typedef char assert_swarm_actor_prop_index[(offsetof(s_swarm_actor, prop_index) == 0x338) ? 1 : -1];
+typedef char assert_swarm_actor_size[(sizeof(s_swarm_leader) == 0x888) ? 1 : -1];
+typedef char assert_swarm_actor_position[(offsetof(s_swarm_leader, position) == 0x238) ? 1 : -1];
+typedef char assert_swarm_actor_prop_index[(offsetof(s_swarm_leader, prop_index) == 0x338) ? 1 : -1];
 
-inline s_swarm_actor *swarm_actor_get(long actor_index)
+inline s_swarm_leader *swarm_leader_get(long actor_index)
 {
-	return &((s_swarm_actor *)g_4f55f0->data)[actor_index & 0xffff];
+	return &((s_swarm_leader *)g_4f55f0->data)[actor_index & 0xffff];
 }
 
 /* the swarm's iterator (swarm_iterator_new; 0x256bd0 steps it) */
@@ -220,16 +220,16 @@ struct s_290c50_iterator
 void function_28d930(void);
 void function_28d9d0(void);
 void swarm_iterator_new(s_290c50_iterator *iterator);
-void __stdcall swarm_delete(long swarm_index);
-bool __stdcall swarm_remove_creature(long swarm_index, long object_index, bool remove_from_world, bool delete_when_empty);
-void __stdcall swarm_actor_attach(long actor_index, long swarm_index);
-void swarm_actor_detach(long actor_index);
-void swarm_set_team(long swarm_index, short team);
-void swarm_forget_prop(long swarm_index, long prop_index);
-void swarm_creatures_clear_index20(long swarm_index);
-void swarm_creatures_set_object_flag(long swarm_index, bool flag6);
-void swarm_reset_orientations(long swarm_index);
-void swarm_apply_impulse(long swarm_index, vector3f const *impulse);
+void __stdcall swarm_delete(long swarm_handle);
+bool __stdcall swarm_remove_creature(long swarm_handle, long object_index, bool remove_from_world, bool delete_when_empty);
+void __stdcall swarm_leader_attach(long actor_index, long swarm_handle);
+void swarm_leader_detach(long actor_index);
+void swarm_set_team(long swarm_handle, short team);
+void swarm_forget_prop(long swarm_handle, long prop_index);
+void swarm_creatures_clear_index20(long swarm_handle);
+void swarm_creatures_set_object_flag(long swarm_handle, bool flag6);
+void swarm_reset_orientations(long swarm_handle);
+void swarm_apply_impulse(long swarm_handle, vector3f const *impulse);
 void swarm_spawn_slots_clear_object(long object_index);
 void swarm_creature_initialize(s_object_ai_data *creature);
 void swarm_creature_reset_position(long object_index, s_object_ai_data *creature);

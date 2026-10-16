@@ -598,7 +598,7 @@ void function_2694d0(long clump_index, long actor_index);
 void record_pool_release(s_record_pool *pool, long index);
 void function_1e1740(long actor_index, long object_index);
 void function_26dc20(long actor_index);
-void swarm_actor_detach(long actor_index);
+void swarm_leader_detach(long actor_index);
 
 // @retail 0x1e1a00
 void __stdcall function_1e1a00(long actor_index, long value)
@@ -675,7 +675,7 @@ void __stdcall function_1e1a00(long actor_index, long value)
 	if (actor->unknown007)
 	{
 		if (*(long *)((byte *)actor + 0x1c) != NONE)
-			swarm_actor_detach(*index_reference);
+			swarm_leader_detach(*index_reference);
 	}
 	else
 	{
@@ -798,7 +798,7 @@ long __stdcall function_1e0160(long squad_index, long entry_index, long unit_ind
 			if (*(short *)((byte *)actor + 0x254) == NONE)
 			{
 				if (*(long *)((byte *)actor + 0x1c) != NONE)
-					swarm_actor_detach(actor_index);
+					swarm_leader_detach(actor_index);
 				function_1e1a00(actor_index, 0);
 				actor_index = NONE;
 			}
@@ -807,7 +807,7 @@ long __stdcall function_1e0160(long squad_index, long entry_index, long unit_ind
 	return actor_index;
 }
 
-void __stdcall swarm_actor_attach(long actor_index, long perception_index);
+void __stdcall swarm_leader_attach(long actor_index, long perception_index);
 
 // @retail 0x1e02f0
 long __stdcall function_1e02f0(long squad_index, long entry_index, long unit_index, long perception_index, bool flag)
@@ -831,7 +831,7 @@ long __stdcall function_1e02f0(long squad_index, long entry_index, long unit_ind
 			if (*unit_reference != NONE)
 				function_1e0d50(actor_index, *unit_reference);
 			else if (*perception_reference != NONE)
-				swarm_actor_attach(actor_index, *perception_reference);
+				swarm_leader_attach(actor_index, *perception_reference);
 			if (squad_index == NONE)
 				function_203f60(actor_index);
 			else
@@ -864,7 +864,7 @@ long __stdcall function_1e02f0(long squad_index, long entry_index, long unit_ind
 			if (*(short *)((byte *)actor + 0x254) == NONE)
 			{
 				if (*(long *)((byte *)actor + 0x1c) != NONE)
-					swarm_actor_detach(actor_index);
+					swarm_leader_detach(actor_index);
 				function_1e1a00(actor_index, 0);
 			}
 			else

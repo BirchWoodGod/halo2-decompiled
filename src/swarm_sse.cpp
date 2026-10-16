@@ -40,24 +40,24 @@ PRIVATE __forceinline s_handler_object_view *swarm_creature_iterator_advance(s_a
 // @retail 0x28f700
 void __stdcall swarm_update(long actor_index)
 {
-	s_swarm_actor *actor = swarm_actor_get(actor_index);
-	s_swarm *swarm = swarm_get(actor->swarm_index);
+	s_swarm_leader *actor = swarm_leader_get(actor_index);
+	s_swarm *swarm = swarm_get(actor->swarm_handle);
 	if ((real)(g_510c54->game_time - swarm->last_event_time) * g_510c54->rate > 2.0f)
 		swarm->event_count = 0;
 	s_ai_object_iterator iterator;
-	iterator.next_index = swarm_get(actor->swarm_index)->first_creature_index;
+	iterator.next_index = swarm_get(actor->swarm_handle)->first_creature_index;
 	while (swarm_creature_iterator_advance(&iterator) != NULL)
 	{
 		long object_index = iterator.index;
 		function_28e770(actor_index, object_index);
 	}
-	iterator.next_index = swarm_get(actor->swarm_index)->first_creature_index;
+	iterator.next_index = swarm_get(actor->swarm_handle)->first_creature_index;
 	while (swarm_creature_iterator_advance(&iterator) != NULL)
 	{
 		long object_index = iterator.index;
 		function_28f3b0(actor_index, object_index);
 	}
-	iterator.next_index = swarm_get(actor->swarm_index)->first_creature_index;
+	iterator.next_index = swarm_get(actor->swarm_handle)->first_creature_index;
 	while (swarm_creature_iterator_advance(&iterator) != NULL)
 	{
 		long object_index = iterator.index;
@@ -88,31 +88,31 @@ void __stdcall swarm_creature_convert_parent_unit(long object_index)
 			{
 				short squad_index = NONE;
 				s_swarm_object *parent = parent_header->object;
-				s_swarm_actor *actor = NULL;
+				s_swarm_leader *actor = NULL;
 				if (creature->actor_index != NONE)
 				{
-					actor = swarm_actor_get(creature->actor_index);
+					actor = swarm_leader_get(creature->actor_index);
 					squad_index = (short)actor->squad_index;
 				}
 				if (TEST_FIELD_BIT(parent->convertible))
 				{
-					long unit_actor_index = function_1e0dc0(((s_swarm_object *)object)->team, parent_index, creature->target_state, (short)squad_index);
+					long created_actor_index = function_1e0dc0(((s_swarm_object *)object)->team, parent_index, creature->target_state, (short)squad_index);
 					if (actor)
 					{
-						if (actor->clump_index != NONE && unit_actor_index != NONE)
+						if (actor->clump_index != NONE && created_actor_index != NONE)
 						{
-							function_269250(actor->clump_index, unit_actor_index);
+							function_269250(actor->clump_index, created_actor_index);
 							if (actor->prop_index != NONE)
 							{
 								long prop_object_index = prop_ref_get(actor->prop_index)->object_index;
-								function_25d020(unit_actor_index, prop_object_index, NONE, NONE, creature->actor_index, actor->prop_index);
+								function_25d020(created_actor_index, prop_object_index, NONE, NONE, creature->actor_index, actor->prop_index);
 							}
 						}
-						if (actor->flag00c && unit_actor_index != NONE)
-							swarm_actor_get(unit_actor_index)->flag00c = true;
+						if (actor->flag00c && created_actor_index != NONE)
+							swarm_leader_get(created_actor_index)->flag00c = true;
 					}
-					if (creature->swarm_index != NONE)
-						swarm_remove_creature(creature->swarm_index, object_index, true, true);
+					if (creature->swarm_handle != NONE)
+						swarm_remove_creature(creature->swarm_handle, object_index, true, true);
 				}
 			}
 		}
