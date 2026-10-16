@@ -5074,10 +5074,11 @@ void __stdcall function_4ebd0(long tag, long context, long first, long second,
     }
     byte *table = *(byte **)((byte *)g_4e0348 + 0x238);
     byte *record = *(byte **)(table + 0x1c) + ((handle >> 8) & 0x3fffff) * 24;
-    byte *block = *(byte **)(table + 0x14) + *(short *)(record + 6) * 0x2c;
+    long block_offset = *(short *)(record + 6) * 0x2c;
     volatile long record_tag = (*(long **)((byte *)g_4e0350 + 0x37c))[(signed char)record[0] * 2 + 1];
     byte *definition = g_4e3b44[record_tag & 0xffff].bytes;
     byte *part = *(byte **)(definition + 0x14) + record[1] * 20;
+    byte *block = *(byte **)(table + 0x14) + block_offset;
     if (function_12de70((s_geometry_block_info *)block, 3))
     {
         byte *geometry = *(byte **)(block + 0x28);
