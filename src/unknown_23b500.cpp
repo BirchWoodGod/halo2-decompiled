@@ -428,7 +428,7 @@ struct s_spawn_player_iterator
 	long absolute_index;
 };
 
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 
 /* a unit as spawning sees it: its position, and whether it is dead */
 struct s_spawn_unit_view
@@ -487,7 +487,7 @@ void function_23b8e0(long player_index, s_spawn_influence_list *list)
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		s_spawn_player_view *other = iterator.player;
 		long index = iterator.index;

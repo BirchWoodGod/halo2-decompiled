@@ -31,7 +31,7 @@ struct s_respawn_player_iterator
 	long index;
 };
 
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 
 static inline s_respawn_player *respawn_player_get(long player_index)
 {
@@ -78,7 +78,7 @@ bool function_15d770(long player_index)
 		iterator.data = players;
 		iterator.index = NONE;
 		iterator.datum_index = NONE;
-		while (function_19f240((long *)&iterator))
+		while (player_iterator_next((long *)&iterator))
 		{
 			s_respawn_player *other = iterator.player;
 
@@ -97,7 +97,7 @@ bool function_15d770(long player_index)
 			iterator.data = g_4e8c24;
 			iterator.index = NONE;
 			iterator.datum_index = NONE;
-			while (function_19f240((long *)&iterator))
+			while (player_iterator_next((long *)&iterator))
 			{
 				s_respawn_player *other = iterator.player;
 
@@ -148,7 +148,7 @@ bool function_15d920(long player_index)
 				iterator.data = players;
 				iterator.index = NONE;
 				iterator.datum_index = NONE;
-				while (function_19f240((long *)&iterator))
+				while (player_iterator_next((long *)&iterator))
 				{
 					s_respawn_player *other = iterator.player;
 					if (other->team != NONE && (other->unit_index != NONE ||
@@ -170,7 +170,7 @@ bool function_15d920(long player_index)
 					iterator.data = g_4e8c24;
 					iterator.index = NONE;
 					iterator.datum_index = NONE;
-					while (function_19f240((long *)&iterator))
+					while (player_iterator_next((long *)&iterator))
 					{
 						s_respawn_player *other = iterator.player;
 						if (player->team == other->team && other != player)
