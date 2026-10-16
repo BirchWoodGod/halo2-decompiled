@@ -88,7 +88,7 @@ bool function_07ab60(const s_type_99af70 *address, long local, long *index_out, 
 {
 	bool result = false;
 	long index = NONE;
-	dword ina = 0;
+	dword ina;
 	XNKID kid;
 	XNKEY key;
 

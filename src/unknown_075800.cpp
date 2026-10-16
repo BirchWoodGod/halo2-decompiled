@@ -73,7 +73,7 @@ void __stdcall function_094310(c_class_938e0 *handler, const s_session_id *messa
 void __stdcall function_094330(c_class_938e0 *handler, const s_session_id *message, const s_type_99af70 *address);
 
 /* src/unknown_075870.cpp, src/unknown_0820f0.cpp */
-bool network_connection_get_address(s_network_connection *connection, s_type_99af70 *address);
+inline __declspec(noinline) bool network_connection_get_address(s_network_connection *connection, s_type_99af70 *address);
 void network_connection_establish(s_network_connection *connection, long remote_sequence);
 
 /* lane D's region: a connection's reconnect (src/stubs/lane_j.cpp) */
@@ -170,7 +170,7 @@ public:
 	void handle_synchronous_update(const s_simulation_block_data *message, long channel_index);
 	void handle_player_update(const struct s_network_message_player_update *message, long channel_index);
 	void handle_join_data_begin(const struct s_network_message_join_data_begin *message, long channel_index);
-	void handle_join_data(const struct s_network_message_join_data *message, long channel_index, long data_size, const byte *data);
+	void handle_join_data(long channel_index, const struct s_network_message_join_data *message, long data_size, const byte *data);
 	void handle_baseline_update(const struct s_network_message_baseline_update *message, long channel_index);
 
 	byte unknown00[4];
@@ -699,7 +699,7 @@ void c_class_938e0::handle_join_data_begin(const s_network_message_join_data_beg
 }
 
 // @retail 0x94a50
-void c_class_938e0::handle_join_data(const s_network_message_join_data *message, long channel_index, long data_size, const byte *data)
+void c_class_938e0::handle_join_data(long channel_index, const s_network_message_join_data *message, long data_size, const byte *data)
 {
 	c_simulation_view *view = simulation_get_view_by_channel(channel_index);
 	if (data_size == message->size && view && view->type == 1)
@@ -946,7 +946,7 @@ void c_class_938e0::function_93aa0(long channel_index, long message_type, long m
 		return;
 	case 42:
 		if (connection->state == 5)
-			handle_join_data((const s_network_message_join_data *)message, channel_index, message_size - 8, (const byte *)message + 8);
+			handle_join_data(channel_index, (const s_network_message_join_data *)message, message_size - 8, (const byte *)message + 8);
 		return;
 	case 44:
 		return;

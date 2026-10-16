@@ -1131,19 +1131,10 @@ __forceinline void quaternion_multiply(quaternionf const *a, quaternionf const *
 	}
 }
 
-/* scales a rotation toward the identity (the one on the same side as the
-   rotation): the offset from the identity, scaled, added back to it */
-__forceinline void quaternion_scale(quaternionf *quaternion, real fraction)
+/* the value a fraction of the way from a to b */
+__forceinline real interpolate_real(real a, real b, real fraction)
 {
-	real one = 1.0f;
-
-	quaternion->i *= fraction;
-	*(dword *)&one |= *(dword *)&quaternion->w & 0x80000000;
-	quaternion->j *= fraction;
-	quaternion->w -= one;
-	quaternion->k *= fraction;
-	quaternion->w *= fraction;
-	quaternion->w += one;
+	return (b - a) * fraction + a;
 }
 
 /* the linear blends of translations and scales */
@@ -1215,7 +1206,9 @@ __forceinline void component_interpolate(long component)
 	}
 	else if (component == 1)
 	{
-		orientation_vector_blend(&g_504430, &g_504410, g_sampling_settings.blend_fraction);
+		g_504430.vector.i = interpolate_real(g_504430.vector.i, g_504410.vector.i, g_sampling_settings.blend_fraction);
+		g_504430.vector.j = interpolate_real(g_504430.vector.j, g_504410.vector.j, g_sampling_settings.blend_fraction);
+		g_504430.vector.k = interpolate_real(g_504430.vector.k, g_504410.vector.k, g_sampling_settings.blend_fraction);
 	}
 	else
 	{
@@ -1272,7 +1265,19 @@ __forceinline void component_apply(long blend_method, long component, s_animatio
 	{
 		if (component == 0)
 		{
-			quaternion_scale(&g_504430.rotation, g_sampling_settings.blend_weight);
+			/* scales the decoded rotation toward the identity (the one on
+			   the same side as the rotation): the offset from the identity,
+			   scaled, added back to it */
+			real one = 1.0f;
+			real fraction = g_sampling_settings.blend_weight;
+
+			*(dword *)&one |= *(dword *)&g_504430.rotation.w & 0x80000000;
+			g_504430.rotation.w -= one;
+			g_504430.rotation.i *= fraction;
+			g_504430.rotation.j *= fraction;
+			g_504430.rotation.k *= fraction;
+			g_504430.rotation.w *= fraction;
+			g_504430.rotation.w += one;
 			quaternion_multiply(&destination->rotation, &g_504430.rotation, &destination->rotation);
 		}
 		else if (component == 1)
@@ -1487,7 +1492,19 @@ __forceinline void function_288573(long arg_0, long arg_1, s_animation_output *a
 	{
 		if (arg_1 == 0)
 		{
-			quaternion_scale(&g_504430.rotation, g_sampling_settings.blend_weight);
+			/* scales the decoded rotation toward the identity (the one on
+			   the same side as the rotation): the offset from the identity,
+			   scaled, added back to it */
+			real one = 1.0f;
+			real fraction = g_sampling_settings.blend_weight;
+
+			*(dword *)&one |= *(dword *)&g_504430.rotation.w & 0x80000000;
+			g_504430.rotation.w -= one;
+			g_504430.rotation.i *= fraction;
+			g_504430.rotation.j *= fraction;
+			g_504430.rotation.k *= fraction;
+			g_504430.rotation.w *= fraction;
+			g_504430.rotation.w += one;
 			quaternion_multiply(&arg_2->rotation, &g_504430.rotation, &arg_2->rotation);
 		}
 		else if (arg_1 == 1)
