@@ -75,7 +75,7 @@ struct s_sort_element
 
 /* ---- callees ---- */
 
-void bit_vector_and(long bit_count, dword *a, dword *b, dword *result);
+void bit_vector_intersect(long bit_count, dword *a, dword *b, dword *result);
 
 /* ---- globals ---- */
 
@@ -763,7 +763,7 @@ void function_1a7b30(s_flag_bits *result, long owner_index)
 
 		if (element && element->tag_index != NONE)
 		{
-			bit_vector_and(0x83, (dword *)(tags[element->tag_index & 0xffff].bytes + 0x38), result->d, result->d);
+			bit_vector_intersect(0x83, (dword *)(tags[element->tag_index & 0xffff].bytes + 0x38), result->d, result->d);
 			return;
 		}
 	}

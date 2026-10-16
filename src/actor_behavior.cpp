@@ -221,7 +221,7 @@ void __stdcall actor_behavior_3a_update48(long actor_index, s_slot *slot);
 void __stdcall actor_behavior_3a_update48(long actor_index, s_slot *slot)
 {
 	s_actor_view *actor = actor_get(actor_index);
-	s_behavior_3a_state *state = (s_behavior_3a_state *)slot;
+	s_actor_behavior_3a_data *state = (s_actor_behavior_3a_data *)slot;
 
 	actor->unknown41c = 4;
 	actor->unknown420 = 0;
@@ -275,7 +275,7 @@ void __stdcall actor_behavior_64_update48(long actor_index, s_slot *slot);
 void __stdcall actor_behavior_64_update48(long actor_index, s_slot *slot)
 {
 	s_actor_view *actor = actor_get(actor_index);
-	s_behavior_64_state *state = (s_behavior_64_state *)slot;
+	s_actor_behavior_64_data *state = (s_actor_behavior_64_data *)slot;
 	s_type_c3b527 *destination = &state->destination;
 	real distance_squared;
 
@@ -508,7 +508,7 @@ PRIVATE __forceinline void actor_move_command_clear(s_actor_move_command *comman
 
 /* orders the actor to move to the point, unless it already moves to within
    0.1 of it */
-PRIVATE __forceinline void actor_move_to_point(long actor_index, s_type_c3b527 const *destination)
+PRIVATE __forceinline void actor_walk_toward_point(long actor_index, s_type_c3b527 const *destination)
 {
 	s_actor_view *actor = actor_get(actor_index);
 	if (!actor->unknown229)
@@ -561,7 +561,7 @@ bool __stdcall actor_behavior_6c_update40(long actor_index, s_slot *slot)
 			function_210850(*(s_type_c3b527 const **)points[state->counter].unknown00, &position);
 			destination.point = position;
 			destination.output_index = NONE;
-			actor_move_to_point(actor_index, &destination);
+			actor_walk_toward_point(actor_index, &destination);
 		}
 	}
 	return true;
@@ -572,7 +572,7 @@ bool __stdcall actor_behavior_6c_update40(long actor_index, s_slot *slot)
 // @retail 0x1c0230
 void __stdcall actor_behavior_50_update48(long actor_index, s_slot *slot)
 {
-	s_behavior_50_state *state = (s_behavior_50_state *)slot;
+	s_actor_behavior_50_data *state = (s_actor_behavior_50_data *)slot;
 
 	if (state->has_look_point)
 	{
@@ -597,7 +597,7 @@ void function_1c1540(long actor_index, long value)
 
 	if (level != NONE)
 	{
-		((s_behavior_82_state *)&actor->slots[level])->value = value;
+		((s_actor_behavior_82_data *)&actor->slots[level])->value = value;
 	}
 	actor->unknown22a = false;
 }
@@ -621,7 +621,7 @@ short __stdcall actor_behavior_15_priority(long actor_index)
 // @retail 0x1c15c0
 bool __stdcall actor_behavior_15_start(long actor_index, s_slot *slot)
 {
-	s_behavior_15_state *state = (s_behavior_15_state *)slot;
+	s_actor_behavior_15_data *state = (s_actor_behavior_15_data *)slot;
 	s_actor_view *actor = actor_get(actor_index);
 
 	*(bool volatile *)&actor->unknown50c = false;
@@ -652,7 +652,7 @@ void __stdcall actor_behavior_15_stop(long actor_index, s_slot *slot)
 // @retail 0x1c1670
 short __stdcall actor_behavior_15_evaluate(long actor_index, s_slot *slot, bool active)
 {
-	s_behavior_15_state *state = (s_behavior_15_state *)slot;
+	s_actor_behavior_15_data *state = (s_actor_behavior_15_data *)slot;
 	short result = g_46fbe8;
 	s_actor_view *actor = actor_get(actor_index);
 	s_prop_node_view *prop;
@@ -707,7 +707,7 @@ static inline s_prop_node_view *actor_behavior_prop_next(long *prop_index)
 // @retail 0x1c1730
 bool __stdcall actor_behavior_15_update40(long actor_index, s_slot *slot)
 {
-	s_behavior_15_state *state = (s_behavior_15_state *)slot;
+	s_actor_behavior_15_data *state = (s_actor_behavior_15_data *)slot;
 	s_actor_view *actor = actor_get(actor_index);
 
 	if (actor->unknown040)
@@ -764,7 +764,7 @@ bool __stdcall actor_behavior_15_update40(long actor_index, s_slot *slot)
 // @retail 0x1c18f0
 void __stdcall actor_behavior_15_update48(long actor_index, s_slot *slot)
 {
-	s_behavior_15_state *state = (s_behavior_15_state *)slot;
+	s_actor_behavior_15_data *state = (s_actor_behavior_15_data *)slot;
 	s_actor_view *actor = actor_get(actor_index);
 	s_prop_node_view *prop = prop_node_get(actor->prop_index);
 
@@ -791,7 +791,7 @@ void __stdcall actor_behavior_15_update48(long actor_index, s_slot *slot)
 // @retail 0x1c1990
 void __stdcall actor_behavior_release_prop(long actor_index, s_slot *slot, long prop_index)
 {
-	s_behavior_15_state *state = (s_behavior_15_state *)slot;
+	s_actor_behavior_15_data *state = (s_actor_behavior_15_data *)slot;
 
 	if (state->prop_index == prop_index)
 	{
