@@ -126,9 +126,13 @@ void __stdcall function_46230(short target, real const *bounds)
     D3DDevice_SetVertexData4f(0, 0.53125f, 0.53125f, 16777215.0f, 16777215.0f);
     D3DDevice_SetVertexData2s(3, 1, 0);
     D3DDevice_SetVertexData4f(0, 64.53125f, 0.53125f, 16777215.0f, 16777215.0f);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData2s(3, 1, 1);
+#pragma inline_depth()
     D3DDevice_SetVertexData4f(0, 64.53125f, 64.53125f, 16777215.0f, 16777215.0f);
+#pragma inline_depth(0)
     D3DDevice_SetVertexData2s(3, 0, 1);
+#pragma inline_depth()
     D3DDevice_SetVertexData4f(0, 0.53125f, 64.53125f, 16777215.0f, 16777215.0f);
     D3DDevice_End();
     function_14bc0((short)g_4858b8, 0, true);
@@ -3437,16 +3441,16 @@ short __stdcall function_467c0(short first, short second, short count)
             for (short stage = 0; stage < 4; ++stage)
             {
                 function_14f60(stage, source);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, 4);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, 4);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, 2);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, 2);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MIPFILTER, 1);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
-                D3DDevice_SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_ADDRESSU, 4);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_ADDRESSV, 4);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MAGFILTER, 2);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MINFILTER, 2);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MIPFILTER, 1);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
+                D3DDevice::SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
             }
             function_14bc0(target, 0, false);
             program.PSConstant0[0] = (i > 0 ? 0x7fu : 0xffu) << 24;
