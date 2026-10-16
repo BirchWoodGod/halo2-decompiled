@@ -127,8 +127,23 @@ void function_268c90()
 	{
 		byte *clump = g_4f55d0->active ? data_iterator_next_inlined(&clumps) : NULL;
 		if (!clump) break;
-		if (clump[0x3c] && (*(long *)(clump + 0x38) == NONE ||
-			*(long *)(clump + 0x38) + real_to_long((real)g_510c54->field_2_3 * 10.0f) < g_510c54->game_time))
+		bool expired = false;
+		if (clump[0x3c])
+		{
+			if (*(long *)(clump + 0x38) == NONE) expired = true;
+			else
+			{
+				real interval = (real)g_510c54->field_2_3 * 10.0f;
+				long ticks;
+				__asm
+				{
+					fld interval
+					fistp ticks
+				}
+				expired = *(long *)(clump + 0x38) + ticks < g_510c54->game_time;
+			}
+		}
+		if (expired)
 		{
 			clump[0x3c] = 0;
 			long next_actor = *(long *)(clump + 0x18);
@@ -138,15 +153,17 @@ void function_268c90()
 				byte *actor = g_4f55f0->data + (actor_index & 0xffff) * 0x888;
 				next_actor = *(long *)(actor + 0x80);
 				if (!actor[0xc]) continue;
-				bool keep = false;
+				long keep = false;
 				if (actor[9])
 				{
-					s_record_pool_iterator players;
-					players.data = g_4e8c24;
-					players.index = NONE;
-					byte *player;
-					while ((player = data_iterator_next_inlined(&players)) != NULL)
+					s_record_pool *players = g_4e8c24;
+					long player_index = NONE;
+					for (;;)
 					{
+						player_index = data_next_absolute_index_inlined(players, player_index + 1);
+						if (player_index == NONE) break;
+						byte *player = players->data + players->size * player_index;
+						if (!player) break;
 						long unit = *(long *)(player + 0x2c);
 						if (unit != NONE)
 						{
