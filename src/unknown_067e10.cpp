@@ -456,12 +456,14 @@ void function_199540(dword flags);
    src/stubs/lane_d.cpp) */
 bool __stdcall function_199740(byte *buffer, long size, byte *destination, long *decompressed_size);
 
+#include "unknown_080e10.h"
+
 // @retail 0x6a8a0
 bool world_buffer_allocate(c_class_6a600 *world)
 {
 	bool result = false;
 	byte *buffer;
-	buffer = (byte *)function_12d400(1, 0x40000, 0, 0, 0);
+	buffer = (byte *)function_80e14(0x40000, 0, 0, 0, 30, 0.1f);
 	world->buffer = buffer;
 	if (buffer != NULL)
 	{
