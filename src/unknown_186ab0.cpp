@@ -150,6 +150,13 @@ long function_155760(long arg_0);
 void __stdcall function_187510(long arg_0, real arg_1, real arg_2);
 void player_action_initialize(s_player_action *arg_0);
 
+/* a pair of angles, copied as one */
+struct s_186ab9
+{
+    real field_0;
+    real field_4;
+};
+
 #pragma inline_depth(0)
 // @retail 0x186ab0
 void __stdcall function_186ab0(long arg_0, real arg_1, real arg_2, s_player_action *arg_3)
@@ -199,10 +206,12 @@ void __stdcall function_186ab0(long arg_0, real arg_1, real arg_2, s_player_acti
         }
         if (local_1->field_2a == local_1->field_2b && local_1->field_2a != NONE)
             local_1->field_2b = NONE;
-        if (local_1->field_2c == NONE || !local_4->field_23e[local_1->field_2c])
+        if (local_1->field_2c == NONE ||
+            !(short)((s_186ab6 *)g_4e0300->data)[local_1->field_0 & 0xffff].field_8->field_23e[local_1->field_2c])
             local_1->field_2c = local_4->field_23d;
         if ((local_3.field_1c & 2) || local_1->field_2c == NONE || !function_cdff0(local_1->field_0, local_1->field_2c))
         {
+            s_186ab5 *local_11 = ((s_186ab6 *)g_4e0300->data)[local_1->field_0 & 0xffff].field_8;
             short local_8 = local_1->field_2c;
             short local_9 = NONE;
             if (local_8 == NONE)
@@ -210,7 +219,7 @@ void __stdcall function_186ab0(long arg_0, real arg_1, real arg_2, s_player_acti
             short local_10 = local_8;
             do
             {
-                if (local_4->field_23e[local_10] > 0)
+                if (local_11->field_23e[local_10] > 0)
                 {
                     local_9 = local_10;
                     if (local_10 != local_8)
@@ -255,10 +264,9 @@ void __stdcall function_186ab0(long arg_0, real arg_1, real arg_2, s_player_acti
             function_187510(local_0->field_28, local_3.field_10, local_3.field_14);
         if (local_4->field_14 == NONE)
         {
-            byte *local_8 = (byte *)&g_54e8e0[local_0->field_24];
-            if ((bool)((*(dword *)local_8 >> 4) & 1) &&
-                (bool)((*(dword *)(local_8 + 0x114) >> 3) & 1) &&
-                fabs(local_1->field_18) > 0.5f && local_3.field_14 < 0.0001f && !local_1->field_68)
+            if ((bool)((*(dword *)&g_54e8e0[local_0->field_24] >> 4) & 1) &&
+                (bool)((*(dword *)((byte *)&g_54e8e0[local_0->field_24] + 0x114) >> 3) & 1) &&
+                (real)fabs((double)local_1->field_18) > 0.5f && local_3.field_14 < 0.0001f && !local_1->field_68)
             {
                 long local_9 = local_1->field_31 + 1;
                 if (local_9 < 0) local_9 = 0;
@@ -280,8 +288,8 @@ void __stdcall function_186ab0(long arg_0, real arg_1, real arg_2, s_player_acti
             {
                 if (!local_1->field_92)
                 {
-                    local_1->field_91 = !local_1->field_91;
                     local_1->field_92 = true;
+                    local_1->field_91 = !local_1->field_91;
                 }
             }
             else
@@ -296,8 +304,7 @@ void __stdcall function_186ab0(long arg_0, real arg_1, real arg_2, s_player_acti
     local_1->field_8 = local_3.field_20;
     memcpy(local_1->field_44, &local_3.field_28, sizeof(local_1->field_44));
     local_1->field_4 = local_3.field_18;
-    local_1->field_18 = local_3.field_0;
-    local_1->field_1c = local_3.field_4;
+    *(s_186ab9 *)&local_1->field_18 = *(s_186ab9 const *)&local_3.field_0;
     local_1->field_20 = local_3.field_8;
     local_1->field_24 = local_3.field_c;
     if (local_1->field_0 != NONE)
