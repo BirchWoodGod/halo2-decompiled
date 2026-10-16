@@ -593,12 +593,16 @@ bool __stdcall function_0b0900(s_bitstream *stream, long unused, s_message_0b090
 				if (message->entries[entry_index].flag0)
 				{
 					message->entries[entry_index].flag1 = stream_read_bit(stream);
-					if (!(message->entries[entry_index].flag1)) {
+					if (message->entries[entry_index].flag1)
+					{
+						message->entries[entry_index].value1 = (word)NONE;
+						message->entries[entry_index].value2 = NONE;
+					}
+					else
+					{
 						function_195820(stream, message->entries[entry_index].address, 0x30);
 						message->entries[entry_index].value1 = (word)function_1959c0(stream, 2);
 						message->entries[entry_index].value2 = function_1959c0(stream, 2);
-					} else {
-						message->entries[entry_index].value1 = message->entries[entry_index].value2 = NONE;
 					}
 					function_195820(stream, message->entries[entry_index].unknown0e, 0x60);
 					bool entry_valid = function_07ca70(stream, message->entries[entry_index].unknown1c);
@@ -621,7 +625,8 @@ bool __stdcall function_0b0900(s_bitstream *stream, long unused, s_message_0b090
 							s_message_0b0900_entry *other = &message->entries[j];
 							if (other->flag0)
 							{
-								valid = valid && memcmp(message->entries[entry_index].unknown0e, other->unknown0e, 12) != 0;
+								if (valid && memcmp(message->entries[entry_index].unknown0e, other->unknown0e, 12) == 0)
+									valid = false;
 								if (!message->entries[entry_index].flag1)
 								{
 									if (memcmp(message->entries[entry_index].address, other->address, 6) == 0)

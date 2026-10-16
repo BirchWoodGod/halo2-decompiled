@@ -8,12 +8,13 @@
 // @retail 0x6c1d0
 void online_presence_clear(XONLINE_USER *users)
 {
+	XONLINE_USER *const *users_reference = &users;
 	for (long i = 0; i != NONE; i = controller_index_next(i))
 	{
-		XONLINE_USER *user = &users[i];
-		XUID *xuid = online_user_get_xuid(user);
+		XONLINE_USER *user = &(*users_reference)[i];
 		if (user->xuid.qwUserID != 0 && user->szGamertag[0] && SUCCEEDED(user->hr))
 		{
+			XUID *xuid = online_user_get_xuid(&(*users_reference)[i]);
 			if (!XOnlineIsUserGuest(xuid->dwUserFlags))
 			{
 				s_online_presence presence;
