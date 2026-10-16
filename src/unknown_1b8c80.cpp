@@ -1345,11 +1345,11 @@ void __stdcall function_1bb570(long vehicle_index, long actor_index)
             *((bool *)actor + 0x3c) = false;
         else if (actor->unknown030 != NONE)
             *(long *)((byte *)actor + 0x28) = actor->unknown030;
-        long current_vehicle = vehicle_index;
-        long root_index = function_baf40(current_vehicle);
+        long root_vehicle = vehicle_index;
+        long root_index = function_baf40(root_vehicle);
         if (g_4e0300->data[(root_index & 0xffff) * 12 + 3] == 1)
-            current_vehicle = root_index;
-        byte *vehicle = (byte *)object_get(current_vehicle);
+            root_vehicle = root_index;
+        byte *vehicle = (byte *)object_get(root_vehicle);
         long squad_index = *(long *)(vehicle + 0x3a0);
         if (actor->unknown030 != squad_index)
         {
@@ -1363,7 +1363,7 @@ void __stdcall function_1bb570(long vehicle_index, long actor_index)
                 if (actor->unknown030 == NONE && *(long *)((byte *)actor + 0x28) != NONE)
                     function_1e3400(actor_index, *(word *)((byte *)actor + 0x28));
                 if (actor->unknown030 != NONE)
-                    function_201ad0(actor->unknown030, current_vehicle);
+                    function_201ad0(actor->unknown030, root_vehicle);
             }
             else
             {
@@ -1390,7 +1390,7 @@ void __stdcall function_1bb570(long vehicle_index, long actor_index)
             s_object_seat seats[0x40];
             long count = 0;
             long previous = NONE;
-            function_c8a40(current_vehicle, seats, (short *)&count, 0x40);
+            function_c8a40(root_vehicle, seats, (short *)&count, 0x40);
             for (short i = 0; i < (short)count; ++i)
             {
                 if (seats[i].object_index != previous)
@@ -1424,7 +1424,7 @@ event:
             {
                 s_vehicle_tag_view *definition = (s_vehicle_tag_view *)g_4e3b44[*(long *)vehicle & 0xffff].bytes;
                 if (!TEST_FIELD_BIT(definition->seats[seat_index].flags.bit11))
-                    function_1fb7e0(0x66, actor_index, 0, current_vehicle, NONE);
+                    function_1fb7e0(0x66, actor_index, 0, root_vehicle, NONE);
             }
         }
 done:
