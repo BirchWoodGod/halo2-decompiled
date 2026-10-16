@@ -143,8 +143,8 @@ struct s_team_entry
 	long lc;
 };
 
-long function_19f3c0(long, long);
-bool function_19f240(long *iterator);
+long player_find_unit_item_of_type(long, long);
+bool player_iterator_next(long *iterator);
 void function_1967d0(long a, long c, long b, long delta);
 void function_1970a0(long b, long a, long delta);
 void function_197210(long player_index, long value14, long value10);
@@ -276,7 +276,7 @@ long c_game_engine_markers::v37(long player_index, byte *flag)
 	*flag = 1;
 	if (*((byte *)player + 0xc0) != 0xff)
 	{
-		if (function_19f3c0(player_index, 1) != NONE)
+		if (player_find_unit_item_of_type(player_index, 1) != NONE)
 			result = (g_4e6948->mode_180 == 9) * 8 + 0xb;
 	}
 
@@ -844,7 +844,7 @@ struct s_player_iterator
 	long absolute_index;
 };
 
-bool function_19f300(long *iterator);
+bool player_iterator_next_with_unit(long *iterator);
 
 static inline real distance_sq3f(point3f const *a, point3f const *b)
 {
@@ -990,7 +990,7 @@ real c_game_engine_markers::v19(long player_index)
 {
 	real result = 1.0f;
 
-	if (function_19f3c0(player_index, 1) != NONE)
+	if (player_find_unit_item_of_type(player_index, 1) != NONE)
 	{
 		switch (ctf_options()->carrier_speed)
 		{
@@ -1029,7 +1029,7 @@ long c_game_engine_markers::v20(long object_index)
 // @retail 0x240ee0
 void c_game_engine_markers::v30(long killer, long victim, bool suicide, long)
 {
-	if (killer != NONE && victim != NONE && !suicide && function_19f3c0(victim, 1) != NONE)
+	if (killer != NONE && victim != NONE && !suicide && player_find_unit_item_of_type(victim, 1) != NONE)
 	{
 		long absolute_index = killer & 0xffff;
 		s_player_view const *local_0 = ctf_player_get(killer);
@@ -1054,7 +1054,7 @@ long c_game_engine_markers::v31(long killer, long victim, bool suicide)
 {
 	long result = NONE;
 
-	if (killer != result && victim != result && !suicide && function_19f3c0(victim, 1) != result)
+	if (killer != result && victim != result && !suicide && player_find_unit_item_of_type(victim, 1) != result)
 		result = ctf_options()->engine_type == 9 ? 0x28 : 0x27;
 
 	return result;
@@ -1344,7 +1344,7 @@ bool c_game_engine_markers::v35(long player_index, long type)
 {
 	bool result = false;
 
-	if (function_19f3c0(player_index, 1) != NONE)
+	if (player_find_unit_item_of_type(player_index, 1) != NONE)
 	{
 		if (type == 2)
 			result = ctf_options()->l238 == 0;
@@ -1954,7 +1954,7 @@ bool function_244300(long object_index, long *player_index)
 		iterator.data = g_4e8c24;
 		iterator.absolute_index = NONE;
 		iterator.index = NONE;
-		while (function_19f300((long *)&iterator))
+		while (player_iterator_next_with_unit((long *)&iterator))
 		{
 			s_player_view *player = iterator.player;
 			long player_team = player->team;
@@ -2132,7 +2132,7 @@ void function_240740(long object_index)
 	iterator.data = g_4e8c24;
 	iterator.absolute_index = NONE;
 	iterator.index = NONE;
-	while (function_19f240((long *)&iterator) != 0)
+	while (player_iterator_next((long *)&iterator) != 0)
 	{
 		if (slot == 8 || iterator.player->team == slot)
 		{
@@ -2374,11 +2374,11 @@ bool function_241900(long player_index)
 			iterator.data = g_4e8c24;
 			iterator.absolute_index = NONE;
 			iterator.index = NONE;
-			while (function_19f300((long *)&iterator))
+			while (player_iterator_next_with_unit((long *)&iterator))
 			{
 				if (iterator.index != player_index &&
 					iterator.player->team == player->team &&
-					function_19f3c0(iterator.index, 1) != NONE &&
+					player_find_unit_item_of_type(iterator.index, 1) != NONE &&
 					iterator.player->unit_index != NONE &&
 					function_baf80(iterator.player->unit_index) == vehicle_index)
 				{
@@ -2720,7 +2720,7 @@ void c_game_engine_markers::v14(long arg_0)
 	bool local_3 = false;
 	if (ctf_options()->engine_type == 9)
 	{
-		if (function_19f3c0(local_0, 1) != NONE || function_241900(local_0))
+		if (player_find_unit_item_of_type(local_0, 1) != NONE || function_241900(local_0))
 		{
 			if (ctf_options()->team_mode == 1)
 				local_3 = true;
@@ -2728,7 +2728,7 @@ void c_game_engine_markers::v14(long arg_0)
 				local_4 = true;
 		}
 	}
-	else if (function_19f3c0(local_0, 1) != NONE || function_241900(local_0))
+	else if (player_find_unit_item_of_type(local_0, 1) != NONE || function_241900(local_0))
 		local_2 = true;
 	if (ctf_options()->team_mode == 2)
 	{
@@ -2861,7 +2861,7 @@ void c_game_engine_markers::v14(long arg_0)
 		local_32.data = g_4e8c24;
 		local_32.absolute_index = NONE;
 		local_32.index = NONE;
-		while (function_19f240((long *)&local_32))
+		while (player_iterator_next((long *)&local_32))
 		{
 			if (local_32.index != local_0)
 			{
@@ -2869,7 +2869,7 @@ void c_game_engine_markers::v14(long arg_0)
 				{
 					if (function_162550(local_32.index, &local_14))
 					{
-						long local_35 = function_19f3c0(local_32.index, 1);
+						long local_35 = player_find_unit_item_of_type(local_32.index, 1);
 						if (local_35 != NONE)
 						{
 							long local_36 = slot_object_get(local_35)->slot;

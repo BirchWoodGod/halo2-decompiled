@@ -116,7 +116,7 @@ s_slot_handler_2 g_47dfd0 =
 {
 	{
 		5, 2, NONE, -2, 0,
-		function_1a8370, function_1b1f30, function_1b1eb0, 0, NONE, {0},
+		actor_behavior_priority_minimum, function_1b1f30, function_1b1eb0, 0, NONE, {0},
 		0, 0, 0, 0, function_1b22e0, 0, 0
 	},
 	(t_slot_proc)function_1b1f70, 0, function_1b21f0
@@ -141,7 +141,7 @@ s_slot_handler_1 g_47e030 =
 {
 	{
 		0x6a, 1, 0, -2, 0,
-		function_1a8370, function_1bced0, function_1b2310, 0, NONE, {0},
+		actor_behavior_priority_minimum, function_1bced0, function_1b2310, 0, NONE, {0},
 		0, 0, 0, 0, 0, 0, 0
 	},
 	function_1a79e0, 5, g_46f670

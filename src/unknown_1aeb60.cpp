@@ -92,7 +92,7 @@ bool __stdcall function_1aebd0(long actor_index, s_slot *slot)
 }
 
 short __stdcall function_1a79e0(long actor_index, short level, bool active);
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 real function_30bf0(vector3f *vector);
 struct s_clump_object_view;
 s_clump_object_view *function_26bdd0(s_iterator *iterator);
@@ -134,7 +134,7 @@ short __stdcall function_1aec30(long actor_index, short level, bool active)
 				s_actor_view *other = (s_actor_view *)function_26bdd0(&iterator);
 				while (other)
 				{
-					if (other != actor && other->unknown26c == NONE && function_1a6fe0(iterator.index, 0xe) != NONE)
+					if (other != actor && other->unknown26c == NONE && actor_behavior_find_level(iterator.index, 0xe) != NONE)
 					{
 						vector3f offset;
 						vector3d_from_points3d(&actor->position, &other->position, &offset);

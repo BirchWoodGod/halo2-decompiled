@@ -407,7 +407,7 @@ struct s_game_engine_player_iterator
 	long index;
 };
 
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 
 short g_4e9b38[8][16];
 
@@ -421,7 +421,7 @@ long function_162fd0(long index)
 	iterator.data = g_4e8c24;
 	iterator.index = NONE;
 	iterator.datum_index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		long value = g_4e9b38[index][iterator.datum_index & 0xffff];
 
@@ -503,7 +503,7 @@ void function_162de0(void)
 				state.iterator.datum_index = NONE;
 				state.talking = 0;
 				state.iterator.data = g_4e8c24;
-				while (function_19f240((long *)&state.iterator))
+				while (player_iterator_next((long *)&state.iterator))
 				{
 					long talker = state.iterator.datum_index;
 
@@ -599,7 +599,7 @@ long function_162470(bool flag)
 
 point3f *function_b9dd0(long object_index, point3f *result);
 real function_11ce20(vector3f const *a, vector3f const *b);
-bool function_19f300(long *iterator);
+bool player_iterator_next_with_unit(long *iterator);
 long function_187450(long player_index);
 
 struct s_game_engine_unit_view
@@ -619,7 +619,7 @@ bool function_161cd0(long object_index)
 	iterator.data = g_4e8c24;
 	iterator.index = NONE;
 	iterator.datum_index = NONE;
-	while (function_19f300((long *)&iterator))
+	while (player_iterator_next_with_unit((long *)&iterator))
 	{
 		long unit_index = ((s_game_engine_respawn_player *)iterator.datum)->unit_index;
 		s_game_engine_unit_view *unit = (s_game_engine_unit_view *)((s_game_engine_object_header *)g_4e0300->data)[unit_index & 0xffff].object;

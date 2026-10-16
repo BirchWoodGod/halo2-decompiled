@@ -16,7 +16,7 @@ struct s_slot_70_state
 short g_470b58 = -2;
 short g_470b5c = -3;
 
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 
 short __stdcall function_256070(long actor_index);
 short __stdcall function_256210(long actor_index, s_slot *slot, bool active);
@@ -58,7 +58,7 @@ short __stdcall function_256070(long actor_index)
 			if (*(volatile short *)&actor->unknown004 == member->unknown004)
 			{
 				count = (short)(count + 1);
-				if (function_1a6fe0(current_index, 0x1b) != NONE)
+				if (actor_behavior_find_level(current_index, 0x1b) != NONE)
 				{
 					ready_count++;
 				}
@@ -113,7 +113,7 @@ bool __stdcall function_256150(long actor_index, s_slot *slot)
 	{
 		if (member != actor)
 		{
-			short slot_index = function_1a6fe0(iterator.index, 0x70);
+			short slot_index = actor_behavior_find_level(iterator.index, 0x70);
 
 			if (slot_index >= 0 && slot_index <= member->current)
 			{

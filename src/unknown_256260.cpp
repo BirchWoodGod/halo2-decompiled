@@ -33,7 +33,7 @@ short g_470be8 = -1;
 short g_470bec = -2;
 
 void *function_1e4b50(long actor_index);
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 s_type_5cfb45 *function_25d670(long prop_ref_index);
 short __stdcall function_1ad550(long actor_index);
 
@@ -98,7 +98,7 @@ s_slot_handler_1 g_47f958 =
 {
 	{
 		0x72, 1, NONE, -2, 0,
-		function_1a8370, 0, 0, 0, NONE, {0},
+		actor_behavior_priority_minimum, 0, 0, 0, NONE, {0},
 		0, 0, 0, 0, 0, 0, 0
 	},
 	function_256af0, 6, g_470b70
@@ -263,7 +263,7 @@ bool function_256520(long actor_index, real range)
 				s_prop_datum *other = prop_ref_get(member->prop_index);
 
 				if (other->prop_index == prop->prop_index &&
-					function_1a6fe0(iterator.index, 0xe) != NONE &&
+					actor_behavior_find_level(iterator.index, 0xe) != NONE &&
 					range > other->unknown28)
 				{
 					result = true;

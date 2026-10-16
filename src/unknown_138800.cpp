@@ -325,7 +325,7 @@ void function_138db0(s_controller_sticks_view const *input)
 		}
 	}
 }
-bool function_19f240(long *iterator);
+bool player_iterator_next(long *iterator);
 
 // @retail 0x138fa0
 bool function_138fa0(long type)
@@ -343,7 +343,7 @@ bool function_138fa0(long type)
 	iterator.data = g_4e8c24;
 	iterator.index = NONE;
 	iterator.datum_index = NONE;
-	while (function_19f240((long *)&iterator))
+	while (player_iterator_next((long *)&iterator))
 	{
 		count++;
 	}

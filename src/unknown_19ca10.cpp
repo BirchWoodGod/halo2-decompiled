@@ -133,7 +133,7 @@ struct s_marker_object_header
 	s_marker_object *object;
 };
 
-bool function_19f300(long *iterator);
+bool player_iterator_next_with_unit(long *iterator);
 real distance_sq3f(point3f const *a, point3f const *b);
 
 real const g_45dc20 = 0.25f;
@@ -150,7 +150,7 @@ void function_19ce10(s_marker_pair *pair)
 		iterator.data = g_4e8c24;
 		iterator.index = NONE;
 		iterator.datum_index = NONE;
-		while (function_19f300((long *)&iterator))
+		while (player_iterator_next_with_unit((long *)&iterator))
 		{
 			s_marker_player *player = iterator.player;
 			long unit_index = player->unit_index;
@@ -240,7 +240,7 @@ void __stdcall function_19cf20(s_marker_pair *pair)
 		iterator.data = g_4e8c24;
 		iterator.index = NONE;
 		iterator.datum_index = NONE;
-		while (function_19f300((long *)&iterator))
+		while (player_iterator_next_with_unit((long *)&iterator))
 		{
 			long unit_index = iterator.player->unit_index;
 			point3f unit_position;
@@ -322,7 +322,7 @@ void function_19cd10(void)
 	iterator.data = data;
 	iterator.index = NONE;
 	iterator.datum_index = NONE;
-	while (function_19f300((long *)&iterator))
+	while (player_iterator_next_with_unit((long *)&iterator))
 		iterator.player->near_marker = false;
 	s_mp_globals *globals = g_4e9ae8;
 	for (long i = 0; i < globals->marker_pair_count; i++)
@@ -330,7 +330,7 @@ void function_19cd10(void)
 	iterator.data = data;
 	iterator.index = NONE;
 	iterator.datum_index = NONE;
-	while (function_19f300((long *)&iterator))
+	while (player_iterator_next_with_unit((long *)&iterator))
 	{
 		if (!(*(word *)((byte *)iterator.player + 2) & 0x80))
 			iterator.player->flag8 = false;

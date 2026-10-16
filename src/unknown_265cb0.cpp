@@ -1044,7 +1044,7 @@ short function_2684f0(s_actor_view *actor)
 #pragma inline_depth(255)
 
 long function_1e4a10(long index);
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 struct s_node_view;
 s_node_view *function_26be30(s_iterator *iterator);
 void function_1f86a0(long actor_index);
@@ -1101,8 +1101,8 @@ void function_267c50(long actor_index)
 	*(real *)(data + 0x3d8) += difference * blend;
 	if (actor->unknown024 != NONE && !team_is_enemy(actor->unknown024, 1) &&
 		*(long *)(data + 0x26c) == NONE && !*(bool *)(data + 0x225) && actor->unknown858 == NONE &&
-		function_1a6fe0(actor_index, 0x38) == NONE && function_1a6fe0(actor_index, 0x10) == NONE &&
-		function_1a6fe0(actor_index, 0x11) == NONE)
+		actor_behavior_find_level(actor_index, 0x38) == NONE && actor_behavior_find_level(actor_index, 0x10) == NONE &&
+		actor_behavior_find_level(actor_index, 0x11) == NONE)
 	{
 		bool moving_toward = false, nearby_player = false;
 		bool check_target = function_2684f0(actor) > 6;

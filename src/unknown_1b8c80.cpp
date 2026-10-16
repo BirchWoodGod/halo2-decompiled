@@ -636,7 +636,7 @@ struct s_player_unit_view
 	long unit_index;
 };
 
-short function_1a6fe0(long owner_index, short type);
+short actor_behavior_find_level(long owner_index, short type);
 struct s_object;
 s_object *function_badc0(long object_index, dword type_mask);
 
@@ -837,7 +837,7 @@ short __stdcall function_1b9640(long actor_index, s_slot *slot)
 
 			if (prop_index != NONE && prop_node_get(prop_index)->unknown24 < 1)
 				function_25c230(actor_index, prop_index, 3);
-			slot_index = function_1a6fe0(actor_index, 0x4c);
+			slot_index = actor_behavior_find_level(actor_index, 0x4c);
 			if (slot_index == NONE || function_1b8c80(((s_slot_4c *)&actor->slots[slot_index])->unknown1c) != vehicle_index)
 			{
 				s_slot_4c *state = (s_slot_4c *)slot;
