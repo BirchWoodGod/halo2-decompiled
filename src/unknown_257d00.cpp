@@ -227,7 +227,7 @@ void function_258540(long actor_index, long cs_index);
 void function_258480(long joint_index, long actor_index);
 void function_2583e0(long joint_index);
 
-/* a copy of function_290c80 (unknown_290c80.cpp), which retail inlines here */
+/* a copy of swarm_creature_iterator_next (swarm.cpp), which retail inlines here */
 static inline s_handler_object_view *ai_object_iterator_next(s_ai_object_iterator *iterator)
 {
 	s_handler_object_view *object = NULL;

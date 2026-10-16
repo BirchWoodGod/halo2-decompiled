@@ -231,7 +231,7 @@ void function_28f3b0(long arg_0, long arg_1)
 
 struct s_object_ai_data;
 struct s_actor_object_sample;
-void function_28f890(long arg_0, s_object_ai_data *arg_1);
+void swarm_creature_reset_position(long arg_0, s_object_ai_data *arg_1);
 void function_1e3a00(long arg_0, s_actor_object_sample *arg_1);
 
 __forceinline void function_28f998(point3f const *arg_0, point3f const *arg_1, point3f *arg_2)
@@ -272,7 +272,7 @@ void function_28f8d0(long arg_0)
 				local_4 = (s_28e600 *)((byte *)local_3 + local_3->ai_offset);
 			else
 				local_4 = NULL;
-			function_28f890(local_2, (s_object_ai_data *)local_4);
+			swarm_creature_reset_position(local_2, (s_object_ai_data *)local_4);
 			function_28f998(&local_0->field_8, &local_4->field_14, &local_0->field_8);
 			local_0->field_14++;
 			local_2 = local_4->field_c;

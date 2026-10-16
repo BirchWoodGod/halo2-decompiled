@@ -17,7 +17,7 @@ extern s_record_pool *g_5044c8;
 void function_1e2a90(long actor_index);
 void __stdcall function_b83b0(long object_index, bool unused);
 void __stdcall function_b8460(long object_index, bool detach);
-void __stdcall function_28e200(long arg_0);
+void __stdcall swarm_delete(long arg_0);
 
 struct s_1c8560_iterator
 {
@@ -88,10 +88,10 @@ long __stdcall function_1c8560(long arg_0, void *arg_1, long arg_2, bool *arg_3,
 				function_b8460(local_5, true);
 			}
 			else if (local_6 != NONE)
-				function_28e200(local_6);
+				swarm_delete(local_6);
 		}
 		else
-			function_28e200(local_1.records.datum_index);
+			swarm_delete(local_1.records.datum_index);
 	}
 	*arg_3 = false;
 	return local_0;

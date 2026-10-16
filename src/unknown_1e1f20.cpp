@@ -323,8 +323,8 @@ done:
 	return result;
 }
 
-void function_290bf0(long perception_index, short team);
-void function_290040(long perception_index);
+void swarm_set_team(long perception_index, short team);
+void swarm_reset_orientations(long perception_index);
 
 // @retail 0x1e1150
 void function_1e1150(long actor_index, short team)
@@ -332,7 +332,7 @@ void function_1e1150(long actor_index, short team)
  s_actor_view *actor = actor_get(actor_index);
  actor->unknown024 = team;
  if (actor->unknown007)
-  function_290bf0(*(long *)actor->unknown01c, team);
+  swarm_set_team(*(long *)actor->unknown01c, team);
  else if (actor->unknown018 != NONE)
   *(short *)((byte *)ai_object_get(actor->unknown018) + 0x138) = team;
 }
@@ -346,7 +346,7 @@ void function_1e3240(void)
  {
   s_actor_view *actor = actor_get(iterator.actor_index);
   if (actor->unknown007 && *(long *)actor->unknown01c != NONE)
-   function_290040(*(long *)actor->unknown01c);
+   swarm_reset_orientations(*(long *)actor->unknown01c);
   else
    function_1e31b0(actor->unknown018);
   actor->unknown008 = 1;
@@ -383,7 +383,7 @@ void function_1e22d0(long actor_index, bool conditional)
  }
 }
 
-void function_28fd90(long perception_index, long index);
+void swarm_forget_prop(long perception_index, long index);
 
 // @retail 0x1e2150
 void function_1e2150(long actor_index, long object_index)
@@ -421,7 +421,7 @@ void function_1e2150(long actor_index, long object_index)
  if (*(short *)((byte *)actor + 0x6b0) == 1 && *(long *)((byte *)actor + 0x6b4) == object_index)
   *(long *)((byte *)actor + 0x6b4) = NONE;
  if (actor->unknown007 && *(long *)actor->unknown01c != NONE)
-  function_28fd90(*(long *)actor->unknown01c, object_index);
+  swarm_forget_prop(*(long *)actor->unknown01c, object_index);
  for (short i = 0; i <= actor->current; ++i)
  {
   s_slot *slot = &actor->slots[i];
@@ -430,7 +430,7 @@ void function_1e2150(long actor_index, long object_index)
  }
 }
 
-void function_28fdf0(long perception_index);
+void swarm_creatures_clear_index20(long perception_index);
 
 // @retail 0x1e23c0
 void function_1e23c0(long actor_index)
@@ -454,7 +454,7 @@ void function_1e23c0(long actor_index)
   *(long *)((byte *)actor + 0x4c8) = NONE;
  *(long *)((byte *)actor + 0x4fc) = NONE;
  if (actor->unknown007 && *(long *)actor->unknown01c != NONE)
-  function_28fdf0(*(long *)actor->unknown01c);
+  swarm_creatures_clear_index20(*(long *)actor->unknown01c);
  for (short i = 0; i <= actor->current; ++i)
  {
   s_slot *slot = &actor->slots[i];
@@ -598,7 +598,7 @@ void function_2694d0(long clump_index, long actor_index);
 void record_pool_release(s_record_pool *pool, long index);
 void function_1e1740(long actor_index, long object_index);
 void function_26dc20(long actor_index);
-void function_28e160(long actor_index);
+void swarm_actor_detach(long actor_index);
 
 // @retail 0x1e1a00
 void __stdcall function_1e1a00(long actor_index, long value)
@@ -675,7 +675,7 @@ void __stdcall function_1e1a00(long actor_index, long value)
 	if (actor->unknown007)
 	{
 		if (*(long *)((byte *)actor + 0x1c) != NONE)
-			function_28e160(*index_reference);
+			swarm_actor_detach(*index_reference);
 	}
 	else
 	{
@@ -798,7 +798,7 @@ long __stdcall function_1e0160(long squad_index, long entry_index, long unit_ind
 			if (*(short *)((byte *)actor + 0x254) == NONE)
 			{
 				if (*(long *)((byte *)actor + 0x1c) != NONE)
-					function_28e160(actor_index);
+					swarm_actor_detach(actor_index);
 				function_1e1a00(actor_index, 0);
 				actor_index = NONE;
 			}
@@ -807,7 +807,7 @@ long __stdcall function_1e0160(long squad_index, long entry_index, long unit_ind
 	return actor_index;
 }
 
-void __stdcall function_28e090(long actor_index, long perception_index);
+void __stdcall swarm_actor_attach(long actor_index, long perception_index);
 
 // @retail 0x1e02f0
 long __stdcall function_1e02f0(long squad_index, long entry_index, long unit_index, long perception_index, bool flag)
@@ -831,7 +831,7 @@ long __stdcall function_1e02f0(long squad_index, long entry_index, long unit_ind
 			if (*unit_reference != NONE)
 				function_1e0d50(actor_index, *unit_reference);
 			else if (*perception_reference != NONE)
-				function_28e090(actor_index, *perception_reference);
+				swarm_actor_attach(actor_index, *perception_reference);
 			if (squad_index == NONE)
 				function_203f60(actor_index);
 			else
@@ -864,7 +864,7 @@ long __stdcall function_1e02f0(long squad_index, long entry_index, long unit_ind
 			if (*(short *)((byte *)actor + 0x254) == NONE)
 			{
 				if (*(long *)((byte *)actor + 0x1c) != NONE)
-					function_28e160(actor_index);
+					swarm_actor_detach(actor_index);
 				function_1e1a00(actor_index, 0);
 			}
 			else
