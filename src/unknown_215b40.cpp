@@ -1,5 +1,6 @@
 #include "unknown_11c920.h"
 #include "unknown_19d220.h"
+#include "saved_game_storage.h"
 #include <string.h>
 
 // @flags /O2 /Ob1 /Gr
@@ -65,22 +66,23 @@ bool function_216990(long unit, c_location_record const *record, long *index)
 	return result;
 }
 
+/* removes a file's entry from its storage device's list in the cache */
 // @retail 0x2169e0
-void function_2169e0(long file_index)
+void saved_game_storage_remove_location(long file_index)
 {
 	if (g_51ea14)
 	{
 		long unit = (file_index >> 4) & 0xf;
 		long index = (file_index >> 8) & 0x1fff;
-		s_location_record_table *table = (s_location_record_table *)((byte *)g_51ea14 + 0xbef8) + unit;
+		s_saved_game_location_table *table = &saved_game_storage_get_cache()->locations + unit;
 		long count = table->count;
 		long bounded_index = index < 0 ? 0 : index > count - 1 ? count - 1 : index;
 		if (bounded_index == index)
 		{
 			if (index < count - 1)
 			{
-				c_location_record *record = &table->entries[index];
-				memmove(record, record + 1, (count - index - 1) * sizeof(c_location_record));
+				s_saved_game_file_location *location = &table->entries[index];
+				memmove(location, location + 1, (count - index - 1) * sizeof(s_saved_game_file_location));
 			}
 			table->count--;
 		}
@@ -179,7 +181,7 @@ word *function_215b50(long file_index, word *name)
 
 struct s_player_profile;
 void function_1a0750(s_player_profile *profile);
-const word *function_217a20(long language);
+const word *saved_game_storage_get_default_profile_name(long language);
 long g_55c280;
 
 // @retail 0x216760
@@ -191,7 +193,7 @@ void function_216760(void)
 		word name[0x100];
 		entry.type = 0;
 		name[0] = 0;
-		word const *default_name = function_217a20(g_55c280);
+		word const *default_name = saved_game_storage_get_default_profile_name(g_55c280);
 		word const *const *name_reference = &default_name;
 		wcsncpy(name, *name_reference, 0xff);
 		name[0xff] = 0;
@@ -531,15 +533,6 @@ bool function_2160b0(long file_index, char *path)
 }
 
 
-struct s_saved_game_file_location
-{
-    char name[0x14];
-    wchar_t display_name[0x12];
-    long type;
-    byte unknown3c;
-    char language;
-    byte unknown3e[2];
-};
 
 char *function_216400(long memory_unit, char *buffer, short capacity);
 bool function_216da0(long type, wchar_t *name, wchar_t const *display_name, long language);
@@ -575,7 +568,7 @@ void __stdcall function_215e60(long file_index)
                     XDeleteSaveGame(function_216400(unit, root, 8), name);
                 }
             }
-            function_2169e0(file_index);
+            saved_game_storage_remove_location(file_index);
         }
     }
 }
@@ -587,7 +580,7 @@ extern long g_55c154;
 long function_217590(long memory_unit);
 bool function_216d70(char *path, const char *directory, long type);
 s_type_acf665 *function_136710(s_type_acf665 *file, bool replace, const char *name);
-bool function_216f80(long type, s_saved_game_file_location *location);
+bool saved_game_file_write_save_image(long type, s_saved_game_file_location *location);
 long saved_game_file_type_size_in_blocks(long type);
 bool saved_game_storage_has_free_blocks(long blocks);
 
@@ -637,7 +630,7 @@ long function_215c00(long type, wchar_t const *display_name)
                     } file;
                     if (function_136710((s_type_acf665 *)&file, false, path) &&
                         function_1367d0((s_type_acf665 *)&file) &&
-                        function_216f80(type, (s_saved_game_file_location *)directory) &&
+                        saved_game_file_write_save_image(type, (s_saved_game_file_location *)directory) &&
                         function_216990(0, (c_location_record const *)&location, &index))
                     {
                         long generation = *(long *)((byte *)g_51ea14 + 0x4befc);
@@ -710,7 +703,7 @@ bool __stdcall function_217520(long file_index, void const *header, long header_
     return result;
 }
 
-bool function_216240(long arg_0, void *arg_1, long arg_2, wchar_t *arg_3);
+bool saved_game_file_read_synchronous(long file_index, void *buffer, long size, wchar_t *display_name);
 
 // @retail 0x212ec0
 bool function_212ec0(s_game_variant *arg_0, long arg_1)
@@ -726,7 +719,7 @@ bool function_212ec0(s_game_variant *arg_0, long arg_1)
             unsigned __int64 field_8[0x130 / 8];
         } local_2;
         local_2.field_0 = *arg_0;
-        local_1 = function_216240(*local_0, &local_2.field_0, sizeof(local_2), arg_0->name);
+        local_1 = saved_game_file_read_synchronous(*local_0, &local_2.field_0, sizeof(local_2), arg_0->name);
     }
     return local_1;
 }
