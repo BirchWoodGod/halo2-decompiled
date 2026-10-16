@@ -32,7 +32,7 @@ struct s_request_transition
 	short ticks;
 };
 
-/* a local player's state in g_51e9c0 (src/unknown_1e6a40.cpp), 0x1b0 bytes:
+/* a local player's state in g_51e9c0 (src/player_request_state.cpp), 0x1b0 bytes:
    the four last unit requests at +0x150 */
 struct s_local_player_state_view
 {

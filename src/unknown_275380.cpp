@@ -6,7 +6,7 @@
 
 struct s_location;
 bool function_1e13f0(long arg_0);
-bool function_1e1500(long arg_0);
+bool actor_update_bsp_locations(long arg_0);
 void function_1e22d0(long arg_0, bool arg_1);
 void function_203fb0(long arg_0);
 void function_203d70(long arg_0, short arg_1, bool arg_2);
@@ -215,7 +215,7 @@ void function_275380(long arg_0)
                         function_b7360(local_15);
                         local_4[local_11 >> 5] |= 1UL << (local_11 & 31);
                         local_3++;
-                        if (function_1e1500(local_8))
+                        if (actor_update_bsp_locations(local_8))
                         {
                             if (local_9->field_34 == local_0.field_18)
                             {

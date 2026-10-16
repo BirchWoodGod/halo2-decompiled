@@ -143,7 +143,7 @@ static inline long real_to_long(real value)
 real magnitude3d(vector3f const *v);
 
 /* an element (0xb4 bytes) of the block of the actor's tag, found by
-   function_1e5450 (unknown_1e5450.cpp) */
+   function_1e5450 (character_definitions.cpp) */
 struct s_tag_element
 {
 	byte unknown00[4];

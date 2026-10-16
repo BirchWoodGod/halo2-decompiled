@@ -383,7 +383,7 @@ void __stdcall function_1e1a00(long index, long value);
 void function_273150(long list_index)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = object_list_get_first(list_index, &reference_index);
 
 	while (object_index != NONE)
 	{
@@ -493,7 +493,7 @@ s_object *function_badc0(long object_index, dword type_mask);
 void function_275160(long list_index, bool flag)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = object_list_get_first(list_index, &reference_index);
 	while (object_index != NONE)
 	{
 		s_ai_script_unit_flags *unit = (s_ai_script_unit_flags *)function_badc0(object_index, 3);
@@ -513,7 +513,7 @@ void function_275160(long list_index, bool flag)
 void function_275270(long list_index, bool flag)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = object_list_get_first(list_index, &reference_index);
 	while (object_index != NONE)
 	{
 		s_ai_script_unit_flags *unit = (s_ai_script_unit_flags *)function_badc0(object_index, 3);
@@ -1194,7 +1194,7 @@ void function_273040(long unit_index, long squad_index)
 void function_2730c0(long list_index, long squad_index)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = object_list_get_first(list_index, &reference_index);
 	while (object_index != NONE)
 	{
 		function_273040(object_index, squad_index);
@@ -1678,7 +1678,7 @@ struct s_character_grenades_2758b0
 	short maximum_count;
 };
 
-void *function_1e53e0(long character_index, short key);
+void *character_get_grenade_properties(long character_index, short key);
 
 inline s_ai_unit_2758b0 *ai_unit_get(long unit_index)
 {
@@ -1693,7 +1693,7 @@ inline s_character_grenades_2758b0 *actor_get_grenade_properties(long actor_inde
 	{
 		short grenade_index = ai_unit_get(actor->unit_index)->current_grenade_index;
 		if (grenade_index != NONE)
-			result = (s_character_grenades_2758b0 *)function_1e53e0(actor->character_index, grenade_index);
+			result = (s_character_grenades_2758b0 *)character_get_grenade_properties(actor->character_index, grenade_index);
 	}
 	return result;
 }

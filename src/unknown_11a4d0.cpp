@@ -136,7 +136,7 @@ inline void object_set_maximum_vitality(long object_index, real maximum_body_vit
 void function_11a220(long list_index, real maximum_body_vitality, real maximum_shield_vitality)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = object_list_get_first(list_index, &reference_index);
 	while (object_index != NONE)
 	{
 		object_set_maximum_vitality(object_index, maximum_body_vitality, maximum_shield_vitality);
@@ -230,7 +230,7 @@ bool function_11a4d0(long unit_index, long definition_index)
 void function_11a570(long list_index, bool flag)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = object_list_get_first(list_index, &reference_index);
 	while (object_index != NONE)
 	{
 		s_unit_11a4d0 *unit = (s_unit_11a4d0 *)function_badc0(object_index, 3);
@@ -250,7 +250,7 @@ void function_11a570(long list_index, bool flag)
 void function_11a680(long list_index)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = object_list_get_first(list_index, &reference_index);
 	while (object_index != NONE)
 	{
 		s_unit_11a4d0 *unit = (s_unit_11a4d0 *)function_badc0(object_index, 3);
@@ -460,7 +460,7 @@ bool function_11ac30(long vehicle_index, long label, long list_index)
 					if (iterator.unit->parent_index == object_index && iterator.unit->parent_seat_index == seat_index)
 					{
 						long reference_index;
-						long list_object_index = function_1dee50(list_index, &reference_index);
+						long list_object_index = object_list_get_first(list_index, &reference_index);
 						while (list_object_index != NONE && iterator.iterator.object_index != list_object_index)
 							list_object_index = function_x457076(&reference_index);
 						if (iterator.iterator.object_index == list_object_index)
@@ -585,7 +585,7 @@ short function_11b0c0(long vehicle_index, long filter_range, long volatile list_
 		{
 			long reference_index;
 #pragma inline_depth(0)
-			long object_index = function_1dee50(list_index, &reference_index);
+			long object_index = object_list_get_first(list_index, &reference_index);
 #pragma inline_depth()
 			while (object_index != NONE)
 			{

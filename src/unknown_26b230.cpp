@@ -2006,7 +2006,7 @@ void function_26a210(long clump_index)
 }
 
 int __cdecl function_269da0(void const *a, void const *b);
-void *function_1e51a0(long actor_index);
+void *actor_get_character_situation_entry(long actor_index);
 
 // @retail 0x269870
 void function_269870(long clump_index)
@@ -2019,7 +2019,7 @@ void function_269870(long clump_index)
     actors.next = clump->first_actor;
     while (clump_next_actor(&actors) != NULL)
     {
-        byte *settings = (byte *)function_1e51a0(actors.index);
+        byte *settings = (byte *)actor_get_character_situation_entry(actors.index);
         if (settings && *(real *)(settings + 4) > distance)
             distance = *(real *)(settings + 4);
     }
