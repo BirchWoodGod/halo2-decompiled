@@ -1497,10 +1497,7 @@ void function_266640(long actor_index)
 	long best_node = NONE, strongest_node = NONE;
 	short best_level = 0;
 	real strongest = 0.0f;
-	*(long *)(data + 0x324) = 0;
-	*(long *)(data + 0x328) = 0;
-	*(long *)(data + 0x32c) = 0;
-	*(long *)(data + 0x330) = 0;
+	memset(data + 0x324, 0, 0x10);
 	long next = actor_get(actor_index)->first_prop_index;
 	while (next != NONE)
 	{
@@ -1537,11 +1534,14 @@ void function_266640(long actor_index)
 				{
 					long other_index = object_get(node->object_index)->actor_index;
 					s_actor_view *other = other_index == NONE ? NULL : actor_get(other_index);
-					bool close = node->unknown28 < 8.0f;
-					if (!close && *(bool *)((byte *)state + 0x62) && other &&
+					bool close = false;
+					bool very_close = false;
+					if (node->unknown28 < 8.0f) close = true;
+					else if (*(bool *)((byte *)state + 0x62) && other &&
 						*(long *)(data + 0x338) != NONE && *(long *)((byte *)other + 0x338) != NONE)
 						close = prop_ref_get(*(long *)(data + 0x338))->object_index == prop_ref_get(*(long *)((byte *)other + 0x338))->object_index;
-					bool very_close = (view->unknown06 == 0 || view->unknown06 == 1) && node->unknown28 < 3.0f;
+					if (view->unknown06 == 0 || view->unknown06 == 1)
+						very_close = node->unknown28 < 3.0f;
 					if (close) ++*(char *)(data + 0x326);
 					if (very_close) ++*(char *)(data + 0x327);
 				}

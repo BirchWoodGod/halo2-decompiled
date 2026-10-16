@@ -220,6 +220,8 @@ long network_session_get_open_slot_count(c_class_58d20 *session)
 	return session->value4994 - session->player_count - pending;
 }
 
+__declspec(noinline) long network_session_cancel_reservations(c_class_58d20 *session, const s_session_id *id);
+
 // @retail 0x62fa0
 long network_session_cancel_reservations(c_class_58d20 *session, const s_session_id *id)
 {

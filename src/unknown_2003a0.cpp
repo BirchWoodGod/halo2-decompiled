@@ -2140,50 +2140,41 @@ void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
             local_4 = *(byte **)((byte *)g_4e0350 + 0x244) + (short)arg_1 * 0x7c;
         *(short *)(local_3 + 0x2a) = (short)arg_1;
         if ((byte)*local_1)
-            local_3[2] |= 0x40;
+            *(word *)(local_3 + 2) |= 0x40;
         else
-            local_3[2] &= ~0x40;
+            *(word *)(local_3 + 2) &= ~0x40;
         *(long *)(local_3 + 0x80) = NONE;
         s_squad_actor_iterator local_5;
-        if (g_4f55d0->active)
-        {
-            if (*local_0 == NONE)
-                local_5.next_actor_index = g_4f55d0->unknown14;
-            else
-                local_5.next_actor_index = squad_get(*local_0)->first_actor_index;
-        }
-        while (g_4f55d0->active && local_5.next_actor_index != NONE)
-        {
-            long local_6 = local_5.next_actor_index;
-            s_actor_datum *local_7 = actor_datum_get(local_6);
-            local_5.next_actor_index = local_7->next_actor_index;
-            function_1e4570(local_6, (s_actor_options const *)local_4);
-        }
+        squad_actors_begin(&local_5, *local_0);
+        s_actor_datum *actor;
+        while ((actor = squad_actors_next(&local_5)) != NULL)
+            function_1e4570(local_5.actor_index, (s_actor_options const *)local_4);
         if (local_4)
         {
             if (local_4[0x24] & 0x10)
                 function_204450((short)arg_1, *local_0);
             function_291740((short)arg_1, *local_0 & 0xffff);
             short local_8 = *(short *)(local_4 + 0x20);
+            s_flag_bits const *source = NULL;
             if (local_8 == NONE)
             {
-                for (long local_9 = 0; local_9 < 5; local_9++)
-                    ((s_flag_bits *)(local_3 + 0x84))->d[local_9] = NONE;
+                memset(local_3 + 0x84, 0xff, sizeof(s_flag_bits));
             }
             else if (local_8 >= 0 && local_8 < *(long *)((byte *)g_4e0350 + 0x150))
             {
                 long local_10 = *(long *)(*(byte **)((byte *)g_4e0350 + 0x154) + local_8 * 8 + 4);
                 if (local_10 != NONE)
-                    *(s_flag_bits *)(local_3 + 0x84) = *(s_flag_bits *)(g_4e3b44[local_10 & 0xffff].bytes + 0x38);
+                    source = (s_flag_bits const *)(g_4e3b44[local_10 & 0xffff].bytes + 0x38);
             }
+            if (source)
+                *(s_flag_bits *)(local_3 + 0x84) = *source;
             if (*(short *)(local_4 + 0x28) > 0)
             {
-                function_204d30(&local_5, *local_0);
                 long local_11 = NONE;
-                while (g_4f55d0->active && local_5.next_actor_index != NONE)
+                function_204d30(&local_5, *local_0);
+                s_actor_datum *local_12;
+                while ((local_12 = squad_actors_next(&local_5)) != NULL)
                 {
-                    s_actor_datum *local_12 = actor_datum_get(local_5.next_actor_index);
-                    local_5.next_actor_index = local_12->next_actor_index;
                     long local_13 = local_12->clump_object_index;
                     if (local_13 != NONE && local_13 != local_11)
                     {

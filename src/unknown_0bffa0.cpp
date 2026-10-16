@@ -942,12 +942,31 @@ void __stdcall function_c1d90(s_light_frame_ab const *frame, s_light_shape_ab co
         if ((short)shape->kind == 0)
         {
             real radius = shape->sphere_render.radius;
-            vector3f vertices[8] = {
-                { radius, radius, -radius }, { -radius, radius, -radius },
-                { -radius, -radius, -radius }, { radius, -radius, -radius },
-                { radius, radius, radius }, { -radius, radius, radius },
-                { -radius, -radius, radius }, { radius, -radius, radius }
-            };
+            vector3f vertices[8];
+            vertices[0].i = radius;
+            vertices[0].j = radius;
+            vertices[0].k = -radius;
+            vertices[1].i = -radius;
+            vertices[1].j = radius;
+            vertices[1].k = -radius;
+            vertices[2].i = -radius;
+            vertices[2].j = -radius;
+            vertices[2].k = -radius;
+            vertices[3].i = radius;
+            vertices[3].j = -radius;
+            vertices[3].k = -radius;
+            vertices[4].i = radius;
+            vertices[4].j = radius;
+            vertices[4].k = radius;
+            vertices[5].i = -radius;
+            vertices[5].j = radius;
+            vertices[5].k = radius;
+            vertices[6].i = -radius;
+            vertices[6].j = -radius;
+            vertices[6].k = radius;
+            vertices[7].i = radius;
+            vertices[7].j = -radius;
+            vertices[7].k = radius;
             vector3f directions[6] = {
                 { 0, 0, -1 }, { 1, 0, 0 }, { 0, 1, 0 },
                 { -1, 0, 0 }, { 0, -1, 0 }, { 0, 0, 1 }
