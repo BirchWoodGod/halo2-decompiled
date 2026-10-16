@@ -3139,7 +3139,10 @@ void function_36b50()
         real step = g_509418;
         bool updated = true;
         for (long j = 0; j < *(long *)(definition + 8); ++j)
-            updated = updated && function_37260(*(byte **)(definition + 0xc) + j * 0x3a8, step, definition);
+        {
+            byte *state = *(byte **)(definition + 0xc) + j * 0x3a8;
+            updated = updated && function_37260(state, step, definition);
+        }
         for (long j = 0; j < *(long *)definition; ++j)
             updated = updated && function_38450(*(byte **)(definition + 4) + j * 0x8c, definition, fog_distance);
         bool rendered = true;
