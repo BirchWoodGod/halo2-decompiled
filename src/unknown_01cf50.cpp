@@ -3661,10 +3661,10 @@ void *function_135a30(s_type_7ba8e9 const *bitmap, short mipmap_index, short x, 
 void function_13f10(long bitmap_value, long front_value)
 {
     byte *bitmap = (byte *)bitmap_value;
-    bool front = (byte)front_value != 0;
     if (bitmap && *(void **)(bitmap + 0x54))
     {
-        short_rect_pair rectangle_pair = g_485a8a;
+        short_rect_pair rectangle_pair;
+        rectangle_pair.a = g_485a8a.a;
         short right = (short)(rectangle_pair.a.v1 + *(short *)(bitmap + 4));
         if (rectangle_pair.a.v3 <= right) right = rectangle_pair.a.v3;
         short bottom = (short)(rectangle_pair.a.v0 + *(short *)(bitmap + 6));
@@ -3674,7 +3674,11 @@ void function_13f10(long bitmap_value, long front_value)
         short format = *(short *)(bitmap + 0xc);
         if ((format == 11 || format == 10) && *(short *)(bitmap + 0x14) == 0)
         {
-            D3DSurface *surface = front ? D3DDevice_GetRenderTarget2() : D3DDevice_GetBackBuffer2(0);
+            D3DSurface *surface;
+            if ((byte)front_value != 0)
+                D3DDevice::GetRenderTarget(&surface);
+            else
+                D3DDevice::GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
             D3DSURFACE_DESC description;
             D3DSurface_GetDesc(surface, &description);
             if (description.Size == description.Width * description.Height * 4)
