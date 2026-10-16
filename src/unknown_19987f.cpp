@@ -910,7 +910,7 @@ bool function_19a179(long player_index)
 
 /* the voice/peer list (unknown_0b35e0.cpp) and its state */
 struct s_0b35e0_entry;
-s_0b35e0_entry *function_b35e0(long index);
+s_0b35e0_entry *session_search_results_get(long index);
 extern long g_4d8f14;
 
 s_peer_list_globals g_4ee4c4;
@@ -964,7 +964,7 @@ long function_199b6a(long start)
 
 		for (index = start != NONE ? start + 1 : 0; index < g_4d8f14; index++)
 		{
-			if (function_b35e0(index))
+			if (session_search_results_get(index))
 			{
 				result = index;
 				break;
@@ -979,7 +979,7 @@ bool function_199ba5(long index)
 {
 	bool result = false;
 
-	if (g_4ee4c4.active && function_b35e0(index))
+	if (g_4ee4c4.active && session_search_results_get(index))
 	{
 		result = true;
 	}
@@ -993,7 +993,7 @@ byte *function_199bbf(long index)
 
 	if (g_4ee4c4.active)
 	{
-		byte *entry = (byte *)function_b35e0(index);
+		byte *entry = (byte *)session_search_results_get(index);
 		if (entry)
 		{
 			byte *data = entry + 0x70;

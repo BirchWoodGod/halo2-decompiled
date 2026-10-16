@@ -1136,7 +1136,7 @@ void simulation_write_relative_position(s_bitstream *stream, long bits, real con
 void simulation_read_relative_position(s_bitstream *stream, long bits, real *position);
 void function_ab5e0(s_z_blend_state const *state, s_bitstream *stream);
 bool function_ab700(s_bitstream *stream, s_z_blend_state *state);
-void function_b5650(long identifier, s_bitstream *stream);
+void simulation_write_entity_identifier(long identifier, s_bitstream *stream);
 
 // @retail 0xa28e0
 void c_weapon_fire_event::v9(long a, void const *data, s_bitstream *stream)
@@ -1157,7 +1157,7 @@ void c_weapon_fire_event::v9(long a, void const *data, s_bitstream *stream)
  if (event->attached)
  {
   stream_write_checked(stream, event->attachment, 5);
-  function_b5650(event->identifier, stream);
+  simulation_write_entity_identifier(event->identifier, stream);
  }
 }
 

@@ -917,7 +917,7 @@ long function_cbd50(long unit_index, short weapon_index);
 void function_b9c60(long object_index, bool flag);
 bool function_e6900(long unit_index, s_unit_request *request);
 void function_a7b30(long index);
-void __stdcall function_28e200(long perception_index);
+void __stdcall swarm_delete(long perception_index);
 void function_1e04a0(long primary_tag, long character_index, long unit_index, long secondary_tag, short grenade_type);
 
 // @retail 0x1e0850
@@ -979,7 +979,7 @@ long __stdcall function_1e0850(long character_index, long squad_index, s_203780 
 	if (actor_index == NONE)
 	{
 		if (unit_index != NONE) function_b8540(unit_index);
-		else if (perception_index != NONE) function_28e200(perception_index);
+		else if (perception_index != NONE) swarm_delete(perception_index);
 		return actor_index;
 	}
 	byte *actor = (byte *)actor_get(actor_index);
@@ -1136,7 +1136,7 @@ void __stdcall function_1a7cc0(long actor_index);
 void actor_behavior_current_update44(long actor_index);
 void function_1e3860(long actor_index);
 void actor_behavior_current_update48(long actor_index);
-void __stdcall function_28f700(long actor_index);
+void __stdcall swarm_update(long actor_index);
 void function_25a380(long actor_index);
 void function_1f38c0(long actor_index);
 void function_298370(long actor_index);
@@ -1173,7 +1173,7 @@ void function_1e34e0(long actor_index)
 		actor_behavior_current_update48(actor_index);
 		if (actor[7])
 		{
-			if (*(long *)(actor + 0x1c)) function_28f700(actor_index);
+			if (*(long *)(actor + 0x1c)) swarm_update(actor_index);
 		}
 		else
 		{
@@ -1256,7 +1256,7 @@ void function_1e2f50()
 			long unit = *(long *)(current + 0x18), proxy = *(long *)(current + 0x1c);
 			function_1e2a90(index);
 			if (unit != NONE) function_b8540(unit);
-			else if (proxy != NONE) function_28e200(proxy);
+			else if (proxy != NONE) swarm_delete(proxy);
 		}
 		else if (*(short *)(actor + 0x84) > 0)
 		{
@@ -1292,7 +1292,7 @@ struct s_actor_position_state
 bool function_1e11b0(long actor_index, bool active);
 bool function_e58e0(long unit_index);
 bool function_109e00(long object_index, vector3f *velocity, bool required);
-void function_2901e0(long perception_index, vector3f const *velocity);
+void swarm_apply_impulse(long perception_index, vector3f const *velocity);
 
 // @retail 0x1e0fe0
 long function_1e0fe0(point3f const *point, long unit_index, long character_index, short mode)
@@ -1336,7 +1336,7 @@ long function_1e0fe0(point3f const *point, long unit_index, long character_index
 			{
 				vector3f velocity;
 				if (function_109e00(unit_index, &velocity, true))
-					function_2901e0(*(long *)(actor + 0x1c), &velocity);
+					swarm_apply_impulse(*(long *)(actor + 0x1c), &velocity);
 			}
 		}
 	}
@@ -1355,7 +1355,7 @@ void __stdcall function_1e2930(long object_index, long actor_index)
 void __stdcall function_b83b0(long object_index, bool flag);
 void __stdcall function_b8460(long object_index, bool flag);
 void __stdcall function_b8540(long object_index);
-void __stdcall function_28e200(long index);
+void __stdcall swarm_delete(long index);
 void function_1e2a90(long actor_index);
 bool function_1e1500(long actor_index);
 void function_203ed0(long actor_index, bool keep_count);
@@ -1379,7 +1379,7 @@ bool function_1e35f0(long actor_index)
 		{
 			long captured_index = other_index;
 			if (captured_index != NONE)
-				function_28e200(captured_index);
+				swarm_delete(captured_index);
 		}
 		result = false;
 	}
@@ -1427,7 +1427,7 @@ void c_1e2990::function_1e2990(bool preserve)
 			function_b8540(object_index);
 	}
 	else if (other_index != NONE)
-		function_28e200(other_index);
+		swarm_delete(other_index);
 }
 
 #include "unknown_0259a0.h"

@@ -113,7 +113,7 @@ void c_turret_entity_definition::v12(long a, s_entity_info *info, long c, s_bits
 	stream->bit_position++;
 	if (info->identifier != NONE)
 	{
-		function_b5650(info->identifier, stream);
+		simulation_write_entity_identifier(info->identifier, stream);
 	}
 }
 
@@ -1299,7 +1299,7 @@ void c_projectile_type::v12(long a, s_entity_info *info, long c, s_bitstream *st
     stream_write_bit(stream, *(long const *)(data + 0x14) != NONE);
     if (*(long const *)(data + 0x14) != NONE)
     {
-        function_b5650(*(long const *)(data + 0x14), stream);
+        simulation_write_entity_identifier(*(long const *)(data + 0x14), stream);
         stream_write_bit(stream, *(long const *)(data + 0x18) != NONE);
         long third = *(long const *)(data + 0x18);
         if (third != NONE) stream_write_checked(stream, third, 5);

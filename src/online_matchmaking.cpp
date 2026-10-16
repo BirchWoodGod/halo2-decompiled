@@ -9,8 +9,8 @@
 #include "online_tasks.h"
 #include "online_attributes.h"
 
-long function_0b4a90(s_entry_pair *out, const s_range_input *in);
-long function_0b4b80(long count, s_property_entry *out, const s_property_input *in);
+long online_match_search_build_parameters(s_entry_pair *out, const s_range_input *in);
+long online_match_session_build_attributes(long count, s_property_entry *out, const s_property_input *in);
 
 /* the attributes of a search result: seven integers */
 const XONLINE_ATTRIBUTE_SPEC g_44050c[7] =
@@ -50,7 +50,7 @@ struct s_long7
 {
 	long values[7];
 };
-void function_0b4a40(s_long7 *out, const __int64 *in);
+void online_match_properties_from_attributes(s_long7 *out, const __int64 *in);
 
 struct s_online_match_result
 {
@@ -92,7 +92,7 @@ void function_8fb30(long task_index, s_online_match_result *output, word *capaci
 					__int64 properties[7];
 					if (SUCCEEDED(XOnlineMatchSearchParse(results[i], results[i]->dwNumAttributes, g_44050c, properties)))
 					{
-						function_0b4a40(&local_0->properties, properties);
+						online_match_properties_from_attributes(&local_0->properties, properties);
 						written++;
 						local_0++;
 					}
@@ -118,7 +118,7 @@ long online_match_search(const s_range_input *input)
 	if (task)
 	{
 		s_entry_pair attributes[12];
-		long attribute_count = function_0b4a90(attributes, input);
+		long attribute_count = online_match_search_build_parameters(attributes, input);
 		DWORD results_size = XOnlineMatchSearchResultsLen(50, 7, g_44050c);
 		if (SUCCEEDED(XOnlineMatchSearch(1, 50, attribute_count, (PXONLINE_ATTRIBUTE)attributes, results_size, NULL, (PXONLINETASK_HANDLE)&task->handle)))
 		{
@@ -148,7 +148,7 @@ long online_match_session_create(const s_online_match_session *session)
 		if (task)
 		{
 			s_property_entry attributes[15];
-			long attribute_count = function_0b4b80(15, attributes, &session->properties);
+			long attribute_count = online_match_session_build_attributes(15, attributes, &session->properties);
 			if (SUCCEEDED(XOnlineMatchSessionCreate(session->public_filled, session->public_open, session->private_filled, session->private_open,
 				attribute_count, (PXONLINE_ATTRIBUTE)attributes, NULL, (PXONLINETASK_HANDLE)&task->handle)))
 			{
@@ -210,7 +210,7 @@ long online_match_session_update(const s_online_match_session *session)
 		if (task)
 		{
 			s_property_entry attributes[15];
-			long attribute_count = function_0b4b80(15, attributes, &session->properties);
+			long attribute_count = online_match_session_build_attributes(15, attributes, &session->properties);
 			if (SUCCEEDED(XOnlineMatchSessionUpdate(session->session_id, session->public_filled, session->public_open, session->private_filled, session->private_open,
 				attribute_count, (PXONLINE_ATTRIBUTE)attributes, NULL, (PXONLINETASK_HANDLE)&task->handle)))
 			{
