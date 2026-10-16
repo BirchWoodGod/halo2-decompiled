@@ -41,19 +41,19 @@ long samples_trimmed_mean(const long *samples, long count)
 
 	if (trim > 0)
 	{
-		for (i = 0; i < count; i++)
+		for (used = 0; used < count; used++)
 		{
-			for (long j = i; j >= 0; j--)
+			for (long j = used; j >= 0; j--)
 			{
-				if (j <= 0 || sorted[j - 1] <= samples[i])
+				if (j <= 0 || sorted[j - 1] <= samples[used])
 				{
-					sorted[j] = samples[i];
+					sorted[j] = samples[used];
 					break;
 				}
 				sorted[j] = sorted[j - 1];
 			}
 		}
-		used = i + (-trim) * 2;
+		used -= trim * 2;
 		memmove(sorted, &sorted[trim], used * sizeof(long));
 	}
 	else

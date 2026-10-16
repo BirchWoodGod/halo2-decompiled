@@ -1,5 +1,5 @@
 #include "unknown_4cf790.h"
-// @flags /O2 /Gr
+// @flags /O2 /arch:SSE /Gr
 /* UNKNOWN_0805E0.CPP: the cache of the configurations of the
    players met recently (entries of 0x68 bytes at 0x4cf98c, chained through
    their next index). Most of the file is outside lane D's region
@@ -737,11 +737,12 @@ long function_7fe90(const s_cached_player_identity *identity, long position, con
 		function_7fd10(removed);
 		function_7fd80(removed);
 	}
-	long lower, upper;
+	long lower = 0;
+	long upper = 0;
 	bool downward = false;
 	if (removed != NONE)
 	{
-		lower = removed < position ? removed : position;
+		lower = removed > position ? position : removed;
 		upper = removed > position ? removed : position;
 		if (removed < position)
 		{
@@ -750,7 +751,7 @@ long function_7fe90(const s_cached_player_identity *identity, long position, con
 			downward = true;
 		}
 	}
-	else
+	else if (position < g_4cf978)
 	{
 		lower = position;
 		upper = g_4cf978;
