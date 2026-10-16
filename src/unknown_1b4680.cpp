@@ -162,13 +162,14 @@ bool __stdcall function_25d020(long actor_index, long object_index, long type, l
 	long reference_actor_index, long reference_index);
 
 /* joins the slot group 0x1b joint the actor was invited to about its prop,
-   or starts one, then sets the slot's timers */
+   or starts one, then sets the slot's timers; retail calls the random range
+   (0x259d0) and the prop view (0x25d740) here instead of inlining them */
 // @retail 0x1b47b0
 long __stdcall function_1b47b0(long actor_index, s_slot *slot)
 {
+	long element_index = NONE;
 	s_slot_1b *state = (s_slot_1b *)slot;
 	s_actor_view *actor = actor_get(actor_index);
-	long element_index = NONE;
 	s_character_e50 *character = (s_character_e50 *)function_1e4e50(actor_index);
 
 	if (actor->prop_index != NONE && character)
@@ -208,8 +209,10 @@ long __stdcall function_1b47b0(long actor_index, s_slot *slot)
 
 			if (state->unknown0c)
 			{
+#pragma inline_depth(0)
 				real first = function_259d0(&g_4e7408->unknown0, NULL, 0, character->unknown04, character->unknown08);
 				real second = function_259d0(&g_4e7408->unknown0, NULL, 0, character->unknown0c, character->unknown10);
+#pragma inline_depth()
 
 				state->unknown1c = (real)g_510c54->game_time;
 				real ticks = g_510c54->field_2_3 * first;
@@ -241,7 +244,9 @@ long __stdcall function_1b47b0(long actor_index, s_slot *slot)
 				state->unknown2a = joint->unknown86;
 
 				s_prop_state_view *node_state = prop_node_state(node);
-				s_prop_view_fields *view = prop_node_view(node);
+#pragma inline_depth(0)
+				s_prop_view_fields *view = (s_prop_view_fields *)function_25d740((s_prop_node *)node);
+#pragma inline_depth()
 				long target_index = joint->prop_index;
 
 				if (target_index != NONE)
@@ -254,7 +259,9 @@ long __stdcall function_1b47b0(long actor_index, s_slot *slot)
 						function_25d020(actor_index, node->object_index, NONE, actor->prop_index, target->unknown04, target_index);
 						if (view)
 						{
-							s_prop_view_fields *target_view = prop_node_view(target);
+#pragma inline_depth(0)
+							s_prop_view_fields *target_view = (s_prop_view_fields *)function_25d740((s_prop_node *)target);
+#pragma inline_depth()
 
 							if (target_view)
 								view->unknown18 = target_view->unknown18;
