@@ -7,7 +7,7 @@
 #include "globals.h"
 
 struct s_type_954545;
-s_type_954545 *function_148350(void);
+s_type_954545 *ui_definition_get(void);
 long function_147f4f();
 long function_18a5a0(long tag_index, long object_index, real value);
 word *function_18a5e0(long datum_index);
@@ -65,7 +65,7 @@ extern dword g_54d5b8;
 long main_menu_music_tag_index()
 {
 	long result = NONE;
-	s_user_interface_globals_music *globals = (s_user_interface_globals_music *)function_148350();
+	s_user_interface_globals_music *globals = (s_user_interface_globals_music *)ui_definition_get();
 
 	if (globals)
 	{
@@ -79,7 +79,7 @@ long main_menu_music_tag_index()
 dword function_235ca9()
 {
 	dword result = 0;
-	s_user_interface_globals_music *globals = (s_user_interface_globals_music *)function_148350();
+	s_user_interface_globals_music *globals = (s_user_interface_globals_music *)ui_definition_get();
 
 	if (globals)
 	{

@@ -132,7 +132,7 @@ short g_4e63ba;
 long g_4e638c;
 __int64 g_4e63a0;
 
-bool function_14a224(void);
+bool window_manager_main_menu_focused(void);
 
 /* the frame's timing: the vertical blank it ends on (no earlier than the
    one the last frame asked for, plus the interval the game asks for), the
@@ -159,7 +159,7 @@ real function_12b0e0(void)
 	if (function_12b3c0())
 	{
 		g_4e63ba = g_485aca;
-		if (g_4e6948->flag1120 && (g_4e6948->state != 3 || function_14a224()))
+		if (g_4e6948->flag1120 && (g_4e6948->state != 3 || window_manager_main_menu_focused()))
 			g_4e63ba = g_4e63ba > 2 ? g_4e63ba : 2;
 		g_4e63b8 = g_4e63ba;
 		next = target + g_4e63b8;

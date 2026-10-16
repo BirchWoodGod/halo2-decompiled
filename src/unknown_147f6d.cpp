@@ -27,7 +27,7 @@ c_window_manager::c_window_manager()
 
 long g_47ff54;
 
-void *function_1482e8(void);
+struct s_user_interface_shared_globals *ui_mode_definition_get(void);
 
 void function_236299(long sound);
 
@@ -119,7 +119,7 @@ long function_147f4f()
 // @retail 0x148098
 long function_148098(long screen_id)
 {
-	s_screen_references *references = (s_screen_references *)function_1482e8();
+	s_screen_references *references = (s_screen_references *)ui_mode_definition_get();
 	long result = NONE;
 
 	if (references)
@@ -214,9 +214,9 @@ bool function_147d13()
 
 #define NUMBEROF(array) (sizeof(array) / sizeof((array)[0]))
 
-bool window_manager_window_has_pause_screen_for_user(long channel, long index, long user_index);
+bool window_manager_window_has_dialog(long channel, long index, long dialog_id);
 void function_23538b(c_window_channel *channel);
-void function_14935c(void);
+void window_manager_window_2_start_animation(void);
 void function_236299(long sound);
 
 /* closes the dialog window, the windows of channel 3 and the channel 1
@@ -243,7 +243,7 @@ void function_148523()
 			{
 				for (dword j = 0; j < NUMBEROF(screen_ids); j++)
 				{
-					if (window_manager_window_has_pause_screen_for_user(1, i, screen_ids[j]))
+					if (window_manager_window_has_dialog(1, i, screen_ids[j]))
 					{
 						function_23538b(&g_54d598.windows_1[i]);
 						break;
@@ -254,7 +254,7 @@ void function_148523()
 		function_23538b(&g_54d598.window_4);
 		function_236299(4);
 	}
-	function_14935c();
+	window_manager_window_2_start_animation();
 }
 
 bool function_138800();
@@ -353,7 +353,7 @@ void function_1486b8(long error, bool keep)
 		dialog_id = 0xb8;
 		first = function_2323ab;
 	}
-	if (!window_manager_window_has_pause_screen_for_user(1, 4, dialog_id))
+	if (!window_manager_window_has_dialog(1, 4, dialog_id))
 	{
 		if (choice)
 		{
@@ -574,8 +574,8 @@ const char *function_148956(s_window_manager_text *text)
 // @retail 0x14896e
 void function_14896e(s_window_manager_754 *a, s_window_manager_df6 *b)
 {
-	*a = g_54d598.m754;
-	*b = g_54d598.mdf6;
+	*a = g_54d598.team_details;
+	*b = g_54d598.team_member_details;
 }
 
 // @retail 0x148995
@@ -914,13 +914,13 @@ void __stdcall function_148893(s_name_request *request, long mode)
 			function_6b640(g_54d598.team_task);
 			g_54d598.team_task = NONE;
 		}
-		if (g_54d598.task750 != NONE)
+		if (g_54d598.team_members_task != NONE)
 		{
-			function_6b640(g_54d598.task750);
-			g_54d598.task750 = NONE;
+			function_6b640(g_54d598.team_members_task);
+			g_54d598.team_members_task = NONE;
 		}
-		memset(&g_54d598.m754, 0, sizeof(g_54d598.m754));
-		memset(&g_54d598.mdf6, 0, sizeof(g_54d598.mdf6));
+		memset(&g_54d598.team_details, 0, sizeof(g_54d598.team_details));
+		memset(&g_54d598.team_member_details, 0, sizeof(g_54d598.team_member_details));
 	}
 	if (request)
 	{
@@ -949,7 +949,7 @@ void __stdcall function_148893(s_name_request *request, long mode)
 }
 
 void function_19987f(void);
-void function_14a152(void);
+void window_manager_reset_all_windows(void);
 void function_1a479a(void);
 
 /* the user interface's dispose (the subsystem table at 0x4414e0) */
@@ -957,7 +957,7 @@ void function_1a479a(void);
 void function_14783f(void)
 {
 	function_19987f();
-	function_14a152();
+	window_manager_reset_all_windows();
 	function_1a479a();
 }
 
@@ -968,7 +968,7 @@ void function_147920(void)
 	long i;
 
 	g_54d598.default_window.dispose();
-	g_54d598.m10 = NONE;
+	g_54d598.shell_mode = NONE;
 	for (i = 0; i < 5; i++)
 	{
 		((c_window_channel *)&g_54d598.windows_5[i])->dispose();
@@ -983,12 +983,12 @@ void function_147920(void)
 	}
 	g_54d598.mf04 = NONE;
 	g_54e5d0.profile_index = NONE;
-	g_54d598.m1248.m10 = NONE;
+	g_54d598.main_menu_music.m10 = NONE;
 	g_54d598.active = false;
-	g_54d598.m1248.m0 = 0;
-	g_54d598.m1248.m4 = 0;
-	g_54d598.m1248.mc = 0;
-	g_54d598.m1248.m8 = 0;
+	g_54d598.main_menu_music.m0 = 0;
+	g_54d598.main_menu_music.m4 = 0;
+	g_54d598.main_menu_music.mc = 0;
+	g_54d598.main_menu_music.m8 = 0;
 }
 
 bool __stdcall function_236973(long controller);
@@ -1076,7 +1076,7 @@ void function_147ebe(void)
 // @retail 0x147f1e
 void function_147f1e(void)
 {
-	s_type_954545 *globals = function_148350();
+	s_type_954545 *globals = ui_definition_get();
 
 	if (globals)
 	{
@@ -1269,7 +1269,7 @@ extern dword g_54d5bc;
 
 struct s_controller_event;
 bool function_155f60(void);
-void function_14954a(s_event const *event);
+void window_manager_handle_event(s_event const *event);
 bool function_23515d(c_window_channel *channel, s_event *event);
 
 /* sends input to the shared windows, then the controller's windows */
@@ -1280,7 +1280,7 @@ void function_147dbe(s_controller_event *event)
 
 	if (function_155f60())
 	{
-		function_14954a(message);
+		window_manager_handle_event(message);
 	}
 	else
 	{
@@ -1309,7 +1309,7 @@ void function_147dbe(s_controller_event *event)
 				if (index != NONE)
 					continue;
 			}
-			function_14954a(message);
+			window_manager_handle_event(message);
 			break;
 		}
 	}
@@ -1420,7 +1420,7 @@ void function_1476c7()
     g_54d598.unknown05[1] = false;
     g_54d598.unknown05[2] = false;
     g_54d5a0 = false;
-    g_54d598.m0c = 0;
+    g_54d598.pending_join_type = 0;
     g_54d5a8 = (char)0xff;
     g_54d5ac = 0.f;
     g_54d5b0 = 0.f;
@@ -1447,9 +1447,9 @@ void function_1476c7()
     function_18f58c();
     memset(&g_54d598.settings, 0, sizeof(g_54d598.settings));
     g_54d598.team_task = NONE;
-    g_54d598.task750 = NONE;
-    memset(&g_54d598.m754, 0, sizeof(g_54d598.m754));
-    memset(&g_54d598.mdf6, 0, sizeof(g_54d598.mdf6));
+    g_54d598.team_members_task = NONE;
+    memset(&g_54d598.team_details, 0, sizeof(g_54d598.team_details));
+    memset(&g_54d598.team_member_details, 0, sizeof(g_54d598.team_member_details));
     memset(g_54d598.unknowne88, 0, sizeof(g_54d598.unknowne88));
     g_54d598.m1220 = false;
     g_54e7cc = false;
@@ -1539,12 +1539,12 @@ void __stdcall function_148b27(long index)
 
 void function_2133a1();
 void function_199893();
-void function_149570();
+void window_manager_update_online();
 void function_18f62b();
 void function_199b08();
 bool function_223976();
 void function_223a21();
-bool function_14a224();
+bool window_manager_main_menu_focused();
 struct s_main_menu_music;
 void main_menu_music_update(s_main_menu_music *music);
 
@@ -1555,7 +1555,7 @@ void __stdcall function_1479c3(real elapsed)
     function_2133a1();
     function_199893();
     function_147f1e();
-    function_149570();
+    window_manager_update_online();
     function_18f62b();
     for (dword i = 0; i < 0x23; i++)
     {
@@ -1588,8 +1588,8 @@ void __stdcall function_1479c3(real elapsed)
     {
         function_223a21();
     }
-    main_menu_music_update((s_main_menu_music *)&g_54d598.m1248);
-    if (function_138800() && g_4e6948->state == 3 && function_14a224())
+    main_menu_music_update((s_main_menu_music *)&g_54d598.main_menu_music);
+    if (function_138800() && g_4e6948->state == 3 && window_manager_main_menu_focused())
     {
         g_54e7fc = g_54d5b8;
     }
@@ -1692,13 +1692,13 @@ struct s_ui_initial_screen
 
 void function_2157c0(long selection);
 void __stdcall function_149f88(void *screen);
-void function_14a08f();
+void window_manager_send_pending_join();
 
 // @retail 0x14784e
 void function_14784e()
 {
     s_scenario_ui_type *scenario = (s_scenario_ui_type *)g_4e0350;
-    if (!g_54d598.m0c)
+    if (!g_54d598.pending_join_type)
         function_148893(NULL, 1);
     long type = scenario ? *(volatile short *)&scenario->type : NONE;
     g_54d5a8 = (char)type;
@@ -1712,15 +1712,15 @@ void function_14784e()
     }
     if (g_54d5a8 == 2)
     {
-        s_ui_initial_selection *globals = (s_ui_initial_selection *)function_148350();
+        s_ui_initial_selection *globals = (s_ui_initial_selection *)ui_definition_get();
         if (globals)
             function_2157c0(globals->selection);
-        s_ui_initial_screen *screen = (s_ui_initial_screen *)function_1482e8();
+        s_ui_initial_screen *screen = (s_ui_initial_screen *)ui_mode_definition_get();
         if (screen && screen->tag_index != NONE)
             function_149f88(g_4e3b44[screen->tag_index & 0xffff].bytes);
     }
     g_4ee4e0 = false;
     g_4ee4c4.session_booted = false;
-    function_14a08f();
+    window_manager_send_pending_join();
     g_54e7fc = 0;
 }

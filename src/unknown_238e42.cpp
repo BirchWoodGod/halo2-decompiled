@@ -338,7 +338,7 @@ void function_199c94(const void *target, long controller, bool flag);
 bool function_19a1bd(void);
 void function_199e2e(bool close);
 void function_148523();
-c_class_1473c9 *function_149ef3(word user_flags, long load);
+c_class_1473c9 *window_manager_open_channel_3_screen(word user_flags, long load);
 c_class_1473c9 *__stdcall function_2b8536(s_screen_parameters *parameters);
 
 /* the screen that joins a friend's game, set to come along with the squad */
@@ -408,7 +408,7 @@ void __stdcall function_2395dc(XONLINE_FRIEND *friend_, long controller_index, l
 			}
 			else if (mode == 3)
 			{
-				((s_join_screen_view *)function_149ef3((word)(1 << controller_index), (long)function_2b8536))->value898 = true;
+				((s_join_screen_view *)window_manager_open_channel_3_screen((word)(1 << controller_index), (long)function_2b8536))->value898 = true;
 				return;
 			}
 			else
@@ -443,7 +443,7 @@ void __stdcall function_2395dc(XONLINE_FRIEND *friend_, long controller_index, l
 		function_148523();
 		if (state == 3)
 		{
-			g_54d598.m0c = join_type;
+			g_54d598.pending_join_type = join_type;
 			if (in_session && join_type == 3)
 			{
 				function_19a1bd();
