@@ -820,15 +820,25 @@ bool function_cc380(long object_index)
 	return unit->actor_index != NONE;
 }
 
+/* the name of the unit's current animation, or NONE when it has none */
+inline long unit_animation_name(long unit_index)
+{
+	s_unit_animation *animation = UNIT_ANIMATION(UNIT_GET(unit_index));
+
+	if (animation->unknown68 != NONE && animation->unknown00 != NONE && animation->unknown06 != NONE)
+	{
+		return animation->name;
+	}
+	return NONE;
+}
+
 /* whether the unit's animation is 0x600008c */
 // @retail 0xcc3c0
 bool function_cc3c0(long unit_index)
 {
-	s_unit_animation *animation = UNIT_ANIMATION(UNIT_GET(unit_index));
 	bool result = false;
 
-	if (animation->unknown68 != NONE && animation->unknown00 != NONE && animation->unknown06 != NONE &&
-		animation->name == 0x600008c)
+	if (unit_animation_name(unit_index) == 0x600008c)
 	{
 		result = true;
 	}
@@ -839,14 +849,9 @@ bool function_cc3c0(long unit_index)
 // @retail 0xcc410
 bool function_cc410(long unit_index)
 {
-	s_unit_animation *animation = UNIT_ANIMATION(UNIT_GET(unit_index));
+	long name = unit_animation_name(unit_index);
 
-	if (animation->unknown68 != NONE && animation->unknown00 != NONE && animation->unknown06 != NONE &&
-		(animation->name == 0xd000042 || animation->name == 0xc000043))
-	{
-		return true;
-	}
-	return false;
+	return name == 0xd000042 || name == 0xc000043;
 }
 
 /* whether the unit's seat has bit 2 of its flags */
@@ -887,11 +892,13 @@ long function_ccb80(long unit_index)
 // @retail 0xcccd0
 short function_cccd0(long unit_index, short grenade_type, char delta)
 {
-	UNIT_GET(unit_index)->grenade_counts[grenade_type] += delta;
+	char *count = UNIT_GET(unit_index)->grenade_counts + grenade_type;
+
+	*count += delta;
 	s_unit *unit = UNIT_GET(unit_index);
 	unit->next_grenade_index = (char)grenade_type;
 	unit->current_grenade_index = (char)grenade_type;
-	return UNIT_GET(unit_index)->grenade_counts[grenade_type];
+	return *count;
 }
 
 /* deletes the object +0x238 names */
@@ -912,15 +919,17 @@ void function_ccd20(long unit_index)
 short function_cd620(long unit_index)
 {
 	s_unit *unit = UNIT_GET(unit_index);
+	short result = NONE;
 
 	for (long i = 0; i < 4; i++)
 	{
 		if (unit->weapon_object_indices[i] == NONE)
 		{
-			return (short)i;
+			result = (short)i;
+			break;
 		}
 	}
-	return NONE;
+	return result;
 }
 
 /* the unit's count of a grenade type */
@@ -1418,20 +1427,19 @@ bool function_cc0c0(long unit_index)
 {
 	s_unit *unit = UNIT_GET(unit_index);
 	bool result = false;
-	short index = unit->current_weapon_index;
 
-	if (index != NONE && unit->weapon_object_indices[index] != NONE)
+	for (long hand = 0; hand < 2; hand++)
 	{
-		char state = *((char *)UNIT_GET(unit->weapon_object_indices[index]) + 0x20c);
+		s_unit *holder = UNIT_GET(unit_index);
+		short index = (&holder->current_weapon_index)[hand];
+		long weapon_index = index != NONE ? holder->weapon_object_indices[index] : NONE;
 
-		result = state == 1 || state == 2;
-	}
-	index = unit->next_weapon_index;
-	if (index != NONE && unit->weapon_object_indices[index] != NONE && !result)
-	{
-		char state = *((char *)UNIT_GET(unit->weapon_object_indices[index]) + 0x20c);
+		if (weapon_index != NONE && !result)
+		{
+			char state = *((char *)UNIT_GET(weapon_index) + 0x20c);
 
-		result = state == 1 || state == 2;
+			result = state == 1 || state == 2;
+		}
 	}
 	return result;
 }
@@ -1763,7 +1771,10 @@ void function_ccf20(long unit_index)
 			long weapon_index = unit->weapon_object_indices[(short)i];
 
 			unit->weapon_object_indices[(short)i] = NONE;
+			/* retail calls 0xce470 out of line here */
+#pragma inline_depth(0)
 			function_ce470(1, weapon_index, unit_index);
+#pragma inline_depth()
 			unit_weapon_slot_changed(unit_index, (short)i);
 		}
 	}
@@ -2393,8 +2404,10 @@ void function_cce00(long unit_index, short starting_profile_index, bool reset, b
 		}
 		unit->unknownf0 -= *(real *)(profile + 0x24);
 		unit->unknownec -= *(real *)(profile + 0x20);
-		unit->grenade_counts[0] += profile[0x40];
-		unit->grenade_counts[1] += profile[0x41];
+		for (long j = 0; j < 2; j++)
+		{
+			unit->grenade_counts[j] += profile[0x40 + j];
+		}
 	}
 }
 
@@ -2484,39 +2497,38 @@ void __stdcall function_c42e0(long unit_index, void const *placement)
 // @retail 0xccba0
 bool __stdcall function_ccba0(long unit_index, long grenade_index)
 {
-	byte *definition = UNIT_DEFINITION_GET(UNIT_GET(grenade_index));
+	s_unit *grenade = UNIT_GET(grenade_index);
+	byte *definition = UNIT_DEFINITION_GET(grenade);
 	s_unit *unit = UNIT_GET(unit_index);
-	byte *globals = (byte *)g_4e034c;
+	bool result = false;
 
-	if (!*(void **)(globals + 0x100))
+	if (*(void **)((byte *)g_4e034c + 0x100))
 	{
-		return false;
+		short *maximum = (short *)(*(byte **)((byte *)g_4e034c + 0x104) + *(short *)(definition + 0x12e) * 0x2c);
+
+		if (maximum && unit->grenade_counts[*(short *)(definition + 0x12e)] < *maximum)
+		{
+			if (unit->unknown13c != NONE)
+			{
+				function_1e9070(unit->unknown13c);
+			}
+			if (g_4e6948->mode != 4)
+			{
+				unit->grenade_counts[*(short *)(definition + 0x12e)]++;
+				function_a7a30(unit_index, 0x400000);
+				function_a8950(unit_index, grenade->definition_index);
+				s_unit *object = (s_unit *)function_badc0(unit_index, 3);
+				if (object && object->unknown13c != NONE &&
+					*(short *)((byte *)g_4e8c24->data + (unit_get_player_index(unit_index) & 0xffff) * 0x21c + 0x28) != NONE)
+				{
+					function_f8110(grenade_index);
+				}
+				function_b8540(grenade_index);
+				result = true;
+			}
+		}
 	}
-	short type = *(short *)(definition + 0x12e);
-	short *maximum = (short *)(*(byte **)(globals + 0x104) + type * 0x2c);
-	if (!maximum || unit->grenade_counts[type] >= *maximum)
-	{
-		return false;
-	}
-	if (unit->unknown13c != NONE)
-	{
-		function_1e9070(unit->unknown13c);
-	}
-	if (g_4e6948->mode == 4)
-	{
-		return false;
-	}
-	unit->grenade_counts[type]++;
-	function_a7a30(unit_index, 0x400000);
-	function_a8950(unit_index, UNIT_GET(grenade_index)->definition_index);
-	s_unit *object = (s_unit *)function_badc0(unit_index, 3);
-	if (object && object->unknown13c != NONE &&
-		*(short *)((byte *)g_4e8c24->data + (unit_get_player_index(unit_index) & 0xffff) * 0x21c + 0x28) != NONE)
-	{
-		function_f8110(grenade_index);
-	}
-	function_b8540(grenade_index);
-	return true;
+	return result;
 }
 
 /* finds a unit that is dying or down: object flags 22, 26 or 27 in its
@@ -3532,16 +3544,19 @@ void function_cc590(long unit_index)
 	direction.j *= 0.6f;
 	direction.k *= 0.6f;
 	function_b9a90(unit_index);
-	point3f position = unit->position;
-	function_11bf90(unit_index, &position);
-	vector3f velocity;
-	velocity.i = unit->linear_velocity.i + direction.i;
-	velocity.j = unit->linear_velocity.j + direction.j;
-	velocity.k = unit->linear_velocity.k + direction.k;
-	function_b75a0(unit_index, &position, 0, 0, 0, false);
-	function_b77d0(unit_index, &velocity, g_4687a4);
+	{
+		point3f position = unit->position;
+
+		function_11bf90(unit_index, &position);
+		vector3f velocity;
+		velocity.i = unit->linear_velocity.i + direction.i;
+		velocity.j = unit->linear_velocity.j + direction.j;
+		velocity.k = unit->linear_velocity.k + direction.k;
+		function_b75a0(unit_index, &position, 0, 0, 0, false);
+		function_b77d0(unit_index, &velocity, g_4687a4);
+	}
 	s_unit *again = UNIT_GET(unit_index);
-	if (again->object_flags & 1)
+	if (TEST_FIELD_BIT(again->object_flags & 1))
 	{
 		again->object_flags &= ~1;
 		if (function_b9d20(unit_index))
@@ -3700,44 +3715,45 @@ bool function_c5eb0(long unit_index)
 bool function_cb810(long unit_index, vector3f *vector)
 {
 	s_unit *unit = UNIT_GET(unit_index);
+	bool result = false;
 
-	if (unit->unknown13c == NONE)
+	if (unit->unknown13c != NONE)
 	{
-		return false;
-	}
-	short seat_index = unit->parent_seat_index;
-	if (seat_index == NONE)
-	{
-		return false;
-	}
-	long parent_index = unit->parent_index;
-	if (TEST_FIELD_BIT((*(dword *)&UNIT_SEATS(UNIT_DEFINITION_GET(UNIT_GET(parent_index)))[seat_index].flags >> 4) & 1))
-	{
-		return false;
-	}
-	vector3f forward;
-	vector3f up;
-	transform4x3f matrix;
+		short seat_index = unit->parent_seat_index;
 
-	function_b9fc0(parent_index, &forward, &up);
-	matrix.forward.i = g_4687b8->k * up.j - g_4687b8->j * up.k;
-	matrix.forward.j = g_4687b8->i * up.k - g_4687b8->k * up.i;
-	matrix.forward.k = g_4687b8->j * up.i - g_4687b8->i * up.j;
-	if (function_30bf0(&matrix.forward) == 0.0f)
-	{
-		matrix.forward.i = g_4687bc->k * up.j - g_4687bc->j * up.k;
-		matrix.forward.j = g_4687bc->i * up.k - g_4687bc->k * up.i;
-		matrix.forward.k = g_4687bc->j * up.i - g_4687bc->i * up.j;
-		function_30bf0(&matrix.forward);
+		if (seat_index != NONE)
+		{
+			long parent_index = unit->parent_index;
+
+			if (!TEST_FIELD_BIT((*(dword *)&UNIT_SEATS(UNIT_DEFINITION_GET(UNIT_GET(parent_index)))[seat_index].flags >> 4) & 1))
+			{
+				vector3f forward;
+				vector3f up;
+				transform4x3f matrix;
+
+				function_b9fc0(parent_index, &forward, &up);
+				matrix.forward.i = g_4687b8->k * up.j - g_4687b8->j * up.k;
+				matrix.forward.j = g_4687b8->i * up.k - g_4687b8->k * up.i;
+				matrix.forward.k = g_4687b8->j * up.i - g_4687b8->i * up.j;
+				if (function_30bf0(&matrix.forward) == 0.0f)
+				{
+					matrix.forward.i = g_4687bc->k * up.j - g_4687bc->j * up.k;
+					matrix.forward.j = g_4687bc->i * up.k - g_4687bc->k * up.i;
+					matrix.forward.k = g_4687bc->j * up.i - g_4687bc->i * up.j;
+					function_30bf0(&matrix.forward);
+				}
+				matrix4x3_from_forward_and_up(&matrix, &matrix.forward, &up);
+				real i = vector->i;
+				real j = vector->j;
+				real k = vector->k;
+				vector->i = matrix.up.i * k + matrix.left.i * j + i * matrix.forward.i;
+				vector->j = matrix.up.j * k + matrix.left.j * j + matrix.forward.j * i;
+				vector->k = matrix.up.k * k + matrix.left.k * j + matrix.forward.k * i;
+				result = true;
+			}
+		}
 	}
-	matrix4x3_from_forward_and_up(&matrix, &matrix.forward, &up);
-	real i = vector->i;
-	real j = vector->j;
-	real k = vector->k;
-	vector->i = matrix.up.i * k + matrix.left.i * j + i * matrix.forward.i;
-	vector->j = matrix.up.j * k + matrix.left.j * j + matrix.forward.j * i;
-	vector->k = matrix.up.k * k + matrix.left.k * j + matrix.forward.k * i;
-	return true;
+	return result;
 }
 
 /* how the unit reacts to damage it took: sets the report's reaction
