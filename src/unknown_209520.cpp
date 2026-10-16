@@ -1089,25 +1089,23 @@ PRIVATE t_script_value_formatter const g_46fd70[62] =
 // @retail 0x208e10
 void __stdcall function_208e10(short function_index, long thread_index, bool initialize)
 {
+    typedef void (__stdcall *t_local_formatter)(short, long, char *, long);
     char buffer[1024];
     s_hs_thread *thread = hs_thread_get(thread_index);
-    s_hs_frame *frame = thread->frame;
-    long *value = (long *)((byte *)frame + 0xe + frame->size);
-    frame->size += 4;
-    s_hs_expression *nodes = (s_hs_expression *)g_4f9394->data;
+    long *value = hs_frame_allocate_value(thread_index);
     if (initialize)
     {
-        s_hs_expression *expression = &nodes[thread->frame->expression_index & 0xffff];
-        s_hs_expression *name = &nodes[expression->value & 0xffff];
+        s_hs_expression *expression = hs_expression_get(thread->frame->expression_index);
+        s_hs_expression *name = hs_expression_get(expression->value);
         function_2099f0(thread_index, value, *(long *)((byte *)name + 8));
     }
     else
     {
-        s_hs_expression *expression = &nodes[thread->frame->expression_index & 0xffff];
-        s_hs_expression *name = &nodes[expression->value & 0xffff];
-        s_hs_expression *argument = &nodes[*(long *)((byte *)name + 8) & 0xffff];
+        s_hs_expression *expression = hs_expression_get(thread->frame->expression_index);
+        s_hs_expression *name = hs_expression_get(expression->value);
+        s_hs_expression *argument = hs_expression_get(*(long *)((byte *)name + 8));
         if ((thread->flags & 4) && g_46fd70[argument->type])
-            g_46fd70[argument->type](argument->type, *value, buffer, sizeof(buffer));
+            ((t_local_formatter)g_46fd70[argument->type])(argument->type, *value, buffer, sizeof(buffer));
         function_209ae0(thread_index, 0);
     }
 }
