@@ -549,7 +549,7 @@ dword function_024e50(
 
 __inline void histogram_add(
 	real *histogram,
-	byte index)
+	byte const &index)
 {
 	histogram[index] += 1.0f;
 }
@@ -561,22 +561,13 @@ void function_024a70(
 	word stride)
 {
 	memset(histogram, 0, 256 * sizeof(real));
-	for (long y = 0; y < 48; y++)
+	long y = 48;
+	do
 	{
-		for (long x = 0; x < 64; x += 8)
-		{
-			histogram_add(histogram, (byte)pixels[0]);
-			histogram_add(histogram, (byte)pixels[1]);
-			histogram_add(histogram, (byte)pixels[2]);
-			histogram_add(histogram, (byte)pixels[3]);
-			histogram_add(histogram, (byte)pixels[4]);
-			histogram_add(histogram, (byte)pixels[5]);
-			histogram_add(histogram, (byte)pixels[6]);
-			histogram_add(histogram, (byte)pixels[7]);
-			pixels += 8;
-		}
+		for (long x = 0; x < 64; x++)
+			histogram_add(histogram, (byte)*pixels++);
 		pixels += stride - 64;
-	}
+	} while (--y);
 }
 
 // @retail 0x24b80
