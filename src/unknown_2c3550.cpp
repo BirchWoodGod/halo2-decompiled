@@ -653,7 +653,7 @@ bool __stdcall function_2c41b0(long actor_index, s_type_f17a25 *state, short cou
   s_obstacle_list *obstacles = &local_obstacles;
   s_avoidance_search *search = &local_search;
   s_path_step_view const *input = &steps[step];
-  short ignored = NONE;
+  long ignored = NONE;
   if (*out_count >= 4)
   {
    *complete = false;
@@ -664,7 +664,7 @@ bool __stdcall function_2c41b0(long actor_index, s_type_f17a25 *state, short cou
   previous_node = input->node_index;
   if (input->type == NONE)
   {
-   short frame = input->point.output_index;
+   long frame = input->point.output_index;
    cache = *(byte **)((byte *)state + 0x50);
    if (cache)
    {
@@ -736,7 +736,7 @@ bool __stdcall function_2c41b0(long actor_index, s_type_f17a25 *state, short cou
      input->node_index, false, last);
     if (!found)
     {
-     bool retry = obstacles->flag0_count > 0;
+     long retry = obstacles->flag0_count > 0;
      if (avoid)
      {
       retry = retry || (obstacles->flag3_count > 0 && search->result != NONE);
@@ -776,7 +776,7 @@ bool __stdcall function_2c41b0(long actor_index, s_type_f17a25 *state, short cou
     }
     short inserted_count = 0;
     bool truncated = false;
-    short node_index = search->value1e;
+    long node_index = search->value1e;
     while (node_index != 0)
     {
      s_avoidance_node *node = &search->nodes[node_index];
