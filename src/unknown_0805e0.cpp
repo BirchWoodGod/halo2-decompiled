@@ -102,51 +102,47 @@ struct s_cache_property_record
 };
 
 // @retail 0x80940
-void function_80940(s_cache_property_record *records, long record_capacity,
-	s_cache_property *properties, long property_capacity, long buffer_capacity,
+void function_80940(long record_capacity, s_cache_property_record *records,
+	long property_capacity, s_cache_property *properties, long buffer_capacity,
 	byte *buffers, long *record_count, long *property_count, long *buffer_count)
 {
-	s_cache_property_record **record_slot = &records;
+	/* retail passes the records on the stack */
+	s_cache_property_record *const *records_reference = &records;
 	long records_used = 0;
 	long properties_used = 0;
 	long buffers_used = 0;
-	if (g_4cf978 > 0)
+	for (long i = 0; i < g_4cf978; i++)
 	{
-		records = *(s_cache_property_record *volatile *)&records;
-		buffers = *(byte *volatile *)&buffers;
-		for (long i = 0; i < g_4cf978; i++)
+		s_player_configuration_cache_entry *entry = &g_4cf98c[i];
+		if (entry->flags & 2)
 		{
-			s_player_configuration_cache_entry *entry = &g_4cf98c[i];
-			if (entry->flags & 2)
+			if (record_capacity <= 0 || property_capacity < 4 || buffer_capacity <= 0)
+				break;
+			memcpy(records->identity, &entry->player, sizeof(records->identity));
+			records->type = 0x61;
+			records->count = 4;
+			records->properties = properties;
+			records++;
+			record_capacity--;
+			records_used++;
+			*(short *)&properties->unknown00 = -3;
+			properties->type = 4;
+			properties->unknown08 = (long)buffers;
+			properties++;
+			property_capacity--;
+			properties_used++;
+			buffers += 0x40;
+			buffer_capacity--;
+			buffers_used++;
+			for (long j = 0; j < 3; j++)
 			{
-				if (record_capacity <= 0 || property_capacity < 4 || buffer_capacity <= 0)
-					break;
-				memcpy((*record_slot)->identity, &entry->player, sizeof(records->identity));
-				(*record_slot)->type = 0x61;
-				(*record_slot)->count = 4;
-				(*record_slot)->properties = properties;
-				++*record_slot;
-				record_capacity--;
-				records_used++;
-				*(short *)&properties->unknown00 = -3;
-				properties->type = 4;
-				properties->unknown08 = (long)buffers;
-				properties++;
-				property_capacity--;
-				properties_used++;
-				buffers += 0x40;
-				buffer_capacity--;
-				buffers_used++;
-				for (long j = 0; j < 3; j++)
-				{
-					*(short *)&properties[j].unknown00 = (short)(j + 2);
-					properties[j].type = 1;
-					properties[j].unknown08 = 0;
-				}
-				properties += 3;
-				property_capacity -= 3;
-				properties_used += 3;
+				*(short *)&properties[j].unknown00 = (short)(j + 2);
+				properties[j].type = 1;
+				properties[j].unknown08 = 0;
 			}
+			properties += 3;
+			property_capacity -= 3;
+			properties_used += 3;
 		}
 	}
 	if (record_count)
@@ -457,9 +453,91 @@ void function_7f930(void)
 	}
 }
 
+#include "files.h"
+#include "crc.h"
+#include "async.h"
+
+struct file_reference_data;
+void async_create_file_blocking(file_reference_data const *s_type_acf665, dword access_flags, long disposition, dword file_flags, long category, s_file_handle *file);
+bool function_1368f0(s_type_acf665 *file);
+bool function_136e90(s_type_acf665 *file, dword *size);
+
+char const g_450c68[] = "z:\\player_configuration_cache.dat";
+bool volatile g_467260 = true;
+s_file_handle g_467264 = { INVALID_HANDLE_VALUE };
+
+/* loads the cache from its file; true when the file has the cache's size,
+   its checksum and a consistent cache */
+// @retail 0x7fa40
+bool function_7fa40(void)
+{
+	bool local_0 = false;
+	s_type_acf665 local_1;
+	memset(&local_1, 0, sizeof(local_1));
+	local_1.signature = FILE_REFERENCE_SIGNATURE;
+	local_1.location = NONE;
+	if ((byte)local_1.flags & 1)
+		function_1373c0(local_1.path);
+	function_137320(local_1.path, g_450c68);
+	*(byte *)&local_1.flags |= 1;
+	if (function_1368f0(&local_1))
+	{
+		dword local_2 = 0;
+		if (function_136e90(&local_1, &local_2) && local_2 == 0x8e4c)
+		{
+			dword local_3;
+			if (function_136970(&local_1, 1, &local_3))
+			{
+				if (function_136ca0(&local_1, 0x8e4c, &g_4cf970, true))
+				{
+					dword local_4 = NONE;
+					function_163ba0(&local_4, &g_4cf978, 0x8e44);
+					if (local_4 == (dword)g_4cf974 && function_80660())
+						local_0 = true;
+				}
+				function_136bb0(&local_1);
+			}
+		}
+	}
+	return local_0;
+}
+
+/* starts writing the cache to its file, opening the file the first time;
+   false when the file can't be opened */
+// @retail 0x7fb50
+bool function_7fb50(void)
+{
+	bool local_0 = false;
+	s_type_acf665 local_1;
+	memset(&local_1, 0, sizeof(local_1));
+	local_1.signature = FILE_REFERENCE_SIGNATURE;
+	local_1.location = NONE;
+	if (local_1.flags & 1)
+		function_1373c0(local_1.path);
+	function_137320(local_1.path, g_450c68);
+	local_1.flags |= 1;
+	if (g_467264.handle == INVALID_HANDLE_VALUE)
+	{
+		async_create_file_blocking((file_reference_data const *)&local_1, 2, 4, 4, 2, &g_467264);
+		g_467260 = true;
+		if (g_467264.handle != INVALID_HANDLE_VALUE)
+			function_1a1310(g_467264, 0, 2, 6, NULL, &g_467260);
+	}
+	if (g_467264.handle != INVALID_HANDLE_VALUE)
+	{
+		g_4cf974 = NONE;
+		function_163ba0((dword *)&g_4cf974, &g_4cf978, 0x8e44);
+		g_4cf970 = 8;
+		function_120d50(&g_467260, false);
+		function_1a1050(g_467264, &g_4cf970, 0x8e4c, 0, 0, 2, 6, NULL, &g_467260);
+		local_0 = true;
+	}
+	return local_0;
+}
+
 // @retail 0x80bf0
-void function_80bf0(s_cache_property_record *records, long record_capacity,
-	s_cache_property *properties, long property_capacity, byte *buffers,
+void function_80bf0(long record_capacity, s_cache_property_record *records,
+	long property_capacity, s_cache_property *properties, byte *buffers,
 	long *record_count, long *property_count, long *buffer_count)
 {
 	long records_used = 0;

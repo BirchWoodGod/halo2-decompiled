@@ -30,12 +30,6 @@ void network_observer_reset_bandwidth(s_network_observer *observer);
 
 /* sorts the samples, drops the given fraction of them at each end and returns
    the mean of the rest */
-PRIVATE __forceinline void function_7f190(long *arg_0, const long *arg_1, long arg_2)
-{
-	memcpy(arg_0, arg_1, arg_2 * sizeof(long));
-}
-
-#pragma function(memcpy)
 // @retail 0x7f190
 long samples_trimmed_mean(const long *samples, long count)
 {
@@ -60,11 +54,11 @@ long samples_trimmed_mean(const long *samples, long count)
 			}
 		}
 		used = i + (-trim) * 2;
-		memcpy(sorted, &sorted[trim], used * sizeof(long));
+		memmove(sorted, &sorted[trim], used * sizeof(long));
 	}
 	else
 	{
-		function_7f190(sorted, samples, count);
+		memcpy(sorted, samples, count * sizeof(long));
 		used = count;
 	}
 	total = 0;
@@ -72,7 +66,6 @@ long samples_trimmed_mean(const long *samples, long count)
 		total += sorted[i];
 	return total / used;
 }
-#pragma intrinsic(memcpy)
 
 // @retail 0x7f020
 bool function_7f020(s_network_observer *observer, real *trim)
@@ -237,9 +230,9 @@ void function_7f410(void)
 	}
 	if (g_4cf95c)
 	{
-		long single = 0;
 		long sent = 0;
 		long received = 0;
+		long single = 0;
 		if (g_4cf8f0[9] >= ((s_estimate_configuration *)g_4cf8e8)->minimum_samples)
 		{
 			sent = samples_trimmed_mean(g_4cf8f0 + 10, g_4cf8f0[9]);
@@ -249,9 +242,8 @@ void function_7f410(void)
 			single = samples_trimmed_mean(g_4cf8f0 + 1, g_4cf8f0[0]);
 		if (sent > 0)
 		{
-			estimate = received - ((s_estimate_configuration *)g_4cf8e8)->reserve;
-			if (sent <= estimate)
-				estimate = sent;
+			estimate = sent <= received - ((s_estimate_configuration *)g_4cf8e8)->reserve ?
+				sent : received - ((s_estimate_configuration *)g_4cf8e8)->reserve;
 			long minimum = ((s_estimate_configuration *)g_4cf8e8)->minimum;
 			if (estimate <= minimum)
 				estimate = minimum;
