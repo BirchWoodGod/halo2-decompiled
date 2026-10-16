@@ -570,11 +570,24 @@ real function_020d80(s_slot *slot, bool skip)
 	return result;
 }
 
+PRIVATE __forceinline dword function_20f32(dword inputs, dword stage_outputs)
+{
+    dword outputs = 0x30c00;
+    g_484f68.PSAlphaInputs[0] = 0x18201920;
+    g_484f68.PSAlphaOutputs[0] = outputs;
+    g_484f68.PSAlphaInputs[1] = 0x1a201b20;
+    g_484f68.PSAlphaOutputs[1] = 0x30d00;
+    g_484f68.PSAlphaInputs[2] = inputs;
+    g_484f68.PSAlphaOutputs[2] = stage_outputs;
+    g_484f68.PSFinalCombinerInputsEFG = 0x1c00;
+    return outputs;
+}
+
 // @retail 0x20f30
 void function_020f30(real b, real a)
 {
     dword count;
-    dword volatile full;
+    dword outputs;
     dword half = 0xc00;
 
     memset(&g_484f68, 0, sizeof(g_484f68));
@@ -604,23 +617,10 @@ void function_020f30(real b, real a)
             shl v, 24
         }
         g_484f68.PSConstant1[2] = v;
-        full = 0x30c00;
-        g_484f68.PSAlphaInputs[2] = 0x1c121d12;
-        g_484f68.PSAlphaOutputs[2] = half;
+        outputs = function_20f32(0x1c121d12, half);
     }
     else
-    {
-        full = 0x30c00;
-        g_484f68.PSAlphaInputs[2] = 0x1c201d20;
-        g_484f68.PSAlphaOutputs[2] = full;
-    }
-
-    dword outputs = full;
-    g_484f68.PSAlphaInputs[0] = 0x18201920;
-    g_484f68.PSAlphaOutputs[0] = outputs;
-    g_484f68.PSAlphaInputs[1] = 0x1a201b20;
-    g_484f68.PSAlphaOutputs[1] = 0x30d00;
-    g_484f68.PSFinalCombinerInputsEFG = 0x1c00;
+        outputs = function_20f32(0x1c201d20, 0x30c00);
 
     count = 3;
 
