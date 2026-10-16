@@ -411,7 +411,7 @@ void __stdcall function_18fb34(long index, s_player_profile_settings *settings, 
 	function_54fc0(index, settings->voice_through_tv);
 }
 
-void function_215790();
+void saved_game_storage_update();
 long function_2170e0(long file_index);
 void online_mutelist_reset(long controller_index);
 void function_190d4b(long index);
@@ -421,7 +421,7 @@ extern bool g_551ae4;
 // @retail 0x18f5e3
 void function_18f5e3()
 {
-	function_215790();
+	saved_game_storage_update();
 	long index = 0;
 	do
 	{

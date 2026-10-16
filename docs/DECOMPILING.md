@@ -280,6 +280,39 @@ that marker recreates (`??_H` for `vector_constructor_iterator`); otherwise
 both sides' names (the map symbol, the `name` column) must agree when both
 are known. Globals are still checked by eye.
 
+## Naming and readability
+
+Readability work changes names, types and file layout but never a byte of the
+build: run a full check before and after, and every function that matched
+must still match.
+
+- **Where names come from:** only the code itself, the retail executable's own
+  strings and constants, and SDK constants such as `XC_LANGUAGE_*`. See
+  [PROVENANCE.md](../PROVENANCE.md) for the sources a name must never come
+  from. Keep `function_<address>` for anything whose purpose the code doesn't
+  show.
+- **Functions:** `subsystem_object_verb` in lower snake case, with one prefix
+  per subsystem: `saved_game_storage_update` acts on the whole store,
+  `saved_game_type_get_storage_name` on one file type.
+- **Types:** `s_name` for structs, `c_name` for classes, `e_name` for enums with
+  `_name_value` members, `k_name` for constants and counts. Grep `src/` and
+  `include/` for a name before adding it to a shared header.
+- **Globals:** `g_name`. Rename a global only when the code you are working on
+  is its only user; otherwise keep `g_<address>` and describe it in a comment
+  beside its declaration.
+- **Data layouts:** put a subsystem's structs in a header named after it.
+  Check every struct's size, and any offset you are unsure of, with
+  `typedef char assert_x[(cond) ? 1 : -1];` (the compiler has no
+  `static_assert`). Name a member `unknownNN` (its hex offset) only when
+  nothing reads it.
+- **Files:** group a subsystem's functions in one file named after it, and
+  move a function only into a file with the same `@flags`. The checker finds
+  each function by its `@retail` marker, so a function moves with its marker.
+- **Renames:** change the definition, every declaration and every call site,
+  and nothing else on those lines. Leave `@retail` markers exactly as written.
+- A one-line comment above each `@retail` marker saying what the function does
+  helps the next reader most.
+
 ## What not to do
 
 - Do not add `__declspec(noinline)` or other attributes Bungie's code would
