@@ -73,7 +73,7 @@ inline void stream_write_checked(s_bitstream *stream, dword value, long bits)
 }
 
 /* whether a read ran past the end of the data or failed (0x1946f0); forced
-   inline, as some of the decoders in src/unknown_0b2440.cpp need */
+   inline, as some of the decoders in src/network_messages_simulation.cpp need */
 __forceinline bool stream_overflowed(s_bitstream *stream)
 {
 	bool result = stream->bit_position > (stream->size_in_bytes << 3);

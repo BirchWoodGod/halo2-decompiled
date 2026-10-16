@@ -387,7 +387,7 @@ bool c_unit_type::v14(long arg_0, long arg_1, long arg_2, long arg_3, long arg_4
                     function_194830(local_2, local_4 != NONE);
                     if (local_3->field_94 != NONE)
                     {
-                        function_b5650(local_3->field_94, local_2);
+                        simulation_write_entity_identifier(local_3->field_94, local_2);
                         function_1947e0(local_2, local_3->field_98, 5);
                     }
                 }

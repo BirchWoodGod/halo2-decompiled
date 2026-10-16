@@ -661,7 +661,7 @@ bool function_1a334a(long index, XUID const *xuid);
 bool player_slot_get_identity(long index, s_player_identity *identity);
 void function_18ff47(long player, dword *out);
 void online_task_screen_finish(c_online_task_screen *screen);
-dword function_0b4a20(dword key);
+dword online_result_get_error_string(dword key);
 void function_190728(long index);
 const char *function_148956(s_window_manager_text *text);
 void function_14896e(s_window_manager_754 *a, s_window_manager_df6 *b);
@@ -772,7 +772,7 @@ void __stdcall function_239968(c_online_task_screen *screen)
 	online_task_screen_finish(screen);
 	if (failed)
 	{
-		dialog_ok_show(1, function_0b4a20(view->result), 4, widget->user_flags, 0, 0);
+		dialog_ok_show(1, online_result_get_error_string(view->result), 4, widget->user_flags, 0, 0);
 	}
 	else
 	{
