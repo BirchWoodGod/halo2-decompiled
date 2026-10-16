@@ -225,7 +225,7 @@ void function_47ea0(short stage, byte flags)
 }
 
 extern byte *g_485a80;
-bool function_14560(long tag, short stage, short fallback, short fallback_index, short index);
+bool function_14560(long tag, short stage, long fallback, short fallback_index, short index);
 bool function_14480(long tag, short stage, short index);
 
 // @retail 0x47fd0
