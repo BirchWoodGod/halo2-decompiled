@@ -126,8 +126,8 @@ bool __stdcall function_18c250(long object_index, long tag_index, s_sound_marker
 // @retail 0x18c3b0
 bool __stdcall function_18c3b0(long object_index, long tag_index, s_sound_marker const *marker, s_type_99c531 *location)
 {
-	byte result = 0;
 	s_sound_object_view *object = (s_sound_object_view *)function_badc0(object_index, NONE);
+	byte result = 0;
 
 	if (object && !object_or_parent_hidden(object_index))
 	{
@@ -162,7 +162,7 @@ bool __stdcall function_18c3b0(long object_index, long tag_index, s_sound_marker
 						s_local_camera *camera = function_125360();
 						if (camera && camera->active)
 						{
-							long camera_index = camera->index;
+							short camera_index = camera->index;
 							if (camera_index != NONE)
 							{
 								s_structure_bsp_view *bsp = (s_structure_bsp_view *)g_4e0348;
