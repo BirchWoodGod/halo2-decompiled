@@ -378,6 +378,8 @@ struct s_havok_array08
 	}
 };
 
+struct rigid_transform_scaled;
+
 struct s_havok_component
 {
 	short identifier;
@@ -425,6 +427,8 @@ struct s_havok_component
 
 	~s_havok_component();
 	void initialize(long object_index);
+	void function_1d3d20(long node_index, dword *updated, dword const *restore,
+		rigid_transform_scaled *orientations, long unknown);
 };
 
 inline s_havok_component *havok_component_get(long component_index)

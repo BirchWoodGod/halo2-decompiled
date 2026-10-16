@@ -2136,7 +2136,6 @@ void function_78ac0(s_network_observer *observer)
 		real values[MAXIMUM_OBSERVER_CHANNELS];
 		long indices[MAXIMUM_OBSERVER_CHANNELS];
 		long count = 0;
-		long scratch;
 		memset(values, 0, sizeof(values));
 		*(long *)((byte *)observer + 0x4f40) = 0;
 		for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++)
@@ -2154,7 +2153,7 @@ void function_78ac0(s_network_observer *observer)
 		else if (maximum > *(long *)((byte *)observer->configuration + 0x1c0))
 			maximum = *(long *)((byte *)observer->configuration + 0x1c0);
 		*(long *)((byte *)observer + 0x4f44) = maximum;
-		sort_4byte(indices, count, &scratch, function_78a90, values);
+		sort_4byte(indices, count, &maximum, function_78a90, values);
 		for (long i = 0; i < count; i++) function_7a330(observer, indices[i]);
 		function_79260(observer);
 		byte *local_1 = (byte *)observer->channels + 0x4dc;
