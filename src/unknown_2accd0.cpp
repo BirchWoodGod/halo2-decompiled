@@ -704,7 +704,7 @@ PRIVATE long __stdcall signed_file_read_work(s_async_task *task, s_signed_file_r
 }
 
 // @retail 0x2ada70
-bool signed_file_read_begin(void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task, const char *path)
+bool signed_file_read_begin(const char *path, void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task)
 {
 	s_signed_file_read_parameters parameters;
 
@@ -910,7 +910,7 @@ PRIVATE long __stdcall signed_file_write_work(s_async_task *task, s_signed_file_
 }
 
 // @retail 0x2adec0
-bool signed_file_write_begin(void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task, const char *path)
+bool signed_file_write_begin(const char *path, void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task)
 {
 	s_signed_file_write_parameters parameters;
 
