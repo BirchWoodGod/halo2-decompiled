@@ -2659,7 +2659,7 @@ void __stdcall function_29b00(long tag, long first_bitmap, real first_alpha,
     second_coordinates[6] = ((-cosine - sine) * second_scale + 1.0f) * 0.5f;
     second_coordinates[7] = ((cosine - sine) * second_scale + 1.0f) * 0.5f;
 #pragma inline_depth(0)
-    D3DDevice_Begin(D3DPT_QUADLIST);
+    D3DDevice_Begin(D3DPT_TRIANGLEFAN);
 #pragma inline_depth(255)
 #pragma inline_depth(0)
     D3DDevice_SetVertexData2f(1, first_coordinates[0], first_coordinates[1]);
