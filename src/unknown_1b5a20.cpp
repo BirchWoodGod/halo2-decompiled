@@ -269,8 +269,6 @@ s_slot_handler_2 g_47e5f8 =
 	(t_slot_proc)function_1b5f30, 0, function_1b5fe0
 };
 
-extern "C" void _ReadWriteBarrier(void);
-#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1b5f30
 bool __stdcall function_1b5f30(long actor_index, s_slot *slot)
 {
@@ -282,12 +280,7 @@ bool __stdcall function_1b5f30(long actor_index, s_slot *slot)
 		s_2605d0_request request;
 		bool unknown;
 
-		s_2605d0_request *local_0 = &request;
-		memset(local_0, 0, sizeof(*local_0));
-		*(volatile bool *)&local_0->unknown015 = true;
-		*(volatile short *)&local_0->unknown69a = 1;
-		*(volatile bool *)&local_0->unknown698 = true;
-		_ReadWriteBarrier();
+		request_initialize(&request);
 		request.type = 8;
 
 		s_reference reference = function_2605d0(actor_index, &request, 0, 0, scratch, &unknown);
@@ -298,8 +291,6 @@ bool __stdcall function_1b5f30(long actor_index, s_slot *slot)
 
 	return true;
 }
-
-#pragma function(_ReadWriteBarrier)
 
 short function_1a78a0(long actor_index, long argument, short level);
 void function_25d420(long prop_ref_index, short type, long actor_index);
