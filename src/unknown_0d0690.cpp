@@ -1199,8 +1199,9 @@ real function_30bf0(vector3f *vector);
 void function_d4080(s_effect_color_query const *query, long type, s_lighting_record *record, bool flag)
 {
 	(void)&flag;
-	vector3f normal = *(vector3f const *)query;
-	real length = (real)sqrt(normal.i * normal.i + normal.j * normal.j + normal.k * normal.k);
+	vector3f const *input_normal = (vector3f const *)query;
+	real length = (real)sqrt(input_normal->i * input_normal->i + input_normal->j * input_normal->j + input_normal->k * input_normal->k);
+	vector3f normal = *input_normal;
 	volatile bool mobile = type == 0 || type == 1 || type == 2;
 	record->length = lighting_normalize_ordered(&normal, (normal.i * normal.i + normal.k * normal.k) + normal.j * normal.j);
 	color3f base, lightmap;
