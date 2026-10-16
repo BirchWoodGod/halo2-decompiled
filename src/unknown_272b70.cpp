@@ -3034,9 +3034,11 @@ void __stdcall function_2736c0(long arg_0)
 PRIVATE __forceinline bool function_274611(long arg_0, short arg_1)
 {
 	s_slot_object_view *local_0 = object_get(arg_0);
-	return function_c8f60(arg_0, arg_1) != NONE ||
+	bool result = false;
+	if (function_c8f60(arg_0, arg_1) != NONE ||
 		(local_0->type == 1 && ((local_0->unknown3b0 & (1 << arg_1)) ||
-		(local_0->unknown3b4 & (1 << arg_1))));
+		(local_0->unknown3b4 & (1 << arg_1))))) result = true;
+	return result;
 }
 
 PRIVATE __forceinline long function_2746fc(long arg_0)
@@ -3086,10 +3088,10 @@ short __stdcall function_274470(long arg_0)
 	for (;;)
 	{
 		real local_12 = 0.0f;
-		short local_13 = NONE;
+		long local_13 = NONE;
 		long local_14 = NONE;
 		bool local_15 = false;
-		for (short local_16 = 0; local_16 < local_2; local_16++)
+		for (long local_16 = 0; local_16 < local_2; local_16++)
 		{
 			s_object_seat *local_17 = &local_1[local_16];
 			if (local_17->object_index != local_14)
