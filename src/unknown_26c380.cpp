@@ -155,11 +155,11 @@ bool function_26c590(s_pathfinding_data const *pathfinding, point3f const *origi
 	real last_distance = -0.1f;
 	s_pathfinding_edge *edge = NULL;
 
-	result->distance = distance;
 	result->unknown20 = 3.4028235e38f;
 	result->blocked = false;
 	result->sector_index = NONE;
 	result->edge_index = (word)NONE;
+	result->distance = distance;
 	result->unknown1c = false;
 	if (pathfinding && sector_index != target_sector_index && sector_index >= 0 && sector_index < pathfinding->node_count)
 	{
@@ -202,10 +202,12 @@ bool function_26c590(s_pathfinding_data const *pathfinding, point3f const *origi
 				edge = function_1fa720(&iterator);
 				if (!edge)
 				{
-					result->blocked = true;
 					result->sector_index = current_sector_index;
-					success = true;
-					goto done;
+					result->blocked = true;
+					result->edge_index = (word)NONE;
+					result->distance = distance;
+					function_x697631(origin, direction, distance, &result->point);
+					return true;
 				}
 				do
 				{
@@ -265,7 +267,7 @@ bool function_26c590(s_pathfinding_data const *pathfinding, point3f const *origi
 								result->edge_index = (word)NONE;
 								result->distance = distance;
 								function_x697631(origin, direction, distance, &result->point);
-								success = false;
+								return false;
 							}
 							else
 							{
@@ -273,7 +275,7 @@ bool function_26c590(s_pathfinding_data const *pathfinding, point3f const *origi
 								result->blocked = true;
 								result->edge_index = (word)NONE;
 								function_x697631(origin, direction, distance, &result->point);
-								success = true;
+								return true;
 							}
 						}
 						else
@@ -282,21 +284,18 @@ bool function_26c590(s_pathfinding_data const *pathfinding, point3f const *origi
 							result->edge_index = (word)NONE;
 							result->distance = distance;
 							function_x697631(origin, direction, distance, &result->point);
-							success = false;
+							return false;
 						}
-						return success;
 					}
 					if (result->blocked)
 					{
-						success = true;
-						return success;
+						return true;
 					}
 					if (location && (((s_sector_edge const *)edge)->flags & 0x80) &&
 						function_270600(location, iterator.edge_index))
 					{
-						success = true;
 						result->blocked = true;
-						return success;
+						return true;
 					}
 					if (count > 200)
 					{
@@ -306,18 +305,19 @@ bool function_26c590(s_pathfinding_data const *pathfinding, point3f const *origi
 				}
 				else
 				{
-					result->blocked = true;
 					result->sector_index = current_sector_index;
-					success = true;
-					goto done;
+					result->blocked = true;
+					result->edge_index = (word)NONE;
+					result->distance = distance;
+					function_x697631(origin, direction, distance, &result->point);
+					return true;
 				}
 			}
 		}
 	}
 	result->blocked = false;
-	result->sector_index = current_sector_index;
-done:
 	result->edge_index = (word)NONE;
+	result->sector_index = current_sector_index;
 	result->distance = distance;
 	function_x697631(origin, direction, distance, &result->point);
 	return success;
