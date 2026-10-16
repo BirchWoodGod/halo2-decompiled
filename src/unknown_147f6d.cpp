@@ -27,7 +27,7 @@ c_window_manager::c_window_manager()
 
 long g_47ff54;
 
-struct s_user_interface_shared_globals *user_interface_shared_globals_get(void);
+struct s_user_interface_shared_globals *ui_mode_definition_get(void);
 
 void function_236299(long sound);
 
@@ -119,7 +119,7 @@ long function_147f4f()
 // @retail 0x148098
 long function_148098(long screen_id)
 {
-	s_screen_references *references = (s_screen_references *)user_interface_shared_globals_get();
+	s_screen_references *references = (s_screen_references *)ui_mode_definition_get();
 	long result = NONE;
 
 	if (references)
@@ -968,7 +968,7 @@ void function_147920(void)
 	long i;
 
 	g_54d598.default_window.dispose();
-	g_54d598.game_mode = NONE;
+	g_54d598.shell_mode = NONE;
 	for (i = 0; i < 5; i++)
 	{
 		((c_window_channel *)&g_54d598.windows_5[i])->dispose();
@@ -1076,7 +1076,7 @@ void function_147ebe(void)
 // @retail 0x147f1e
 void function_147f1e(void)
 {
-	s_type_954545 *globals = user_interface_globals_get();
+	s_type_954545 *globals = ui_definition_get();
 
 	if (globals)
 	{
@@ -1712,10 +1712,10 @@ void function_14784e()
     }
     if (g_54d5a8 == 2)
     {
-        s_ui_initial_selection *globals = (s_ui_initial_selection *)user_interface_globals_get();
+        s_ui_initial_selection *globals = (s_ui_initial_selection *)ui_definition_get();
         if (globals)
             function_2157c0(globals->selection);
-        s_ui_initial_screen *screen = (s_ui_initial_screen *)user_interface_shared_globals_get();
+        s_ui_initial_screen *screen = (s_ui_initial_screen *)ui_mode_definition_get();
         if (screen && screen->tag_index != NONE)
             function_149f88(g_4e3b44[screen->tag_index & 0xffff].bytes);
     }

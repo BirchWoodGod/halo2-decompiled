@@ -2,7 +2,7 @@
 // @flags /O1 /Oi /Gr
 /* WINDOW_MANAGER_EVENTS.CPP: the window manager's queries of its channels
    and their dialogs, its handlers of the users' events (one per game mode,
-   e_game_mode), the screens it opens for them, the resets of its windows, the
+   e_shell_mode), the screens it opens for them, the resets of its windows, the
    online tasks that read the selected player's clan, and the pending join
    (the rest of the window manager is in unknown_147f6d.cpp) */
 
@@ -12,7 +12,7 @@
 #include "unknown_19b516.h"
 #include "online_tasks.h"
 #include "unknown_19b510.h"
-#include "user_interface_globals.h"
+#include "ui_definition.h"
 #include <xtl.h>
 #include <xonline.h>
 
@@ -402,7 +402,7 @@ void online_teams_enumerate_get_results(long task_index, DWORD *count, XUID *tea
 void online_team_get_details(long task_index, XUID const *team, XONLINE_TEAM *details);
 long online_team_members_enumerate(long controller_index, XUID const *team);
 void online_team_members_enumerate_get_results(long task_index, DWORD *count, XUID *members);
-void online_team_member_get_details(long task_index, XUID const *member_xuid, XONLINE_TEAM_MEMBER *member);
+void online_team_member_get_details(long task_index, XUID const *member_user_id, XONLINE_TEAM_MEMBER *member);
 
 /* once the user's clans are enumerated, reads the first one's details and
    starts listing its members */
@@ -621,7 +621,7 @@ void window_manager_handle_multiplayer_event(s_event const *event)
 // @retail 0x14954a
 void window_manager_handle_event(s_event const *event)
 {
-	switch (g_54d598.game_mode)
+	switch (g_54d598.shell_mode)
 	{
 	case _game_mode_campaign:
 		window_manager_handle_campaign_event(event);
@@ -629,7 +629,7 @@ void window_manager_handle_event(s_event const *event)
 	case _game_mode_multiplayer:
 		window_manager_handle_multiplayer_event(event);
 		break;
-	case _game_mode_main_menu:
+	case _shell_mode_main_menu:
 		window_manager_handle_main_menu_event(event);
 		break;
 	}

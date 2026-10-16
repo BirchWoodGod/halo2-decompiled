@@ -217,7 +217,7 @@ color4f const *g_4686f8;
 // @retail 0x2b07e2
 void __stdcall function_2b07e2(c_class_2b01eb *widget, long frame)
 {
-    s_type_954545 *globals = user_interface_globals_get();
+    s_type_954545 *globals = ui_definition_get();
     dword alpha = (long)(globals ? *(real *)((byte *)globals + 0x50) * 255.0f : 255.0f);
     dword red = (long)(globals ? *(real *)((byte *)globals + 0x54) * 255.0f : 255.0f);
     dword green = (long)(globals ? *(real *)((byte *)globals + 0x58) * 255.0f : 255.0f);

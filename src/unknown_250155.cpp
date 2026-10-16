@@ -1236,7 +1236,7 @@ byte *function_19ab0e(long player_index);
 void function_24c0c4(c_widget *widget);
 void function_2b01a2(long value, s_widget_item *item);
 void function_2b01b5(s_widget_item *item, short value);
-long user_interface_globals_find_range(long value);
+long ui_definition_find_range(long value);
 void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
 
 /* a player as the matchmaking list shows it */
@@ -1539,7 +1539,7 @@ void show_player(c_matchmaking_list *list, c_class_1a2c81 *item, long player_ind
 		}
 		else
 		{
-			function_2b01b5(&definition, (short)user_interface_globals_find_range(NONE));
+			function_2b01b5(&definition, (short)ui_definition_find_range(NONE));
 		}
 		memcpy(definition.value48, player->value40, sizeof(definition.value48));
 		definition.flags |= 2;

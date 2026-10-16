@@ -115,7 +115,7 @@ struct s_variant_string_list_view
 	} languages[1];
 };
 
-struct s_user_interface_shared_globals *user_interface_shared_globals_get(void);
+struct s_user_interface_shared_globals *ui_mode_definition_get(void);
 long function_11ca80(long value);
 __declspec(noinline) const char *string_table_find(s_string_table *table, long first, long count, long string_handle);
 void utf8_string_to_utf16_string(const char *source, word *destination, long destination_count);
@@ -161,7 +161,7 @@ void function_1936e0(long type, s_built_variant *variant, dword field_8, long de
 	variant->type = type;
 	variant->field_4 = 0;
 	variant->field_8 = *field_8_reference;
-	strings = (s_variant_strings_view *)user_interface_shared_globals_get();
+	strings = (s_variant_strings_view *)ui_mode_definition_get();
 	if (strings && strings->string_list_index != NONE)
 	{
 		long string_list_index = strings->string_list_index;

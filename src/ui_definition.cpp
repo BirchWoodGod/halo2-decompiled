@@ -1,32 +1,32 @@
 // @flags /O1 /Gr
-/* USER_INTERFACE_GLOBALS.CPP: the user interface's tags: the current game
+/* UI_DEFINITION.CPP: the user interface's tags: the current game
    mode's shared globals, the user interface globals they name, its skins,
    and the default game variant of a game engine type
-   (user_interface_globals.h) */
+   (ui_definition.h) */
 
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_234c64.h"
 #include "unknown_19b516.h"
-#include "user_interface_globals.h"
+#include "ui_definition.h"
 
 /* the shared globals tag of the scenario's game mode, if the global tag data
    has interface tags */
 // @retail 0x1482e8
-s_user_interface_shared_globals *user_interface_shared_globals_get(void)
+s_user_interface_shared_globals *ui_mode_definition_get(void)
 {
 	s_user_interface_shared_globals *result = 0;
 
 	if (g_4e0350 && g_4e034c)
 	{
-		s_scenario_game_mode_view *scenario = (s_scenario_game_mode_view *)g_4e0350;
+		s_scenario_shell_mode_view *scenario = (s_scenario_shell_mode_view *)g_4e0350;
 		s_global_interface_tags_view *global_tags = (s_global_interface_tags_view *)g_4e034c;
-		s_interface_tag_references *references = global_tags->interface_tag_count ? global_tags->interface_tags : 0;
+		s_ui_tag_references *references = global_tags->interface_tag_count ? global_tags->interface_tags : 0;
 
 		if (references)
 		{
 			long tag_index;
-			switch (scenario->game_mode)
+			switch (scenario->shell_mode)
 			{
 			case _game_mode_campaign:
 				tag_index = references->campaign_shared_globals.tag_index;
@@ -34,7 +34,7 @@ s_user_interface_shared_globals *user_interface_shared_globals_get(void)
 			case _game_mode_multiplayer:
 				tag_index = references->multiplayer_shared_globals.tag_index;
 				break;
-			case _game_mode_main_menu:
+			case _shell_mode_main_menu:
 				tag_index = references->main_menu_shared_globals.tag_index;
 				break;
 			default:
@@ -53,28 +53,28 @@ s_user_interface_shared_globals *user_interface_shared_globals_get(void)
 
 /* the user interface globals tag the shared globals name */
 // @retail 0x148350
-s_type_954545 *user_interface_globals_get(void)
+s_type_954545 *ui_definition_get(void)
 {
-	s_type_954545 *user_interface_globals = 0;
-	s_user_interface_shared_globals *shared_globals = user_interface_shared_globals_get();
+	s_type_954545 *ui_definition = 0;
+	s_user_interface_shared_globals *shared_globals = ui_mode_definition_get();
 
-	if (shared_globals && shared_globals->user_interface_globals.tag_index != NONE)
+	if (shared_globals && shared_globals->ui_definition.tag_index != NONE)
 	{
-		user_interface_globals = (s_type_954545 *)g_4e3b44[shared_globals->user_interface_globals.tag_index & 0xffff].bytes;
+		ui_definition = (s_type_954545 *)g_4e3b44[shared_globals->ui_definition.tag_index & 0xffff].bytes;
 	}
-	return user_interface_globals;
+	return ui_definition;
 }
 
 /* a list skin of the user interface globals */
 // @retail 0x14837a
-s_sprite_placement *user_interface_globals_get_skin(short index)
+s_sprite_placement *ui_definition_get_skin(short index)
 {
 	s_sprite_placement *result = 0;
-	s_type_954545 *user_interface_globals = user_interface_globals_get();
+	s_type_954545 *ui_definition = ui_definition_get();
 
-	if (user_interface_globals && index >= 0 && index < user_interface_globals->skin_count)
+	if (ui_definition && index >= 0 && index < ui_definition->skin_count)
 	{
-		s_tag_reference_8 *skin = &user_interface_globals->skins[index];
+		s_tag_reference_8 *skin = &ui_definition->skins[index];
 		if (skin->tag_index != NONE)
 		{
 			result = (s_sprite_placement *)g_4e3b44[skin->tag_index & 0xffff].bytes;
@@ -91,10 +91,10 @@ void function_2373be(long index, void *base, long value);
    then the settings the game variant settings tag lists for it, then
    clamped into range */
 // @retail 0x1489b5
-void user_interface_game_variant_build_default(long engine_type, s_game_variant *variant)
+void ui_game_variant_build_default(long engine_type, s_game_variant *variant)
 {
 	function_19d220(variant, function_216b00(engine_type));
-	long settings_tag_index = user_interface_shared_globals_get()->game_variant_settings.tag_index;
+	long settings_tag_index = ui_mode_definition_get()->game_variant_settings.tag_index;
 	if (settings_tag_index != NONE)
 	{
 		s_game_variant_settings *settings = (s_game_variant_settings *)g_4e3b44[settings_tag_index & 0xffff].bytes;

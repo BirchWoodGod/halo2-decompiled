@@ -226,8 +226,8 @@ public:
 	/* the kind of join to start for the first signed in user (set by 0x2395dc,
 	   sent by 0x14a08f) */
 	long pending_join_type;
-	/* the e_game_mode whose event handler 0x14954a runs */
-	char game_mode;
+	/* the e_shell_mode whose event handler 0x14954a runs */
+	char shell_mode;
 	byte unknown11[0x14 - 0x11];
 	color3f color14;
 	long m20;
@@ -360,8 +360,8 @@ struct s_type_954545
 	} title_bounds[4];
 };
 
-/* the user interface globals tag (user_interface_globals.cpp) */
-s_type_954545 *user_interface_globals_get(void);
+/* the user interface globals tag (ui_definition.cpp) */
+s_type_954545 *ui_definition_get(void);
 
 /* the render window passed down to the screens */
 class c_render_window
