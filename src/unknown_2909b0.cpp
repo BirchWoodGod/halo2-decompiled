@@ -3,8 +3,8 @@
 #include "unknown_0259d0.h"
 // @flags /O2 /arch:SSE /Gr
 
-struct s_290b90_entry;
-extern s_290b90_entry *g_5044c4;
+struct s_swarm_spawn_slot;
+extern s_swarm_spawn_slot *g_5044c4;
 
 struct s_2909b0
 {

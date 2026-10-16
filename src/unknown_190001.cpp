@@ -755,7 +755,7 @@ long function_190565(void)
 bool g_54d5a0;
 
 bool function_8d7c0(void);
-c_class_1473c9 *function_149ef3(word user_flags, long load);
+c_class_1473c9 *window_manager_open_channel_3_screen(word user_flags, long load);
 c_class_1473c9 *__stdcall function_18f42d(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_18f474(s_screen_parameters *parameters);
 
@@ -768,7 +768,7 @@ void function_1905bf(long controller, bool flag)
 	}
 	else
 	{
-		function_149ef3(1 << controller, (long)(flag ? function_18f474 : function_18f42d));
+		window_manager_open_channel_3_screen(1 << controller, (long)(flag ? function_18f474 : function_18f42d));
 	}
 }
 
@@ -1401,16 +1401,16 @@ bool __stdcall function_19119c(c_class_1473c9 *screen, long dialog_id)
 
 char const *function_19c970(long campaign_id, long map_id);
 
-bool window_manager_window_has_pause_screen_for_user(long channel, long index, long user_index);
+bool window_manager_window_has_dialog(long channel, long index, long dialog_id);
 
 /* one of the controllers' reconnect dialogs is showing */
 // @retail 0x18f973
 bool function_18f973(void)
 {
-	if (window_manager_window_has_pause_screen_for_user(0, 4, 0x1c)
-		|| window_manager_window_has_pause_screen_for_user(0, 4, 0x1d)
-		|| window_manager_window_has_pause_screen_for_user(0, 4, 0x1e)
-		|| window_manager_window_has_pause_screen_for_user(0, 4, 0x1f))
+	if (window_manager_window_has_dialog(0, 4, 0x1c)
+		|| window_manager_window_has_dialog(0, 4, 0x1d)
+		|| window_manager_window_has_dialog(0, 4, 0x1e)
+		|| window_manager_window_has_dialog(0, 4, 0x1f))
 	{
 		return true;
 	}

@@ -255,7 +255,7 @@ void function_2363d4(short_rectangle2d const *bounds, short *x, short *y);
 bool function_22f0ff(c_widget *widget);
 /* the list's get_skin_index (unknown_24c177.cpp) */
 inline long function_24c0b3(c_widget *widget) { return ((c_class_1474e8 *)(void *)widget)->get_skin_index(); }
-s_sprite_placement *function_14837a(short index);
+s_sprite_placement *ui_definition_get_skin(short index);
 /* the base class's get_depth (unknown_22e27b.cpp) */
 inline real function_22e9aa(c_widget *widget) { return ((c_class_1a2c81 *)(void *)widget)->get_depth(); }
 struct short_rectangle2d;

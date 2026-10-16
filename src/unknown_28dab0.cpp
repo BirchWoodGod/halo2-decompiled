@@ -33,7 +33,7 @@ struct s_28dab2
 
 long function_1e4990(long arg_0);
 long function_28dbd0(long arg_0, long arg_1, long arg_2, s_28dab2 const *arg_3, bool arg_4);
-void __stdcall function_28e200(long arg_0);
+void __stdcall swarm_delete(long arg_0);
 
 // @retail 0x28dab0
 long __stdcall function_28dab0(long arg_0, s_28dab2 const *arg_1)
@@ -61,7 +61,7 @@ long __stdcall function_28dab0(long arg_0, s_28dab2 const *arg_1)
 				function_28dbd0(local_0, arg_0, local_2, arg_1, local_5 == 0);
 			if (local_3->field_14 <= 0)
 			{
-				function_28e200(local_0);
+				swarm_delete(local_0);
 				local_0 = NONE;
 				goto local_6;
 			}

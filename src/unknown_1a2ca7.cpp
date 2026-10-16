@@ -133,7 +133,7 @@ void online_get_title_name(DWORD title_id, WCHAR *name, long name_length);
 HRESULT online_task_continue(s_type_9df9da *task);
 void function_6b640(long task_index);
 bool function_6c7e0();
-dword function_0b4a20(dword key);
+dword online_result_get_error_string(dword key);
 void unicode_string_copy(word *destination, const word *source, long maximum_count);
 c_class_1473c9 *__stdcall online_task_screen_load(s_screen_parameters *parameters);
 void function_1a3294();
@@ -185,7 +185,7 @@ void online_task_screen_end(c_online_task_screen *screen, bool show_error)
 	}
 	online_task_screen_finish(screen);
 	if (failed && show_error)
-		dialog_ok_show(1, function_0b4a20(screen->result), 4, screen->user_flags, 0, 0);
+		dialog_ok_show(1, online_result_get_error_string(screen->result), 4, screen->user_flags, 0, 0);
 }
 
 // @retail 0x1a2ca7
@@ -216,7 +216,7 @@ void __stdcall function_1a2cb7(c_online_task_screen *screen)
 	}
 	online_task_screen_finish(screen);
 	if (failed)
-		dialog_ok_show(1, function_0b4a20(screen->result), 4, screen->user_flags, 0, 0);
+		dialog_ok_show(1, online_result_get_error_string(screen->result), 4, screen->user_flags, 0, 0);
 	function_190728(screen->get_controller_index());
 	function_1a3294();
 	function_18fe9e(screen->get_controller_index());
@@ -244,7 +244,7 @@ void __stdcall function_1a2d2f(c_online_task_screen *screen)
 	}
 	online_task_screen_finish(screen);
 	if (failed)
-		dialog_ok_show(1, function_0b4a20(screen->result), 4, screen->user_flags, 0, 0);
+		dialog_ok_show(1, online_result_get_error_string(screen->result), 4, screen->user_flags, 0, 0);
 	function_1a3294();
 }
 

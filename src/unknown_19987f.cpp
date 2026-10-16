@@ -910,7 +910,7 @@ bool function_19a179(long player_index)
 
 /* the voice/peer list (unknown_0b35e0.cpp) and its state */
 struct s_0b35e0_entry;
-s_0b35e0_entry *function_b35e0(long index);
+s_0b35e0_entry *session_search_results_get(long index);
 extern long g_4d8f14;
 
 s_peer_list_globals g_4ee4c4;
@@ -964,7 +964,7 @@ long function_199b6a(long start)
 
 		for (index = start != NONE ? start + 1 : 0; index < g_4d8f14; index++)
 		{
-			if (function_b35e0(index))
+			if (session_search_results_get(index))
 			{
 				result = index;
 				break;
@@ -979,7 +979,7 @@ bool function_199ba5(long index)
 {
 	bool result = false;
 
-	if (g_4ee4c4.active && function_b35e0(index))
+	if (g_4ee4c4.active && session_search_results_get(index))
 	{
 		result = true;
 	}
@@ -993,7 +993,7 @@ byte *function_199bbf(long index)
 
 	if (g_4ee4c4.active)
 	{
-		byte *entry = (byte *)function_b35e0(index);
+		byte *entry = (byte *)session_search_results_get(index);
 		if (entry)
 		{
 			byte *data = entry + 0x70;
@@ -1250,7 +1250,7 @@ bool function_6c7e0();
 void __stdcall function_18f1c0(long a);
 void network_session_manager_request_mode_acknowledge(void);
 bool function_148044(long channel, long index, long value);
-bool window_manager_window_has_pause_screen_for_user(long channel, long index, long user_index);
+bool window_manager_window_has_dialog(long channel, long index, long dialog_id);
 void function_1906b4(void);
 void __stdcall function_1483c3(long reason);
 void dialog_choice_show(long a, long dialog_id, long b, short user_flags, dialog_choice_callback first_chosen, dialog_choice_callback second_chosen, dialog_closed_callback closed);
@@ -1435,7 +1435,7 @@ void function_19ae0f(long change, long pending, long error)
 					return;
 				}
 			}
-			if (!window_manager_window_has_pause_screen_for_user(1, 4, dialog_id))
+			if (!window_manager_window_has_dialog(1, 4, dialog_id))
 			{
 				if (choice)
 				{
@@ -1559,7 +1559,7 @@ void function_1484f4(void);
 long function_147f4f();
 void network_session_manager_leave_session_a(bool close);
 void network_session_manager_leave_session_b(bool close);
-c_class_1473c9 *function_149f1e(short user_flags, long load);
+c_class_1473c9 *window_manager_open_channel_5_screen(short user_flags, long load);
 c_class_1473c9 *__stdcall function_2521f8(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2519bb(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_24fa4c(s_screen_parameters *parameters);
@@ -1574,7 +1574,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 	{
 		if (screen_id != 0xe7)
 		{
-			function_149f1e(function_1901fc(), (long)function_2521f8);
+			window_manager_open_channel_5_screen(function_1901fc(), (long)function_2521f8);
 		}
 	}
 	else if (!state || state == menu)
@@ -1613,7 +1613,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 				break;
 			case 2:
 				if (menu != 2)
-					stay = function_149f1e(function_1901fc(), (long)function_2519bb) != 0;
+					stay = window_manager_open_channel_5_screen(function_1901fc(), (long)function_2519bb) != 0;
 				break;
 			case 3:
 			{
@@ -1639,7 +1639,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 
 				if (in_game & players)
 				{
-					function_149f1e(NONE, (long)function_24fa4c);
+					window_manager_open_channel_5_screen(NONE, (long)function_24fa4c);
 					return;
 				}
 				stay = false;
@@ -1653,7 +1653,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 			case 7:
 				if (screen_id != 0xcc)
 				{
-					function_149f1e(function_1901fc(), (long)function_24f8c6);
+					window_manager_open_channel_5_screen(function_1901fc(), (long)function_24f8c6);
 				}
 				return;
 			default:
