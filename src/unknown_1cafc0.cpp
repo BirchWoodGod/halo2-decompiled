@@ -604,9 +604,9 @@ bool s_animation_state::animation_lookup(s_animation_names *names, s_animation_n
 	}
 	if (success)
 	{
-		long found_mode = found->mode;
-		long found_weapon_class = found->weapon_class;
 		long found_weapon_type = found->weapon_type;
+		long found_weapon_class = found->weapon_class;
+		long found_mode = found->mode;
 		long i;
 
 		graph_weapon_types_request(graph, found_mode, found_weapon_class, found_weapon_type);

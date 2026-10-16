@@ -1620,13 +1620,13 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         g_484f68.PSAlphaOutputs[3] = 0x10d00;
         // Retail clears the alpha conversion slot before rounding.
         alpha = 0.0f;
-        color.red = 255.0f;
+        real alpha_scale = 255.0f;
         long &packed = *(long *)&distortion;
         packed = 0;
         __asm
         {
             fld alpha
-            fld color.red
+            fld alpha_scale
             fmulp st(1), st(0)
             fistp distortion
         }

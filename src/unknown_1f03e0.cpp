@@ -378,13 +378,11 @@ bool function_1f1ee0(s_shape_carrier_contact const *contact, s_shape_state *stat
 
 real function_30bf0(vector3f *v);
 
-PRIVATE inline vector3f contact_cross(vector3f const &a, vector3f const &b)
+PRIVATE inline void contact_cross(vector3f const *a, vector3f const *b, vector3f *out)
 {
-    vector3f result;
-    result.i = a.j * b.k - a.k * b.j;
-    result.j = a.k * b.i - a.i * b.k;
-    result.k = a.i * b.j - a.j * b.i;
-    return result;
+    out->i = a->j * b->k - a->k * b->j;
+    out->j = a->k * b->i - a->i * b->k;
+    out->k = a->i * b->j - a->j * b->i;
 }
 
 // @retail 0x1f2a80
@@ -419,12 +417,13 @@ void function_1f2a80(vector3f const *velocity, byte const *request, bool moving,
             vector3f const *b = (vector3f *)(contacts + indices[1] * 0x48 + 0x28);
             if (selected != NONE)
             {
-                vector3f axis = contact_cross(*a, *b);
+                vector3f axis;
+                contact_cross(a, b, &axis);
                 vector3f const *normal = (vector3f *)(contacts + indices[selected] * 0x48 + 0x28);
                 if (selected == 0)
-                    *out = contact_cross(axis, *normal);
+                    contact_cross(&axis, normal, out);
                 else
-                    *out = contact_cross(*normal, axis);
+                    contact_cross(normal, &axis, out);
             }
             else
             {
@@ -1004,8 +1003,9 @@ bool function_1f2250(vector3f const *velocity, byte const *request, vector3f con
             else if (count == 2)
             {
                 byte *contacts = *(byte **)(component + 0x88);
-                vector3f tangent = contact_cross(*(vector3f *)(contacts + indices[0] * 0x48 + 0x28),
-                    *(vector3f *)(contacts + indices[1] * 0x48 + 0x28));
+                vector3f tangent;
+                contact_cross((vector3f *)(contacts + indices[0] * 0x48 + 0x28),
+                    (vector3f *)(contacts + indices[1] * 0x48 + 0x28), &tangent);
                 contact_normalize(&tangent);
                 direction = shape_scale(tangent, dot3f(&tangent, &desired));
             }

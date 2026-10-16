@@ -1356,7 +1356,7 @@ long function_56380(byte *output, s_voice_channels *channels, long player, long 
 		for (long i = 0; i < 16; i++)
 		{
 			s_voice_channel *channel = &channels->channels[i];
-			if (channel->active && (channel->player_mask & (1 << player)) && capacity > 0)
+			if (voice_channel_has_player(channel, player) && capacity > 0)
 			{
 				cursor += 2;
 				long written = function_55c40((s_voice_queue *)channel, player, cursor, header, capacity, include_mask);

@@ -863,55 +863,55 @@ bool function_a6d50(long flags_address, long state_address, s_bitstream *stream)
  {
   function_195240(stream, (vector3f *)(state + 0x18), (vector3f *)(state + 0xc));
   *flags |= 4;
-  if (result) result = function_a74c0((vector3f *)(state + 0xc), (vector3f *)(state + 0x18));
+  if (result && (function_a74c0((vector3f *)(state + 0xc), (vector3f *)(state + 0x18)))) result = true; else result = false;
  }
  if (function_1957d0(stream))
  {
   *(real *)(state + 0x24) = z_decode_state_scalar(stream, 7, 127, 0.0f, 10.0f);
   *flags |= 8;
-  if (result) result = z_state_real_valid(*(real *)(state + 0x24));
+  if (result && (z_state_real_valid(*(real *)(state + 0x24)))) result = true; else result = false;
  }
  if (function_1957d0(stream))
  {
   function_195070(stream, (vector3f *)(state + 0x28), 0.03f, 350.0f, 10);
   *flags |= 0x10;
-  if (result) result = function_a7570((vector3f *)(state + 0x28));
+  if (result && (function_a7570((vector3f *)(state + 0x28)))) result = true; else result = false;
  }
  if (function_1957d0(stream))
  {
   function_195070(stream, (vector3f *)(state + 0x34), 0.03f, 30.0f, 8);
   *flags |= 0x20;
-  if (result) result = function_a7570((vector3f *)(state + 0x34));
+  if (result && (function_a7570((vector3f *)(state + 0x34)))) result = true; else result = false;
  }
  if (function_1957d0(stream))
  {
   *(real *)(state + 0x40) = z_decode_state_scalar(stream, 8, 254, -1.0f, 1.0f);
   *(bool *)(state + 0x44) = function_1957d0(stream);
   *flags |= 0x40;
-  if (result) result = z_state_real_valid(*(real *)(state + 0x40));
+  if (result && (z_state_real_valid(*(real *)(state + 0x40)))) result = true; else result = false;
  }
  if (function_1957d0(stream))
  {
   *(real *)(state + 0x48) = z_decode_state_scalar(stream, 8, 254, 0.0f, 3.0f);
   *(bool *)(state + 0x4c) = function_1957d0(stream);
   *flags |= 0x80;
-  if (result) result = z_state_real_valid(*(real *)(state + 0x48));
+  if (result && (z_state_real_valid(*(real *)(state + 0x48)))) result = true; else result = false;
  }
  if (function_1957d0(stream))
  {
   state[0x50] = (byte)function_1959c0(stream, 4);
-  if (result) result = state[0x50] <= 16;
+  if (result && (state[0x50] <= 16)) result = true; else result = false;
   for (long i = 0; i < 16; ++i)
   {
    state[0x51 + i] = (byte)function_1959c0(stream, 3);
-   if (result) result = state[0x51 + i] < 12;
+   if (result && (state[0x51 + i] < 12)) result = true; else result = false;
   }
   *flags |= 0x100;
  }
  if (stream_read_bit(stream))
  {
   state[0x61] = (byte)function_1959c0(stream, 5);
-  if (result) result = state[0x61] <= 16;
+  if (result && (state[0x61] <= 16)) result = true; else result = false;
   if (state[0x61] > 0)
   {
    *(word *)(state + 0x62) = (word)function_1959c0(stream, state[0x61]);
@@ -919,7 +919,8 @@ bool function_a6d50(long flags_address, long state_address, s_bitstream *stream)
   }
   *flags |= 0x200;
  }
- if (result && stream->bit_position <= (stream->size_in_bytes << 3)) return true;
+ long valid = result;
+ if (valid && stream->bit_position <= (stream->size_in_bytes << 3)) return true;
  return false;
 }
 
