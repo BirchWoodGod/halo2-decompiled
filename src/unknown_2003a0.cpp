@@ -2124,6 +2124,11 @@ void function_26b290(long arg_0);
 // @retail 0x202e90
 void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
 {
+    struct s_entry_view
+    {
+        long field_0;
+        long field_4;
+    };
     long const *local_0 = &arg_0;
     long const *local_1 = &arg_2;
     long local_2 = g_510c54->game_time;
@@ -2133,7 +2138,7 @@ void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
     *(short *)(local_3 + 0x64) = NONE;
     local_3[0x60] = false;
     if (*(short *)(local_3 + 0x2a) != (short)arg_1 ||
-        (byte)(((dword)local_3[2] & 0x40) >> 6) != (byte)*local_1)
+        ((*(word *)(local_3 + 2) & 0x40) >> 6) != (byte)*local_1)
     {
         byte *local_4 = NULL;
         if ((short)arg_1 >= 0 && (short)arg_1 < *(long *)((byte *)g_4e0350 + 0x240))
@@ -2155,19 +2160,17 @@ void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
                 function_204450((short)arg_1, *local_0);
             function_291740((short)arg_1, *local_0 & 0xffff);
             short local_8 = *(short *)(local_4 + 0x20);
-            s_flag_bits const *source = NULL;
             if (local_8 == NONE)
             {
                 memset(local_3 + 0x84, 0xff, sizeof(s_flag_bits));
             }
             else if (local_8 >= 0 && local_8 < *(long *)((byte *)g_4e0350 + 0x150))
             {
-                long local_10 = *(long *)(*(byte **)((byte *)g_4e0350 + 0x154) + local_8 * 8 + 4);
+                s_entry_view const *const &entry = (s_entry_view const *)*(byte **)((byte *)g_4e0350 + 0x154) + local_8;
+                long local_10 = entry->field_4;
                 if (local_10 != NONE)
-                    source = (s_flag_bits const *)(g_4e3b44[local_10 & 0xffff].bytes + 0x38);
+                    *(s_flag_bits *)(local_3 + 0x84) = *(s_flag_bits const *)(g_4e3b44[local_10 & 0xffff].bytes + 0x38);
             }
-            if (source)
-                *(s_flag_bits *)(local_3 + 0x84) = *source;
             if (*(short *)(local_4 + 0x28) > 0)
             {
                 long local_11 = NONE;
@@ -2341,7 +2344,8 @@ bool function_1fb8a0(long arg_0, short arg_1);
 void function_202be0(long arg_0, long arg_1)
 {
     long const *local_0 = &arg_1;
-    long const *choice = &arg_0;
+    long selected_choice = arg_0;
+    long const *choice = &selected_choice;
     byte *local_1 = (byte *)squad_get(*local_0);
     if (*choice != NONE && (!(local_1[2] & 0x40) ||
         *(short *)(local_1 + 0x2a) == NONE ||

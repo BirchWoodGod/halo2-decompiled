@@ -348,14 +348,15 @@ void function_69b50(c_class_6a600 *world, dword mask, const byte *input)
 // @retail 0x69a00
 void function_69a00(const byte *input, c_class_6a600 *world, dword mask)
 {
- for (long i = 0; i < 16; i++, input += 0x5c)
+ const byte *cursor = input;
+ for (long i = 0; i < 16; i++, cursor += 0x5c)
  {
   s_simulation_world_player *player = &world->players[i];
   if (player->player_index != NONE && (mask & (1 << i)))
   {
    byte *datum = g_4e8c24->data + (player->unknown04 & 0xffff) * 0x21c;
    s_weapon_activity_result action;
-   function_823d0(&action, input, *(long *)(datum + 0x2c));
+   function_823d0(&action, cursor, *(long *)(datum + 0x2c));
    if (*(long *)(datum + 0x2c) != NONE)
    {
     long index = player->player_index;
