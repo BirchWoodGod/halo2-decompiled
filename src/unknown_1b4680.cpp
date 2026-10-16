@@ -376,16 +376,15 @@ short __stdcall function_1b52a0(long actor_index, s_slot *slot)
 	short result = 0x38;
 	long index = element_502420_get(actor->unknown07c)->first_actor_index;
 
-	while (index != NONE)
+	s_actor_view *other;
+	long other_index;
+	while ((other = member_next_1b4e70(index, other_index)) != 0)
 	{
-		s_actor_view *other = actor_get(index);
-
-		index = other->next_index;
-		short other_type = other->unknown004;
-		if (other_type != *(short const volatile *)&type->leader_type)
-			continue;
-		result = g_46fbe4;
-		goto done;
+		if (other->unknown004 == type->leader_type)
+		{
+			result = g_46fbe4;
+			goto done;
+		}
 	}
 
 	if (result != g_46fbe4)
@@ -398,6 +397,7 @@ short __stdcall function_1b52a0(long actor_index, s_slot *slot)
 		if (accepted)
 		{
 			s_slot_38 *state = (s_slot_38 *)slot;
+
 			state->unknown10 = actor->prop_index;
 			state->unknown14 = 0x3f;
 			state->unknown0c = true;
