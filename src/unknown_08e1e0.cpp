@@ -107,18 +107,18 @@ long pending_message_add_received(s_pending_message_header *header, void *data, 
 }
 
 void function_6b640(long task_index);
-void function_81050(long result, s_pending_message_header *header);
+void function_81050(s_pending_message_header *header, long result);
 void function_12d520(long memory);
 void __stdcall function_812d0(void *allocation, s_pending_message_header *header);
 
 void __stdcall function_8e0f0(long index, long result);
 #pragma optimize("g", off)
-PRIVATE __forceinline void function_8e0f1(long index)
+PRIVATE __forceinline void function_8e0f1(long offset)
 {
- s_pending_message_header *header = g_4d8c28[index].header;
+ s_pending_message_header *header = ((s_pending_message_header **)g_4d8c28)[offset];
  if (header->kind && header->pending_index != NONE)
   function_8e0f0(header->pending_index, 13);
- header = g_4d8c28[index].header;
+ header = ((s_pending_message_header **)g_4d8c28)[offset];
  void *allocation = header->data;
  if (allocation)
  {
@@ -131,22 +131,23 @@ PRIVATE __forceinline void function_8e0f1(long index)
 // @retail 0x8e0f0
 void __stdcall function_8e0f0(long index, long result)
 {
- if (g_4d8c28[index].header)
+ long offset = index * 5;
+ if (((s_pending_message_header **)g_4d8c28)[offset])
  {
-  if (g_4d8c28[index].task_index != NONE)
-   function_6b640(g_4d8c28[index].task_index);
-  function_81050(result, g_4d8c28[index].header);
-  s_pending_message_header *header = g_4d8c28[index].header;
+  if (((long *)g_4d8c28)[offset + 1] != NONE)
+   function_6b640(((long *)g_4d8c28)[offset + 1]);
+  function_81050(((s_pending_message_header **)g_4d8c28)[offset], result);
+  s_pending_message_header *header = ((s_pending_message_header **)g_4d8c28)[offset];
   if (header->kind == 4)
   {
    long local_0 = header->pending_index;
    if (local_0 == NONE)
-    function_8e0f1(index);
+    function_8e0f1(offset);
   }
-  g_4d8c28[index].header = 0;
-  g_4d8c28[index].task_index = NONE;
-  g_4d8c28[index].size = 0;
-  g_4d8c28[index].data = 0;
+  ((s_pending_message_header **)g_4d8c28)[offset] = 0;
+  ((long *)g_4d8c28)[offset + 1] = NONE;
+  ((long *)g_4d8c28)[offset + 2] = 0;
+  ((void **)g_4d8c28)[offset + 3] = 0;
   for (long row = 0; row < 2; row++)
   {
    long *queue = g_4d8ba8[row];
