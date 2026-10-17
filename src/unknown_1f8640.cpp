@@ -188,11 +188,7 @@ real function_1f8940(long actor_index)
 			s_actor_path_point *point = &actor->path[i];
 			point3f position;
 
-			if (point->node.output_index == NONE ||
-				!function_2104b0(point->node.output_index, &point->node.point, &position))
-			{
-				position = point->node.point;
-			}
+			function_210850(&point->node, &position);
 			length += distance3d(&position, &previous);
 			previous = position;
 		}

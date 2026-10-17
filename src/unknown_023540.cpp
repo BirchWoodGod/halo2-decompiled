@@ -2214,22 +2214,30 @@ struct s_245c0_state
     dword frame_count;
 };
 
+/* queues the histogram read-back on the push buffer */
+static __forceinline void histogram_callback_insert(s_245c0_state *state)
+{
+    D3DDevice_InsertCallback(D3DCALLBACK_WRITE, (D3DCALLBACK)function_24970, (dword)state);
+}
+
 __declspec(noinline) void function_245c0(s_245c0_state *state, real *histogram, short mode);
 // @retail 0x245c0
 void function_245c0(s_245c0_state *state, real *histogram, short mode)
 {
     state->curve.histogram = histogram;
-    if ((word)(mode - 1) < 3)
+    switch (mode)
     {
+    case 1:
+    case 2:
+    case 3:
         if (!(state->frame_count & 7))
         {
             function_249f0();
             function_14bc0((short)g_4858b8, 0, true);
-            D3DDevice_InsertCallback(D3DCALLBACK_WRITE, (D3DCALLBACK)function_24970, (dword)state);
+            histogram_callback_insert(state);
         }
-    }
-    else
-    {
+        break;
+    default:
         state->curve.range.low = 0.0f;
         state->curve.range.high = 0.75f;
         state->curve.range.average = 0.4f;
@@ -2237,6 +2245,7 @@ void function_245c0(s_245c0_state *state, real *histogram, short mode)
         state->curve.range.smoothed_high = 0.75f;
         state->curve.range.smoothed_average = 0.4f;
         state->frame_count = 0;
+        break;
     }
     if (mode == 2 || !(state->frame_count & 7))
         function_24ee0(&state->curve, mode);
