@@ -875,7 +875,7 @@ void function_19a864(void);
 bool function_199967(void);
 long function_199d7c(void);
 long network_session_manager_get_value49ac(void);
-short function_18f93a(void);
+short player_slot_count_signed_in_non_guests(void);
 short player_slot_count_active(void);
 bool function_1900a5(long player);
 void function_199e3c(long controller);
@@ -1038,7 +1038,7 @@ bool __stdcall function_251345(long controller)
 // @retail 0x251242
 void function_251242(long controller)
 {
-	if (function_18f93a() == 1 && !function_1900a5(controller))
+	if (player_slot_count_signed_in_non_guests() == 1 && !function_1900a5(controller))
 	{
 		function_199e3c(controller);
 	}
@@ -1080,7 +1080,7 @@ void function_2512f8(long controller, bool choice)
 // @retail 0x2511b6
 void function_2511b6(long controller)
 {
-	long count = function_18f93a();
+	long count = player_slot_count_signed_in_non_guests();
 	long players = function_199f34();
 
 	if (function_1900a5(controller) || count == 1 && players <= count)
@@ -1714,8 +1714,8 @@ bool c_matchmaking_screen::v10(s_widget_event *event)
 long function_148222(long channel, long index, long screen_id);
 void function_148241(long channel, long index, long screen_id);
 bool function_19a902(void);
-long player_slot_get_value1fc(long index);
-long function_190262(long value);
+long player_slot_get_team(long index);
+long player_slot_iterate_next(long value);
 long function_19aa17(long value);
 void function_18fe9e(long index);
 
@@ -1884,9 +1884,9 @@ void c_screen_24fd74::function_250f3a(byte *data)
 					team_count = *(long *)(data + 0xb4);
 				}
 			}
-			teams[index].team = (short)(player_slot_get_value1fc(index) % team_count);
+			teams[index].team = (short)(player_slot_get_team(index) % team_count);
 			function_250cda(index, false);
-			index = function_190262(index);
+			index = player_slot_iterate_next(index);
 		}
 		while (index != NONE);
 	}
@@ -1978,7 +1978,7 @@ void c_screen_24fd74::update_countdown(bool signed_in_needed)
 
 		if (state != 4 && (state <= 8 || state > 10))
 		{
-			for (long controller = 0; controller != NONE; controller = function_190262(controller))
+			for (long controller = 0; controller != NONE; controller = player_slot_iterate_next(controller))
 			{
 				if (((s_player_slot_view_04 *)g_54e8e0)[controller].value04 != NONE)
 				{
@@ -2605,13 +2605,9 @@ byte *function_2530a4(c_class_252b72 *list)
 
 /* whether the list has no squads */
 // @retail 0x252b5e
-long function_252b5e(c_class_252b72 *list)
+bool function_252b5e(c_class_252b72 *list)
 {
-	if (list->data && list->data->actual_count)
-	{
-		return 0;
-	}
-	return 1;
+	return !list->data || !list->data->actual_count;
 }
 
 // @retail 0x253319
@@ -2707,39 +2703,52 @@ struct s_localized_short_name;
 wchar_t *localized_name_get(s_localized_name *definition);
 wchar_t *localized_short_name_get(s_localized_short_name *definition);
 
+/* the player list's items: a player's name, appearance and team, each with
+   the flag that says the item has it */
+PRIVATE inline void squad_item_set_name(s_widget_item *item, word const *name)
+{
+	item->flags |= 1;
+	item->value4 = (long)name;
+}
+
+PRIVATE inline void squad_item_set_appearance(s_widget_item *item, dword const *appearance)
+{
+	item->flags |= 2;
+	memcpy(item->value48, appearance, sizeof(item->value48));
+}
+
+PRIVATE inline void squad_item_set_team(s_widget_item *item, short team)
+{
+	item->flags |= 4;
+	item->value5c = team;
+}
+
 // @retail 0x253339
 void c_network_squad_browser_screen::v3()
 {
 	s_network_squad *squad = (s_network_squad *)function_2530a4(&list);
-	long has_game = squad && squad->category;
+	bool has_game = squad && squad->category;
 	c_class_1a2c81 *text;
 	c_class_1a2c81 *bitmap;
 	long i;
 
 	if (squad)
 	{
+		/* retail constructs the items with the out-of-line constructor */
+#pragma inline_depth(0)
 		s_widget_item items[16];
+#pragma inline_depth()
 
+		for (i = 0; i < squad->player_count; i++)
 		{
-			i = 0;
-			if (i < squad->player_count)
+			squad_item_set_name(&items[i], squad->player_names[i]);
+			if (has_game)
 			{
-				do
+				squad_item_set_appearance(&items[i], squad->player_appearances[i]);
+				if (squad->has_teams)
 				{
-					items[i].flags |= 1;
-					items[i].value4 = (long)squad->player_names[i];
-					if (has_game)
-					{
-						items[i].flags |= 2;
-						memcpy(items[i].value48, squad->player_appearances[i], sizeof(items[i].value48));
-						if (squad->has_teams)
-						{
-							items[i].flags |= 4;
-							items[i].value5c = squad->player_teams[i];
-						}
-					}
-					i++;
-				} while (i < squad->player_count);
+					squad_item_set_team(&items[i], squad->player_teams[i]);
+				}
 			}
 		}
 		function_22f042(items, this, squad->player_count);
@@ -2859,35 +2868,37 @@ void c_network_squad_browser_screen::v3()
 	{
 		if (squad)
 		{
-			wchar_t *name = NULL;
-
 			if (has_game)
 			{
 				s_localized_short_name *entry = (s_localized_short_name *)function_19c5f0(squad->map_key);
 
-				if (entry)
+				if (!entry)
 				{
-					name = localized_short_name_get(entry);
+					goto no_map_name;
 				}
+				wchar_t *name = localized_short_name_get(entry);
+
+				text->function_22f52e()->set_text((word *)name);
 			}
 			else
 			{
 				s_localized_name *entry = (s_localized_name *)function_19c1f0(squad->map_key);
 
-				if (entry)
+				if (!entry)
 				{
-					name = localized_name_get(entry);
+					goto no_map_name;
 				}
-			}
-			if (name)
-			{
+				wchar_t *name = localized_name_get(entry);
+
 				text->function_22f52e()->set_text((word *)name);
-				goto map_shown;
 			}
 		}
-		((c_text_widget_45a5e0 *)text)->function_253b1a(0x7000180);
+		else
+		{
+		no_map_name:
+			((c_text_widget_45a5e0 *)text)->function_253b1a(0x7000180);
+		}
 	}
-map_shown:
 	if (bitmap)
 	{
 		function_2b0a7b((s_widget_view_2b0a *)bitmap, 0);
@@ -2919,7 +2930,7 @@ map_shown:
 		}
 	}
 bitmap_shown:
-	for (i = 0; i < 16; i++)
+	for (i = 0; i < sizeof(squad->player_names) / sizeof(squad->player_names[0]); i++)
 	{
 		text = find_child(6, (short)(i + 4), false);
 		bitmap = find_child(8, (short)(i + 5), false);
@@ -2947,7 +2958,13 @@ bitmap_shown:
 			}
 		}
 	}
-	list.searching = !(ANIMATION_FLAG(animation, 1) || network_session_manager_session_unready() || network_session_manager_is_joining());
+	bool searching = true;
+
+	if (ANIMATION_FLAG(animation, 1) || network_session_manager_session_unready() || network_session_manager_is_joining())
+	{
+		searching = false;
+	}
+	list.searching = searching;
 	c_class_1a2c81::v3();
 }
 

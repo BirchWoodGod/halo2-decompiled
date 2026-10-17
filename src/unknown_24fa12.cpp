@@ -77,7 +77,7 @@ bool function_592f0(void);
 long window_manager_get_game_variant_index(void);
 bool function_199e6d(long index);
 void function_19a0af(long value);
-long function_18fa4d(long mode);
+long player_slot_find_signed_in(long mode);
 bool function_19a78e(long controller, long countdown, long minimum);
 void function_236299(long sound);
 bool function_2510e1(void);
@@ -90,7 +90,7 @@ void function_24fbea(c_screen_24fd74 *screen)
 		if (function_592f0() && g_51ec98 && function_199e6d(window_manager_get_game_variant_index()))
 		{
 			function_19a0af(window_manager_get_game_variant_index());
-			if (!function_19a78e(function_18fa4d(0), 3, 3))
+			if (!function_19a78e(player_slot_find_signed_in(0), 3, 3))
 				function_236299(2);
 		}
 	}
@@ -281,7 +281,7 @@ void function_24ffc9(c_screen_24fd74 *arg_0, bool arg_1)
 
 byte *network_session_interface_get_data_4db0();
 word function_1901fc();
-long function_190262(long arg_0);
+long player_slot_iterate_next(long arg_0);
 bool function_19a951(long arg_0);
 long function_19aa17(long arg_0);
 bool function_251121();
@@ -312,14 +312,14 @@ void c_screen_24fd74::v3()
     *(short *)&user_flags = NONE;
     if (!(byte)function_251364((s_session_player_view *)local_1))
     {
-        for (long local_4 = 0; local_4 != NONE; local_4 = function_190262(local_4))
+        for (long local_4 = 0; local_4 != NONE; local_4 = player_slot_iterate_next(local_4))
         {
             teams[local_4].valid = false;
             teams[local_4].team = NONE;
         }
     }
     long local_5[4];
-    for (long local_6 = 0; local_6 != NONE; local_6 = function_190262(local_6))
+    for (long local_6 = 0; local_6 != NONE; local_6 = player_slot_iterate_next(local_6))
         local_5[local_6] = function_19aa17(local_6);
     long local_7 = 0;
     long local_8[16];

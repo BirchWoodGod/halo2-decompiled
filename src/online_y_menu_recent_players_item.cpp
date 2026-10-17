@@ -1,7 +1,8 @@
 // @flags /O1 /Oi /arch:SSE /Gr
-/* UNKNOWN_2B3A9D.CPP: filling in one item of the online Y menu's list of the
-   players of the recent games (built with SSE, apart from its neighbours in
-   unknown_2b393c.cpp) */
+/* ONLINE_Y_MENU_RECENT_PLAYERS_ITEM.CPP: filling in one item of the online Y
+   menu's list of the players of the recent games: gamertag, status, voice,
+   session and invitation bitmaps (built with SSE, apart from the rest of the
+   list in online_y_menu_lists.cpp) */
 
 #include "unknown_11c920.h"
 #include <string.h>
@@ -11,18 +12,9 @@
 #include "unknown_2b116a.h"
 #include "unknown_x8d43e5.h"
 #include "online_friends.h"
+#include "online_y_menu_lists.h"
 
 bool xuid_equal(XUID const *a, XUID const *b, bool compare_guest_number);
-
-/* a recent player's datum */
-struct s_recent_player_datum
-{
-	word salt;
-	word unknown02;
-	s_recent_player player;
-};
-
-dword friend_get_flags(XUID const *xuid);
 
 #include <wchar.h>
 struct s_screen_view_2b39;
@@ -47,16 +39,7 @@ void function_080de0(s_player_status_values *values, s_player_status_source cons
 void function_2b01a2(long value, s_widget_item *item);
 void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
 
-/* the screen's 0x40-byte records the loop matches by identifier: the
-   identifier first, a flag byte at 0x1d */
-struct s_blocked_record_2b3a9d
-{
-	XUID xuid;
-	byte unknown0c[0x1d - sizeof(XUID)];
-	byte flags;
-	byte unknown1e[0x40 - 0x1e];
-};
-
+/* fills in a recent player's item */
 // @retail 0x2b3a9d
 void c_y_menu_recent_players_list::v20(c_class_1a2c81 *item, long index)
 {
@@ -67,7 +50,7 @@ void c_y_menu_recent_players_list::v20(c_class_1a2c81 *item, long index)
     c_class_1a2c81 *invite = item->find_child(8, 3, false);
     c_class_1a2c81 *session = item->find_child(8, 5, false);
     c_class_1a2c81 *voice = item->find_child(8, 4, false);
-    long datum_index = *(long *)((byte *)item + 0x70);
+    long datum_index = widget_item(item)->value70;
     if (datum_index != NONE)
     {
         s_recent_player_datum *datum = &((s_recent_player_datum *)data->data)[datum_index & 0xffff];
@@ -80,7 +63,7 @@ void c_y_menu_recent_players_list::v20(c_class_1a2c81 *item, long index)
         dword friend_flags = 0;
         if (has_identifier)
         {
-            function_08cc20((s_name_buffer *)display_name, (wchar_t const *)((byte *)datum + 0x10));
+            function_08cc20((s_name_buffer *)display_name, (wchar_t const *)datum->player.name);
             in_session = network_session_interface_has_user(xuid);
             friend_flags = friend_get_flags(xuid);
         }
@@ -109,16 +92,16 @@ void c_y_menu_recent_players_list::v20(c_class_1a2c81 *item, long index)
                     joinable = true;
             }
         }
-        byte *screen = (byte *)parent->parent->parent;
-        long count = *(long *)(screen + 0x55a8);
-        s_blocked_record_2b3a9d *records = (s_blocked_record_2b3a9d *)(screen + 0x3668);
+        c_online_y_menu_screen *screen = (c_online_y_menu_screen *)parent->parent->parent;
+        long count = screen->message_count;
+        s_entry *messages = screen->messages;
         for (long i = 0; i < count; ++i)
         {
-            s_blocked_record_2b3a9d *record = &records[i];
-            XUID const *other = 0;
-            if (record)
-                other = &record->xuid;
-            if (xuid_equal(xuid, other, false) && (record->flags & 8))
+            s_entry *message = &messages[i];
+            XUID const *sender = 0;
+            if (message)
+                sender = (XUID const *)message;
+            if (xuid_equal(xuid, sender, false) && (message->flags & 0x800))
             {
                 blocked = true;
                 break;
@@ -194,8 +177,8 @@ void c_y_menu_recent_players_list::v20(c_class_1a2c81 *item, long index)
         {
             dword values[4];
             function_080de0((s_player_status_values *)values, (s_player_status_source const *)xuid);
-            function_2b01a2(*(signed char *)((byte *)datum + 0x5a), &layout);
-            word *name_text = (word *)((byte *)datum + 0x10);
+            function_2b01a2(datum->player.range_value, &layout);
+            word *name_text = datum->player.name;
             memcpy(layout.value48, values, sizeof(values));
             layout.flags |= 2;
             layout.value4 = (long)name_text;

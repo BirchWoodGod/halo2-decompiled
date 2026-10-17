@@ -33,7 +33,7 @@ class c_class_2b0b5e;
 bool controller_is_connected(short index);
 void player_slot_get_profile(long index, s_player_profile *profile, long *profile_index);
 long function_1249d0(short index);
-long function_190262(long index);
+long player_slot_iterate_next(long index);
 void function_2b10a3(dword const *appearance, c_class_2b0b5e *widget, long type);
 void function_2b0a14(s_widget_view_2b0a *widget, short index);
 void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
@@ -128,7 +128,7 @@ void c_4way_signin_screen::v3()
                 function_2b0a14((s_widget_view_2b0a *)bitmap, frame);
             }
         }
-        controller = function_190262(controller);
+        controller = player_slot_iterate_next(controller);
     } while (controller != NONE);
     function_22f042(items, this, 4);
     c_class_1a2c81::v3();

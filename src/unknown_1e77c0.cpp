@@ -764,8 +764,8 @@ void function_1e6bd0(long player_index)
 
 struct s_player_profile;
 struct s_player_profile_settings;
-void __stdcall function_18fcc4(long index, s_player_profile *settings, long profile_index);
-void __stdcall function_18fd20(long index, s_player_profile_settings *settings, long profile_index);
+void __stdcall player_slot_change_profile(long index, s_player_profile *settings, long profile_index);
+void __stdcall player_slot_store_profile(long index, s_player_profile_settings *settings, long profile_index);
 
 struct __declspec(align(8)) s_request_settings
 {
@@ -823,11 +823,11 @@ void __stdcall function_1e75d0(dword flush)
 						if (!flush)
 						{
 							if (changed)
-								function_18fcc4(*(long *)((byte *)player + 0x24), (s_player_profile *)&settings, profile_index);
+								player_slot_change_profile(*(long *)((byte *)player + 0x24), (s_player_profile *)&settings, profile_index);
 						}
 						else if (*((byte *)state + 0x19d))
 						{
-							function_18fd20(*(long *)((byte *)player + 0x24), (s_player_profile_settings *)&settings, profile_index);
+							player_slot_store_profile(*(long *)((byte *)player + 0x24), (s_player_profile_settings *)&settings, profile_index);
 							*((byte *)g_51e9c0 + index * 0x1b0 + 0x19d) = 0;
 						}
 					}
