@@ -662,24 +662,19 @@ long function_215c00(long type, wchar_t const *display_name)
 struct s_saved_game_read;
 struct s_saved_game_file_task;
 char *function_122810(char *path, const char *suffix);
-bool signed_file_read_begin(void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task, const char *path);
-bool signed_file_write_begin(void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task, const char *path);
+bool signed_file_read_begin(const char *path, void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task);
+bool signed_file_write_begin(const char *path, void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task);
 
 // @retail 0x2174b0
 bool __stdcall function_2174b0(long file_index, void *header, long header_size, void *body, long body_size, s_saved_game_read *task)
 {
-    (void)&header;
-    (void)&header_size;
-    (void)&body;
-    (void)&body_size;
-    (void)&task;
     bool result = false;
     char path[256];
     path[0] = 0;
     if (function_2160b0(file_index, path))
     {
         function_122810(path, "auxilary.bin");
-        result = signed_file_read_begin(header, header_size, body, body_size, false, (s_saved_game_file_task *)task, path);
+        result = signed_file_read_begin(path, header, header_size, body, body_size, false, (s_saved_game_file_task *)task);
     }
     return result;
 }
@@ -687,18 +682,13 @@ bool __stdcall function_2174b0(long file_index, void *header, long header_size, 
 // @retail 0x217520
 bool __stdcall function_217520(long file_index, void const *header, long header_size, void const *body, long body_size, s_saved_game_read *task)
 {
-    (void)&header;
-    (void)&header_size;
-    (void)&body;
-    (void)&body_size;
-    (void)&task;
     bool result = false;
     char path[256];
     path[0] = 0;
     if (function_2160b0(file_index, path))
     {
         function_122810(path, "auxilary.bin");
-        result = signed_file_write_begin((void *)header, header_size, (void *)body, body_size, false, (s_saved_game_file_task *)task, path);
+        result = signed_file_write_begin(path, (void *)header, header_size, (void *)body, body_size, false, (s_saved_game_file_task *)task);
     }
     return result;
 }

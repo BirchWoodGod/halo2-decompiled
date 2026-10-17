@@ -42,11 +42,25 @@ long saved_game_file_type_from_variant(s_game_variant *variant)
 	}
 }
 
+/* the saved game drive's letter, 0 when there is none; whether there is one */
+static inline bool saved_game_drive_get_letter(char *letter)
+{
+	if (g_4e61c0.utility_drive)
+	{
+		*letter = 'u';
+	}
+	else
+	{
+		*letter = 0;
+	}
+	return TEST_FIELD_BIT(g_4e61c0.utility_drive);
+}
+
 static inline void saved_game_drive_root(char *root, long maximum_count)
 {
-	char letter = TEST_FIELD_BIT(g_4e61c0.utility_drive) ? 'u' : 0;
+	char letter;
 
-	if (TEST_FIELD_BIT(g_4e61c0.utility_drive))
+	if (saved_game_drive_get_letter(&letter))
 	{
 		function_11c9c0(root, maximum_count, "%c:\\", letter);
 	}
@@ -89,16 +103,12 @@ long saved_game_file_type_size_in_blocks(long type)
 // @retail 0x216ce0
 bool saved_game_storage_has_free_blocks(long blocks)
 {
-	__int64 bytes = blocks << 14;
+	long bytes = blocks << 14;
 	char root[8];
 	ULARGE_INTEGER available;
 	ULARGE_INTEGER total;
 	ULARGE_INTEGER free;
 
 	saved_game_drive_root(root, sizeof(root));
-	if (GetDiskFreeSpaceExA(root, &available, &total, &free) && available.QuadPart >= (unsigned __int64)bytes)
-	{
-		return true;
-	}
-	return false;
+	return GetDiskFreeSpaceExA(root, &available, &total, &free) && available.QuadPart >= bytes;
 }
