@@ -335,10 +335,10 @@ void __stdcall function_1bf5c0(long actor_index, s_slot *slot)
 		function_210850(&point, &position);
 		actor->unknown41c = 3;
 		actor->unknown420 = 3;
-		actor->unknown434 = 3;
 		actor->unknown424.point = position;
-		actor->unknown438.point = position;
 		actor->unknown430 = 2;
+		actor->unknown434 = 3;
+		actor->unknown438.point = position;
 		actor->unknown444 = NONE;
 		actor->unknown488 = true;
 		actor->unknown4a0 = true;
