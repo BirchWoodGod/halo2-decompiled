@@ -140,7 +140,7 @@ void function_25ac00(long prop_ref_index, long actor_index)
 
 short actor_behavior_find_level(long owner_index, short type);
 bool function_26ba40(long clump_index, long actor_index, long prop_index);
-bool __stdcall function_20ba60(short type, long unit_index, long target_index, long unknown, long unknown2, s_1fb7e0_data const *data);
+bool __stdcall function_20ba60(short type, long unit_index, long target_index, long unknown, short unknown2, s_1fb7e0_data const *data);
 real normalize2d(point2f *v);
 bool function_1f57f0(long actor_index, long animation, long const *target);
 
@@ -1080,7 +1080,7 @@ struct s_seated_unit_view
 	short seat_index;
 };
 
-bool __stdcall function_20ba60(short type, long unit_index, long target_index, long unknown, long unknown2, s_1fb7e0_data const *data);
+bool __stdcall function_20ba60(short type, long unit_index, long target_index, long unknown, short unknown2, s_1fb7e0_data const *data);
 s_ai_player *ai_player_get(long player_index);
 
 /* the actor leaves the vehicle it rides in, and its player remembers the
