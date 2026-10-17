@@ -66,9 +66,8 @@ struct s_search_result
 	long unknown78;
 	long unknown7c;
 	long unknown80;
-	byte unknown84[0x90 - 0x84];
-	long field90;
-	byte unknown94[0xaa - 0x94];
+	s_qos_result qos;
+	byte unknowna4[0xaa - 0xa4];
 	short session_kind;
 	byte unknownac[0xbc - 0xac];
 	XNKID session_id;
@@ -194,8 +193,17 @@ bool function_90160(long task_index, s_match_result_data *result)
 	return success;
 }
 
+/* sets the lowest score a session must reach: it falls from the strictest
+   score to the loosest as the search widens */
+static inline void session_search_set_minimum_score(s_session_search *search)
+{
+	if (search->unknown1c != NONE && search->unknown20 > 0)
+		search->minimum_score = (long)((real)g_network_configuration.value1e8 + ((real)search->unknown1c / (real)search->unknown20) * ((real)g_network_configuration.value1ec - (real)g_network_configuration.value1e8));
+	else
+		search->minimum_score = g_network_configuration.value1ec;
+}
+
 extern "C" void _ReadWriteBarrier(void);
-#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x90b30
 void function_90b30(s_session_search *search)
 {
@@ -218,11 +226,7 @@ void function_90b30(s_session_search *search)
 		SEARCH_FLAG(search, 0x2c) = false;
 		SEARCH_FLAG(search, 0x24) = false;
 	}
-	_ReadWriteBarrier();
-	if (current != NONE && search->unknown20 > 0)
-		search->minimum_score = (long)((real)g_network_configuration.value1e8 + ((real)current / (real)search->unknown20) * ((real)g_network_configuration.value1ec - (real)g_network_configuration.value1e8));
-	else
-		search->minimum_score = g_network_configuration.value1ec;
+	session_search_set_minimum_score(search);
 	s_range_input input;
 	memset(&input, 0, sizeof(input));
 	input.x = SEARCH_LONG(search, 0x10);
@@ -241,8 +245,6 @@ void function_90b30(s_session_search *search)
 	else
 		search->start_time = g_510548 ? g_51054c : GetTickCount();
 }
-
-#pragma function(_ReadWriteBarrier)
 
 struct s_qos_target
 {
@@ -312,21 +314,24 @@ long online_match_session_find(XNKID const *session_id)
 	return task_index;
 }
 
-static __forceinline void function_90c81(void *arg_0, long *arg_1)
+/* the release routine, with the block's size written to *info */
+static inline void release_block(void *block, long *info)
 {
-	g_4d87f8->allocator->get_info(arg_0, arg_1);
-	s_allocator_globals *local_0;
-	(local_0 = g_4d87f8)->allocator->release(arg_0, NONE);
-	if (arg_0)
-		local_0->count--;
+	g_4d87f8->allocator->get_info(block, info);
+	s_allocator_globals *globals = g_4d87f8;
+	globals->allocator->release(block, NONE);
+	if (block != 0)
+		globals->count--;
 }
 
-#pragma optimize("s", on)
+/* stops a session search: cancels its online task and its QoS lookups and
+   releases its buffers */
 // @retail 0x90c80
 void __stdcall function_090c80(byte *p)
 {
-	byte *const *reference = &p;
-	s_session_search *search = (s_session_search *)*reference;
+	/* retail writes each block's size over the parameter, which is dead by
+	   then */
+	s_session_search *search = (s_session_search *)p;
 	if (search->state == 1)
 		search->state = 2;
 	if (search->task_index != NONE)
@@ -346,24 +351,21 @@ void __stdcall function_090c80(byte *p)
 	}
 	if (search->unknown90)
 	{
-		function_90c81(search->unknown90, (long *)&p);
+		release_block(search->unknown90, (long *)&p);
 		search->unknown90 = 0;
 	}
 	if (search->results)
 	{
-		function_90c81(search->results, (long *)&p);
+		release_block(search->results, (long *)&p);
 		search->results = 0;
 	}
 	if (search->seen)
 	{
-		function_90c81(search->seen, (long *)&p);
+		release_block(search->seen, (long *)&p);
 		search->seen = 0;
 	}
 	search->active = false;
 }
-
-
-#pragma optimize("", on)
 
 // @retail 0x91290
 bool session_search_seen(s_session_search *search, XNKID const *id)
@@ -474,27 +476,25 @@ void __stdcall function_905a0(s_session_search *search, long kind)
 					case 4: session_search_mark_seen(search, entry); break;
 					case 5:
 						{
-							s_qos_result *result = (s_qos_result *)((byte *)entry + 0x84);
-							if (!qos_target_result(search->qos_handles[kind], result, entry->unknown7c))
+							if (!qos_target_result(search->qos_handles[kind], &entry->qos, entry->unknown7c))
 								session_search_mark_seen(search, entry);
-							else if (!SEARCH_LONG(entry, 0x9c))
+							else if (!entry->qos.data_size)
 								session_search_mark_seen(search, entry);
 							else
 							{
 								dword values[0x53];
-								if (function_7e080((byte const *)SEARCH_LONG(entry, 0xa0), SEARCH_LONG(entry, 0x9c), (s_session_message_values *)values))
+								if (function_7e080(entry->qos.data, entry->qos.data_size, (s_session_message_values *)values))
 								{
 									memcpy((byte *)entry + 0xa8, values, sizeof(values));
 									SEARCH_FLAG(entry, 0xa4) = true;
-									*(long volatile *)((byte *)entry + 0x1f4) = function_75870();
-									long local_0 = *(long volatile *)&kind;
-									*((bool *)entry + 0x74 + local_0) = true;
+									SEARCH_LONG(entry, 0x1f4) = function_75870();
+									((bool *)&entry->unknown74)[kind] = true;
 									entry->unknown7c = NONE;
 								}
 								else
 									session_search_mark_seen(search, entry);
-								SEARCH_LONG(entry, 0x9c) = 0;
-								SEARCH_LONG(entry, 0xa0) = 0;
+								entry->qos.data_size = 0;
+								entry->qos.data = 0;
 							}
 						}
 						break;
@@ -581,26 +581,23 @@ bool __stdcall session_search_result_precedes(void const *a, void const *b, void
 	s_search_result const *first = (s_search_result const *)a;
 	s_search_result const *second = (s_search_result const *)b;
 	if (first->field1f8 < second->field1f8)
-	{
-local_0:
 		return true;
-	}
-	if (first->field1f8 > second->field1f8)
-		goto failed;
-	if (first->unknown74)
+	if (first->field1f8 <= second->field1f8)
 	{
-		if (first->field90 > second->field90)
+		if (first->unknown74)
+		{
+			if (first->qos.rtt_median > second->qos.rtt_median)
+				return true;
+			if (first->qos.rtt_median < second->qos.rtt_median)
+				return false;
+		}
+		if (first->field1fc > second->field1fc)
 			return true;
-		if (first->field90 < second->field90)
+		if (first->field1fc < second->field1fc)
 			return false;
+		if (first->field10c > second->field10c)
+			return true;
 	}
-	if (first->field1fc > second->field1fc)
-		return true;
-	if (first->field1fc < second->field1fc)
-		return false;
-	if (first->field10c > second->field10c)
-		goto local_0;
-failed:
 	return false;
 }
 
@@ -713,7 +710,7 @@ void __stdcall session_search_score_and_sort(s_session_search *search)
 			}
 			if (entry->unknown74)
 			{
-				real value = entry->field90 * 0.01f;
+				real value = entry->qos.rtt_median * 0.01f;
 				value = value < 0.0f ? 0.0f : (value > 9.0f ? 9.0f : value);
 				long index = (long)value;
 				long score;
@@ -749,25 +746,20 @@ bool session_search_select(s_session_search *search, s_search_session *session)
 	{
 		for (s_search_result *entry = search->results; entry < search->results + MAXIMUM_SEARCH_RESULTS; entry++)
 		{
-			if (entry->valid)
+			if (entry->valid && entry->unknown01)
 			{
-				result = entry->unknown01;
-				if (result)
+				candidate_count++;
+				if (entry->unknown74)
 				{
-					candidate_count++;
-					result = entry->unknown74;
-					if (result)
-					{
-						ready_count++;
-						if (entry->field1f8 >= search->minimum_score && selected == 0)
-							selected = entry;
-					}
+					ready_count++;
+					if (entry->field1f8 >= search->minimum_score && selected == 0)
+						selected = entry;
 				}
 			}
 		}
-		if (selected && (ready_count == candidate_count ||
-			(ready_count >= (candidate_count >> 2) &&
-			session_search_elapsed(search->start_time) > g_4ce394)))
+		bool ready = selected && (ready_count == candidate_count ||
+			(ready_count >= (candidate_count >> 2) && session_search_elapsed(search->start_time) > g_4ce394));
+		if (ready)
 		{
 			if (session)
 			{
@@ -776,11 +768,10 @@ bool session_search_select(s_session_search *search, s_search_session *session)
 				session->id = selected->session_id;
 				session->key = selected->session_key;
 				session->address = selected->session_address;
-				session->value = selected->field90;
+				session->value = selected->qos.rtt_median;
 			}
-			return true;
+			result = true;
 		}
-		return false;
 	}
 	return result;
 }

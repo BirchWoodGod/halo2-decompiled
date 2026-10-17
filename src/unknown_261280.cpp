@@ -448,6 +448,7 @@ bool function_2601f0(long actor_index, s_type_c3b527 const *point, long sector, 
         {
             s_path_source source;
             memset(&source, 0, sizeof(source));
+            source.unknown4c = 0.0f;
             source.radius = *(real *)((byte *)function_1e4a50(actor->unknown054) + 4);
             source.object_index = NONE;
             source.unknown0c = NONE;
@@ -457,7 +458,6 @@ bool function_2601f0(long actor_index, s_type_c3b527 const *point, long sector, 
             source.unknown24 = *sector_reference;
             source.unknown45 = true;
             source.unknown48 = *path_distance_reference;
-            source.unknown4c = 0.0f;
             s_path_settings settings;
             function_1f9240(actor_index, &settings);
             function_271300((s_type_f17a25 *)buffer, NULL, &settings, &source, 0);

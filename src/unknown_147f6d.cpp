@@ -1212,16 +1212,18 @@ bool __stdcall function_148fff(long user_index)
 	}
 	for (;;)
 	{
-		if (index == 4 && function_1473b6(&g_54d598.window_0))
-			result = g_54d598.window_0.function_235276(user_index);
+		c_window_channel *window;
+
+		if (index == 4 && function_1473b6(window = &g_54d598.window_0))
+			result = window->function_235276(user_index);
 		else if (function_1473b6(&g_54d598.windows_1[index]))
 			result = g_54d598.windows_1[index].function_235276(user_index);
 		else if (index == 4 && function_1473b6(&g_54d598.window_2))
 			result = g_54d598.window_2.function_235276(user_index);
 		else if (function_1473b6(&g_54d598.windows_3[index]))
 			result = g_54d598.windows_3[index].function_235276(user_index);
-		else if (index == 4 && function_1473b6(&g_54d598.window_4))
-			result = g_54d598.window_4.function_235276(user_index);
+		else if (index == 4 && function_1473b6(window = &g_54d598.window_4))
+			result = window->function_235276(user_index);
 		else if (function_1473b6(&g_54d598.windows_5[index]))
 			result = g_54d598.windows_5[index].function_235276(user_index);
 		if (index == 4)

@@ -3066,47 +3066,54 @@ extern D3DResource *g_485ae4, *g_485ae8, *g_485aec;
 // @retail 0x1d0e0
 bool function_1d0e0()
 {
-    D3DTexture *texture;
-    if (!function_0158f0(9, 0, 4, 4, 0, 0, &texture))
+    bool result = function_0158f0(9, 0, 4, 4, 0, 0, (D3DTexture **)&g_485ae4) &&
+        function_015a60(9, 4, 4, 4, 0, 0, (D3DVolumeTexture **)&g_485ae8) &&
+        function_0159b0(4, 9, 0, 0, (D3DCubeTexture **)&g_485aec);
+    if (result)
     {
-        g_485ae4 = texture;
-        return false;
-    }
-    g_485ae4 = texture;
-    D3DVolumeTexture *volume;
-    if (!function_015a60(9, 4, 4, 4, 0, 0, &volume))
-    {
-        g_485ae8 = volume;
-        return false;
-    }
-    g_485ae8 = volume;
-    D3DCubeTexture *cube;
-    if (!function_0159b0(4, 9, 0, 0, &cube))
-    {
-        g_485aec = cube;
-        return false;
-    }
-    g_485aec = cube;
-    bool result = true;
-    if (!g_485ae4 || !g_485ae8 || !g_485aec)
-        return false;
-    word colors[2] = { 0x0f00, 0xf0f0 };
-    D3DLOCKED_RECT rectangle;
-    D3DTexture_LockRect((D3DTexture *)g_485ae4, 0, &rectangle, NULL, 0);
-    for (long i = 0; i < 16; ++i)
-        ((word *)rectangle.pBits)[i] = colors[i & 1];
-    D3DTexture_UnlockRect((D3DTexture *)g_485ae4, 0);
-    D3DLOCKED_BOX box;
-    D3DVolumeTexture_LockBox((D3DVolumeTexture *)g_485ae8, 0, &box, NULL, 0);
-    for (long j = 0; j < 64; ++j)
-        ((word *)box.pBits)[j] = colors[j & 1];
-    D3DVolumeTexture_UnlockBox((D3DVolumeTexture *)g_485ae8, 0);
-    for (long face = 0; face < 6; ++face)
-    {
-        D3DCubeTexture_LockRect((D3DCubeTexture *)g_485aec, (D3DCUBEMAP_FACES)face, 0, &rectangle, NULL, 0);
-        for (long k = 0; k < 16; ++k)
-            ((word *)rectangle.pBits)[k] = colors[k & 1];
-        D3DCubeTexture_UnlockRect((D3DCubeTexture *)g_485aec, (D3DCUBEMAP_FACES)face, 0);
+        if (!g_485ae4 || !g_485ae8 || !g_485aec)
+            result = false;
+        else
+        {
+            word colors[2] = { 0x0f00, 0xf0f0 };
+            D3DLOCKED_RECT rectangle;
+            D3DTexture_LockRect((D3DTexture *)g_485ae4, 0, &rectangle, NULL, 0);
+            long i = 0;
+            word *i_out = (word *)rectangle.pBits;
+            for (long i_remaining = 16; i_remaining; --i_remaining)
+            {
+                *i_out = colors[i & 1];
+                ++i;
+                ++i_out;
+            }
+            D3DTexture_UnlockRect((D3DTexture *)g_485ae4, 0);
+            D3DLOCKED_BOX box;
+            D3DVolumeTexture_LockBox((D3DVolumeTexture *)g_485ae8, 0, &box, NULL, 0);
+            long j = 0;
+            word *j_out = (word *)box.pBits;
+            for (long j_remaining = 64; j_remaining; --j_remaining)
+            {
+                *j_out = colors[j & 1];
+                ++j;
+                ++j_out;
+            }
+            D3DVolumeTexture_UnlockBox((D3DVolumeTexture *)g_485ae8, 0);
+            long face = 0;
+            for (long faces_left = 6; faces_left; --faces_left)
+            {
+                D3DCubeTexture_LockRect((D3DCubeTexture *)g_485aec, (D3DCUBEMAP_FACES)face, 0, &rectangle, NULL, 0);
+                long k = 0;
+                word *k_out = (word *)rectangle.pBits;
+                for (long k_remaining = 16; k_remaining; --k_remaining)
+                {
+                    *k_out = colors[k & 1];
+                    ++k;
+                    ++k_out;
+                }
+                D3DCubeTexture_UnlockRect((D3DCubeTexture *)g_485aec, (D3DCUBEMAP_FACES)face, 0);
+                ++face;
+            }
+        }
     }
     return result;
 }
@@ -3162,8 +3169,9 @@ bool g_55e6bc;
 void function_12d50(real const *projection, bool scaled, real *output)
 {
     real constants[16];
-    real near_plane = (scaled ? 0.15f : 1.0f) * g_485adc;
+    real near_plane = scaled ? 0.15f : 1.0f;
     real far_plane = g_485ae0;
+    near_plane *= g_485adc;
     D3DDevice_SetDepthClipPlanes(near_plane, far_plane,
         D3DSDCP_SET_VERTEXPROGRAM_PLANES);
     if (!projection)
@@ -3171,17 +3179,18 @@ void function_12d50(real const *projection, bool scaled, real *output)
     if (!output)
         output = constants;
     real scale = 16777215.0f / g_48565c;
+    real *next = output;
     for (long i = 0; i < 4; ++i)
     {
-        output[i * 4] = (projection[38 + i] * projection[3] + projection[1] * projection[30 + i]
+        *next++ = (projection[38 + i] * projection[3] + projection[1] * projection[30 + i]
             + projection[34 + i] * projection[2]) * scale;
-        output[i * 4 + 1] = (projection[38 + i] * projection[6] + projection[30 + i] * projection[4]
+        *next++ = (projection[38 + i] * projection[6] + projection[30 + i] * projection[4]
             + projection[34 + i] * projection[5]) * scale;
-        output[i * 4 + 2] = (projection[38 + i] * projection[9] + projection[8] * projection[34 + i]
+        *next++ = (projection[38 + i] * projection[9] + projection[8] * projection[34 + i]
             + projection[30 + i] * projection[7]) * scale;
-        output[i * 4 + 3] = (projection[38 + i] * projection[12] + projection[11] * projection[34 + i]
+        *next++ = (projection[38 + i] * projection[12] + projection[11] * projection[34 + i]
             + projection[30 + i] * projection[10]) * scale;
-        output[i * 4 + 3] += projection[42 + i] * scale;
+        next[-1] += projection[42 + i] * scale;
     }
     if (scaled)
         for (long j = 0; j < 16; ++j)
@@ -3652,10 +3661,10 @@ void *function_135a30(s_type_7ba8e9 const *bitmap, short mipmap_index, short x, 
 void function_13f10(long bitmap_value, long front_value)
 {
     byte *bitmap = (byte *)bitmap_value;
-    bool front = (byte)front_value != 0;
     if (bitmap && *(void **)(bitmap + 0x54))
     {
-        short_rect_pair rectangle_pair = g_485a8a;
+        short_rect_pair rectangle_pair;
+        rectangle_pair.a = g_485a8a.a;
         short right = (short)(rectangle_pair.a.v1 + *(short *)(bitmap + 4));
         if (rectangle_pair.a.v3 <= right) right = rectangle_pair.a.v3;
         short bottom = (short)(rectangle_pair.a.v0 + *(short *)(bitmap + 6));
@@ -3665,7 +3674,11 @@ void function_13f10(long bitmap_value, long front_value)
         short format = *(short *)(bitmap + 0xc);
         if ((format == 11 || format == 10) && *(short *)(bitmap + 0x14) == 0)
         {
-            D3DSurface *surface = front ? D3DDevice_GetRenderTarget2() : D3DDevice_GetBackBuffer2(0);
+            D3DSurface *surface;
+            if ((byte)front_value != 0)
+                D3DDevice::GetRenderTarget(&surface);
+            else
+                D3DDevice::GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
             D3DSURFACE_DESC description;
             D3DSurface_GetDesc(surface, &description);
             if (description.Size == description.Width * description.Height * 4)
@@ -3722,8 +3735,8 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     real bias = 0.03125f;
     if (mode == 2)
     {
-        width = height = 128.0f;
-        left = top = 0.0f;
+        height = width = 128.0f;
+        top = left = 0.0f;
         scale = 1.0f;
         bias = 0.0f;
     }
@@ -3739,25 +3752,26 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     constants[23] = 0.5f;
     constants[24] = projection[20];
     constants[25] = projection[21];
+    constants[33] = 0.0f;
     constants[26] = projection[22];
     constants[27] = 2.0f;
     constants[28] = ((real const *)camera)[0];
     constants[29] = ((real const *)camera)[1];
     constants[30] = ((real const *)camera)[2];
     constants[31] = 767.8125f;
-    constants[32] = width * 0.5f * scale;
-    constants[33] = 0.0f;
+    real half_width = width * 0.5f;
+    constants[32] = half_width * scale;
     constants[34] = 0.0f;
     constants[35] = ((width + 1.0f) * 0.5f + left) * scale + bias;
     constants[36] = 0.0f;
     constants[37] = height * -0.5f * scale;
     constants[38] = 0.0f;
     constants[39] = ((height + 1.0f) * 0.5f + top) * scale + bias;
-    constants[40] = width * 0.5f * scale;
+    constants[40] = half_width * scale;
     constants[41] = height * -0.5f * scale;
     constants[42] = 16777215.0f;
     constants[43] = 0.0f;
-    constants[44] = (width * 0.5f + left) * scale + 0.5f;
+    constants[44] = (half_width + left) * scale + 0.5f;
     constants[45] = (height * 0.5f + top) * scale + 0.5f;
     constants[46] = 0.0f;
     constants[47] = 0.0f;
@@ -3880,6 +3894,7 @@ void function_40890(void)
 	inverse.blue = (1.0f - g_485884) * g_485874;
 	dword packed = pack_color4f(&color);
 	dword constant = pack_color4f(&inverse);
+#pragma inline_depth(255)
 	function_0222d0(D3DRS_CULLMODE, 0x901);
 	function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
 	function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
@@ -3915,6 +3930,7 @@ void function_40890(void)
 		function_0222d0(D3DRS_SRCBLEND, 0x307);
 		function_0222d0(D3DRS_DESTBLEND, 0x8002);
 		function_0222d0(D3DRS_BLENDOP, 0x8007);
+#pragma inline_depth(0)
 		function_0222d0(D3DRS_BLENDCOLOR, packed);
 		constant = packed;
 		rgb_inputs = 0x1201120;
@@ -3968,7 +3984,7 @@ void function_40890(void)
 	short width = g_48564e - g_48564a;
 	short height = g_48564c - g_485648;
 	function_1cf50();
-	D3DDevice_Begin(D3DPT_QUADLIST);
+	D3DDevice_Begin(D3DPT_TRIANGLEFAN);
 	D3DDevice_SetVertexData2s(0, 0, 0);
 	D3DDevice_SetVertexData2s(0, width, 0);
 	D3DDevice_SetVertexData2s(0, width, height);
@@ -5242,8 +5258,10 @@ void __stdcall function_35b90(void *material)
         byte *bitmap = *(byte **)(source + 0xc + stage * 4);
         if (!bitmap) break;
         g_51f3c8[1][stage] = function_12310((s_bitmap_view *)bitmap, 0.0f);
-        g_485af4[stage] = *(short *)(bitmap + 4);
-        g_485b04[stage] = *(short *)(bitmap + 6);
+        short texture_width = *(short *)(bitmap + 4);
+        short texture_height = *(short *)(bitmap + 6);
+        g_485af4[stage] = texture_width;
+        g_485b04[stage] = texture_height;
         D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, source[0x18 + stage] ? 1 : 3);
         D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, source[0x18 + stage] ? 1 : 3);
         D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, source[0x96] ? 1 : 2);
@@ -5350,7 +5368,7 @@ void function_1f070(short_rectangle2d const *bounds, short_rectangle2d const *cl
         long right = window->right - window->left;
         if (right > clip->right) right = clip->right;
         long top = clip->top < 0 ? 0 : clip->top;
-        long left = clip->left < 0 ? 0 : clip->left;
+        short left = clip->left < 0 ? 0 : clip->left;
         wanted_clip.left = (short)left;
         wanted_clip.top = (short)top;
         wanted_clip.right = (short)right;
@@ -5690,7 +5708,7 @@ void function_46ea0(long tag, point3f const *position)
     g_484f68.PSFinalCombinerInputsEFG = 0x1100;
     function_1ccf0(&g_484f68);
     function_1cf50();
-    D3DDevice::Begin(D3DPT_QUADLIST);
+    D3DDevice::Begin(D3DPT_TRIANGLEFAN);
     D3DDevice_SetVertexData4f(0, left, top, 16777215.0f, 16777215.0f);
     D3DDevice_SetVertexData4f(0, right, top, 16777215.0f, 16777215.0f);
     D3DDevice_SetVertexData4f(0, right, bottom, 16777215.0f, 16777215.0f);
@@ -5727,7 +5745,7 @@ void function_46ea0(long tag, point3f const *position)
     g_484f68.PSFinalCombinerInputsEFG = 0x1c00;
     function_1ccf0(&g_484f68);
     function_1cf50();
-    D3DDevice::Begin(D3DPT_QUADLIST);
+    D3DDevice::Begin(D3DPT_TRIANGLEFAN);
     draw_filter_quad(left, right, top, bottom);
     D3DDevice::End();
     function_46230(16, bounds);
@@ -5776,7 +5794,7 @@ void function_46ea0(long tag, point3f const *position)
     {
         real offset = (real)i * 0.0625f * 80.0f - 4.0f;
         function_1cf50();
-        D3DDevice::Begin(D3DPT_QUADLIST);
+        D3DDevice::Begin(D3DPT_TRIANGLEFAN);
         ++i;
         D3DDevice_SetVertexData4f(9, 0.0f, 0.0f, 0.0f, strength / i);
         D3DDevice_SetVertexData2s(3, 0, 0);
@@ -6474,6 +6492,7 @@ void __stdcall function_4f010(void *payload)
             }
             for (long i = 0; i < *(long *)(entry + 0xc); ++i)
             {
+                s_501e0 *out_point = points + i;
                 real position;
                 if (*(dword *)(entry + 0x5c) & 2) position = (real)i * step;
                 else if (*(dword *)(entry + 0x5c) & 1)
@@ -6494,18 +6513,21 @@ void __stdcall function_4f010(void *payload)
                 if (*(byte **)(entry + 0x2c) && *(long *)(entry + 0x28) > 0)
                     unpack_color3f(function_13bc00((s_tag_data *)(entry + 0x28), colour_time), (color3f *)&colour.red);
                 else *(color3f *)&colour.red = *(color3f *)&g_4686cc->red;
-                colour.red = clamp_callback(state->third.i * colour.red, 0.0f, 1.0f);
-                colour.green = clamp_callback(state->third.j * colour.green, 0.0f, 1.0f);
-                colour.blue = clamp_callback(state->third.k * colour.blue, 0.0f, 1.0f);
+                real red = state->third.i * colour.red;
+                colour.red = clamp_callback(red, 0.0f, 1.0f);
+                real green = state->third.j * colour.green;
+                colour.green = clamp_callback(green, 0.0f, 1.0f);
+                real blue = state->third.k * colour.blue;
+                colour.blue = clamp_callback(blue, 0.0f, 1.0f);
                 colour.alpha = clamp_callback(opacity * fade, 0.0f, 1.0f);
                 point3f point;
                 point.x = state->first.i * length + state->position.x;
                 point.y = state->first.j * length + state->position.y;
                 point.z = state->first.k * length + state->position.z;
-                points[i].field_0 = point;
-                points[i].field_c = width * output[0];
-                points[i].field_10 = width * output[1];
-                points[i].field_14 = pack_color4f(&colour);
+                out_point->field_0 = point;
+                out_point->field_c = width * output[0];
+                out_point->field_10 = width * output[1];
+                out_point->field_14 = pack_color4f(&colour);
             }
             function_4f7e0(*(long *)(entry + 8), points, *(long *)(entry + 0xc), 0,
                 horizontal, vertical, false, false, filtered);
