@@ -698,14 +698,14 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00056dd0,22,game,unknown,a16,,,,src/network_voice.cpp,matched
 00056df0,358,game,speed,a16 pad,,,00054d20 00054df0 00055130 00057a80 00057c20 00057d60 00057eb0,src/network_voice.cpp,todo
 00056f60,276,game,speed,a16 pad,,,00053850 00053de0 00054d20 00054df0 00057270 000574e0 000589e0,src/unknown_0574e0.cpp,matched
-00057080,489,game,speed,a16 pad,,,00053de0 00054d20 00054df0 00054e60 000caf90,src/network_voice.cpp,todo
+00057080,489,game,speed,a16 pad,,,00053de0 00054d20 00054df0 00054e60 000caf90,src/network_voice.cpp,matched
 00057270,230,game,speed,a16 pad,,,00053d40 00053d90 00053de0 00054d20 00192950,src/network_voice.cpp,matched
 00057360,378,game,speed,a16 pad,,,00053de0 00054d20 00054df0 00054e60 00057270 00057620 00057790 00147da5,src/unknown_0574e0.cpp,matched
 000574e0,67,game,speed,a16 pad,,,00057530,src/unknown_0574e0.cpp,matched
 00057530,240,game,speed,a16 pad,,,00054c20 001896c0 00189760 001906da,src/unknown_0574e0.cpp,matched
 00057620,358,game,unknown,a16,,,00053750 000574e0 000589e0,src/unknown_0574e0.cpp,matched
 00057790,62,game,speed,a16 pad,,,,src/unknown_0574e0.cpp,matched
-000577d0,385,game,speed,a16 pad,,,00053d40 00053d90 00053de0 00054d20 00054df0 000589e0 00192950,src/network_voice.cpp,todo
+000577d0,385,game,speed,a16 pad,,,00053d40 00053d90 00053de0 00054d20 00054df0 000589e0 00192950,src/network_voice.cpp,matched
 00057960,280,game,speed,a16 pad ebp,,,00054d20 00055130 00057b60 00057d60 00057eb0,src/network_voice.cpp,matched
 00057a80,219,game,speed,a16 pad,,,00054df0 00054e60 000caf90,src/network_voice.cpp,matched
 00057b60,192,game,speed,a16 pad,,,00053de0,src/network_voice.cpp,todo
