@@ -1578,52 +1578,56 @@ bool __stdcall function_34100(long mode, real const *rectangle, real const *coor
 }
 
 
+/* the direction's component across the camera's up vector:
+   (direction x up) x direction */
+PRIVATE inline void direction_perpendicular_to_up(vector3f const *direction, vector3f *perpendicular)
+{
+    vector3f cross;
+    cross.i = direction->j * g_4b9e4c.k - direction->k * g_4b9e4c.j;
+    cross.j = direction->k * g_4b9e4c.i - direction->i * g_4b9e4c.k;
+    cross.k = direction->i * g_4b9e4c.j - direction->j * g_4b9e4c.i;
+    perpendicular->i = direction->k * cross.j - direction->j * cross.k;
+    perpendicular->j = direction->i * cross.k - direction->k * cross.i;
+    perpendicular->k = direction->j * cross.i - direction->i * cross.j;
+}
+
 // @retail 0x2f2d0
 real function_2f2d0(vector3f const *direction, point3f const *position, long mode, real scale)
 {
     real result = 0.0f;
     real y;
     real x;
+    vector3f perpendicular;
     vector3f reference;
     switch (mode)
     {
+    case 0:
+        return result;
     case 1:
-    case 3:
-        {
-            vector3f cross;
-            cross.i = direction->j * g_4b9e4c.k - direction->k * g_4b9e4c.j;
-            cross.j = direction->k * g_4b9e4c.i - direction->i * g_4b9e4c.k;
-            cross.k = direction->i * g_4b9e4c.j - direction->j * g_4b9e4c.i;
-            vector3f perpendicular;
-            perpendicular.i = direction->k * cross.j - direction->j * cross.k;
-            perpendicular.j = direction->i * cross.k - direction->k * cross.i;
-            perpendicular.k = direction->j * cross.i - direction->i * cross.j;
-            if (mode == 1)
-                reference = g_4b9dac;
-            else
-            {
-                reference.i = position->x - g_4b9da0.x;
-                reference.j = position->y - g_4b9da0.y;
-                reference.k = position->z - g_4b9da0.z;
-            }
-            y = reference.j * perpendicular.j + reference.k * perpendicular.k + reference.i * perpendicular.i;
-            x = 0.0f - (direction->k * reference.k + direction->j * reference.j + direction->i * reference.i);
-        }
+        direction_perpendicular_to_up(direction, &perpendicular);
+        reference = g_4b9dac;
+        y = reference.j * perpendicular.j + reference.k * perpendicular.k + reference.i * perpendicular.i;
+        x = 0.0f - (direction->k * reference.k + direction->j * reference.j + direction->i * reference.i);
         break;
     case 2:
+        reference.i = 0.0f - direction->i;
+        reference.j = 0.0f - direction->j;
+        reference.k = 0.0f - direction->k;
+        y = g_4b9e4c.k * reference.k + g_4b9e4c.j * reference.j + g_4b9e4c.i * reference.i;
+        x = 0.0f - (g_4b9e64.k * reference.k + g_4b9e64.j * reference.j + g_4b9e64.i * reference.i);
+        break;
+    case 3:
+        direction_perpendicular_to_up(direction, &perpendicular);
+        reference.i = position->x - g_4b9da0.x;
+        reference.j = position->y - g_4b9da0.y;
+        reference.k = position->z - g_4b9da0.z;
+        y = reference.j * perpendicular.j + reference.k * perpendicular.k + reference.i * perpendicular.i;
+        x = 0.0f - (direction->k * reference.k + direction->j * reference.j + direction->i * reference.i);
+        break;
     case 4:
-        if (mode == 2)
-        {
-            reference.i = 0.0f - direction->i;
-            reference.j = 0.0f - direction->j;
-            reference.k = 0.0f - direction->k;
-        }
-        else
-        {
-            reference.i = position->x - g_4b9da0.x;
-            reference.j = position->y - g_4b9da0.y;
-            reference.k = position->z - g_4b9da0.z;
-        }
+        reference.i = position->x - g_4b9da0.x;
+        reference.j = position->y - g_4b9da0.y;
+        reference.k = position->z - g_4b9da0.z;
         y = g_4b9e4c.k * reference.k + g_4b9e4c.j * reference.j + g_4b9e4c.i * reference.i;
         x = 0.0f - (g_4b9e64.k * reference.k + g_4b9e64.j * reference.j + g_4b9e64.i * reference.i);
         break;
@@ -3461,46 +3465,79 @@ PRIVATE __forceinline void draw_configured_pass_r18(long mode)
     if (function_44370(mode)) { function_44550(); function_445d0(); }
 }
 
+PRIVATE __forceinline void draw_light_source_pass(long group, long mode, bool extra_enabled, bool depth, bool normal_cull, long target, bool filter)
+{
+    byte enabled = (byte)(g_4c1a48[group].flags >> mode) & extra_enabled;
+    if (enabled)
+    {
+        g_467130 = mode;
+        g_467134 = (void *)group;
+        g_467138 = &g_4c1a48[group];
+        g_4858b4 = target;
+        function_14bc0((short)target, 0, true);
+        if (mode == 1 && !g_485a75 && !g_485a76) function_14b60(1, 0, 0.0f, 0);
+        function_15680(normal_cull && (g_485898 < 4 || g_485898 > 7) ? 1 : 0);
+        if (filter) function_0496f0();
+    }
+    else g_467130 = 0;
+    function_15370(depth ? 1 : 0);
+    if (enabled) { function_44550(); function_445d0(); }
+}
+
+/* the index of key in the list's keys, or NONE */
+PRIVATE inline short key_list_find_index(byte const *list, long key)
+{
+    long i;
+    for (i = 0; i < *(word const *)(list + 4); i++)
+    {
+        if ((*(long const *const *)(list + 0xc))[i] == key)
+        {
+            return (short)i;
+        }
+    }
+    return NONE;
+}
+
 // @retail 0x30ed0
 void function_30ed0()
 {
     bool rendered = false;
     byte *state = (byte *)g_4c0b78.state;
     byte *list = *(byte **)(state + 0x14);
-    long saved_context = g_4c19ac;
+    long first_group = g_4c19ac;
     for (long i = 0; i < g_4ba134; ++i)
     {
-        byte *entry = (byte *)&g_4ba074 + i * 12;
-        volatile long found = 0;
-        bool hit = false;
-        for (long j = 0; j < *(word *)(list + 4); ++j)
-            if (*(long *)(*(byte **)(list + 0xc) + j * 4) == *(long *)entry) { found = j; hit = true; break; }
-        if (!hit || !(*(word *)(*(byte **)(list + 8) + found * 2) & 0x1000)) continue;
+        s_flag_entry const *entry = &g_4ba074[i];
+        long index = key_list_find_index(list, entry->key);
+        if (index == NONE || !(*(word *)(*(byte **)(list + 8) + (short)index * 2) & 0x1000))
+            continue;
         s_object_marker marker;
-        if (function_b8d30(*(long *)entry, *(long *)(entry + 4), &marker, 1, false) <= 0) continue;
         byte *frustum = *(byte **)state + 4;
+        if (function_b8d30(entry->key, entry->value, &marker, 1, false) <= 0)
+            continue;
         s_bounds3d bounds3d;
-        if (!function_1650a0((s_view *)frustum, &marker.matrix.position, &bounds3d, *(real *)(entry + 8))) continue;
+        if (!function_1650a0((s_view *)frustum, &marker.matrix.position, &bounds3d, entry->x))
+            continue;
         s_record_sources &group = g_4c1a48[1];
         group.unknown10 = group.flags;
         group.flags = 0;
         group.first = group.count;
         real *r = (real *)&bounds3d;
-        real *bounds = (real *)(frustum + 0xa0);
-        if (!(r[0] > bounds[0])) r[0] = bounds[0];
-        if (r[1] > bounds[1]) r[1] = bounds[1];
-        if (!(r[2] > bounds[2])) r[2] = bounds[2];
-        if (r[3] > bounds[3]) r[3] = bounds[3];
-        function_133790((s_bit_vector_pool *)state, (short)found, false, (long *)&bounds3d, saved_context, true);
-        function_44ac0(3, 2, saved_context);
-        function_0494b0(bounds, (real const *)&bounds3d);
+        real *clip = (real *)(frustum + 0xa0);
+        if (!(r[0] > clip[0])) r[0] = clip[0];
+        if (r[1] > *(real *)(frustum + 0xa4)) r[1] = *(real *)(frustum + 0xa4);
+        if (!(r[2] > *(real *)(frustum + 0xa8))) r[2] = *(real *)(frustum + 0xa8);
+        if (r[3] > *(real *)(frustum + 0xac)) r[3] = *(real *)(frustum + 0xac);
+        function_133790((s_bit_vector_pool *)state, index, false, (long *)&bounds3d, first_group + i, true);
+        function_44ac0(3, 2, first_group + i);
+        function_0494b0(clip, (real const *)&bounds3d);
         draw_configured_pass_r18(10);
-        draw_source_pass_r18(1, 11, true, false, false, g_4858b8, true);
+        draw_light_source_pass(1, 11, true, false, false, g_4858b8, true);
         group.flags = group.unknown10;
         group.first = 0;
         rendered = true;
     }
-    g_4c19ac = saved_context;
+    g_4c19ac = first_group;
     if (rendered) function_40e90(0);
 }
 
@@ -3639,25 +3676,6 @@ void __stdcall function_15720(real x, real y);
 
 extern byte g_4ba018;
 extern dword g_4b843c;
-
-PRIVATE __forceinline void draw_light_source_pass(long group, long mode, bool extra_enabled, bool depth, bool normal_cull, long target, bool filter)
-{
-    dword enabled = (g_4c1a48[group].flags >> mode) & (extra_enabled ? 1 : 0);
-    if (enabled)
-    {
-        g_467130 = mode;
-        g_467134 = (void *)group;
-        g_467138 = &g_4c1a48[group];
-        g_4858b4 = target;
-        function_14bc0((short)target, 0, true);
-        if (mode == 1 && !g_485a75 && !g_485a76) function_14b60(1, 0, 0.0f, 0);
-        function_15680(normal_cull && (g_485898 < 4 || g_485898 > 7) ? 1 : 0);
-        if (filter) function_0496f0();
-    }
-    else g_467130 = 0;
-    function_15370(depth ? 1 : 0);
-    if (enabled) { function_44550(); function_445d0(); }
-}
 
 // @retail 0x31170
 void function_31170(long tag, s_view_camera *camera, long resource, s_view_source *source, bool special, real scale)
