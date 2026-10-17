@@ -132,7 +132,6 @@ void function_16c6f0(long object_index, transform4x3f *matrix);
 long function_16c2b0(void);
 s_animation *function_1daea0(s_graph_tag *graph, c_type_709360 animation_id);
 extern point3f *g_468788;
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name);
 void function_3f660(transform4x3f const *matrix);
 void function_1554b0(real elapsed);
 void __stdcall function_16f280(real dt);
@@ -297,7 +296,7 @@ void function_16bf70(long animation_graph_index, long animation_name, long unit_
 		struct { c_type_709360 id; s_animation_state state; } work;
 
 		work.state.initialize(animation_graph_index, NONE, true);
-		work.id = function_1dd0b0(graph_tag_get(work.state.graph_tag_index), animation_name);
+		work.id = graph_tag_get(work.state.graph_tag_index)->animation_by_name(animation_name);
 		if (work.id.index != NONE)
 		{
 			s_animation *animation = function_1daea0(graph_tag_get(work.state.graph_tag_index), work.id);
@@ -501,7 +500,7 @@ void function_16c110(long animation_graph_index, long animation_name, long objec
 		s_animation_state state;
 
 		state.initialize(animation_graph_index, NONE, true);
-		c_type_709360 animation_id = function_1dd0b0(graph_tag_get(state.graph_tag_index), animation_name);
+		c_type_709360 animation_id = graph_tag_get(state.graph_tag_index)->animation_by_name(animation_name);
 		if (animation_id.index != NONE)
 		{
 			transform4x3f matrix;
@@ -575,7 +574,7 @@ bool camera_scripting_animation_matrix_get(transform4x3f *matrix, real *seconds_
 	s_animation_state state;
 
 	state.initialize(camera_animation->graph_tag_index, NONE, true);
-	c_type_709360 animation_id = function_1dd0b0(graph_tag_get(state.graph_tag_index), camera_animation->animation_name);
+	c_type_709360 animation_id = graph_tag_get(state.graph_tag_index)->animation_by_name(camera_animation->animation_name);
 	if (animation_id.index != NONE)
 	{
 		long unit_index;

@@ -93,7 +93,9 @@ void function_15c150()
 		{
 			long index = iterator.datum_index;
 			++count;
+#pragma inline_depth(0)
 			if (!function_15eb20(index))
+#pragma inline_depth()
 			{
 				byte *player = g_4e8c24->data + (index & 0xffff) * 0x21c;
 				long unit_index = *(long *)(player + 0x2c);
@@ -145,8 +147,12 @@ void function_15c150()
 			{
 				byte *player = g_4e8c24->data + (index & 0xffff) * 0x21c;
 				real *fade = (real *)((byte *)globals + 0xe4 + local * 4);
-				if (*(short *)((byte *)globals + 0xfa) > g_510c54->field_2_3 * 4 ||
-					(*(long *)(player + 0x2c) == NONE && *(long *)(player + 0x170) <= 0 && function_158a50(index)))
+				if (*(short *)((byte *)globals + 0xfa) > g_510c54->field_2_3 * 4)
+				{
+					real value = *fade + 1.0f / (real)g_510c54->field_2_3;
+					*fade = value < 1.0f ? value : 1.0f;
+				}
+				else if (*(long *)(player + 0x2c) == NONE && *(long *)(player + 0x170) <= 0 && function_158a50(index))
 				{
 					real value = *fade + 1.0f / (real)g_510c54->field_2_3;
 					*fade = value < 1.0f ? value : 1.0f;

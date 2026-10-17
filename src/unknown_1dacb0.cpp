@@ -645,13 +645,13 @@ bool function_1dceb0(s_graph_iterator3c *iterator, s_graph_tag *graph)
 /* the animation of the given name in the graph or the graphs it inherits
    from, the graph first */
 // @retail 0x1dd0b0
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name)
+c_type_709360 s_graph_tag::animation_by_name(long name)
 {
 	c_type_709360 animation_id;
-	s_graph_tag *current = graph;
+	s_graph_tag *current = this;
 	long graph_index = NONE;
 
-	if (graph)
+	if (this)
 	{
 
 		do
@@ -680,17 +680,17 @@ c_type_709360 function_1dd0b0(s_graph_tag *graph, long name)
 			if (animation_id.index == NONE)
 			{
 				graph_index++;
-				if (graph_index >= graph->inheritance_count)
+				if (graph_index >= inheritance_count)
 				{
 					break;
 				}
-				current = graph_inherited_get(graph, graph_index);
+				current = graph_inherited_get(this, graph_index);
 			}
 		}
 		while (current);
 		if (animation_id.index != NONE)
 		{
-			function_1dd9d0(graph, animation_id);
+			function_1dd9d0(this, animation_id);
 		}
 	}
 	return animation_id;

@@ -525,7 +525,7 @@ void sound_source_get_position(s_sound_location_source const *source, long liste
 real magnitude3d(vector3f const *v);
 
 // @retail 0x127e20
-real sound_source_get_listener_distance(s_sound_location_source const *source, long listener_index)
+real sound_source_get_listener_distance(long listener_index, s_sound_location_source const *source)
 {
 	real result;
 
@@ -1480,7 +1480,7 @@ bool function_128b90(long other_index, long sound_index, real distance)
 			if (other->value_a0 != sound->value_a0)
 				return false;
 		}
-		if (sound_source_get_listener_distance((s_sound_location_source const *)&sound->location, sound->listener_index) > distance)
+		if (sound_source_get_listener_distance(sound->listener_index, (s_sound_location_source const *)&sound->location) > distance)
 			return true;
 	}
 	return false;
@@ -1496,7 +1496,7 @@ short sound_voice_find(long sound_index, long *reason)
 	short result = NONE;
 	long result_sound_index = NONE;
 	real result_distance;
-	real distance = sound_source_get_listener_distance((s_sound_location_source const *)&sound->location, sound->listener_index);
+	real distance = sound_source_get_listener_distance(sound->listener_index, (s_sound_location_source const *)&sound->location);
 
 	*reason = 0;
 	for (short i = 0; i < SOUND_SYSTEM->voice_count; i++)
@@ -1518,7 +1518,7 @@ short sound_voice_find(long sound_index, long *reason)
 				*reason = 9;
 				result_sound_index = voice->sound_index;
 				result = i;
-				result_distance = sound_source_get_listener_distance((s_sound_location_source const *)&other->location, other->listener_index);
+				result_distance = sound_source_get_listener_distance(other->listener_index, (s_sound_location_source const *)&other->location);
 			}
 		}
 	}
@@ -2180,7 +2180,7 @@ long __stdcall function_127d00(s_type_99c531 const *source, real maximum_distanc
 		{
 			if (SOUND_SYSTEM->listeners[i].active)
 			{
-				real listener_distance = sound_source_get_listener_distance((s_sound_location_source const *)*source_reference, i);
+				real listener_distance = sound_source_get_listener_distance(i, (s_sound_location_source const *)*source_reference);
 
 				if (best > listener_distance)
 				{
@@ -2289,7 +2289,7 @@ long function_126000(long tag_index, long listener_index, s_sound_play_state *st
 		if (result != NONE)
 		{
 			s_sound_playback *sound = SOUND_PLAYBACK_GET(result);
-			long delay = (long)(sqrt(sound_source_get_listener_distance((s_sound_location_source const *)&state->location, listener_index)) * g_547f14);
+			long delay = (long)(sqrt(sound_source_get_listener_distance(listener_index, (s_sound_location_source const *)&state->location)) * g_547f14);
 			long chunk_index;
 
 			sound->state = 0;
@@ -2565,6 +2565,8 @@ struct s_driver_voice_index_view
 	short buffer_index;
 	byte unknown04[0x6c - 4];
 };
+
+static __forceinline short sound_voice_find_available_channel(char type);
 
 static inline short sound_voice_find_available_channel(char type)
 {

@@ -349,7 +349,6 @@ void function_10e920(long object_index);
 void function_10dbc0(long object_index);
 long render_model_find_named_entry(long render_model_index, long name);
 void function_11b710(long unit_index, long field_7c);
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name);
 s_animation *function_1daea0(s_graph_tag *graph, c_type_709360 animation_id);
 
 // @retail 0x111590
@@ -1038,7 +1037,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 
 		if (graph)
 		{
-			c_type_709360 first_id = function_1dd0b0(graph, animation_name);
+			c_type_709360 first_id = graph->animation_by_name(animation_name);
 			if (first_id.index == NONE)
 				goto done_1101e0;
 
@@ -1054,7 +1053,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 				goto done_1101e0;
 			}
 
-			c_type_709360 animation_id = function_1dd0b0(GRAPH_GET(state->graph_tag_index), animation_name);
+			c_type_709360 animation_id = GRAPH_GET(state->graph_tag_index)->animation_by_name(animation_name);
 			function_10f260(unit_index);
 
 			word channel_flags = flag ? 0x4003 : 0x4001;
@@ -1790,7 +1789,7 @@ struct s_request_114b60
 };
 
 // @retail 0x114b60
-bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra)
+bool unit_submit_entry_request(short fallback_index, short entry_index, long unit_index, long priority, void const *extra)
 {
 	bool local_0 = false;
 	// Retail keeps the object on the stack and reuses the priority slot for the tag.
@@ -1830,6 +1829,12 @@ bool function_114b60(short entry_index, short fallback_index, long unit_index, l
 	}
 local_1:
 	return local_0;
+}
+
+/* the same request with the entry first, for callers written in that order */
+bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra)
+{
+	return unit_submit_entry_request(fallback_index, entry_index, unit_index, priority, extra);
 }
 
 real function_259a0(dword *seed);
