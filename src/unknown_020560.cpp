@@ -1103,6 +1103,7 @@ void function_1ed70(color4f const *color, s_1ed70_point const *points, short cou
 // @retail 0x1ba00
 void function_1ba00(byte *state)
 {
+    unsigned long output = 0;
     byte *definition = *(byte **)(state + 0x20);
     byte *blocks = *(byte **)(definition + 0x2c);
     dword *values = *(dword **)(definition + 0x34);
@@ -1110,19 +1111,17 @@ void function_1ba00(byte *state)
     *(dword *)(state + 0x14fc) = *(dword *)(selection + 0xde);
     *(dword *)(state + 0x1504) = *(dword *)(selection + 0xe6);
     *(dword *)(state + 0x1500) = *(dword *)(selection + 0xe2);
-    unsigned long output = 0;
     bool final = false;
     for (long i = 0; i < (*(word *)(*(byte **)(state + 0x24) + 0xf6) >> 9); ++i)
     {
-        word range = *(word *)(*(byte **)(state + 0x24) + 0xf6);
+        short *entry = *(short **)(*(byte **)(state + 0x20) + 0x24) + ((*(word *)(*(byte **)(state + 0x24) + 0xf6) & 0x1ff) + i) * 2;
         state[0x1520 + i] = (byte)output;
-        short *entry = *(short **)(*(byte **)(state + 0x20) + 0x24) + ((range & 0x1ff) + i) * 2;
-        long block_index = (word)entry[1] & 0x1ff;
+        short source = entry[0];
         byte *block;
-        if (!(entry[0] == NONE))
-            block = blocks + (block_index + *(long *)(state + 0x300 + entry[0] * 4)) * 6;
+        if (source == NONE)
+            block = blocks + ((word)entry[1] & 0x1ff) * 6;
         else
-            block = blocks + block_index * 6;
+            block = blocks + (((word)entry[1] & 0x1ff) + *(long *)(state + 0x300 + source * 4)) * 6;
         dword *value = values + (*(word *)(block + 4) & 0x1ff) * 8;
         for (long j = 0; j < (*(word *)(block + 4) >> 9); value += 8, ++j)
         {
