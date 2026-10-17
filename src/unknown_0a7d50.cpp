@@ -224,7 +224,8 @@ void function_a85c0(long index, s_collision_result_1697c0 const *collision,
             }
             else
             {
-                s_collision_event_data data;
+                struct { long target; s_collision_event_data data; } packet;
+                s_collision_event_data &data = packet.data;
                 data.definition = *(long *)object;
                 data.first_scale = first_scale;
                 data.second_scale = second_scale;
