@@ -166,8 +166,7 @@ long physical_memory_used_pages(s_physical_object *physical, long age)
 }
 
 struct s_physical_block_view;
-struct s_physical_allocator_view;
-bool function_13d320(s_physical_allocator_view const *allocator, s_physical_block_view const *a, s_physical_block_view const *b);
+bool physical_memory_candidate_is_better(s_physical_object const *physical, s_physical_block_view const *a, s_physical_block_view const *b);
 
 struct s_block_candidate
 {
@@ -266,7 +265,7 @@ long __stdcall function_13d370(s_physical_object *physical, long size, long type
 								better = candidate->time < best.time || (candidate->time == best.time && candidate->pages < best.pages);
 								break;
 							case 1:
-								better = function_13d320((s_physical_allocator_view *)physical, (s_physical_block_view *)candidate, (s_physical_block_view *)&best);
+								better = physical_memory_candidate_is_better(physical, (s_physical_block_view *)candidate, (s_physical_block_view *)&best);
 								break;
 							default:
 								{

@@ -177,7 +177,7 @@ void __stdcall cache_copy_record_use(char const *map_name)
 	char path[256];
 	s_cache_copy *copy;
 
-	*(short volatile *)path = 0;
+	path[0] = 0;
 	map_file_path_get(map_name, path);
 	copy = cache_copy_find(path);
 	if (!copy)
@@ -280,7 +280,7 @@ long cache_copy_current_priority(char const *map_name)
 
 	path[0] = 0;
 	map_file_path_get(map_name, path);
-	*(short volatile *)current_path = 0;
+	current_path[0] = 0;
 	map_file_path_get(g_55bd21, current_path);
 	if (!function_11c920(path, current_path))
 	{
@@ -298,7 +298,7 @@ long cache_copy_queued_priority(char const *map_name)
 
 	path[0] = 0;
 	map_file_path_get(map_name, path);
-	*(short volatile *)queued_path = 0;
+	queued_path[0] = 0;
 	map_file_path_get(g_55be24[1].map_name, queued_path);
 	if (!function_11c920(path, queued_path))
 	{
@@ -328,7 +328,7 @@ long map_location_get(char const *map_name)
 	char path[256];
 	s_cache_copy *copy;
 
-	*(short volatile *)path = 0;
+	path[0] = 0;
 	map_file_path_get(map_name, path);
 	if (cache_file_find(path) != NONE)
 	{
