@@ -519,7 +519,7 @@ bool function_68290(void);
 long function_1910b8(long controller);
 void function_236299(long sound);
 c_class_1473c9 *__stdcall function_2320c4(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_1475c7(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall mp_pause_game_open(s_screen_parameters *parameters);
 
 /* a player slot's player (NONE when the user has none) */
 struct s_player_slot_player_view
@@ -595,7 +595,7 @@ void window_manager_handle_multiplayer_event(s_event const *event)
 					{
 						s_screen_parameters parameters;
 						parameters.field_c = 0;
-						function_149f49((s_message *)&parameters, 0, 0, 1 << user, 5, player, (long)function_1475c7);
+						function_149f49((s_message *)&parameters, 0, 0, 1 << user, 5, player, (long)mp_pause_game_open);
 						parameters.load(&parameters);
 					}
 				}

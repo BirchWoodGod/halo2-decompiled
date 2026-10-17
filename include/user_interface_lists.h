@@ -484,7 +484,7 @@ public:
 	long mode;
 };
 
-/* "legalese acceptance list" (vtable 0x458988; unknown_14741b.cpp) */
+/* "legalese acceptance list" (vtable 0x458988; main_menu.cpp) */
 class c_legalese_acceptance_list : public c_class_1474e8
 {
 public:
@@ -499,7 +499,7 @@ public:
 	bool accepted;
 };
 
-/* "main menu list" (vtable 0x458a70; unknown_14741b.cpp) */
+/* "main menu list" (vtable 0x458a70; main_menu.cpp) */
 class c_main_menu_list : public c_class_1474e8
 {
 public:
@@ -523,7 +523,7 @@ public:
 	virtual bool v10(s_widget_event *event);
 };
 
-/* "mp pause game list" (vtable 0x459298; unknown_14741b.cpp) */
+/* "mp pause game list" (vtable 0x459298; mp_pause_game.cpp) */
 class c_mp_pause_game_list : public c_class_1474e8
 {
 public:
