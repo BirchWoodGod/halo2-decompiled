@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-16: 8927 functions match
+
+```
+matched 8927 of 11321 game functions (1235990 of 2784283 bytes, 44.39%)
+```
+
+5 new matches, none lost:
+- @BirchWoodGod's #517: `0x91400`, `0x915d0`, `0x91690`, `0x916e0` and `0x91fc0` match.
+
 ## 2026-10-16: 8922 functions match
 
 ```
