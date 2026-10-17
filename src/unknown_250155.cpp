@@ -2703,6 +2703,26 @@ struct s_localized_short_name;
 wchar_t *localized_name_get(s_localized_name *definition);
 wchar_t *localized_short_name_get(s_localized_short_name *definition);
 
+/* the player list's items: a player's name, appearance and team, each with
+   the flag that says the item has it */
+PRIVATE inline void squad_item_set_name(s_widget_item *item, word const *name)
+{
+	item->flags |= 1;
+	item->value4 = (long)name;
+}
+
+PRIVATE inline void squad_item_set_appearance(s_widget_item *item, dword const *appearance)
+{
+	item->flags |= 2;
+	memcpy(item->value48, appearance, sizeof(item->value48));
+}
+
+PRIVATE inline void squad_item_set_team(s_widget_item *item, short team)
+{
+	item->flags |= 4;
+	item->value5c = team;
+}
+
 // @retail 0x253339
 void c_network_squad_browser_screen::v3()
 {
@@ -2721,16 +2741,13 @@ void c_network_squad_browser_screen::v3()
 
 		for (i = 0; i < squad->player_count; i++)
 		{
-			items[i].has_value4 = true;
-			items[i].value4 = (long)squad->player_names[i];
+			squad_item_set_name(&items[i], squad->player_names[i]);
 			if (has_game)
 			{
-				items[i].unknown1 = true;
-				memcpy(items[i].value48, squad->player_appearances[i], sizeof(items[i].value48));
+				squad_item_set_appearance(&items[i], squad->player_appearances[i]);
 				if (squad->has_teams)
 				{
-					items[i].has_value5c = true;
-					items[i].value5c = squad->player_teams[i];
+					squad_item_set_team(&items[i], squad->player_teams[i]);
 				}
 			}
 		}
