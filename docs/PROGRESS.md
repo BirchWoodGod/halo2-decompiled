@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-17: 8991 functions match
+
+```
+matched 8991 of 11321 game functions (1255985 of 2784283 bytes, 45.11%)
+```
+
+2 new matches, none lost:
+- Our key lane's round 20 (machine 3's loan): `0x178bc0` and `0x293b30` match.
+
 ## 2026-10-17: 8989 functions match
 
 ```
