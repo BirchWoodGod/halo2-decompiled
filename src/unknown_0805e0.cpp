@@ -463,7 +463,7 @@ bool function_1368f0(s_type_acf665 *file);
 bool function_136e90(s_type_acf665 *file, dword *size);
 
 char const g_450c68[] = "z:\\player_configuration_cache.dat";
-bool volatile g_467260 = true;
+bool g_467260 = true;
 s_file_handle g_467264 = { INVALID_HANDLE_VALUE };
 
 /* loads the cache from its file; true when the file has the cache's size,
