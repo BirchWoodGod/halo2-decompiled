@@ -942,7 +942,7 @@ void function_15b220(long object_index, long slot);
 void __stdcall object_list_erase(long object_index);
 void function_bb950(long object_index, bool add, long delta);
 void function_a7a60(long object_index);
-void function_10ace0(long object_index);
+void object_interpolated_values_clear_all(long object_index);
 
 // Disabled: round 18 reactivation with exact bef30 still breaks matched 11a320; retain the complete 14-difference, 190/189-byte draft
 // Disabled: round 35: five new fruitless trials, 14 differences; activation loses matched d6bc0 and 11a320
@@ -967,7 +967,7 @@ void __stdcall function_b8540(long object_index)
     object_list_erase(object_index);
     function_bb950(object_index, false, NONE);
     function_a7a60(object_index);
-    function_10ace0(object_index);
+    object_interpolated_values_clear_all(object_index);
 }
 #endif
 
