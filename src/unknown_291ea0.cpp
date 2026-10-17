@@ -97,7 +97,7 @@ inline void dialogue_name_override(long volatile *name, long value)
 bool function_291ea0(long arg_80f1d4, long actor_index, long script_index, real *duration)
 {
 	s_scenario_ai_dialogue_view *scenario = (s_scenario_ai_dialogue_view *)g_4e0350;
-	volatile bool result = false;
+	bool result = false;
 
 	if (duration)
 		*duration = 0.0f;
@@ -112,56 +112,53 @@ bool function_291ea0(long arg_80f1d4, long actor_index, long script_index, real 
 			{
 				s_tag_instance *tags = g_4e3b44;
 				s_ai_dialogue_globals *globals = (s_ai_dialogue_globals *)tags[globals_index & 0xffff].bytes;
-				if (globals->vocalization_count > 0)
+				for (short i = 0; i < globals->vocalization_count; i++)
 				{
-					short i = 0;
-					do
+					s_vocalization *vocalization = &globals->vocalizations[i];
+					if (vocalization->name == arg_80f1d4)
 					{
-						s_vocalization *vocalization = &globals->vocalizations[i];
-						if (vocalization->name == arg_80f1d4)
-						{
-							s_globals_tag_dialogue_view *globals_tag = (s_globals_tag_dialogue_view *)g_4e034c;
-							long default_name = 0;
-							if (globals_tag && globals_tag->count > 0)
-								default_name = *(long *)(globals_tag->elements + 0x68);
+						s_globals_tag_dialogue_view *globals_tag = (s_globals_tag_dialogue_view *)g_4e034c;
+						long default_name = 0;
+						if (globals_tag && globals_tag->count > 0)
+							default_name = *(long *)(globals_tag->elements + 0x68);
 
-							volatile long name = vocalization->default_name;
-							if (name == 0 || name == NONE)
-								name = default_name;
+						long local_dn = vocalization->default_name;
+						long name;
+						if (local_dn != 0)
+							name = local_dn;
+						if (local_dn == 0 || local_dn == NONE)
+							name = default_name;
 
-							s_unit_291ea0 *unit = ((s_object_header_291ea0 *)g_4e0300->data)[unit_index & 0xffff].object;
-							s_unit_dialogue_view *dialogue = (s_unit_dialogue_view *)((byte *)unit + unit->dialogue_offset);
-							if (dialogue->dialogue_definition_index == NONE)
-								break;
-
-							long unit_name = dialogue->name;
-							s_dialogue_definition_view *definition = (s_dialogue_definition_view *)tags[dialogue->dialogue_definition_index & 0xffff].bytes;
-							dialogue_name_override(&name, unit_name);
-							if (name == NONE || name == 0)
-								name = unit_name;
-
-							for (short j = 0; j < vocalization->variant_count; j++)
-							{
-								s_vocalization_variant *variant = &vocalization->variants[j];
-								if (variant->dialogue_name == definition->name)
-								{
-									if (variant->sound_index == NONE)
-										break;
-									dialogue_name_override(&name, variant->name);
-									dialogue_name_override(&name, variant->name);
-
-									real seconds = function_2760a0(actor_index, script_index, name, variant->sound_index, 1.0f, 1.0f);
-									if (duration)
-										*duration = seconds;
-									result = true;
-									break;
-								}
-							}
+						s_unit_291ea0 *unit = ((s_object_header_291ea0 *)g_4e0300->data)[actor->unit_index & 0xffff].object;
+						s_unit_dialogue_view *dialogue = (s_unit_dialogue_view *)((byte *)unit + unit->dialogue_offset);
+						if (dialogue->dialogue_definition_index == NONE)
 							break;
-						}
 
-						i++;
-					} while (i < globals->vocalization_count);
+						long unit_name = dialogue->name;
+						s_dialogue_definition_view *definition = (s_dialogue_definition_view *)tags[dialogue->dialogue_definition_index & 0xffff].bytes;
+						dialogue_name_override(&name, unit_name);
+						if (name == NONE || name == 0)
+							name = unit_name;
+
+						for (short j = 0; j < vocalization->variant_count; j++)
+						{
+							s_vocalization_variant *variant = &vocalization->variants[j];
+							if (variant->dialogue_name == definition->name)
+							{
+								if (variant->sound_index == NONE)
+									break;
+								dialogue_name_override(&name, variant->name);
+								dialogue_name_override(&name, variant->name);
+
+								real seconds = function_2760a0(actor_index, script_index, name, variant->sound_index, 1.0f, 1.0f);
+								if (duration)
+									*duration = seconds;
+								result = true;
+								break;
+							}
+						}
+						break;
+					}
 				}
 			}
 		}

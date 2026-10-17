@@ -2,6 +2,105 @@
 
 The newest entry comes first.
 
+## 2026-10-17: 9040 functions match
+
+```
+matched 9040 of 11321 game functions (1272869 of 2784283 bytes, 45.72%)
+```
+
+13 new matches, none lost:
+- Machine 3's batch 65 (#548): `0x214f0`, `0x246a0`, `0x251b0`, `0x276d0`, `0x352e0`, `0x47ea0`, `0x9ba90`, `0xb5110`, `0xfda00`, `0x12a0b0`, `0x1b7000`, `0x1bdad0` and `0x25ab50` match.
+
+## 2026-10-17: 9027 functions match
+
+```
+matched 9027 of 11321 game functions (1267121 of 2784283 bytes, 45.51%)
+```
+
+3 new matches, none lost:
+- Our key lane's round k1r21 (machine 3's loan): `0x2641c0`, `0x276160` and `0x2a7cf0` match.
+
+## 2026-10-17: 9024 functions match
+
+```
+matched 9024 of 11321 game functions (1266818 of 2784283 bytes, 45.50%)
+```
+
+11 new matches, none lost:
+- Machine 3's batch 64 (#547): `0x8b0a0`, `0xb5920`, `0x11c120`, `0x121120`, `0x1890c0`, `0x189400`, `0x1d90e0`, `0x2151f0`, `0x22c330`, `0x2511b6` and `0x2c0740` match.
+
+## 2026-10-17: 9013 functions match
+
+```
+matched 9013 of 11321 game functions (1264095 of 2784283 bytes, 45.40%)
+```
+
+0 new matches, none lost:
+- @coldspear's #546:  match.
+
+## 2026-10-17: 9013 functions match
+
+```
+matched 9013 of 11321 game functions (1264095 of 2784283 bytes, 45.40%)
+```
+
+2 new matches, none lost:
+- Our key lane's round k3r2 (machine 3's loan): `0x1f2e60` and `0x1f8940` match.
+
+## 2026-10-17: 9011 functions match
+
+```
+matched 9011 of 11321 game functions (1263412 of 2784283 bytes, 45.38%)
+```
+
+10 new matches, none lost:
+- Machine 3's batch 63 (#545): `0x245c0`, `0x29370`, `0x296c0`, `0x2b000`, `0x351a0`, `0xa85c0`, `0x1afcf0`, `0x1ba5c0`, `0x1bf5c0` and `0x2772b0` match.
+
+## 2026-10-17: 9001 functions match
+
+```
+matched 9001 of 11321 game functions (1258739 of 2784283 bytes, 45.21%)
+```
+
+1 new matches, none lost:
+- Our key lane's round k3r1 (machine 3's loan): `0x1b0f20` match.
+
+## 2026-10-17: 9000 functions match
+
+```
+matched 9000 of 11321 game functions (1258402 of 2784283 bytes, 45.20%)
+```
+
+0 new matches, none lost:
+- @BirchWoodGod's #537:  match.
+
+## 2026-10-17: 9000 functions match
+
+```
+matched 9000 of 11321 game functions (1258402 of 2784283 bytes, 45.20%)
+```
+
+2 new matches, none lost:
+- @BirchWoodGod's #536: `0x2bc420` and `0x2bc4f0` match.
+
+## 2026-10-17: 8998 functions match
+
+```
+matched 8998 of 11321 game functions (1258003 of 2784283 bytes, 45.18%)
+```
+
+1 new matches, none lost:
+- @BirchWoodGod's #530: `0x1b3880` match.
+
+## 2026-10-17: 8997 functions match
+
+```
+matched 8997 of 11321 game functions (1257651 of 2784283 bytes, 45.17%)
+```
+
+3 new matches, none lost:
+- @BirchWoodGod's #543: `0x1c6f60`, `0x1c7100` and `0x1c7200` match.
+
 ## 2026-10-17: 8994 functions match
 
 ```

@@ -220,8 +220,10 @@ void function_121120(void)
 			}
 			if (global_preferences_globals.file.handle != INVALID_HANDLE_VALUE && signed_data)
 			{
+				s_file_write_flags flags(1);
+
 				global_preferences_globals.saved.signature = signature;
-				global_preferences_globals.write_task = function_1a1050(global_preferences_globals.file, &global_preferences_globals.saved, sizeof(global_preferences_globals.saved), 0, 1, 8, 2, NULL, &global_preferences_globals.done);
+				global_preferences_globals.write_task = function_1a1050(global_preferences_globals.file, &global_preferences_globals.saved, sizeof(global_preferences_globals.saved), 0, flags, 8, 2, NULL, &global_preferences_globals.done);
 			}
 		}
 		global_preferences_globals.dirty = false;
