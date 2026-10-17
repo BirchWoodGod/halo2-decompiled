@@ -24,7 +24,7 @@ c_class_1473c9 *__stdcall function_230691(s_screen_parameters *request);
 c_class_1473c9 *__stdcall function_2310b7(s_screen_parameters *request);
 c_class_1473c9 *__stdcall function_2312c2(s_screen_parameters *request);
 c_class_1473c9 *__stdcall function_2313a8(s_screen_parameters *request);
-c_class_1473c9 *__stdcall function_231995(s_screen_parameters *request);
+c_class_1473c9 *__stdcall online_y_menu_open(s_screen_parameters *request);
 c_class_1473c9 *__stdcall function_2320c4(s_screen_parameters *request);
 c_class_1473c9 *__stdcall function_231db5(s_screen_parameters *request);
 c_class_1473c9 *__stdcall function_23252e(s_screen_parameters *request);
@@ -911,8 +911,8 @@ struct s_objectives_scenario_view
 	long objectives_string_list_index;
 };
 
-long function_22c075(long index);
-long function_232371(long item);
+long mission_objectives_state(long index);
+long mission_objectives_text_id(long item);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 word *unicode_string_append(word *destination, const word *source, long maximum_count);
 
@@ -939,7 +939,7 @@ void function_23223d(c_pause_game_screen *screen)
 		{
 			for (long i = 0; i < 5; i++)
 			{
-				long state = function_22c075(i);
+				long state = mission_objectives_state(i);
 
 				if (state)
 				{
@@ -959,7 +959,7 @@ void function_23223d(c_pause_game_screen *screen)
 						unicode_string_append(buffer, checked_box, 0x100);
 					}
 					buffer[0xff] = 0;
-					function_1a0180(string_list_index, function_232371(i), objective);
+					function_1a0180(string_list_index, mission_objectives_text_id(i), objective);
 					unicode_string_append(buffer, objective, 0x100);
 					buffer[0xff] = 0;
 					unicode_string_append(buffer, (word const *)L"\r\n", 0x100);

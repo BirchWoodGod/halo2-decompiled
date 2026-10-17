@@ -121,7 +121,7 @@ public:
 	void handle_item(s_controller_reference **controller, long *item);
 
 	c_class_14750b items[6];
-	/* the online Y menu's tab fills these in (unknown_2312b4.cpp) */
+	/* the online Y menu's tab fills these in (online_y_menu_screen.cpp) */
 	word *name;
 	void *entries;
 	long entry_count;
@@ -189,7 +189,7 @@ public:
 	void handle_item(s_controller_reference **controller, long *item);
 
 	c_class_14750b items[4];
-	/* the online Y menu's tab fills these in (unknown_2312b4.cpp) */
+	/* the online Y menu's tab fills these in (online_y_menu_screen.cpp) */
 	word *name;
 	void *entries;
 	long entry_count;

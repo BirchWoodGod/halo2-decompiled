@@ -237,7 +237,7 @@ void c_4way_signin_screen::v18(void *parameters)
 	g_54d598.m1220 = false;
 }
 
-c_class_1473c9 *__stdcall function_22f11e(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall press_start_screen_open(s_screen_parameters *parameters);
 short player_slot_count_active(void);
 bool function_6c7e0();
 void function_1905bf(long controller, bool flag);
@@ -249,7 +249,7 @@ bool __stdcall function_252a32(long controller)
 	s_screen_parameters parameters;
 
 	parameters.field_c = 0;
-	function_149f49((s_message *)&parameters, 0, 0, (word)(1 << controller), 5, 4, (long)function_22f11e);
+	function_149f49((s_message *)&parameters, 0, 0, (word)(1 << controller), 5, 4, (long)press_start_screen_open);
 	parameters.load(&parameters);
 	return true;
 }
