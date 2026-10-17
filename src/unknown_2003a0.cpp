@@ -2122,7 +2122,7 @@ void function_1e4570(long arg_0, s_actor_options const *arg_1);
 void function_26b290(long arg_0);
 
 // @retail 0x202e90
-void __stdcall function_202e90(long arg_0, long arg_1, long arg_2)
+void __stdcall function_202e90(long arg_0, short arg_1, long arg_2)
 {
     struct s_entry_view
     {
@@ -2258,7 +2258,7 @@ void function_200d80(void)
     }
 }
 
-void __stdcall function_203120(long arg_0, long arg_1, long arg_2);
+void __stdcall function_203120(long arg_0, short arg_1, long arg_2);
 
 // @retail 0x201100
 void __stdcall function_201100(long arg_0, dword *arg_1)
@@ -2296,10 +2296,10 @@ void __stdcall function_201100(long arg_0, dword *arg_1)
 }
 
 // @retail 0x203120
-void __stdcall function_203120(long arg_0, long arg_1, long arg_2)
+void __stdcall function_203120(long arg_0, short arg_1, long arg_2)
 {
     long const *local_0 = &arg_0;
-    long const *local_1 = &arg_1;
+    short const *local_1 = &arg_1;
     long *local_2 = &arg_2;
     byte *local_3 = (byte *)squad_group_get(*local_0);
     if (!(byte)*local_2 && local_3[0x16] && *(short *)(local_3 + 0x14) != NONE)

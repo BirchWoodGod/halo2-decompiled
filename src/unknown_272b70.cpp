@@ -1105,8 +1105,8 @@ void function_274f30(long list_index, bool flag)
 	}
 }
 
-void __stdcall function_202e90(long squad_index, long index, long flag);
-void __stdcall function_203120(long squad_group_index, long index, long flag);
+void __stdcall function_202e90(long squad_index, short index, long flag);
+void __stdcall function_203120(long squad_group_index, short index, long flag);
 
 struct s_scenario_275cb0_view
 {

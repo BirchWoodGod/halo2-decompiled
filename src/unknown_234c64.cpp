@@ -953,24 +953,28 @@ int __cdecl function_2356d8(void const *a, void const *b)
 {
 	s_screen_sort_entry const *x = (s_screen_sort_entry const *)a;
 	s_screen_sort_entry const *y = (s_screen_sort_entry const *)b;
+	int result;
 	real difference = x->depth - y->depth;
 	real distance = difference >= 0.f ? difference : 0.f - difference;
 
 	if (distance <= 0.001f)
 	{
 		if (x->layer > y->layer)
-			return 1;
-		if (x->layer < y->layer)
-			return -1;
-		if (x->screen->type < y->screen->type)
-			return 1;
-		return x->screen->type > y->screen->type ? -1 : 0;
+			result = 1;
+		else if (x->layer < y->layer)
+			result = -1;
+		else if (x->screen->type < y->screen->type)
+			result = 1;
+		else
+			result = x->screen->type > y->screen->type ? -1 : 0;
 	}
-	if (y->depth > x->depth)
-		return 1;
-	if (x->depth > y->depth)
-		return -1;
-	return 0;
+	else if (y->depth > x->depth)
+		result = 1;
+	else if (x->depth > y->depth)
+		result = -1;
+	else
+		result = 0;
+	return result;
 }
 
 // @retail 0x2353a5
