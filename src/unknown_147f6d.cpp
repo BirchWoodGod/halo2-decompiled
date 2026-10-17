@@ -1693,7 +1693,7 @@ struct s_ui_initial_screen
 };
 
 void function_2157c0(long selection);
-void __stdcall function_149f88(void *screen);
+void __stdcall game_variant_settings_add_presets(void *screen);
 void window_manager_send_pending_join();
 
 // @retail 0x14784e
@@ -1719,7 +1719,7 @@ void function_14784e()
             function_2157c0(globals->selection);
         s_ui_initial_screen *screen = (s_ui_initial_screen *)ui_mode_definition_get();
         if (screen && screen->tag_index != NONE)
-            function_149f88(g_4e3b44[screen->tag_index & 0xffff].bytes);
+            game_variant_settings_add_presets(g_4e3b44[screen->tag_index & 0xffff].bytes);
     }
     g_4ee4e0 = false;
     g_4ee4c4.session_booted = false;

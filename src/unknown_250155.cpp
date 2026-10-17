@@ -3082,7 +3082,7 @@ void c_matchmaking_screen::v3()
         if (value618!=state)
         {
             long delta=state;
-            function_230427((short *)&delta);
+            select_pane((short *)&delta);
             value610=function_199d7c();
             value618=state;
             value614=function_75870();
