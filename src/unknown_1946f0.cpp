@@ -17,16 +17,17 @@ s_direction_face g_475480[32];
 
 static __inline real normalize3d(vector3f *v)
 {
-	real m = (real)sqrt(v->i * v->i + v->j * v->j + v->k * v->k);
+	real m = (real)sqrt(v->j * v->j + (v->i * v->i + v->k * v->k));
 	if (!(fabs(m) < k_real_epsilon))
 	{
 		real inv = 1.f / m;
 		v->i = inv * v->i;
 		v->j = inv * v->j;
 		v->k = v->k * inv;
-		return m;
 	}
-	return 0.f;
+	else
+		m = 0.f;
+	return m;
 }
 
 // Decode normalization uses the rounded local components in double products.

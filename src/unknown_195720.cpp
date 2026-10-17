@@ -180,7 +180,11 @@ real function_194ff0(s_bitstream *stream, real lo, real hi, long bits)
 		long n = (1 << bits) - 1;
 		if (value >= n)
 			return hi;
-		lo = (real)exp(((real)(n - value) * (real)log(lo) + (real)value * (real)log(hi)) / (real)n);
+		real log_lo = (real)log(lo);
+		real log_hi = (real)log(hi);
+		real weight_lo = (real)(n - value);
+		real weight_hi = (real)value;
+		lo = (real)exp((weight_lo * log_lo + weight_hi * log_hi) / (real)n);
 	}
 	return lo;
 }

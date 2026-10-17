@@ -8,6 +8,7 @@
 #include <wchar.h>
 #include <string.h>
 #include "globals.h"
+#include "language.h"
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
@@ -117,33 +118,33 @@ struct s_variant_string_list_view
 
 struct s_user_interface_shared_globals *ui_mode_definition_get(void);
 long function_11ca80(long value);
-__declspec(noinline) const char *string_table_find(s_string_table *table, long first, long count, long string_handle);
+const char *string_table_find(s_string_table *table, long first, long count, long string_handle);
 void utf8_string_to_utf16_string(const char *source, word *destination, long destination_count);
 void utf16_string_to_utf8_string(const word *source, char *destination, long destination_size);
 
-/* a string of a string list in the current language (as 0x1a0180, which
-   retail inlines here) */
-__forceinline void variant_string_get(long tag_index, long string_handle, word *buffer)
+/* a string of a table, as 0x1a0350, which retail inlines here */
+__forceinline void variant_string_table_get(s_string_table *table, long first, long count, long string_handle, word *buffer)
 {
-	long language;
-	s_variant_string_list_view *list;
-	s_string_table *table;
-
-	if (g_47ff38 == NONE)
-	{
-		g_47ff38 = function_11ca80(XGetLanguage());
-	}
-	language = g_47ff38;
-	list = (s_variant_string_list_view *)g_4e3b44[tag_index & 0xffff].bytes;
-	table = &((s_variant_string_tables_view *)g_4e034c)->tables[language];
 	if (table->loaded)
 	{
 		word string[0x100];
 
-		utf8_string_to_utf16_string(string_table_find(table, list->languages[language].first, list->languages[language].count, string_handle), string, 0x100);
+		utf8_string_to_utf16_string(string_table_find(table, first, count, string_handle), string, 0x100);
 		wcsncpy((wchar_t *)buffer, (wchar_t *)string, 0xff);
 		buffer[0xff] = 0;
 	}
+}
+
+/* a string of a string list in the current language: 0x1a0180 without
+   its test for NONE, which the caller makes */
+__forceinline void variant_string_get(long tag_index, long string_handle, word *buffer)
+{
+	long language = get_current_language();
+	s_variant_string_list_view *list = (s_variant_string_list_view *)g_4e3b44[tag_index & 0xffff].bytes;
+	s_variant_string_tables_view *tables = (s_variant_string_tables_view *)g_4e034c;
+
+	variant_string_table_get(&tables->tables[language], list->languages[language].first,
+		list->languages[language].count, string_handle, buffer);
 }
 
 /* fills a variant: its type and settings, its nine names and descriptions
