@@ -24,6 +24,8 @@
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "index_cache_storage.h"
+#include "depth_groups_storage.h"
+#include "unknown_11cb00.h"
 #include <xtl.h>
 #include <string.h>
 #include <math.h>
@@ -2607,57 +2609,62 @@ void __stdcall function_423c0(void *payload);
 void __stdcall function_4f010(void *payload);
 void __stdcall function_508d0(void *payload);
 
-struct s_42760_entry
-{
-    real depth;
-    point3f position;
-    byte unknown10[0x10];
-    long type;
-};
-s_42760_entry g_4c152c[32];
-long g_4c19ac;
+s_depth_groups_storage g_depth_groups_storage;
 
-extern "C" void _ReadWriteBarrier(void);
-#pragma intrinsic(_ReadWriteBarrier)
+/* Takes the next free record and clears its type and active flag, as
+   0x1e2d0 does, with the count advanced first. */
+PRIVATE inline s_cache_record *cache_record_push(void)
+{
+    s_cache_record *result = 0;
+    if (g_4b6280.count < 1024)
+    {
+        result = &g_4b6280.records[g_4b6280.count++];
+        result->count = 0;
+        result->active = 0;
+    }
+    else if (g_4b6280.available)
+        g_4b6280.available = false;
+    return result;
+}
+
+/* Copies a depth group's depth and position to whichever outputs are given. */
+PRIVATE inline void depth_group_get(s_42760_entry const *group, real *depth, point3f *position)
+{
+    if (depth)
+        *depth = group->depth;
+    if (position)
+        *position = group->position;
+}
+
+/* Queues one record per type-3 depth group, drawn by 0x423c0. */
 // @retail 0x42760
 void function_42760(long flags)
 {
-    long initial_count = g_4c19ac;
-    volatile long count = initial_count;
+    long count = g_4c19ac;
     long i = 0;
-    if (initial_count > 0)
+    if (count > 0)
     {
-      do
-      {
-        s_42760_entry *entry = &g_4c152c[i];
-        if (entry->type == 3)
+        do
         {
-            if (g_4b6280.count < 1024)
+            s_42760_entry const *entry = &g_4c152c[i];
+            if (entry->type == 3)
             {
-                s_1e4e0_record *record = (s_1e4e0_record *)&g_4b6280.records[g_4b6280.count];
-                record->type = 0;
-                record->active = false;
-                ++g_4b6280.count;
-                _ReadWriteBarrier();
-                record->type = 3;
-                record->flags = 0;
-                record->callback = function_423c0;
-                real *depth = &record->depth;
-                point3f *position = &record->position;
-                if (depth) *depth = entry->depth;
-                if (position) *position = entry->position;
-                ((long *)record->payload)[0] = i;
-                ((long *)record->payload)[1] = flags;
-                *depth = 0.0f - *depth;
+                s_1e4e0_record *record = (s_1e4e0_record *)cache_record_push();
+                if (record)
+                {
+                    record->type = 3;
+                    record->flags = 0;
+                    record->callback = function_423c0;
+                    real *depth = &record->depth;
+                    depth_group_get(entry, depth, &record->position);
+                    ((long *)record->payload)[0] = i;
+                    ((long *)record->payload)[1] = flags;
+                    *depth = 0.0f - *depth;
+                }
             }
-            else if (g_4b6280.available)
-                g_4b6280.available = false;
-        }
-        ++i;
-      } while (i < count);
+        } while (++i < count);
     }
 }
-#pragma function(_ReadWriteBarrier)
 
 struct s_42850_payload
 {
@@ -2668,17 +2675,14 @@ struct s_42850_payload
     vector3f third;
 };
 
-#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x42850
 void function_42850(long a, long b, point3f const *position,
     vector3f const *first, vector3f const *second, real scale, real width,
     vector3f const *third)
 {
-    if (g_4b6280.count < 1024)
+    s_1e4e0_record *record = (s_1e4e0_record *)cache_record_take();
+    if (record)
     {
-        s_1e4e0_record *record = (s_1e4e0_record *)&g_4b6280.records[g_4b6280.count++];
-        record->type = 0;
-        record->active = false;
         s_42850_payload *payload = (s_42850_payload *)record->payload;
         payload->a = a;
         payload->b = b;
@@ -2700,12 +2704,8 @@ void function_42850(long a, long b, point3f const *position,
         depth += g_4b9dac.i * delta.i;
         record->depth = 0.0f - depth;
         record->position = *position;
-        _ReadWriteBarrier();
     }
-    else if (g_4b6280.available)
-        g_4b6280.available = false;
 }
-#pragma function(_ReadWriteBarrier)
 
 
 struct s_429a0_payload
@@ -2721,28 +2721,23 @@ struct s_429a0_payload
 void function_429a0(byte type, long a, long b, long c, point3f const *position,
     point3f const *endpoint, vector3f const *first, vector3f const *second, real opacity)
 {
-    if (g_4b6280.count >= 1024)
+    s_1e4e0_record *record = (s_1e4e0_record *)cache_record_take();
+    if (record)
     {
-        if (g_4b6280.available) g_4b6280.available = false;
-        return;
-    }
-    {
-        s_1e4e0_record *record = (s_1e4e0_record *)&g_4b6280.records[g_4b6280.count];
-        record->type = 0;
-        record->active = false;
         s_429a0_payload *payload = (s_429a0_payload *)record->payload;
         payload->type = type;
         payload->a = a;
         payload->b = b;
         payload->c = c;
-        ++g_4b6280.count;
         payload->position = *position;
         payload->endpoint = *(endpoint ? endpoint : position);
         payload->first = *first;
         payload->second = *second;
         long value = (long)(opacity * 256.0f);
-        long clamped = 0;
-        if (value >= 0)
+        long clamped;
+        if (value < 0)
+            clamped = 0;
+        else
             clamped = value > 255 ? 255 : value;
         payload->opacity = (byte)clamped;
         vector3f delta;
@@ -2757,7 +2752,6 @@ void function_429a0(byte type, long a, long b, long c, point3f const *position,
         depth += g_4b9dac.i * delta.i;
         record->depth = 0.0f - depth;
         record->position = *position;
-    
     }
 }
 
@@ -4075,72 +4069,79 @@ byte g_4b6291;
 
 void __stdcall function_41cc0(void *payload);
 
+/* Gathers type-1 depth groups whose screen bounds do not overlap into
+   records drawn by 0x41cc0, each placed at the centre of its groups. */
 // @retail 0x420a0
 void function_420a0(void)
 {
-    dword used[2] = { 0, 0 };
     long count = g_4c19ac;
-    for (long i = 0; i < count; ++i)
+    dword used[1] = { 0 };
+    long i = 0;
+    if (count > 0)
     {
-        s_42760_entry *entry = &g_4c152c[i];
-        if (entry->type != 1 || (used[i >> 5] & (1 << (i & 31))))
-            continue;
-        if (g_4b6280.count >= 1024)
+        do
         {
-            if (g_4b6291)
-                g_4b6291 = false;
-            continue;
-        }
-        s_1e4e0_record *record = (s_1e4e0_record *)&g_4b6280.records[g_4b6280.count++];
-        record->type = 0;
-        record->active = false;
-        record->type = 3;
-        record->flags = 0;
-        record->callback = function_41cc0;
-        used[i >> 5] |= 1 << (i & 31);
-        byte indices[32];
-        indices[0] = (byte)i;
-        long selected = 1;
-        point3f minimum = entry->position;
-        point3f maximum = entry->position;
-        real depth = entry->depth;
-        for (long j = 0; j < count; ++j)
-        {
-            if (used[j >> 5] & (1 << (j & 31)))
-                continue;
-            s_42760_entry *candidate = &g_4c152c[j];
-            box2f bounds = *(box2f *)candidate->unknown10;
-            bool intersects = false;
-            for (long k = 0; k < selected; ++k)
+            s_42760_entry const *entry = &g_4c152c[i];
+            if (entry->type == 1 && !(used[i >> 5] & (1 << (i & 31))))
             {
-                box2f previous = *(box2f *)g_4c152c[(signed char)indices[k]].unknown10;
-                if (bounds.x1 > previous.x0 && bounds.y1 > previous.y0 &&
-                    previous.x1 > bounds.x0 && previous.y1 > bounds.y0)
+                s_1e4e0_record *record = (s_1e4e0_record *)cache_record_push();
+                if (record)
                 {
-                    intersects = true;
-                    break;
+                    byte indices[32];
+                    indices[0] = (byte)i;
+                    long selected = 1;
+                    record->type = 3;
+                    record->flags = 0;
+                    record->callback = function_41cc0;
+                    real depth = entry->depth;
+                    used[i >> 5] |= 1 << (i & 31);
+                    point3f position = entry->position;
+                    box3f bounds;
+                    bounds.x0 = bounds.x1 = position.x;
+                    bounds.y0 = bounds.y1 = position.y;
+                    bounds.z0 = bounds.z1 = position.z;
+                    long j = 0;
+                    do
+                    {
+                        if (used[j >> 5] & (1 << (j & 31)))
+                            continue;
+                        s_42760_entry const *candidate = &g_4c152c[j];
+                        point3f candidate_position = candidate->position;
+                        box2f candidate_bounds = *(box2f const *)candidate->unknown10;
+                        bool overlaps = false;
+                        for (long k = 0; k < selected; ++k)
+                        {
+                            s_42760_entry const *other = &g_4c152c[(signed char)indices[k]];
+                            box2f previous = *(box2f const *)other->unknown10;
+                            if (candidate_bounds.x1 > previous.x0 && candidate_bounds.y1 > previous.y0 &&
+                                previous.x1 > candidate_bounds.x0 && previous.y1 > candidate_bounds.y0)
+                            {
+                                overlaps = true;
+                                break;
+                            }
+                        }
+                        if (overlaps)
+                            continue;
+                        indices[selected++] = (byte)j;
+                        used[j >> 5] |= 1 << (j & 31);
+                        if (!(candidate_position.x > bounds.x0)) bounds.x0 = candidate_position.x;
+                        if (!(candidate_position.y > bounds.y0)) bounds.y0 = candidate_position.y;
+                        if (!(candidate_position.z > bounds.z0)) bounds.z0 = candidate_position.z;
+                        if (candidate_position.x > bounds.x1) bounds.x1 = candidate_position.x;
+                        if (candidate_position.y > bounds.y1) bounds.y1 = candidate_position.y;
+                        if (candidate_position.z > bounds.z1) bounds.z1 = candidate_position.z;
+                        real candidate_depth = candidate->depth;
+                        if (depth > candidate_depth) depth = candidate_depth;
+                    } while (++j < count);
+                    record->payload[0] = (byte)selected;
+                    memcpy(record->payload + 1, indices, selected);
+                    record->depth = 0.0f - depth;
+                    record->position.x = (bounds.x0 + bounds.x1) * 0.5f;
+                    record->position.y = (bounds.y0 + bounds.y1) * 0.5f;
+                    record->position.z = (bounds.z0 + bounds.z1) * 0.5f;
                 }
             }
-            if (!intersects)
-            {
-                used[j >> 5] |= 1 << (j & 31);
-                indices[selected++] = (byte)j;
-                point3f position = candidate->position;
-                if (!(position.x > minimum.x)) minimum.x = position.x;
-                if (!(position.y > minimum.y)) minimum.y = position.y;
-                if (!(position.z > minimum.z)) minimum.z = position.z;
-                if (position.x > maximum.x) maximum.x = position.x;
-                if (position.y > maximum.y) maximum.y = position.y;
-                if (position.z > maximum.z) maximum.z = position.z;
-                if (depth > candidate->depth) depth = candidate->depth;
-            }
-        }
-        record->payload[0] = (byte)selected;
-        memcpy(record->payload + 1, indices, selected);
-        record->depth = 0.0f - depth;
-        record->position.x = (minimum.x + maximum.x) * 0.5f;
-        record->position.y = (minimum.y + maximum.y) * 0.5f;
-        record->position.z = (minimum.z + maximum.z) * 0.5f;
+        } while (++i < count);
     }
 }
 
