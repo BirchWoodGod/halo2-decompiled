@@ -26,7 +26,7 @@ bool function_2613d0(long actor_index, s_reference reference, s_prop_search *sea
 	s_2605d0_request const *request = (s_2605d0_request const *)search;
 	s_actor_view *actor = actor_get(actor_index);
 	s_262b40_result *volatile definition = function_262b40(reference);
-	bool has_path = false;
+	bool result = false;
 	if (definition)
 	{
 		function_261510(actor_index, request);
@@ -49,16 +49,17 @@ bool function_2613d0(long actor_index, s_reference reference, s_prop_search *sea
 				}
 				byte *scratch = ai_scratch_buffer_get();
 				long reported_entry;
+				bool path_found;
 				s_reference selected = function_260670(actor_index, request, &entry, 1,
-					(long)evaluation.output, (long)&reported_entry, scratch, &has_path);
-				bool result = true;
-				if (!REFERENCE_EQUAL(selected, reference)) result = has_path;
+					(long)evaluation.output, (long)&reported_entry, scratch, &path_found);
+				if (REFERENCE_EQUAL(selected, reference))
+					result = true;
 				ai_scratch_buffer_release(scratch);
 				return result;
 			}
 		}
 	}
-	return has_path;
+	return result;
 }
 
 /* the request as function_261280 reads it */
