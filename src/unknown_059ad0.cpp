@@ -3281,7 +3281,7 @@ void __stdcall function_061570(c_class_58d20 *session, bool flag)
 
 
 bool function_07a9b0(void);
-void function_07ad80(long count, byte *buffer);
+void transport_get_random_bytes(long count, byte *buffer);
 void network_session_enter_state_5(c_class_58d20 *session);
 extern "C" DWORD WINAPI XGetLanguage(void);
 
@@ -3326,7 +3326,7 @@ bool __stdcall network_session_host(c_class_58d20 *session, long mode, long loca
 	session->value49c8 = NONE;
 	session->value4d08 = NONE;
 	session->value4d0c = NONE;
-	function_07ad80(8, (byte *)&session->value4da0);
+	transport_get_random_bytes(8, (byte *)&session->value4da0);
 	session->value5dd0 = NONE;
 	session->value49b4 = NONE;
 	session->value5e20 = NONE;

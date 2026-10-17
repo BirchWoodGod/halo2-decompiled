@@ -1099,13 +1099,12 @@ bool function_13a3c6(long arg_1, long arg_2, byte const *arg_3, long arg_4)
 void function_13a532(long arg_1, long arg_2, byte const *arg_3, long arg_4)
 {
 	s_13a532 const *local_2 = (s_13a532 const *)g_4e3b44[arg_1 & 0xffff].bytes;
-    word local_6 = 0;
-    union s_13a533 { dword field_0; word field_1; };
-    s_13a533 local_5;
-    local_5.field_0 = 0;
-    word local_4 = 0;
     word local_3 = 0;
-    function_13a050(arg_3, arg_2, arg_4, (s_13ad48_item const **)&arg_4, &local_3, &local_4, &local_5.field_1, &local_6);
+    word local_4 = 0;
+    word local_5 = 0;
+    word local_6 = 0;
+    s_13ad48_item const *item;
+    function_13a050(arg_3, arg_2, arg_4, &item, &local_3, &local_4, &local_5, &local_6);
     if (local_2->field_20 > 0)
     {
         long local_8 = 0;
@@ -1113,13 +1112,11 @@ void function_13a532(long arg_1, long arg_2, byte const *arg_3, long arg_4)
         do
         {
             byte const *local_9 = local_2->field_24 + local_8;
-            word local_12 = (word)*(dword volatile *)&local_5.field_0;
-            s_condition_subject const *local_13 = (s_condition_subject const *)*(long volatile *)&arg_4;
             if (function_13ac87((s_condition_masks const *)(local_9 + 8), local_3, local_4,
-                local_6, local_12, local_13))
+                local_6, local_5, (s_condition_subject const *)item))
             {
                 real local_10[4];
-                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, (s_13ad48_item const *)arg_4);
+                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, item);
                 function_22b8e2((s_22b8e2 const *)local_9, arg_2, (color4f const *)local_10);
             }
             local_8 += 0x50;
@@ -1133,13 +1130,11 @@ void function_13a532(long arg_1, long arg_2, byte const *arg_3, long arg_4)
         do
         {
             byte const *local_9 = local_2->field_c + local_8;
-            word local_12 = (word)*(dword volatile *)&local_5.field_0;
-            s_condition_subject const *local_13 = (s_condition_subject const *)*(long volatile *)&arg_4;
             if (function_13ac87((s_condition_masks const *)(local_9 + 8), local_3, local_4,
-                local_6, local_12, local_13))
+                local_6, local_5, (s_condition_subject const *)item))
             {
                 real local_10[4];
-                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, (s_13ad48_item const *)arg_4);
+                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, item);
                 function_22aff1(arg_2, arg_3, local_9, local_10);
             }
             local_8 += 0x64;
@@ -1153,13 +1148,11 @@ void function_13a532(long arg_1, long arg_2, byte const *arg_3, long arg_4)
         do
         {
             byte const *local_9 = local_2->field_14 + local_8;
-            word local_12 = (word)*(dword volatile *)&local_5.field_0;
-            s_condition_subject const *local_13 = (s_condition_subject const *)*(long volatile *)&arg_4;
             if (function_13ac87((s_condition_masks const *)(local_9 + 8), local_3, local_4,
-                local_6, local_12, local_13))
+                local_6, local_5, (s_condition_subject const *)item))
             {
                 real local_10[4];
-                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, (s_13ad48_item const *)arg_4);
+                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, item);
                 function_22aa16(arg_2, arg_3, local_9, local_10);
             }
             local_8 += 0x54;

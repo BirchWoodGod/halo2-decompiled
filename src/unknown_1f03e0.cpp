@@ -65,21 +65,22 @@ bool __stdcall function_1f0230(s_lookup *lookup, point3f const *point, real radi
         transform4x3f const *matrix = (transform4x3f const *)lookup->pointer_b + (position & 0xff);
         transform4x3f inverse;
         function_141590(matrix, &inverse);
+        real scale = inverse.scale;
         real scaled_x = point->x;
         real scaled_y = point->y;
         real scaled_z = point->z;
-        if (inverse.scale != 1.0f)
+        if (scale != 1.0f)
         {
-            scaled_x *= inverse.scale;
-            scaled_y *= inverse.scale;
-            scaled_z *= inverse.scale;
+            scaled_x *= scale;
+            scaled_y *= scale;
+            scaled_z *= scale;
         }
         point3f local;
         local.x = inverse.up.i * scaled_z + inverse.left.i * scaled_y + inverse.forward.i * scaled_x + inverse.position.x;
         local.y = inverse.up.j * scaled_z + inverse.left.j * scaled_y + inverse.forward.j * scaled_x + inverse.position.y;
         local.z = inverse.up.k * scaled_z + inverse.left.k * scaled_y + inverse.forward.k * scaled_x + inverse.position.z;
         s_1de2c2 hits;
-        if (function_1dde10((s_bsp3d *)iterator.current, 0, NULL, &local, inverse.scale * radius, &hits))
+        if (function_1dde10((s_bsp3d *)iterator.current, 0, NULL, &local, scale * radius, &hits))
         {
             function_245aa0((s_245aa0 *)&hits, (s_source_245400 *)iterator.current,
                 matrix, height, thickness, lookup->handle, position, collection);

@@ -13,6 +13,9 @@
 
 /* the level of the actor's behavior stack that runs the given type, or
    NONE */
+/* 0x274470 keeps both calls to this lookup out of line. */
+__declspec(noinline) short actor_behavior_find_level(long actor_index, short type);
+
 // @retail 0x1a6fe0
 short actor_behavior_find_level(long actor_index, short type)
 {

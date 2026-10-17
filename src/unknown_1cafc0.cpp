@@ -1523,9 +1523,12 @@ bool s_animation_state::channel_refresh(c_animation_channel *channel, long weapo
 		{
 			if (animation_id.graph_index == old_animation_id.graph_index && animation_id.index == old_animation_id.index)
 			{
-				return true;
+				result = true;
 			}
-			result = channel_start(channel, animation_id, name, NONE, NONE, kind, channel->flags);
+			else
+			{
+				result = channel_start(channel, animation_id, name, NONE, NONE, kind, channel->flags);
+			}
 		}
 		if (!result)
 		{
