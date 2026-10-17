@@ -46,10 +46,10 @@ void function_2b8c05(long a, long b, word user_flags, multiple_choice_callback c
 void __stdcall function_2395dc(XONLINE_FRIEND *friend_, long controller_index, long mode);
 
 c_class_1473c9 *__stdcall function_2b8add(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b8099(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80a9(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80d9(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80e9(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type1(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type2(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type3(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type4(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2b8aed(s_screen_parameters *parameters);
 
 /* the player the online screens act on, as function_14887e copies it out:
@@ -94,16 +94,16 @@ void function_238e42(long controller_index, long type)
 	switch (type)
 	{
 	case 1:
-		parameters.load = function_2b8099;
+		parameters.load = xbox_live_message_send_screen_load_type1;
 		break;
 	case 2:
-		parameters.load = function_2b80a9;
+		parameters.load = xbox_live_message_send_screen_load_type2;
 		break;
 	case 3:
-		parameters.load = function_2b80d9;
+		parameters.load = xbox_live_message_send_screen_load_type3;
 		break;
 	case 4:
-		parameters.load = function_2b80e9;
+		parameters.load = xbox_live_message_send_screen_load_type4;
 		break;
 	}
 	if (parameters.load)
