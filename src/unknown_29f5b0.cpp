@@ -9897,7 +9897,7 @@ void __stdcall function_2ab7a0(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44ea94 = { _hs_type_void, 0, function_2ab7a0, NULL, 0 };
 
-void objectives_show_up_to(long index);
+void mission_objectives_reveal_through(long index);
 
 /* 751: void (long_integer) */
 // @retail 0x2ab7d0
@@ -9907,7 +9907,7 @@ void __stdcall function_2ab7d0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		objectives_show_up_to(arguments[0]);
+		mission_objectives_reveal_through(arguments[0]);
 		hs_thread_return_value(thread_index, 0);
 	}
 }
