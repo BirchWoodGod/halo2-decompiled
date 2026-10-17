@@ -725,9 +725,11 @@ void c_game_engine_derived::v45(long a, long b)
 		g_51ecc4->bytes18[index] = (char)g_510c54->field_2_3;
 		if (b != NONE)
 		{
-			long owner = ((s_object_header *)objects->data)[b & 0xffff].object->owner;
-			if (owner != NONE)
+			s_object *object = ((s_object_header *)objects->data)[b & 0xffff].object;
+
+			if (object->owner != NONE)
 			{
+				long owner = object->owner;
 				s_event e;
 
 				game_engine_event_initialize_inline(&e, 4, 2);
@@ -749,10 +751,11 @@ void c_game_engine_derived::v46(long a, long b)
 	{
 		if (b != NONE)
 		{
-			long owner = headers[b & 0xffff].object->owner;
+			s_object *object = headers[b & 0xffff].object;
 
-			if (owner != NONE)
+			if (object->owner != NONE)
 			{
+				long owner = object->owner;
 				s_event e;
 
 				game_engine_event_initialize_inline(&e, 4, 3);
