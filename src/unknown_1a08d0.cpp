@@ -326,7 +326,7 @@ long function_1a1050(
 	void const *buffer,
 	dword size,
 	dword offset,
-	dword flags,
+	s_file_write_flags flags,
 	long category,
 	long priority,
 	dword *bytes_written,
@@ -343,7 +343,7 @@ long function_1a1050(
 	task.write_position.size = size;
 	task.write_position.offset = offset;
 	task.write_position.bytes_written_out = bytes_written;
-	task.write_position.flags = flags;
+	task.write_position.flags = flags.bits;
 	return function_120ba0(priority, &task, category, function_1a0fb0, done);
 }
 

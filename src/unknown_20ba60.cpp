@@ -69,7 +69,6 @@ PRIVATE __forceinline s_audio_priority_table *function_20cdc1(void)
     return local_0;
 }
 
-#pragma inline_depth(1)
 // @retail 0x20d0c0
 bool __stdcall function_20d0c0(s_audio_priority_table *arg_0, long arg_1, short arg_2,
     s_audio_selection const *arg_3, s_1fb7e0_data const *arg_4, long arg_5, long *arg_6)
@@ -123,7 +122,6 @@ bool __stdcall function_20d0c0(s_audio_priority_table *arg_0, long arg_1, short 
     }
     return local_7;
 }
-#pragma inline_depth(255)
 
 // @retail 0x20ba60
 bool __stdcall function_20ba60(short arg_0, long arg_1, long arg_2, long arg_3, short arg_4, s_1fb7e0_data const *arg_5)
