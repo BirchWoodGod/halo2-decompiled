@@ -2163,11 +2163,10 @@ static __forceinline long sound_local_player_first_index(void)
 // @retail 0x127d00
 long __stdcall function_127d00(s_type_99c531 const *source, real maximum_distance, real *distance)
 {
-	s_type_99c531 const *const *source_reference = &source;
 	long listener_index = NONE;
 	real result;
 
-	if (((s_sound_location_type_view const *)*source_reference)->type != 1)
+	if (((s_sound_location_type_view const *)source)->type != 1)
 	{
 		listener_index = sound_local_player_first_index();
 		result = 0.0f;
@@ -2180,7 +2179,7 @@ long __stdcall function_127d00(s_type_99c531 const *source, real maximum_distanc
 		{
 			if (SOUND_SYSTEM->listeners[i].active)
 			{
-				real listener_distance = sound_source_get_listener_distance(i, (s_sound_location_source const *)*source_reference);
+				real listener_distance = sound_source_get_listener_distance(i, (s_sound_location_source const *)source);
 
 				if (best > listener_distance)
 				{
@@ -2190,9 +2189,9 @@ long __stdcall function_127d00(s_type_99c531 const *source, real maximum_distanc
 			}
 		}
 		result = (real)sqrt(best);
-		if (function_221da0(listener_index, (s_sound_transmission_view const *)*source_reference, result / maximum_distance))
+		if (function_221da0(listener_index, (s_sound_transmission_view const *)source, result / maximum_distance))
 			listener_index = NONE;
-		if (!SOUND_FLAG((*source_reference)->flags, 8) && !SOUND_FLAG((*source_reference)->flags, 11))
+		if (!SOUND_FLAG((source)->flags, 8) && !SOUND_FLAG((source)->flags, 11))
 		{
 			if (best > maximum_distance * maximum_distance)
 			{
