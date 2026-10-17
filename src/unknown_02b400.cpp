@@ -464,14 +464,14 @@ void function_2fd90(s_2f800_view const *view, box2f const *clip, byte *out)
     plane3f plane;
     if (view->near_distance == 0.0f)
     {
-        plane3f const *clip_plane = (plane3f const *)view->unknown48;
-        real i = clip_plane->i;
-        real j = clip_plane->j;
-        real k = clip_plane->k;
+        plane3f const *cutting_plane = (plane3f const *)view->unknown48;
+        real i = cutting_plane->i;
+        real j = cutting_plane->j;
+        real k = cutting_plane->k;
         plane.i = inverse->up.i * k + inverse->left.i * j + inverse->forward.i * i;
         plane.j = inverse->up.j * k + inverse->left.j * j + inverse->forward.j * i;
         plane.k = inverse->up.k * k + inverse->left.k * j + inverse->forward.k * i;
-        plane.d = clip_plane->d * inverse->scale + inverse->position.z * plane.k + inverse->position.y * plane.j + inverse->position.x * plane.i;
+        plane.d = cutting_plane->d * inverse->scale + inverse->position.z * plane.k + inverse->position.y * plane.j + inverse->position.x * plane.i;
     }
     else
     {
