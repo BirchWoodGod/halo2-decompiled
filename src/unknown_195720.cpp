@@ -177,9 +177,9 @@ real function_194ff0(s_bitstream *stream, real lo, real hi, long bits)
 	long value = (long)function_1959c0(stream, bits);
 	if (value != 0)
 	{
-		long n = (1 << bits) - 1;
-		if (value >= n)
+		if (value >= (1 << bits) - 1)
 			return hi;
+		long n = (1 << bits) - 1;
 		real log_lo = (real)log(lo);
 		real log_hi = (real)log(hi);
 		real weight_lo = (real)(n - value);
