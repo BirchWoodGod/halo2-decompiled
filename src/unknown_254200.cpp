@@ -200,17 +200,17 @@ void __stdcall function_2548f0(point2f const *arg_0, real arg_1)
 			g_4b8450 = 0;
 			D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
 			function_14390(0, (s_type_7ba8e9 *)local_0, 0.f);
-			D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, 4);
-			D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, 4);
-			D3DDevice_SetTextureStageState(0, D3DTSS_BORDERCOLOR, 0x46000000);
-			D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, 2);
-			D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, 2);
-			D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 1);
-			D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-			D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-			D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-			D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-			D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_ADDRESSU, 4);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_ADDRESSV, 4);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_BORDERCOLOR, 0x46000000);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MAGFILTER, 2);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MINFILTER, 2);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MIPFILTER, 1);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MAXANISOTROPY, 0);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MIPMAPLODBIAS, 0);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_MAXMIPLEVEL, 0);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_COLORSIGN, 0);
+			D3DDevice::SetTextureStageState(0, (D3DTEXTURESTAGESTATETYPE const &)D3DTSS_ALPHAKILL, 0);
 			g_4b82f4 = 1;
 			D3DDevice_SetRenderState(D3DRS_SRCBLEND, 1);
 			g_4b82f8 = 0x302;
@@ -234,18 +234,22 @@ void __stdcall function_2548f0(point2f const *arg_0, real arg_1)
 			real local_3 = arg_1 * 0.5f;
 			real local_4 = local_3 + 0.5f;
 			real local_5 = 0.5f - local_3;
-			D3DDevice_SetVertexData2f(1, local_4, local_5);
+			D3DDevice::SetVertexData2f(1, local_4, local_5);
 			D3DDevice_SetVertexData4f(D3DVSDE_VERTEX, 0.f, 0.f, 16777215.f, 16777215.f);
-			D3DDevice_SetVertexData2f(1, local_5, local_5);
+			D3DDevice::SetVertexData2f(1, local_5, local_5);
 			D3DDevice_SetVertexData4f(D3DVSDE_VERTEX, 64.f, 0.f, 16777215.f, 16777215.f);
+			#pragma inline_depth(0)
 			D3DDevice_SetVertexData2f(1, local_5, local_4);
 			D3DDevice_SetVertexData4f(D3DVSDE_VERTEX, 64.f, 64.f, 16777215.f, 16777215.f);
 			D3DDevice_SetVertexData2f(1, local_4, local_4);
 			D3DDevice_SetVertexData4f(D3DVSDE_VERTEX, 0.f, 64.f, 16777215.f, 16777215.f);
 			D3DDevice_End();
+			#pragma inline_depth()
 			function_14390(0, (s_type_7ba8e9 *)local_1, 0.f);
+#pragma inline_depth(0)
 			function_0222d0((D3DRENDERSTATETYPE)0x3e, 0);
 			function_0222d0((D3DRENDERSTATETYPE)0x3f, 0x302);
+#pragma inline_depth()
 			memset(&g_484f68, 0, sizeof(g_484f68));
 			g_484f68.PSCombinerCount = 1;
 			g_484f68.PSTextureModes = 1;
@@ -272,7 +276,9 @@ void __stdcall function_2548f0(point2f const *arg_0, real arg_1)
 			function_0224f0(0, (D3DTEXTURESTAGESTATETYPE)3, 2);
 			function_0224f0(0, (D3DTEXTURESTAGESTATETYPE)4, 2);
 			function_0224f0(0, (D3DTEXTURESTAGESTATETYPE)5, 1);
+			#pragma inline_depth()
 			D3DDevice_SetTextureStageState(0, D3DTSS_BORDERCOLOR, 0);
+			#pragma inline_depth(0)
 			function_0224f0(0, D3DTSS_MAXANISOTROPY, 0);
 			function_0224f0(0, D3DTSS_MIPMAPLODBIAS, 0);
 			function_0224f0(0, D3DTSS_MAXMIPLEVEL, 0);
