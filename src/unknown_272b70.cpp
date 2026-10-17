@@ -1105,8 +1105,8 @@ void function_274f30(long list_index, bool flag)
 	}
 }
 
-void __stdcall function_202e90(long squad_index, long index, long flag);
-void __stdcall function_203120(long squad_group_index, long index, long flag);
+void __stdcall function_202e90(long squad_index, short index, long flag);
+void __stdcall function_203120(long squad_group_index, short index, long flag);
 
 struct s_scenario_275cb0_view
 {
@@ -3089,10 +3089,10 @@ short __stdcall function_274470(long arg_0)
 	for (;;)
 	{
 		real local_12 = 0.0f;
-		long local_13 = NONE;
+		short local_13 = NONE;
 		long local_14 = NONE;
 		bool local_15 = false;
-		for (long local_16 = 0; local_16 < local_2; local_16++)
+		for (short local_16 = 0; local_16 < local_2; local_16++)
 		{
 			s_object_seat *local_17 = &local_1[local_16];
 			if (local_17->object_index != local_14)

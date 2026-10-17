@@ -283,7 +283,7 @@ void function_8fb30(long task_index, s_online_match_result *output, word *capaci
 long online_task_poll(long task_index);
 long qos_lookup(long kind, long count, long bits_per_second, s_qos_target *targets);
 long qos_target_status(long handle, long index);
-bool function_7c530(byte const *data, long size, void *description);
+bool session_description_decode_buffer(byte const *data, long size, void *description);
 
 PRIVATE __forceinline s_qos_handle *search_qos_handle(long handle)
 {
@@ -372,7 +372,7 @@ void function_b3200(void)
 					entry[0x44] = true;
 					s_qos_result *result = (s_qos_result *)(entry + 0x4c);
 					entry[0x45] = qos_target_result(g_4d8ef4, result, i);
-					if (entry[0x45] && result->data_size > 0 && function_7c530(result->data, result->data_size, description))
+					if (entry[0x45] && result->data_size > 0 && session_description_decode_buffer(result->data, result->data_size, description))
 					{
 						memcpy(entry + 0x70, description, sizeof(description));
 						entry[0x6c] = true;

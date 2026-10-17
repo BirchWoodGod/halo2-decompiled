@@ -842,7 +842,9 @@ bool __stdcall function_14df40(long *unit_index)
 		}
 		else
 		{
+#pragma inline_depth(0)
 			s_unit_vehicle_view *vehicle = (s_unit_vehicle_view *)function_badc0(function_baf40(unit_object->parent_index), 2);
+#pragma inline_depth()
 
 			if (vehicle &&
 				TEST_FIELD_BIT(((s_vehicle_definition_view *)g_4e3b44[vehicle->definition_index & 0xffff].bytes)->flags.bit6) &&
@@ -2028,7 +2030,7 @@ bool function_1012c0(long);
 bool function_101300(long);
 bool function_101340(long);
 bool function_101160(long);
-bool function_10f890(long);
+bool unit_animation_control_channel_playing(long);
 bool function_cc3c0(long);
 bool function_e4050(long);
 s_object *function_bae20(long, dword);
@@ -2241,7 +2243,7 @@ void __stdcall function_14f820(long player_index, long unit_index, byte *input)
         if (remaining < 0.0f) { idle = 0; rest = 0; }
         else if (remaining >= first+second) { idle = (short)(first+second); rest = 0; }
         dword activity = buttons;
-        bool first_activity = function_10f890(unit_index) || *(short *)(input + 0x24) != *(signed char *)(locals.unit + 0x240) || (activity & 0x10000001);
+        bool first_activity = unit_animation_control_channel_playing(unit_index) || *(short *)(input + 0x24) != *(signed char *)(locals.unit + 0x240) || (activity & 0x10000001);
         bool second_activity = function_cc3c0(unit_index) || (activity & 0x4030031) || local_85417d;
         if (first_activity || second_activity)
         {

@@ -1,18 +1,24 @@
 // @flags /O2 /Ob1 /arch:SSE /Gr
-/* UNKNOWN_0820F0.CPP: the connections (0xf8 bytes each, at 0x4d87d4) and
-   the two kinds of stream they own (lane D) */
+/* LINK_CONNECTION.CPP: the connections (0xf8 bytes each, at 0x4d87d4)
+   between this machine and another over a link, and the two kinds of stream
+   they own (lane D). A connection handshakes (connecting, establishing,
+   established), hands each packet it reads to its clients, builds packets
+   from what its clients write, and closes on a timeout or a client's
+   request. */
 
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_0820f0.h"
+#include "network_streams.h"
 #include <xtl.h>
 #include <string.h>
 
+/* a free connection with no streams, clients or address */
 // @retail 0x81390
-s_network_connection::s_network_connection()
+s_link_connection::s_link_connection()
 {
-	unknown1c = false;
-	unknown1d = false;
+	sent_to_all_clients = false;
+	read_by_all_clients = false;
 	link_list = 0;
 	link = 0;
 	handler = 0;
@@ -25,20 +31,20 @@ s_network_connection::s_network_connection()
 	callback = 0;
 	owner = 0;
 	flags = 0;
-	state = 0;
+	state = _link_connection_state_free;
 	close_reason = 0;
 	memset(&address, 0, sizeof(address));
 	handshake_next_time = 0;
-	network_connection_reset_timers(this);
+	link_connection_reset_timers(this);
 }
 
-bool g_4d8ba0;
-s_connection_counter g_4e6398;
+bool g_4d8ba0;                  /* the connection pool exists */
+s_connection_counter g_4e6398;  /* the counter every connection timer copies */
 
-s_link g_528000;
-byte g_528b28[4];
-byte g_529188[4];
-s_connection_config g_4cf6d4;
+s_link g_528000;                /* the link new connections join */
+byte g_528b28[4];               /* what new connections send out-of-band messages through */
+byte g_529188[4];              /* the message handler new connections get */
+s_connection_config g_4cf6d4;   /* the timeouts new connections use */
 
 void function_094bf0(s_network_stream_header *stream);
 void function_095cf0(s_network_stream_header *stream);
@@ -50,7 +56,7 @@ static inline long network_time_now(void)
 	return GetTickCount();
 }
 
-static inline long function_75890(long time)
+static inline long network_ticks_since(long time)
 {
 	return network_time_now() - time;
 }
@@ -61,6 +67,12 @@ static inline long network_stream_window_space(s_network_stream_header *stream)
 	return (window->end - stream->window.next + 0x200) << 5;
 }
 
+static inline c_network_reliable_stream *link_connection_reliable_stream(s_link_connection *connection)
+{
+	return (c_network_reliable_stream *)network_reliable_stream_get(connection->reliable_stream_index);
+}
+
+/* claims the first free reliable stream for an owner; NONE when all are in use */
 // @retail 0x820f0
 long network_reliable_stream_allocate(long owner)
 {
@@ -84,6 +96,7 @@ long network_reliable_stream_allocate(long owner)
 	return result;
 }
 
+/* claims the first free unreliable stream for an owner; NONE when all are in use */
 // @retail 0x82150
 long network_stream_allocate(long owner)
 {
@@ -108,8 +121,9 @@ long network_stream_allocate(long owner)
 	return result;
 }
 
+/* whether a set of connection flags is consistent */
 // @retail 0x880b0
-bool network_connection_flags_valid(dword flags)
+bool link_connection_flags_valid(dword flags)
 {
 	bool valid = !(flags & 0xffffff00) && (!(flags & 1) || !(flags & 2)) && (!(flags & 0x40) || !(flags & 0x80));
 	if (flags & 4)
@@ -121,10 +135,11 @@ bool network_connection_flags_valid(dword flags)
 	return valid;
 }
 
+/* closes a connection, telling the other machine why unless the reason is 6 */
 // @retail 0x88650
-void network_connection_close(s_network_connection *connection, long reason)
+void link_connection_close(s_link_connection *connection, long reason)
 {
-	if (connection->state == 5 && reason != 6)
+	if (connection->state == _link_connection_state_established && reason != 6)
 	{
 		struct
 		{
@@ -142,17 +157,18 @@ void network_connection_close(s_network_connection *connection, long reason)
 		connection->callback->function(connection->callback->context);
 	link_remove_entry(connection->link_list, connection->id);
 	connection->previous_address = connection->address;
-	connection->state = 2;
+	connection->state = _link_connection_state_closed;
 	connection->close_reason = reason;
 	connection->local_sequence = NONE;
 	connection->remote_sequence = NONE;
 }
 
+/* closes a connection if it is open, then frees it and its streams */
 // @retail 0x886e0
-void network_connection_dispose(s_network_connection *connection)
+void link_connection_dispose(s_link_connection *connection)
 {
-	if (connection->state > 2)
-		network_connection_close(connection, 3);
+	if (connection->state > _link_connection_state_closed)
+		link_connection_close(connection, 3);
 	connection->owner = 0;
 	if (connection->stream_index != NONE)
 	{
@@ -169,84 +185,91 @@ void network_connection_dispose(s_network_connection *connection)
 		stream->owner = 0;
 		connection->reliable_stream_index = NONE;
 	}
-	connection->state = 0;
+	connection->state = _link_connection_state_free;
 }
 
+/* restarts every timer of a connection */
 // @retail 0x88d20
-void network_connection_reset_timers(s_network_connection *connection)
+void link_connection_reset_timers(s_link_connection *connection)
 {
-	for (long i = 0; i < 6; i++)
+	for (long i = 0; i < k_link_connection_timer_count; i++)
 	{
 		connection->timers[i].time = network_time_now();
 		connection->timers[i].counter = g_4e6398;
 	}
 }
 
+/* restarts one timer of a connection */
 // @retail 0x88d70
-void network_connection_reset_timer(s_network_connection *connection, long index)
+void link_connection_reset_timer(s_link_connection *connection, long index)
 {
 	connection->timers[index].time = network_time_now();
 	connection->timers[index].counter = g_4e6398;
 }
 
+/* the bytes the reliable stream has sent and not had acknowledged */
 // @retail 0x88fd0
-long network_connection_get_reliable_value48(s_network_connection *connection)
+long link_connection_get_reliable_bytes(s_link_connection *connection)
 {
 	long result = 0;
 
-	if (connection->state == 5 && (connection->flags & 8))
-		result = *(long *)((byte *)network_reliable_stream_get(connection->reliable_stream_index) + 0x48);
+	if (connection->state == _link_connection_state_established && (connection->flags & _link_connection_reliable_stream_flag))
+		result = link_connection_reliable_stream(connection)->m_bytes;
 	return result;
 }
 
+/* the reliable messages not yet acknowledged */
 // @retail 0x89000
-long network_connection_get_reliable_pending(s_network_connection *connection)
+long link_connection_get_reliable_pending(s_link_connection *connection)
 {
 	long result = 0;
 
-	if (connection->state == 5 && (connection->flags & 8))
+	if (connection->state == _link_connection_state_established && (connection->flags & _link_connection_reliable_stream_flag))
 	{
-		byte *stream = (byte *)network_reliable_stream_get(connection->reliable_stream_index);
-		result = *(long *)(stream + 0x30) - *(long *)(stream + 0x44);
+		c_network_reliable_stream *stream = link_connection_reliable_stream(connection);
+		result = stream->m_message_window.newest - stream->m_next_sequence;
 	}
 	return result;
 }
 
+/* the reliable messages that may still be sent before the window fills */
 // @retail 0x89030
-long network_connection_get_reliable_window(s_network_connection *connection)
+long link_connection_get_reliable_window(s_link_connection *connection)
 {
 	long result = 0;
 
-	if (connection->state == 5 && (connection->flags & 8))
+	if (connection->state == _link_connection_state_established && (connection->flags & _link_connection_reliable_stream_flag))
 	{
-		byte *stream = (byte *)network_reliable_stream_get(connection->reliable_stream_index);
-		result = *(long *)(stream + 0x94c) - *(long *)(stream + 0x30) + 0x80;
+		c_network_reliable_stream *stream = link_connection_reliable_stream(connection);
+		result = stream->m_last_sequence - stream->m_message_window.newest + 0x80;
 	}
 	return result;
 }
 
+/* the bits the unreliable stream may still send */
 // @retail 0x89070
-long network_connection_send_capacity(s_network_connection *connection)
+long link_connection_send_capacity(s_link_connection *connection)
 {
 	long result = 0;
 
-	if (connection->state == 5 && (connection->flags & 0x10))
+	if (connection->state == _link_connection_state_established && (connection->flags & _link_connection_unreliable_stream_flag))
 	{
-		s_network_stream_window *local_0 = &network_stream_get(connection->stream_index)->window;
-		result = (local_0->end - local_0->next + 0x200) << 5;
+		s_network_stream_window *window = &network_stream_get(connection->stream_index)->window;
+		result = (window->end - window->next + 0x200) << 5;
 	}
 	return result;
 }
 
+/* times a handshake out, or resends it once its retry interval has passed */
 // @retail 0x890b0
-void network_connection_update_handshake(s_network_connection *connection)
+void link_connection_update_handshake(s_link_connection *connection)
 {
-	if (function_75890(connection->handshake_time) >= connection->config->connect_timeout)
+	if (network_ticks_since(connection->handshake_time) >= connection->config->connect_timeout)
 	{
-		network_connection_close(connection, 4);
+		link_connection_close(connection, 4);
 		return;
 	}
-	if (function_75890(connection->handshake_next_time) >= 0 && connection->handshake_count < connection->config->retry_count)
+	if (network_ticks_since(connection->handshake_next_time) >= 0 && connection->handshake_count < connection->config->retry_count)
 	{
 		struct
 		{
@@ -261,8 +284,9 @@ void network_connection_update_handshake(s_network_connection *connection)
 	}
 }
 
+/* acknowledges the other machine's handshake, through the unreliable stream when there is one */
 // @retail 0x89180
-void network_connection_send_acknowledge(s_network_connection *connection, bool reliable)
+void link_connection_send_acknowledge(s_link_connection *connection, bool reliable)
 {
 	struct
 	{
@@ -272,7 +296,7 @@ void network_connection_send_acknowledge(s_network_connection *connection, bool 
 
 	message.local_sequence = connection->local_sequence;
 	message.remote_sequence = connection->remote_sequence;
-	if (connection->flags & 0x10)
+	if (connection->flags & _link_connection_unreliable_stream_flag)
 	{
 		if (reliable)
 			function_095580(network_stream_get(connection->stream_index), 6, sizeof(message), &message);
@@ -283,22 +307,23 @@ void network_connection_send_acknowledge(s_network_connection *connection, bool 
 	}
 }
 
+/* answers a handshake: a connecting connection starts establishing */
 // @retail 0x88360
-void network_connection_establish(s_network_connection *connection, long remote_sequence)
+void link_connection_establish(s_link_connection *connection, long remote_sequence)
 {
 	bool established = false;
 
-	if (connection->state == 3)
+	if (connection->state == _link_connection_state_connecting)
 	{
-		connection->state = 4;
+		connection->state = _link_connection_state_establishing;
 		connection->establish_time = network_time_now();
 		connection->remote_sequence = remote_sequence;
 		established = true;
-		network_connection_reset_timers(connection);
-		if (!(connection->flags & 0x10))
-			connection->state = 5;
+		link_connection_reset_timers(connection);
+		if (!(connection->flags & _link_connection_unreliable_stream_flag))
+			connection->state = _link_connection_state_established;
 	}
-	network_connection_send_acknowledge(connection, established);
+	link_connection_send_acknowledge(connection, established);
 }
 
 /* ---- reading a connection's packets ---- */
@@ -312,10 +337,10 @@ class c_connection_client
 {
 public:
 	virtual void v0() {}
-	virtual bool v1(long *reason) { return false; }
-	virtual bool v2(bool *reliable) { return false; }
-	virtual long v3(long capacity, long available) { return 0; }
-	virtual bool v4(long sequence, s_bitstream *stream, long bits, long remaining) { return false; }
+	virtual bool should_close(long *reason) { return false; }
+	virtual bool has_data(bool *reliable) { return false; }
+	virtual long reserve_bits(long capacity, long available) { return 0; }
+	virtual bool write_packet(long sequence, s_bitstream *stream, long bits, long remaining) { return false; }
 	virtual long read_packet(long *sequence, s_bitstream *stream) { return 0; }
 	virtual void message_delivered(long sequence) {}
 	virtual void message_lost(long sequence, bool resent) {}
@@ -324,7 +349,7 @@ public:
 class c_connection_owner
 {
 public:
-	virtual void v0(long connection_id, long size, bool wrote) {}
+	virtual void packet_sent(long connection_id, long size, bool wrote) {}
 	virtual void packet_received(long connection_id, long packet_size) {}
 	virtual void message_acknowledged(long connection_id, long size, long time) {}
 	virtual void message_lost(long connection_id, bool resent, bool late) {}
@@ -334,13 +359,6 @@ public:
 };
 
 /* src/network_streams.cpp (lane J) */
-class c_network_reliable_stream
-{
-public:
-	long function_965e0(long *sequence, long *size, long *time);
-	long allocate_sequence(long time);
-	void mark_received(long sequence);
-};
 bool __stdcall function_096ce0(c_network_reliable_stream *stream, bool force, long *type, long *sequence);
 bool __stdcall function_095840(s_network_stream_header *stream, long *message_type, long *message_size, void *message);
 
@@ -390,8 +408,9 @@ static inline void connection_client_iterator_new(s_connection_client_iterator *
 	iterator->client = NULL;
 }
 
+/* advances an iterator to the next client handling all of its flags */
 // @retail 0x891e0
-bool network_connection_next_client(s_network_connection *connection, s_connection_client_iterator *iterator)
+bool link_connection_next_client(s_link_connection *connection, s_connection_client_iterator *iterator)
 {
 	long index = iterator->index;
 	long absolute_index = iterator->absolute_index;
@@ -470,10 +489,11 @@ bool network_connection_next_client(s_network_connection *connection, s_connecti
 	return iterator->index != NONE;
 }
 
+/* drains the reliable stream's events, telling clients and the owner of delivered and lost messages */
 // @retail 0x88db0
-void network_connection_update_reliable_stream(s_network_connection *connection)
+void link_connection_update_reliable_stream(s_link_connection *connection)
 {
-	if (connection->flags & 8)
+	if (connection->flags & _link_connection_reliable_stream_flag)
 	{
 		c_network_reliable_stream *stream = (c_network_reliable_stream *)network_reliable_stream_get(connection->reliable_stream_index);
 		{
@@ -490,40 +510,40 @@ void network_connection_update_reliable_stream(s_network_connection *connection)
 		{
 			if (event == 4 || event == 1)
 			{
-				connection->timers[4].time = network_time_now();
-				connection->timers[4].counter = g_4e6398;
-				if (connection->state == 4)
-					connection->state = 5;
+				connection->timers[_link_connection_timer_acknowledged].time = network_time_now();
+				connection->timers[_link_connection_timer_acknowledged].counter = g_4e6398;
+				if (connection->state == _link_connection_state_establishing)
+					connection->state = _link_connection_state_established;
 				if (connection->owner)
 					connection->owner->message_acknowledged(connection->id, size, time);
 			}
 			if (event == 4)
 			{
 				s_connection_client_iterator iterator;
-				connection_client_iterator_new(&iterator, 4);
-				while (network_connection_next_client(connection, &iterator))
+				connection_client_iterator_new(&iterator, _connection_client_delivered_flag);
+				while (link_connection_next_client(connection, &iterator))
 					iterator.client->message_delivered(message_sequence);
 			}
 			else if (event == 1 || event == 2 || event == 3)
 			{
 				bool resent = event != 3;
 				s_connection_client_iterator iterator;
-				connection_client_iterator_new(&iterator, 8);
-				while (network_connection_next_client(connection, &iterator))
+				connection_client_iterator_new(&iterator, _connection_client_lost_flag);
+				while (link_connection_next_client(connection, &iterator))
 					iterator.client->message_lost(message_sequence, resent);
 				if (connection->owner)
 				{
 					bool late = false;
 					if (resent)
 					{
-						real scaled_real = (real)*(long *)((byte *)stream + 0x968) * g_network_configuration.real16e8;
+						real scaled_real = (real)stream->m_round_trip_minimum * g_network_configuration.real16e8;
 						long scaled;
 						__asm
 						{
 							fld scaled_real
 							fistp scaled
 						}
-						long padded = *(long *)((byte *)stream + 0x968) + g_network_configuration.value16ec;
+						long padded = stream->m_round_trip_minimum + g_network_configuration.value16ec;
 						if (scaled > padded)
 							padded = scaled;
 						if (time >= padded)
@@ -540,8 +560,9 @@ void network_connection_update_reliable_stream(s_network_connection *connection)
 	}
 }
 
+/* hands a packet to the connection's clients, then reads the unreliable stream's messages */
 // @retail 0x88750
-bool network_connection_read_packet(s_network_connection *connection, s_bitstream *stream, long packet_size, bool out_of_band)
+bool link_connection_read_packet(s_link_connection *connection, s_bitstream *stream, long packet_size, bool out_of_band)
 {
 	long sequence = NONE;
 	bool result = false;
@@ -555,18 +576,18 @@ bool network_connection_read_packet(s_network_connection *connection, s_bitstrea
 	if (!out_of_band)
 		stream_begin_reading(stream);
 	dword type;
-	if (connection->callback && connection->callback->unknown31)
+	if (connection->callback && connection->callback->include_all_clients)
 	{
 		type = 0;
-		connection->unknown1d = true;
+		connection->read_by_all_clients = true;
 	}
 	else
 	{
 		type = 1;
-		connection->unknown1d = false;
+		connection->read_by_all_clients = false;
 	}
 	connection_client_iterator_new(&iterator, type);
-	while (network_connection_next_client(connection, &iterator))
+	while (link_connection_next_client(connection, &iterator))
 	{
 		status = iterator.client->read_packet(&sequence, stream);
 		if (status)
@@ -601,11 +622,11 @@ bool network_connection_read_packet(s_network_connection *connection, s_bitstrea
 		result = true;
 		if (!out_of_band)
 		{
-			network_connection_reset_timer(connection, 3);
-			network_connection_update_reliable_stream(connection);
-			if (connection->flags & 8)
+			link_connection_reset_timer(connection, _link_connection_timer_packet_received);
+			link_connection_update_reliable_stream(connection);
+			if (connection->flags & _link_connection_reliable_stream_flag)
 				((c_network_reliable_stream *)network_reliable_stream_get(connection->reliable_stream_index))->mark_received(sequence);
-			if (connection->flags & 0x10)
+			if (connection->flags & _link_connection_unreliable_stream_flag)
 			{
 				s_network_stream_header *unreliable = network_stream_get(connection->stream_index);
 				while (function_095840(unreliable, &message_type, &message_size, message))
@@ -645,13 +666,13 @@ static inline long link_next_sequence(s_link *link)
 
 /* starts connecting to an address: the initiator sends the handshake */
 // @retail 0x88220
-void network_connection_connect(s_type_99af70 const *address, s_network_connection *connection, bool initiator)
+void link_connection_connect(s_type_99af70 const *address, s_link_connection *connection, bool initiator)
 {
 	connection->address = *address;
-	connection->state = 3;
+	connection->state = _link_connection_state_connecting;
 	connection->initiator = initiator;
 	if (!transport_address_is_loopback_inline(address))
-		connection->flags &= ~0xc0;
+		connection->flags &= ~_link_connection_loopback_flags;
 	long sequence = link_next_sequence(connection->link_list);
 	connection->local_sequence = sequence;
 	connection->remote_sequence = NONE;
@@ -662,9 +683,9 @@ void network_connection_connect(s_type_99af70 const *address, s_network_connecti
 			connection->handshake_time = network_time_now();
 			connection->handshake_next_time = network_time_now();
 			connection->handshake_count = 0;
-			network_connection_update_handshake(connection);
+			link_connection_update_handshake(connection);
 		}
-		network_connection_reset_timers(connection);
+		link_connection_reset_timers(connection);
 		if (connection->reliable_stream_index != NONE)
 			function_095cf0(network_reliable_stream_get(connection->reliable_stream_index));
 		if (connection->stream_index != NONE)
@@ -672,11 +693,11 @@ void network_connection_connect(s_type_99af70 const *address, s_network_connecti
 	}
 	else
 	{
-		network_connection_close(connection, 2);
+		link_connection_close(connection, 2);
 	}
 }
 
-static inline void connection_add_handler(s_network_connection *connection, dword type, c_connection_client *client)
+static inline void connection_add_handler(s_link_connection *connection, dword type, c_connection_client *client)
 {
 	s_connection_handler *handler = &connection->handlers[connection->handler_count];
 	handler->type = type;
@@ -688,10 +709,10 @@ static inline void connection_add_handler(s_network_connection *connection, dwor
    streams its flags ask for (the reliable stream, the unreliable stream and
    the connection's own client) */
 // @retail 0x88110
-bool network_connection_initialize(s_network_connection *connection, long id, dword flags, s_link *link_list, void *link, c_class_938e0 *handler, s_connection_config const *config)
+bool link_connection_initialize(s_link_connection *connection, long id, dword flags, s_link *link_list, void *link, c_class_938e0 *handler, s_connection_config const *config)
 {
 	bool result = false;
-	connection->state = 1;
+	connection->state = _link_connection_state_initialized;
 	connection->close_reason = 0;
 	memset(&connection->previous_address, 0, sizeof(connection->previous_address));
 	connection->id = id;
@@ -706,33 +727,35 @@ bool network_connection_initialize(s_network_connection *connection, long id, dw
 	memset(connection->handlers, 0, sizeof(connection->handlers));
 	connection->callback = 0;
 	connection->owner = 0;
-	if (connection->flags & 8)
+	result = true;
+	if (connection->flags & _link_connection_reliable_stream_flag)
 	{
 		connection->reliable_stream_index = network_reliable_stream_allocate(0);
 		if (connection->reliable_stream_index == NONE)
-			goto done;
-		connection_add_handler(connection, 0x31, (c_connection_client *)network_reliable_stream_get(connection->reliable_stream_index));
+			result = false;
+		else
+			connection_add_handler(connection, _connection_client_packets_flag | _connection_client_can_close_flag | _connection_client_priority_flag, (c_connection_client *)network_reliable_stream_get(connection->reliable_stream_index));
 	}
-	if (connection->flags & 0x10)
+	if (result && (connection->flags & _link_connection_unreliable_stream_flag))
 	{
 		connection->stream_index = network_stream_allocate(0);
 		if (connection->stream_index == NONE)
-			goto done;
-		connection_add_handler(connection, 0x19, (c_connection_client *)network_stream_get(connection->stream_index));
+			result = false;
+		else
+			connection_add_handler(connection, _connection_client_packets_flag | _connection_client_lost_flag | _connection_client_can_close_flag, (c_connection_client *)network_stream_get(connection->stream_index));
 	}
-	if (connection->flags & 0x20)
+	if (result && (connection->flags & _link_connection_own_client_flag))
 	{
-		connection_add_handler(connection, 1, (c_connection_client *)&connection->unknown18);
+		connection_add_handler(connection, _connection_client_packets_flag, (c_connection_client *)&connection->own_client);
 	}
-	result = true;
-done:
 	if (!result)
-		network_connection_dispose(connection);
+		link_connection_dispose(connection);
 	return result;
 }
 
+/* sets up the first free connection with the given flags; its index, or NONE */
 // @retail 0x82060
-long network_connection_allocate(long unused_owner, dword flags)
+long link_connection_allocate(long unused_owner, dword flags)
 {
 	long result = NONE;
 	dword const *flags_reference = &flags;
@@ -741,9 +764,9 @@ long network_connection_allocate(long unused_owner, dword flags)
 	{
 		for (long i = 0; i < g_4d87d0; i++)
 		{
-			if (function_x7665e0(i)->state == 0)
+			if (link_connection_get(i)->state == _link_connection_state_free)
 			{
-				if (network_connection_initialize(function_x7665e0(i), i, flags, &g_528000,
+				if (link_connection_initialize(link_connection_get(i), i, flags, &g_528000,
 					g_528b28, (c_class_938e0 *)g_529188, &g_4cf6d4))
 					result = i;
 				break;
@@ -755,13 +778,14 @@ long network_connection_allocate(long unused_owner, dword flags)
 
 typedef void (__stdcall *connection_callback_function)(void *context);
 
+/* fills in a connection class: its close callback and its clients */
 // @retail 0x892f0
-void network_connection_callback_initialize(s_connection_callback *callback, c_connection_client *const *clients,
+void link_connection_callback_initialize(s_connection_callback *callback, c_connection_client *const *clients,
 	void *context, connection_callback_function function, long count, const dword *types, bool active)
 {
 	callback->active = active;
 	callback->context = context;
-	callback->unknown00[0] = true;
+	callback->initialized = true;
 	callback->function = function;
 	callback->handler_count = count;
 	for (long i = 0; i < count; i++)
@@ -770,7 +794,7 @@ void network_connection_callback_initialize(s_connection_callback *callback, c_c
 		handler->type = types[i];
 		handler->client = clients[i];
 	}
-	callback->unknown31 = false;
+	callback->include_all_clients = false;
 }
 
 class c_class_93590;
@@ -778,7 +802,7 @@ void network_link_send_connection_packet(c_class_93590 *link, long connection_in
 	long extra_size, const void *extra, long *size_out);
 void reliable_stream_set_message_size(c_network_reliable_stream *stream, long sequence, long size);
 
-static __forceinline void function_889ee(s_bitstream *stream)
+static __forceinline void packet_stream_begin_writing(s_bitstream *stream)
 {
 	stream->mode = 1;
 	stream->unknown08 = 8;
@@ -805,14 +829,14 @@ static __forceinline void function_889ee(s_bitstream *stream)
 	}
 }
 
-static __forceinline void function_88bbf(s_bitstream *stream, bool value)
+static __forceinline void packet_stream_write_bit(s_bitstream *stream, bool value)
 {
 	if ((stream->size_in_bytes << 3) - stream->bit_position >= 1 && value)
 		stream->data[stream->bit_position / 8] |= (byte)(1 << (stream->bit_position % 8));
 	stream->bit_position++;
 }
 
-static __forceinline void function_88bef(s_bitstream *stream, dword value, long bits)
+static __forceinline void packet_stream_write_value(s_bitstream *stream, dword value, long bits)
 {
 	if (bits < 32 && value >= (dword)(1 << bits))
 	{
@@ -823,8 +847,9 @@ static __forceinline void function_88bef(s_bitstream *stream, dword value, long 
 	function_195720(stream, value, bits);
 }
 
+/* builds a packet from what each client writes and sends it over the link */
 // @retail 0x88980
-void function_88980(bool reliable, s_network_connection *connection, s_bitstream *stream, bool pad,
+void link_connection_send_packet(bool reliable, s_link_connection *connection, s_bitstream *stream, bool pad,
 	long extra_size, const void *extra, long *packet_size, long *stream_size, long *sent_extra_size)
 {
 	long sequence = NONE;
@@ -842,26 +867,26 @@ void function_88980(bool reliable, s_network_connection *connection, s_bitstream
 	if (ready)
 	{
 		long total = 0;
-		function_889ee(stream);
+		packet_stream_begin_writing(stream);
 		long capacity = (stream->size_in_bytes << 3) - stream->bit_position;
 		dword type;
-		if (connection->callback && connection->callback->unknown31)
+		if (connection->callback && connection->callback->include_all_clients)
 		{
 			type = 0;
-			connection->unknown1c = true;
+			connection->sent_to_all_clients = true;
 		}
 		else
 		{
 			type = 1;
-			connection->unknown1c = false;
+			connection->sent_to_all_clients = false;
 		}
 		long reserved[7];
 		s_connection_client_iterator iterator;
 		connection_client_iterator_new(&iterator, type);
 		memset(reserved, 0, sizeof(reserved));
-		while (network_connection_next_client(connection, &iterator))
+		while (link_connection_next_client(connection, &iterator))
 		{
-			long bits = iterator.client->v3(capacity, capacity - total);
+			long bits = iterator.client->reserve_bits(capacity, capacity - total);
 			total += bits;
 			reserved[iterator.absolute_index] = bits;
 		}
@@ -869,11 +894,11 @@ void function_88980(bool reliable, s_network_connection *connection, s_bitstream
 		if (total > capacity)
 			goto done;
 		connection_client_iterator_new(&iterator, type);
-		while (network_connection_next_client(connection, &iterator))
+		while (link_connection_next_client(connection, &iterator))
 		{
 			long bits = reserved[iterator.absolute_index];
 			total -= bits;
-			if (iterator.client->v4(sequence, stream, bits, total))
+			if (iterator.client->write_packet(sequence, stream, bits, total))
 				wrote = true;
 			if ((stream->size_in_bytes << 3) - stream->bit_position < total)
 				goto done;
@@ -883,14 +908,14 @@ void function_88980(bool reliable, s_network_connection *connection, s_bitstream
 			long bits = (stream->size_in_bytes << 3) - stream->bit_position - 15;
 			long count = (bits + 7) / 8;
 			byte padding[0x600];
-			function_88bbf(stream, true);
-			function_88bef(stream, bits, 14);
+			packet_stream_write_bit(stream, true);
+			packet_stream_write_value(stream, bits, 14);
 			memset(padding, 0, count);
 			function_1955d0(stream, padding, bits);
 		}
 		else
 		{
-			function_88bbf(stream, false);
+			packet_stream_write_bit(stream, false);
 		}
 		long size = (stream->bit_position + 7) / 8;
 		long alignment = stream->unknown08;
@@ -907,7 +932,7 @@ void function_88980(bool reliable, s_network_connection *connection, s_bitstream
 		if (sequence != NONE)
 			reliable_stream_set_message_size((c_network_reliable_stream *)network_reliable_stream_get(connection->reliable_stream_index), sequence, sent);
 		if (connection->owner)
-			connection->owner->v0(connection->id, sent, wrote);
+			connection->owner->packet_sent(connection->id, sent, wrote);
 	}
 done:
 	if (packet_size)
@@ -918,41 +943,42 @@ done:
 		*sent_extra_size = extra_bytes;
 }
 
+/* times out handshakes, closes on a client's request, and sends a packet when clients have data */
 // @retail 0x883c0
-void __stdcall function_0883c0(s_network_connection *connection)
+void __stdcall link_connection_update(s_link_connection *connection)
 {
- if (connection->state == 3 && connection->initiator)
-  network_connection_update_handshake(connection);
- if (connection->state == 4 && function_75890(connection->establish_time) > connection->config->establish_timeout)
-  network_connection_close(connection, 7);
- if (connection->state >= 4)
+ if (connection->state == _link_connection_state_connecting && connection->initiator)
+  link_connection_update_handshake(connection);
+ if (connection->state == _link_connection_state_establishing && network_ticks_since(connection->establish_time) > connection->config->establish_timeout)
+  link_connection_close(connection, 7);
+ if (connection->state >= _link_connection_state_establishing)
  {
   s_connection_client_iterator iterator;
-  connection_client_iterator_new(&iterator, 16);
-  while (network_connection_next_client(connection, &iterator))
+  connection_client_iterator_new(&iterator, _connection_client_can_close_flag);
+  while (link_connection_next_client(connection, &iterator))
   {
    long reason = 0;
-   if (iterator.client->v1(&reason))
+   if (iterator.client->should_close(&reason))
    {
-    network_connection_close(connection, reason);
+    link_connection_close(connection, reason);
     break;
    }
   }
  }
- if (connection->state >= 4)
+ if (connection->state >= _link_connection_state_establishing)
  {
   bool ordinary = false;
   bool priority = false;
   bool reliable = false;
   s_connection_client_iterator iterator;
-  dword type = connection->callback && connection->callback->unknown31 ? 0 : 1;
+  dword type = connection->callback && connection->callback->include_all_clients ? 0 : 1;
   connection_client_iterator_new(&iterator, type);
-  while (network_connection_next_client(connection, &iterator))
+  while (link_connection_next_client(connection, &iterator))
   {
    bool client_reliable = false;
-   if (iterator.client->v2(&client_reliable))
+   if (iterator.client->has_data(&client_reliable))
    {
-    if (iterator.client_type & 32)
+    if (iterator.client_type & _connection_client_priority_flag)
      priority = true;
     else
      ordinary = true;
@@ -960,7 +986,7 @@ void __stdcall function_0883c0(s_network_connection *connection)
      reliable = true;
    }
   }
-  if (!(connection->flags & 8) && reliable)
+  if (!(connection->flags & _link_connection_reliable_stream_flag) && reliable)
    reliable = false;
   bool send_reliable;
   bool pad;
@@ -993,15 +1019,15 @@ void __stdcall function_0883c0(s_network_connection *connection)
    long packet_size;
    long stream_size;
    long sent_extra_size;
-   function_88980(send_reliable, connection, &stream, pad, extra_size,
+   link_connection_send_packet(send_reliable, connection, &stream, pad, extra_size,
     extra_size > 0 ? extra : 0, &packet_size, &stream_size, &sent_extra_size);
-   network_connection_reset_timer(connection, 0);
+   link_connection_reset_timer(connection, _link_connection_timer_packet_sent);
    if (send_reliable)
-    network_connection_reset_timer(connection, 1);
+    link_connection_reset_timer(connection, _link_connection_timer_reliable_sent);
    if (extra_size > 0)
-    network_connection_reset_timer(connection, 2);
+    link_connection_reset_timer(connection, _link_connection_timer_extra_sent);
   }
  }
- if (connection->state >= 4)
-  network_connection_update_reliable_stream(connection);
+ if (connection->state >= _link_connection_state_establishing)
+  link_connection_update_reliable_stream(connection);
 }

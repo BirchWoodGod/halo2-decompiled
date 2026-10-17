@@ -404,7 +404,7 @@ struct s_1aa0d2
 };
 
 bool function_10f340(long arg_0, long arg_1, long arg_2);
-bool function_114b60(short arg_0, short arg_1, long arg_2, long arg_3, void const *arg_4);
+bool unit_submit_entry_request(short fallback_index, short entry_index, long unit_index, long priority, void const *extra);
 long function_1469f0(real arg_0);
 real function_30bf0(vector3f *arg_0);
 real normalize2d(point2f *arg_0);
@@ -528,7 +528,7 @@ bool __stdcall function_1aa0d0(long arg_0, s_slot *arg_1)
 				}
 				if (function_e6900(local_0->unknown018, &local_17))
 				{
-					function_114b60(NONE, 0x12, local_0->unknown018, 0xd, NULL);
+					unit_submit_entry_request(0x12, NONE, local_0->unknown018, 0xd, NULL);
 					local_2->field_12 = true;
 				}
 			}
@@ -719,7 +719,7 @@ local_7:
 			}
 			if (function_e6900(local_1->unknown018, &local_28))
 			{
-				function_114b60(NONE, 0x13, local_1->unknown018, 0xd, NULL);
+				unit_submit_entry_request(0x13, NONE, local_1->unknown018, 0xd, NULL);
 				local_0->field_12 = true;
 			}
 		}
@@ -794,7 +794,7 @@ local_7:
 	return (short)local_2;
 }
 
-bool function_10fa80(long arg_0, long arg_1, long arg_2, short *arg_3, real *arg_4, short *arg_5, real *arg_6);
+bool unit_animation_get_timing(long arg_0, long arg_1, long arg_2, short *arg_3, real *arg_4, short *arg_5, real *arg_6);
 long function_1e4a50(long arg_0);
 
 struct s_1aa750
@@ -844,7 +844,7 @@ bool __stdcall function_1aa750(long arg_0, s_slot *arg_1, bool arg_2)
 		{
 			local_3->field_28 = local_1->field_c;
 			long local_8 = arg_2 ? 0xa000040 : local_3->field_a ? 0xe00067d : 0x500000a;
-			if (function_10fa80(local_0->unknown018, 0x7000101, local_8, &local_4, &local_6, &local_5, &local_7))
+			if (unit_animation_get_timing(local_0->unknown018, 0x7000101, local_8, &local_4, &local_6, &local_5, &local_7))
 			{
 				if (local_4 == NONE)
 				{
@@ -876,7 +876,7 @@ bool __stdcall function_1aa750(long arg_0, s_slot *arg_1, bool arg_2)
 				local_8 = local_3->field_a ? 0xe00067d : 0xc0006cd;
 				local_5 = 0;
 				local_7 = 0.0f;
-				if (function_10fa80(local_0->unknown018, 0x7000101, local_8, &local_4, &local_6, &local_5, &local_7))
+				if (unit_animation_get_timing(local_0->unknown018, 0x7000101, local_8, &local_4, &local_6, &local_5, &local_7))
 				{
 					local_3->field_26 = local_5;
 					local_3->field_2c = local_7;
