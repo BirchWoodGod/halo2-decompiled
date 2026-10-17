@@ -1525,6 +1525,9 @@ bool __stdcall function_29080(long context)
         g_484f68.PSCombinerCount = 0x11001;
         constant = pack_color3f(&color);
         g_484f68.PSFinalCombinerInputsABCD = 0xa010000;
+        g_484f68.PSFinalCombinerConstant0 = constant;
+        g_484f68.PSFinalCombinerInputsEFG = 0;
+        function_1ccf0(&g_484f68);
     }
     else
     {
@@ -1533,10 +1536,10 @@ bool __stdcall function_29080(long context)
         g_484f68.PSCombinerCount = 0x11001;
         constant = pack_color3f(&color);
         g_484f68.PSFinalCombinerInputsABCD = 0x8010000;
+        g_484f68.PSFinalCombinerConstant0 = constant;
+        g_484f68.PSFinalCombinerInputsEFG = 0;
+        function_1ccf0(&g_484f68);
     }
-    g_484f68.PSFinalCombinerInputsEFG = 0;
-    g_484f68.PSFinalCombinerConstant0 = constant;
-    function_1ccf0(&g_484f68);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
     function_1c710(g_51f0f0);
     return true;
@@ -2852,8 +2855,10 @@ void __stdcall function_2a2f0(long tag, real alpha)
                         if (bitmap)
                         {
                             g_51f3c8[1][0] = function_12310((s_bitmap_view *)bitmap, 0.0f);
-                            g_485af4[0] = *(short *)(bitmap + 4);
-                            g_485b04[0] = *(short *)(bitmap + 6);
+                            long width = *(short *)(bitmap + 4);
+                            long height = *(short *)(bitmap + 6);
+                            g_485af4[0] = width;
+                            g_485b04[0] = height;
                         }
                     }
                 }
@@ -2865,20 +2870,19 @@ void __stdcall function_2a2f0(long tag, real alpha)
             sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
             sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
             sampler_state_write(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
-            sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
             sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
             sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+            sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
             sampler_state_write(0, D3DTSS_COLORSIGN, 0);
             sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
 #pragma inline_depth(0)
             function_1cf50();
             s_2a2f0_record *line = &records[i];
-            real half_height = height * 0.5f;
-            real center = 240.0f - ((real)line->y - half_height);
+            real center = 240.0f - ((real)line->y - height * 0.5f);
             box2f bounds;
             bounds.x0 = 0.0f; bounds.x1 = 640.0f;
-            bounds.y0 = center - half_height;
-            bounds.y1 = center + half_height;
+            bounds.y0 = center - height * 0.5f;
+            bounds.y1 = center + height * 0.5f;
             real time;
             if (g_510c54 && g_510c54->active)
                 time = g_510c54->game_time * g_510c54->rate;
@@ -3253,6 +3257,8 @@ void function_25a10(vector3f const *direction, point3f const *position, byte con
 extern dword g_4b8308, g_4b82e8, g_4b82f4, g_4b82f8, g_4b8324, g_4b82ec, g_4b8448, g_4b843c, g_4b8438, g_4b8450;
 dword __cdecl pack_color4f(color4f const *color);
 
+#define FILTER_PIN(x) ((x) < 0.0f ? 0.0f : (x) > 1.0f ? 1.0f : (x))
+
 // @retail 0x25e50
 bool __stdcall function_25e50(void *context)
 {
@@ -3303,28 +3309,35 @@ bool __stdcall function_25e50(void *context)
     function_0222d0(D3DRS_ZFUNC, g_48575d ? 0x207 : 0x204);
 #pragma inline_depth(255)
     g_4b8450 = 0; D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
-    color4f first, second, third;
-    first.alpha = clamp_filter_unit((1.0f - g_485868) * g_48578c);
-    first.red = clamp_filter_unit(g_485768.i * g_485774);
-    first.green = clamp_filter_unit(g_485768.j * g_485774);
-    first.blue = clamp_filter_unit(g_485768.k * g_485774);
-    second.alpha = clamp_filter_unit(g_485774 * g_485868);
-    second.red = clamp_filter_unit(g_485780.i * g_48578c);
-    second.green = clamp_filter_unit(g_485780.j * g_48578c);
-    second.blue = clamp_filter_unit(g_485780.k * g_48578c);
-    real first_alpha = clamp_filter_unit(g_485774);
-    real second_alpha = clamp_filter_unit(g_48578c);
-    third.alpha = clamp_filter_unit(g_4857b4);
-    third.red = clamp_filter_unit(g_4857a8.red);
-    third.green = clamp_filter_unit(g_4857a8.green);
-    third.blue = clamp_filter_unit(g_4857a8.blue);
+    byte const *settings = (byte const *)&g_48574c;
+    vector3f const &first_color = *(vector3f const *)(settings + 0x1c);
+    real const &second_scale = *(real const *)(settings + 0x40);
+    real const &first_scale = *(real const *)(settings + 0x28);
+    real const &mix = *(real const *)(settings + 0x11c);
+    vector3f const &second_color = *(vector3f const *)(settings + 0x34);
+    color3f const &third_color = *(color3f const *)(settings + 0x5c);
+    color4f colors[3];
+    colors[0].alpha = FILTER_PIN((1.0f - mix) * second_scale);
+    colors[0].red = FILTER_PIN(first_color.i * first_scale);
+    colors[0].green = FILTER_PIN(first_color.j * first_scale);
+    colors[0].blue = FILTER_PIN(first_color.k * first_scale);
+    colors[1].alpha = FILTER_PIN(first_scale * mix);
+    colors[1].red = FILTER_PIN(second_color.i * second_scale);
+    colors[1].green = FILTER_PIN(second_color.j * second_scale);
+    colors[1].blue = FILTER_PIN(second_color.k * second_scale);
+    real first_alpha = FILTER_PIN(first_scale);
+    real second_alpha = FILTER_PIN(second_scale);
+    colors[2].alpha = FILTER_PIN(*(real const *)(settings + 0x68));
+    colors[2].red = FILTER_PIN(third_color.red);
+    colors[2].green = FILTER_PIN(third_color.green);
+    colors[2].blue = FILTER_PIN(third_color.blue);
     memset(&g_484f68, 0, sizeof(g_484f68));
     dword *fields = (dword *)&g_484f68;
     fields[0xd8 / 4] = 0x2621;
     fields[0xdc / 4] = 0x44;
     fields[0xd4 / 4] = 0x11004;
-    fields[0x28 / 4] = pack_color4f(&first);
-    fields[0x48 / 4] = pack_color4f(&second);
+    fields[0x28 / 4] = pack_color4f(&colors[0]);
+    fields[0x48 / 4] = pack_color4f(&colors[1]);
     fields[0x88 / 4] = 0x10a021a;
     fields[0xb4 / 4] = 0xcd;
     fields[0x0 / 4] = 0x111a120a;
@@ -3337,7 +3350,7 @@ bool __stdcall function_25e50(void *context)
     fields[0xb8 / 4] = 0xc00;
     fields[0x4 / 4] = 0x110a121a;
     fields[0x8 / 4] = 0x3c3d0820;
-    fields[0x34 / 4] = pack_color4f(&third);
+    fields[0x34 / 4] = pack_color4f(&colors[2]);
     fields[0x94 / 4] = 0x3d0c1d01;
     fields[0xc0 / 4] = 0xc00;
     fields[0xc / 4] = 0x3d3c1d11;

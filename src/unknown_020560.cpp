@@ -1311,44 +1311,41 @@ void __stdcall function_34a90(long target, short blend, dword color_write,
 // @retail 0x22070
 void __stdcall function_22070(real strength, real exponent)
 {
+    strength = strength > 0.0f ? PIN(pow(strength > 1.0f ? 1.0f : strength,
+        exponent > 0.0f ? exponent : 0.0f), 0.0f, 1.0f) : 0.0f;
     if (strength > 0.0f)
     {
-        strength = PIN(pow(strength > 1.0f ? 1.0f : strength,
-            exponent > 0.0f ? exponent : 0.0f), 0.0f, 1.0f);
-        if (strength > 0.0f)
+        function_14f60(0, 18);
+        sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+        sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+        sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+        sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+        sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+        sampler_state_write(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+        memset(&g_484f68, 0, sizeof(g_484f68));
+        g_484f68.PSTextureModes = 1;
+        g_484f68.PSCombinerCount = 0x11001;
+        real alpha_scale = 255.0f;
+        long alpha = 0;
+        __asm
         {
-            function_14f60(0, 18);
-            sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
-            sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
-            sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
-            sampler_state_write(0, D3DTSS_COLORSIGN, 0);
-            sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
-            sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-            sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-            sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-            sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-            sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-            sampler_state_write(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
-            memset(&g_484f68, 0, sizeof(g_484f68));
-            g_484f68.PSTextureModes = 1;
-            g_484f68.PSCombinerCount = 0x11001;
-            real alpha_scale = 255.0f;
-            long alpha = 0;
-            __asm
-            {
-                fld strength
-                fld alpha_scale
-                fmulp st(1), st(0)
-                fistp alpha
-                shl alpha, 24
-            }
-            g_484f68.PSFinalCombinerConstant0 = (dword)alpha;
-            g_484f68.PSFinalCombinerInputsABCD = 0x8110000;
-            g_484f68.PSFinalCombinerInputsEFG = 0x1100;
-            function_1ccf0(&g_484f68);
-            function_34a90(g_4858b8, 7, 0x1010101, false, false,
-                1.0f, 0.0f, 1.0f, 1, false, false);
+            fld strength
+            fld alpha_scale
+            fmulp st(1), st(0)
+            fistp alpha
+            shl alpha, 24
         }
+        g_484f68.PSFinalCombinerConstant0 = (dword)alpha;
+        g_484f68.PSFinalCombinerInputsABCD = 0x8110000;
+        g_484f68.PSFinalCombinerInputsEFG = 0x1100;
+        function_1ccf0(&g_484f68);
+        function_34a90(g_4858b8, 7, 0x1010101, false, false,
+            1.0f, 0.0f, 1.0f, 1, false, false);
     }
 }
 
