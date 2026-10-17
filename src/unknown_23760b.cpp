@@ -26,8 +26,8 @@ void unicode_string_copy(word *destination, const word *source, long maximum_cou
 c_class_1473c9 *__stdcall function_23784f(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_23764f(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_237713(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80b9(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80c9(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type1_to_gamertag(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type2_to_gamertag(s_screen_parameters *parameters);
 long function_1480ff(long screen_id);
 s_screen_definition *function_22f871(c_class_1473c9 *screen);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
@@ -1428,7 +1428,7 @@ bool finish_message_gamertag(c_virtual_keyboard_screen *keyboard)
 	request.name[0xf] = 0;
 	function_148893((s_name_request *)&request, 1);
 	parameters.field_c = 0;
-	function_149f49((s_message *)&parameters, 0, 0, keyboard->user_flags, 3, 4, (long)function_2b80b9);
+	function_149f49((s_message *)&parameters, 0, 0, keyboard->user_flags, 3, 4, (long)xbox_live_message_send_screen_load_type1_to_gamertag);
 	parameters.load(&parameters);
 	return true;
 }
@@ -1450,7 +1450,7 @@ bool finish_friend_gamertag(c_virtual_keyboard_screen *keyboard)
 		request.name[0xf] = 0;
 		function_148893((s_name_request *)&request, 1);
 		parameters.field_c = 0;
-		function_149f49((s_message *)&parameters, 0, 0, keyboard->user_flags, 3, 4, (long)function_2b80c9);
+		function_149f49((s_message *)&parameters, 0, 0, keyboard->user_flags, 3, 4, (long)xbox_live_message_send_screen_load_type2_to_gamertag);
 		parameters.load(&parameters);
 	}
 	return true;

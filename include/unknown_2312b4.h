@@ -73,12 +73,28 @@ public:
 	c_list_item_handler handler;
 };
 
-/* a recent player (0x58 bytes, copied from the player configuration cache) */
+/* a recent player (0x58 bytes, copied from the player configuration cache):
+   its XUID (the id, then its flags) and gamertag */
 struct s_recent_player
 {
 	dword xuid[2];
-	byte unknown08[0x58 - 0x08];
+	union
+	{
+		/* the player configuration cache reads these as bytes */
+		byte unknown08[0x58 - 0x08];
+		struct
+		{
+			dword xuid_flags;
+			word name[16];
+			byte unknown2c[0x56 - 0x2c];
+			/* the value the player's list item takes its range for
+			   (function_2b01a2) */
+			signed char range_value;
+			byte unknown57;
+		};
+	};
 };
+typedef char assert_recent_player_size[(sizeof(s_recent_player) == 0x58) ? 1 : -1];
 
 /* the recent players list (vtable 0x45b4a0) */
 class c_y_menu_recent_players_list : public c_class_1474e8
