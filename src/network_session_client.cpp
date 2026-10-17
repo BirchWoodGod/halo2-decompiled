@@ -743,13 +743,13 @@ bool function_90160(long task_index, s_match_result_data *result);
 long online_match_session_find(XNKID const *session_id);
 long qos_lookup(long kind, long count, long bits_per_second, s_qos_target *targets);
 bool qos_is_complete(long handle);
-bool function_7c530(const byte *data, long size, void *description);
+bool session_description_decode_buffer(const byte *data, long size, void *description);
 
 PRIVATE __forceinline bool function_6f4b1(const s_qos_result *arg_0, s_session_description *arg_1)
 {
  const byte *local_0 = *(byte *volatile const *)&arg_0->data;
  long local_1 = *(volatile const long *)&arg_0->data_size;
- return function_7c530(local_0, local_1, arg_1);
+ return session_description_decode_buffer(local_0, local_1, arg_1);
 }
 
 // @retail 0x6f4b0

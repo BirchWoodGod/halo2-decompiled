@@ -44,7 +44,7 @@ struct s_game_globals_137dd0
 };
 
 bool function_19d650(s_game_variant *variant);
-void function_07ad80(long count, byte *buffer);
+void transport_get_random_bytes(long count, byte *buffer);
 
 byte g_510c49;
 /* unknown_12b070.cpp */
@@ -88,6 +88,6 @@ void function_138110(s_game_options *options)
 	options->field_2_3 = (short)(ticks / 2);
 	options->unknown14 = NONE;
 	options->unknown18 = NONE;
-	function_07ad80(sizeof(options->random_id), options->random_id);
+	transport_get_random_bytes(sizeof(options->random_id), options->random_id);
 	options->field_8_4 = 0x78a8;
 }
