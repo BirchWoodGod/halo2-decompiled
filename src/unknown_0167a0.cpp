@@ -544,10 +544,8 @@ bool function_1b790(byte const *state, long index, real *out, long mode)
     memset(&matrix, 0, sizeof(matrix));
     if (!(fabs(values[13]) < 0.0001f))
     {
-        volatile real rounded_angle = values[13] * 6.2831854820251465f;
-        real angle = rounded_angle;
-        sine = sinf(angle);
-        cosine = cosf(angle);
+        sine = sinf(values[13] * 6.2831854820251465f);
+        cosine = cosf(values[13] * 6.2831854820251465f);
     }
     matrix.forward.j = 0.0f - sx * sine;
     matrix.position.x = (1.0f - cosine + sine) * sx * 0.5f + values[10];
