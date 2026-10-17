@@ -209,8 +209,8 @@ void function_1b0f20(s_slot_target_list *list, vector2f *direction)
 {
 	if (function_25ab50(list->unknown84) && function_25ab50(list->unknown88))
 	{
-		point2f *end = point_get(list->unknown88);
-		point2f *start = point_get(list->unknown84);
+		point2f *end = point_get(*(long volatile *)&list->unknown88);
+		point2f *start = point_get(*(long volatile *)&list->unknown84);
 
 		direction->i = end->x - start->x;
 		direction->j = end->y - start->y;

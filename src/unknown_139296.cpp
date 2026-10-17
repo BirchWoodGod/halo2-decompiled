@@ -401,7 +401,7 @@ void function_13a050(byte const *status, long user_index, long type, s_13ad48_it
 	*fourth_out = fourth;
 }
 
-void function_22a648(void);
+void new_hud_function_context_initialize(void);
 
 // @retail 0x139152
 void new_hud_initialize_for_new_map(void)
@@ -425,7 +425,7 @@ void new_hud_initialize_for_new_map(void)
 		globals->users[i].index08 = NONE;
 	}
 	memset(&globals->appearance, 0, sizeof(globals->appearance));
-	function_22a648();
+	new_hud_function_context_initialize();
 	function_13ac30();
 }
 
