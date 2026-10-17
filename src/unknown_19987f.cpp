@@ -46,7 +46,7 @@ byte *network_session_interface_get_data_4db0(void);
 bool network_session_interface_get_values_4d08(long *a, long *b, byte **c);
 long network_session_interface_get_value_49b0(void);
 bool network_session_interface_can_add_player(void);
-long function_190262(long value);
+long player_slot_iterate_next(long value);
 
 bool network_session_get_membership(c_class_58d20 *session, long *value4c, long *host_member_index, long *local_member_index, long *value50, long *member_count, s_session_member **members, long *player_count, dword *player_mask, s_network_session_player **players);
 
@@ -411,7 +411,7 @@ long function_19b3e3(void)
 	long count = 0;
 	long index;
 
-	for (index = 0; index != NONE; index = function_190262(index))
+	for (index = 0; index != NONE; index = player_slot_iterate_next(index))
 	{
 		if (TEST_FIELD_BIT(g_54e8e0[index].flag4))
 		{
@@ -2422,7 +2422,7 @@ void function_199a03(long mode)
 {
 	long index;
 
-	for (index = 0; index != NONE; index = function_190262(index))
+	for (index = 0; index != NONE; index = player_slot_iterate_next(index))
 	{
 		word *name = function_1902c1(index);
 

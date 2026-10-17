@@ -381,7 +381,7 @@ HRESULT online_task_continue(s_type_9df9da *task);
 /* unknown_0b49a0.cpp: the error string of a Live result */
 dword online_result_get_error_string(dword key);
 
-/* unknown_18f576.cpp */
+/* player_slots.cpp */
 bool player_slot_get_identity(long index, s_player_identity *identity);
 
 /* unknown_147f6d.cpp */

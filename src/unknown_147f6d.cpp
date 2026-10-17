@@ -33,9 +33,9 @@ void function_236299(long sound);
 
 s_profile_edit g_54e5d0;
 
-struct s_player_profile; /* unknown_18f576.cpp */
+struct s_player_profile; /* player_slots.cpp */
 void player_slot_get_profile(long index, s_player_profile *profile, long *profile_index);
-void __stdcall function_18fd20(long player, s_player_profile_settings *settings, long profile_index);
+void __stdcall player_slot_store_profile(long player, s_player_profile_settings *settings, long profile_index);
 void __stdcall function_215367(long player, long profile_index, void *data, long flags);
 void __stdcall function_2153dd(long player, long profile_index, s_player_profile_settings *settings, long flags);
 
@@ -662,7 +662,7 @@ void profile_edit_save()
 			player_slot_get_profile(player, (s_player_profile *)profile, &found_index);
 			if (found_index == profile_index)
 			{
-				function_18fd20(player, &g_54e5d0.settings, found_index);
+				player_slot_store_profile(player, &g_54e5d0.settings, found_index);
 				return;
 			}
 		}
@@ -899,7 +899,7 @@ static inline s_selection_xuid *selection_get_xuid(s_name_request *selection)
 }
 
 struct _XUID;
-long function_18fa4d(long mode);
+long player_slot_find_signed_in(long mode);
 long function_abc70(long controller_index, _XUID const *xuid);
 
 /* selects the player the online screens act on (mode 2 keeps the clan
@@ -933,7 +933,7 @@ void __stdcall function_148893(s_name_request *request, long mode)
 
 			if (xuid && xuid->id && !(xuid->flags & 3))
 			{
-				long controller_index = function_18fa4d(1);
+				long controller_index = player_slot_find_signed_in(1);
 
 				if (controller_index >= 0 && controller_index < 4)
 				{
@@ -1239,14 +1239,14 @@ bool __stdcall function_148fff(long user_index)
 	return result;
 }
 
-long player_slot_find_controller(long controller_id);
+long player_slot_find_session_user(long controller_id);
 
 /* whether the controller's player slot is signed in to its user */
 // @retail 0x147da5
 bool function_147da5(long controller_id)
 {
 	bool result = false;
-	long user = player_slot_find_controller(controller_id);
+	long user = player_slot_find_session_user(controller_id);
 
 	if (user != NONE)
 	{
@@ -1255,7 +1255,7 @@ bool function_147da5(long controller_id)
 	return result;
 }
 
-void function_18f5e3(void);
+void player_slots_refresh_profile_indices(void);
 short player_slot_count_active(void);
 bool function_6c7e0();
 void function_1906b4(void);
@@ -1339,7 +1339,7 @@ void __stdcall function_1483c3(long reason)
 {
 	if (!g_54d598.active)
 	{
-		function_18f5e3();
+		player_slots_refresh_profile_indices();
 		g_54d5bc = g_54d5b8;
 	}
 	g_54d598.active = true;
@@ -1411,7 +1411,7 @@ extern char g_54d5a8;
 extern real g_54d5ac, g_54d5b0, g_54d5b4;
 extern bool g_54e7cc;
 extern dword g_54e7fc;
-void function_18f58c();
+void player_slots_initialize();
 
 // @retail 0x1476c7
 void function_1476c7()
@@ -1446,7 +1446,7 @@ void function_1476c7()
             g_54d598.window_2.m4 = i;
         }
     }
-    function_18f58c();
+    player_slots_initialize();
     memset(&g_54d598.settings, 0, sizeof(g_54d598.settings));
     g_54d598.team_task = NONE;
     g_54d598.team_members_task = NONE;
@@ -1503,7 +1503,7 @@ void c_render_window::function_147cdb(dword color)
 
 void __stdcall function_215e60(long file_index);
 long function_217300(long file_index, long removed_index);
-void __stdcall function_18fb34(long index, s_player_profile_settings *settings, long profile_index);
+void __stdcall player_slot_set_profile(long index, s_player_profile_settings *settings, long profile_index);
 
 PRIVATE inline long next_controller_148b27(long index)
 {
@@ -1531,7 +1531,7 @@ void __stdcall function_148b27(long index)
             long updated_index = function_217300(current_index, removed_index);
             if (updated_index != profile_index)
             {
-                function_18fb34(controller, &profile, updated_index);
+                player_slot_set_profile(controller, &profile, updated_index);
             }
         }
         controller = next_controller_148b27(controller);

@@ -35,7 +35,7 @@ struct s_presence_name_cache
 void online_teams_enumerate_get_results(long task_index, DWORD *count, XUID *teams);
 void online_team_get_details(long task_index, XUID const *team, XONLINE_TEAM *details);
 long function_abc70(long controller_index, XUID const *xuid);
-long function_18fa4d(long mode);
+long player_slot_find_signed_in(long mode);
 
 // @retail 0x8bf70
 void function_8bf70(s_presence_name_cache *cache)
@@ -89,7 +89,7 @@ void function_8bf70(s_presence_name_cache *cache)
 	}
 	if (cache->task_index == NONE)
 	{
-		long controller = function_18fa4d(1);
+		long controller = player_slot_find_signed_in(1);
 		if (controller >= 0 && controller < 4)
 		{
 			for (long i = 0; i < 150; i++)

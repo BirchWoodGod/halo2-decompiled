@@ -27,7 +27,7 @@ struct s_187df2
 	byte field_1fc[0xc70 - 0x1fc];
 };
 
-void __stdcall function_18fcc4(long arg_0, s_player_profile *arg_1, long arg_2);
+void __stdcall player_slot_change_profile(long arg_0, s_player_profile *arg_1, long arg_2);
 void function_12b980(void);
 
 #pragma inline_depth(0)
@@ -69,7 +69,7 @@ void __stdcall function_187df0(bool arg_0)
 				local_0.field_fc |= 1;
 			else
 				local_0.field_fc &= ~1;
-			function_18fcc4(local_4, (s_player_profile *)&local_0, local_6);
+			player_slot_change_profile(local_4, (s_player_profile *)&local_0, local_6);
 			function_12b980();
 		}
 	}
