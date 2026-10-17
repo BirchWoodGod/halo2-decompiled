@@ -1467,11 +1467,11 @@ struct s_cache_property_record
     long count;
     s_cache_property *properties;
 };
-void function_80940(s_cache_property_record *records, long record_capacity,
-    s_cache_property *properties, long property_capacity, long buffer_capacity,
+void function_80940(long record_capacity, s_cache_property_record *records,
+    long property_capacity, s_cache_property *properties, long buffer_capacity,
     byte *buffers, long *record_count, long *property_count, long *buffer_count);
-void function_80bf0(s_cache_property_record *records, long record_capacity,
-    s_cache_property *properties, long property_capacity, byte *buffers,
+void function_80bf0(long record_capacity, s_cache_property_record *records,
+    long property_capacity, s_cache_property *properties, byte *buffers,
     long *record_count, long *property_count, long *buffer_count);
 void function_80aa0(s_cache_property_record *records, long count);
 void function_80d70(s_cache_property_record *records, long count);
@@ -1622,8 +1622,8 @@ void function_074aa0(void)
             if (records_used < 80 && properties_used < 480)
             {
                 long records = 0, properties = 0, buffers;
-                function_80940(&g_50c474[records_used], 80 - records_used,
-                    &g_50cbf8[properties_used], 480 - properties_used, 32, g_50e9fc,
+                function_80940(80 - records_used, &g_50c474[records_used],
+                    480 - properties_used, &g_50cbf8[properties_used], 32, g_50e9fc,
                     &records, &properties, &buffers);
                 records_used += records;
                 properties_used += properties;
@@ -1717,7 +1717,7 @@ void function_074aa0(void)
         if (!g_50f1fc && (!g_50f200 || query_time_now() - g_50f200 > 300000))
         {
             long records = 0, properties = 0, buffers;
-            function_80bf0(g_50f20c, 32, g_50f510, 128, g_50fd14, &records, &properties, &buffers);
+            function_80bf0(32, g_50f20c, 128, g_50f510, g_50fd14, &records, &properties, &buffers);
             if (records > 0 && properties > 0)
             {
                 long task = online_stats_write((XONLINE_STAT_SPEC *)g_50f20c, (word)records);
