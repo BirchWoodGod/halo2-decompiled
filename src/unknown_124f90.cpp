@@ -2191,7 +2191,7 @@ long __stdcall function_127d00(s_type_99c531 const *source, real maximum_distanc
 		result = (real)sqrt(best);
 		if (function_221da0(listener_index, (s_sound_transmission_view const *)source, result / maximum_distance))
 			listener_index = NONE;
-		if (!SOUND_FLAG((source)->flags, 8) && !SOUND_FLAG((source)->flags, 11))
+		if (!SOUND_FLAG(source->flags, 8) && !SOUND_FLAG(source->flags, 11))
 		{
 			if (best > maximum_distance * maximum_distance)
 			{
@@ -2745,10 +2745,6 @@ void function_129380(vector3f const *const *voice_values, vector3f const *const 
 	}
 }
 
-__declspec(noinline) bool sound_playback_update_location(long sound_index);
-
-__declspec(noinline) void function_126df0(long fade_in_index, long fade_out_index, short curve, real duration);
-
 // @retail 0x128020
 void function_128020(void)
 {
@@ -2775,7 +2771,10 @@ void function_128020(void)
 			function_127320(sound_index, 0xf);
 			goto skip_to_next;
 		}
+/* retail calls these two out of line */
+#pragma inline_depth(0)
 		if (!sound_playback_update_location(sound_index))
+#pragma inline_depth()
 		{
 			function_127320(sound_index, 3);
 			goto skip_to_next;
@@ -2823,7 +2822,9 @@ void function_128020(void)
 				sound->listener_index = (char)listener;
 				if (TEST_FIELD_BIT(sound->flag2))
 				{
+#pragma inline_depth(0)
 					function_126df0(sound_index, NONE, 0, 0.5f);
+#pragma inline_depth()
 					sound->flag2 = false;
 				}
 			}
