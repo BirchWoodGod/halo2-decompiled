@@ -245,7 +245,7 @@ PRIVATE inline long player_profile_random(long range)
    __stdcall alone and the earlier parameter-address trial did not retain
    the unused stack argument. */
 // @retail 0x1a03a0 standard
-long __stdcall player_profile_create(long controller_index, word *name)
+long __stdcall player_profile_make(long controller_index, word *name)
 {
 	s_player_profile profile;
 	long file_index = function_215c00(0, (wchar_t const *)name);

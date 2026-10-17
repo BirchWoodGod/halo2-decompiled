@@ -24,12 +24,12 @@ long game_engine_get_player_score(dword player_index)
 	if (scores)
 	{
 		s_game_engine_score_player *player = (s_game_engine_score_player *)(g_4e8c24->data + (player_index & 0xffff) * sizeof(s_game_engine_score_player));
-		bool team_game = false;
+		bool uses_teams = false;
 		if (engine)
 		{
-			team_game = TEST_FIELD_BIT(g_4e6948->flags184.bit0);
+			uses_teams = TEST_FIELD_BIT(g_4e6948->flags184.bit0);
 		}
-		if (team_game)
+		if (uses_teams)
 		{
 			char team_index = player->team_index;
 			if (team_index != -1)
