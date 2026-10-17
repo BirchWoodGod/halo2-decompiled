@@ -4,7 +4,7 @@
    An animation is named by a c_type_709360: the graph it is in (NONE for the
    graph itself, else an index into the graph's inheritance list) and its index
    in that graph's animation block. An animation's data may sit in a streamed
-   resource of the graph (the cache of unknown_123680.cpp); the lookups request
+   resource of the graph (the cache of animation_cache.cpp); the lookups request
    the resources of the animations they touch. */
 
 #ifndef UNKNOWN_1DACB0_H
