@@ -74,7 +74,7 @@ long function_1890c0(s_sound_label_play const *play, long object_index, short va
 long function_189400(s_sound_position const *position, long object_index, long tag_index, real scale);
 
 // @retail 0x1892a0
-void function_1892a0(s_sound_source_description *description, point3f const *position, vector3f const *direction, short value, long tag_index, long object_index)
+void function_1892a0(short value, point3f const *position, vector3f const *direction, long tag_index, long object_index, s_sound_source_description *description)
 {
 	description->position = *position;
 	description->direction = *direction;
@@ -369,7 +369,7 @@ long function_189340(long object_index, long tag_index, long audible, s_sound_ma
 	return NONE;
 }
 
-void function_1892a0(s_sound_source_description *description, point3f const *position, vector3f const *direction, short value, long tag_index, long object_index);
+void function_1892a0(short value, point3f const *position, vector3f const *direction, long tag_index, long object_index, s_sound_source_description *description);
 extern point3f *g_468788;
 extern s_sound_source_callbacks const g_444b5c;
 
@@ -426,7 +426,7 @@ long function_189400(s_sound_position const *position, long object_index, long t
 	s_sound_source_description description;
 
 	description.flags = 0;
-	function_1892a0(&description, g_468788, (vector3f *)g_4687a8, NONE, tag_index, object_index);
+	function_1892a0(NONE, g_468788, (vector3f *)g_4687a8, tag_index, object_index, &description);
 
 	s_tag_header_globals_sound_view *globals = (s_tag_header_globals_sound_view *)g_4e034c;
 	s_tag_header_alt_sound_view *header = globals->header ? globals->header_alt : NULL;
@@ -471,7 +471,7 @@ long function_189060(long object_index, short value, real scale, point3f const *
 	s_sound_source_description description;
 
 	description.flags = 0;
-	function_1892a0(&description, position, direction, *local_0, tag_index, object_index);
+	function_1892a0(*local_0, position, direction, tag_index, object_index, &description);
 	return function_189340(object_index, tag_index, 1, (s_sound_marker *)&description, function_189010(tag_index, object_index) ? &g_444b1c : &g_444afc, scale, NONE, NULL);
 }
 
@@ -486,7 +486,7 @@ long function_1890c0(s_sound_label_play const *play, long object_index, short va
 	description.flags = 0;
 	audible = 1;
 	function_18d4f0(object_index, &audible, NULL);
-	function_1892a0(&description, position, direction, value, play->tag_index, object_index);
+	function_1892a0(value, position, direction, play->tag_index, object_index, &description);
 	request.location.audible = audible;
 	request.location.requested_audible = audible;
 	request.location.spatial.location.leaf_index = NONE;

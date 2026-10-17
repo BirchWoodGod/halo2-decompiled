@@ -55,7 +55,7 @@ matrix3x3 *function_141e10(matrix3x3 *out, quaternionf const *q);
 void function_141590(transform4x3f const *in, transform4x3f *out);
 void function_1421b0(transform4x3f *out, point3f const *position, quaternionf const *rotation);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
-void function_120220(transform4x3f *root, transform4x3f *mid, transform4x3f *target, transform4x3f *end);
+void function_120220(transform4x3f *target, transform4x3f *end, transform4x3f *root, transform4x3f *mid);
 struct s_render_model_definition;
 void __stdcall render_model_build_child_node_matrices(s_render_model_definition const *definition, transform4x3f const *parent_matrix,
 	long node_index, long node_count, transform4x3f *field_50);
@@ -217,7 +217,7 @@ short function_1d90b0(long render_model_index, long marker_name, byte const *reg
    reaches the target (weighted toward the node's own position), then carries
    the node's children along */
 // @retail 0x1d90e0
-void function_1d90e0(long render_model_index, transform4x3f *nodes, long node_index, transform4x3f const *marker_matrix,
+void function_1d90e0(long render_model_index, long node_index, transform4x3f *nodes, transform4x3f const *marker_matrix,
 	transform4x3f const *target_matrix, real weight, long node_count)
 {
 	s_render_model_view *definition = render_model_view_get(render_model_index);
@@ -235,16 +235,15 @@ void function_1d90e0(long render_model_index, transform4x3f *nodes, long node_in
 
 			function_141590(marker_matrix, &target);
 			function_142a60(target_matrix, &target, &target);
-			transform4x3f *node = &nodes[node_index];
-			function_141590(node, &node_inverse);
+			function_141590(&nodes[node_index], &node_inverse);
 			if (!(fabs(weight - 1.0f) < k_real_epsilon))
 			{
-				target.position.x = node->position.x * (1.0f - weight) + target.position.x * weight;
-				target.position.y = node->position.y * (1.0f - weight) + target.position.y * weight;
-				target.position.z = node->position.z * (1.0f - weight) + target.position.z * weight;
+				target.position.x = nodes[node_index].position.x * (1.0f - weight) + target.position.x * weight;
+				target.position.y = nodes[node_index].position.y * (1.0f - weight) + target.position.y * weight;
+				target.position.z = nodes[node_index].position.z * (1.0f - weight) + target.position.z * weight;
 			}
-			function_120220(&nodes[grandparent_node_index], &nodes[parent_node_index], &target, node);
-			function_142a60(node, &node_inverse, &delta);
+			function_120220(&target, &nodes[node_index], &nodes[grandparent_node_index], &nodes[parent_node_index]);
+			function_142a60(&nodes[node_index], &node_inverse, &delta);
 			render_model_build_child_node_matrices((s_render_model_definition const *)definition, &delta, node_index, node_count,
 				nodes);
 		}

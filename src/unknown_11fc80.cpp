@@ -101,10 +101,10 @@ static inline real distance_squared(point3f const *a, point3f const *b)
    root and middle axes and copies the target into the end node */
 // @retail 0x120220
 void function_120220(
-	transform4x3f *root,
-	transform4x3f *mid,
 	transform4x3f *target,
-	transform4x3f *end)
+	transform4x3f *end,
+	transform4x3f *root,
+	transform4x3f *mid)
 {
 	real mid_root_squared = distance_squared(&mid->position, &root->position);
 	real end_mid_squared = distance_squared(&end->position, &mid->position);
