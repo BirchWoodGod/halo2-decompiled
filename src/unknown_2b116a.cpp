@@ -4391,8 +4391,8 @@ long online_team_member_remove(long controller_index, _XUID const *team, _XUID c
 long online_team_delete(_XUID const *team, long controller_index);
 void function_1487c3(long controller_index, long task_index, long callback, long value, long context);
 void __stdcall function_1a2cb7(c_online_task_screen *screen);
-c_class_1473c9 *__stdcall function_2b80d9(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80e9(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type3(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type4(s_screen_parameters *parameters);
 
 /* a recipient of a message: the player's id and what follows it */
 #pragma pack(push, 4)
@@ -4504,7 +4504,7 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 				{
 					s_message_send_screen_view *screen;
 
-					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)function_2b80d9);
+					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)xbox_live_message_send_screen_load_type3);
 					screen = (s_message_send_screen_view *)parameters.load(&parameters);
 					if (screen)
 					{
@@ -4553,7 +4553,7 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 				{
 					s_message_send_screen_view *screen;
 
-					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)function_2b80e9);
+					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)xbox_live_message_send_screen_load_type4);
 					screen = (s_message_send_screen_view *)parameters.load(&parameters);
 					if (screen)
 					{
@@ -4655,7 +4655,7 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 				{
 					s_message_send_screen_view *screen;
 
-					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)function_2b80d9);
+					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)xbox_live_message_send_screen_load_type3);
 					screen = (s_message_send_screen_view *)parameters.load(&parameters);
 					if (screen)
 					{
@@ -4705,7 +4705,7 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 				{
 					s_message_send_screen_view *screen;
 
-					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)function_2b80e9);
+					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)xbox_live_message_send_screen_load_type4);
 					screen = (s_message_send_screen_view *)parameters.load(&parameters);
 					if (screen)
 					{
