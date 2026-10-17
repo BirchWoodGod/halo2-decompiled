@@ -351,12 +351,12 @@ void c_particle_interface::initialize(long index)
 // @retail 0x224d40
 s_effect_particle_system_definition *c_particle_model_interface::particle_system_at(long index)
 {
-	return &model()->particle_systems[index];
+	return &model()->system_entries[index];
 }
 
 /* a particle system the particle attaches */
 // @retail 0x224260
 s_effect_particle_system_definition *c_particle_interface::particle_system_at(long index)
 {
-	return &particle()->particle_systems[index];
+	return &particle()->system_entries[index];
 }

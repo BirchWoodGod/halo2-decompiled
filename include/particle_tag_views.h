@@ -72,7 +72,7 @@ struct s_particle_tag_view : s_interface_definition
 	long name_count;
 	long const *names;
 	long particle_system_count;
-	s_effect_particle_system_definition *particle_systems;
+	s_effect_particle_system_definition *system_entries;
 	long shader_count;
 	long const *shaders;
 };
@@ -91,7 +91,7 @@ struct s_particle_model_definition : s_interface_definition
 	long name_count;
 	long const *names;
 	long particle_system_count;
-	s_effect_particle_system_definition *particle_systems;
+	s_effect_particle_system_definition *system_entries;
 };
 
 /* the tag a particle model renders: it holds a pointer to its shader
@@ -108,6 +108,6 @@ typedef char assert_particle_function_offset[(offsetof(s_particle_tag_view, func
 typedef char assert_particle_names_offset[(offsetof(s_particle_tag_view, name_count) == 0x7c) ? 1 : -1];
 typedef char assert_particle_shaders_offset[(offsetof(s_particle_tag_view, shaders) == 0x90) ? 1 : -1];
 typedef char assert_particle_model_render_offset[(offsetof(s_particle_model_definition, render_tag_index) == 0x1c) ? 1 : -1];
-typedef char assert_particle_model_systems_offset[(offsetof(s_particle_model_definition, particle_systems) == 0x7c) ? 1 : -1];
+typedef char assert_particle_model_systems_offset[(offsetof(s_particle_model_definition, system_entries) == 0x7c) ? 1 : -1];
 
 #endif
