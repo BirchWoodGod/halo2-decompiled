@@ -476,7 +476,6 @@ static __forceinline void function_91fc1(s_balance_team *arg_0, s_balance_party 
         arg_0->flagged_count++;
 }
 
-#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x91fc0
 bool balance_teams(long team_count, long maximum_team_size, bool flag_parties, long flag_minimum, long flag_maximum,
 	bool use_parties, long player_count, long const *party_indices, long const *weights, bool optimize, long *team_indices)
@@ -499,39 +498,35 @@ bool balance_teams(long team_count, long maximum_team_size, bool flag_parties, l
 	{
 		if (parties[i].count > 0)
 		{
-			parties[i].id = i;
-			if (flag_parties && parties[i].count >= flag_minimum && parties[i].count <= flag_maximum)
-				parties[i].flagged = true;
-			function_91fc1(&pool, &parties[i]);
+			s_balance_party *party = &parties[i];
+			party->id = i;
+			if (flag_parties && party->count >= flag_minimum && party->count <= flag_maximum)
+				party->flagged = true;
+			function_91fc1(&pool, party);
 		}
 	}
 
 	s_balance_problem problem;
-	if (!balance_teams_greedy(&problem, team_count, &pool, maximum_team_size))
-		return false;
-
-	long optimizer_storage[sizeof(s_balance_optimizer) / sizeof(long)];
-	s_balance_optimizer &optimizer = *(s_balance_optimizer *)optimizer_storage;
-	new (optimizer_storage) s_balance_optimizer;
-	s_balance_solution const *solution = &optimizer.current;
-	if (!optimize || !optimizer.optimize(&problem.solution))
-		solution = &problem.solution;
-	for (long team = 0; team < solution->team_count; team++)
+	bool result = false;
+	if (balance_teams_greedy(&problem, team_count, &pool, maximum_team_size))
 	{
-		long j = 0;
-		for (;;)
+		long optimizer_storage[sizeof(s_balance_optimizer) / sizeof(long)];
+		s_balance_optimizer &optimizer = *(s_balance_optimizer *)optimizer_storage;
+		new (optimizer_storage) s_balance_optimizer;
+		s_balance_solution const *solution = &optimizer.current;
+		if (!optimize || !optimizer.optimize(&problem.solution))
+			solution = &problem.solution;
+		for (long team = 0; team < solution->team_count; team++)
 		{
-			_ReadWriteBarrier();
-			if (j >= solution->teams[team].players.count)
-				break;
-			team_indices[solution->teams[team].players.players[j].index] = team;
-			++j;
+			s_balance_party const *members = &solution->teams[team].players;
+			for (long j = 0; members->slot_in_use(j); j++)
+				team_indices[members->players[j].index] = team;
 		}
+		result = true;
 	}
-	return true;
+	return result;
 }
 
-#pragma function(_ReadWriteBarrier)
 
 /* balances the players without their weights and returns the difference
    between the largest and the smallest team */
