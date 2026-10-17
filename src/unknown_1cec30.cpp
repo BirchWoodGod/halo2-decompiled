@@ -2712,8 +2712,9 @@ void function_1cf520(s_1cf520 *arg_1, c_1cf520 *arg_0, bool arg_2, bool arg_3, l
  function_1cf529(&local_0->field_0, (real *)&arg_1->field_1c);
  function_1cf529(&local_0->field_10, (real *)&arg_1->field_28);
  local_2->rigid_bodies.data[arg_5].rigid_body->m_motion->getType();
- real local_3 = 1.0f > local_2->rigid_bodies.data[arg_5].rigid_body->m_motion->getMass()
-  ? 1.0f : local_2->rigid_bodies.data[arg_5].rigid_body->m_motion->getMass();
+ hkRigidBody *body = local_2->rigid_bodies.data[arg_5].rigid_body;
+ real local_3 = 1.0f > body->m_motion->getMass()
+  ? 1.0f : body->m_motion->getMass();
  real local_4 = *(real *)local_1 >= 0.0f ? *(real *)local_1 : 0.0f - *(real *)local_1;
  if ((*(dword *)&local_4 & 0x7f800000) == 0x7f800000) local_4 = 0.0f;
  arg_1->field_38 = local_4 / local_3;
