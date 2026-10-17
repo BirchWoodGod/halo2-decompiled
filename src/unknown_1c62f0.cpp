@@ -132,7 +132,7 @@ void function_20aa70(vector3f *out, s_anim_data *data, long index, real *w);
 void function_20ad40(s_anim_data *data, vector3f *a, vector3f *b, long index);
 
 /* the sampling state the codecs' decoders read (unknown_279d80.cpp,
-   unknown_28c510.cpp) */
+   animation_channel_decoders.cpp) */
 
 // @retail 0x1c73a0
 void c_animation_channel_node_position_get(c_animation_channel const *channel, point3f *position, real frame,
