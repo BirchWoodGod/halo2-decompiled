@@ -8,6 +8,15 @@ The newest entry comes first.
 matched 8950 of 11321 game functions (1244905 of 2784283 bytes, 44.71%)
 ```
 
+0 new matches, none lost:
+- @'s #525:  match.
+
+## 2026-10-17: 8950 functions match
+
+```
+matched 8950 of 11321 game functions (1244905 of 2784283 bytes, 44.71%)
+```
+
 11 new matches, none lost:
 - Machine 3's batch 60 (#527): `0x3d000`, `0x53e30`, `0x5a090`, `0x5a880`, `0x5dac0`, `0x73bc0`, `0x123d80`, `0x1c4b00`, `0x1c6c80`, `0x1ca9f0` and `0x2273d0` match.
 
