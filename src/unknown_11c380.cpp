@@ -159,7 +159,10 @@ static inline point3f *transform4x3f_apply_point(transform4x3f const *matrix, po
 		y = matrix->scale * y;
 		z = matrix->scale * z;
 	}
-	out->x = matrix->up.i * z + matrix->left.i * y + matrix->forward.i * x + matrix->position.x;
+	real result_x = matrix->left.i * y;
+	result_x += matrix->forward.i * x;
+	result_x += matrix->up.i * z;
+	out->x = result_x + matrix->position.x;
 	out->y = matrix->up.j * z + matrix->left.j * y + matrix->forward.j * x + matrix->position.y;
 	out->z = matrix->up.k * z + matrix->left.k * y + matrix->forward.k * x + matrix->position.z;
 	return out;
