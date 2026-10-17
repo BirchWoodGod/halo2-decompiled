@@ -1263,8 +1263,8 @@ bool function_199df9(bool offline, bool system_link);
 void function_199a57(void);
 void function_199a03(long mode);
 c_class_1473c9 *__stdcall function_22f11e(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_14741b(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_14752c(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall legalese_open(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall main_menu_open(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2310b7(s_screen_parameters *parameters);
 extern dword g_54d5b8;
 extern dword g_54d5bc;
@@ -1318,8 +1318,8 @@ void function_147dbe(s_controller_event *event)
 	g_54d5bc = g_54d5b8;
 }
 
-/* unknown_14741b.cpp */
-extern bool g_54e7cd;
+/* main_menu.cpp */
+extern bool g_main_menu_campaign_chosen;
 /* the legal screen shows once */
 bool g_55e734;
 
@@ -1379,16 +1379,16 @@ void __stdcall function_1483c3(long reason)
 		{
 			if (g_54d598.value08 && !g_55e734)
 			{
-				parameters.load = function_14741b;
+				parameters.load = legalese_open;
 				g_55e734 = true;
 			}
 		}
 		else if (function_6c7e0() && reason != 1)
 		{
 			parameters.user_flags = function_1901fc();
-			if (count == 1 && g_54e7cd)
+			if (count == 1 && g_main_menu_campaign_chosen)
 			{
-				parameters.load = function_14752c;
+				parameters.load = main_menu_open;
 			}
 			else
 			{
@@ -1398,12 +1398,12 @@ void __stdcall function_1483c3(long reason)
 		else if (count == 1)
 		{
 			parameters.user_flags = function_1901fc();
-			parameters.load = function_14752c;
+			parameters.load = main_menu_open;
 		}
 		parameters.load(&parameters);
 	}
 done:
-	g_54e7cd = false;
+	g_main_menu_campaign_chosen = false;
 }
 
 extern bool g_54d5a0;
