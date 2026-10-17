@@ -1,15 +1,15 @@
 // @flags /O2 /arch:SSE /Gr
-/* OBJECT_TYPES_SSE.CPP: the per-object-type event dispatch, first part (the
-   rest is in object_types.cpp). Each function calls one event function of
-   every definition in the object's type hierarchy (object_types.h) */
+/* OBJECT_DISPATCH_SSE.CPP: the per-object-type event dispatch, first part (the
+   rest is in object_dispatch.cpp). Each function calls one event function of
+   every definition in the object's type hierarchy (object_dispatch.h) */
 
-#include "object_types.h"
+#include "object_dispatch.h"
 
 /* creates the object in each of its types; false when one of them fails */
 // @retail 0x108a90
-bool object_type_create(long object_index, long placement, long failed)
+bool object_dispatch_create(long object_index, long placement, long failed)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	bool result = true;
 	short i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
@@ -28,9 +28,9 @@ bool object_type_create(long object_index, long placement, long failed)
 
 /* places the object from its scenario datum in each of its types */
 // @retail 0x108b10
-void object_type_place(long object_index, long scenario_datum)
+void object_dispatch_place(long object_index, long scenario_datum)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	short i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
 	while (definition->type_hierarchy[i])
@@ -47,9 +47,9 @@ void object_type_place(long object_index, long scenario_datum)
 
 /* tells each of the object's types that the new object is set up */
 // @retail 0x108b80
-void object_type_finish_creation(long object_index)
+void object_dispatch_finish_creation(long object_index)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	short i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
 	while (definition->type_hierarchy[i])
@@ -66,17 +66,17 @@ void object_type_finish_creation(long object_index)
 
 /* deletes the object in each of its types */
 // @retail 0x108bf0
-void object_type_delete(long object_index)
+void object_dispatch_remove(long object_index)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	short i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
 	while (definition->type_hierarchy[i])
 	{
 		s_object_type_definition *type = *entry;
-		if (type->delete_object)
+		if (type->remove_object)
 		{
-			type->delete_object(object_index);
+			type->remove_object(object_index);
 		}
 		i++;
 		entry = &definition->type_hierarchy[i];
@@ -85,9 +85,9 @@ void object_type_delete(long object_index)
 
 /* updates the object in each of its types; true while any keeps it active */
 // @retail 0x108c60
-bool object_type_update(long object_index)
+bool object_dispatch_update(long object_index)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	bool result = false;
 	short i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
@@ -106,17 +106,17 @@ bool object_type_update(long object_index)
 
 /* the second update pass in each of the object's types */
 // @retail 0x108cd0
-void object_type_post_update(long object_index)
+void object_dispatch_late_update(long object_index)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	long i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
 	while (definition->type_hierarchy[i])
 	{
 		s_object_type_definition *type = *entry;
-		if (type->post_update)
+		if (type->late_update)
 		{
-			type->post_update(object_index);
+			type->late_update(object_index);
 		}
 		i++;
 		entry = &definition->type_hierarchy[i];
@@ -127,10 +127,10 @@ void object_type_post_update(long object_index)
 /* asks the object's types, until one answers, whether the object is in the
    clusters; true when one answered (with *visible) */
 // @retail 0x108d30
-bool object_type_test_cluster_visibility(long object_index, long clusters, long visible)
+bool object_dispatch_test_cluster_visibility(long object_index, long clusters, long visible)
 {
 	struct { s_object_type_definition *definition; bool answered; s_object_type_definition **entry; } iterator;
-	iterator.definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	iterator.definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	iterator.answered = false;
 	iterator.entry = iterator.definition->type_hierarchy;
 	while (!iterator.answered && *iterator.entry)
@@ -148,9 +148,9 @@ bool object_type_test_cluster_visibility(long object_index, long clusters, long 
 /* the object's named function value from the first type that has it; zero
    and disabled when none does */
 // @retail 0x108d90
-bool object_type_get_function_value(long object_index, long name, real *value, bool *enabled)
+bool object_dispatch_query_function_value(long object_index, long name, real *value, bool *enabled)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	bool found = false;
 	*value = 0.0f;
 	*enabled = false;
@@ -158,9 +158,9 @@ bool object_type_get_function_value(long object_index, long name, real *value, b
 	while (!found && *entry)
 	{
 		s_object_type_definition *type = *entry;
-		if (type->get_function_value)
+		if (type->query_function_value)
 		{
-			found = type->get_function_value(object_index, name, value, enabled);
+			found = type->query_function_value(object_index, name, value, enabled);
 		}
 		entry++;
 	}
@@ -174,9 +174,9 @@ bool object_type_get_function_value(long object_index, long name, real *value, b
 
 /* tells each of the object's types that it has a simulation entity */
 // @retail 0x108e10
-void object_type_attach_simulation_entity(long object_index)
+void object_dispatch_attach_simulation_entity(long object_index)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	short i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
 	while (definition->type_hierarchy[i])
@@ -193,9 +193,9 @@ void object_type_attach_simulation_entity(long object_index)
 
 /* tells each of the object's types that it loses its simulation entity */
 // @retail 0x108e80
-void object_type_detach_simulation_entity(long object_index)
+void object_dispatch_detach_simulation_entity(long object_index)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	short i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
 	while (definition->type_hierarchy[i])
@@ -212,17 +212,17 @@ void object_type_detach_simulation_entity(long object_index)
 
 /* tells each of the object's types that another object is being deleted */
 // @retail 0x108ef0
-void object_type_handle_object_deleted(long object_index, long deleted_object_index)
+void object_dispatch_object_removed(long object_index, long deleted_object_index)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	short i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
 	while (definition->type_hierarchy[i])
 	{
 		s_object_type_definition *type = *entry;
-		if (type->handle_object_deleted)
+		if (type->on_object_removed)
 		{
-			type->handle_object_deleted(object_index, deleted_object_index);
+			type->on_object_removed(object_index, deleted_object_index);
 		}
 		i++;
 		entry = &definition->type_hierarchy[i];
@@ -231,17 +231,17 @@ void object_type_handle_object_deleted(long object_index, long deleted_object_in
 
 /* tells each of the object's types that a player is being deleted */
 // @retail 0x108f60
-void object_type_handle_player_deleted(long object_index, long player_index)
+void object_dispatch_player_removed(long object_index, long player_index)
 {
-	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_GET(object_index);
+	s_object_type_definition *definition = OBJECT_TYPE_DEFINITION_FOR(object_index);
 	short i = 0;
 	s_object_type_definition **entry = &definition->type_hierarchy[0];
 	while (definition->type_hierarchy[i])
 	{
 		s_object_type_definition *type = *entry;
-		if (type->handle_player_deleted)
+		if (type->on_player_removed)
 		{
-			type->handle_player_deleted(object_index, player_index);
+			type->on_player_removed(object_index, player_index);
 		}
 		i++;
 		entry = &definition->type_hierarchy[i];

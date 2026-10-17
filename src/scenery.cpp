@@ -341,7 +341,7 @@ s_scenery_type_definition g_467ff0 =
 	function_10a390
 };
 
-bool scenery_animation_start(long object_index, long animation_name, short frame, long attached_object_index, bool interpolate, bool loop, long animation_graph_index);
+bool scenery_animation_begin(long object_index, long animation_name, short frame, long attached_object_index, bool interpolate, bool loop, long animation_graph_index);
 
 /* starts a scenery's default looping animation; flag 0 says it plays */
 // @retail 0x10a3f0
@@ -355,7 +355,7 @@ void function_10a3f0(long scenery_index)
 		long graph_tag_index = ((s_scenery_animation_state *)((byte *)scenery + scenery->animation_state_offset))->graph_tag_index;
 
 		if (graph_tag_index != NONE &&
-			scenery_animation_start(scenery_index, 0x400000c, 0, NONE, false, true, graph_tag_index))
+			scenery_animation_begin(scenery_index, 0x400000c, 0, NONE, false, true, graph_tag_index))
 		{
 			scenery->flags |= 1;
 		}

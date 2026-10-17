@@ -3,7 +3,7 @@
    definition marks them as carrying other objects, kept in a game state
    block of up to 32 */
 
-#include "object_types.h"
+#include "object_dispatch.h"
 #include "crc.h"
 #include "unknown_123b30.h"
 #include "object_list.h"
@@ -47,9 +47,9 @@ void object_list_dispose_from_old_map(void)
 /* adds an object whose definition carries objects to the list, while there
    is room */
 // @retail 0x109390
-void object_list_add(long object_index)
+void object_list_insert(long object_index)
 {
-	s_object_datum *object = OBJECT_DATUM_GET(object_index);
+	s_object_common_datum *object = OBJECT_DATUM_GET(object_index);
 
 	if (TEST_FIELD_BIT(((s_object_definition *)g_4e3b44[object->definition_index & 0xFFFF].bytes)->carries_objects))
 	{
@@ -68,9 +68,9 @@ void function_e4c10(long object_index);
 
 /* takes an object out of the list and lets go of the objects it carried */
 // @retail 0x109400
-void __stdcall object_list_remove(long object_index)
+void __stdcall object_list_erase(long object_index)
 {
-    s_object_datum *object = OBJECT_DATUM_GET(object_index);
+    s_object_common_datum *object = OBJECT_DATUM_GET(object_index);
     if (TEST_FIELD_BIT(((s_object_definition *)g_4e3b44[object->definition_index & 0xffff].bytes)->carries_objects))
     {
         s_object_list_state *state = g_5107f0;
@@ -88,18 +88,18 @@ void __stdcall object_list_remove(long object_index)
                 while ((header = (s_object_header_datum *)data_iterator_next_inlined(&iterator)) != 0)
                 {
                     long carried_index = iterator.datum_index;
-                    s_object_datum *carried = OBJECT_DATUM_GET(carried_index);
+                    s_object_common_datum *carried = OBJECT_DATUM_GET(carried_index);
                     if ((header->flags & 1) && !(header->flags & 0x10) &&
                         (TEST_FIELD_BIT(carried->flag1) || TEST_FIELD_BIT(carried->carried_by_platform)) &&
                         carried->platform_index == object_index)
                     {
                         long type_mask = 1 << header->type;
-                        if (type_mask & ((1 << _object_type_weapon) | (1 << _object_type_equipment) | (1 << _object_type_garbage)))
+                        if (type_mask & ((1 << _object_kind_weapon) | (1 << _object_kind_equipment) | (1 << _object_kind_garbage)))
                         {
                             function_b9b90(carried_index, false);
                             function_b7360(carried_index);
                         }
-                        else if (type_mask & (1 << _object_type_biped))
+                        else if (type_mask & (1 << _object_kind_biped))
                         {
                             function_e4c10(carried_index);
                             function_b9b90(carried_index, false);

@@ -39,7 +39,7 @@ void function_b8b70(long object_index);
 void __stdcall function_10a250(long scenery_index);
 void function_bf090(long object_index);
 void function_15b220(long object_index, long index);
-void __stdcall object_list_remove(long object_index);
+void __stdcall object_list_erase(long object_index);
 void function_bb950(long object_index, bool add, long delta);
 void function_a7a60(long index);
 void function_10ace0(long object_index);
@@ -69,7 +69,7 @@ void __stdcall function_b8540(long object_index)
 	object_identifier_clear(&object->identifier);
 	if (object->field_af != -1)
 		function_15b220(object_index, object->field_af);
-	object_list_remove(object_index);
+	object_list_erase(object_index);
 	function_bb950(object_index, false, -1);
 	function_a7a60(object_index);
 	function_10ace0(object_index);

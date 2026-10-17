@@ -2,7 +2,7 @@
 /* SCENERY_ANIMATION.CPP: starts an animation on a scenery object's own
    animation state, optionally relative to another object */
 
-#include "object_types.h"
+#include "object_dispatch.h"
 #include "data_array.h"
 #include "unknown_1dacb0.h"
 #include "unknown_1cafc0.h"
@@ -14,14 +14,14 @@ void function_1ccb80(c_animation_channel *channel, real seconds);
 /* plays the named animation of a graph on a scenery object from a frame;
    with an object to follow it is placed relative to that object */
 // @retail 0x10a660
-bool scenery_animation_start(long scenery_index, long animation_name, short frame, long attached_object_index, bool interpolate, bool loop, long animation_graph_index)
+bool scenery_animation_begin(long scenery_index, long animation_name, short frame, long attached_object_index, bool interpolate, bool loop, long animation_graph_index)
 {
 	bool result = false;
 
 	if (scenery_index != NONE && animation_graph_index != NONE && animation_name)
 	{
 		long header_offset = (scenery_index & 0xffff) * sizeof(s_object_header_datum);
-		s_scenery_datum *scenery = (s_scenery_datum *)((s_object_header_datum *)(g_4e0300->data + header_offset))->object;
+		s_scenery_object_datum *scenery = (s_scenery_object_datum *)((s_object_header_datum *)(g_4e0300->data + header_offset))->object;
 		if (*(short const volatile *)&scenery->animation_state_offset != NONE)
 		{
 			s_object_definition *definition = (s_object_definition *)g_4e3b44[scenery->definition_index & 0xffff].bytes;
