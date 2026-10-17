@@ -17,7 +17,7 @@ extern dword g_51ebec;
 extern dword g_54d5b8;
 dword g_54d5bc;
 
-bool function_138800();
+bool game_loop_running();
 bool function_163870(void);
 bool network_session_manager_session_unready(void);
 long function_147f4f();
@@ -35,7 +35,7 @@ bool function_223976(void)
 {
 	volatile bool result = false;
 
-	if (function_138800() && g_4e6948->state == 3 && function_163870() && !network_session_manager_session_unready() &&
+	if (game_loop_running() && g_4e6948->state == 3 && function_163870() && !network_session_manager_session_unready() &&
 		!function_155f60())
 	{
 		dword idle_time = g_54d5b8 - (g_51ebec > g_54d5bc ? g_51ebec : g_54d5bc);

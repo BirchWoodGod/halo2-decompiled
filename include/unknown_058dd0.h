@@ -283,9 +283,9 @@ static inline bool session_state_is_live(c_class_58d20 *s)
 	return result;
 }
 void function_06e620(c_class_58d20 *s);
-bool function_138800();
-bool function_138a10();
-void function_1388e0();
+bool game_loop_running();
+bool game_finish_countdown_done();
+void game_finish();
 void function_068750();
 
 #endif
