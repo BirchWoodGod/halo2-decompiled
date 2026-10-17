@@ -158,10 +158,13 @@ void __stdcall function_186ab0(long arg_0, real arg_1, real arg_2, s_player_acti
     s_186ab4 local_2;
     s_186ab3 local_3;
     byte *local_5 = (byte *)g_4e034c;
-    local_2.field_4 = *(byte **)(local_5 + 0xf4);
+    local_2.field_4 = *(byte *volatile *)(local_5 + 0xf4);
     local_2.field_0 = NULL;
     function_185be0(local_0->field_24, local_0->field_28, arg_1, arg_2, &local_2, &local_3);
-    if ((byte)function_148fff(local_0->field_24) | (byte)function_12be90() | ((byte *)g_4e8c44)[local_0->field_28 * 0x140 + 0x56])
+    byte reset = function_148fff(local_0->field_24);
+    reset |= function_12be90();
+    reset |= ((byte *)g_4e8c44)[local_0->field_28 * 0x140 + 0x56];
+    if (reset)
     {
         bool local_4 = (local_3.field_20 >> 8) & 1;
         memset(&local_3, 0, sizeof(local_3));
