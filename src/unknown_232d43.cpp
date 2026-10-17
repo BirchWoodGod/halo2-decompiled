@@ -564,25 +564,25 @@ s_postgame_team g_55dc30[16];
 bool function_15dea0();
 bool function_15eaf0();
 void function_1990b0(long *device_count, long *devices, long *entry_count, long *entries);
-long function_196a90();
+long game_results_get_game_type();
 void function_19eae0(long team, word *buffer);
 void unicode_string_copy(word *destination, word const *source, long maximum_count);
-long function_196bb0(long index);
+long game_results_get_team_score(long index);
 void function_159130(long value, word *text);
-long function_196c60(long index);
+long game_results_get_team_standing(long index);
 void function_159050(long index, word *buffer);
-long function_196a50(long a, long b, long c);
-long function_196a10(long a, long b);
-void *function_196ca0(long index);
-long function_196b70(long index);
+long game_results_get_player_versus_statistic(long a, long b, long c);
+long game_results_get_player_medal_count(long a, long b);
+void *game_results_get_player_name(long index);
+long game_results_get_player_score(long index);
 long function_1969a0(long a, long b, long c);
-long function_196bf0(long index);
+long game_results_get_player_standing(long index);
 long function_196d20(long index);
 bool function_19a0c5();
 long function_196da0(long index);
 void function_196d50(long index, s_input_vector *out);
-void *function_196ce0(long index);
-long function_1969d0(long a, long b, long c);
+void *game_results_get_player_identifier(long index);
+long game_results_get_player_category_statistic(long a, long b, long c);
 
 // @retail 0x232d77
 void function_232d77()
@@ -597,7 +597,7 @@ void function_232d77()
 		function_1990b0(&player_count, players, &team_count, team_indices);
 		g_51ec08 = player_count;
 		g_51ec0c = team_count;
-		g_50224c = function_196a90();
+		g_50224c = game_results_get_game_type();
 		word name[0x100], score[0x100], place[0x100];
 		if (teams)
 		{
@@ -607,9 +607,9 @@ void function_232d77()
 				name[0] = score[0] = place[0] = 0;
 				function_19eae0(team, name);
 				unicode_string_copy(g_55dc30[i].name, name, 0x20);
-				function_159130(function_196bb0(team), score);
+				function_159130(game_results_get_team_score(team), score);
 				unicode_string_copy(g_55dc30[i].score, score, 0x10);
-				g_55dc30[i].unknown60 = (short)function_196c60(team);
+				g_55dc30[i].unknown60 = (short)game_results_get_team_standing(team);
 				g_55dc30[i].color_index = (short)team;
 				function_159050(g_55dc30[i].unknown60, place);
 				unicode_string_copy(g_55dc30[i].place, place, 0x10);
@@ -621,13 +621,13 @@ void function_232d77()
 			s_postgame_player *entry = &g_55caf0[row];
 			place[0] = score[0] = 0;
 			for (long column = 0; column < g_51ec08; column++)
-				entry->values[column] = function_196a50(player, players[column], 0);
+				entry->values[column] = game_results_get_player_versus_statistic(player, players[column], 0);
 			entry->medal_count = 0;
 			entry->medals = 0;
 			bool group13 = false, group0 = false;
 			for (long medal = 31; medal >= 0; medal--)
 			{
-				long count = function_196a10(player, medal);
+				long count = game_results_get_player_medal_count(player, medal);
 				if (count > 0)
 				{
 					bool show = true;
@@ -646,21 +646,21 @@ void function_232d77()
 					entry->medal_count += count;
 				}
 			}
-			unicode_string_copy(entry->name, (word *)function_196ca0(player), 0x20);
-			function_159130(function_196b70(player), place);
+			unicode_string_copy(entry->name, (word *)game_results_get_player_name(player), 0x20);
+			function_159130(game_results_get_player_score(player), place);
 			unicode_string_copy(entry->team_name, place, 0x10);
 			entry->value60 = function_1969a0(player, 7, NONE);
 			entry->value64 = function_1969a0(player, 9, NONE);
 			entry->value68 = function_1969a0(player, 8, NONE);
 			entry->value6c = function_1969a0(player, 11, NONE);
-			entry->value70 = (short)function_196bf0(player);
+			entry->value70 = (short)game_results_get_player_standing(player);
 			entry->value72 = teams ? (short)function_196d20(player) : NONE;
 			entry->value74 = function_196d20(player) == NONE;
 			entry->value78 = function_19a0c5() ? function_196da0(player) : NONE;
 			function_196d50(player, (s_input_vector *)entry->valued0);
 			function_159050(entry->value70, score);
 			unicode_string_copy(entry->texte0, score, 0x10);
-			entry->id = *(s_id_triplet *)function_196ce0(player);
+			entry->id = *(s_id_triplet *)game_results_get_player_identifier(player);
 			if (g_50224c == 2)
 			{
 				long deaths = function_1969a0(player, 9, NONE) + 1;
@@ -704,9 +704,9 @@ void function_232d77()
 			*total_count = *total_value = *total_value2 = 0;
 			for (long statistic = 5; statistic < 39; statistic++)
 			{
-				*total_count += function_1969d0(player, 4, statistic);
-				*total_value += function_1969d0(player, 5, statistic);
-				*total_value2 += function_1969d0(player, 6, statistic);
+				*total_count += game_results_get_player_category_statistic(player, 4, statistic);
+				*total_value += game_results_get_player_category_statistic(player, 5, statistic);
+				*total_value2 += game_results_get_player_category_statistic(player, 6, statistic);
 			}
 		}
 	}
