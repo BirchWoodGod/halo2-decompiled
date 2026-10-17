@@ -1471,7 +1471,7 @@ bool __stdcall function_29080(long context)
         return false;
     g_509400 = g_485ae0;
     function_14bc0(*(short *)(g_4b99b0 + 0x44), 0, false);
-    function_14f60(0, g_4b99b0[1] ? *(short *)(g_4b99b0 + 0x38) : 0);
+    function_14f60(0, (short)(g_4b99b0[1] ? *(long *)(g_4b99b0 + 0x38) : 0));
     D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
     D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
     D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
@@ -1970,14 +1970,24 @@ struct s_24ee0_state
 byte g_4b9370[2][3][256];
 extern long g_4ba04c;
 
+/* the surface's texture header, or NULL while it has no storage */
+static __forceinline void *surface_texture_get(long index)
+{
+    s_unknown_01dcc0 *entry = &g_4b4b58[index];
+    void *result = NULL;
+    if (entry->data && !entry->flag95)
+        result = entry->sub_header;
+    return result;
+}
+
 // @retail 0x24ee0
 void function_24ee0(s_24ee0_state const *state, short mode)
 {
     (void)&mode;
-    D3DTexture *texture = (D3DTexture *)function_01dcc0(15);
+    D3DTexture *texture = (D3DTexture *)surface_texture_get(15);
     texture->Size = 0;
     texture->Format = 0x06610629;
-    volatile long index = state->index;
+    long index = state->index;
     if (index < 0) index = 0;
     else if (index > 1) index = 1;
     real low = state->range.smoothed_low;
@@ -1991,15 +2001,14 @@ void function_24ee0(s_24ee0_state const *state, short mode)
         real value = (real)i * (1.0f / 255.0f);
         real result;
         if (value <= low) result = 0.0f;
-        else if (!(value >= high))
+        else if (value >= high) result = 1.0f;
+        else
         {
             result = (real)pow(((double)value - low) / ((double)high - low), (double)gamma);
             if (result < 0.0f) result = 0.0f;
             else if (result > 1.0f) result = 1.0f;
         }
-        else
-            result = 1.0f;
-        byte mapped = (byte)(long)((double)result * 255.0 + 0.5);
+        byte mapped = (byte)(long)(result * 255.0f + 0.5f);
         curve[i] = mapped;
         if (mode == 1 && g_4ba04c == 1)
         {
@@ -2023,11 +2032,10 @@ void function_24ee0(s_24ee0_state const *state, short mode)
             &bits, &pitch, &width, &height, &slice);
         for (long y = 0; y < 64; ++y)
         {
-            dword component = curve[y * 4];
-            dword outer = (component | 0xffffff00) << 8;
+            byte component = curve[y * 4];
             for (long x = 0; x < 64; ++x)
             {
-                dword color = ((curve[x * 4] | outer) << 8) | component;
+                dword color = D3DCOLOR_XRGB(component, curve[x * 4], component);
                 ((dword *)bits)[function_024e50((word)y, (word)x)] = color;
             }
         }
