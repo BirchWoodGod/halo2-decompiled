@@ -1345,7 +1345,7 @@ void function_0224f0(dword stage, D3DTEXTURESTAGESTATETYPE type, dword value);
 
 /* one texture stage state through the device's inline setter; the type comes
    by reference, so each call keeps its own update of the dirty flags */
-PRIVATE __forceinline void texture_stage_apply_state(dword stage, D3DTEXTURESTAGESTATETYPE const &type, dword value)
+PRIVATE __forceinline void sampler_state_write(dword stage, D3DTEXTURESTAGESTATETYPE const &type, dword value)
 {
     D3DDevice_SetTextureStageState(stage, type, value);
 }
@@ -1356,17 +1356,17 @@ bool __stdcall function_2b000(void *context)
     g_509400 = g_485ae0;
     function_14bc0(16, 0, false);
     function_14f60(0, (short)g_4858b8);
-    texture_stage_apply_state(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-    texture_stage_apply_state(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-    texture_stage_apply_state(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-    texture_stage_apply_state(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-    texture_stage_apply_state(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-    texture_stage_apply_state(0, D3DTSS_MIPFILTER, 0);
-    texture_stage_apply_state(0, D3DTSS_MAXANISOTROPY, 0);
-    texture_stage_apply_state(0, D3DTSS_MIPMAPLODBIAS, 0);
-    texture_stage_apply_state(0, D3DTSS_MAXMIPLEVEL, 0);
-    texture_stage_apply_state(0, D3DTSS_COLORSIGN, 0);
-    texture_stage_apply_state(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
@@ -1393,17 +1393,17 @@ bool __stdcall function_296c0(long context)
     g_509400 = g_485ae0;
     function_14bc0(*(short *)(g_4b99b0 + 0x44), 0, false);
     function_14f60(0, *(short *)(g_4b99b0 + 0x34));
-    texture_stage_apply_state(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-    texture_stage_apply_state(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-    texture_stage_apply_state(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-    texture_stage_apply_state(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-    texture_stage_apply_state(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-    texture_stage_apply_state(0, D3DTSS_MIPFILTER, 0);
-    texture_stage_apply_state(0, D3DTSS_MAXANISOTROPY, 0);
-    texture_stage_apply_state(0, D3DTSS_MIPMAPLODBIAS, 0);
-    texture_stage_apply_state(0, D3DTSS_MAXMIPLEVEL, 0);
-    texture_stage_apply_state(0, D3DTSS_COLORSIGN, 0);
-    texture_stage_apply_state(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
@@ -1631,17 +1631,17 @@ bool __stdcall function_29370(long context)
     for (long stage = 0; stage < 4; stage++)
     {
         function_14f60((short)stage, *(short *)(g_4b99b0 + 0x38));
-        texture_stage_apply_state(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-        texture_stage_apply_state(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-        texture_stage_apply_state(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-        texture_stage_apply_state(stage, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-        texture_stage_apply_state(stage, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-        texture_stage_apply_state(stage, D3DTSS_MIPFILTER, 0);
-        texture_stage_apply_state(stage, D3DTSS_MAXANISOTROPY, 0);
-        texture_stage_apply_state(stage, D3DTSS_MIPMAPLODBIAS, 0);
-        texture_stage_apply_state(stage, D3DTSS_MAXMIPLEVEL, 0);
-        texture_stage_apply_state(stage, D3DTSS_COLORSIGN, 0);
-        texture_stage_apply_state(stage, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+        sampler_state_write(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+        sampler_state_write(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+        sampler_state_write(stage, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(stage, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(stage, D3DTSS_MIPFILTER, 0);
+        sampler_state_write(stage, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(stage, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(stage, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(stage, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(stage, D3DTSS_ALPHAKILL, 0);
     }
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
@@ -2279,17 +2279,17 @@ void function_245c0(s_245c0_state *state, real *histogram, short mode)
 
 PRIVATE __forceinline void configure_351a0_texture(long stage, D3DTEXTUREFILTERTYPE filter)
 {
-    texture_stage_apply_state(stage, D3DTSS_MAXANISOTROPY, 0);
-    texture_stage_apply_state(stage, D3DTSS_MIPMAPLODBIAS, 0);
-    texture_stage_apply_state(stage, D3DTSS_MAXMIPLEVEL, 0);
-    texture_stage_apply_state(stage, D3DTSS_COLORSIGN, 0);
-    texture_stage_apply_state(stage, D3DTSS_ALPHAKILL, 0);
-    texture_stage_apply_state(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-    texture_stage_apply_state(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-    texture_stage_apply_state(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-    texture_stage_apply_state(stage, D3DTSS_MAGFILTER, filter);
-    texture_stage_apply_state(stage, D3DTSS_MINFILTER, filter);
-    texture_stage_apply_state(stage, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+    sampler_state_write(stage, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(stage, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(stage, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(stage, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(stage, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    sampler_state_write(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    sampler_state_write(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+    sampler_state_write(stage, D3DTSS_MAGFILTER, filter);
+    sampler_state_write(stage, D3DTSS_MINFILTER, filter);
+    sampler_state_write(stage, D3DTSS_MIPFILTER, D3DTEXF_NONE);
 }
 
 // @retail 0x351a0

@@ -28,7 +28,7 @@ byte const g_43f7b9[6] = { 0x2d, 0, 2, 3, 0x10, 0xff };
 
 /* one texture stage state through the device's inline setter; the type comes
    by reference, so each call keeps its own update of the dirty flags */
-static __forceinline void texture_stage_apply_state(DWORD stage, D3DTEXTURESTAGESTATETYPE const &type, DWORD value)
+static __forceinline void sampler_state_write(DWORD stage, D3DTEXTURESTAGESTATETYPE const &type, DWORD value)
 {
     D3DDevice_SetTextureStageState(stage, type, value);
 }
@@ -51,16 +51,16 @@ void __stdcall function_43a40(long mode)
         s_type_7ba8e9 *bitmap = function_137550(tag, 1);
         if (bitmap) function_14390(0, bitmap, 0.0f);
     }
-    texture_stage_apply_state(0, D3DTSS_ADDRESSU, 3);
-    texture_stage_apply_state(0, D3DTSS_ADDRESSV, 3);
-    texture_stage_apply_state(0, D3DTSS_MAGFILTER, 2);
-    texture_stage_apply_state(0, D3DTSS_MINFILTER, 2);
-    texture_stage_apply_state(0, D3DTSS_MIPFILTER, 2);
-    texture_stage_apply_state(0, D3DTSS_MIPMAPLODBIAS, 0);
-    texture_stage_apply_state(0, D3DTSS_MAXMIPLEVEL, 0);
-    texture_stage_apply_state(0, D3DTSS_MAXANISOTROPY, 0);
-    texture_stage_apply_state(0, D3DTSS_ALPHAKILL, 0);
-    texture_stage_apply_state(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, 3);
+    sampler_state_write(0, D3DTSS_ADDRESSV, 3);
+    sampler_state_write(0, D3DTSS_MAGFILTER, 2);
+    sampler_state_write(0, D3DTSS_MINFILTER, 2);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 2);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
     if (mode != 6)
