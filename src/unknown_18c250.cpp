@@ -99,7 +99,6 @@ static inline vector3f *function_x84d9e8(vector3f *vector, vector3f const *axis,
 // @retail 0x18c250
 bool __stdcall function_18c250(long object_index, long tag_index, s_sound_marker const *marker, s_type_99c531 *location)
 {
-	struct s_18c252 { byte field_0 : 1; byte field_1 : 7; };
 	bool result = object_index == NONE || function_18c3b0(object_index, tag_index, marker, location);
 
 	if (object_index == NONE || result)
@@ -112,12 +111,12 @@ bool __stdcall function_18c250(long object_index, long tag_index, s_sound_marker
 
 		if (class_spatialization && (class_spatialization->flags & 1))
 		{
-			((s_18c252 *)location)->field_0 = true;
+			location->flags |= 1;
 			location->spatial.velocity = *g_4687a4;
 			location->spatial.position = *(point3f *)g_4687a8;
 			function_x84d9e8((vector3f *)&location->spatial.position, g_4687b0, (real)sin(class_spatialization->angle), (real)cos(class_spatialization->angle));
+			result = true;
 		}
-		result = true;
 	}
 	return result;
 }
