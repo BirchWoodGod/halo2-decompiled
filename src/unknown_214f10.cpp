@@ -163,7 +163,8 @@ void game_state_cache_write(short slot)
 		priority = 2;
 	}
 	s_file_handle file = g_5020f8[slot];
-	function_1a1050(file, source, g_5020e0, 0, 0, 8, priority, &g_5020ec, &g_5020e8);
+	s_file_write_flags flags(0);
+	function_1a1050(file, source, g_5020e0, 0, flags, 8, priority, &g_5020ec, &g_5020e8);
 	if (!g_5020e4)
 	{
 		if (!g_5020e8)
