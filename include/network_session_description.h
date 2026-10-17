@@ -53,7 +53,7 @@ struct s_session_description
 	long map_variant;
 	bool teams;
 	byte unknownb1[3];
-	long score_type;
+	long scoring_kind;
 	long score_limit;
 	short player_count;
 	s_session_player_identifier player_id_list[k_session_description_maximum_players];
@@ -78,7 +78,7 @@ typedef char assert_session_description_layout[(
 	offsetof(s_session_description, public_open) == 0x94 &&
 	offsetof(s_session_description, game_type) == 0xa0 &&
 	offsetof(s_session_description, teams) == 0xb0 &&
-	offsetof(s_session_description, score_type) == 0xb4 &&
+	offsetof(s_session_description, scoring_kind) == 0xb4 &&
 	offsetof(s_session_description, player_count) == 0xbc &&
 	offsetof(s_session_description, player_id_list) == 0xbe &&
 	offsetof(s_session_description, player_names) == 0x17e &&

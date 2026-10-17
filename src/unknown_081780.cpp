@@ -314,12 +314,12 @@ void __stdcall function_81780(long stage)
 	g_4d87d0 = count;
 	g_4d87e0 = count;
 
-	size = count * sizeof(s_network_connection);
+	size = count * sizeof(s_link_connection);
 	g_4d87d4 = physical_memory_malloc_fixed(size, PAGE_READWRITE);
 	network_memory_track(g_4d87d4, size);
 	for (i = 0; i < g_4d87d0; i++)
 	{
-		new ((s_network_connection *)g_4d87d4 + i) s_network_connection;
+		new ((s_link_connection *)g_4d87d4 + i) s_link_connection;
 	}
 
 	size = g_4d87d0 * sizeof(c_reliable_stream_storage);

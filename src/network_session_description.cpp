@@ -76,7 +76,7 @@ bool session_description_valid(const s_session_description *description)
 	{
 		return false;
 	}
-	if (description->score_type < 0 || description->score_type >= 3)
+	if (description->scoring_kind < 0 || description->scoring_kind >= 3)
 	{
 		return false;
 	}
@@ -130,7 +130,7 @@ bool __stdcall session_description_decode(s_bitstream *stream, void *session)
 	description->option = function_1959c0(stream, 3) - 1;
 	description->map_variant = function_1959c0(stream, 32);
 	description->teams = function_1957d0(stream);
-	description->score_type = function_1959c0(stream, 2);
+	description->scoring_kind = function_1959c0(stream, 2);
 	description->score_limit = function_1959c0(stream, 32);
 	description->player_count = (short)function_1959c0(stream, 5);
 	bool valid = description->player_count >= 0 && description->player_count <= k_session_description_maximum_players;
@@ -208,7 +208,7 @@ void __stdcall session_description_encode(s_bitstream *stream, void *session)
 	stream_write_checked(stream, description->option + 1, 3);
 	function_195720(stream, description->map_variant, 32);
 	stream_write_bit(stream, description->teams);
-	stream_write_checked(stream, description->score_type, 2);
+	stream_write_checked(stream, description->scoring_kind, 2);
 	function_195720(stream, description->score_limit, 32);
 	stream_write_checked(stream, description->player_count, 5);
 	long count = description->player_count;

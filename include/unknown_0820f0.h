@@ -39,7 +39,7 @@ enum e_connection_client_flags
 	_connection_client_priority_flag = 0x20       /* its data makes a priority packet */
 };
 
-/* s_network_connection::flags */
+/* s_link_connection::flags */
 enum e_link_connection_flags
 {
 	_link_connection_reliable_stream_flag = 0x8,
@@ -48,7 +48,7 @@ enum e_link_connection_flags
 	_link_connection_loopback_flags = 0xc0      /* kept only for a loopback address */
 };
 
-/* s_network_connection::state */
+/* s_link_connection::state */
 enum e_link_connection_state
 {
 	_link_connection_state_free,
@@ -59,7 +59,7 @@ enum e_link_connection_state
 	_link_connection_state_established
 };
 
-/* s_network_connection::timers */
+/* s_link_connection::timers */
 enum e_link_connection_timer
 {
 	_link_connection_timer_packet_sent,
@@ -113,9 +113,9 @@ struct s_connection_timer
 	s_connection_counter counter;
 };
 
-struct s_network_connection
+struct s_link_connection
 {
-	s_network_connection();
+	s_link_connection();
 	s_link *link_list;
 	void *link;
 	class c_class_938e0 *handler;
@@ -147,7 +147,7 @@ struct s_network_connection
 	s_connection_timer timers[k_link_connection_timer_count];
 };
 
-typedef char assert_link_connection_size[(sizeof(s_network_connection) == 0xf8) ? 1 : -1];
+typedef char assert_link_connection_size[(sizeof(s_link_connection) == 0xf8) ? 1 : -1];
 
 struct s_network_stream_window
 {
@@ -182,18 +182,18 @@ void __stdcall function_095580(void *stream, long message_type, long message_siz
 
 long network_reliable_stream_allocate(long owner);
 long network_stream_allocate(long owner);
-bool network_connection_flags_valid(dword flags);
-void network_connection_close(s_network_connection *connection, long reason);
-void network_connection_dispose(s_network_connection *connection);
-void network_connection_reset_timers(s_network_connection *connection);
-void network_connection_reset_timer(s_network_connection *connection, long index);
-long network_connection_send_capacity(s_network_connection *connection);
-void network_connection_update_handshake(s_network_connection *connection);
-void network_connection_send_acknowledge(s_network_connection *connection, bool reliable);
+bool link_connection_flags_valid(dword flags);
+void link_connection_close(s_link_connection *connection, long reason);
+void link_connection_dispose(s_link_connection *connection);
+void link_connection_reset_timers(s_link_connection *connection);
+void link_connection_reset_timer(s_link_connection *connection, long index);
+long link_connection_send_capacity(s_link_connection *connection);
+void link_connection_update_handshake(s_link_connection *connection);
+void link_connection_send_acknowledge(s_link_connection *connection, bool reliable);
 
-static inline s_network_connection *link_connection_get(long index)
+static inline s_link_connection *link_connection_get(long index)
 {
-	return &((s_network_connection *)g_4d87d4)[index];
+	return &((s_link_connection *)g_4d87d4)[index];
 }
 
 static inline s_network_stream_header *network_reliable_stream_get(long index)
