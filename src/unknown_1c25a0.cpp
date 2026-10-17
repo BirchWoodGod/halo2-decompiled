@@ -202,7 +202,6 @@ void c_contact_exclusion::hit(void const *query, s_contact_body_view const *body
 }
 
 bool havok_component_any_rigid_body_active(s_havok_component *component);
-bool havok_component_rigid_body_keyframed(long rigid_body_index, s_havok_component *component);
 void havok_component_rigid_body_linear_velocity_set(long rigid_body_index, s_havok_component *component, vector3f const *velocity);
 void havok_component_rigid_body_angular_velocity_set(long rigid_body_index, s_havok_component *component, vector3f const *velocity);
 void havok_component_rigid_bodies_activate(s_havok_component *component);
@@ -229,7 +228,7 @@ void function_1c4b00(long object_index, void *linear, void *angular, long force)
 			{
 				long index = havok_component_main_rigid_body_index_get(component);
 				if (index != NONE && !havok_component_rigid_body_get(index, component)->m_fixed &&
-					!havok_component_rigid_body_keyframed(index, component))
+					!component->rigid_body_keyframed(index))
 				{
 					if (linear)
 						havok_component_rigid_body_linear_velocity_set(index, component, (vector3f *)linear);
