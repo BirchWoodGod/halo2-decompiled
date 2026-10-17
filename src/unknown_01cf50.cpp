@@ -223,24 +223,23 @@ PRIVATE __forceinline void write_texture_corners(real u, real v)
 // @retail 0x15ec0
 void __stdcall function_15ec0(long index)
 {
-    long height = 0;
     long width = 0;
+    long height = 0;
     long count;
-    if (g_4b4b58[index].data && !g_4b4b58[index].flag95)
-        count = g_4b4b58[index].element_count;
+    s_unknown_01dcc0 *entry = &g_4b4b58[index];
+    if (entry->data && !entry->flag95)
+        count = entry->element_count;
     else count = index == 0 || index == 3 ? 1 : 0;
     function_01dd60(index, &width, &height);
     for (long level = 0; level < count; ++level)
     {
-        real upper = g_485ad4.hi;
-        real lower = g_485ad4.lo;
-        real y = (real)height;
         real x = (real)width;
-        real ratio = upper / (upper - lower);
-        real z = (ratio - lower * ratio) * 16777215.0f;
+        real y = (real)height;
+        real ratio = g_485ad4.hi / (g_485ad4.hi - g_485ad4.lo);
+        real z = (ratio - g_485ad4.lo * ratio) * 16777215.0f;
         if (z < 0.0f) z = 0.0f;
         else if (z > 16777215.0f) z = 16777215.0f;
-        real w = (1.0f / upper) * 16777215.0f;
+        real w = (1.0f / g_485ad4.hi) * 16777215.0f;
         if (w < 0.0f) w = 0.0f;
         else if (w > 16777215.0f) w = 16777215.0f;
         function_14bc0((short)index, (short)level, false);
@@ -898,12 +897,12 @@ viewport_ready:
 // @retail 0x14f60
 void function_14f60(short stage, short index)
 {
-	long local_c270bf = stage;
+	D3DBaseTexture *texture = NULL;
 	struct { long width; long height; } dimensions = { 0, 0 };
 	function_01dd60(index, &dimensions.width, &dimensions.height);
+	long local_c270bf = stage;
 	g_485af4[local_c270bf] = dimensions.width;
 	g_485b04[local_c270bf] = dimensions.height;
-	D3DBaseTexture *texture = NULL;
 	switch (index)
 	{
 	case 0: texture = g_509354[(g_485aa0 - 1) % 2]; break;

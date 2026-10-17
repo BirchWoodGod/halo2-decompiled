@@ -140,21 +140,26 @@ void *function_01dd20(long index, long element)
 bool function_01dd60(long index, long *width, long *height)
 {
 	s_unknown_01dcc0 *e = &g_4b4b58[index];
+	bool result;
 	if (e->data != 0 && !e->flag95)
 	{
 		*width = e->width;
 		*height = e->height;
-		return true;
+		result = true;
 	}
-	if (index == 0 || index == 3 || index == 0x18)
+	else if (index == 0 || index == 3 || index == 0x18)
 	{
 		*width = 0x280;
 		*height = 0x1e0;
-		return true;
+		result = true;
 	}
-	*width = 0;
-	*height = 0;
-	return false;
+	else
+	{
+		*width = 0;
+		*height = 0;
+		result = false;
+	}
+	return result;
 }
 
 // @retail 0x1ddd0
