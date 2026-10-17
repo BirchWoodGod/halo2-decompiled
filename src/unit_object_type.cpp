@@ -796,15 +796,17 @@ void function_cb7e0(long unit_index, vector3f *vector)
 long function_cbe60(long unit_index)
 {
 	s_unit *unit = UNIT_GET(unit_index);
+	long result = NONE;
 
 	for (long i = 0; i < 4; i++)
 	{
 		if (i != unit->current_weapon_index && i != unit->next_weapon_index && unit->weapon_object_indices[i] != NONE)
 		{
-			return unit->weapon_object_indices[i];
+			result = unit->weapon_object_indices[i];
+			break;
 		}
 	}
-	return NONE;
+	return result;
 }
 
 /* whether the unit (or what +0x248 names) has an actor */
@@ -1125,15 +1127,18 @@ short function_cbec0(long unit_index, short grenade_type, short direction)
 {
 	s_unit *unit = UNIT_GET(unit_index);
 	short result = NONE;
-	short first = grenade_type == NONE ? 0 : grenade_type;
-	short type = first;
 
+	if (grenade_type == NONE)
+	{
+		grenade_type = 0;
+	}
+	short type = grenade_type;
 	do
 	{
 		if (unit->grenade_counts[type] > 0)
 		{
 			result = type;
-			if (type != first || direction == 0)
+			if (type != grenade_type || direction == 0)
 			{
 				break;
 			}
@@ -1146,7 +1151,7 @@ short function_cbec0(long unit_index, short grenade_type, short direction)
 		{
 			type = type == 1 ? 0 : type + 1;
 		}
-	} while (type != first);
+	} while (type != grenade_type);
 	return result;
 }
 
@@ -1547,6 +1552,12 @@ void __stdcall function_d1360(long unit_index, long seat_index, bool a, bool b)
 	}
 }
 
+/* the dot product of two vectors' horizontal (i, j) parts */
+static inline real unit_dot_product2d(vector3f const *a, vector3f const *b)
+{
+	return a->i * b->i + a->j * b->j;
+}
+
 /* whether a biped faces along the direction: always while in animation
    0x6000084, else by the sign of its facing's dot product with it */
 // @retail 0xcc010
@@ -1560,14 +1571,17 @@ bool __stdcall function_cc010(long object_index, vector3f const *direction)
 		long unknown;
 		long name = NONE;
 
-		function_10f630(object_index, &unknown, &name);
+		function_10f630(object_index, &name, &unknown);
 		if (!(*(UNIT_DEFINITION_GET(unit) + 0xbe) & 1))
 		{
 			if (name == 0x6000084)
 			{
-				return true;
+				result = true;
 			}
-			return unit->unknown190 * direction->j + direction->i * unit->unknown18c > 0.0f;
+			else
+			{
+				result = unit_dot_product2d((vector3f const *)&unit->unknown18c, direction) > 0.0f;
+			}
 		}
 	}
 	return result;
@@ -1819,6 +1833,13 @@ bool function_c6740(long unit_index)
 	return result;
 }
 
+/* one of a unit definition's weapons (+0x1c4, 8 bytes each) */
+struct s_unit_definition_weapon
+{
+	long unknown0;
+	long tag_index;
+};
+
 /* creates the unit definition's starting weapons (+0x1c0, +0x1c4) and
    gives them to the unit; deletes those it cannot take (or, in state 2,
    already has) */
@@ -1829,13 +1850,13 @@ void function_ccab0(long unit_index)
 
 	for (long i = 0; i < *(long *)(definition + 0x1c0); i++)
 	{
-		long tag_index = *(long *)(*(byte **)(definition + 0x1c4) + i * 8 + 4);
+		s_unit_definition_weapon *entry = &(*(s_unit_definition_weapon **)(definition + 0x1c4))[i];
 
-		if (tag_index != NONE)
+		if (entry->tag_index != NONE)
 		{
 			byte data[0xc4];
 
-			function_b7930(data, tag_index, unit_index, 0);
+			function_b7930(data, entry->tag_index, unit_index, 0);
 			long weapon_index = function_b7b40(data);
 			if (weapon_index != NONE)
 			{
@@ -1997,30 +2018,28 @@ bool __stdcall function_d0f30(long unit_index, bool a, bool b)
 bool __stdcall function_cd4e0(long unit_index, short hand, bool flag)
 {
 	s_unit *unit = UNIT_GET(unit_index);
-	char *indices = &unit->current_weapon_index + hand;
 	bool result = false;
 
-	if (indices[0] != NONE && indices[4] != NONE)
+	if ((&unit->current_weapon_index)[hand] != NONE && (&unit->unknown216)[hand] != NONE)
 	{
 		s_unit_request request;
 
 		memset(&request, 0, sizeof(request));
-		indices[4] = NONE;
+		(&unit->unknown216)[hand] = NONE;
 		request.type = hand != 0 ? 0x12 : 8;
 		request.type17.unknown4 = flag;
-		if (!function_e6900(unit_index, &request))
+		if (function_e6900(unit_index, &request))
 		{
-			return false;
+			if (hand)
+			{
+				function_cea00(unit_index);
+			}
+			if (unit->unknown13c != NONE)
+			{
+				function_1520f0(unit->unknown13c);
+			}
+			result = true;
 		}
-		if (hand)
-		{
-			function_cea00(unit_index);
-		}
-		if (unit->unknown13c != NONE)
-		{
-			function_1520f0(unit->unknown13c);
-		}
-		return true;
 	}
 	return result;
 }
@@ -2030,34 +2049,30 @@ bool __stdcall function_cd4e0(long unit_index, short hand, bool flag)
 // @retail 0xcbd80
 long __stdcall function_cbd80(long object_index, long *holder_index)
 {
-	s_unit *unit = UNIT_GET(object_index);
-	short index = unit->current_weapon_index;
-	long weapon_index = NONE;
+	long weapon_index = function_cbd50(object_index, UNIT_GET(object_index)->current_weapon_index);
 
-	if (index != NONE)
-	{
-		weapon_index = unit->weapon_object_indices[index];
-	}
 	if (weapon_index != NONE)
 	{
 		if (holder_index)
 		{
 			*holder_index = object_index;
 		}
-		return weapon_index;
 	}
-	for (long child_index = UNIT_GET(object_index)->first_child_index; child_index != NONE;
-		child_index = UNIT_GET(child_index)->next_sibling_index)
+	else
 	{
-		s_unit *child = UNIT_GET(child_index);
-
-		if ((1 << child->type) & 3 && TEST_FIELD_BIT((*(dword *)(UNIT_DEFINITION_GET(child) + 0xbc) >> 27) & 1))
+		for (long child_index = UNIT_GET(object_index)->first_child_index; child_index != NONE;)
 		{
-			weapon_index = function_cbd80(child_index, holder_index);
-			if (weapon_index != NONE)
+			s_unit *child = UNIT_GET(child_index);
+
+			if ((1 << child->type) & 3 && TEST_FIELD_BIT((*(dword *)(UNIT_DEFINITION_GET(child) + 0xbc) >> 27) & 1))
 			{
-				break;
+				weapon_index = function_cbd80(child_index, holder_index);
+				if (weapon_index != NONE)
+				{
+					break;
+				}
 			}
+			child_index = child->next_sibling_index;
 		}
 	}
 	return weapon_index;
