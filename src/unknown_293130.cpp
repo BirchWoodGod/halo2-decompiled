@@ -107,6 +107,7 @@ __forceinline void function_293133(real arg_0, vector3f const *arg_1, vector3f *
 // @retail 0x293130
 long __stdcall function_293130(long arg_0)
 {
+	s_293134 local_13;
 	long const *local_1 = &arg_0;
 	s_293130 *local_2 = &((s_293130 *)g_51ecb4->data)[arg_0 & 0xffff];
 	s_293132 *local_3 = &((s_293133 *)g_4e0350)->field_354[local_2->field_2];
@@ -165,7 +166,6 @@ long __stdcall function_293130(long arg_0)
 		{
 			s_293131 *local_11 = &local_3->field_10[local_8];
 			bool local_12 = !((*(dword *)(g_4e3b44[local_3->field_2c & 0xffff].bytes + 0xd4) >> 4) & 1);
-			s_293134 local_13;
 			function_b7930(&local_13, local_3->field_2c, NONE, NULL);
 			local_13.field_b4 = 1;
 			local_13.field_b6 = 0x34;
