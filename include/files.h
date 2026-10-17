@@ -56,20 +56,20 @@ typedef char assert_file_reference_handle[(offsetof(s_type_acf665, handle) == 0x
 
 void function_137320(char *path, const char *name);
 void function_1373c0(char *path);
-s_type_acf665 *file_reference_create(s_type_acf665 *file, bool directory, const char *name);
+s_type_acf665 *file_ref_create(s_type_acf665 *file, bool directory, const char *name);
 bool function_1367d0(s_type_acf665 *file);
-bool file_delete(s_type_acf665 *file);
+bool file_ref_delete(s_type_acf665 *file);
 bool function_1368f0(s_type_acf665 *file);
 bool function_136970(s_type_acf665 *file, dword flags, dword *error);
 bool function_136bb0(s_type_acf665 *file);
-bool file_set_position(s_type_acf665 *file, dword position, bool silent);
-bool file_set_end(s_type_acf665 *file, dword position);
-bool file_read(s_type_acf665 *file, dword size, void *buffer, bool silent);
+bool file_ref_seek(s_type_acf665 *file, dword position, bool silent);
+bool file_ref_truncate(s_type_acf665 *file, dword position);
+bool file_ref_read(s_type_acf665 *file, dword size, void *buffer, bool silent);
 bool function_136d00(s_type_acf665 *file, const void *buffer, dword size);
-bool file_read_from_position(s_type_acf665 *file, dword position, dword size, bool silent, void *buffer);
-bool file_write_to_position(s_type_acf665 *file, dword position, dword size, const void *buffer);
-bool file_get_last_write_time(s_type_acf665 *file, FILETIME *time);
-void file_get_current_time(FILETIME *time);
-bool file_get_size(s_type_acf665 *file, dword *size);
+bool file_ref_read_at(s_type_acf665 *file, dword position, dword size, bool silent, void *buffer);
+bool file_ref_write_at(s_type_acf665 *file, dword position, dword size, const void *buffer);
+bool file_ref_modified_time(s_type_acf665 *file, FILETIME *time);
+void file_ref_clock_time(FILETIME *time);
+bool file_ref_size(s_type_acf665 *file, dword *size);
 
 #endif

@@ -15,7 +15,7 @@ void function_10a9d0(void);
 void function_123bf0(void);
 void function_125600(void);
 void function_1320b0(void);
-void interpolators_dispose(void);
+void scenario_ramps_dispose(void);
 void function_141c0(void);
 void function_14783f(void);
 void function_14b560(void);

@@ -13,7 +13,7 @@ void function_1374c0(char *dest, const char *path); /* unknown_136770.cpp: the p
 
 /* a reference to a file, or to a directory, by its path */
 // @retail 0x136710
-s_type_acf665 *file_reference_create(s_type_acf665 *file, bool directory, const char *name)
+s_type_acf665 *file_ref_create(s_type_acf665 *file, bool directory, const char *name)
 {
 	memset(file, 0, sizeof(s_type_acf665));
 	file->signature = FILE_REFERENCE_SIGNATURE;
@@ -61,7 +61,7 @@ bool function_1367d0(s_type_acf665 *file)
 
 /* deletes the file or the directory a reference names */
 // @retail 0x136860
-bool file_delete(s_type_acf665 *file)
+bool file_ref_delete(s_type_acf665 *file)
 {
 	char path[MAXIMUM_PATH_SIZE] = { 0 };
 	function_1374c0(path, file->path);
@@ -207,7 +207,7 @@ bool function_136bb0(s_type_acf665 *file)
 
 /* moves an open file's position from its start */
 // @retail 0x136bf0
-bool file_set_position(s_type_acf665 *file, dword position, bool silent)
+bool file_ref_seek(s_type_acf665 *file, dword position, bool silent)
 {
 	if (file->position == position)
 	{
@@ -226,7 +226,7 @@ bool file_set_position(s_type_acf665 *file, dword position, bool silent)
 
 /* ends an open file at a position */
 // @retail 0x136c40
-bool file_set_end(s_type_acf665 *file, dword position)
+bool file_ref_truncate(s_type_acf665 *file, dword position)
 {
 	bool result;
 	bool success = true;
@@ -256,7 +256,7 @@ bool file_set_end(s_type_acf665 *file, dword position)
 
 /* reads from an open file's position */
 // @retail 0x136ca0
-bool file_read(s_type_acf665 *file, dword size, void *buffer, bool silent)
+bool file_ref_read(s_type_acf665 *file, dword size, void *buffer, bool silent)
 {
 	dword bytes_read;
 	bool success = false;
@@ -303,15 +303,15 @@ bool function_136d00(s_type_acf665 *file, const void *buffer, dword size)
 /* reads from a position in an open file */
 #pragma inline_depth(0)
 // @retail 0x136d50
-bool file_read_from_position(s_type_acf665 *file, dword position, dword size, bool silent, void *buffer)
+bool file_ref_read_at(s_type_acf665 *file, dword position, dword size, bool silent, void *buffer)
 {
-	return file_set_position(file, position, silent) && file_read(file, size, buffer, silent);
+	return file_ref_seek(file, position, silent) && file_ref_read(file, size, buffer, silent);
 }
 #pragma inline_depth(255)
 
 /* writes at a position in an open file */
 // @retail 0x136d90
-bool file_write_to_position(s_type_acf665 *file, dword position, dword size, const void *buffer)
+bool file_ref_write_at(s_type_acf665 *file, dword position, dword size, const void *buffer)
 {
 	bool success = true;
 	if (file->position != position)
@@ -329,7 +329,7 @@ bool file_write_to_position(s_type_acf665 *file, dword position, dword size, con
 
 /* when the file or directory a reference names was last written */
 // @retail 0x136df0
-bool file_get_last_write_time(s_type_acf665 *file, FILETIME *time)
+bool file_ref_modified_time(s_type_acf665 *file, FILETIME *time)
 {
 	char path[MAXIMUM_PATH_SIZE] = { 0 };
 	WIN32_FILE_ATTRIBUTE_DATA data;
@@ -350,7 +350,7 @@ bool file_get_last_write_time(s_type_acf665 *file, FILETIME *time)
 
 /* the system time, as a file time */
 // @retail 0x136e70
-void file_get_current_time(FILETIME *time)
+void file_ref_clock_time(FILETIME *time)
 {
 	FILETIME now;
 	GetSystemTimeAsFileTime(&now);
@@ -359,7 +359,7 @@ void file_get_current_time(FILETIME *time)
 
 /* the size of the file a reference names */
 // @retail 0x136e90
-bool file_get_size(s_type_acf665 *file, dword *size)
+bool file_ref_size(s_type_acf665 *file, dword *size)
 {
 	bool result = false;
 	char path[MAXIMUM_PATH_SIZE] = { 0 };

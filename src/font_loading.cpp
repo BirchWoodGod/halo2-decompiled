@@ -117,7 +117,7 @@ void fonts_get_source_directory(s_type_acf665 *reference)
 	function_137320(reference->path, directory);
 }
 
-bool file_get_last_write_time(s_type_acf665 *file, FILETIME *time);
+bool file_ref_modified_time(s_type_acf665 *file, FILETIME *time);
 
 /* when the font table on the DVD was last written */
 // @retail 0x1219b0
@@ -133,7 +133,7 @@ bool font_table_get_time(FILETIME *time)
 	memcpy(&reference, &directory, offsetof(s_type_acf665, unknown108));
 	font_table_get_name(name, sizeof(name));
 	function_x73bce5(&reference, name);
-	return file_get_last_write_time(&reference, time);
+	return file_ref_modified_time(&reference, time);
 }
 
 static inline char *function_xe9ecc4(char *string, char const *delimiters, char **next)
@@ -261,7 +261,7 @@ long font_table_parse(char const *text, s_type_acf665 const *directory, s_type_a
 
 long function_136770(file_reference_data *directory, dword flags, long maximum_count, file_reference_data *files);
 bool function_1367d0(s_type_acf665 *file);
-bool file_delete(s_type_acf665 *file);
+bool file_ref_delete(s_type_acf665 *file);
 
 static inline void font_copy_wait(bool volatile *done)
 {
@@ -327,7 +327,7 @@ bool function_121b00(void)
 			if (function_1368f0(&destination))
 			{
 				long old_count = function_136770((file_reference_data *)&destination, 0, 11, (file_reference_data *)files.old_files);
-				for (long i = 0; i < old_count; i++) file_delete(&files.old_files[i]);
+				for (long i = 0; i < old_count; i++) file_ref_delete(&files.old_files[i]);
 			}
 			else function_1367d0(&destination);
 			path[0] = 0;

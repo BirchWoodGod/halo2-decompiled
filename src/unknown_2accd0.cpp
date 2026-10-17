@@ -74,7 +74,7 @@ char *function_122810(char *path, const char *name);
 char *function_11c9c0(char *buffer, long maximum_count, const char *format, ...);
 bool function_1249f0(long memory_unit, char *drive_letter);
 bool function_1367d0(s_type_acf665 *file);
-bool file_set_end(s_type_acf665 *file, dword position);
+bool file_ref_truncate(s_type_acf665 *file, dword position);
 bool function_216da0(long type, wchar_t *name, const wchar_t *display_name, long language);
 bool saved_game_file_write_save_image(long type, s_saved_game_file_location *location);
 bool function_2168b0(s_saved_game_file_location *location, long flags);
@@ -134,7 +134,7 @@ inline bool function_xe8ca68(s_type_acf665 *file, dword size, const void *buffer
 
 inline bool function_xab2909(s_type_acf665 *file, dword size, bool silent, void *buffer)
 {
-	return file_read(file, size, buffer, silent);
+	return file_ref_read(file, size, buffer, silent);
 }
 
 inline bool function_x8231f3(s_type_acf665 *file)
@@ -324,7 +324,7 @@ bool saved_game_file_copy_create(s_saved_game_file *file)
 		function_xbb02d2(&s_type_acf665, file_path);
 		if (function_1367d0(&s_type_acf665) && function_136970(&s_type_acf665, 2, &error))
 		{
-			if (file_set_end(&s_type_acf665, function_217480(type)))
+			if (file_ref_truncate(&s_type_acf665, function_217480(type)))
 			{
 				*(s_saved_game_file_id *)file->location.name = id;
 				result = true;
@@ -950,7 +950,7 @@ void saved_game_file_read(s_type_acf665 *file, void *buffer, dword size, bool no
 
 				XCalculateSignatureUpdate(signature_handle, (const BYTE *)buffer, size);
 				if (XCalculateSignatureEnd(signature_handle, &computed) == ERROR_SUCCESS &&
-					file_read_from_position(file, size, sizeof(stored), false, &stored) &&
+					file_ref_read_at(file, size, sizeof(stored), false, &stored) &&
 					memcmp(&computed, &stored, sizeof(stored)) == 0)
 				{
 					task->succeeded = true;
@@ -979,7 +979,7 @@ void saved_game_file_write(s_type_acf665 *file, void *buffer, dword size, bool n
 
 				XCalculateSignatureUpdate(signature_handle, (const BYTE *)buffer, size);
 				if (XCalculateSignatureEnd(signature_handle, &signature) == ERROR_SUCCESS &&
-					file_write_to_position(file, size, sizeof(signature), &signature))
+					file_ref_write_at(file, size, sizeof(signature), &signature))
 				{
 					task->succeeded = true;
 					task->state = 0;

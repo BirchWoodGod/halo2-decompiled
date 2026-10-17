@@ -37,7 +37,7 @@ struct s_12ed00
 
 struct s_interpolator_globals;
 extern s_interpolator_globals *g_4e6740;
-real __stdcall interpolator_evaluate(long arg_0, real arg_1);
+real __stdcall scenario_ramp_evaluate(long arg_0, real arg_1);
 
 // @retail 0x12eb00
 long function_12eb00(long arg_0, s_fog_cluster_distance *arg_1, s_12eb00 *arg_2)
@@ -70,7 +70,7 @@ long function_12eb00(long arg_0, s_fog_cluster_distance *arg_1, s_12eb00 *arg_2)
 						local_10->field_e >= 0 && local_10->field_e < local_2->field_3c0)
 					{
 						real *local_11 = (real *)((byte *)g_4e6740 + local_10->field_e * 0x20 + 4);
-						real local_12 = local_11 ? interpolator_evaluate(local_10->field_e, *local_11) : 0.0f;
+						real local_12 = local_11 ? scenario_ramp_evaluate(local_10->field_e, *local_11) : 0.0f;
 						if (local_12 < 0.0f) local_12 = 0.0f;
 						else if (local_12 > 1.0f) local_12 = 1.0f;
 						local_6 += local_12;

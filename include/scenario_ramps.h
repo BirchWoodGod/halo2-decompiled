@@ -1,11 +1,11 @@
-/* INTERPOLATORS.H: the scenario's named interpolators (src/interpolators.cpp,
-   src/interpolator_globals.cpp). Each scenario interpolator names a tag
+/* SCENARIO_RAMPS.H: the scenario's named interpolators (src/interpolators.cpp,
+   src/scenario_ramp_globals.cpp). Each scenario interpolator names a tag
    function, the interpolator whose value feeds its accumulated input and the
    one that scales its output; its state moves its value from a start value to
    a target value between a start and an end time of the game clock. */
 
-#ifndef INTERPOLATORS_H
-#define INTERPOLATORS_H
+#ifndef SCENARIO_RAMPS_H
+#define SCENARIO_RAMPS_H
 
 #include "unknown_11c920.h"
 #include "unknown_246cd0.h" /* s_tag_data */
@@ -67,28 +67,28 @@ typedef char assert_interpolator_globals_size[(sizeof(s_interpolator_globals) ==
 
 extern s_interpolator_globals *g_4e6740;
 
-void interpolators_initialize(void);
-void interpolators_dispose(void);
-void interpolators_initialize_for_new_map(void);
-void interpolators_update(real delta);
-void interpolators_stop_all(void);
-void interpolators_resume_all(void);
-void interpolators_toggle_last_used(void);
+void scenario_ramps_initialize(void);
+void scenario_ramps_dispose(void);
+void scenario_ramps_reset_for_map(void);
+void scenario_ramps_update(real delta);
+void scenario_ramps_stop_all(void);
+void scenario_ramps_resume_all(void);
+void scenario_ramps_toggle_last_used(void);
 
 s_interpolator_state *interpolator_get(long name, long *index_out);
-real __stdcall interpolator_evaluate(long index, real value);
-real interpolator_evaluate_current(long index);
+real __stdcall scenario_ramp_evaluate(long index, real value);
+real scenario_ramp_evaluate_current(long index);
 long interpolator_start(long name, real target, real seconds);
-long interpolator_start_smooth(long name, real target, real seconds);
+long scenario_ramp_start_eased(long name, real target, real seconds);
 long interpolator_resume(long name);
 bool interpolator_exists(long name);
-real interpolator_get_current_value(long name, bool evaluate);
-real interpolator_get_accumulated_input(long name);
-real interpolator_get_progress(long name);
-real interpolator_get_start_time(long name);
+real scenario_ramp_current_value(long name, bool evaluate);
+real scenario_ramp_accumulated_input(long name);
+real scenario_ramp_progress(long name);
+real scenario_ramp_start_time(long name);
 real interpolator_get_end_time(long name);
-real interpolator_get_value_at_fraction(long name, real fraction, bool evaluate);
-real interpolator_get_value_at_time(long name, real time, bool evaluate);
-real interpolator_get_value_after(long name, real seconds, bool evaluate);
+real scenario_ramp_value_at_fraction(long name, real fraction, bool evaluate);
+real scenario_ramp_value_at_time(long name, real time, bool evaluate);
+real scenario_ramp_value_after(long name, real seconds, bool evaluate);
 
 #endif

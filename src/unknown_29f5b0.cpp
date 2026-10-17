@@ -16,7 +16,7 @@
 #include "unknown_272b70.h"
 #include "unit_requests.h"
 #include "unknown_11a4d0.h"
-#include "interpolators.h"
+#include "scenario_ramps.h"
 #include "unknown_0bbf40.h"
 #include "unknown_10aca0.h"
 #include "command_scripts.h"
@@ -10036,7 +10036,7 @@ void __stdcall function_2aba10(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, interpolator_start_smooth(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]));
+		function_209ae0(thread_index, scenario_ramp_start_eased(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]));
 	}
 }
 
@@ -10102,7 +10102,7 @@ void __stdcall function_2abb50(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44f240 = { _hs_type_long_integer, 0, function_2abb50, NULL, 2, { _hs_type_string_id, _hs_type_real } };
 
-real interpolator_get_current_value(long name, bool flag);
+real scenario_ramp_current_value(long name, bool flag);
 
 /* 854: real (string_handle, boolean) */
 // @retail 0x2abbc0
@@ -10113,14 +10113,14 @@ void __stdcall function_2abbc0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = interpolator_get_current_value(arguments[0], *(bool *)&arguments[1]);
+		*(real *)&result = scenario_ramp_current_value(arguments[0], *(bool *)&arguments[1]);
 		function_209ae0(thread_index, result);
 	}
 }
 
 s_type_f4462a const g_44f254 = { _hs_type_real, 0, function_2abbc0, NULL, 2, { _hs_type_string_id, _hs_type_boolean } };
 
-real __stdcall interpolator_evaluate(long index, real value);
+real __stdcall scenario_ramp_evaluate(long index, real value);
 inline real function_xa57cf5(long name, bool flag)
 {
 	long index = NONE;
@@ -10130,7 +10130,7 @@ inline real function_xa57cf5(long name, bool flag)
 	{
 		value = state->start_value;
 		if (flag)
-			value = interpolator_evaluate(index, value);
+			value = scenario_ramp_evaluate(index, value);
 	}
 	return value;
 }
@@ -10161,7 +10161,7 @@ inline real interpolator_get_target_value(long name, bool flag)
 	{
 		value = state->target_value;
 		if (flag)
-			value = interpolator_evaluate(index, value);
+			value = scenario_ramp_evaluate(index, value);
 	}
 	return value;
 }
@@ -10190,12 +10190,12 @@ void __stdcall function_2abd30(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		hs_return_real(thread_index, interpolator_get_accumulated_input(arguments[0]));
+		hs_return_real(thread_index, scenario_ramp_accumulated_input(arguments[0]));
 }
 
 s_type_f4462a const g_44f290 = { _hs_type_real, 0, function_2abd30, NULL, 1, { _hs_type_string_id } };
 
-real interpolator_get_progress(long name);
+real scenario_ramp_progress(long name);
 
 /* 858: real (string_handle) */
 // @retail 0x2abd80
@@ -10206,7 +10206,7 @@ void __stdcall function_2abd80(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = interpolator_get_progress(arguments[0]);
+		*(real *)&result = scenario_ramp_progress(arguments[0]);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -10220,7 +10220,7 @@ void __stdcall function_2abdd0(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		hs_return_real(thread_index, interpolator_get_start_time(arguments[0]));
+		hs_return_real(thread_index, scenario_ramp_start_time(arguments[0]));
 }
 
 s_type_f4462a const g_44f2b8 = { _hs_type_real, 0, function_2abdd0, NULL, 1, { _hs_type_string_id } };
@@ -10246,7 +10246,7 @@ inline real interpolator_convert_value(long name, real value_in, bool flag)
 	{
 		value = value_in;
 		if (flag)
-			value = interpolator_evaluate(index, value);
+			value = scenario_ramp_evaluate(index, value);
 	}
 	return value;
 }
@@ -10268,7 +10268,7 @@ void __stdcall function_2abe70(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44f2e0 = { _hs_type_real, 0, function_2abe70, NULL, 3, { _hs_type_string_id, _hs_type_real, _hs_type_boolean } };
 
-real interpolator_get_value_at_fraction(long name, real value, bool flag);
+real scenario_ramp_value_at_fraction(long name, real value, bool flag);
 
 /* 862: real (string_handle, real, boolean) */
 // @retail 0x2abf00
@@ -10279,14 +10279,14 @@ void __stdcall function_2abf00(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = interpolator_get_value_at_fraction(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
+		*(real *)&result = scenario_ramp_value_at_fraction(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
 		function_209ae0(thread_index, result);
 	}
 }
 
 s_type_f4462a const g_44f2f8 = { _hs_type_real, 0, function_2abf00, NULL, 3, { _hs_type_string_id, _hs_type_real, _hs_type_boolean } };
 
-real interpolator_get_value_at_time(long name, real value, bool flag);
+real scenario_ramp_value_at_time(long name, real value, bool flag);
 
 /* 863: real (string_handle, real, boolean) */
 // @retail 0x2abf60
@@ -10297,14 +10297,14 @@ void __stdcall function_2abf60(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = interpolator_get_value_at_time(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
+		*(real *)&result = scenario_ramp_value_at_time(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
 		function_209ae0(thread_index, result);
 	}
 }
 
 s_type_f4462a const g_44f310 = { _hs_type_real, 0, function_2abf60, NULL, 3, { _hs_type_string_id, _hs_type_real, _hs_type_boolean } };
 
-real interpolator_get_value_after(long name, real value, bool flag);
+real scenario_ramp_value_after(long name, real value, bool flag);
 
 /* 864: real (string_handle, real, boolean) */
 // @retail 0x2abfc0
@@ -10315,7 +10315,7 @@ void __stdcall function_2abfc0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = interpolator_get_value_after(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
+		*(real *)&result = scenario_ramp_value_after(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -10326,7 +10326,7 @@ s_type_f4462a const g_44f328 = { _hs_type_real, 0, function_2abfc0, NULL, 3, { _
 // @retail 0x2ac020
 void __stdcall function_2ac020(short function_index, long thread_index, bool initialize)
 {
-	interpolators_stop_all();
+	scenario_ramps_stop_all();
 	function_209ae0(thread_index, 0);
 }
 
@@ -10336,7 +10336,7 @@ s_type_f4462a const g_44f340 = { _hs_type_void, 0, function_2ac020, NULL, 0 };
 // @retail 0x2ac040
 void __stdcall function_2ac040(short function_index, long thread_index, bool initialize)
 {
-	interpolators_resume_all();
+	scenario_ramps_resume_all();
 	function_209ae0(thread_index, 0);
 }
 
@@ -10346,7 +10346,7 @@ s_type_f4462a const g_44f350 = { _hs_type_void, 0, function_2ac040, NULL, 0 };
 // @retail 0x2ac060
 void __stdcall function_2ac060(short function_index, long thread_index, bool initialize)
 {
-	interpolators_toggle_last_used();
+	scenario_ramps_toggle_last_used();
 	function_209ae0(thread_index, 0);
 }
 

@@ -82,7 +82,7 @@ bool __stdcall function_8c900(const byte *messages)
 			}
 		}
 		if (!result)
-			file_delete(&file);
+			file_ref_delete(&file);
 	}
 	return result;
 }
@@ -107,7 +107,7 @@ bool function_1368f0(s_type_acf665 *file);
 #pragma inline_depth(0)
 static __forceinline bool function_8ca71(s_type_acf665 *arg_0, dword arg_1, bool arg_2)
 {
- return file_set_position(arg_0, arg_1, arg_2);
+ return file_ref_seek(arg_0, arg_1, arg_2);
 }
 #pragma inline_depth(8)
 // @retail 0x8ca70
@@ -134,7 +134,7 @@ bool __stdcall function_8ca70(long mode, s_name_buffer *output)
 					s_name_list list;
 					name_list_clear(&list);
 					function_8ca71(&file, 0x200, true);
-					if (file_read(&file, sizeof(list), &list, true))
+					if (file_ref_read(&file, sizeof(list), &list, true))
 					{
 					long local_1 = list.count;
 					if (local_1 <= 32)
@@ -149,7 +149,7 @@ bool __stdcall function_8ca70(long mode, s_name_buffer *output)
 				else
 				{
 					wchar_t message[256] = { 0 };
-					if (file_read(&file, sizeof(message), message, true))
+					if (file_ref_read(&file, sizeof(message), message, true))
 					{
 						function_08cc20(output, message);
 						result = true;
