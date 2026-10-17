@@ -764,21 +764,22 @@ bool __stdcall function_27960(long mode, real const *bounds, real const *t, real
 	(void)&unused;
 	if (g_509400 <= 0.0f)
 		g_509400 = g_485ae0;
+	real x = g_509400;
 	switch (mode)
 	{
 	case 0:
 		out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
 		out[1] = (bounds[3] - bounds[2]) * t[1] + bounds[2];
 		{
-		real x = g_509400;
-		real scale = g_485ad4.hi / (g_485ad4.hi - g_485ad4.lo);
+		s_range const *range = &g_485ad4;
+		real scale = range->hi / (range->hi - range->lo);
 		real depth = scale * x;
-		depth -= g_485ad4.lo * scale;
+		depth -= range->lo * scale;
 		depth = depth / x * 16777215.0f;
 		if (0.0f > depth) depth = 0.0f;
 		else if (depth > 16777215.0f) depth = 16777215.0f;
 		out[2] = depth;
-		real reciprocal = x / g_485ad4.hi * 16777215.0f;
+		real reciprocal = x / range->hi * 16777215.0f;
 		if (0.0f > reciprocal) reciprocal = 0.0f;
 		else if (reciprocal > 16777215.0f) reciprocal = 16777215.0f;
 		out[3] = reciprocal;
@@ -1461,6 +1462,8 @@ bool __stdcall function_276d0(void *context)
     return true;
 }
 
+extern dword g_4b8438;
+
 // @retail 0x29080 standard
 bool __stdcall function_29080(long context)
 {
@@ -1507,7 +1510,10 @@ bool __stdcall function_29080(long context)
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
     function_0222d0(D3DRS_CULLMODE, 0);
     function_0222d0(D3DRS_STENCILENABLE, 0);
-    function_0222d0(D3DRS_ZENABLE, 0);
+    g_4b8438 = 0;
+#pragma inline_depth(0)
+    D3DDevice_SetRenderState_ZEnable(0);
+#pragma inline_depth(255)
     function_0222d0(D3DRS_ZBIAS, 0);
     color3f const &color = *(color3f const *)(g_4b99b0 + 4);
     dword constant;
@@ -1803,19 +1809,20 @@ bool __stdcall function_2b220(long mode, real const *bounds,
     real const *t, real *out, long unused)
 {
     if (g_509400 <= 0.0f) g_509400 = g_485ae0;
+    real depth_x = g_509400;
     switch (mode)
     {
     case 0:
         out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
         out[1] = (bounds[3] - bounds[2]) * t[1] + bounds[2];
         {
-            real depth_x = g_509400;
-            real depth_scale = g_485ad4.hi / (g_485ad4.hi - g_485ad4.lo);
-            real depth_value = (depth_scale * depth_x - g_485ad4.lo * depth_scale) / depth_x * 16777215.0f;
+            s_range const *range = &g_485ad4;
+            real depth_scale = range->hi / (range->hi - range->lo);
+            real depth_value = (depth_scale * depth_x - range->lo * depth_scale) / depth_x * 16777215.0f;
             if (0.0f > depth_value) depth_value = 0.0f;
             else if (depth_value > 16777215.0f) depth_value = 16777215.0f;
             out[2] = depth_value;
-            real depth_weight = depth_x / g_485ad4.hi;
+            real depth_weight = depth_x / range->hi;
             depth_weight = depth_weight * 16777215.0f;
             if (0.0f > depth_weight) depth_weight = 0.0f;
             else if (depth_weight > 16777215.0f) depth_weight = 16777215.0f;
@@ -1885,6 +1892,20 @@ void function_25d50(void)
 byte g_5093fd, g_5093fe;
 bool function_143c0(long tag, short index, short stage, real priority);
 
+/* the filter rows: an index word, then a colour per row */
+struct s_filter_row
+{
+    real index;
+    real unknown04;
+    color3f color;
+    real unknown14[9];
+};
+
+struct s_filter_rows
+{
+    s_filter_row header, first, second, third, fourth;
+};
+
 // @retail 0x26880
 bool __stdcall function_26880(void *context)
 {
@@ -1918,7 +1939,7 @@ bool __stdcall function_26880(void *context)
     if (!g_4b9d9c)
     {
         g_484f68.PSCombinerCount = 0x11004;
-        g_484f68.PSConstant0[0] = pack_color3f((color3f const *)(g_4b9c74[1] + 2));
+        g_484f68.PSConstant0[0] = pack_color3f(&((s_filter_rows const *)&g_4b9c74)->first.color);
 #pragma inline_depth(0)
         g_484f68.PSConstant1[0] = pack_color3f((color3f const *)(g_4b9c74[2] + 2));
         g_484f68.PSConstant0[1] = pack_color3f((color3f const *)(g_4b9c74[3] + 2));
@@ -1934,7 +1955,7 @@ bool __stdcall function_26880(void *context)
     else
     {
         g_484f68.PSCombinerCount = 0x11003;
-        g_484f68.PSConstant0[0] = pack_color3f((color3f const *)(g_4b9c74[1] + 2));
+        g_484f68.PSConstant0[0] = pack_color3f(&((s_filter_rows const *)&g_4b9c74)->first.color);
 #pragma inline_depth(0)
         g_484f68.PSConstant1[0] = pack_color3f((color3f const *)(g_4b9c74[2] + 2));
         g_484f68.PSConstant0[1] = pack_color3f((color3f const *)(g_4b9c74[3] + 2));
@@ -2790,12 +2811,8 @@ void __stdcall function_2a2f0(long tag, real alpha)
             *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
         function_1c710(g_51f0f0);
         long definition_index = tag & 0xffff;
-        long i = 0;
-        dword bitmap_offset = 0;
-        s_2a2f0_record *volatile record = records;
-        for (i = 0; bitmap_offset < 5 * 0x74; ++i, ++record, bitmap_offset += 0x74)
+        for (long i = 0; i < sizeof(records) / sizeof(records[0]); ++i)
         {
-            s_2a2f0_record *line = record;
             byte *definition = g_4e3b44[definition_index].bytes;
             real &height = *(real *)&tag;
             real &width = alpha;
@@ -2803,7 +2820,7 @@ void __stdcall function_2a2f0(long tag, real alpha)
             width = 1.0f;
             if (i < *(long *)(definition + 0x44))
             {
-                byte *bitmap = *(byte **)(definition + 0x48) + bitmap_offset;
+                byte *bitmap = *(byte **)(definition + 0x48) + i * 0x74;
                 real local_62a74a_2 = (real)*(short *)(bitmap + 4);
                 width = 1.0f;
                 if (!(local_62a74a_2 < 1.0f)) width = local_62a74a_2;
@@ -2818,7 +2835,7 @@ void __stdcall function_2a2f0(long tag, real alpha)
             {
                 short index = (short)((short)i % count);
                 selected = NULL;
-                if (definition && index >= 0 && index < count)
+                if (g_4e3b44[definition_index].bytes && index >= 0 && index < count)
                     selected = *(byte **)(definition + 0x48) + index * 0x74;
             }
             if (count > 0 && *(short *)(selected + 0xa) == 0)
@@ -2855,6 +2872,7 @@ void __stdcall function_2a2f0(long tag, real alpha)
             sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
 #pragma inline_depth(0)
             function_1cf50();
+            s_2a2f0_record *line = &records[i];
             real half_height = height * 0.5f;
             real center = 240.0f - ((real)line->y - half_height);
             box2f bounds;
@@ -3240,11 +3258,8 @@ bool __stdcall function_25e50(void *context)
 {
     if (g_48578c == 0.0f)
     {
-        real depth = g_509400;
-        bool filtered = function_3a5c0((byte const *)&g_48574c, g_485778, g_48577c, 1,
-            false, false, false, false, &depth);
-        g_509400 = depth;
-        if (filtered)
+        if (function_3a5c0((byte const *)&g_48574c, g_485778, g_48577c, 1,
+                false, false, false, false, &g_509400))
             return true;
     }
     g_509400 = g_485ae0;
@@ -3283,8 +3298,10 @@ bool __stdcall function_25e50(void *context)
     g_4b8448 = 0; D3DDevice_SetRenderState(D3DRS_CULLMODE, 0);
     g_4b843c = 0; D3DDevice_SetRenderState(D3DRS_STENCILENABLE, 0);
     g_4b8438 = g_48575d ? 0 : 2; D3DDevice_SetRenderState(D3DRS_ZENABLE, g_4b8438);
+#pragma inline_depth(0)
     function_0222d0(D3DRS_ZWRITEENABLE, 0);
     function_0222d0(D3DRS_ZFUNC, g_48575d ? 0x207 : 0x204);
+#pragma inline_depth(255)
     g_4b8450 = 0; D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
     color4f first, second, third;
     first.alpha = clamp_filter_unit((1.0f - g_485868) * g_48578c);
@@ -3301,40 +3318,33 @@ bool __stdcall function_25e50(void *context)
     third.red = clamp_filter_unit(g_4857a8.red);
     third.green = clamp_filter_unit(g_4857a8.green);
     third.blue = clamp_filter_unit(g_4857a8.blue);
-    dword first_pixel = pack_color4f(&first);
-    dword second_pixel = pack_color4f(&second);
-    dword first_alpha_pixel = function_131fc0(first_alpha);
-    dword second_alpha_pixel = function_131fc0(second_alpha);
-    dword third_pixel = pack_color4f(&third);
-    D3DPIXELSHADERDEF program;
-    memset(&program, 0, sizeof(program));
-    dword *fields = (dword *)&program;
+    memset(&g_484f68, 0, sizeof(g_484f68));
+    dword *fields = (dword *)&g_484f68;
     fields[0xd8 / 4] = 0x2621;
     fields[0xdc / 4] = 0x44;
     fields[0xd4 / 4] = 0x11004;
+    fields[0x28 / 4] = pack_color4f(&first);
+    fields[0x48 / 4] = pack_color4f(&second);
     fields[0x88 / 4] = 0x10a021a;
     fields[0xb4 / 4] = 0xcd;
     fields[0x0 / 4] = 0x111a120a;
     fields[0x68 / 4] = 0xcd;
+    fields[0x2c / 4] = function_131fc0(first_alpha);
+    fields[0x4c / 4] = function_131fc0(second_alpha);
     fields[0x6c / 4] = 0xcd;
     fields[0x70 / 4] = 0xcd;
     fields[0x8c / 4] = 0xc3c0d3d;
     fields[0xb8 / 4] = 0xc00;
     fields[0x4 / 4] = 0x110a121a;
     fields[0x8 / 4] = 0x3c3d0820;
+    fields[0x34 / 4] = pack_color4f(&third);
     fields[0x94 / 4] = 0x3d0c1d01;
     fields[0xc0 / 4] = 0xc00;
     fields[0xc / 4] = 0x3d3c1d11;
     fields[0x74 / 4] = 0xc00;
     fields[0x20 / 4] = 0xc;
     fields[0x24 / 4] = 0x1c00;
-    fields[0x28 / 4] = first_pixel;
-    fields[0x48 / 4] = second_pixel;
-    fields[0x2c / 4] = first_alpha_pixel;
-    fields[0x4c / 4] = second_alpha_pixel;
-    fields[0x34 / 4] = third_pixel;
-    g_484f68 = program;
-    function_1ccf0(&program);
+    function_1ccf0(&g_484f68);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
     function_1c710(g_51f0f0);
     return true;
@@ -3355,10 +3365,8 @@ bool __stdcall function_26e50(void *context)
         *(real *)(configuration + 4) = g_4857d8;
         *(color3f *)(configuration + 8) = g_4857bc;
         configuration[0x14] = separate;
-        real depth = g_509400;
         bool filtered = function_3a5c0(configuration, g_4857dc, g_4857e0, 2,
-            false, false, true, false, &depth);
-        g_509400 = depth;
+            false, false, true, false, &g_509400);
         if (filtered)
         {
             function_14f60(1, 19);
@@ -3377,7 +3385,7 @@ bool __stdcall function_26e50(void *context)
         }
     }
     g_509400 = g_485ae0;
-    function_14bc0(separate ? 3 : (short)g_4858b8, 0, false);
+    function_14bc0((short)(separate ? 3 : g_4858b8), 0, false);
     function_14f60(0, 3);
     sampler_state_write(0, D3DTSS_ADDRESSU, 3);
     sampler_state_write(0, D3DTSS_ADDRESSV, 3);
@@ -3417,32 +3425,38 @@ bool __stdcall function_26e50(void *context)
     g_4b8308 = 0x1010101; D3DDevice_SetRenderState(D3DRS_COLORWRITEENABLE, 0x1010101);
     g_4b82e8 = 1; D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
     g_4b82f4 = 0x8001; D3DDevice_SetRenderState(D3DRS_SRCBLEND, 0x8001);
+#pragma inline_depth(0)
     function_0222d0(D3DRS_DESTBLEND, 0x303);
     function_0222d0(D3DRS_BLENDOP, 0x8006);
     function_0222d0(D3DRS_BLENDCOLOR, 0xffffff);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
+#pragma inline_depth(255)
     g_4b8448 = 0; D3DDevice_SetRenderState(D3DRS_CULLMODE, 0);
     g_4b843c = 0; D3DDevice_SetRenderState(D3DRS_STENCILENABLE, 0);
-    g_4b8438 = 0; D3DDevice_SetRenderState(D3DRS_ZENABLE, 0);
+    g_4b8438 = 0;
+#pragma inline_depth(0)
+    D3DDevice_SetRenderState_ZEnable(0);
+#pragma inline_depth(255)
     g_4b8450 = 0; D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
-    real colors[3][4];
-    colors[0][0] = g_4b9c74[1][5] < 0.0f ? 0.0f : (g_4b9c74[1][5] > 1.0f ? 1.0f : g_4b9c74[1][5]);
-    colors[0][1] = g_4b9c74[2][5] < 0.0f ? 0.0f : (g_4b9c74[2][5] > 1.0f ? 1.0f : g_4b9c74[2][5]);
-    colors[0][2] = g_4b9c74[3][5] < 0.0f ? 0.0f : (g_4b9c74[3][5] > 1.0f ? 1.0f : g_4b9c74[3][5]);
-    colors[0][3] = g_4b9c74[4][5] < 0.0f ? 0.0f : (g_4b9c74[4][5] > 1.0f ? 1.0f : g_4b9c74[4][5]);
-    colors[1][0] = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
-    colors[1][1] = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
-    colors[1][2] = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
-    colors[1][3] = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
-    colors[2][0] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
-    colors[2][1] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
-    colors[2][2] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
-    colors[2][3] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
+    color4f first, second, third;
+    first.alpha = g_4b9c74[1][5] < 0.0f ? 0.0f : (g_4b9c74[1][5] > 1.0f ? 1.0f : g_4b9c74[1][5]);
+    first.red = g_4b9c74[2][5] < 0.0f ? 0.0f : (g_4b9c74[2][5] > 1.0f ? 1.0f : g_4b9c74[2][5]);
+    first.green = g_4b9c74[3][5] < 0.0f ? 0.0f : (g_4b9c74[3][5] > 1.0f ? 1.0f : g_4b9c74[3][5]);
+    first.blue = g_4b9c74[4][5] < 0.0f ? 0.0f : (g_4b9c74[4][5] > 1.0f ? 1.0f : g_4b9c74[4][5]);
+    second.alpha = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
+    second.red = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
+    second.green = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
+    second.blue = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
+    third.alpha = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
+    third.red = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
+    third.green = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
+    third.blue = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
     memset(&g_484f68, 0, sizeof(g_484f68));
     dword *fields = (dword *)&g_484f68;
     fields[0xd8 / 4] = 0xa621;
     fields[0xdc / 4] = 0x44;
     fields[0xd4 / 4] = 0x11006;
+    fields[0x28 / 4] = pack_color4f(&first);
     fields[0x0 / 4] = 0x1a20b120;
     fields[0x68 / 4] = 0x10c00;
     fields[0x88 / 4] = 0xa20a120;
@@ -3457,21 +3471,22 @@ bool __stdcall function_26e50(void *context)
     fields[0xbc / 4] = 0x3045;
     fields[0xc / 4] = 0x24251a1a;
     fields[0x74 / 4] = 0x58;
+    fields[0x38 / 4] = pack_color4f(&second);
+    fields[0x58 / 4] = pack_color4f(&third);
     fields[0x10 / 4] = 0x14150000;
     fields[0x78 / 4] = 0xc0;
     fields[0x98 / 4] = 0xa010a02;
     fields[0xc4 / 4] = 0xcd;
     fields[0x9c / 4] = 0x1c0c3c0d;
     fields[0xc8 / 4] = 0xc00;
-    fields[0x28 / 4] = pack_color4f((color4f *)colors[0]);
-    fields[0x38 / 4] = pack_color4f((color4f *)colors[1]);
-    fields[0x58 / 4] = pack_color4f((color4f *)colors[2]);
     if (separate)
     {
+#pragma inline_depth(0)
         function_0222d0(D3DRS_COLORWRITEENABLE, 1);
         function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
+#pragma inline_depth(255)
         fields[0x20 / 4] = 0xc;
-        fields[0x24 / 4] = 1;
+        fields[0x24 / 4] = 0;
     }
     else
     {
