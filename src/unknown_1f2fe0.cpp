@@ -24,10 +24,10 @@ void function_1f2fe0(long actor_index)
 	actor->unknown5d0 = true;
 	if (actor->unknown229)
 	{
-		long object_index = actor->unknown26c;
-		if (object_index == NONE)
-			object_index = actor->unit_index;
-		function_1caa40(object_index, &position);
+		if (actor->unknown26c != NONE)
+			function_1caa40(actor->unknown26c, &position);
+		else
+			function_1caa40(actor->unit_index, &position);
 	}
 	else
 	{
