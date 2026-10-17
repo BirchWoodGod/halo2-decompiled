@@ -18,6 +18,7 @@
 
 #include "unknown_11c920.h"
 #include "globals.h"
+#include "depth_groups_storage.h"
 #include <string.h>
 #include <math.h>
 #include <xtl.h>
@@ -3435,7 +3436,7 @@ void __stdcall function_44ac0(long group, dword selection_mask, long level);
 void function_0494b0(real const *bounds, real const *clip);
 void function_40e90(long mode);
 
-extern long g_4ba134, g_4c19ac;
+extern long g_4ba134;
 
 PRIVATE __forceinline void draw_source_pass_r18(long group, long mode, bool extra_enabled, bool depth, bool normal_cull, long target, bool filter)
 {
