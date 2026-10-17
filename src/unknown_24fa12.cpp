@@ -74,7 +74,7 @@ typedef char session_screen_size_check[sizeof(c_screen_24fd74) == 0x1474 ? 1 : -
 extern bool g_51ec98;
 bool function_199971(void);
 bool function_592f0(void);
-long function_148d30(void);
+long window_manager_get_game_variant_index(void);
 bool function_199e6d(long index);
 void function_19a0af(long value);
 long function_18fa4d(long mode);
@@ -87,9 +87,9 @@ void function_24fbea(c_screen_24fd74 *screen)
 {
 	if (function_199971())
 	{
-		if (function_592f0() && g_51ec98 && function_199e6d(function_148d30()))
+		if (function_592f0() && g_51ec98 && function_199e6d(window_manager_get_game_variant_index()))
 		{
-			function_19a0af(function_148d30());
+			function_19a0af(window_manager_get_game_variant_index());
 			if (!function_19a78e(function_18fa4d(0), 3, 3))
 				function_236299(2);
 		}

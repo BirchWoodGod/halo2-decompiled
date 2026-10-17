@@ -6,7 +6,7 @@
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_1c62f0.h"
-#include "unknown_123680.h"
+#include "animation_cache.h"
 #include "unknown_1cafc0.h"
 #include "unknown_11cb00.h"
 #include <math.h>
@@ -524,7 +524,7 @@ PRIVATE __forceinline void graph_weapon_type_request(s_graph_tag *graph, long mo
 
 			if (resource->streamed)
 			{
-				function_1236f0(resource, true);
+				animation_cache_request_resource(resource, true);
 			}
 		}
 	}

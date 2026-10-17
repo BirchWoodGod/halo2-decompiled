@@ -1,11 +1,12 @@
 // @flags /O2 /arch:SSE /Gr
-/* UNKNOWN_123110.CPP: an MMX exclusive-or checksum of a buffer, 8 bytes at a
+/* CHECKSUM_MMX.CPP: an MMX exclusive-or checksum of a buffer, 8 bytes at a
    time (written in assembly, as retail's prefetchnta and MMX code shows). */
 
 #include "unknown_11c920.h"
 
 #pragma warning(disable: 4035)
 
+/* the exclusive-or of a buffer's 8-byte words, folded to 32 bits */
 // @retail 0x123110
 dword __stdcall checksum_buffer_mmx(void const *buffer, dword buffer_size)
 {

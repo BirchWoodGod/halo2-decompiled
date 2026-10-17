@@ -7560,7 +7560,7 @@ void global_preferences_initialize();
 void function_120a90();
 void function_121fc0();
 void function_2136c0();
-void function_123180();
+void animation_cache_initialize();
 void function_123b30();
 void function_12560();
 bool function_1248b0();
@@ -7580,7 +7580,7 @@ bool function_12000()
     global_preferences_initialize();
     function_121fc0();
     function_2136c0();
-    function_123180();
+    animation_cache_initialize();
     function_123b30();
     function_12560();
     if (g_5093b0)
@@ -7609,7 +7609,7 @@ void function_12080()
     function_125600();
     function_124920();
     function_141c0();
-    function_123310();
+    animation_cache_dispose();
     function_141190();
     function_140aa0();
     memset(&g_4e2920, 0, 0x1220);
@@ -7764,7 +7764,7 @@ extern bool g_5020d8;
 void game_state_cache_files_close();
 void function_125600();
 void function_124920();
-void function_123310();
+void animation_cache_dispose();
 void font_cache_pixels_dispose();
 void font_cache_dispose();
 HANDLE g_4e0354, g_4e0358, g_4e035c, g_4e0360;
@@ -7781,7 +7781,7 @@ void function_12080()
     function_125600();
     function_124920();
     function_141c0();
-    function_123310();
+    animation_cache_dispose();
     font_cache_pixels_dispose();
     font_cache_dispose();
     memset(&g_4e2920, 0, 0x1220);

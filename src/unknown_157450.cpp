@@ -5359,8 +5359,8 @@ void function_11be40(void);
 void function_11cc10(void);
 void function_123b30(void);
 void function_123bf0(void);
-void arena_initialize_for_new_map(void);
-void arena_initialize_for_new_structure_bsp(void);
+void game_state_map_begin(void);
+void game_state_bsp_begin(void);
 void function_1253d0(void);
 void function_125600(void);
 void function_125690(void);
@@ -5510,7 +5510,7 @@ s_subsystem_440dd8 const g_440dd8[68] =
     { level_handle_tables_initialize, level_handle_tables_dispose, function_19c190, function_19c1d0, NULL, NULL, NULL, NULL, NULL },
     { function_131ff0, function_1320b0, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { function_225700, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { function_123b30, function_123bf0, arena_initialize_for_new_map, function_175f40, arena_initialize_for_new_structure_bsp, function_175f40, NULL, NULL, NULL },
+    { function_123b30, function_123bf0, game_state_map_begin, function_175f40, game_state_bsp_begin, function_175f40, NULL, NULL, NULL },
     { game_time_globals_allocate, function_175f40, game_time_globals_initialize, game_time_stop, NULL, NULL, NULL, NULL, NULL },
     { function_1df460, function_175f40, function_1df4b0, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_14b4b0, function_14b560, function_14b580, function_14b600, function_175f40, function_175f40, NULL, NULL, NULL },
