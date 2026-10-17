@@ -15,8 +15,8 @@
 #include <xmmintrin.h>
 
 
-/* the codecs' channel decoders (animation_codecs.cpp,
-   animation_keyframe_codecs.cpp, unknown_2c4d60.cpp) */
+/* the codecs' channel decoders (animation_channel_decoders.cpp,
+   animation_keyframe_decoders.cpp, unknown_2c4d60.cpp) */
 void animation_codec_static_rotation_sample(void);
 void animation_codec_static_translation_sample(void);
 void animation_codec_static_scale_sample(void);

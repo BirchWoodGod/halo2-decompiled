@@ -2,18 +2,18 @@
 #include <xmmintrin.h>
 #include "globals.h"
 #include "unknown_xd56787.h"
-#include "animation_codecs.h"
+#include "animation_channel_decoders.h"
 
 // @flags /O2 /Gr /arch:SSE
 
-/* ANIMATION_CODECS.CPP: the channel decoders of the per-frame animation
+/* ANIMATION_CHANNEL_DECODERS.CPP: the channel decoders of the per-frame animation
    codecs (g_47fb18): each one reads the rotation, translation or scale of
    the current node (node indices g_5044b4, g_5044b8 and g_5044bc) out of
    g_sampling_settings.field_30 and writes it to *g_5044c0. The first decoder
    set of a codec samples g_sampling_settings.frame_index; the second blends
    toward next_frame_index by frame_fraction. The interpolating decoders of
    the byte keyframe codecs live here too; their other decoders are in
-   src/animation_keyframe_codecs.cpp. */
+   src/animation_keyframe_decoders.cpp. */
 
 /* _uncompressed_static_data_codec: one quantized rotation per node */
 // @retail 0x28c470

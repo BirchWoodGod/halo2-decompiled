@@ -1,11 +1,11 @@
-/* ANIMATION_CODECS.H: the layouts of an animation's codec data, as the
-   codecs' channel decoders (src/animation_codecs.cpp and
-   src/animation_keyframe_codecs.cpp) read it through
+/* ANIMATION_CHANNEL_DECODERS.H: the layouts of an animation's codec data, as the
+   codecs' channel decoders (src/animation_channel_decoders.cpp and
+   src/animation_keyframe_decoders.cpp) read it through
    g_sampling_settings.field_30. The first byte picks the codec in g_47fb18;
    every other offset is in bytes from the start of the data. */
 
-#ifndef ANIMATION_CODECS_H
-#define ANIMATION_CODECS_H
+#ifndef ANIMATION_CHANNEL_DECODERS_H
+#define ANIMATION_CHANNEL_DECODERS_H
 
 #include <stddef.h>
 #include "unknown_11c920.h"

@@ -2,16 +2,16 @@
 #include <xmmintrin.h>
 #include "globals.h"
 #include "unknown_xd56787.h"
-#include "animation_codecs.h"
+#include "animation_channel_decoders.h"
 // @flags /O2 /arch:SSE /Gr
 
-/* ANIMATION_KEYFRAME_CODECS.CPP: the channel decoders of the keyframe
+/* ANIMATION_KEYFRAME_DECODERS.CPP: the channel decoders of the keyframe
    animation codecs (byte_keyframe_lightly_quantized, word_keyframe_lightly_
    quantized and their reverse forms). Each channel of a node keeps a sorted
    run of frame numbers (bytes or words) with its keys beside them; the
    decoder finds the last key at or before the frame by binary search and
    blends it toward the next key. The byte codecs decode the interpolated
-   form in src/animation_codecs.cpp. */
+   form in src/animation_channel_decoders.cpp. */
 
 // @retail 0x28d170
 char __stdcall function_28d170(

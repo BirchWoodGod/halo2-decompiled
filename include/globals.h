@@ -427,8 +427,8 @@ extern vector3f *g_4687a4;
 extern dword g_4ba014;
 
 /* the animation sampling state, shared by the samplers and the codecs' channel
-   decoders (src/animation_codecs.cpp, src/animation_keyframe_codecs.cpp; the
-   data layouts are in animation_codecs.h): g_5044b4, g_5044b8 and g_5044bc
+   decoders (src/animation_channel_decoders.cpp, src/animation_keyframe_decoders.cpp; the
+   data layouts are in animation_channel_decoders.h): g_5044b4, g_5044b8 and g_5044bc
    index the current rotation, translation and scale channel, and the
    decoders write the node to *g_5044c0 */
 struct s_animation_data;
