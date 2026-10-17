@@ -998,26 +998,45 @@ bool c_projectile_effect_event::v11(long a, long const *entities, long c, void c
 
 void game_engine_boot_player(long player_index);
 
+/* the datum index of the player at an absolute index; false when the index
+   is out of range or that player slot is free */
+static inline bool event_absolute_player_to_datum_index(long index, long *player_index)
+{
+ if (index == NONE || index < 0 || index >= g_4e8c24->high_water_index)
+  return false;
+ byte *player = g_4e8c24->data + g_4e8c24->size * index;
+ if (!*(short *)player)
+  return false;
+ *player_index = (*(short *)player << 16) | index;
+ return true;
+}
+
+/* the datum at an absolute index, or null when the index is out of range or
+   the datum is free (the same test as datum_get_absolute in unknown_16b570.cpp,
+   which retail inlines here) */
+static inline byte *event_used_datum_at(s_record_pool *data, long index)
+{
+ byte *result = 0;
+ if (index != NONE && index >= 0 && index < data->high_water_index)
+ {
+  byte *datum = data->data + data->size * index;
+  if (*(short *)datum != 0)
+   result = datum;
+ }
+ return result;
+}
+
 // @retail 0xa5850
 bool c_game_engine_request_boot_player_event::v11(long a, long const *entities, long c, void const *data)
 {
- long const *volatile values = (long const *)data;
- volatile bool result = false;
- long first = values[0];
- if (first != NONE && first >= 0 && first < g_4e8c24->high_water_index)
+ long const *values = (long const *)data;
+ bool result = false;
+ long player_index;
+ if (event_absolute_player_to_datum_index(values[0], &player_index) &&
+  event_used_datum_at(g_4e8c24, values[1]))
  {
-  short salt = *(short *)(g_4e8c24->data + g_4e8c24->size * first);
-  if (salt)
-  {
-   long identifier = data_datum_index(g_4e8c24, first);
-   long second = values[1];
-   if (second != NONE && second >= 0 && second < g_4e8c24->high_water_index &&
-    *(short *)(g_4e8c24->data + g_4e8c24->size * second))
-   {
-    game_engine_boot_player(identifier);
-    result = true;
-   }
-  }
+  game_engine_boot_player(player_index);
+  result = true;
  }
  return result;
 }
@@ -1074,9 +1093,8 @@ bool c_game_engine_event::v11(long a, long const *entities, long c, void const *
    {
     if (index < 0 || index >= g_4e8c24->high_water_index) return false;
     byte *player = g_4e8c24->data + g_4e8c24->size * index;
-    short salt = *(short *)player;
-    if (!salt) return false;
-    *identifier = ((long)salt << 16) | (index & 0xffff);
+    if (!*(short *)player) return false;
+    *identifier = (*(short *)player << 16) | index;
    }
    return true;
   }
