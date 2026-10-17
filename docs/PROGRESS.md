@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-17: 8986 functions match
+
+```
+matched 8986 of 11321 game functions (1254702 of 2784283 bytes, 45.06%)
+```
+
+1 new matches, none lost:
+- @BirchWoodGod's #540: `0x22d2ee` match.
+
 ## 2026-10-17: 8985 functions match
 
 ```
