@@ -403,6 +403,8 @@ void function_2bdd70(point3f *out, s_spline_2bd *spline, long n, point3f *points
 void function_2bde90(real t, point3f *out, point3f *points)
 {
 	point3f *volatile output = out;
+	real t2 = t * t;
+	real t3 = t2 * t;
 	real m[4][4] =
 	{
 		{ -1.0f, 3.0f, -3.0f, 1.0f },
@@ -410,8 +412,6 @@ void function_2bde90(real t, point3f *out, point3f *points)
 		{ -3.0f, 3.0f, 0.0f, 0.0f },
 		{ 1.0f, 0.0f, 0.0f, 0.0f }
 	};
-	real t2 = t * t;
-	real t3 = t2 * t;
 	real r[4];
 	long i = 0;
 
