@@ -380,7 +380,7 @@ struct s_1d9240;
 void function_1d9240(s_1d9240 *slot, char flag, real seconds);
 bool function_1d9320(s_1d9240 *slot);
 
-void function_1d90e0(long render_model_index, transform4x3f *nodes, long node_index, transform4x3f const *marker_matrix,
+void function_1d90e0(long render_model_index, long node_index, transform4x3f *nodes, transform4x3f const *marker_matrix,
 	transform4x3f const *target_matrix, real weight, long node_count);
 
 // @retail 0x113980
@@ -428,7 +428,7 @@ void __stdcall function_113980(long object_index, long target_index, bool altern
 						!(visited[marker.node_index >> 5] & (1 << (marker.node_index & 31))) &&
 						function_b8d30(target_index, iterator->b, &target, 1, false))
 					{
-						function_1d90e0(*(long *)(model + 4), nodes, marker.node_index, &marker.node_matrix,
+						function_1d90e0(*(long *)(model + 4), marker.node_index, nodes, &marker.node_matrix,
 							&target.matrix, weight, node_count);
 						visited[marker.node_index >> 5] |= 1 << (marker.node_index & 31);
 					}
