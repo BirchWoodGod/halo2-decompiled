@@ -109,7 +109,7 @@ void function_1fb510(void);
 void function_20b660(void);
 void function_15c150();
 void function_195ed0(void);
-void function_209310(void);
+void hs_scheduler_update(void);
 void game_clusters_update(void);
 void function_b6f10();
 void function_1c3d30();
@@ -141,7 +141,7 @@ static __forceinline void game_loop_tick_update(s_simulation_block_data *block)
 	function_20b660();
 	function_15c150();
 	function_195ed0();
-	function_209310();
+	hs_scheduler_update();
 	game_clusters_update();
 	function_b6f10();
 	function_1c3d30();
@@ -509,8 +509,8 @@ bool function_138fa0(long type)
 
 	return result;
 }
-long __stdcall function_209f00(char const *name);
-void __stdcall function_209c80(long index);
+long __stdcall hs_thread_for_script_name(char const *name);
+void __stdcall hs_thread_wake(long index);
 
 /* reads the script name on the third line of d:\launch.txt and wakes that
    script's thread */
@@ -532,10 +532,10 @@ void game_launch_file_wake_script(void)
 			{
 				*end = 0;
 			}
-			index = function_209f00(name);
+			index = hs_thread_for_script_name(name);
 			if (index != NONE)
 			{
-				function_209c80(index);
+				hs_thread_wake(index);
 			}
 		}
 		fclose(file);
