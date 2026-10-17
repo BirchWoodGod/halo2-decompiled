@@ -42,9 +42,9 @@ void __stdcall function_bc300(long index);
 bool function_bc380(long index, long field, long size, long alignment);
 bool function_bf9a0(long index, long *render_model, long *second_index);
 void function_b8b70(long index);
-bool function_108a90(long index, long placement, long failed);
-void function_108b80(long index);
-void function_108bf0(long index);
+bool object_dispatch_create(long index, long placement, long failed);
+void object_dispatch_finish_creation(long index);
+void object_dispatch_remove(long index);
 void function_ba540(long index, string_handle name);
 void __stdcall function_ba590(long index, dword mask);
 void __stdcall function_be240(long index, dword colors, color3f const *values);
@@ -57,7 +57,7 @@ void function_be690(long index);
 long function_176780(long index, s_effect_owner const *owner, real scale_a,
     long tag, real scale_b, point3f const *point, vector3f const *direction);
 void function_2e1e0(long index);
-void function_109390(long index);
+void object_list_insert(long index);
 long function_b8820();
 bool havok_object_type_can_have_component(long tag);
 
@@ -197,9 +197,9 @@ long __stdcall function_b7b40(void *creation)
     else object[0xb3] = 0;
     if (*(long *)(definition + 0x94) > 0)
         memset(object + *(short *)(object + 0x11e), 0xff, (*(short *)(object + 0x11c) >> 3) << 3);
-    if (!function_108a90(result, (long)placement, (long)&failed))
+    if (!object_dispatch_create(result, (long)placement, (long)&failed))
     {
-        function_108bf0(result);
+        object_dispatch_remove(result);
         goto fail_allocation;
     }
     object = (byte *)OBJECT_GET(result);
@@ -232,13 +232,13 @@ long __stdcall function_b7b40(void *creation)
         else object[0xc0] &= ~2;
         function_b8890(result);
         function_be690(result);
-        function_108b80(result);
+        object_dispatch_finish_creation(result);
         long effect = *(long *)(definition + 0x50);
         if (effect != NONE) function_176780(result, (s_effect_owner const *)(placement + 0x68), 0.0f, effect, 0.0f, 0, 0);
         function_2e1e0(result);
         if (hidden) *(dword *)(object + 4) |= 0x20000;
         else *(dword *)(object + 4) &= ~0x20000;
-        function_109390(result);
+        object_list_insert(result);
         if ((*(dword *)(object + 4) & 0x20000) && !(header->flags & 1) && function_b8820() &&
             !(placement[0x18] & 2) && (!(placement[0x18] & 4) || *(short *)(object + 0x2c) != NONE))
             function_b8540(result);
