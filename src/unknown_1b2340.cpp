@@ -181,13 +181,13 @@ bool __stdcall function_1b2770(long actor_index, s_slot *slot)
 	type = view->unknown70;
 	if (type == 0)
 	{
-		s_prop_state_view *prop_state = prop_node_state(node);
+		s_prop_state_view *prop_entry = prop_node_state(node);
 		vector3f *direction = (vector3f *)((byte *)view + 0x94);
 		s_sector_trace_result trace;
 
 		if ((real)sqrt(direction->i * direction->i + direction->j * direction->j + direction->k * direction->k) > 0.0f &&
-			(function_26c590((s_pathfinding_data const *)function_1fa7f0(), &prop_state->unknown48.point,
-				*(long *)((byte *)prop_state + 0x44), NONE, direction, 1.8f, NULL, (s_path_trace_result *)&trace),
+			(function_26c590((s_pathfinding_data const *)function_1fa7f0(), &prop_entry->unknown48.point,
+				*(long *)((byte *)prop_entry + 0x44), NONE, direction, 1.8f, NULL, (s_path_trace_result *)&trace),
 				!trace.blocked || trace.distance > 0.3f))
 		{
 			real distance = trace.distance;
@@ -195,16 +195,16 @@ bool __stdcall function_1b2770(long actor_index, s_slot *slot)
 			if (distance > 1.5f)
 				distance = 1.5f;
 			distance -= 0.3f;
-			target.point.x = direction->i * distance + prop_state->unknown48.point.x;
-			target.point.y = direction->j * distance + prop_state->unknown48.point.y;
-			target.point.z = direction->k * distance + prop_state->unknown48.point.z;
-			target.output_index = prop_state->unknown48.output_index;
+			target.point.x = direction->i * distance + prop_entry->unknown48.point.x;
+			target.point.y = direction->j * distance + prop_entry->unknown48.point.y;
+			target.point.z = direction->k * distance + prop_entry->unknown48.point.z;
+			target.output_index = prop_entry->unknown48.output_index;
 			result = function_1f4460(actor_index, &target, trace.sector_index, NONE, false);
 		}
 		else
 		{
 			result = function_1f4810(actor_index, actor->prop_index, 0.7f, false);
-			target = prop_state->unknown48;
+			target = prop_entry->unknown48;
 		}
 		actor->unknown4cc = 0.7f;
 	}
