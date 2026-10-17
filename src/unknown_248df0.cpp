@@ -72,12 +72,12 @@ PRIVATE __forceinline real function_248df1(long arg_0, void *arg_1, void const *
 		break;
 	case 9:
 		if (local_2->effect_index != NONE)
-			local_0 = ((s_effect_datum *)g_4ea93c->data)[local_2->effect_index & 0xffff].scale_a;
-		break;
+			return ((s_effect_datum *)g_4ea93c->data)[local_2->effect_index & 0xffff].scale_a;
+		return 0.f;
 	case 10:
 		if (local_2->effect_index != NONE)
-			local_0 = ((s_effect_datum *)g_4ea93c->data)[local_2->effect_index & 0xffff].scale_b;
-		break;
+			return ((s_effect_datum *)g_4ea93c->data)[local_2->effect_index & 0xffff].scale_b;
+		return 0.f;
 	case 11:
 		if (local_1) local_0 = function_248ef0(&local_1->field_38);
 		break;
