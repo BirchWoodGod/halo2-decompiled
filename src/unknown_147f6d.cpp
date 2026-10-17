@@ -1544,8 +1544,8 @@ void function_199893();
 void window_manager_update_online();
 void function_18f62b();
 void function_199b08();
-bool function_223976();
-void function_223a21();
+bool attract_movie_due();
+void attract_mode_play_movie();
 bool window_manager_main_menu_focused();
 struct s_main_menu_music;
 void main_menu_music_update(s_main_menu_music *music);
@@ -1586,9 +1586,9 @@ void __stdcall function_1479c3(real elapsed)
         function_1483c3(0);
     }
     function_1482c4();
-    if (function_223976())
+    if (attract_movie_due())
     {
-        function_223a21();
+        attract_mode_play_movie();
     }
     main_menu_music_update((s_main_menu_music *)&g_54d598.main_menu_music);
     if (game_loop_running() && g_4e6948->state == 3 && window_manager_main_menu_focused())
