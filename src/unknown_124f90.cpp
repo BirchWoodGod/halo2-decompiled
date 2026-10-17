@@ -1164,26 +1164,28 @@ long sound_definition_rate_limited(long definition_index, long *stage_index)
 // @retail 0x127f10
 bool sound_playback_update_source(long sound_index, s_sound_source_callbacks const *source, s_sound_playback_flags *flags)
 {
-	bool local_1 = true;
-	s_sound_playback_flags *const volatile *local_0 = &flags;
 	s_sound_playback *sound = SOUND_PLAYBACK_GET(sound_index);
 	long definition_index = sound->definition_index;
+	bool result = true;
 	s_sound_definition *definition = sound_definition_get(definition_index);
 
 	if (source)
 	{
 		if (source->update(sound->object_index, definition_index, &sound->marker, &sound->location))
-			return local_1;
+			return true;
 		if (!((1 << SOUND_PLAYBACK_GET(sound_index)->state) & 0x1e) &&
 			!function_124f90((s_sound const *)function_221810(definition->promotion_index)))
 		{
-			(*local_0)->source_updated = true;
-			return local_1;
+			result = true;
+			flags->source_updated = true;
 		}
-		(*local_0)->source_updated = true;
-		local_1 = false;
+		else
+		{
+			result = false;
+			flags->source_updated = true;
+		}
 	}
-	return local_1;
+	return result;
 }
 static __forceinline bool function_127fc1(long arg_0, s_sound_playback *arg_1, s_sound_playback_flags *arg_2)
 {
