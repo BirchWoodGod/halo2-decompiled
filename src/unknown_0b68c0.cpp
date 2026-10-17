@@ -429,7 +429,7 @@ void function_15b220(long object_index, long index);
 void __stdcall object_list_erase(long object_index);
 void function_bb950(long object_index, bool add, long delta);
 void function_a7a60(long object_index);
-void function_10ace0(long object_index);
+void object_interpolated_values_clear_all(long object_index);
 
 void function_1ca130(long unit_index, long priority, long value);
 

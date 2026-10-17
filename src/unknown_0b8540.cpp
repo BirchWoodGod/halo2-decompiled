@@ -42,7 +42,7 @@ void function_15b220(long object_index, long index);
 void __stdcall object_list_erase(long object_index);
 void function_bb950(long object_index, bool add, long delta);
 void function_a7a60(long index);
-void function_10ace0(long object_index);
+void object_interpolated_values_clear_all(long object_index);
 
 static inline void object_identifier_clear(s_object_hide_identifier *identifier)
 {
@@ -72,6 +72,6 @@ void __stdcall function_b8540(long object_index)
 	object_list_erase(object_index);
 	function_bb950(object_index, false, -1);
 	function_a7a60(object_index);
-	function_10ace0(object_index);
+	object_interpolated_values_clear_all(object_index);
 }
 #endif

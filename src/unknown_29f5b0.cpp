@@ -18,7 +18,8 @@
 #include "unknown_11a4d0.h"
 #include "scenario_ramps.h"
 #include "unknown_0bbf40.h"
-#include "unknown_10aca0.h"
+#include "object_script_values.h"
+#include "unit_animation_access.h"
 #include "command_scripts.h"
 #include "unknown_276f80.h"
 #include "unknown_1dee50.h"
@@ -1820,7 +1821,7 @@ s_type_f4462a const g_44b4e4 = { _hs_type_void, 0, function_2a1720, NULL, 4, { _
 inline void unit_function_10e9a0(long unit_index, long name, real value, real time)
 {
 	if (unit_index != NONE)
-		function_10e9a0(unit_index, name, value, time);
+		unit_animation_channel_blend_set_by_name(unit_index, name, value, time);
 }
 
 /* 61: void (object, string_handle) */
@@ -1831,7 +1832,7 @@ void __stdcall function_2a1770(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10aca0(arguments[0], arguments[1]);
+		object_interpolated_value_clear(arguments[0], arguments[1]);
 		hs_thread_return_value(thread_index, 0);
 	}
 }
@@ -1846,14 +1847,14 @@ void __stdcall function_2a17c0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10ace0(arguments[0]);
+		object_interpolated_values_clear_all(arguments[0]);
 		hs_thread_return_value(thread_index, 0);
 	}
 }
 
 s_type_f4462a const g_44b510 = { _hs_type_void, 0, function_2a17c0, NULL, 1, { _hs_type_object } };
 
-void function_10ad40(long object_index, bool flag);
+void object_physics_flag_set(long object_index, bool flag);
 /* 63: void (object, boolean) */
 // @retail 0x2a1800
 void __stdcall function_2a1800(short function_index, long thread_index, bool initialize)
@@ -1862,7 +1863,7 @@ void __stdcall function_2a1800(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10ad40(arguments[0], *(bool *)&arguments[1]);
+		object_physics_flag_set(arguments[0], *(bool *)&arguments[1]);
 		hs_thread_return_value(thread_index, 0);
 	}
 }
@@ -2019,7 +2020,7 @@ void __stdcall function_2a1b00(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10ad90(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
+		object_fade_start(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
 		hs_thread_return_value(thread_index, 0);
 	}
 }
@@ -2065,7 +2066,7 @@ void __stdcall function_2a1bd0(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44b5ec = { _hs_type_object, 0, function_2a1bd0, NULL, 1, { _hs_type_object } };
 
-long function_10ae60(long object_index, long marker_name);
+long object_find_child_at_marker(long object_index, long marker_name);
 void function_10af20(long object_index, long marker_name, long other_object_index, long other_marker_name);
 
 /* 74: void (object, string_handle, object, string_handle) */
@@ -2091,7 +2092,7 @@ void __stdcall function_2a1c80(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		hs_thread_return_value(thread_index, function_10ae60(arguments[0], arguments[1]));
+		hs_thread_return_value(thread_index, object_find_child_at_marker(arguments[0], arguments[1]));
 	}
 }
 
