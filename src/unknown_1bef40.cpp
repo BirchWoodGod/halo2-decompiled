@@ -167,9 +167,9 @@ bool __stdcall function_1befd0(long actor_index, s_slot *slot)
 // @retail 0x1bf230
 bool __stdcall function_1bf230(long actor_index, s_slot *slot)
 {
+	bool result = true;
 	s_actor_view *actor = actor_get(actor_index);
 	s_slot_0a *state = (s_slot_0a *)slot;
-	bool result = true;
 
 	if (!REFERENCE_EQUAL(state->reference, g_470fa0) && actor->unknown5b4 > 0)
 		state->reference = g_470fa0;
@@ -195,11 +195,12 @@ bool __stdcall function_1bf230(long actor_index, s_slot *slot)
 			state->reference = function_2605d0(actor_index, &request, 0, (long)&other_index, scratch, &unknown);
 			ai_scratch_buffer_release(scratch);
 			if (REFERENCE_EQUAL(state->reference, g_470fa0))
-				return result;
+				goto done;
 		}
 		state->reference = function_2626b0(actor_index, state->reference, other_index, NULL, false, true);
-		return !REFERENCE_EQUAL(state->reference, g_470fa0);
+		result = !REFERENCE_EQUAL(state->reference, g_470fa0);
 	}
+done:
 	return result;
 }
 
