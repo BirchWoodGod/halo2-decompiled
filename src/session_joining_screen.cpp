@@ -107,7 +107,7 @@ void c_session_joining_screen::v3()
 		if (function_68290())
 		{
 			c_text_widget_45a5e0 *text = (c_text_widget_45a5e0 *)find_child(6, 1, false);
-			c_class_2b01eb *progress_bar = (c_class_2b01eb *)find_child(8, 0, false);
+			c_class_2b01eb *join_progress = (c_class_2b01eb *)find_child(8, 0, false);
 			long string_handle = 0;
 			real progress = 0.0f;
 
@@ -116,9 +116,9 @@ void c_session_joining_screen::v3()
 			{
 				text->function_253b1a(string_handle);
 			}
-			if (progress_bar)
+			if (join_progress)
 			{
-				progress_bar->value84 = progress;
+				join_progress->value84 = progress;
 			}
 		}
 		else
