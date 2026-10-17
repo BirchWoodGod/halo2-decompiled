@@ -6600,8 +6600,10 @@ void function_c7840(vector3f const *desired, vector3f *current, transform4x3f co
 	function_c7300(yaw_offset, yaw_speed, max_speed, acceleration, &yaw_motion);
 	function_c7300(pitch_offset, pitch_speed, max_speed, acceleration, &pitch_motion);
 	function_c75d0(&yaw_motion, &pitch_motion, acceleration);
+#pragma inline_depth(0)
 	bool yaw_done = function_c7750(&yaw_motion, yaw_offset, yaw_speed, rate, &yaw_speed, &yaw_offset);
 	bool pitch_done = function_c7750(&pitch_motion, pitch_offset, pitch_speed, rate, &pitch_speed, &pitch_offset);
+#pragma inline_depth()
 	if (yaw_done && pitch_done)
 	{
 		*current = target;
