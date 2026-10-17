@@ -1479,7 +1479,7 @@ void function_19ae0f(long change, long pending, long error)
 	}
 }
 
-bool function_138800();
+bool game_loop_running();
 
 /* which of the network menus a screen belongs to */
 // @retail 0x19b0e1
@@ -1487,7 +1487,7 @@ long function_19b0e1(long screen_id)
 {
 	long result = 0;
 
-	if (function_138800() && g_4e6948->state != 3)
+	if (game_loop_running() && g_4e6948->state != 3)
 	{
 		result = 4;
 	}
@@ -1579,7 +1579,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 	}
 	else if (!state || state == menu)
 	{
-		if (screen_id != 9 && screen_id != 0x1e && function_138800() && g_4e6948->state == 3 && !player_slot_count_active())
+		if (screen_id != 9 && screen_id != 0x1e && game_loop_running() && g_4e6948->state == 3 && !player_slot_count_active())
 		{
 			function_18f1c0(0);
 		}

@@ -1909,8 +1909,8 @@ long voice_player_settings_get_active_value(s_voice_player_settings *settings, l
 	return result;
 }
 
-/* src/unknown_138800_2.cpp, src/unknown_067e10.cpp */
-bool function_138800();
+/* src/game_loop_status.cpp, src/unknown_067e10.cpp */
+bool game_loop_running();
 bool function_68250(void);
 
 /* chooses the voice mode from the session manager's state */
@@ -1923,7 +1923,7 @@ void voice_update_mode(void)
 	switch (state)
 	{
 	case 3:
-		if (!function_138800() || !function_68250())
+		if (!game_loop_running() || !function_68250())
 		{
 			g_4c9878.mode = 2;
 			break;
@@ -1940,7 +1940,7 @@ local_0:
 		g_4c9878.mode = 2;
 		break;
 	case 8:
-		if (function_138800() && function_68250())
+		if (game_loop_running() && function_68250())
 		{
 			goto local_0;
 		}

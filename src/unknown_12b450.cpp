@@ -39,9 +39,9 @@ void function_59940(void);
 bool function_68250(void);
 void function_146660(real seconds, real *elapsed, long *ticks_due);
 void __stdcall function_1870a0(real arg_0, real arg_1);
-void function_137f70(long arg_1, real *arg_2);
+void game_loop_run_ticks(long arg_1, real *arg_2);
 void function_8dfc0(void);
-void function_137ed0(real arg_1);
+void game_loop_frame_update(real arg_1);
 void function_1554b0(real elapsed);
 void __stdcall function_16f280(real dt);
 void function_222a70(real seconds);
@@ -133,9 +133,9 @@ void function_12b450(void)
 		{
 			function_146660(seconds, &elapsed, &ticks);
 			function_1870a0(seconds, elapsed);
-			function_137f70(ticks, &elapsed);
+			game_loop_run_ticks(ticks, &elapsed);
 			function_8dfc0();
-			function_137ed0(elapsed);
+			game_loop_frame_update(elapsed);
 			function_1554b0(seconds);
 			function_16f280(seconds);
 			function_222a70(seconds);

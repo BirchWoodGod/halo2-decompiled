@@ -111,22 +111,32 @@ struct s_game_options_view
 	byte flag1120;
 	bool flag1121;
 	byte unknown1122[2];
-	long ticks1124;
+	long revert_ticks_left;
 	bool flag1128;
-	bool flag1129;
+	bool finish_sound_faded;
 	byte unknown112a[2];
-	long ticks112c;
+	long finish_ticks_left;
 	long value1130;
-	byte unknown1134[0x11f8 - 0x1134];
+	byte unknown1134[4];
+	/* the cluster masks game_clusters_update (game_loop.cpp) keeps: the clusters
+	   every player sees, those the local players see, and the first with
+	   the actors' clusters and the focus cluster's view added */
+	dword visible_clusters[16];
+	dword locally_visible_clusters[16];
+	dword active_clusters[16];
 	bool flag11f8;
 	byte unknown11f9;
 	short value11fa;
 	union
 	{
 		long value11fc;
-		short cluster11fc;
+		short focus_cluster_index;
 	};
 };
+typedef char assert_game_options_view_revert_ticks[((long)&((s_game_options_view *)0)->revert_ticks_left == 0x1124) ? 1 : -1];
+typedef char assert_game_options_view_visible_clusters[((long)&((s_game_options_view *)0)->visible_clusters == 0x1138) ? 1 : -1];
+typedef char assert_game_options_view_active_clusters[((long)&((s_game_options_view *)0)->active_clusters == 0x11b8) ? 1 : -1];
+typedef char assert_game_options_view_flag11f8[((long)&((s_game_options_view *)0)->flag11f8 == 0x11f8) ? 1 : -1];
 
 extern s_game_options_view *g_4e6948;
 

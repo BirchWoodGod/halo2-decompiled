@@ -282,17 +282,17 @@ bool c_session_state_in_game::update()
 			}
 			if (a->function_058d20())
 			{
-				if (function_138a10())
+				if (game_finish_countdown_done())
 				{
 					network_session_set_mode(a, 5);
 					result = true;
 				}
 				else if (a->get_value_49c4())
 				{
-					function_1388e0();
+					game_finish();
 				}
 			}
-			if (function_138800())
+			if (game_loop_running())
 			{
 				s_game_options_view *options = g_4e6948;
 				if (options->id_a == id_a && options->id_b == id_b)
@@ -374,7 +374,7 @@ bool c_session_state_in_match::update()
 				result = true;
 				goto local_0;
 			}
-			if (function_138a10() && b->function_058d20())
+			if (game_finish_countdown_done() && b->function_058d20())
 			{
 				network_session_set_mode(b, 5);
 				result = true;

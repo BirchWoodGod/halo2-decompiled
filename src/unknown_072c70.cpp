@@ -121,7 +121,7 @@ long function_23f260(long, long, long);
 void function_1523c0();
 void function_196780();
 void function_15cba0(long mode);
-void function_1389c0();
+void game_finish_countdown_start();
 long player_find_unit_item_of_type(long, long);
 struct s_team_entry;
 s_team_entry *function_15e410(short team);
@@ -520,7 +520,7 @@ bool c_game_engine::v13(byte mask, s_engine_settings *settings)
 		}
 	}
 	if (mask & 4)
-		function_1389c0();
+		game_finish_countdown_start();
 	if (mask & 8)
 		g->w6e = settings->w1e;
 	if (mask & 0x10)
