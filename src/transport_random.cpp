@@ -1,6 +1,7 @@
 #include "unknown_4cf790.h"
 // @flags /O2 /Ob1 /Gr
-/* UNKNOWN_07AD80.CPP: network random bytes and address helpers */
+/* TRANSPORT_RANDOM.CPP: random bytes, from XNet once the transport has
+   started it (g_4cf790), else from a generator seeded by the clock */
 
 #include "unknown_11c920.h"
 #include <xtl.h>
@@ -9,8 +10,9 @@
 
 
 
+/* fills a buffer with count random bytes */
 // @retail 0x7ad80
-void function_07ad80(long count, byte *buffer)
+void transport_get_random_bytes(long count, byte *buffer)
 {
 	if (g_4cf790)
 	{

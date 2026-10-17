@@ -4,7 +4,7 @@
 
 
 struct s_bitstream;
-struct s_network_connection;
+struct s_link_connection;
 
 /* lane D's region */
 

@@ -471,7 +471,7 @@ long online_task_poll(long);
 bool function_90160(long, s_match_result_data *);
 long qos_lookup(long, long, long, s_qos_target *);
 bool qos_is_complete(long);
-bool function_7c530(byte const *, long, void *);
+bool session_description_decode_buffer(byte const *, long, void *);
 struct s_friend_presence_status;
 bool function_8d230(XONLINE_FRIEND const *, s_friend_presence_status *);
 bool online_title_is_this_title(DWORD);
@@ -522,7 +522,7 @@ void c_y_menu_player_selected_screen::v3()
 	{
 		s_qos_result information;
 		if (qos_target_result(screen->qos_handle, &information, 0) &&
-			function_7c530(information.data, information.data_size, screen->unknown9c4))
+			session_description_decode_buffer(information.data, information.data_size, screen->unknown9c4))
 		{
 			screen->value10e4 = true;
 			screen->value10e0 = g_54d5b8;

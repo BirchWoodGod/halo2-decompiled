@@ -479,7 +479,7 @@ bool function_84630(long channel_index, s_simulation_world_owner *watcher, long 
   s_network_observer_channel *channel = &observer->channels[channel_index];
   if (channel->state == 7)
   {
-   s_network_connection *connection = &((s_network_connection *)g_4d87d4)[channel->connection_index];
+   s_link_connection *connection = &((s_link_connection *)g_4d87d4)[channel->connection_index];
    if (connection->state == 5)
    {
     short type;
