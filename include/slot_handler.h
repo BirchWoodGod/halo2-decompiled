@@ -883,6 +883,28 @@ inline s_actor_view *actor_get(long actor_index)
 	return (s_actor_view *)(g_4f55f0->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 }
 
+/* walks the actors of an element of 0x502420 from its first_actor_index
+   through each actor's next_index; retail tests the next index at the loop
+   head (0x1bb3a0) */
+struct s_element_502420_member_iterator
+{
+	long next_index;
+	long index;
+};
+
+inline s_actor_view *element_502420_member_next(s_element_502420_member_iterator *iterator)
+{
+	s_actor_view *member = 0;
+
+	if (iterator->next_index != NONE)
+	{
+		member = actor_get(iterator->next_index);
+		iterator->index = iterator->next_index;
+		iterator->next_index = member->next_index;
+	}
+	return member;
+}
+
 /* clears the actor's state at 0x4ac..0x5b6 (inlined by several start
    callbacks) */
 inline void actor_reset_state(long actor_index)

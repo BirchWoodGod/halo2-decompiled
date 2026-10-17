@@ -891,10 +891,10 @@ short __stdcall function_1b9890(long actor_index, s_slot *slot)
 // @retail 0x1bb3a0
 short __stdcall function_1bb3a0(long actor_index, long joint_index, long a, long b)
 {
-	long count = 0;
 	s_actor_view *actor = actor_get(actor_index);
 	s_4c_element *element = (s_4c_element *)element_502424_get(joint_index);
 	long local_0 = element->object_index;
+	long count = 0;
 	short seat_count = 0;
 	short free_count = 0;
 	point3f position;
@@ -909,14 +909,15 @@ short __stdcall function_1bb3a0(long actor_index, long joint_index, long a, long
 	function_b9dd0(element->object_index, &position);
 	if (free_count > 1 && actor->unknown07c != NONE)
 	{
-		long index = element_502420_get(actor->unknown07c)->first_actor_index;
+		s_element_502420_member_iterator iterator;
+		s_actor_view *other;
 
-		while (index != NONE)
+		iterator.next_index = element_502420_get(actor->unknown07c)->first_actor_index;
+		iterator.index = NONE;
+		while ((other = element_502420_member_next(&iterator)) != 0)
 		{
-			s_actor_view *other = actor_get(index);
-			long other_index = index;
+			long other_index = iterator.index;
 
-			index = other->next_index;
 			if (actor != other &&
 				(other->unknown26c == NONE || other->unknown26c == element->object_index && other->unknown266))
 			{
