@@ -1564,6 +1564,22 @@ static __forceinline s_cache_record *cache_record_new(void)
 	return result;
 }
 
+/* 0x1e2d0's work in its own order, where 0x1e5e0 inlines it */
+static __forceinline s_cache_record *cache_record_take(void)
+{
+	s_cache_record *result = 0;
+	if (g_4b6280.count < 1024)
+	{
+		result = &g_4b6280.records[g_4b6280.count];
+		result->count = 0;
+		g_4b6280.count++;
+		result->active = 0;
+	}
+	else if (g_4b6280.available)
+		g_4b6280.available = false;
+	return result;
+}
+
 PRIVATE inline real render_bounds_midpoint(real const *pair)
 {
     return (pair[0] + pair[1]) * 0.5f;
@@ -2192,11 +2208,10 @@ bool __stdcall function_1e700(word first, word second, void const *context)
 			real point = b->position.z * a->plane.k;
 			point += b->position.y * a->plane.j;
 			point += b->position.x * a->plane.i;
-			// Retail rereads these record fields in camera-dot-product order.
-			plane3f const volatile *camera_plane = &a->plane;
+			plane3f const *camera_plane = &a->plane;
 			real camera = camera_plane->k * g_4b9da0.z;
 			camera = camera_plane->j * g_4b9da0.y + camera;
-			camera = camera_plane->i * g_4b9da0.x + camera;
+			camera = camera + camera_plane->i * g_4b9da0.x;
 			long camera_side = a->plane.d > camera ? 1 : 0;
 			long point_side = a->plane.d > point ? 1 : 0;
 			comparison = camera_side != point_side ? 1 : -1;
@@ -2206,10 +2221,10 @@ bool __stdcall function_1e700(word first, word second, void const *context)
 			real point = a->position.z * b->plane.k;
 			point += a->position.y * b->plane.j;
 			point += a->position.x * b->plane.i;
-			plane3f const volatile *camera_plane = &b->plane;
+			plane3f const *camera_plane = &b->plane;
 			real camera = camera_plane->k * g_4b9da0.z;
 			camera = camera_plane->j * g_4b9da0.y + camera;
-			camera = camera_plane->i * g_4b9da0.x + camera;
+			camera = camera + camera_plane->i * g_4b9da0.x;
 			long camera_side = b->plane.d > camera ? 1 : 0;
 			long point_side = b->plane.d > point ? 1 : 0;
 			comparison = camera_side == point_side ? 1 : -1;
@@ -2293,9 +2308,6 @@ bool function_1e4e0(point3f const *position, t_1e4e0_callback callback, void con
 
 void __stdcall function_35b00(void *payload);
 
-extern "C" void _ReadWriteBarrier(void);
-#pragma intrinsic(_ReadWriteBarrier)
-
 // @retail 0x1e5e0 standard
 bool function_1e5e0(long size, point3f const *position, long a, long b, long c,
 	long d, long e, long f, long g, void const *data)
@@ -2303,11 +2315,9 @@ bool function_1e5e0(long size, point3f const *position, long a, long b, long c,
 	(void)&a; (void)&b; (void)&c; (void)&d;
 	(void)&e; (void)&f; (void)&g; (void)&data;
 	bool result = false;
-	if (g_4b6280.count < 1024)
+	s_1e4e0_record *record = (s_1e4e0_record *)cache_record_take();
+	if (record)
 	{
-		s_1e4e0_record *record = (s_1e4e0_record *)&g_4b6280.records[g_4b6280.count++];
-		record->type = 0;
-		record->active = false;
 		long *payload = (long *)record->payload;
 		payload[0] = a;
 		payload[1] = b;
@@ -2328,12 +2338,8 @@ bool function_1e5e0(long size, point3f const *position, long a, long b, long c,
 		real depth = (real)(g_485618.forward.k * delta.k) + (real)(g_485618.forward.j * delta.j) + (real)(g_485618.forward.i * delta.i);
 		record->depth = 0.0f - depth;
 		record->position = *position;
-		_ReadWriteBarrier();
 		result = true;
-		_ReadWriteBarrier();
 	}
-	else if (g_4b6280.available)
-		g_4b6280.available = false;
 	return result;
 }
 
