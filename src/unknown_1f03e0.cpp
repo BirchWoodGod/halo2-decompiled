@@ -835,7 +835,8 @@ void __stdcall function_1f0450(s_shape_state *history, byte *out, s_shape_carrie
         if (carrier)
         {
             velocity = carrier_velocity;
-            *(dword *)out |= 8;
+            byte *const *out_reference = &out;
+            *(dword *)*out_reference |= 8;
             *(matrix3x3 *)(out + 0x30) = rotation;
         }
     }
