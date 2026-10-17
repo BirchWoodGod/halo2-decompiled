@@ -203,7 +203,7 @@ void function_13edb0(long font, long style, long justification, dword flags, col
 
 bool font_cache_predict_character(s_13eeb1 font_index, s_13eeb1 character);
 long unicode_escape_character_lookup(word character, bool *found);
-bool function_13fd20(utf32 previous, utf32 character);
+bool unicode_line_break_allowed(utf32 previous, utf32 character);
 
 enum
 {
@@ -316,7 +316,7 @@ void function_13f5a0(s_text_iterator *iterator)
 			{
 				utf32 previous = { iterator->character };
 				utf32 next = { character };
-				iterator->can_break = function_13fd20(previous, next);
+				iterator->can_break = unicode_line_break_allowed(previous, next);
 			}
 			else
 			{
