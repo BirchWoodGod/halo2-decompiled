@@ -1826,11 +1826,9 @@ bool __stdcall function_105c20(long weapon_index, long animation_name)
 
 					if (state.initialize(player_animation->graph_index, NONE, true))
 					{
-						c_type_709360 animation_id;
+						c_type_709360 animation_id = state.overlay_or_animation_get(NONE, animation_name, NONE);
 
-						animation_id = state.overlay_find(animation_name, state.unknown74, state.unknown78);
-						if (animation_id.index != NONE ||
-							(animation_id = state.animation_get(animation_name, state.unknown74, state.unknown78)).index != NONE)
+						if (animation_id.index != NONE)
 						{
 							long graph_index = player_animation->graph_index;
 
