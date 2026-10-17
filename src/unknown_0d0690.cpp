@@ -1378,6 +1378,7 @@ bool function_d30d0(long tag, long flags, real u, real v, color3f *out)
 {
     bool result = true;
     byte temporary[0x74];
+    s_bitmap_data *sample_bitmap;
     s_bitmap_data *bitmap = NULL;
     if (tag != NONE)
     {
@@ -1391,13 +1392,15 @@ bool function_d30d0(long tag, long flags, real u, real v, color3f *out)
     {
         if (!function_d15e0(bitmap, 0.0f))
         {
-            if (*(void **)((byte *)bitmap + 0x54))
+            void *data = *(void **)((byte *)bitmap + 0x54);
+            sample_bitmap = bitmap;
+            if (data)
                 goto sample;
-            function_12360((s_bitmap_view *)bitmap, 0.0f);
+            function_12360((s_bitmap_view *)sample_bitmap, 0.0f);
         }
         else if (result = function_1d2f0((D3DSurface *)function_d15e0(bitmap, 0.0f), temporary))
         {
-            bitmap = (s_bitmap_data *)temporary;
+            sample_bitmap = (s_bitmap_data *)temporary;
             goto sample;
         }
     }
@@ -1407,7 +1410,7 @@ bool function_d30d0(long tag, long flags, real u, real v, color3f *out)
     return false;
 sample:
     point2f uv = { u, v };
-    unpack_color3f(function_1362b0((s_type_7ba8e9 const *)bitmap, &uv, 1.0f), out);
+    unpack_color3f(function_1362b0((s_type_7ba8e9 const *)sample_bitmap, &uv, 1.0f), out);
     return result;
 }
 

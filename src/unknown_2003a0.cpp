@@ -2286,8 +2286,9 @@ void __stdcall function_201100(long arg_0, dword *arg_1)
                 function_203120(arg_0, local_8, true);
             else if (*(short *)(local_3 + 0x14) != NONE && local_7 && local_7[0x23])
             {
-                long local_9 = *(short *)(local_7 + 0x14);
-                if ((short)local_9 != NONE)
+                short const *inherited = (short const *)(local_7 + 0x14);
+                long local_9 = *inherited;
+                if (*inherited != NONE)
                     function_203120(arg_0, local_9, false);
             }
             *bits |= mask;
@@ -2302,6 +2303,7 @@ void __stdcall function_203120(long arg_0, short arg_1, long arg_2)
     short const *local_1 = &arg_1;
     long *local_2 = &arg_2;
     byte *local_3 = (byte *)squad_group_get(*local_0);
+    long initial_flag = arg_2;
     if (!(byte)*local_2 && local_3[0x16] && *(short *)(local_3 + 0x14) != NONE)
     {
         byte *local_4 = *(byte **)((byte *)g_4e0350 + 0x244) + *(short *)(local_3 + 0x14) * 0x7c;
@@ -2312,7 +2314,7 @@ void __stdcall function_203120(long arg_0, short arg_1, long arg_2)
                 return;
         }
     }
-    function_202e30((short)*local_1, *local_0, (byte)*local_2);
+    function_202e30((short)*local_1, *local_0, (byte)initial_flag);
     for (long local_5 = *(long *)(local_3 + 4); local_5 != NONE; )
     {
         byte *local_6 = (byte *)squad_group_get(local_5);

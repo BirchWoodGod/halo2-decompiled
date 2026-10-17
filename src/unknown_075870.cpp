@@ -1012,9 +1012,10 @@ real network_observer_rate_above(s_network_observer *observer, real minimum, boo
 {
 	real frame_rate = network_frame_rate();
 	real result = FLT_MAX;
-	for (long i = observer->configuration->rate_count - 1; i >= 0; i--)
+	s_network_observer_configuration *configuration = observer->configuration;
+	for (long i = configuration->rate_count - 1; i >= 0; i--)
 	{
-		real rate = frame_rate * observer->configuration->rates[i];
+		real rate = frame_rate * configuration->rates[i];
 		if (rate > minimum && result > rate)
 			result = rate;
 	}
