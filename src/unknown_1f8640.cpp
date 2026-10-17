@@ -175,22 +175,38 @@ extern "C" void _ReadWriteBarrier(void);
 real function_1f8940(long actor_index)
 {
 	s_actor_moving *actor = actor_moving_get(actor_index);
-	_ReadWriteBarrier();
 	real length = 0.0f;
 
 	if (actor->unknown50c && actor->unknown504 == 1)
 	{
-		point3f previous = actor->position;
-		short i;
+		real total = 0.0f;
+		point3f previous = actor_moving_get(actor_index)->position;
+		short i = actor->path_index;
 
-		for (i = actor->path_index; i < actor->path_count; i++)
+		if (i < actor->path_count)
 		{
-			s_actor_path_point *point = &actor->path[i];
-			point3f position;
+			do
+			{
+				s_actor_path_point *point = &actor->path[i];
+				point3f position;
 
-			function_210850(&point->node, &position);
-			length += distance3d(&position, &previous);
-			previous = position;
+				if (point->node.output_index == NONE ||
+					!function_2104b0(point->node.output_index, &point->node.point, &position))
+				{
+					position = point->node.point;
+				}
+				vector3f offset;
+				offset.i = previous.x - position.x;
+				offset.j = previous.y - position.y;
+				offset.k = previous.z - position.z;
+				real squared = offset.k * offset.k + offset.i * offset.i;
+				squared += offset.j * offset.j;
+				total += (real)sqrt(squared);
+				previous = position;
+				i++;
+			}
+			while (i < actor->path_count);
+			length = total;
 		}
 	}
 

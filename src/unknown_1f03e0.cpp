@@ -250,36 +250,37 @@ struct s_shape_ground
 };
 
 // @retail 0x1f2e60
-bool function_1f2e60(bool moving, s_shape_ground const *ground, vector3f const *velocity, bool stepping, point3f const *base, real height)
+bool function_1f2e60(s_shape_ground const *ground, bool moving, vector3f const *velocity, bool stepping, point3f const *base, real height)
 {
 	point3f const *const *base_reference = &base;
-	real top = (*base_reference)->z + height;
+	real base_height = (*base_reference)->z;
+	real top = base_height + height;
 
-	if (top - 0.001f > (*base_reference)->z)
+	if (top - 0.001f > base_height)
 	{
 		point3f point = ground->point;
 		point3f center;
 		vector3f v;
 		real distance;
-		real lower, upper;
 
 		if (moving)
 		{
-			point.x = velocity->i * g_510c54->rate + point.x;
-			point.y = velocity->j * g_510c54->rate + point.y;
-			point.z = velocity->k * g_510c54->rate + point.z;
+			real rate = g_510c54->rate;
+			point.x = velocity->i * rate + point.x;
+			point.y = velocity->j * rate + point.y;
+			point.z = velocity->k * rate + point.z;
 		}
 		center.x = (*base_reference)->x;
 		center.y = (*base_reference)->y;
 		center.z = height + (*base_reference)->z;
 		vector3d_from_points3d(&center, &point, &v);
-		distance = (real)sqrt(v.k * v.k + v.j * v.j + v.i * v.i) - height;
-		lower = moving ? -0.25f : -0.1f;
-		upper = stepping ? 0.1f : 0.2f;
-		return PIN(distance, lower, upper) == distance;
+		distance = (real)sqrt(v.i * v.i + v.j * v.j + v.k * v.k) - height;
+		bool result = PIN(distance, moving ? -0.25f : -0.1f, stepping ? 0.1f : 0.2f) == distance;
+		return result;
 	}
 
-	return PIN(ground->height, -0.1f, 0.0328f) == ground->height;
+	bool result = PIN(ground->height, -0.1f, 0.0328f) == ground->height;
+	return result;
 }
 
 struct s_havok_component;
@@ -397,7 +398,7 @@ void function_1f2a80(vector3f const *velocity, byte const *request, bool moving,
     {
         byte *entry = *(byte **)(component + 0x88) + indices[i] * 0x48;
         real const &z = *(real *)(entry + 0x30);
-        if (lowest > z && z > -0.999f && function_1f2e60(moving, (s_shape_ground *)entry,
+        if (lowest > z && z > -0.999f && function_1f2e60((s_shape_ground *)entry, moving,
             velocity, ((*(dword *)(request + 0x18) >> 1) & 1) != 0,
             (point3f const *)(request + 0x1c), *(real *)(*(byte *const *)request + 0xc)))
         {
@@ -933,7 +934,7 @@ bool function_1f2250(vector3f const *velocity, byte const *request, vector3f con
             byte *contact = *(byte **)(component + 0x88) + i * 0x48;
             if (*(long *)(contact + 0x14) == *(long *)(request + 0x44) &&
                 *(real *)(contact + 0x30) > *(real *)(settings + 0x54) &&
-                function_1f2e60(moving, (s_shape_ground *)contact, velocity, stepping,
+                function_1f2e60((s_shape_ground *)contact, moving, velocity, stepping,
                     (point3f const *)(request + 0x1c), *(real *)(settings + 0xc)))
             {
                 desired = shape_scale(*(vector3f *)(contact + 0x28), -1.0f);
@@ -971,7 +972,7 @@ bool function_1f2250(vector3f const *velocity, byte const *request, vector3f con
             for (long i = 0; i < contacts; ++i)
             {
                 byte *contact = *(byte **)(component + 0x88) + i * 0x48;
-                if (function_1f2e60(moving, (s_shape_ground *)contact, velocity, stepping,
+                if (function_1f2e60((s_shape_ground *)contact, moving, velocity, stepping,
                     (point3f const *)(request + 0x1c), *(real *)(settings + 0xc)) &&
                     (!stepping || *(long *)(request + 0x44) == NONE || *(long *)(request + 0x44) == *(long *)(contact + 0x14)))
                 {
@@ -1017,7 +1018,7 @@ bool function_1f2250(vector3f const *velocity, byte const *request, vector3f con
     for (long i = 0; i < *(long *)(component + 0x8c); ++i)
     {
         byte *contact = *(byte **)(component + 0x88) + i * 0x48;
-        if (function_1f2e60(moving, (s_shape_ground *)contact, velocity, stepping,
+        if (function_1f2e60((s_shape_ground *)contact, moving, velocity, stepping,
             (point3f const *)(request + 0x1c), *(real *)(settings + 0xc)))
         {
             real projection = 0.0f - shape_dot(*(vector3f *)(contact + 0x28), relative);
