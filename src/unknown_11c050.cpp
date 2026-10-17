@@ -116,6 +116,9 @@ bool function_11c080(s_location const *location)
 	return (CLUSTER_BITS(0x1138)[cluster_index >> 5] & (1 << (cluster_index & 31))) != 0;
 }
 
+/* retail calls this from every caller */
+__declspec(noinline) bool function_11c120(s_location const *location, point3f const *point, short *zone_index);
+
 // @retail 0x11c120
 bool function_11c120(s_location const *location, point3f const *point, short *zone_index)
 {
@@ -125,16 +128,16 @@ bool function_11c120(s_location const *location, point3f const *point, short *zo
 	if (cluster_index != NONE)
 	{
 		s_11c120_bsp *bsp = (s_11c120_bsp *)g_4e0348;
-		byte zone = bsp->clusters[cluster_index].zone;
+		s_11c120_cluster *cluster = &bsp->clusters[cluster_index];
 
-		if (zone != 0xff)
+		if (cluster->zone != 0xff)
 		{
-			s_11c120_zone *entry = &bsp->zones[zone & 0x7f];
+			s_11c120_zone *entry = &bsp->zones[cluster->zone & 0x7f];
 			short index = entry->index;
 
 			if (index != NONE)
 			{
-				if (!(zone & 0x80) || 0.0f > entry->plane.k * point->z + entry->plane.j * point->y + entry->plane.i * point->x - entry->plane.d)
+				if (!(cluster->zone & 0x80) || 0.0f > entry->plane.k * point->z + entry->plane.j * point->y + entry->plane.i * point->x - entry->plane.d)
 				{
 					result = true;
 					if (zone_index)

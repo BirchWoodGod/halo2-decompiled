@@ -1358,7 +1358,7 @@ void __stdcall function_741f0(s_match_player_rating_collection *collection, s_qu
         for (long i = 0; i < 16; i++, local_0 += sizeof(s_match_player_rating_entry), local_1 += 0x36a)
         {
             const s_match_player_rating_entry *player = (const s_match_player_rating_entry *)(local_0 - 0x9a);
-            if (!player->active || player->team == NONE || (player->flags & 3)) continue;
+            if (!player->active || player->team == NONE || (*(const dword *)((const byte *)player + 0xa) & 3)) continue;
             long skill = player->unknown9a;
             long value = player->value;
             if (*(const dword *)((const byte *)player + 0xa) != 0xbad00000 &&
@@ -1431,8 +1431,21 @@ void __stdcall function_741f0(s_match_player_rating_collection *collection, s_qu
     {
         const byte *local_2 = (const byte *)collection + 0xdc8;
         const byte *local_3 = (const byte *)collection + 0x49e4;
-        for (long i = 0; i < variant->width; i++, local_2 += sizeof(s_match_rating_entry), local_3 += 0x5a)
+        for (long i = 0; ; i++, local_2 += sizeof(s_match_rating_entry), local_3 += 0x5a)
         {
+            long count = NONE;
+            switch (variant->type)
+            {
+            case 1: case 2:
+                break;
+            case 3: case 4: case 5:
+                count = variant->width;
+                break;
+            default:
+                __assume(0);
+            }
+            if (i >= count)
+                break;
             const s_match_rating_entry *team = (const s_match_rating_entry *)(local_2 - 4);
             const s_query_identity *identity = (const s_query_identity *)team->unknown0c;
             if (team->active && memcmp(identity, g_440070, 12) != 0 &&
