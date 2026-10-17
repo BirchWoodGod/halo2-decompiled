@@ -1,93 +1,57 @@
 // @flags /O1 /arch:SSE /Gr
-/* UNKNOWN_235B46.CPP: the main menu's music: the screens that want it, the
+/* MAIN_MENU_MUSIC.CPP: the main menu's music: the screens that want it, the
    looping sound that plays it, and how long it has been silent */
 
 #include "unknown_11c920.h"
 #include <xtl.h>
 #include "globals.h"
+#include "main_menu_music.h"
+#include "ui_definition.h"
+#include "unknown_19c1d0.h"
 
-struct s_type_954545;
-s_type_954545 *ui_definition_get(void);
 long function_147f4f();
 long function_18a5a0(long tag_index, long object_index, real value);
 word *function_18a5e0(long datum_index);
 long map_location_progress_get(char const *map_name);
 long function_122db0(long mode, char const *map_name);
-
-/* the user interface globals' music */
-struct s_user_interface_globals_music
-{
-	byte unknown00[0x1bc];
-	/* the looping sound of the main menu's music */
-	long music_tag_index;
-	/* how long the music stays silent (milliseconds) */
-	long silence_time;
-};
-
-/* the main menu's (scenario's) map type */
-struct s_scenario_type_view
-{
-	byte unknown00[0x10];
-	short type;
-};
-
-/* the last entry of the campaign (unknown_147f6d.cpp): its map name */
-struct s_campaign_entry_view
-{
-	byte unknown00[8];
-	char map_name[1];
-};
-struct s_entry_a;
 s_entry_a *function_148d61();
 
-/* the music's state */
-struct s_main_menu_music
-{
-	/* whether it plays now, and whether it should */
-	long playing;
-	long wanted;
-	/* whether the current screen wants it */
-	long enabled;
-	/* when it last started or stopped (user interface time) */
-	dword time;
-	/* its looping sound */
-	long sound_index;
-	/* when it stopped (tick count) */
-	dword stop_tick;
-};
-
+/* cleared by the attract mode's idle timer (unknown_223976.cpp) a silence
+   time before it starts, so the music stops in time */
 extern bool g_4701b8;
 
 /* the user interface time (the window manager's) */
 extern dword g_54d5b8;
 
+/* the music's looping sound tag, or NONE */
 // @retail 0x235b46
 long main_menu_music_tag_index()
 {
 	long result = NONE;
-	s_user_interface_globals_music *globals = (s_user_interface_globals_music *)ui_definition_get();
+	s_type_954545 *ui_globals = ui_definition_get();
 
-	if (globals)
+	if (ui_globals)
 	{
-		result = globals->music_tag_index;
+		result = ui_globals->main_menu_music.tag_index;
 	}
 	return result;
 }
 
-/* (unknown_223976.cpp calls it function_235ca9) */
+/* how long the music stays silent (milliseconds) */
 // @retail 0x235ca9
-dword function_235ca9()
+dword main_menu_music_silence_time()
 {
 	dword result = 0;
-	s_user_interface_globals_music *globals = (s_user_interface_globals_music *)ui_definition_get();
+	s_type_954545 *ui_globals = ui_definition_get();
 
-	if (globals)
+	if (ui_globals)
 	{
-		result = globals->silence_time;
+		result = ui_globals->main_menu_music_silence_time;
 	}
 	return result;
 }
 
+/* starts the looping sound */
 // @retail 0x235b5d
 void main_menu_music_start(s_main_menu_music *music)
 {
@@ -99,6 +63,7 @@ void main_menu_music_start(s_main_menu_music *music)
 	}
 }
 
+/* stops the looping sound and notes when */
 // @retail 0x235b82
 void main_menu_music_stop(s_main_menu_music *music)
 {
@@ -134,19 +99,20 @@ void main_menu_music_update_playing(s_main_menu_music *music)
 	}
 }
 
-/* the campaign screen wants the music until the campaign is far enough in */
+/* the campaign screen wants the music unless its map is still being copied
+   and the copy will end within the silence time, or the map is open */
 extern "C" void _ReadWriteBarrier(void);
 #pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x235c4a
 void main_menu_music_check_campaign(s_main_menu_music *music)
 {
-	s_campaign_entry_view *entry = (s_campaign_entry_view *)function_148d61();
+	s_entry_a *campaign_map = function_148d61();
 	char const *map_name = 0;
 	long progress = 3;
 
-	if (entry)
+	if (campaign_map)
 	{
-		map_name = entry->map_name;
+		map_name = campaign_map->name;
 		if (map_name)
 		{
 			progress = map_location_progress_get(map_name);
@@ -154,35 +120,40 @@ void main_menu_music_check_campaign(s_main_menu_music *music)
 	}
 	switch (progress)
 	{
+	/* map location none, or copied (map_location_progress_get) */
 	case 0:
 	case 3:
 		music->enabled = 1;
 		break;
+	/* queued or copying: the remaining copy time (milliseconds) */
 	case 1:
 	{
-		long volatile limit = function_235ca9();
-		long current = function_122db0(0, map_name);
-		long threshold = limit;
+		long volatile silence_time = main_menu_music_silence_time();
+		long remaining_time = function_122db0(0, map_name);
+		long threshold = silence_time;
 		_ReadWriteBarrier();
-		if (current <= threshold)
+		if (remaining_time <= threshold)
 		{
 			music->enabled = 0;
 		}
 		break;
 	}
+	/* map location open */
 	case 2:
 		music->enabled = 0;
 		break;
 	}
 }
 
-/* whether the current screen wants the music */
+/* whether the current screen wants the music: only in the main menu's
+   scenario, on screens 6 and 9 (the ones the attract mode's idle timer
+   watches) and the campaign screen (0xd1) */
 // @retail 0x235bfa
 void main_menu_music_check_screen(s_main_menu_music *music)
 {
-	s_scenario_type_view *scenario = (s_scenario_type_view *)g_4e0350;
+	s_scenario_shell_mode_view *scenario = (s_scenario_shell_mode_view *)g_4e0350;
 
-	if (scenario && scenario->type == 2)
+	if (scenario && scenario->shell_mode == _shell_mode_main_menu)
 	{
 		switch (function_147f4f())
 		{
@@ -204,6 +175,8 @@ void main_menu_music_check_screen(s_main_menu_music *music)
 	music->enabled = 0;
 }
 
+/* each frame (window manager): what the screen wants, unless the attract
+   mode is near, then start or stop */
 // @retail 0x235bdb
 void main_menu_music_update(s_main_menu_music *music)
 {
@@ -224,7 +197,7 @@ bool main_menu_music_silence_done(s_main_menu_music *music)
 {
 	if (!music->enabled && music->sound_index == NONE)
 	{
-		dword silence_time = function_235ca9();
+		dword silence_time = main_menu_music_silence_time();
 
 		return silence_time < GetTickCount() - music->stop_tick;
 	}
@@ -239,7 +212,7 @@ real main_menu_music_silence_fraction(s_main_menu_music const *music)
 
 	if (!music->enabled && music->sound_index == NONE)
 	{
-		real silence_time = (real)(long)function_235ca9();
+		real silence_time = (real)(long)main_menu_music_silence_time();
 		real elapsed = (real)(GetTickCount() - music->stop_tick);
 
 		if (silence_time > 1.0f)

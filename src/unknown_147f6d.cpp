@@ -260,10 +260,10 @@ void function_148523()
 bool game_loop_running();
 bool function_138820();
 void function_199e2e(bool close);
-bool __stdcall function_236917(long controller_index);
-bool __stdcall function_236926(long controller_index);
-bool __stdcall function_236937(long controller);
-bool __stdcall function_236953(long controller);
+bool __stdcall dialog_callback_dashboard_network_configuration(long controller_index);
+bool __stdcall dialog_callback_leave_sessions(long controller_index);
+bool __stdcall dialog_callback_dashboard_online_menu(long controller);
+bool __stdcall dialog_callback_sign_out_to_main_menu(long controller);
 bool __stdcall function_2323ab(long controller_index);
 
 /* shows the dialog of a lost connection or failed sign in (by the error),
@@ -271,8 +271,8 @@ bool __stdcall function_2323ab(long controller_index);
 // @retail 0x1486b8
 void function_1486b8(long error, bool keep)
 {
-	dialog_choice_callback first = function_236953;
-	dialog_choice_callback second = function_236953;
+	dialog_choice_callback first = dialog_callback_sign_out_to_main_menu;
+	dialog_choice_callback second = dialog_callback_sign_out_to_main_menu;
 	bool choice = false;
 	bool leave = false;
 	long dialog_id;
@@ -284,13 +284,13 @@ void function_1486b8(long error, bool keep)
 		return;
 	case 3:
 		dialog_id = 0x24;
-		first = function_236926;
+		first = dialog_callback_leave_sessions;
 		choice = true;
 		leave = true;
 		break;
 	case 2:
 		dialog_id = 0x27;
-		first = function_236937;
+		first = dialog_callback_dashboard_online_menu;
 		choice = true;
 		if (keep)
 		{
@@ -303,13 +303,13 @@ void function_1486b8(long error, bool keep)
 		break;
 	case 4:
 		dialog_id = 0x23;
-		first = function_236917;
+		first = dialog_callback_dashboard_network_configuration;
 		choice = true;
 		leave = true;
 		break;
 	case 6:
 		dialog_id = 0x9a;
-		first = function_236937;
+		first = dialog_callback_dashboard_online_menu;
 		choice = true;
 		if (keep)
 		{
@@ -328,19 +328,19 @@ void function_1486b8(long error, bool keep)
 		break;
 	case 5:
 		dialog_id = 0x38;
-		first = function_236917;
+		first = dialog_callback_dashboard_network_configuration;
 		choice = true;
 		leave = true;
 		break;
 	case 9:
 		dialog_id = 0x38;
-		first = function_236917;
+		first = dialog_callback_dashboard_network_configuration;
 		choice = true;
 		leave = true;
 		break;
 	default:
 		dialog_id = 0x38;
-		first = function_236917;
+		first = dialog_callback_dashboard_network_configuration;
 		choice = true;
 		leave = true;
 		break;
@@ -612,8 +612,8 @@ void function_148a8d()
 	memset(g_54d598.mf08, 0, sizeof(g_54d598.mf08));
 }
 
-bool __stdcall function_236964(long controller);
-bool __stdcall function_236989(long controller);
+bool __stdcall dialog_callback_dashboard_memory(long controller);
+bool __stdcall dialog_callback_dashboard_memory_for_game_variant(long controller);
 bool __stdcall function_2523b7(long controller);
 
 /* tells the controllers why a game variant could not be saved */
@@ -623,13 +623,13 @@ void function_148aa3(long error, word controller_flags)
 	switch (error)
 	{
 	case 1:
-		dialog_choice_show(3, 0x4b, 4, controller_flags, function_236964, function_2523b7, 0);
+		dialog_choice_show(3, 0x4b, 4, controller_flags, dialog_callback_dashboard_memory, function_2523b7, 0);
 		break;
 	case 2:
-		dialog_choice_show(3, 0x4f, 4, controller_flags, function_236989, function_2523b7, 0);
+		dialog_choice_show(3, 0x4f, 4, controller_flags, dialog_callback_dashboard_memory_for_game_variant, function_2523b7, 0);
 		break;
 	default:
-		dialog_choice_show(3, 0xd, 4, controller_flags, function_236989, function_2523b7, 0);
+		dialog_choice_show(3, 0xd, 4, controller_flags, dialog_callback_dashboard_memory_for_game_variant, function_2523b7, 0);
 		break;
 	}
 }
@@ -991,7 +991,7 @@ void function_147920(void)
 	g_54d598.main_menu_music.m8 = 0;
 }
 
-bool __stdcall function_236973(long controller);
+bool __stdcall dialog_callback_dashboard_memory_for_profile(long controller);
 
 /* tells the controllers why a game variant could not be loaded */
 // @retail 0x148ca8
@@ -1000,13 +1000,13 @@ void function_148ca8(long error, short controller_flags)
 	switch (error)
 	{
 	case 1:
-		dialog_choice_show(3, 0x4a, 4, controller_flags, function_236964, function_2523b7, 0);
+		dialog_choice_show(3, 0x4a, 4, controller_flags, dialog_callback_dashboard_memory, function_2523b7, 0);
 		break;
 	case 2:
-		dialog_choice_show(3, 0x4e, 4, controller_flags, function_236973, function_2523b7, 0);
+		dialog_choice_show(3, 0x4e, 4, controller_flags, dialog_callback_dashboard_memory_for_profile, function_2523b7, 0);
 		break;
 	case 4:
-		dialog_choice_show(3, 0xc, 4, controller_flags, function_236973, function_2523b7, 0);
+		dialog_choice_show(3, 0xc, 4, controller_flags, dialog_callback_dashboard_memory_for_profile, function_2523b7, 0);
 		break;
 	}
 }

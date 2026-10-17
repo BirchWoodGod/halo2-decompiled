@@ -36,19 +36,26 @@ namespace D3D
 extern bool g_4ba019;
 bool function_143c0(long tag, short index, short stage, real priority);
 
+/* Rounds toward negative infinity: truncates, then subtracts one when the
+   value was negative and not already whole. */
 PRIVATE __forceinline long texture_floor(real value)
 {
-    long result = (long)value;
-    if (value < 0.0f && value != (real)result)
-        result--;
-    return result;
+    __asm
+    {
+        movss xmm0, value
+        cvttss2si eax, xmm0
+        cvtsi2ss xmm1, eax
+        cmpneqss xmm1, xmm0
+        cmpltss xmm0, g_45dbd8
+        andps xmm0, xmm1
+        movmskps ecx, xmm0
+        sub eax, ecx
+    }
 }
 
 // @retail 0x1b0a0
 void __stdcall function_1b0a0(byte *state)
 {
-    byte *const *state_reference = &state;
-    state = *state_reference;
     dword remaining = *(dword *)(state + 0x1420);
     while (remaining)
     {
@@ -59,25 +66,28 @@ void __stdcall function_1b0a0(byte *state)
             mov index, ecx
         }
         byte *entry = state + 0x1320 + index * 0x40;
-        long tag = *(long *)entry;
-        if (tag != NONE)
+        if (*(long *)entry != NONE)
         {
             long bitmap = 0;
-            real time = *(real *)(entry + 0x18);
-            if (fabs(time) >= 0.0001f)
-            {
-                long count = *(long *)(g_4e3b44[tag & 0xffff].bytes + 0x44);
-                bitmap = texture_floor((real)fmod(time, count));
-            }
             real bias = 0.0f;
-            if (!(entry[4] & 1) && !g_4ba019)
-                bias = PIN(*(real *)(entry + 0x14) + *(real *)(state + 0x2c) - 0.5f, 0.0f, 4.0f);
+            if (!(fabs(*(real *)(entry + 0x18)) < 0.0001f))
+            {
+                long count = *(long *)(g_4e3b44[*(long *)entry & 0xffff].bytes + 0x44);
+                bitmap = texture_floor((real)fmod(*(real *)(entry + 0x18), count));
+            }
+            if (!(entry[4] & 1))
+            {
+                real adjusted = 0.0f;
+                if (!g_4ba019)
+                    adjusted = PIN(*(real *)(entry + 0x14) + *(real *)(state + 0x2c) - 0.5f, 0.0f, 4.0f);
+                bias = adjusted;
+            }
             real level = (real)texture_floor(bias);
             level = PIN(level, 0.0f, 2.0f);
             level = (real)(long)level;
             if (*(real *)(entry + 0x10) > level)
             {
-                function_143c0(tag, (short)bitmap, (short)index, bias);
+                function_143c0(*(long *)entry, (short)bitmap, (short)index, bias);
                 *(real *)(entry + 0x10) = level;
             }
         }
@@ -1093,6 +1103,7 @@ void function_1ed70(color4f const *color, s_1ed70_point const *points, short cou
 // @retail 0x1ba00
 void function_1ba00(byte *state)
 {
+    unsigned long output = 0;
     byte *definition = *(byte **)(state + 0x20);
     byte *blocks = *(byte **)(definition + 0x2c);
     dword *values = *(dword **)(definition + 0x34);
@@ -1100,21 +1111,17 @@ void function_1ba00(byte *state)
     *(dword *)(state + 0x14fc) = *(dword *)(selection + 0xde);
     *(dword *)(state + 0x1504) = *(dword *)(selection + 0xe6);
     *(dword *)(state + 0x1500) = *(dword *)(selection + 0xe2);
-    unsigned long output = 0;
     bool final = false;
-    long i = 0;
-    if ((*(word *)(*(byte **)(state + 0x24) + 0xf6) >> 9) > 0)
-    do
+    for (long i = 0; i < (*(word *)(*(byte **)(state + 0x24) + 0xf6) >> 9); ++i)
     {
-        word range = *(word *)(*(byte **)(state + 0x24) + 0xf6);
+        short *entry = *(short **)(*(byte **)(state + 0x20) + 0x24) + ((*(word *)(*(byte **)(state + 0x24) + 0xf6) & 0x1ff) + i) * 2;
         state[0x1520 + i] = (byte)output;
-        short *entry = *(short **)(*(byte **)(state + 0x20) + 0x24) + ((range & 0x1ff) + i) * 2;
-        long block_index = (word)entry[1] & 0x1ff;
+        short source = entry[0];
         byte *block;
-        if (!(entry[0] == NONE))
-            block = blocks + (block_index + *(long *)(state + 0x300 + entry[0] * 4)) * 6;
+        if (source == NONE)
+            block = blocks + ((word)entry[1] & 0x1ff) * 6;
         else
-            block = blocks + block_index * 6;
+            block = blocks + (((word)entry[1] & 0x1ff) + *(long *)(state + 0x300 + source * 4)) * 6;
         dword *value = values + (*(word *)(block + 4) & 0x1ff) * 8;
         for (long j = 0; j < (*(word *)(block + 4) >> 9); value += 8, ++j)
         {
@@ -1135,8 +1142,7 @@ void function_1ba00(byte *state)
             *(dword *)(state + 0x146c + output * 4) = value[5];
             ++output;
         }
-        ++i;
-    } while (i < (*(word *)(*(byte **)(state + 0x24) + 0xf6) >> 9));
+    }
     if (!final)
     {
         *(dword *)(state + 0x1444) = 0xc;

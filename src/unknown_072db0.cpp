@@ -688,7 +688,7 @@ void function_73bc0(const s_session_id *session_id, const s_session_id *round_ke
 	long task = online_round_register(free_for_all, (const XNKID *)session_id,
 		(const ULONGLONG *)round_key, g_network_configuration.value374);
 	g_510528 = *session_id;
-	g_510520 = *round_key;
+	memcpy(&g_510520, round_key, sizeof(g_510520));
 	g_510540 = *(const s_session_id *)&arg_2;
 	g_510514 = 4;
 	g_510534 = 0;

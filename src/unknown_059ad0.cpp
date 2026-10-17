@@ -873,7 +873,7 @@ long network_session_add_local_player(c_class_58d20 *session, long member_index,
 // @retail 0x5a880
 bool network_session_player_add(c_class_58d20 *session, long slot, const dword *identity, long unknown18, const byte *properties, long unknownac)
 {
-	volatile bool result = false;
+	bool result = false;
 
 	if (session_state_is_live(session))
 	{
@@ -886,7 +886,7 @@ bool network_session_player_add(c_class_58d20 *session, long slot, const dword *
 				player->unknown14 = unknown18;
 				memcpy(player->properties18, properties, sizeof(player->properties18));
 				player->unknown138 = unknownac;
-				return true;
+				result = true;
 			}
 		}
 		else
@@ -902,7 +902,7 @@ bool network_session_player_add(c_class_58d20 *session, long slot, const dword *
 			memcpy(message.properties, properties, sizeof(message.properties));
 			message.unknownac = unknownac;
 			network_session_send_to_host(session, _network_message_type_player_add, sizeof(message), &message);
-			return true;
+			result = true;
 		}
 	}
 	return result;
@@ -3010,15 +3010,10 @@ bool network_session_handle_parameters_request(const s_network_message_parameter
 			name[31] = 0;
 			changed = true;
 		}
-		if (message->change_value49a1)
+		if (message->change_value49a1 && memcmp(session->data49a1, &message->value49a1, sizeof(message->value49a1)) != 0)
 		{
-			byte current = *(volatile byte *)&session->data49a1[0];
-			byte value = message->value49a1;
-			if ((byte)(current - value))
-			{
-				session->data49a1[0] = value;
-				changed = true;
-			}
+			session->data49a1[0] = message->value49a1;
+			changed = true;
 		}
 		if (message->change_value5dd0 && session->value5dd0 != message->value5dd0)
 		{
@@ -4827,8 +4822,7 @@ void function_5a090(c_class_58d20 *session)
   case 8: function_61e00(session); break;
   case 9: function_61ef0(session); break;
   }
-  long state = session->state;
-  if (state == 5 || state == 6 || state == 7 || state == 8)
+  if (session->function_058d20())
   {
    network_session_expire_reservations(session);
    if (session->state != 7 && session->state != 6 && session->state != 8)
@@ -4843,7 +4837,6 @@ void function_5a090(c_class_58d20 *session)
   }
   else
   {
-   volatile long unused = state;
    if ((session->state > 2 && session->state <= 8))
    {
     if (session->observer->channels[session->member_states[session->member_index].unknown04].state == 1)
@@ -4852,15 +4845,10 @@ void function_5a090(c_class_58d20 *session)
    }
   }
   function_62240(session);
-  state = session->state;
-  if (state == 5 || state == 6 || state == 7 || state == 8)
+  if (session->function_058d20())
   {
    function_62640(session);
    function_627e0(session);
-  }
-  else
-  {
-   volatile long unused = state;
   }
  }
 }

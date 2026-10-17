@@ -1254,9 +1254,9 @@ bool window_manager_window_has_dialog(long channel, long index, long dialog_id);
 void function_1906b4(void);
 void __stdcall function_1483c3(long reason);
 void dialog_choice_show(long a, long dialog_id, long b, short user_flags, dialog_choice_callback first_chosen, dialog_choice_callback second_chosen, dialog_closed_callback closed);
-bool __stdcall function_23690b(long controller);
-bool __stdcall function_236917(long controller_index);
-bool __stdcall function_236953(long controller);
+bool __stdcall dialog_callback_return_to_main_menu(long controller);
+bool __stdcall dialog_callback_dashboard_network_configuration(long controller_index);
+bool __stdcall dialog_callback_sign_out_to_main_menu(long controller);
 c_class_1473c9 *__stdcall function_2524a8(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_25240c(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_253185(s_screen_parameters *parameters);
@@ -1397,7 +1397,7 @@ void function_19ae0f(long change, long pending, long error)
 				return;
 			}
 			bool choice = false;
-			dialog_choice_callback first_chosen = function_23690b;
+			dialog_choice_callback first_chosen = dialog_callback_return_to_main_menu;
 			dialog_choice_callback second_chosen = 0;
 			if (g_4ee4c4.session_booted)
 			{
@@ -1427,8 +1427,8 @@ void function_19ae0f(long change, long pending, long error)
 					{
 						dialog_id = 0x38;
 						choice = true;
-						first_chosen = function_236917;
-						second_chosen = function_236953;
+						first_chosen = dialog_callback_dashboard_network_configuration;
+						second_chosen = dialog_callback_sign_out_to_main_menu;
 					}
 					break;
 				default:

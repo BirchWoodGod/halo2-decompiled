@@ -139,7 +139,6 @@ real function_30bf0(vector3f *v);
 
 /* the havok components (src/unknown_1cec30.cpp, src/unknown_0dc3a0.cpp) */
 void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, transform4x3f *matrix);
-bool havok_component_rigid_body_keyframed(long rigid_body_index, s_havok_component *component);
 void havok_component_contact_properties_get(s_havok_component const *component, long contact_index, long *property_a, long *property_b);
 void function_141590(transform4x3f const *in, transform4x3f *out);
 
@@ -704,9 +703,9 @@ long function_2273d0(
 
 		if (rigid_body_index_a != NONE && rigid_body_index_b != NONE &&
 			!havok_component_rigid_body_get(rigid_body_index_a, havok_component_a)->m_fixed &&
-			!havok_component_rigid_body_keyframed(rigid_body_index_a, havok_component_a) &&
+			!havok_component_a->rigid_body_keyframed(rigid_body_index_a) &&
 			!havok_component_rigid_body_get(rigid_body_index_b, havok_component_b)->m_fixed &&
-			!havok_component_rigid_body_keyframed(rigid_body_index_b, havok_component_b))
+			!havok_component_b->rigid_body_keyframed(rigid_body_index_b))
 		{
 			result = 1;
 		}
