@@ -2744,6 +2744,10 @@ void function_129380(vector3f const *const *voice_values, vector3f const *const 
 	}
 }
 
+__declspec(noinline) bool sound_playback_update_location(long sound_index);
+
+__declspec(noinline) void function_126df0(long fade_in_index, long fade_out_index, short curve, real duration);
+
 // @retail 0x128020
 void function_128020(void)
 {
@@ -2776,20 +2780,26 @@ void function_128020(void)
 			goto skip_to_next;
 		}
 		if (definition->flags & 8)
-			sound->location.flag0 = true;
+			((s_sound_location_byte_flags *)&sound->location)->flag0 = true;
 		{
 			real maximum;
-			if (TEST_FIELD_BIT(sound->location.flag3))
-				maximum = *(real *)((byte *)&sound->location + 0x38);
+			s_type_99c531 *location = &sound->location;
+			word location_flags = *(word *)location;
+			if ((bool)((location_flags >> 3) & 1))
+				maximum = *(real *)((byte *)location + 0x38);
 			else
 			{
 				s_sound_definition *current = sound_definition_get(sound->definition_index);
 				if (current->flags & 0x800)
+				{
+#pragma inline_depth(0)
 					maximum = *(real *)((byte *)function_221810(current->promotion_index) + 0x1c);
+#pragma inline_depth(255)
+				}
 				else
 					maximum = function_xaa8231(current->class_index)->maximum_distance;
 			}
-			long listener = function_127d00(&sound->location, maximum, NULL);
+			long listener = function_127d00(location, maximum, NULL);
 			if (listener == NONE)
 			{
 				if (!TEST_FIELD_BIT(sound->flag2))
@@ -2801,7 +2811,8 @@ void function_128020(void)
 						fading->fade_curve = 0;
 						fading->fade_start_time = 2000;
 						fading->fade_end_time = NONE;
-						fading->fading = true;
+						byte *flags = (byte *)&fading->flags;
+						*flags |= 0x80;
 					}
 					sound->flag2 = true;
 				}

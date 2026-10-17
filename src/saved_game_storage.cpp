@@ -32,6 +32,7 @@ s_51e9f8 g_51e9f8;
 
 /* the subsystem's initialize (in the table in src/unknown_157450.cpp,
    with 0x215730 as its dispose): makes sure n:\sgf exists and resets the state */
+#pragma inline_depth(0)
 // @retail 0x215690
 void saved_game_storage_initialize(void)
 {
@@ -39,23 +40,24 @@ void saved_game_storage_initialize(void)
     // Retail clears g_55c030..g_55c284 with one memset; here the range is
     // still separate globals, so this function does not match yet.
     memset(g_saved_game_storage_reserved, 0, sizeof(g_saved_game_storage_reserved));
-    g_55c14c = true;
-    g_55c14d = true;
     g_55c14e = 0;
     g_55c14f = 0;
-    g_55c150 = 3;
     g_55c154 = 0;
-    g_55c158 = NONE;
-    g_55c15c = 123;
     g_55c160_table.count = 0;
     memset(g_55c160_table.entries, 0, 4 * sizeof(g_55c160_table.entries[0]));
-    g_saved_game_file_lock.free = true;
     g_saved_game_file_lock.file_index = 0;
     g_saved_game_file_lock.thread = 0;
     g_51e9f8.field_0 = 0;
+    g_55c14c = true;
+    g_55c14d = true;
+    g_55c150 = 3;
+    g_55c158 = NONE;
+    g_55c15c = 123;
+    g_saved_game_file_lock.free = true;
     g_51e9f8.field_4 = 1;
     g_55c280 = get_current_language();
 }
+#pragma inline_depth()
 
 /* lists the hard disk's files again when they have changed */
 // @retail 0x215790

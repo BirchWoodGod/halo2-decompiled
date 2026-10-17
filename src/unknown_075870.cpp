@@ -841,17 +841,18 @@ long network_connection_allocate(long unused_owner, dword flags);
 static inline void observer_statistics_initialize(s_network_statistics *statistics, long interval)
 {
 	statistics->interval = interval;
-	statistics->period = interval / NUMBER_OF_STATISTICS_SAMPLES;
-	statistics->rate_scale = 1000.0f / interval;
+	statistics->period = statistics->interval / NUMBER_OF_STATISTICS_SAMPLES;
+	statistics->rate_scale = 1000.0f / statistics->interval;
 	observer_statistics_reset(statistics);
 }
 
 // @retail 0x76aa0
 long network_observer_attach_channel(s_network_observer *observer, long owner_index, const XNADDR *address)
 {
+	long i = 0;
 	s_network_observer_channel *local_0 = observer->channels;
 	long result = NONE;
-	for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++)
+	for (; i < MAXIMUM_OBSERVER_CHANNELS; i++)
 	{
 		if (local_0[i].state && !memcmp(address, local_0[i].remote_id, sizeof(*address)))
 		{
@@ -877,7 +878,7 @@ long network_observer_attach_channel(s_network_observer *observer, long owner_in
 				if (local_0[j].state && !local_0[j].owner_mask)
 				{
 					index = j;
-					s_network_observer_channel *channel = &observer->channels[index];
+					s_network_observer_channel *channel = &observer->channels[j];
 					network_observer_channel_forget_address(observer, j, false, 0xe);
 					if (channel->connection_index != NONE)
 					{
@@ -2067,8 +2068,9 @@ bool __stdcall function_78a90(long first, long second, const void *context)
 void function_78ac0(s_network_observer *observer)
 {
 	byte enabled = observer->flag4e00;
+	long i = 0;
 	byte *local_0 = (byte *)observer->channels + 0x48c;
-	for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++, local_0 += sizeof(s_network_observer_channel))
+	for (; i < MAXIMUM_OBSERVER_CHANNELS; i++, local_0 += sizeof(s_network_observer_channel))
 	{
 		s_network_observer_channel *base = (s_network_observer_channel *)(local_0 - 0x48c);
 		s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)base;

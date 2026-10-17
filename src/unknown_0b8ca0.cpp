@@ -130,13 +130,13 @@ long __stdcall function_b8ca0(long object_index)
 
 	if (object->parent_index != NONE)
 	{
-		byte const &parent_flag = TAG_DATA(s_object_definition_view, object->definition_index)->flag4;
-		if (TEST_FIELD_BIT(parent_flag))
+		word parent_flags = *(word const *)((byte const *)TAG_DATA(s_object_definition_view, object->definition_index) + 2);
+		if ((bool)(((dword)parent_flags >> 4) & 1))
 	{
 		{ result_value = function_b8ca0(object->parent_index); goto return_exit; }
 	}
 	}
-	if (TEST_FIELD_BIT(object->flag0) && ((byte)(1u << object->type) & 0x1c) && function_10cf50(object_index))
+	if (TEST_FIELD_BIT(object->flag0) && ((1u << object->type) & 0x1c) && function_10cf50(object_index))
 		{ result_value = object->unit_index; goto return_exit; }
 	{ result_value = object_index; goto return_exit; }
 

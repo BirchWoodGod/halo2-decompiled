@@ -453,7 +453,7 @@ bool network_session_create_key(c_class_58d20 *session, long local, long mode)
 			XNKID kid = entry->kid;
 			XNKEY key = entry->key;
 			network_session_set_key(session, local_value, &kid, &key);
-			return true;
+			result = true;
 		}
 	}
 	return result;
