@@ -2212,7 +2212,7 @@ void __stdcall function_683a0(byte *block)
 		}
 		update++;
 		j++;
-	} while (j < count);
+	} while (j < *(long *)(block + 0xe38));
 	if (*(bool *)(block + 0x403c) &&
 		(SIMULATION_WORLD->state == 3 || SIMULATION_WORLD->state == 5))
 	{
