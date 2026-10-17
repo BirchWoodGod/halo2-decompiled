@@ -13,6 +13,8 @@
 #include "unknown_234c64.h"
 
 /* a value a setting can take, and the string that names it */
+struct s_game_variant_preset;
+
 struct s_game_variant_setting_option
 {
 	byte unknown00[4];
@@ -81,7 +83,7 @@ struct s_game_variant_settings
 	byte unknown20[4];
 	long preset_string_list_index;
 	long preset_count;
-	void *presets;
+	s_game_variant_preset *presets;
 	s_game_engine_default_settings engines[9];
 };
 typedef char assert_game_variant_settings_categories[(offsetof(s_game_variant_settings, num_categories) == 0x18) ? 1 : -1];

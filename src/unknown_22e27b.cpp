@@ -1145,7 +1145,7 @@ c_class_1473c9::c_class_1473c9(long screen_id, long a, long b, word user_flags) 
 	value5f2(false),
 	value5f3(0),
 	value5f4(false),
-	delegate(this, &c_class_1473c9::function_230427)
+	delegate(this, &c_class_1473c9::select_pane)
 {
 	type = 0;
 	value0c = ++next_widget_id;

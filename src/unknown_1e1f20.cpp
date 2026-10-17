@@ -432,24 +432,35 @@ void function_1e2150(long actor_index, long object_index)
 
 void swarm_creatures_clear_index20(long perception_index);
 
+/* empties a location: no leaf or cluster, in the current structure bsp */
+PRIVATE inline void location_make_empty(s_location *location)
+{
+ location->leaf_index = NONE;
+ location->cluster_index = NONE;
+ location->bsp_index = g_4686c4;
+}
+
+/* the actor's next prop in its list, or NULL at the end */
+PRIVATE inline s_prop_node_view *prop_list_take_next(long *prop_index)
+{
+ s_prop_node_view *prop = NULL;
+ if (*prop_index != NONE)
+ {
+  prop = prop_node_get(*prop_index);
+  *prop_index = prop->next_index;
+ }
+ return prop;
+}
+
 // @retail 0x1e23c0
 void function_1e23c0(long actor_index)
 {
  const long *index_reference = &actor_index;
  s_actor_view *actor = actor_get(*index_reference);
- *(long *)((byte *)actor + 0x250) = NONE;
- *(short *)((byte *)actor + 0x254) = NONE;
- *(short *)((byte *)actor + 0x256) = g_4686c4;
+ location_make_empty((s_location *)((byte *)actor + 0x250));
  *(bool *)((byte *)actor + 0x278) = false;
  *(long *)((byte *)actor + 0x28c) = NONE;
- s_actor_view *state = actor_get(*index_reference);
- *(bool *)((byte *)state + 0x50c) = false;
- *(long *)((byte *)state + 0x5ac) = NONE;
- *(short *)((byte *)state + 0x5b0) = NONE;
- *(short *)((byte *)state + 0x5b4) = 0;
- *(short *)((byte *)state + 0x5b6) = 0;
- state->unknown4ac = 0;
- *(short *)((byte *)state + 0x504) = 0;
+ actor_reset_state(*index_reference);
  if (actor->unknown4ac == 2)
   *(long *)((byte *)actor + 0x4c8) = NONE;
  *(long *)((byte *)actor + 0x4fc) = NONE;
@@ -460,27 +471,23 @@ void function_1e23c0(long actor_index)
   s_slot *slot = &actor->slots[i];
   t_slot_proc callback = g_46eeb8[slot->type]->proc30;
   if (callback)
-  {
-   s_slot *selected = slot;
-   if (i >= 4) selected = NULL;
-   callback(*index_reference, selected);
-  }
+   callback(*index_reference, i < 4 ? &actor->slots[i] : NULL);
  }
  long prop_index = actor_get(*index_reference)->first_prop_index;
- while (prop_index != NONE)
+ s_prop_node_view *prop;
+ while ((prop = prop_list_take_next(&prop_index)) != NULL)
  {
-  s_prop_node_view *prop = (s_prop_node_view *)(g_502418->data + (prop_index & 0xffff) * 0x3c);
-  prop_index = prop->next_index;
+  /* retail calls 0x25d690 here rather than inlining it */
+#pragma inline_depth(0)
   byte *prop_block = (byte *)function_25d690((s_prop_datum *)prop);
+#pragma inline_depth()
   byte *view = NULL;
   if (prop->view_index != NONE)
   {
    byte *entry = g_502414->data + (prop->view_index & 0xffff) * 0x124;
    if (entry) view = entry + 0x70;
   }
-  *(long *)(prop_block + 0x28) = NONE;
-  *(short *)(prop_block + 0x2c) = NONE;
-  *(short *)(prop_block + 0x2e) = g_4686c4;
+  location_make_empty((s_location *)(prop_block + 0x28));
   *(long *)(prop_block + 0x44) = NONE;
   if (view && *(short *)(view + 0x70) == 1)
   {

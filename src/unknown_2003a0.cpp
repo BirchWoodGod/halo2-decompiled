@@ -2427,7 +2427,7 @@ local_16:
 }
 
 struct s_1fb7e0_data;
-bool __stdcall function_20ba60(short arg_0, long arg_1, long arg_2, long arg_3, long arg_4, s_1fb7e0_data const *arg_5);
+bool __stdcall function_20ba60(short arg_0, long arg_1, long arg_2, long arg_3, short arg_4, s_1fb7e0_data const *arg_5);
 
 // @retail 0x202a00
 void __stdcall function_202a00(long arg_0, long arg_1)

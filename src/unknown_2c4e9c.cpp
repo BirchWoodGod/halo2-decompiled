@@ -632,7 +632,7 @@ bool online_title_is_this_title(DWORD title_id);
 bool function_1906da(long index);
 void parse_replace_missing_characters(word *string, long count);
 void function_253bc9(c_text_widget_458940 *widget, long subtitle_type);
-bool function_230265(c_class_1473c9 *screen);
+bool screen_lower_channel_window_in_use(c_class_1473c9 *screen);
 void voice_play_voice_mail(long port, const long *data, long size);
 void function_236299(long sound);
 c_class_1473c9 *__stdcall function_2b7152(s_screen_parameters *parameters);
@@ -1084,7 +1084,7 @@ void c_xbox_live_message_display_screen::v3()
 		update_details();
 		update_attachment();
 	}
-	else if (!function_230265(this))
+	else if (!screen_lower_channel_window_in_use(this))
 	{
 		s_screen_parameters parameters;
 

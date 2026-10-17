@@ -126,7 +126,7 @@ bool __stdcall function_20d0c0(s_audio_priority_table *arg_0, long arg_1, short 
 #pragma inline_depth(255)
 
 // @retail 0x20ba60
-bool __stdcall function_20ba60(short arg_0, long arg_1, long arg_2, long arg_3, long arg_4, s_1fb7e0_data const *arg_5)
+bool __stdcall function_20ba60(short arg_0, long arg_1, long arg_2, long arg_3, short arg_4, s_1fb7e0_data const *arg_5)
 {
     volatile bool local_0 = false;
     if (*((byte *)g_4f55d0 + 0x20) && *(short *)((byte *)g_4f55d0 + 0x22) <= 0)
