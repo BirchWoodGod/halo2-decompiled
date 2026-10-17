@@ -32,7 +32,7 @@ void object_children_reattach(long object_index, long marker_name, long parent_m
 			if (g_4de300[child_index & 0xffff] != g_4de2fc)
 			{
 				g_4de300[child_index & 0xffff] = g_4de2fc;
-				if (child->parent_node_index == marker.node_index)
+				if (child->attached_node_index == marker.node_index)
 				{
 					function_b9a90(child_index);
 					function_b8ee0(object_index, parent_marker_name, child_index, child_marker_name);

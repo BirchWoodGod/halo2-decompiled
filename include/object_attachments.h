@@ -15,11 +15,11 @@ struct s_object_attachment_view
 	long next_sibling_index;
 	long first_child_index;
 	byte unknown14[4];
-	signed char parent_node_index;
+	signed char attached_node_index;
 };
 typedef char assert_object_attachment_view_next_sibling[(offsetof(s_object_attachment_view, next_sibling_index) == 0xc) ? 1 : -1];
 typedef char assert_object_attachment_view_first_child[(offsetof(s_object_attachment_view, first_child_index) == 0x10) ? 1 : -1];
-typedef char assert_object_attachment_view_parent_node[(offsetof(s_object_attachment_view, parent_node_index) == 0x18) ? 1 : -1];
+typedef char assert_object_attachment_view_parent_node[(offsetof(s_object_attachment_view, attached_node_index) == 0x18) ? 1 : -1];
 
 /* an element of the object header data (g_4e0300): the object pointer */
 struct s_object_attachment_header
