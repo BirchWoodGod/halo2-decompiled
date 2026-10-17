@@ -58,7 +58,7 @@ bool __stdcall function_23699f(long controller);
 void function_6cb60(void);
 void function_1906b4(void);
 void window_manager_reset_windows_except_channels_1_and_5(void);
-c_class_1473c9 *__stdcall function_14752c(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall main_menu_open(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_252481(s_screen_parameters *parameters);
 
 extern dword g_51ebec;
@@ -206,7 +206,7 @@ void c_press_start_screen::v3()
 				s_screen_parameters parameters;
 
 				parameters.field_c = 0;
-				function_149f49((s_message *)&parameters, 0, 0, 1 << index, 5, 4, (long)function_14752c);
+				function_149f49((s_message *)&parameters, 0, 0, 1 << index, 5, 4, (long)main_menu_open);
 				parameters.load(&parameters);
 				function_236299(5);
 				break;
