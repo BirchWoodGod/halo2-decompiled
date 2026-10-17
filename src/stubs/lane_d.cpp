@@ -45,12 +45,6 @@ bool __stdcall function_6bff0(s_type_9df9da *task)
 	return false;
 }
 
-// @stub 0x7fb50
-bool function_7fb50(void)
-{
- return false;
-}
-
 // @stub 0xa9f70
 long __stdcall function_a9f70(long object_index, long mode, const point3f *position)
 {
