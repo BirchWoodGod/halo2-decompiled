@@ -721,7 +721,7 @@ inline s_actor_cs_run_view *actor_cs_run_get(long actor_index)
 extern long g_50240c;
 extern long g_502410;
 long g_50242c;
-short function_209580(long thread_index); /* unknown_209520.cpp */
+short hs_thread_run_if_due(long thread_index); /* unknown_209520.cpp */
 
 /* runs the command script's thread for the actor, again while it ends in
    type 0x16: 0 when it is done, 1 while it sleeps, 2 while it waits, 3 when
@@ -759,7 +759,7 @@ short function_258880(long actor_index, long cs_index)
 		cs->unknown2c = NONE;
 		g_502410 = cs_index;
 		_ReadWriteBarrier();
-		result = function_209580(cs->thread_index);
+		result = hs_thread_run_if_due(cs->thread_index);
 		g_502428 = NONE;
 		_ReadWriteBarrier();
 		g_50240c = NONE;
