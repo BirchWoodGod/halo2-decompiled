@@ -202,7 +202,7 @@ word const *c_list_24a64d::function_24a691(long index, bool append)
 }
 
 void function_1630b0(long *values, long value);
-bool function_1a0540(long file_index, s_player_profile_settings *settings);
+bool player_profile_load(long file_index, s_player_profile_settings *settings);
 word *function_215b50(long file_index, word *name);
 
 // @retail 0x24a52b
@@ -255,7 +255,7 @@ void c_list_24a64d::v24()
 				s_player_profile_settings *settings = (s_player_profile_settings *)((byte *)entry + 4);
 				if (index == g_54e5d0.profile_index)
 					*settings = g_54e5d0.settings;
-				else if (!function_1a0540(index, settings))
+				else if (!player_profile_load(index, settings))
 				{
 					memset(settings, 0, sizeof(*settings));
 					function_215b50(entry->index, entry->field_0c);
@@ -350,7 +350,7 @@ void c_list_24a64d::function_24a30e(s_controller_reference **arg_0, long *arg_1)
 		else
 		{
 			s_player_profile_settings local_1;
-			if (function_1a0540(local_0->index, &local_1))
+			if (player_profile_load(local_0->index, &local_1))
 			{
 				if (field_89)
 				{
@@ -464,10 +464,10 @@ void function_24a7ec(dword const *arg_0, c_class_2b0b5e *arg_1, long arg_2, bool
 	}
 }
 
-struct s_key_set;
+struct s_player_profile;
 struct s_entry_b;
 struct s_localized_name;
-void function_1a06f0(s_key_set *arg_0, long *arg_1, long *arg_2);
+void player_profile_get_highest_key(s_player_profile *arg_0, long *arg_1, long *arg_2);
 long function_19c4e0(long arg_0);
 long function_19c440(long arg_0, long arg_1);
 s_entry_b *function_19c1f0(long arg_0);
@@ -538,7 +538,7 @@ void c_screen_24a7bf::v3()
 		if (!local_0)
 		{
 			long local_5, local_6;
-			function_1a06f0((s_key_set *)((byte *)local_1 + 4), &local_5, &local_6);
+			player_profile_get_highest_key((s_player_profile *)((byte *)local_1 + 4), &local_5, &local_6);
 			if (local_5 != function_19c4e0(1))
 				local_5 = function_19c440(1, local_5);
 			if (local_5 != NONE)
@@ -563,7 +563,7 @@ local_9:
 		if (!local_0)
 		{
 			long local_6, local_7;
-			function_1a06f0((s_key_set *)((byte *)local_1 + 4), &local_6, &local_7);
+			player_profile_get_highest_key((s_player_profile *)((byte *)local_1 + 4), &local_6, &local_7);
 			switch (local_7)
 			{
 			case 0: local_5 = 0x400028e; break;

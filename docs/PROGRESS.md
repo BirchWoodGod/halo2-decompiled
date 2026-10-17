@@ -2,6 +2,15 @@
 
 The newest entry comes first.
 
+## 2026-10-17: 8954 functions match
+
+```
+matched 8954 of 11321 game functions (1246909 of 2784283 bytes, 44.78%)
+```
+
+3 new matches, none lost:
+- @BirchWoodGod's #528: `0x420a0`, `0x42760` and `0x42850` match.
+
 ## 2026-10-17: 8951 functions match
 
 ```

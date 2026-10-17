@@ -15,6 +15,7 @@
 #include "reset_storage.h"
 #include "globals.h"
 #include "index_cache_storage.h"
+#include "depth_groups_storage.h"
 #include "physical_memory.h"
 #include <string.h>
 #include <xtl.h>
@@ -28,16 +29,6 @@ dword *function_1332b0(long bit_count, s_bit_vector_pool *data);
 long function_016ae0(real value);
 void function_30290(point3f const *point, s_view const *view, s_camera const *camera, real radius, box2f *bounds);
 extern byte g_509410, g_509411;
-
-struct s_42760_entry
-{
-    real depth;
-    point3f position;
-    byte unknown10[0x10];
-    long type;
-};
-extern s_42760_entry g_4c152c[32];
-extern long g_4c19ac;
 
 void *function_44940(short index, bool instance);
 long function_2d000(long object_tag, long tag, long index);

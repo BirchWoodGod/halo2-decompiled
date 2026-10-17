@@ -40,8 +40,8 @@ bool function_216120(word *string, long type);
 void function_148a58();
 void function_120df0(long index, wchar_t const *name);
 void function_120e20(long *profile_index, long controller_index);
-long __stdcall function_1a03a0(long controller_index, word *name);
-bool function_1a0540(long profile_index, s_player_profile_settings *settings);
+long __stdcall player_profile_make(long controller_index, word *name);
+bool player_profile_load(long profile_index, s_player_profile_settings *settings);
 void function_19060a(long controller_index, long profile_index);
 long online_team_create(long controller_index, XONLINE_TEAM_PROPERTIES const *properties);
 void function_1487c3(long controller_index, long task_index, long callback, long value, long context);
@@ -1282,10 +1282,10 @@ bool finish_profile_create(c_virtual_keyboard_screen *keyboard)
 	long profile_index;
 
 	parameters.field_c = 0;
-	profile_index = function_1a03a0(keyboard->get_controller_index(), keyboard->string);
+	profile_index = player_profile_make(keyboard->get_controller_index(), keyboard->string);
 	if (profile_index != NONE)
 	{
-		function_1a0540(profile_index, &settings);
+		player_profile_load(profile_index, &settings);
 		profile_edit_begin(keyboard->get_controller_index(), &settings, profile_index);
 		player_slot_profile_get(keyboard->get_controller_index())->set_profile(profile_index);
 		function_149f49((s_message *)&parameters, 0, 0, keyboard->user_flags, 5, 4, (long)function_237713);
@@ -1302,11 +1302,11 @@ bool finish_profile_create(c_virtual_keyboard_screen *keyboard)
 bool finish_profile_create_1(c_virtual_keyboard_screen *keyboard)
 {
 	s_player_profile_settings settings;
-	long profile_index = function_1a03a0(keyboard->get_controller_index(), keyboard->string);
+	long profile_index = player_profile_make(keyboard->get_controller_index(), keyboard->string);
 
 	if (profile_index != NONE)
 	{
-		function_1a0540(profile_index, &settings);
+		player_profile_load(profile_index, &settings);
 		profile_edit_begin(keyboard->get_controller_index(), &settings, profile_index);
 		function_19060a(keyboard->get_controller_index(), profile_index);
 	}
@@ -1321,13 +1321,13 @@ bool finish_profile_create_1(c_virtual_keyboard_screen *keyboard)
 bool finish_profile_create_2(c_virtual_keyboard_screen *keyboard)
 {
 	s_player_profile_settings settings;
-	long profile_index = function_1a03a0(keyboard->get_controller_index(), keyboard->string);
+	long profile_index = player_profile_make(keyboard->get_controller_index(), keyboard->string);
 
 	if (profile_index != NONE)
 	{
 		s_screen_parameters parameters;
 
-		function_1a0540(profile_index, &settings);
+		player_profile_load(profile_index, &settings);
 		profile_edit_begin(keyboard->get_controller_index(), &settings, profile_index);
 		parameters.field_c = 0;
 		function_149f49((s_message *)&parameters, 0, 0, keyboard->user_flags, 5, 4, (long)function_237713);
@@ -1344,11 +1344,11 @@ bool finish_profile_create_2(c_virtual_keyboard_screen *keyboard)
 bool finish_profile_create_3(c_virtual_keyboard_screen *keyboard)
 {
 	s_player_profile_settings settings;
-	long profile_index = function_1a03a0(keyboard->get_controller_index(), keyboard->string);
+	long profile_index = player_profile_make(keyboard->get_controller_index(), keyboard->string);
 
 	if (profile_index != NONE)
 	{
-		function_1a0540(profile_index, &settings);
+		player_profile_load(profile_index, &settings);
 		profile_edit_begin(keyboard->get_controller_index(), &settings, profile_index);
 		player_slot_profile_get(keyboard->get_controller_index())->set_profile(profile_index);
 		profile_edit_end();

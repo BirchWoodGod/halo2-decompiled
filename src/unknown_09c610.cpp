@@ -289,7 +289,7 @@ long function_1896c0(real arg_0, long arg_1);
 void player_speed_request_14ea20(long arg_0);
 void player_speed_request_14eb10(long arg_0);
 void player_speed_request_14ec00(long arg_0);
-void function_19ca10(long arg_0);
+void teleporter_display_blocked_message(long arg_0);
 
 // @retail 0x9ffa0
 bool c_unit_pickup_event_definition::v11(long arg_0, long const *arg_1, long arg_2, void const *arg_3)
@@ -354,7 +354,7 @@ bool c_unit_pickup_event_definition::v11(long arg_0, long const *arg_1, long arg
                         byte *local_13 = (byte *)((s_object_header *)g_4e0300->data)[local_0 & 0xffff].object;
                         long local_14 = *(long *)(local_13 + 0x13c);
                         if (local_14 != NONE)
-                            function_19ca10(local_14);
+                            teleporter_display_blocked_message(local_14);
                         break;
                     }
                     }
