@@ -169,6 +169,8 @@ struct s_projection_scalars
 	real left, right, bottom, top;
 };
 
+byte function_016a90();
+
 // @retail 0x2fb70
 void function_2fb70(s_2f800_view const *view, box2f const *clip, s_projection_scalars *out)
 {
@@ -191,19 +193,19 @@ void function_2fb70(s_2f800_view const *view, box2f const *clip, s_projection_sc
     output.half_width = half_width;
     output.offset_x = offset_x;
     output.offset_y = offset_y;
-    real volatile tangent = (real)tan((double)(view->angle * 0.5f));
+    real tangent = (real)tan((double)(view->angle * 0.5f));
     real aspect = output.width / output.height;
-    if (!(g_4e6948 && g_4e6948->flag && g_4e6948->index != NONE && g_4e6948->state == 3) && g_485ac2)
+    if (function_016a90())
     {
         aspect *= 4.0f / 3.0f;
         if (g_510c50 && ((byte *)g_510c50)[5])
-            tangent = tangent * (4.0f / 3.0f) * 0.5625f;
+            tangent = 0.5625f * (tangent * (4.0f / 3.0f));
     }
     else if (g_510c50 && ((byte *)g_510c50)[5])
     {
         real scale = output.height * (1.0f / 480.0f);
-        output.clip.y0 *= scale;
-        output.clip.y1 *= scale;
+        output.clip.y0 = output.clip.y0 * scale;
+        output.clip.y1 = scale * output.clip.y1;
     }
     output.scale_x = 1.0f / (half_width * aspect * tangent);
     real inverse_x = 1.0f / output.scale_x;
@@ -410,7 +412,7 @@ void function_141590(transform4x3f const *in, transform4x3f *out);
 
 PRIVATE __forceinline void normalize_projection_axis(vector3f *axis)
 {
-    real length = (real)sqrt((double)axis->k * axis->k + (double)axis->j * axis->j + (double)axis->i * axis->i);
+    real length = (real)sqrt(axis->k * axis->k + axis->j * axis->j + axis->i * axis->i);
     if (!(fabs(length) < 0.0001f))
     {
         real inverse = 1.0f / length;
@@ -459,45 +461,50 @@ void function_2fd90(s_2f800_view const *view, box2f const *clip, byte *out)
     memcpy(projection->bounds, &scalars.left, 16);
     projection->half_width = scalars.scale_x * scalars.width * 0.5f;
     projection->half_height = scalars.scale_y * scalars.height * 0.5f;
-    real x, y, z, distance;
+    plane3f plane;
     if (view->near_distance == 0.0f)
     {
-        real const *plane = (real const *)view->unknown48;
-        x = inverse->up.i * plane[2] + inverse->left.i * plane[1] + inverse->forward.i * plane[0];
-        y = inverse->up.j * plane[2] + inverse->left.j * plane[1] + inverse->forward.j * plane[0];
-        z = inverse->up.k * plane[2] + inverse->left.k * plane[1] + inverse->forward.k * plane[0];
-        distance = plane[3] * inverse->scale + inverse->position.z * z + inverse->position.y * y + inverse->position.x * x;
+        plane3f const *clip_plane = (plane3f const *)view->unknown48;
+        real i = clip_plane->i;
+        real j = clip_plane->j;
+        real k = clip_plane->k;
+        plane.i = inverse->up.i * k + inverse->left.i * j + inverse->forward.i * i;
+        plane.j = inverse->up.j * k + inverse->left.j * j + inverse->forward.j * i;
+        plane.k = inverse->up.k * k + inverse->left.k * j + inverse->forward.k * i;
+        plane.d = clip_plane->d * inverse->scale + inverse->position.z * plane.k + inverse->position.y * plane.j + inverse->position.x * plane.i;
     }
     else
     {
-        x = y = 0.0f;
-        z = 1.0f;
-        distance = 0.0f - view->near_distance;
+        plane.i = plane.j = 0.0f;
+        plane.k = 1.0f;
+        plane.d = 0.0f - view->near_distance;
     }
-    real reciprocal = 1.0f / z;
-    real near_value = 0.0f - reciprocal * distance;
-    real scale = (real)(view->far_distance / ((view->far_distance - (double)near_value) *
-        (fabs((double)reciprocal * x) + fabs((double)reciprocal * y) + 1.0f)));
-    real a = reciprocal * scale * x;
-    real b = reciprocal * scale * y;
-    real c = 0.0f - scale * near_value;
-    if (c > 0.0f && view->near_distance == 0.0f)
+    real far_distance = view->far_distance;
+    real reciprocal = 1.0f / plane.k;
+    real near_value = 0.0f - reciprocal * plane.d;
+    real scale = (real)(far_distance / ((far_distance - near_value) *
+        (fabs(reciprocal * plane.j) + fabs(reciprocal * plane.i) + 1.0f)));
+    plane.i = reciprocal * scale * plane.i;
+    plane.j = reciprocal * scale * plane.j;
+    plane.k = scale;
+    plane.d = 0.0f - scale * near_value;
+    if (plane.d > 0.0f && view->near_distance == 0.0f)
     {
-        a = 0.0f - a;
-        b = 0.0f - b;
-        c = 0.0f - c;
-        scale = 0.0f - scale;
+        plane.i = 0.0f - plane.i;
+        plane.j = 0.0f - plane.j;
+        plane.k = 0.0f - plane.k;
+        plane.d = 0.0f - plane.d;
     }
     memset(projection->matrix, 0, 64);
     projection->matrix[0] = scalars.scale_x;
     projection->matrix[5] = scalars.scale_y;
     projection->matrix[8] = 0.0f - scalars.offset_x;
     projection->matrix[9] = 0.0f - scalars.offset_y;
-    projection->matrix[2] = 0.0f - a;
-    projection->matrix[6] = 0.0f - b;
-    projection->matrix[10] = 0.0f - scale;
+    projection->matrix[2] = 0.0f - plane.i;
+    projection->matrix[6] = 0.0f - plane.j;
+    projection->matrix[10] = 0.0f - plane.k;
     projection->matrix[11] = -1.0f;
-    projection->matrix[14] = c;
+    projection->matrix[14] = plane.d;
 }
 
 struct s_view_setup;
