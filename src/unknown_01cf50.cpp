@@ -6492,7 +6492,7 @@ void __stdcall function_4f010(void *payload)
             }
             for (long i = 0; i < *(long *)(entry + 0xc); ++i)
             {
-                s_501e0 *point_out = points + i;
+                s_501e0 *out_point = points + i;
                 real position;
                 if (*(dword *)(entry + 0x5c) & 2) position = (real)i * step;
                 else if (*(dword *)(entry + 0x5c) & 1)
@@ -6524,10 +6524,10 @@ void __stdcall function_4f010(void *payload)
                 point.x = state->first.i * length + state->position.x;
                 point.y = state->first.j * length + state->position.y;
                 point.z = state->first.k * length + state->position.z;
-                point_out->field_0 = point;
-                point_out->field_c = width * output[0];
-                point_out->field_10 = width * output[1];
-                point_out->field_14 = pack_color4f(&colour);
+                out_point->field_0 = point;
+                out_point->field_c = width * output[0];
+                out_point->field_10 = width * output[1];
+                out_point->field_14 = pack_color4f(&colour);
             }
             function_4f7e0(*(long *)(entry + 8), points, *(long *)(entry + 0xc), 0,
                 horizontal, vertical, false, false, filtered);
