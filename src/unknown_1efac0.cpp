@@ -113,7 +113,7 @@ bool s_lookup::initialize(long object_handle)
 /* ---- a three-level table of items, walked by a packed position ---- */
 struct s_item
 {
-	byte first;
+	signed char first;
 	byte unknown01[3];
 	byte data[0x40];
 };
