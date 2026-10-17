@@ -5258,9 +5258,9 @@ void __stdcall function_35b90(void *material)
         byte *bitmap = *(byte **)(source + 0xc + stage * 4);
         if (!bitmap) break;
         g_51f3c8[1][stage] = function_12310((s_bitmap_view *)bitmap, 0.0f);
-        short bitmap_width = *(short *)(bitmap + 4);
+        short texture_width = *(short *)(bitmap + 4);
         short bitmap_height = *(short *)(bitmap + 6);
-        g_485af4[stage] = bitmap_width;
+        g_485af4[stage] = texture_width;
         g_485b04[stage] = bitmap_height;
         D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, source[0x18 + stage] ? 1 : 3);
         D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, source[0x18 + stage] ? 1 : 3);
