@@ -53,8 +53,6 @@ struct s_prop_view_state
 
 static __forceinline short actor_prop_state(s_actor_view *actor)
 {
-	short state = 0;
-
 	if (actor->prop_index != NONE)
 	{
 		#pragma inline_depth(0)
@@ -62,9 +60,9 @@ static __forceinline short actor_prop_state(s_actor_view *actor)
 		#pragma inline_depth()
 
 		if (view)
-			state = view->state;
+			return view->state;
 	}
-	return state;
+	return 0;
 }
 
 /* the block of the actor's character tag function_1e4db0 returns */
