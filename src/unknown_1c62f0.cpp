@@ -76,7 +76,6 @@ void c_animation_channel::clear()
 	unknown0e = NONE;
 }
 
-#pragma optimize("y", off)
 // @retail 0x1c6470
 bool c_animation_channel::set(long graph_tag_index, word flags, c_type_709360 animation_id, long unknown08,
 	char unknown0c, char unknown0d, char unknown0e)
@@ -105,7 +104,6 @@ bool c_animation_channel::set(long graph_tag_index, word flags, c_type_709360 an
 	}
 	return false;
 }
-#pragma optimize("", on)
 
 // @retail 0x1c6bb0
 s_graph_tag *c_animation_channel_get_graph(c_animation_channel const *channel)
