@@ -2313,7 +2313,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 000a51f0,28,game,speed,a16 pad,,,0011c9c0,src/unknown_09b910.cpp,matched
 000a5210,860,game,speed,a16 pad,,,000b66f0 00195720,src/unknown_09b910.cpp,matched
 000a5570,220,game,speed,a16 pad,,,001957d0 001959c0,src/unknown_09b910.cpp,matched
-000a5650,221,game,speed,a16 pad,,,0019eb30,src/unknown_09b910.cpp,todo
+000a5650,221,game,speed,a16 pad,,,0019eb30,src/unknown_09b910.cpp,matched
 000a5730,6,game,speed,a16 pad,,,,src/unknown_09b910.cpp,matched
 000a5740,6,game,speed,a16 pad,,,,src/unknown_09b910.cpp,matched
 000a5750,5,game,speed,a16 pad,,,,src/unknown_09a9f0.cpp,matched
@@ -2322,7 +2322,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 000a5780,28,game,speed,a16 pad,,,0011c9c0,src/unknown_09b910.cpp,matched
 000a57a0,125,game,speed,a16 pad,,,000b66f0 00195720,src/unknown_09b910.cpp,matched
 000a5820,36,game,speed,a16 pad,,,001959c0,src/unknown_09b910.cpp,matched
-000a5850,116,game,speed,a16 pad,,,00162d00,src/unknown_09b910.cpp,todo
+000a5850,116,game,speed,a16 pad,,,00162d00,src/unknown_09b910.cpp,matched
 000a58d0,87,game,speed,a16 pad,,,,src/unknown_0a58d0_k2.cpp,matched
 000a5930,80,game,speed,a16 pad,,,,src/unknown_0a58d0.cpp,matched
 000a5980,80,game,unknown,a16,,,,src/unknown_0a58d0.cpp,matched
@@ -2334,7 +2334,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 000a5b40,55,game,speed,a16 pad,,,000b8540 000bb7b0,src/unknown_09a9f0.cpp,matched
 000a5b80,34,game,speed,a16 pad,,,,src/unknown_09a9f0.cpp,matched
 000a5bb0,27,game,speed,a16 pad,,,,src/unknown_09a9f0.cpp,matched
-000a5bd0,437,game,speed,a16 pad,,,0011df60 00122c10,src/unknown_0a58d0.cpp,todo
+000a5bd0,437,game,speed,a16 pad,,,0011df60 00122c10,src/unknown_0a58d0.cpp,matched
 000a5d90,210,game,speed,a16 pad,,,000b7930,src/unknown_0a58d0.cpp,matched
 000a5e70,1466,game,speed,a16 pad,,,,src/unknown_0a5e70.cpp,matched
 000a6430,548,game,speed,a16 pad,,,000a76b0 000a9f70 000aa260 000b7680 000b9b90 000bf830 000bf890 000dbc80 000dc0a0,src/unknown_0a6430.cpp,todo
