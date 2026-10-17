@@ -1490,9 +1490,9 @@ short function_c8960(long unit_index, short value)
 {
 	s_unit *unit = UNIT_GET(unit_index);
 	short index = unit->current_weapon_index;
-	long weapon_index = index != NONE ? unit->weapon_object_indices[index] : NONE;
 	short result = NONE;
 	bool flag = false;
+	long weapon_index = index != NONE ? unit->weapon_object_indices[index] : NONE;
 
 	if (weapon_index != NONE)
 	{
@@ -2871,8 +2871,7 @@ void function_c75d0(s_unit_motion *a, s_unit_motion *b, real scale)
 			}
 			if (step > 0.0f)
 			{
-				real time = motion->field_10_4 - step;
-				real velocity = time * motion->acceleration + motion->velocity;
+				real velocity = (motion->field_10_4 - step) * motion->acceleration + motion->velocity;
 
 				if (0.0001f > (real)fabs(velocity))
 				{
@@ -2882,9 +2881,9 @@ void function_c75d0(s_unit_motion *a, s_unit_motion *b, real scale)
 					motion->coast_time = 0.0f;
 					return;
 				}
-				motion->field_10_4 = time;
+				motion->field_10_4 -= step;
 				motion->s_type_8c87de -= step;
-				motion->coast_time = (motion->acceleration * step + velocity * 2.0f) * step / velocity;
+				motion->coast_time = ((motion->acceleration * step + velocity * 2.0f) * step) / velocity;
 			}
 		}
 	}
