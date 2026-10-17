@@ -206,9 +206,9 @@ void c_class_19b8b1::v4(long screen_rect_address)
         from.y1 = height;
         get_real_bounds((box2f *)&to);
         real px = *(short *)definition->unknown2c + to.x0;
-        real py = to.y0 - *(short *)(definition->unknown2c + 2);
         to.x0 = x + px;
         to.x1 = x + (width + px);
+        real py = to.y0 - *(short *)(definition->unknown2c + 2);
         to.y0 = y + py;
         to.y1 = y + (py - height);
         function_23618e(&to, depth, screen);
