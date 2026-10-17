@@ -174,10 +174,10 @@ real function_bcbb0()
 	return result;
 }
 
-void function_108e10(long object_index);
-void function_108e80(long object_index);
-void function_108ef0(long object_index, long a);
-void function_108f60(long object_index, long a);
+void object_type_attach_simulation_entity(long object_index);
+void object_type_detach_simulation_entity(long object_index);
+void object_type_handle_object_deleted(long object_index, long a);
+void object_type_handle_player_deleted(long object_index, long a);
 
 // @retail 0xbb760
 long function_bb760(short index)
@@ -191,7 +191,7 @@ long function_bb760(short index)
 void function_bb780(long object_index, long value)
 {
 	((s_object_header *)g_4e0300->data)[object_index & 0xffff].object->unknownd4 = value;
-	function_108e10(object_index);
+	object_type_attach_simulation_entity(object_index);
 }
 
 __declspec(noinline) void function_bb7b0(long object_index);
@@ -200,7 +200,7 @@ __declspec(noinline) void function_bb7b0(long object_index);
 void function_bb7b0(long object_index)
 {
 	s_object *object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-	function_108e80(object_index);
+	object_type_detach_simulation_entity(object_index);
 	object->unknownd4 = NONE;
 	object->unknownd8 = 0;
 }
@@ -208,7 +208,7 @@ void function_bb7b0(long object_index)
 PRIVATE __forceinline void object_clear_notification_inline(long object_index)
 {
 	s_object *object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
-	function_108e80(object_index);
+	object_type_detach_simulation_entity(object_index);
 	object->unknownd4 = NONE;
 	object->unknownd8 = 0;
 }
@@ -241,7 +241,7 @@ void __stdcall function_bb880(long a)
 	function_bae80(&state.iterator, 0, 0);
 	while ((state.object = function_baeb0(&state.iterator)) != 0)
 	{
-		function_108ef0(state.iterator.object_index, a);
+		object_type_handle_object_deleted(state.iterator.object_index, a);
 	}
 }
 
@@ -256,7 +256,7 @@ void function_bb8f0(long a)
 	function_bae80(&state.iterator, 0, 0);
 	while ((state.object = function_baeb0(&state.iterator)) != 0)
 	{
-		function_108f60(state.iterator.object_index, a);
+		object_type_handle_player_deleted(state.iterator.object_index, a);
 	}
 }
 

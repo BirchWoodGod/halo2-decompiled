@@ -10,7 +10,7 @@ void function_12b450(void);
 void function_18eb80(void);
 void effects_dispose(void);
 void function_067eb0(void);
-void function_109350(void);
+void object_list_dispose(void);
 void function_10a9d0(void);
 void function_123bf0(void);
 void function_125600(void);

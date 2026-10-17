@@ -675,7 +675,7 @@ void function_aa9e0(long index, point3f const *previous_position, vector3f const
 
 long function_b5990(long tag_index, bool flag);
 void function_b5920(long identifier);
-void function_108e80(long object_index);
+void object_type_detach_simulation_entity(long object_index);
 struct s_effect_object_placement;
 
 __declspec(noinline)
@@ -701,7 +701,7 @@ void function_a7a60(long index)
  {
   function_b5920(identifier);
   s_object_view *object = ((s_object_header *)g_4e0300->data)[index & 0xffff].object;
-  function_108e80(index);
+  object_type_detach_simulation_entity(index);
   object->field_d4 = NONE;
   object->field_d8 = 0;
  }
@@ -1219,7 +1219,7 @@ void function_a7ab0(long index)
  long identifier = object->field_d4;
  if (identifier != NONE)
  {
-  function_108e80(index);
+  object_type_detach_simulation_entity(index);
   object->field_d4 = NONE;
   object->field_d8 = 0;
   _ReadWriteBarrier();

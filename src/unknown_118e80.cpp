@@ -181,7 +181,7 @@ bool function_1faf80(vector3f *facing, long object_index, void const *settings_p
 void function_11f0d0(vector3f *position, vector3f *forward, vector3f const *target, real rate, real max_angle, real scale);
 void function_11d180(vector3f *left, vector3f const *in, vector3f *out, vector3f const *up, vector3f *forward);
 real function_11ce20(vector3f const *a, vector3f const *b);
-void function_109290(long object_index, long a, long b, long c);
+void object_type_handle_position_set(long object_index, long a, long b, long c);
 
 struct s_facing_definition_1197b0
 {
@@ -255,7 +255,7 @@ void function_1197b0(long object_index)
 	else
 		up = target_up;
 	point3f position = object->position;
-	function_109290(object_index, (long)&position, (long)&new_forward, (long)&up);
+	object_type_handle_position_set(object_index, (long)&position, (long)&new_forward, (long)&up);
 	if (dot3f(&object->up, &up) < 0.9999f || dot3f(&object->forward, &new_forward) < 0.9999f)
 	{
 		object->up = up;

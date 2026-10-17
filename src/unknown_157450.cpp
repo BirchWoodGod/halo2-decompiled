@@ -5346,10 +5346,10 @@ void function_d4de0(void);
 void function_d4e20(void);
 void function_d4e30(void);
 void function_d4e60(short bsp_index);
-void function_109300(void);
-void function_109350(void);
-void function_109360(void);
-void function_109380(void);
+void object_list_initialize(void);
+void object_list_dispose(void);
+void object_list_initialize_for_new_map(void);
+void object_list_dispose_from_old_map(void);
 void function_10a980(void);
 void function_10a9d0(void);
 void function_10a9e0(void);
@@ -5522,7 +5522,7 @@ s_subsystem_440dd8 const g_440dd8[68] =
     { function_1eb550, function_1eb5e0, function_1eb5f0, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { function_b67c0, function_b68c0, function_b69d0, function_b6ab0, function_b6bb0, function_b6c50, NULL, NULL, (t_subsystem_440dd8_callback_20)function_b6df0 },
-    { function_109300, function_109350, function_109360, function_109380, NULL, NULL, NULL, NULL, NULL },
+    { object_list_initialize, object_list_dispose, object_list_initialize_for_new_map, object_list_dispose_from_old_map, NULL, NULL, NULL, NULL, NULL },
     { function_10a980, function_10a9d0, function_10a9e0, function_10aab0, NULL, NULL, NULL, NULL, NULL },
     { function_1ec420, function_1ec470, function_1ec480, function_1ec4b0, NULL, NULL, NULL, NULL, NULL },
     { function_12560, function_141c0, function_22590, function_226c0, function_226a0, function_0226b0, NULL, NULL, NULL },

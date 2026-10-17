@@ -472,7 +472,7 @@ struct s_object_functions_definition_ab
     long count;
     s_object_function_ab *functions;
 };
-bool function_108d90(long object_index, long name, real *value, bool *enabled);
+bool object_type_get_function_value(long object_index, long name, real *value, bool *enabled);
 bool function_10aac0(long object_index, long name, real *value, long *index);
 real function_13bb90(s_tag_data const *function, real input, real range);
 bool __stdcall function_bab40(long object_index, long name, real *value);

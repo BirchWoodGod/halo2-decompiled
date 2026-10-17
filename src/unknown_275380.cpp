@@ -16,7 +16,7 @@ void function_cc590(long arg_0);
 void function_b9a90(long arg_0);
 void function_b7360(long arg_0);
 void __stdcall function_b8540(long arg_0);
-void function_109290(long arg_0, long arg_1, long arg_2, long arg_3);
+void object_type_handle_position_set(long arg_0, long arg_1, long arg_2, long arg_3);
 bool __stdcall function_b7430(long arg_0, point3f const *arg_1, vector3f const *arg_2, vector3f const *arg_3,
     s_location const *arg_4, bool arg_5, bool arg_6, bool arg_7, bool arg_8);
 
@@ -206,7 +206,7 @@ void function_275380(long arg_0)
                         }
                         point3f local_14 = local_12;
                         long local_15 = local_9->field_18;
-                        function_109290(local_15,(long)&local_14,0,0);
+                        object_type_handle_position_set(local_15,(long)&local_14,0,0);
                         if (!function_b7430(local_15,&local_14,NULL,NULL,NULL,true,true,false,false))
                         {
                             if (g_4e6948->mode != 4 || *(long *)((byte *)handler_object_get(local_15)+0xd4) == NONE)

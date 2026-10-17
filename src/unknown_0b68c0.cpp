@@ -115,7 +115,7 @@ struct s_object_visibility_header_ab
     byte unknown06[2];
     byte *object;
 };
-bool function_108d30(long object_index, long a, long b);
+bool object_type_test_cluster_visibility(long object_index, long a, long b);
 
 static __forceinline bool object_cluster_contains_ab(dword const *clusters, long index)
 {
@@ -134,7 +134,7 @@ bool function_b6d60(long object_index, dword const *clusters)
     bool result = false;
     if ((bool)((*(dword *)(object + 4) >> 1) & 1))
         return true;
-    if (((1 << header->type) & 0x80) && function_108d30(object_index, (long)clusters, (long)&result))
+    if (((1 << header->type) & 0x80) && object_type_test_cluster_visibility(object_index, (long)clusters, (long)&result))
         return result;
     if (header->cluster != NONE)
         return object_cluster_contains_ab(clusters, header->cluster);
@@ -426,7 +426,7 @@ void function_b8b70(long object_index);
 void function_bf090(long object_index);
 void __stdcall function_10a250(long object_index);
 void function_15b220(long object_index, long index);
-void __stdcall function_109400(long object_index);
+void __stdcall object_list_remove(long object_index);
 void function_bb950(long object_index, bool add, long delta);
 void function_a7a60(long object_index);
 void function_10ace0(long object_index);

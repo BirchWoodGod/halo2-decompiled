@@ -3116,7 +3116,7 @@ s_type_f4462a const g_44bba4 = { _hs_type_void, 0, function_2a2f80, NULL, 4, { _
 
 long function_10a460(long object_index);
 
-bool function_10a660(long object_index, long animation_name, short frame, long other_object_index, bool a, bool b, long animation_graph_index);
+bool scenery_animation_start(long object_index, long animation_name, short frame, long other_object_index, bool a, bool b, long animation_graph_index);
 
 /* 184: void (scenery, arg_0e6cbc, string_handle) */
 // @retail 0x2a2fd0
@@ -3126,7 +3126,7 @@ void __stdcall function_2a2fd0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], 0, NONE, true, false, arguments[1]);
+		scenery_animation_start(arguments[0], arguments[2], 0, NONE, true, false, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -3141,7 +3141,7 @@ void __stdcall function_2a3020(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], 0, NONE, true, true, arguments[1]);
+		scenery_animation_start(arguments[0], arguments[2], 0, NONE, true, true, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -3156,7 +3156,7 @@ void __stdcall function_2a3070(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], 0, arguments[3], true, false, arguments[1]);
+		scenery_animation_start(arguments[0], arguments[2], 0, arguments[3], true, false, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -3171,7 +3171,7 @@ void __stdcall function_2a30c0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], 0, arguments[3], true, true, arguments[1]);
+		scenery_animation_start(arguments[0], arguments[2], 0, arguments[3], true, true, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -3186,7 +3186,7 @@ void __stdcall function_2a3110(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], *(short *)&arguments[3], NONE, true, false, arguments[1]);
+		scenery_animation_start(arguments[0], arguments[2], *(short *)&arguments[3], NONE, true, false, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
