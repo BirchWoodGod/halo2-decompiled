@@ -1,8 +1,15 @@
 // @flags /O2 /Gr
+/* FIXED_HASH_TABLE.CPP: a fixed-size hash table: a named header, its buckets, then
+   maximum_count nodes of data_size bytes each, all in one allocation. The
+   unused nodes form a free list. */
+
 #include "unknown_11c920.h"
 #include "data_array.h"
+#include <stddef.h>
 #include <string.h>
 
+/* a node: its key, the key's hash, the next node of its bucket (or of the
+   free list), then the caller's data */
 struct hash_node
 {
 	void *key;
@@ -10,13 +17,14 @@ struct hash_node
 	hash_node *next;
 	byte data[1];
 };
+typedef char assert_hash_node_data[(offsetof(hash_node, data) == 0xc) ? 1 : -1];
 
 typedef dword (__stdcall *hash_table_hash_proc)(const void *key);
 typedef bool (__stdcall *hash_table_compare_proc)(const void *key_a, const void *key_b);
 
 struct hash_table
 {
-	byte unknown00[0x20];
+	char name[0x20];
 	dword bucket_count;
 	long maximum_count;
 	long data_size;
@@ -26,7 +34,11 @@ struct hash_table
 	hash_node *free_list;
 	hash_node *buckets[1];
 };
+typedef char assert_hash_table_buckets[(offsetof(hash_table, buckets) == 0x3c) ? 1 : -1];
+typedef char assert_hash_table_size[(sizeof(hash_table) == 0x40) ? 1 : -1];
 
+/* empties the table: clears the buckets and nodes and chains every node
+   into the free list */
 // @retail 0x13e210
 void hash_table_initialize(hash_table *table)
 {
@@ -47,6 +59,7 @@ __declspec(noinline) hash_table *function_13e1a0(const char *name, long data_siz
 	hash_table_hash_proc hash_proc, hash_table_compare_proc compare_proc,
 	long maximum_count, c_data_allocator *allocator);
 
+/* allocates and initializes a table of maximum_count nodes */
 // @retail 0x13e1a0
 hash_table *function_13e1a0(const char *name, long data_size, long bucket_count,
 	hash_table_hash_proc hash_proc, hash_table_compare_proc compare_proc,
@@ -56,8 +69,8 @@ hash_table *function_13e1a0(const char *name, long data_size, long bucket_count,
 		maximum_count * (data_size + 12));
 	if (table)
 	{
-		strncpy((char *)table->unknown00, name, sizeof(table->unknown00));
-		table->unknown00[0x1f] = 0;
+		strncpy(table->name, name, sizeof(table->name));
+		table->name[sizeof(table->name) - 1] = 0;
 		table->bucket_count = bucket_count;
 		table->maximum_count = maximum_count;
 		table->hash_proc = hash_proc;
@@ -69,6 +82,8 @@ hash_table *function_13e1a0(const char *name, long data_size, long bucket_count,
 	return table;
 }
 
+/* adds a copy of data under key, in front of its bucket; false when the
+   table is full */
 // @retail 0x13e270
 bool function_13e270(hash_table *table, void *key, const void *data)
 {
@@ -89,6 +104,7 @@ bool function_13e270(hash_table *table, void *key, const void *data)
 	return result;
 }
 
+/* the node holding key, or NULL */
 // @retail 0x13e2d0
 hash_node *function_13e2d0(hash_table *table, void *key)
 {
@@ -101,6 +117,7 @@ hash_node *function_13e2d0(hash_table *table, void *key)
 	return NULL;
 }
 
+/* removes the node holding key, returning it to the free list */
 // @retail 0x13e320
 bool hash_table_remove(hash_table *table, void *key)
 {
@@ -121,107 +138,6 @@ bool hash_table_remove(hash_table *table, void *key)
 			break;
 		}
 		previous = node;
-	}
-	return result;
-}
-
-// @retail 0x13e3a0
-long log2_floor(dword value)
-{
-	long result = 0;
-	if (value > 0)
-	{
-		while (value != 1)
-		{
-			value >>= 1;
-			result++;
-		}
-	}
-	return result;
-}
-
-// @retail 0x13e3c0
-long log2_ceiling_plus_one(dword value)
-{
-	long result = 0;
-	if (value > 1)
-	{
-		value--;
-		while (value != 1)
-		{
-			value >>= 1;
-			result++;
-		}
-	}
-	return result + 1;
-}
-
-// @retail 0x13e3e0
-void function_13e3e0(const dword *a, const dword *b, dword *destination, long bit_count)
-{
-	for (long i = ((bit_count + 31) >> 5) - 1; i >= 0; i--)
-		destination[i] = b[i] | a[i];
-}
-
-static dword bit_mask_for_count(long bit_count)
-{
-	long remainder = bit_count & 31;
-	dword mask = 0xffffffff;
-	if (remainder > 0)
-		mask >>= 32 - remainder;
-	return mask;
-}
-
-static dword popcount32(dword v)
-{
-	v = ((v >> 1) & 0x55555555) + (v & 0x55555555);
-	v = ((v >> 2) & 0x33333333) + (v & 0x33333333);
-	v = ((v >> 4) & 0x0f0f0f0f) + (v & 0x0f0f0f0f);
-	v = ((v >> 8) & 0x00ff00ff) + (v & 0x00ff00ff);
-	return (v >> 16) + (v & 0xffff);
-}
-
-// @retail 0x13e420
-long bit_vector_count_bits(const dword *bits, long bit_count)
-{
-	long word_count = (bit_count + 31) >> 5;
-	long total = 0;
-	for (long i = 0; i < word_count - 1; i++)
-		total += popcount32(bits[i]);
-	return total + popcount32(bits[word_count - 1] & bit_mask_for_count(bit_count));
-}
-
-static long highest_set_bit(dword value)
-{
-	long result = -1;
-	if (value)
-	{
-		__asm { bsr eax, value }
-		__asm { mov result, eax }
-	}
-	return result;
-}
-
-// @retail 0x13e530
-long bit_vector_highest_set_bit(const dword *bits, long bit_count)
-{
-	long word_count = (bit_count + 31) >> 5;
-	long result = highest_set_bit(bits[word_count - 1] & bit_mask_for_count(bit_count));
-	if (result >= 0)
-		result += word_count * 32 - 32;
-	if (result == -1)
-	{
-		long i = word_count - 2;
-		do
-		{
-			if (i < 0)
-				break;
-			result = highest_set_bit(bits[i]);
-			if (result >= 0)
-				result += i * 32;
-			i--;
-		}
-		while (result == -1);
 	}
 	return result;
 }

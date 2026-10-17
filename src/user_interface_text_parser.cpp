@@ -33,7 +33,7 @@ void ascii_string_to_unicode(const char *source, word *destination, long maximum
 word *function_1630e0(word *buffer, const word *format, ...);
 void function_23620d(long string_handle, word *buffer);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
-bool function_140420(word c);
+bool unicode_character_is_private_use(word c);
 
 byte *network_session_interface_get_data_4db0(void);
 long network_session_interface_get_value_49c8(void);
@@ -191,7 +191,7 @@ void parse_replace_missing_characters(word *string, long count)
 {
 	while (count > 0 && *string)
 	{
-		if (function_140420(*string))
+		if (unicode_character_is_private_use(*string))
 		{
 			*string = 0x25a1;
 		}

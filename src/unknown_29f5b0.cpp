@@ -10412,7 +10412,7 @@ void __stdcall function_2ac150(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44f3d0 = { _hs_type_void, 0, function_2ac150, NULL, 3, { _hs_type_object, _hs_type_string_id, _hs_type_string_id } };
 
-void function_13c5a0(long object_index, long a, long b, long c);
+void object_children_reattach(long object_index, long a, long b, long c);
 
 /* 874: void (object, string_handle, string_handle, string_handle) */
 // @retail 0x2ac1a0
@@ -10422,7 +10422,7 @@ void __stdcall function_2ac1a0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_13c5a0(arguments[0], arguments[1], arguments[2], arguments[3]);
+		object_children_reattach(arguments[0], arguments[1], arguments[2], arguments[3]);
 		hs_thread_return_value(thread_index, 0);
 	}
 }
