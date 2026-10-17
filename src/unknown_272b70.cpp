@@ -2078,8 +2078,8 @@ short function_2761d0(long ai_index, long arg_80f1d4)
 		if (ai_actor_iterator_next(&iterator))
 		{
 			long actor_index = iterator.actor_index;
-			long best_index = NONE;
 			real best_rating = 0.0f;
+			long best_index = NONE;
 			real seconds = 0.0f;
 
 			function_291ea0(arg_80f1d4, actor_index, NONE, &seconds);

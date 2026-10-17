@@ -37,31 +37,35 @@ PRIVATE __forceinline s_actor_view *function_256071(long arg_0)
 	return (s_actor_view *)(g_4f55f0->data + (arg_0 & 0xffff) * sizeof(s_actor_view));
 }
 
+struct s_member_iterator_256150
+{
+	long next_index;
+	long index;
+};
+
+static inline s_actor_view *member_iterator_next_256150(s_member_iterator_256150 *iterator);
+
 // @retail 0x256070
 short __stdcall function_256070(long actor_index)
 {
 	s_actor_view *actor = function_256071(actor_index);
 	short result = 0;
-	long count = 0;
-	short ready_count = 0;
 
 	if (actor->unknown07c != NONE)
 	{
-		long member_index = element_502420_get(actor->unknown07c)->first_actor_index;
-
-		while (member_index != NONE)
+		short count = 0;
+		short ready_count = 0;
+		s_member_iterator_256150 iterator;
+		s_actor_view *member;
+		iterator.next_index = element_502420_get(actor->unknown07c)->first_actor_index;
+		iterator.index = NONE;
+		while ((member = member_iterator_next_256150(&iterator)) != 0)
 		{
-			s_actor_view *member = function_256071(member_index);
-			long current_index = member_index;
-			member_index = member->next_index;
-
-			if (*(volatile short *)&actor->unknown004 == member->unknown004)
+			if (member->unknown004 == actor->unknown004)
 			{
-				count = (short)(count + 1);
-				if (actor_behavior_find_level(current_index, 0x1b) != NONE)
-				{
+				count++;
+				if (actor_behavior_find_level(iterator.index, 0x1b) != NONE)
 					ready_count++;
-				}
 			}
 		}
 
@@ -75,12 +79,6 @@ short __stdcall function_256070(long actor_index)
 }
 
 /* walks the actors of the group at 0x502420 (0x256150) */
-struct s_member_iterator_256150
-{
-	long next_index;
-	long index;
-};
-
 static inline s_actor_view *member_iterator_next_256150(s_member_iterator_256150 *iterator)
 {
 	s_actor_view *member = 0;

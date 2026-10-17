@@ -29,20 +29,20 @@ void function_0497a0(
 	s_view_shape_0 * shape0 = 0;
 	s_view_shape_1 * shape1;
 	shape1 = 0;
-	if (!(0 == source->type_low))
+	if (0 == source->type_low)
 	{
-		shape1 = &source->shape1;
+		shape0 = &source->shape0;
 	}
 	else
 	{
-		shape0 = &source->shape0;
+		shape1 = &source->shape1;
 	}
 
 	bool special = ((0x20 & flags->flags)) && (0x40000 & flags->flags);
 	point3f v1 = special ? g_4b9da0 : source->v2c;
-	vector3f v2 = special ? g_4b9dac : camera->v28;
-	vector3f v3 = special ? g_4b9dac : (shape1 ? shape1->v4 : camera->v28);
-	vector3f v4 = special ? g_4b9db8 : camera->v34;
+	vector3f v2 = special ? g_4b9dac : (*(s_view_camera *volatile *)&camera)->v28;
+	vector3f v3 = special ? g_4b9dac : (shape1 ? shape1->v4 : (*(s_view_camera *volatile *)&camera)->v28);
+	vector3f v4 = special ? g_4b9db8 : (*(s_view_camera *volatile *)&camera)->v34;
 	vector3f w;
 
 	if (special)
@@ -98,9 +98,9 @@ void function_0497a0(
 		result->v20.i = source->v1c.i * inv;
 		result->v20.j = (inv * source->v1c.j);
 		result->v20.k = inv * source->v1c.k;
-		result->v30.i = camera->v34.i * inv;
-		result->v30.j = inv * camera->v34.j;
-		result->v30.k = inv * camera->v34.k;
+		result->v30.i = (*(s_view_camera *volatile *)&camera)->v34.i * inv;
+		result->v30.j = inv * (*(s_view_camera *volatile *)&camera)->v34.j;
+		result->v30.k = inv * (*(s_view_camera *volatile *)&camera)->v34.k;
 		result->f2c = 0.0f;
 		result->f3c = 0.0f;
 		break;
@@ -149,7 +149,7 @@ void function_0497a0(
 
 	case 1:
 	{
-		vector3f const * up = special ? &g_4b9dac : &camera->v28;
+		vector3f const * up = special ? &g_4b9dac : &(*(s_view_camera *volatile *)&camera)->v28;
 		if (source->type != 1)
 		{
 			result->v40.i = up->i * inv;
@@ -178,12 +178,12 @@ void function_0497a0(
 
 	*old20 = *(vector4f *)&result->v20;
 	*old30 = *(vector4f *)&result->v30;
-	result->v20.i = result->v20.i + (camera->f6c * result->v40.i);
-	result->v20.j = (result->v40.j * camera->f6c) + result->v20.j;
-	result->v20.k += camera->f6c * result->v40.k;
-	result->v30.i += result->v40.i * camera->f70;
-	result->v30.j = (result->v40.j * camera->f70) + result->v30.j;
-	result->v30.k = (result->v30.k + (camera->f70 * result->v40.k));
+	result->v20.i = result->v20.i + ((*(s_view_camera *volatile *)&camera)->f6c * result->v40.i);
+	result->v20.j = (result->v40.j * (*(s_view_camera *volatile *)&camera)->f6c) + result->v20.j;
+	result->v20.k += (*(s_view_camera *volatile *)&camera)->f6c * result->v40.k;
+	result->v30.i += result->v40.i * (*(s_view_camera *volatile *)&camera)->f70;
+	result->v30.j = (result->v40.j * (*(s_view_camera *volatile *)&camera)->f70) + result->v30.j;
+	result->v30.k = (result->v30.k + ((*(s_view_camera *volatile *)&camera)->f70 * result->v40.k));
 
 	vector3f c = *c_in;
 	vector3f d = *d_in;
