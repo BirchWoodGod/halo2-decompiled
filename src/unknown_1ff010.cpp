@@ -430,11 +430,9 @@ bool __stdcall function_1ff010(long arg_0, point3f const *arg_1)
             (real const *)((byte *)local_3 + 0x7f4), *(bool *)((byte *)local_3 + 0x7c6),
             &local_8, &local_9, &local_10, NULL, &local_11))
         {
-            point2f local_13;
-            local_13.x = local_8.i;
-            local_13.y = local_8.j;
+            point2f local_13 = *(point2f *)&local_8;
             if (!(normalize2d(&local_13) > 0.0f &&
-                local_3->unknown290.j * local_13.y + local_3->unknown290.i * local_13.x > 0.8660253882408142f))
+                local_3->unknown290.i * local_13.x + local_3->unknown290.j * local_13.y > 0.8660253882408142f))
                 return false;
             vector3f local_14;
             local_14.i = local_8.i * local_9;
@@ -452,7 +450,10 @@ bool __stdcall function_1ff010(long arg_0, point3f const *arg_1)
                 *(real *)((byte *)local_3 + 0x7f4) = local_9;
                 local_0 = true;
             }
+            else
+                return false;
         }
+        return local_0;
     }
     return local_0;
 }
