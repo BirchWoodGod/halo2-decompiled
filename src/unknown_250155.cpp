@@ -1083,12 +1083,14 @@ void function_2511b6(long controller)
 	long count = player_slot_count_signed_in_non_guests();
 	long players = function_199f34();
 
-	if (function_1900a5(controller) || count == 1 && players <= count)
+	if (function_1900a5(controller))
 	{
 		function_251242(controller);
 	}
 	else if (count == 1)
 	{
+		if (players > count)
+		{
 			if (function_592f0())
 			{
 				function_2512f8(controller, players == 2);
@@ -1098,13 +1100,18 @@ void function_2511b6(long controller)
 				function_25122f(controller);
 				if (function_1900ff(controller) > 0)
 				{
-						function_2512d3(controller);
+					function_2512d3(controller);
 				}
 				else
 				{
-						function_251284(controller);
+					function_251284(controller);
 				}
 			}
+		}
+		else
+		{
+			function_251242(controller);
+		}
 	}
 	else if (function_1900ff(controller) > 0)
 	{
