@@ -255,8 +255,8 @@ void __stdcall function_1b2bb0(long actor_index, s_slot *slot)
 		actor->unknown4a2 = true;
 		if (actor->unknown5d0)
 		{
-			actor->unknown41c = 3;
 			actor->unknown420 = 0;
+			actor->unknown41c = 3;
 		}
 		else if (state->unknown18 - state->unknown16 < MAX(state->unknown18 / 3, real_to_long((real)g_510c54->field_2_3 * 3.0f)))
 		{
@@ -285,8 +285,8 @@ done:
 		{
 			if (character->flags & 1)
 			{
-				actor->unknown44a = true;
 				actor->unknown449 = true;
+				actor->unknown44a = true;
 			}
 			else if ((character->flags & 2) && view && actor->unknown086 <= 3)
 			{
