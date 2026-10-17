@@ -628,9 +628,10 @@ long function_1469f0(real seconds);
 // @retail 0x1e6bd0
 void function_1e6bd0(long player_index)
 {
+ s_game_options_view *options = g_4e6948;
  s_player_request_view *player = (s_player_request_view *)(g_4e8c24->data + (player_index & 0xffff) * 0x21c);
  long local_index = player->local_player_index;
- bool restricted = g_4e6948->state == 1 && (g_4e6948->difficulty == 3 || g_4e6948->difficulty == 2);
+ bool restricted = options->state == 1 && (options->difficulty == 3 || options->difficulty == 2);
  if (local_index != NONE && *((byte *)g_51e9c0 + 0x6c5) && !restricted)
  {
   s_local_player_state_view *state = &((s_local_player_state_view *)g_51e9c0)[local_index];
@@ -743,7 +744,7 @@ void function_1e6bd0(long player_index)
   {
    if (i != *current)
    {
-    s_local_player_state_view *local_8da5ff = &((s_local_player_state_view *)g_51e9c0)[local_index];
+    s_local_player_state_view *local_8da5ff = state;
     long value = ((local_8da5ff->request_flags[1] & (1 << i)) ? 2 : 0) +
      ((local_8da5ff->request_flags[0] & (1 << i)) ? 1 : 0);
     if (value != 3)
