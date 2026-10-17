@@ -19,7 +19,7 @@ long function_1e4a10(long tag_index);
 void function_d5c90(long object_index, real *body_vitality, real *shield_vitality);
 bool function_1df5d0(short first, short second);
 bool function_1e11b0(long actor_index, bool active);
-bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra);
+bool unit_submit_entry_request(short fallback_index, short entry_index, long unit_index, long priority, void const *extra);
 long __stdcall function_1e0160(long squad_index, long entry_index, long unit_index, bool flag);
 
 void function_1e04a0(long primary_tag, long character_index, long unit_index, long secondary_tag, short grenade_type);
@@ -52,7 +52,7 @@ long function_1e0dc0(short team, long unit_index, short request_value, short squ
 			request.type = 0x31;
 			*(short *)(request.arguments + 2) = *request_reference;
 			if (function_e6900(*unit_reference, &request))
-				function_114b60(NONE, 0x15, actor_get(result)->unknown018, 0xd, NULL);
+				unit_submit_entry_request(0x15, NONE, actor_get(result)->unknown018, 0xd, NULL);
 		}
 	}
 	return result;

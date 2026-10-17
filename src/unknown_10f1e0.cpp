@@ -1789,7 +1789,7 @@ struct s_request_114b60
 };
 
 // @retail 0x114b60
-bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra)
+bool unit_submit_entry_request(short fallback_index, short entry_index, long unit_index, long priority, void const *extra)
 {
 	bool local_0 = false;
 	// Retail keeps the object on the stack and reuses the priority slot for the tag.
@@ -1829,6 +1829,12 @@ bool function_114b60(short entry_index, short fallback_index, long unit_index, l
 	}
 local_1:
 	return local_0;
+}
+
+/* the same request with the entry first, for callers written in that order */
+bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra)
+{
+	return unit_submit_entry_request(fallback_index, entry_index, unit_index, priority, extra);
 }
 
 real function_259a0(dword *seed);
