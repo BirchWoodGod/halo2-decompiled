@@ -956,7 +956,8 @@ void function_1c1b0(void)
 				for (long i = 0; i < count; i++)
 				{
 					long bit = g_43f188[i].y * 32 + base + g_43f188[i].x;
-					g_487288[count][bit / 32] |= 1 << (bit % 32);
+					long word_index = bit / 32;
+					mask[word_index] |= 1 << (bit % 32);
 				}
 			}
 		}
