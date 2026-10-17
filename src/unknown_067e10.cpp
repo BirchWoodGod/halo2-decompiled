@@ -449,8 +449,8 @@ bool world_buffer_append(c_class_6a600 *world, long size, const void *data, long
 /* the texture cache lends its memory (unknown_12c0d0.cpp) */
 long function_12d400(long type, long size, long user_data, long update, long release);
 void function_12bf00(void);
-void function_199520(dword flags);
-void function_199540(dword flags);
+void game_state_modules_call_before_load(dword flags);
+void game_state_modules_call_after_load(dword flags);
 
 /* decompresses the join data into the game state (not decompiled yet:
    src/stubs/lane_d.cpp) */
@@ -832,12 +832,12 @@ bool world_buffer_complete(c_class_6a600 *world, long size)
 	{
 		long decompressed_size;
 		byte *destination = game_state_globals.base_address;
-		function_199520(0);
+		game_state_modules_call_before_load(0);
 		if (function_199740(world->buffer, *size_reference, destination, &decompressed_size) && decompressed_size == 0x3fe000)
 			result = true;
 		else
 			function_12bf00();
-		function_199540(0);
+		game_state_modules_call_after_load(0);
 		function_12d520((long)world->buffer);
 		world->buffer = 0;
 		world->buffer_size = NONE;

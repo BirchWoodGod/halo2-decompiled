@@ -294,32 +294,32 @@ upper_place:
 	return variant_upper_place(p);
 }
 
-bool function_193560(s_surface_description *p);
-byte function_193610(s_surface_description *p);
-byte function_193630(s_surface_description *p);
-byte function_1936a0(s_surface_description *p);
-byte function_1936a0_type5(s_surface_description *p);
+bool matchmaking_hopper_verify_common(s_surface_description *p);
+byte matchmaking_hopper_verify_players(s_surface_description *p);
+byte matchmaking_hopper_verify_teams_party_limits(s_surface_description *p);
+byte matchmaking_hopper_verify_teams(s_surface_description *p);
+byte matchmaking_hopper_verify_teams_party_of_team(s_surface_description *p);
 __declspec(noinline) bool function_1934f0(s_surface_description *p);
 
 // @retail 0x1934f0
 bool function_1934f0(s_surface_description *p)
 {
-	if (!function_193560(p))
+	if (!matchmaking_hopper_verify_common(p))
 	{
 		return false;
 	}
 	switch (p->type)
 	{
 	case 1:
-		return function_193610(p);
+		return matchmaking_hopper_verify_players(p);
 	case 2:
-		return function_193610(p);
+		return matchmaking_hopper_verify_players(p);
 	case 4:
-		return function_193630(p);
+		return matchmaking_hopper_verify_teams_party_limits(p);
 	case 3:
-		return function_1936a0(p);
+		return matchmaking_hopper_verify_teams(p);
 	case 5:
-		return function_1936a0_type5(p);
+		return matchmaking_hopper_verify_teams_party_of_team(p);
 	default:
 		__assume(0);
 	}

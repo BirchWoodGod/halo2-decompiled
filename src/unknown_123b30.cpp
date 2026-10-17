@@ -262,8 +262,8 @@ bool game_state_core_read(char const *name, void *buffer, dword size)
 void __stdcall game_state_cache_lock_release(void *arg_0, long arg_1);
 bool game_state_cache_read(short arg_0);
 bool __stdcall function_11c1b0(short arg_0, bool arg_1);
-void function_199520(dword arg_0);
-void function_199540(dword arg_0);
+void game_state_modules_call_before_load(dword arg_0);
+void game_state_modules_call_after_load(dword arg_0);
 
 // @retail 0x123f60
 void function_123f60(dword arg_0)
@@ -289,14 +289,14 @@ void function_123f60(dword arg_0)
 					dword local_2 = ((byte)arg_0 & 1) << 5;
 					if ((bool)((arg_0 >> 1) & 1)) local_2 |= 0x40;
 					else local_2 &= ~0x40;
-					function_199520(local_2);
+					game_state_modules_call_before_load(local_2);
 					for (;;)
 					{
 						game_state_cache_read(game_state_globals.slot);
 						if (game_state_headers_match(&local_0, game_state_globals.arena))
 							break;
 					}
-					function_199540(local_2);
+					game_state_modules_call_after_load(local_2);
 					return;
 				}
 			}
@@ -323,9 +323,9 @@ void function_1240b0(long arg_0)
 			function_11c1b0((short)*(long *)((byte *)&local_0 + 0x1248), true) &&
 			game_state_headers_match(&local_0, game_state_globals.arena))
 		{
-			function_199520(0xc);
+			game_state_modules_call_before_load(0xc);
 			function_124800(arg_0, game_state_globals.base_address, 0x3fe000);
-			function_199540(0xc);
+			game_state_modules_call_after_load(0xc);
 			function_123e20();
 			game_state_globals.arena_flag = true;
 		}
@@ -358,9 +358,9 @@ void function_124380(char const *arg_0)
 		if (function_11c1b0((short)*(long *)((byte *)&local_0 + 0x1248), true) &&
 			game_state_headers_match(&local_0, game_state_globals.arena))
 		{
-			function_199520(0xc);
+			game_state_modules_call_before_load(0xc);
 			game_state_core_read(arg_0, game_state_globals.base_address, 0x3fe000);
-			function_199540(0xc);
+			game_state_modules_call_after_load(0xc);
 			return;
 		}
 		if (local_1)
