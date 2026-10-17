@@ -127,8 +127,17 @@ void c_animation_channel_data_get(c_animation_channel const *channel, s_animatio
 
 /* the codecs' readers of an animation's data (unknown_20aa70.cpp, which
    names s_animation_data s_anim_data) */
-struct s_anim_data;
-void function_20aa70(vector3f *out, s_anim_data *data, long index, real *w);
+struct s_anim_header;
+struct s_anim_data
+{
+	byte *base;
+	s_anim_header *header;
+	byte unknown8;
+	byte type;
+	short count;
+
+	void movement_get(vector3f *out, long index, real *w);
+};
 void function_20ad40(s_anim_data *data, vector3f *a, vector3f *b, long index);
 
 /* the sampling state the codecs' decoders read (unknown_279d80.cpp,
@@ -170,7 +179,7 @@ void c_animation_channel_movement_get(c_animation_channel const *channel, vector
 		{
 			__forceinline void movement_get(vector3f *vector, long frame, real *value)
 			{
-				function_20aa70(vector, (s_anim_data *)this, frame, value);
+				((s_anim_data *)this)->movement_get(vector, frame, value);
 			}
 		};
 		s_movement_1c6dc0 data;

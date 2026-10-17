@@ -108,7 +108,7 @@ public:
 	virtual void v3();
 	virtual void v18(void *parameters);
 
-	bool value610;
+	bool shows_online_status;
 	s_text_256 text;
 };
 
@@ -120,7 +120,7 @@ public:
 
 	virtual bool v10(s_widget_event *event);
 
-	long value814;
+	long controller_index;
 	c_y_menu_friends_list list;
 };
 
@@ -132,7 +132,7 @@ public:
 
 	virtual bool v10(s_widget_event *event);
 
-	long value814;
+	long controller_index;
 	c_y_menu_players_list list;
 };
 
@@ -144,7 +144,7 @@ public:
 
 	virtual bool v10(s_widget_event *event);
 
-	long value814;
+	long controller_index;
 	c_y_menu_recent_players_list list;
 };
 
@@ -189,7 +189,7 @@ public:
 	/* the user's pending online messages */
 	s_entry messages[0x7d];
 	long message_count;
-	bool value55ac;
+	bool strangers_messages_deleted;
 };
 
 #endif

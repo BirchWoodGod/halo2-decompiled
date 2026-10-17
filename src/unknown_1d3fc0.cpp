@@ -11,7 +11,6 @@ void function_1d1540(s_havok_component *arg_0);
 transform4x3f *function_ba160(long arg_0, transform4x3f *arg_1);
 bool __stdcall function_e0d70(long arg_0, real *arg_1);
 void havok_component_rigid_body_matrix_set(long arg_0, s_havok_component *arg_1, transform4x3f const *arg_2);
-void havok_component_rigid_body_matrix_get(long arg_0, s_havok_component *arg_1, transform4x3f *arg_2);
 void function_1d4360(s_havok_component *arg_0, transform4x3f *volatile arg_1);
 void function_141590(transform4x3f const *arg_0, transform4x3f *arg_1);
 int __fastcall function_142a60(transform4x3f const *arg_0, transform4x3f const *arg_1, transform4x3f *arg_2);
@@ -62,7 +61,7 @@ void __stdcall function_1d3fc0(long arg_0, s_havok_component *arg_1)
   function_142a60(&local_1[2], &local_1[1], &local_1[5]);
   for (long local_9 = 0; local_9 < arg_1->rigid_bodies.size; ++local_9)
   {
-   havok_component_rigid_body_matrix_get(local_9, arg_1, &local_1[3]);
+   arg_1->rigid_body_matrix_get(local_9, &local_1[3]);
    function_142a60(&local_1[5], &local_1[3], &local_1[0]);
    if (arg_1->unknown04 & 0x10000)
    {

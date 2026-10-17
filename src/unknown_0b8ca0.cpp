@@ -1347,8 +1347,6 @@ void function_ba3d0(long index);
 void function_be1d0(long index);
 void __stdcall function_b8890(long index);
 void function_be690(long index);
-long function_176780(long index, s_effect_owner const *owner, real scale_a,
-    long tag, real scale_b, point3f const *point, vector3f const *direction);
 void function_2e1e0(long index);
 void object_list_insert(long index);
 long function_b8820();

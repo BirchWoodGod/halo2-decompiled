@@ -76,7 +76,6 @@ struct s_component_transform_render_model
 bool __stdcall function_e0d70(long object_index, real *offset);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 transform4x3f *function_ba160(long object_index, transform4x3f *matrix);
-void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, transform4x3f *matrix);
 void function_1d43d0(s_havok_component *component, transform4x3f const *matrix, transform4x3f *result);
 
 // @retail 0x1d4360
@@ -86,7 +85,7 @@ void function_1d4360(s_havok_component *component, transform4x3f *volatile resul
 	short index = havok_component_main_rigid_body_index_get(component);
 	if (index != NONE)
 	{
-		havok_component_rigid_body_matrix_get(index, component, &matrix);
+		component->rigid_body_matrix_get(index, &matrix);
 	}
 	else
 	{
@@ -637,15 +636,15 @@ static inline void havok_rigid_body_activate(hkRigidBody *rigid_body)
 }
 
 // @retail 0x1d08e0
-void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, transform4x3f *matrix)
+void s_havok_component::rigid_body_matrix_get(long rigid_body_index, transform4x3f *matrix)
 {
 	hkTransform transform;
 
-	transform.set(havok_component_rigid_body_get(rigid_body_index, component)->m_motion->m_transform);
+	transform.set(havok_component_rigid_body_get(rigid_body_index, this)->m_motion->m_transform);
 
-	if (TEST_FIELD_BIT(component->transformed))
+	if (TEST_FIELD_BIT(transformed))
 	{
-		transform.setMulEq(component->transform);
+		transform.setMulEq(this->transform);
 	}
 	matrix->scale = 1.0f;
 	vector3d_from_havok(&matrix->forward, &transform.m_rotation.m_col0);
@@ -661,7 +660,7 @@ void havok_component_rigid_body_position_get(long rigid_body_index, s_havok_comp
 	{
 		transform4x3f matrix;
 
-		havok_component_rigid_body_matrix_get(rigid_body_index, component, &matrix);
+		component->rigid_body_matrix_get(rigid_body_index, &matrix);
 		*position = matrix.position;
 	}
 	else
@@ -991,7 +990,7 @@ void havok_component_node_states_get(s_havok_component *component, s_havok_node_
 			if (node_index >= 0 && node_index < MAXIMUM_HAVOK_NODES)
 			{
 				states->valid[node_index >> 5] |= 1 << (node_index & 0x1f);
-				havok_component_rigid_body_matrix_get(rigid_body_index, component, &states->matrices[node_index]);
+				component->rigid_body_matrix_get(rigid_body_index, &states->matrices[node_index]);
 				rigid_body_linear_velocity_get(component, rigid_body_index, &states->linear_velocities[node_index]);
 				rigid_body_angular_velocity_get(component, rigid_body_index, &states->angular_velocities[node_index]);
 			}

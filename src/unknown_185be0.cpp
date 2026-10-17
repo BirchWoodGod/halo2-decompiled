@@ -1,5 +1,6 @@
 #include "unknown_11c920.h"
 #include "globals.h"
+#include "unknown_1cec30.h"
 #include "unknown_11cb00.h"
 #include "unknown_11cc90.h"
 #include <math.h>
@@ -100,7 +101,6 @@ short function_0b67a0(s_small_index const *arg_0);
 bool function_e4050(long arg_0);
 bool function_100f70(long arg_0);
 vector2f *function_11df30(vector2f *arg_0, vector3f const *arg_1);
-void havok_component_rigid_body_matrix_get(long arg_0, s_havok_component *arg_1, transform4x3f *arg_2);
 void __stdcall function_1a4900(long arg_0, s_186ab2 *arg_1, vector3f *arg_2);
 void player_control_update_action_flags(s_player_action *arg_0, s_player_action_triggers const *arg_1);
 
@@ -260,7 +260,7 @@ void __stdcall function_185be0(long arg_0, long arg_1, real arg_2, real arg_3, s
                         if (local_24 != NONE)
                         {
                             transform4x3f local_21;
-                            havok_component_rigid_body_matrix_get(local_24, local_20, &local_21);
+                            local_20->rigid_body_matrix_get(local_24, &local_21);
                             local_15 = *(vector3f *)((byte *)&local_21 + 4);
                             if (local_18 == local_1->field_40)
                             {

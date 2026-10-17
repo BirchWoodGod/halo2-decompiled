@@ -4,6 +4,7 @@
 
 #include "unknown_11c920.h"
 #include "globals.h"
+#include "unknown_1cec30.h"
 #include "unknown_0259d0.h"
 #include "data_array.h"
 #include <math.h>
@@ -281,7 +282,6 @@ bool function_1f2e60(bool moving, s_shape_ground const *ground, vector3f const *
 }
 
 struct s_havok_component;
-void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, transform4x3f *matrix);
 void havok_component_rigid_body_point_velocity_get(long rigid_body_index, s_havok_component *component, point3f const *point, vector3f *velocity);
 void function_141590(transform4x3f const *in, transform4x3f *out);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
@@ -348,7 +348,7 @@ bool function_1f1ee0(s_shape_carrier_contact const *contact, s_shape_state *stat
                 s_havok_component *other = (s_havok_component *)(components + (component_index & 0xffff) * 0xa0);
                 transform4x3f matrix;
                 long body_index = *(signed char *)(entry + 0x46);
-                havok_component_rigid_body_matrix_get(body_index, other, &matrix);
+                other->rigid_body_matrix_get(body_index, &matrix);
                 if (component_index == *(long *)(data + 0x54))
                 {
                     long object_index = *(long *)(entry + 0x18);

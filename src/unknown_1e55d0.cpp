@@ -1,5 +1,6 @@
 #include "unknown_11c920.h"
 #include "globals.h"
+#include "unknown_1cec30.h"
 #include "unknown_0259d0.h"
 #include <new>
 // @flags /O2 /arch:SSE /Gr
@@ -53,7 +54,6 @@ void __stdcall function_b87b0(long object_index);
 void __stdcall function_b8600(long object_index, long mode);
 void function_1c4a80(long object_index, bool first, bool second);
 void function_b58c0(long object_index, dword mask);
-void havok_component_rigid_body_matrix_get(long index, s_havok_component *component, transform4x3f *matrix);
 bool function_1c5210(transform4x3f const *matrix, void *shape, long component, long filter);
 
 // @retail 0x1e55d0
@@ -116,7 +116,7 @@ void __stdcall function_1e55d0(s_biped_physics_move *move, void *physics, s_bipe
 			c_z_capsule_temp *capsule = new ((void *)(((dword)capsule_storage + 15) & ~15UL))
 				c_z_capsule_temp((byte *)shape + 0x10, (byte *)shape + 0x20, radius);
 			transform4x3f matrix;
-			havok_component_rigid_body_matrix_get(0, (s_havok_component *)component, &matrix);
+			((s_havok_component *)component)->rigid_body_matrix_get(0, &matrix);
 			matrix.position.z += margin * 0.5f;
 			if (!function_1c5210(&matrix, capsule, *(long *)(input + 0x18), *(long *)(input + 0x24))) *(dword *)out |= 2;
 			else *(dword *)out &= ~2;

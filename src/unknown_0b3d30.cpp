@@ -169,16 +169,14 @@ bool online_result_get_address(long index, IN_ADDR *address);
 bool function_b40b0()
 {
     long index = (dword)g_547620 % g_5107d8;
-    volatile bool result = false;
-    bool failure = result;
+    bool result = false;
     IN_ADDR address;
     if (online_result_get_address(index, &address))
     {
         if (((s_http_connection_ab *)g_546a8c)->connect(address.s_addr, g_546a80, g_4672d8, false))
-            return true;
-        else return result;
+            result = true;
     }
-    return failure;
+    return result;
 }
 
 bool function_b5e90(s_http_connection_ab *connection, bool *complete);
