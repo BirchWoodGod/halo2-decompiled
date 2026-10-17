@@ -129,7 +129,11 @@ struct s_new_hud_globals
 struct s_13a720_status
 {
 	byte unknown00[0x1e];
-	word flags;
+	union
+	{
+		word flags;
+		byte low_flags;
+	};
 	byte unknown20[8];
 	real value28;
 	real value2c;
@@ -150,11 +154,11 @@ void function_13a720(long user_index, s_13a720_status const *status)
 {
 	s_new_hud_user *user = &((s_new_hud_globals *)g_510c4c)->users[user_index];
 	dword flags = 0;
-	if (!(status->flags & 4) && !(0.0f >= status->value28) && !function_13cb40())
+	if (!(status->low_flags & 4) && !(0.0f >= status->value28) && !function_13cb40())
 	{
 		if (user->value00 != -1.0f && function_15eb20(function_14de70(user_index)))
 		{
-			flags = (*(word volatile const *)&status->flags >> 9) & 1;
+			flags = (status->flags >> 9) & 1;
 			if (user->value00 > status->value2c)
 				flags |= 2;
 			else

@@ -1981,7 +1981,7 @@ struct s_168644_render_model
 
 bool function_cd660(long unit_index);
 long function_1d8f00(long render_model_index, long marker_name);
-void function_1d90e0(long render_model_index, transform4x3f *nodes, long node_index, transform4x3f const *marker_matrix,
+void function_1d90e0(long render_model_index, long node_index, transform4x3f *nodes, transform4x3f const *marker_matrix,
 	transform4x3f const *target_matrix, real weight, long node_count);
 void function_1421b0(transform4x3f *out, point3f const *position, quaternionf const *rotation);
 void function_1dd7a0(long *reference);
@@ -2046,7 +2046,7 @@ void function_168644(long user_index, s_first_person_model *arms, s_first_person
 									function_1421b0(&weapon_matrix, &weapon_marker->position,
 										&weapon_marker->rotation);
 									function_142a60(&arg_2f82bc->nodes[weapon_marker->node_index], &weapon_matrix, &weapon_matrix);
-									function_1d90e0(arms_render_model_index, arms->nodes, arms_marker->node_index, &arms_matrix,
+									function_1d90e0(arms_render_model_index, arms_marker->node_index, arms->nodes, &arms_matrix,
 										&weapon_matrix, weight, arms_definition->node_count);
 								}
 							}
