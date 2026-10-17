@@ -25,7 +25,7 @@ bool function_1900a5(long player);
 bool __stdcall function_148e6d(long user_index);
 bool game_loop_running();
 long function_147f4f();
-c_class_1473c9 *__stdcall function_231995(s_screen_parameters *request);
+c_class_1473c9 *__stdcall online_y_menu_open(s_screen_parameters *request);
 long function_199d7c(void);
 long function_18fa4d(long mode);
 void __stdcall function_238ea7(long user_index);
@@ -215,7 +215,7 @@ void window_manager_online_menu_open(long user_index)
 	s_screen_parameters parameters;
 
 	parameters.field_c = 0;
-	function_149f49((s_message *)&parameters, 6, 0, 1 << user_index, 4, 4, (long)function_231995);
+	function_149f49((s_message *)&parameters, 6, 0, 1 << user_index, 4, 4, (long)online_y_menu_open);
 	parameters.load(&parameters);
 }
 

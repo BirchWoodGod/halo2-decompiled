@@ -621,7 +621,7 @@ void function_148823();
 void window_manager_reset_all_windows();
 bool __stdcall dialog_callback_dashboard_network_configuration(long controller);
 bool __stdcall dialog_callback_sign_out_to_main_menu(long controller);
-bool __stdcall function_2323ab(long controller);
+bool __stdcall pause_game_quit_confirmed(long controller);
 void network_session_check_tracking(c_class_58d20 *session);
 void network_session_close(c_class_58d20 *session);
 
@@ -646,7 +646,7 @@ void function_6d270(void)
  {
   choice = false;
   id = 0xb8;
-  accept = function_2323ab;
+  accept = pause_game_quit_confirmed;
  }
  bool present = session_dialog_is(g_54d598.windows_1[4].current, id);
  if (!session_dialog_is(g_54d598.windows_1[4].next, id) && !present)

@@ -1,11 +1,12 @@
 // @flags /O1 /arch:SSE /Gr
-/* UNKNOWN_2312B4.CPP: the online Y menu, its three tabs (the friends,
+/* ONLINE_Y_MENU_SCREEN.CPP: the online Y menu, its three tabs (the friends,
    the players met and the recent players) and the user's pending online
    messages */
 
 #include "unknown_11c920.h"
 #include <xtl.h>
 #include <xonline.h>
+#include <stddef.h>
 #include <string.h>
 #include "globals.h"
 #include "screen_widgets.h"
@@ -52,19 +53,21 @@ struct s_player_slot_messages_view
 	byte unknown000[0x46d];
 	bool messages_changed;
 };
+typedef char assert_player_slot_messages_changed[(offsetof(s_player_slot_messages_view, messages_changed) == 0x46d) ? 1 : -1];
 
 extern char g_54d5a8;
 
 c_class_1473c9 *__stdcall function_2312c2(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2313a8(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_231995(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall online_y_menu_open(s_screen_parameters *parameters);
 
 /* ---- the tabs ---- */
 
+/* the tabs share the menu's screen kind */
 // @retail 0x23148e
 c_y_menu_tab_screen::c_y_menu_tab_screen(long a, long b, word user_flags) :
 	c_class_1473c9(g_54d5a8 == 2 ? 0x1a : 0x1c, a, b, user_flags),
-	value610(false)
+	shows_online_status(false)
 {
 }
 
@@ -76,6 +79,8 @@ struct s_y_menu_profile_view
 	bool voice_muted;
 	byte unknown151[0x1e0 - 0x151];
 };
+typedef char assert_y_menu_profile_view_size[(sizeof(s_y_menu_profile_view) == 0x1e0) ? 1 : -1];
+typedef char assert_y_menu_profile_voice_state[(offsetof(s_y_menu_profile_view, voice_state) == 0x14c) ? 1 : -1];
 
 /* a user's record: the gamertag first, a second name at +0x50 */
 struct s_y_menu_record_view
@@ -87,6 +92,8 @@ struct s_y_menu_record_view
 	char value7f;
 	byte unknown80[0x90 - 0x80];
 };
+typedef char assert_y_menu_record_view_size[(sizeof(s_y_menu_record_view) == 0x90) ? 1 : -1];
+typedef char assert_y_menu_record_second_name[(offsetof(s_y_menu_record_view, second_name) == 0x50) ? 1 : -1];
 
 /* a user's online status */
 struct s_y_menu_status_view
@@ -95,6 +102,8 @@ struct s_y_menu_status_view
 	long state;
 	byte unknown20[0x92 - 0x20];
 };
+/* 0x92 bytes of data, padded to 0x94 by the long */
+typedef char assert_y_menu_status_view_size[(sizeof(s_y_menu_status_view) == 0x94) ? 1 : -1];
 
 struct s_player_profile;
 struct s_profile_record;
@@ -111,6 +120,8 @@ bool voice_port_can_talk(long port);
 void function_2b01a2(long value, s_widget_item *item);
 void function_22f042(s_widget_item *items, c_class_1a2c81 *widget, long count);
 
+/* shows the user: the gamertag with the online status (the players tab)
+   or the second name, and the voice and muted icons */
 // @retail 0x2314ce
 void c_y_menu_tab_screen::v3()
 {
@@ -135,7 +146,7 @@ void c_y_menu_tab_screen::v3()
 	function_2b01a2(record.value7f, &item);
 	memcpy(item.value48, record.value40, sizeof(item.value48));
 	item.flags |= 2;
-	if (value610 && function_18ffc3(get_controller_index(), (s_player_slot_blockb82 *)&status))
+	if (shows_online_status && function_18ffc3(get_controller_index(), (s_player_slot_blockb82 *)&status))
 	{
 		state[0] = 0;
 		format[0] = 0;
@@ -152,7 +163,8 @@ void c_y_menu_tab_screen::v3()
 	else
 	{
 		function_08cc20((s_name_buffer *)text.text, record.gamertag);
-	}	item.flags |= 1;
+	}
+	item.flags |= 1;
 	item.value4 = (long)text.text;
 	function_22f042(&item, this, 1);
 	if (voice_bitmap)
@@ -197,16 +209,18 @@ void c_y_menu_tab_screen::v3()
 	}
 }
 
+/* the tabs only lay out their children */
 // @retail 0x2312b4
 void c_y_menu_tab_screen::v18(void *parameters)
 {
 	c_class_1a2c81::v1();
 }
 
+/* the friends tab and its list */
 // @retail 0x23169c
 c_y_menu_friends_screen::c_y_menu_friends_screen(long a, long b, word user_flags) :
 	c_y_menu_tab_screen(a, b, user_flags),
-	value814(NONE),
+	controller_index(NONE),
 	list(user_flags)
 {
 }
@@ -252,13 +266,14 @@ bool c_y_menu_friends_screen::v10(s_widget_event *event)
 	return c_class_1473c9::v10(event);
 }
 
+/* the players tab shows the user's online status */
 // @retail 0x231865
 c_y_menu_players_screen::c_y_menu_players_screen(long a, long b, word user_flags) :
 	c_y_menu_tab_screen(a, b, user_flags),
-	value814(NONE),
+	controller_index(NONE),
 	list(user_flags)
 {
-	value610 = true;
+	shows_online_status = true;
 }
 
 /* a press of X opens the clan options when a friend request is pending */
@@ -306,10 +321,11 @@ bool c_y_menu_players_screen::v10(s_widget_event *event)
 	return c_class_1473c9::v10(event);
 }
 
+/* the recent players tab and its list */
 // @retail 0x23179c
 c_y_menu_recent_players_screen::c_y_menu_recent_players_screen(long a, long b, word user_flags) :
 	c_y_menu_tab_screen(a, b, user_flags),
-	value814(NONE),
+	controller_index(NONE),
 	list(user_flags)
 {
 }
@@ -318,6 +334,7 @@ c_y_menu_recent_players_screen::c_y_menu_recent_players_screen(long a, long b, w
 // @retail 0x231826 destructor c_y_menu_recent_players_screen
 // @retail 0x2317f0 destructor c_y_menu_recent_players_list
 
+/* back, B and start close the menu */
 // @retail 0x23183b
 bool c_y_menu_recent_players_screen::v10(s_widget_event *event)
 {
@@ -337,8 +354,9 @@ bool c_y_menu_recent_players_screen::v10(s_widget_event *event)
 
 /* ---- the menu ---- */
 
+/* loads the online Y menu */
 // @retail 0x231995
-c_class_1473c9 *__stdcall function_231995(s_screen_parameters *parameters)
+c_class_1473c9 *__stdcall online_y_menu_open(s_screen_parameters *parameters)
 {
 	c_online_y_menu_screen *screen = new c_online_y_menu_screen(parameters->a, parameters->b, parameters->user_flags);
 
@@ -350,6 +368,7 @@ c_class_1473c9 *__stdcall function_231995(s_screen_parameters *parameters)
 	return screen;
 }
 
+/* the menu reserves the voice pool its tabs use */
 // @retail 0x2319d6
 c_online_y_menu_screen::c_online_y_menu_screen(long a, long b, word user_flags) :
 	c_class_1473c9(g_54d5a8 == 2 ? 0x1a : 0x1c, a, b, user_flags),
@@ -363,6 +382,7 @@ c_online_y_menu_screen::c_online_y_menu_screen(long a, long b, word user_flags) 
 	voice_initialize_menu_pool();
 }
 
+/* frees the menu's voice pool */
 // @retail 0x231a7b
 c_online_y_menu_screen::~c_online_y_menu_screen()
 {
@@ -371,12 +391,14 @@ c_online_y_menu_screen::~c_online_y_menu_screen()
 
 // @retail 0x231a5d deleting c_online_y_menu_screen
 
+/* the menu's load proc */
 // @retail 0x2312bc
 screen_load_proc c_online_y_menu_screen::get_load_proc()
 {
-	return function_231995;
+	return online_y_menu_open;
 }
 
+/* closing the menu clears the user and resets the friends list */
 // @retail 0x231c8c
 void c_online_y_menu_screen::v2()
 {
@@ -385,6 +407,7 @@ void c_online_y_menu_screen::v2()
 	friends_list_reset(true);
 }
 
+/* passes slot 17 on to the three tabs */
 // @retail 0x231ac4
 void c_online_y_menu_screen::v17()
 {
@@ -401,7 +424,7 @@ void c_online_y_menu_screen::v17()
 /* deletes the messages from players who are neither friends nor players met
    (once, when the friends list is ready) */
 // @retail 0x231ca0
-void function_231ca0(s_entry *messages, long count, c_online_y_menu_screen *screen)
+void online_y_menu_delete_strangers_messages(s_entry *messages, long count, c_online_y_menu_screen *screen)
 {
 	for (; count; count--, messages++)
 	{
@@ -425,10 +448,10 @@ void c_online_y_menu_screen::v3()
 	function_1a31ff();
 	message_count = 0x7d;
 	online_messages_enumerate(controller_index, messages, &message_count);
-	if (!value55ac && friends_list_task_running() && function_1a325a())
+	if (!strangers_messages_deleted && friends_list_task_running() && function_1a325a())
 	{
-		function_231ca0(messages, message_count, this);
-		value55ac = true;
+		online_y_menu_delete_strangers_messages(messages, message_count, this);
+		strangers_messages_deleted = true;
 	}
 	if (current)
 	{
@@ -487,14 +510,14 @@ void c_online_y_menu_screen::v18(void *parameters)
 	{
 		controller_index = 0;
 	}
-	value55ac = false;
+	strangers_messages_deleted = false;
 	long one = 1;
 	friends_list_reset(one != 0);
 	function_1a303b(controller_index);
 	{
 		c_y_menu_friends_screen *tab = &friends;
 		long controller = controller_index;
-		tab->value814 = controller;
+		tab->controller_index = controller;
 		c_y_menu_friends_list *list = &tab->list;
 		list->value88 = controller;
 		list->user_flags = (word)(one << list->value88);
@@ -502,7 +525,7 @@ void c_online_y_menu_screen::v18(void *parameters)
 	{
 		c_y_menu_players_screen *tab = &players;
 		long controller = controller_index;
-		tab->value814 = controller;
+		tab->controller_index = controller;
 		c_y_menu_players_list *list = &tab->list;
 		list->value88 = controller;
 		list->user_flags = (word)(one << list->value88);
@@ -510,7 +533,7 @@ void c_online_y_menu_screen::v18(void *parameters)
 	{
 		c_y_menu_recent_players_screen *tab = &recent_players;
 		long controller = controller_index;
-		tab->value814 = controller;
+		tab->controller_index = controller;
 		c_y_menu_recent_players_list *list = &tab->list;
 		list->value88 = controller;
 		list->user_flags = (word)(one << list->value88);

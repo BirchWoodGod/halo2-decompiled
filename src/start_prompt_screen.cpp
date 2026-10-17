@@ -1,11 +1,12 @@
 // @flags /O1 /arch:SSE /Gr
-/* UNKNOWN_22F118.CPP: the "press start" screen that opens
+/* START_PROMPT_SCREEN.CPP: the "press start" screen that opens
    the main menu: a press of start (its button's handler) accepts a pending
    game invitation, or signs the user in */
 
 #include "unknown_11c920.h"
 #include <xtl.h>
 #include <xonline.h>
+#include <stddef.h>
 #include "globals.h"
 #include "screen_widgets.h"
 #include "unknown_19b510.h"
@@ -28,6 +29,7 @@ struct s_bitmap_group_view
 	long bitmap_count;
 	s_bitmap_view *bitmaps;
 };
+typedef char assert_bitmap_group_view_bitmaps[(offsetof(s_bitmap_group_view, bitmaps) == 0x48) ? 1 : -1];
 
 D3DTexture *function_12360(s_bitmap_view *bitmap, real priority);
 
@@ -81,6 +83,7 @@ struct s_player_slot_signed_in_view
 	dword signed_in : 1;
 	byte unknown004[0xc70 - 4];
 };
+typedef char assert_player_slot_signed_in_view_size[(sizeof(s_player_slot_signed_in_view) == 0xc70) ? 1 : -1];
 
 class __single_inheritance c_press_start_screen;
 
@@ -122,16 +125,18 @@ public:
 	c_press_start_handler handler;
 };
 
-c_class_1473c9 *__stdcall function_22f11e(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall press_start_screen_open(s_screen_parameters *parameters);
 
+/* the screen's load proc */
 // @retail 0x22f118
 screen_load_proc c_press_start_screen::get_load_proc()
 {
-	return function_22f11e;
+	return press_start_screen_open;
 }
 
+/* loads the press start screen */
 // @retail 0x22f11e
-c_class_1473c9 *__stdcall function_22f11e(s_screen_parameters *parameters)
+c_class_1473c9 *__stdcall press_start_screen_open(s_screen_parameters *parameters)
 {
 	c_press_start_screen *screen;
 
@@ -142,6 +147,7 @@ c_class_1473c9 *__stdcall function_22f11e(s_screen_parameters *parameters)
 	return screen;
 }
 
+/* the screen holds one button, which the handler ties to handle_start */
 // @retail 0x22f15d
 c_press_start_screen::c_press_start_screen(long a, long b, word user_flags) :
 	c_class_1473c9(9, a, b, user_flags),
@@ -153,6 +159,7 @@ c_press_start_screen::c_press_start_screen(long a, long b, word user_flags) :
 // @retail 0x22f1b2 deleting c_press_start_screen
 // @retail 0x22f1ce destructor c_press_start_screen
 
+/* events go to the screen's default handling */
 // @retail 0x22f4c8
 bool c_press_start_screen::v10(s_widget_event *event)
 {
@@ -193,40 +200,41 @@ void c_press_start_screen::v18(void *parameters)
 void c_press_start_screen::v3()
 {
 	s_screen_definition *definition;
-	long i;
+	long bitmap_index;
 
 	if (!function_1473b6(&g_54d598.windows_3[4]) && !function_22f0ff((c_widget *)this))
 	{
-		long index = 0;
+		long user_index = 0;
 
 		do
 		{
-			if (TEST_FIELD_BIT(((s_player_slot_signed_in_view *)&g_54e8e0[index])->signed_in))
+			if (TEST_FIELD_BIT(((s_player_slot_signed_in_view *)&g_54e8e0[user_index])->signed_in))
 			{
 				s_screen_parameters parameters;
 
 				parameters.field_c = 0;
-				function_149f49((s_message *)&parameters, 0, 0, 1 << index, 5, 4, (long)main_menu_open);
+				function_149f49((s_message *)&parameters, 0, 0, 1 << user_index, 5, 4, (long)main_menu_open);
 				parameters.load(&parameters);
 				function_236299(5);
 				break;
 			}
-			index = function_190262(index);
-		} while (index != NONE);
+			user_index = function_190262(user_index);
+		} while (user_index != NONE);
 	}
 	definition = function_22f871(this);
-	for (i = 0; i < definition->bitmap_count; i++)
+	for (bitmap_index = 0; bitmap_index < definition->bitmap_count; bitmap_index++)
 	{
-		s_tag_reference volatile *bitmap = &definition->bitmaps[i];
+		s_tag_reference volatile *bitmap = &definition->bitmaps[bitmap_index];
 
 		bitmap_tag_load(bitmap->tag_index);
 	}
 	c_class_1a2c81::v3();
 }
 
-/* opens the main menu for the users who are signed in */
+/* the invitation dialog's yes: opens the sign in screen (in its mode 4)
+   for the users who are signed in */
 // @retail 0x22f36f
-bool __stdcall function_22f36f(void *data)
+bool __stdcall press_start_join_invite_confirmed(void *data)
 {
 	s_screen_parameters parameters;
 
@@ -236,9 +244,9 @@ bool __stdcall function_22f36f(void *data)
 	return true;
 }
 
-/* signs the user in */
+/* signs the user in (also the choice that skips the memory dialog) */
 // @retail 0x22f3a1
-bool __stdcall function_22f3a1(long controller_index)
+bool __stdcall press_start_sign_in(long controller_index)
 {
 	function_1905bf(controller_index, function_8d7c0());
 	return true;
@@ -265,7 +273,7 @@ void c_press_start_screen::handle_start(s_controller_reference **controller, lon
 			request.field_xb3bdcf = invite.InvitingFriend;
 			request.field_xb3bdcf.gameinviteTime = invite.InviteAcceptTime;
 			function_148893(&request, 1);
-			dialog_choice_show(3, 0x7d, 4, 1 << (*controller)->controller_index, (dialog_choice_callback)function_22f36f, 0, 0);
+			dialog_choice_show(3, 0x7d, 4, 1 << (*controller)->controller_index, (dialog_choice_callback)press_start_join_invite_confirmed, 0, 0);
 			return;
 		}
 	}
@@ -276,11 +284,11 @@ void c_press_start_screen::handle_start(s_controller_reference **controller, lon
 	{
 		if (saved_game_storage_has_free_blocks(minimal_storage_size_in_blocks()))
 		{
-			function_22f3a1((*controller)->controller_index);
+			press_start_sign_in((*controller)->controller_index);
 		}
 		else
 		{
-			dialog_choice_show(3, 0x20, 4, 1 << (*controller)->controller_index, dialog_callback_dashboard_memory_for_minimum_storage, function_22f3a1, 0);
+			dialog_choice_show(3, 0x20, 4, 1 << (*controller)->controller_index, dialog_callback_dashboard_memory_for_minimum_storage, press_start_sign_in, 0);
 		}
 	}
 }
