@@ -429,6 +429,8 @@ void function_1bd50(void *state)
 
 #include <math.h>
 
+#define PIN(value, minimum, maximum) ((value) < (minimum) ? (minimum) : ((value) > (maximum) ? (maximum) : (value)))
+
 struct s_1b230_callback
 {
 	void *context;
@@ -609,32 +611,23 @@ bool function_1b580(byte const *definition, long component, long unused, long mo
         {
             real low = *(real *)(data + 4);
             real high = *(real *)(data + 8);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
+            value = PIN(value, 0.0f, 1.0f);
             value = (high - low) * value + low;
         }
         switch (mode)
         {
         case 1: value = 1.0f - value; break;
         case 2:
-            value = (real)((cos(value * 6.2831854820251465f) + 1.0f) * 0.5f);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
+            value = PIN((real)((cos(value * 6.2831854820251465f) + 1.0f) * 0.5f), 0.0f, 1.0f);
             break;
         case 3:
-            value = (real)(0.5f - cos(value * 6.2831854820251465f) * 0.5f);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
+            value = PIN((real)(0.5f - cos(value * 6.2831854820251465f) * 0.5f), 0.0f, 1.0f);
             break;
         case 4:
-            value = (real)((sin(value * 6.2831854820251465f) + 1.0f) * 0.5f);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
+            value = PIN((real)((sin(value * 6.2831854820251465f) + 1.0f) * 0.5f), 0.0f, 1.0f);
             break;
         case 5:
-            value = (real)(0.5f - sin(value * 6.2831854820251465f) * 0.5f);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
+            value = PIN((real)(0.5f - sin(value * 6.2831854820251465f) * 0.5f), 0.0f, 1.0f);
             break;
         }
         out[component] = value;
@@ -824,24 +817,16 @@ bool function_1b2c0(byte const *state, long index, long component, long texture,
         {
         case 1: value = 1.0f - value; break;
         case 2:
-            value = (real)((cos(value * 6.2831854820251465f) + 1.0f) * 0.5f);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
+            value = PIN((real)((cos(value * 6.2831854820251465f) + 1.0f) * 0.5f), 0.0f, 1.0f);
             break;
         case 3:
-            value = (real)(0.5f - cos(value * 6.2831854820251465f) * 0.5f);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
+            value = PIN((real)(0.5f - cos(value * 6.2831854820251465f) * 0.5f), 0.0f, 1.0f);
             break;
         case 4:
-            value = (real)((sin(value * 6.2831854820251465f) + 1.0f) * 0.5f);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
+            value = PIN((real)((sin(value * 6.2831854820251465f) + 1.0f) * 0.5f), 0.0f, 1.0f);
             break;
         case 5:
-            value = (real)(0.5f - sin(value * 6.2831854820251465f) * 0.5f);
-            if (0.0f > value) value = 0.0f;
-            else if (value > 1.0f) value = 1.0f;
+            value = PIN((real)(0.5f - sin(value * 6.2831854820251465f) * 0.5f), 0.0f, 1.0f);
             break;
         }
         out[component] = value;
