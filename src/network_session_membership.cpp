@@ -696,19 +696,22 @@ long function_1931a0(long count, s_surface_description *p);
 #define SUMMARY_MAX(a, b) ((a) > (b) ? (a) : (b))
 
 // @retail 0x63220
-long session_summary_get_player_value(s_session_summary *summary, long player_index, long variant_index)
+long session_summary_get_player_value(s_session_summary *summary, long player_index, long const volatile variant_index)
 {
-	const long *local_0 = &variant_index;
 	long value = summary->player_values248[player_index];
-	if (value != NONE)
+	if (summary->player_values248[player_index] != NONE)
 	{
-		s_surface_description *variant = function_192e60(*(const volatile long *)local_0);
-		if (*(const volatile long *)local_0)
+		s_surface_description *variant = function_192e60(variant_index);
+		if (variant_index)
 		{
 			long highest = session_summary_get_machine_highest_value(summary, summary->player_machines[player_index]);
 			if (highest != NONE)
-				return SUMMARY_MAX(value, function_1931a0(highest, variant));
+			{
+				if (value <= function_1931a0(highest, variant))
+					return function_1931a0(highest, variant);
+			}
 		}
+		return value;
 	}
 	return value;
 }

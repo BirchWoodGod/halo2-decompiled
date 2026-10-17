@@ -248,11 +248,6 @@ bool __stdcall function_2163d0(long first, long second, void const *context)
 // @retail 0x215900
 void __stdcall function_215900(long controller, long type, word *capacity, long *indices, bool include_cached)
 {
-	(void)&controller;
-	(void)&type;
-	(void)&capacity;
-	(void)&indices;
-	(void)&include_cached;
 	long count = 0;
 	if (g_51ea14)
 	{
