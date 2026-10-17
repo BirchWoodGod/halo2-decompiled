@@ -1399,11 +1399,9 @@ struct s_territory_tag
 // @retail 0x2c0980
 long territory_create_item(long player_index, long territory)
 {
- long const volatile *territory_reference = &territory;
-	s_state_2bf *state = g_51eccc;
-	
+	long result = NONE;
 
-	if ((short)state->w60[*territory_reference] != NONE)
+	if ((short)g_51eccc->w60[territory] != NONE)
 	{
 		long tag_index = NONE;
 		s_territory_placement placement;
@@ -1413,20 +1411,19 @@ long territory_create_item(long player_index, long territory)
 			tag_index = ((s_territory_tag *)g_4e3b44[g_4e034c->index & 0xffff].bytes)->data->item_tag;
 		}
 		function_b7930(&placement, tag_index, NONE, 0);
-		placement.position = g_4e0350->marker_entries[(short)state->w60[*territory_reference]].position;
+		placement.position = g_4e0350->marker_entries[(short)g_51eccc->w60[territory]].position;
 		s_player_2be *player = player_get_2be(player_index);
 		placement.color_mask |= 15;
 		function_15f330((s_player_appearance const *)((byte *)player + 0x84), player->team, placement.colors);
 		placement.value_a8 = *(long *)((byte *)player + 0x89);
-		long result = function_b7b40(&placement);
+		result = function_b7b40(&placement);
 		if (result != NONE)
 		{
 			function_a7870(result);
-			function_15e050(result, (short)*territory_reference);
+			function_15e050(result, (short)territory);
 		}
-  return result;
 	}
-	return NONE;
+	return result;
 }
 
 // @retail 0x2c0b70

@@ -55,7 +55,7 @@ matrix3x3 *function_141e10(matrix3x3 *out, quaternionf const *q);
 void function_141590(transform4x3f const *in, transform4x3f *out);
 void function_1421b0(transform4x3f *out, point3f const *position, quaternionf const *rotation);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
-void function_120220(transform4x3f *mid, transform4x3f *root, transform4x3f *target, transform4x3f *end);
+void function_120220(transform4x3f *root, transform4x3f *mid, transform4x3f *target, transform4x3f *end);
 struct s_render_model_definition;
 void __stdcall render_model_build_child_node_matrices(s_render_model_definition const *definition, transform4x3f const *parent_matrix,
 	long node_index, long node_count, transform4x3f *field_50);
@@ -232,10 +232,10 @@ void function_1d90e0(long render_model_index, transform4x3f *nodes, long node_in
 			transform4x3f target;
 			transform4x3f node_inverse;
 			transform4x3f delta;
-			transform4x3f *node = &nodes[node_index];
 
 			function_141590(marker_matrix, &target);
 			function_142a60(target_matrix, &target, &target);
+			transform4x3f *node = &nodes[node_index];
 			function_141590(node, &node_inverse);
 			if (!(fabs(weight - 1.0f) < k_real_epsilon))
 			{
@@ -243,7 +243,7 @@ void function_1d90e0(long render_model_index, transform4x3f *nodes, long node_in
 				target.position.y = node->position.y * (1.0f - weight) + target.position.y * weight;
 				target.position.z = node->position.z * (1.0f - weight) + target.position.z * weight;
 			}
-			function_120220(&nodes[parent_node_index], &nodes[grandparent_node_index], &target, node);
+			function_120220(&nodes[grandparent_node_index], &nodes[parent_node_index], &target, node);
 			function_142a60(node, &node_inverse, &delta);
 			render_model_build_child_node_matrices((s_render_model_definition const *)definition, &delta, node_index, node_count,
 				nodes);

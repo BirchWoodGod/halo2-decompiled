@@ -43,7 +43,8 @@ struct s_sound_source_description
 	byte unknown02[2];
 	point3f position;
 	vector3f direction;
-	byte unknown1c[8];
+	long value1c;
+	long value20;
 	long value24;
 };
 
@@ -404,6 +405,7 @@ struct s_local_camera_view
 long function_189400(s_sound_position const *position, long object_index, long tag_index, real scale)
 {
 	long local_player_index = NONE;
+	bool play_at_position = true;
 
 	if (object_index != NONE)
 	{
@@ -413,51 +415,50 @@ long function_189400(s_sound_position const *position, long object_index, long t
 			function_18d4f0(object_index, &audible, &local_player_index);
 		}
 
-		bool audible_everywhere = audible == 1;
-		if (!audible_everywhere)
-		{
-			bool camera_inactive = local_player_index != NONE && !local_camera_get(local_player_index)->active;
-			if (!camera_inactive)
-			{
-				s_sound_marker marker;
-
-				marker.flag0 = false;
-				marker.flag1 = false;
-				function_1892a0((s_sound_source_description *)&marker, g_468788, (vector3f *)g_4687a8, NONE, tag_index, object_index);
-
-				s_tag_header_globals_sound_view *globals = (s_tag_header_globals_sound_view *)g_4e034c;
-				s_tag_header_alt_sound_view *header = globals->header ? globals->header_alt : NULL;
-				long sound_globals_tag_index = header->sound_globals_tag_index;
-				if (sound_globals_tag_index != NONE)
-				{
-					s_sound_globals_side_view *sides = (s_sound_globals_side_view *)g_4e3b44[sound_globals_tag_index & 0xffff].bytes;
-					s_local_camera_view *camera = (s_local_camera_view *)local_camera_get(local_player_index);
-					vector3f forward = camera->forward;
-					real distance = (position->position.y * forward.j + position->position.z * forward.k + position->position.x * forward.i)
-						- (camera->position.y * forward.j + camera->position.z * forward.k + camera->position.x * forward.i);
-
-					if ((real)fabs(distance) <= 0.01f)
-					{
-						marker.value1c = sides->side[0];
-						marker.value20 = sides->side[1];
-					}
-					else if (distance > 0.0f)
-					{
-						marker.value1c = sides->front[0];
-						marker.value20 = sides->front[1];
-					}
-					else
-					{
-						marker.value1c = sides->back[0];
-						marker.value20 = sides->back[1];
-					}
-					marker.flag1 = true;
-				}
-				return function_189340(object_index, tag_index, 0, &marker, &g_444b5c, scale, NONE, NULL);
-			}
-		}
+		play_at_position = audible == 1;
+		if (!play_at_position && local_player_index != NONE)
+			play_at_position = !local_camera_get(local_player_index)->active;
 	}
-	return function_1895f0(position, scale, tag_index);
+
+	if (play_at_position)
+		return function_1895f0(position, scale, tag_index);
+
+	s_sound_source_description description;
+
+	description.flags = 0;
+	function_1892a0(&description, g_468788, (vector3f *)g_4687a8, NONE, tag_index, object_index);
+
+	s_tag_header_globals_sound_view *globals = (s_tag_header_globals_sound_view *)g_4e034c;
+	s_tag_header_alt_sound_view *header = globals->header ? globals->header_alt : NULL;
+	long sound_globals_tag_index = header->sound_globals_tag_index;
+	if (sound_globals_tag_index != NONE)
+	{
+		s_sound_globals_side_view *sides = (s_sound_globals_side_view *)g_4e3b44[sound_globals_tag_index & 0xffff].bytes;
+		s_local_camera_view *camera = (s_local_camera_view *)local_camera_get(local_player_index);
+		plane3f plane;
+
+		plane.n = camera->forward;
+		plane.d = dot3f((vector3f const *)&camera->position, &plane.n);
+		real distance = plane_distance_to_point(&plane, &position->position);
+
+		if ((real)fabs(distance) <= 0.01f)
+		{
+			description.value1c = sides->side[0];
+			description.value20 = sides->side[1];
+		}
+		else if (distance > 0.0f)
+		{
+			description.value1c = sides->front[0];
+			description.value20 = sides->front[1];
+		}
+		else
+		{
+			description.value1c = sides->back[0];
+			description.value20 = sides->back[1];
+		}
+		description.flags |= 2;
+	}
+	return function_189340(object_index, tag_index, 0, (s_sound_marker *)&description, &g_444b5c, scale, NONE, NULL);
 }
 
 extern s_sound_source_callbacks const g_444afc;
