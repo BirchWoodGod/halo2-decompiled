@@ -153,9 +153,14 @@ void function_2bc1f0(long team)
 				if (object_index != NONE)
 				{
 					function_15e050(object_index, (short)team);
-					s_event event;
-					game_engine_event_initialize_inline(&event, 4, 1);
-					game_engine_event_send_inline(&event);
+					if (g_4e6948->mode != 4)
+					{
+						s_event event;
+
+						game_engine_event_initialize_inline(&event, 4, 1);
+						function_a7c50(&event);
+						function_19eb30(&event);
+					}
 					function_a7870(object_index);
 				}
 			}
