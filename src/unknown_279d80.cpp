@@ -281,12 +281,13 @@ void function_279d80(s_graph_tag *graph, c_type_709360 animation_id, long node_c
 	byte *address;
 
 	function_1ddb40(&data, graph, animation_id);
+	address = data.data;
 	size = animation_data_size(data.sizes);
 	if (size > 0x400)
 	{
 		size = 0x400;
 	}
-	for (address = data.data; address < data.data + size; address += 0x20)
+	for (; address < data.data + size; address += 0x20)
 	{
 		_mm_prefetch((char const *)address, _MM_HINT_T0);
 	}
