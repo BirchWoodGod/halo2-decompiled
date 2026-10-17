@@ -149,8 +149,8 @@ struct s_player_action
 
 struct s_session_id;
 long network_session_time_since_start(const s_session_id *session_id); /* the time synchronize clock (unknown_075870.cpp) */
-void __stdcall function_07ba10(s_bitstream *stream, void *session);    /* writes a session description */
-bool __stdcall function_07c110(s_bitstream *stream, void *session);    /* reads a session description */
+void __stdcall session_description_encode(s_bitstream *stream, void *session);    /* writes a session description */
+bool __stdcall session_description_decode(s_bitstream *stream, void *session);    /* reads a session description */
 void function_07c5a0(s_bitstream *stream, void const *source);         /* writes a 0x90 byte sub-structure */
 byte function_07ca70(s_bitstream *stream, void *destination);          /* reads it, true when it is valid */
 void __stdcall function_063690(void *part, s_bitstream *stream);       /* writes the parameters' sub-structure at 0x3c / 0x8c */

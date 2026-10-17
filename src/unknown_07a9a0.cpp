@@ -33,7 +33,7 @@ struct s_xnet_registry_entry
 const byte *g_46725c = g_440070;
 
 void qos_release(long handle);
-void function_07ad80(long count, byte *buffer);
+void transport_get_random_bytes(long count, byte *buffer);
 
 /* 0x468758: the allocator the QoS pool and the online tasks
    (online_tasks.cpp) are built through. Retail's .data holds 0x479860, an
@@ -194,7 +194,7 @@ void function_07ad50(byte *buffer)
 {
 	do
 	{
-		function_07ad80(8, buffer);
+		transport_get_random_bytes(8, buffer);
 	}
 	while (memcmp(g_46725c, buffer, 8) == 0);
 }

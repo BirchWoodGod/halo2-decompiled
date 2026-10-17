@@ -1,5 +1,5 @@
 /* UNKNOWN_0820F0.H: the connections (0xf8 bytes each, at 0x4d87d4) and
-   the two kinds of stream they own (lane D, src/unknown_0820f0.cpp) */
+   the two kinds of stream they own (lane D, src/link_connection.cpp) */
 
 #ifndef UNKNOWN_0820F0_H
 #define UNKNOWN_0820F0_H
@@ -25,9 +25,52 @@ struct s_link
 };
 
 /* the objects that read a connection's packets and hear about its messages
-   (src/unknown_0820f0.cpp) */
+   (src/link_connection.cpp) */
 class c_connection_client;
 class c_connection_owner;
+
+/* what a client handles: the bits of s_connection_handler::type */
+enum e_connection_client_flags
+{
+	_connection_client_packets_flag = 0x1,        /* reads and writes packets */
+	_connection_client_delivered_flag = 0x4,      /* hears of delivered messages */
+	_connection_client_lost_flag = 0x8,           /* hears of lost messages */
+	_connection_client_can_close_flag = 0x10,     /* may ask to close the connection */
+	_connection_client_priority_flag = 0x20       /* its data makes a priority packet */
+};
+
+/* s_network_connection::flags */
+enum e_link_connection_flags
+{
+	_link_connection_reliable_stream_flag = 0x8,
+	_link_connection_unreliable_stream_flag = 0x10,
+	_link_connection_own_client_flag = 0x20,
+	_link_connection_loopback_flags = 0xc0      /* kept only for a loopback address */
+};
+
+/* s_network_connection::state */
+enum e_link_connection_state
+{
+	_link_connection_state_free,
+	_link_connection_state_initialized,
+	_link_connection_state_closed,
+	_link_connection_state_connecting,
+	_link_connection_state_establishing,
+	_link_connection_state_established
+};
+
+/* s_network_connection::timers */
+enum e_link_connection_timer
+{
+	_link_connection_timer_packet_sent,
+	_link_connection_timer_reliable_sent,
+	_link_connection_timer_extra_sent,
+	_link_connection_timer_packet_received,
+	_link_connection_timer_acknowledged,
+	_link_connection_timer_unknown5,
+
+	k_link_connection_timer_count
+};
 
 struct s_connection_handler
 {
@@ -39,13 +82,14 @@ struct s_connection_handler
    connection of the class has */
 struct s_connection_callback
 {
-	byte unknown00[4];
+	bool initialized;
+	byte unknown01[3];
 	void *context;
 	void (__stdcall *function)(void *context);
 	long handler_count;
 	s_connection_handler handlers[4];
 	bool active;
-	bool unknown31;
+	bool include_all_clients;  /* every client takes part in packets, not only the packet clients */
 };
 
 struct s_connection_config
@@ -78,9 +122,9 @@ struct s_network_connection
 	s_connection_config const *config;
 	long reliable_stream_index;
 	long stream_index;
-	c_base_450d40 unknown18;
-	bool unknown1c;
-	bool unknown1d;
+	c_base_450d40 own_client;
+	bool sent_to_all_clients;   /* the last packet written included every client */
+	bool read_by_all_clients;   /* the last packet read included every client */
 	byte unknown1e[2];
 	long handler_count;
 	s_connection_handler handlers[3];
@@ -100,8 +144,10 @@ struct s_network_connection
 	long handshake_next_time;
 	long handshake_count;
 	long establish_time;
-	s_connection_timer timers[6];
+	s_connection_timer timers[k_link_connection_timer_count];
 };
+
+typedef char assert_link_connection_size[(sizeof(s_network_connection) == 0xf8) ? 1 : -1];
 
 struct s_network_stream_window
 {
@@ -145,7 +191,7 @@ long network_connection_send_capacity(s_network_connection *connection);
 void network_connection_update_handshake(s_network_connection *connection);
 void network_connection_send_acknowledge(s_network_connection *connection, bool reliable);
 
-static inline s_network_connection *function_x7665e0(long index)
+static inline s_network_connection *link_connection_get(long index)
 {
 	return &((s_network_connection *)g_4d87d4)[index];
 }

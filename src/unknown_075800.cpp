@@ -437,7 +437,7 @@ void c_class_938e0::function_944a0(const s_session_id *message, long remote_inde
 		s_type_67cfcd reply;
 		memset(&reply, 0, sizeof(reply));
 		reply.session_id = *message;
-		function_095580(network_stream_get(function_x7665e0(remote_index)->stream_index), 0x13, sizeof(reply), &reply);
+		function_095580(network_stream_get(link_connection_get(remote_index)->stream_index), 0x13, sizeof(reply), &reply);
 	}
 }
 

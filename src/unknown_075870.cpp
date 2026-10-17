@@ -151,7 +151,7 @@ void network_observer_close_channel(s_network_observer *observer, long channel_i
 	s_network_observer_channel *channel = &observer->channels[channel_index];
 	if (channel->connection_index != NONE)
 	{
-		s_network_connection *connection = function_x7665e0(channel->connection_index);
+		s_network_connection *connection = link_connection_get(channel->connection_index);
 		if (connection->state > 2)
 			network_connection_close(connection, 0x11);
 	}
@@ -187,7 +187,7 @@ void network_observer_send_message(s_network_observer *observer, long owner, lon
 
 	if (channel->connection_index != NONE)
 	{
-		s_network_connection *connection = function_x7665e0(channel->connection_index);
+		s_network_connection *connection = link_connection_get(channel->connection_index);
 		if (out_of_band)
 		{
 			s_type_99af70 address;
@@ -223,7 +223,7 @@ bool network_observer_channel_ready(s_network_observer *observer, long channel_i
 
 	if (channel->connection_index != NONE)
 	{
-		s_network_connection *connection = function_x7665e0(channel->connection_index);
+		s_network_connection *connection = link_connection_get(channel->connection_index);
 		if (connection->state == 5)
 		{
 			if (!(channel->message_mask & ((unsigned __int64)1 << message_type)))
@@ -240,7 +240,7 @@ void network_observer_mark_message(s_network_observer *observer, long channel_in
 {
 	s_network_observer_channel *channel = &observer->channels[channel_index];
 
-	if (channel->connection_index != NONE && function_x7665e0(channel->connection_index)->state == 5)
+	if (channel->connection_index != NONE && link_connection_get(channel->connection_index)->state == 5)
 	{
 		unsigned __int64 bit = (unsigned __int64)1 << message_type;
 		if (!(channel->message_mask & bit))
@@ -302,7 +302,7 @@ bool network_observer_channel_timed_out(s_network_observer *observer, long chann
 	bool result = false;
 	if (channel->connection_index != NONE)
 	{
-		s_network_connection *connection = function_x7665e0(channel->connection_index);
+		s_network_connection *connection = link_connection_get(channel->connection_index);
 		if (connection->state == 5)
 		{
 			long last = connection->timers[1].time;
@@ -329,7 +329,7 @@ void network_observer_check_channel_activity(s_network_observer *observer, long 
 	{
 		if (channel->connection_index != NONE)
 		{
-			s_network_connection *connection = function_x7665e0(channel->connection_index);
+			s_network_connection *connection = link_connection_get(channel->connection_index);
 			if (connection->state == 5)
 			{
 				long last = connection->timers[0].time;
@@ -370,7 +370,7 @@ bool network_observer_channel_stalled(s_network_observer *observer, long channel
 	s_network_observer_channel *channel = &observer->channels[channel_index];
 	if (channel->connection_index != NONE)
 	{
-		s_network_connection *connection = function_x7665e0(channel->connection_index);
+		s_network_connection *connection = link_connection_get(channel->connection_index);
 		if (connection->state == 5)
 		{
 			if (network_connection_send_capacity(connection) < 0x4000)
@@ -454,7 +454,7 @@ void network_observer_channel_forget_address(s_network_observer *observer, long 
 	s_network_observer_channel *channel = &observer->channels[channel_index];
 	if (channel->connection_index != NONE)
 	{
-		s_network_connection *connection = function_x7665e0(channel->connection_index);
+		s_network_connection *connection = link_connection_get(channel->connection_index);
 		if (connection->state > 2)
 			network_connection_close(connection, *reason_reference);
 	}
@@ -481,7 +481,7 @@ void network_observer_channel_dispose(s_network_observer *observer, long channel
 	network_observer_channel_forget_address(observer, channel_index, false, 0xe);
 	if (channel->connection_index != NONE)
 	{
-		network_connection_dispose(function_x7665e0(channel->connection_index));
+		network_connection_dispose(link_connection_get(channel->connection_index));
 		channel->connection_index = NONE;
 	}
 	if (channel->qos_handle != NONE)
@@ -610,7 +610,7 @@ void s_network_observer::packet_received(long connection_index, long size, long 
 {
 	long channel_index = network_observer_find_channel_by_connection(this, connection_index);
 	s_network_observer_channel *channel = &channels[channel_index];
-	s_network_connection *connection = function_x7665e0(channel->connection_index);
+	s_network_connection *connection = link_connection_get(channel->connection_index);
 	network_statistics_add(&channel->statistics_received, size);
 	if (channel->flag48c)
 	{
@@ -694,7 +694,7 @@ bool network_observer_channel_has_host(s_network_observer *observer, long channe
 	s_network_observer_channel *channel = &observer->channels[channel_index];
 	if (channel->connection_index != NONE)
 	{
-		s_network_connection *connection = function_x7665e0(channel->connection_index);
+		s_network_connection *connection = link_connection_get(channel->connection_index);
 		if (connection->state >= 4)
 		{
 			long time = 0;
@@ -735,7 +735,7 @@ void network_observer_update_connection(s_network_observer *volatile observer, l
 		s_network_connection *connection = NULL;
 		if (channel->connection_index != NONE)
 		{
-			connection = function_x7665e0(channel->connection_index);
+			connection = link_connection_get(channel->connection_index);
 			switch (channel->state)
 			{
 			case 1: break;
@@ -882,7 +882,7 @@ long network_observer_attach_channel(s_network_observer *observer, long owner_in
 					network_observer_channel_forget_address(observer, j, false, 0xe);
 					if (channel->connection_index != NONE)
 					{
-						network_connection_dispose(function_x7665e0(channel->connection_index));
+						network_connection_dispose(link_connection_get(channel->connection_index));
 						channel->connection_index = NONE;
 					}
 					if (channel->qos_handle != NONE)
@@ -911,7 +911,7 @@ long network_observer_attach_channel(s_network_observer *observer, long owner_in
 			if (connection_index != NONE)
 			{
 				channel->connection_index = connection_index;
-				function_x7665e0(connection_index)->owner = (c_connection_owner *)local_1;
+				link_connection_get(connection_index)->owner = (c_connection_owner *)local_1;
 				channel->state = 2;
 				channel->time = observer_time_get();
 				channel->unknown10 = NONE;
@@ -1378,7 +1378,7 @@ void function_797b0(s_network_observer *observer, long index, bool received)
 void function_78e60(s_network_observer *observer, long index)
 {
 	s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)&observer->channels[index];
-	s_network_connection *connection = function_x7665e0(observer->channels[index].connection_index);
+	s_network_connection *connection = link_connection_get(observer->channels[index].connection_index);
 	long total = 0;
 	long count = 0;
 	s_observer_bandwidth_channel *local_0 = (s_observer_bandwidth_channel *)&observer->channels[0];
@@ -2076,7 +2076,7 @@ void function_78ac0(s_network_observer *observer)
 		s_observer_bandwidth_channel *channel = (s_observer_bandwidth_channel *)base;
 		if (channel->state)
 		{
-			s_network_connection *connection = function_x7665e0(base->connection_index);
+			s_network_connection *connection = link_connection_get(base->connection_index);
 			if (channel->active && (!enabled || connection->state != 5 ||
 				channel->has_callback != (connection->callback != NULL) ||
 				channel->callback_active != (connection->callback && connection->callback->active)))
@@ -2228,7 +2228,7 @@ static __forceinline long function_779f1(s_network_observer *arg_0, long *arg_1,
         *(long *)(local_2 - 4) = NONE;
         *(real *)local_2 = -1.0f;
         *(long *)(local_2 + 4) = NONE;
-        if (*(long *)(local_2 - 0x484) == 7 && *(long *)(local_2 - 0x478) != NONE && function_x7665e0(*(long *)(local_2 - 0x478))->callback)
+        if (*(long *)(local_2 - 0x484) == 7 && *(long *)(local_2 - 0x478) != NONE && link_connection_get(*(long *)(local_2 - 0x478))->callback)
             arg_1[local_0++] = local_1;
     }
     return local_0;
@@ -2344,7 +2344,7 @@ void network_observer_update_channel_budgets(s_network_observer *observer)
 		for (long j = 0; j < count; j++)
 		{
 			s_network_observer_channel *channel = &observer->channels[indices[j]];
-			s_network_connection *connection = function_x7665e0(channel->connection_index);
+			s_network_connection *connection = link_connection_get(channel->connection_index);
 			*(long *)((byte *)channel + 0x480) = observer->value4f20;
 			*(real *)((byte *)channel + 0x484) = connection->callback && connection->callback->active ? observer->real4f24 : observer->real4f28;
 			long budget = *(long *)((byte *)channel + 0x480);
@@ -2377,13 +2377,13 @@ void __stdcall function_78880(void *p)
 		s_network_observer_channel *channel = &observer->channels[i];
 		if (channel->state)
 		{
-			s_network_connection *connection = function_x7665e0(channel->connection_index);
+			s_network_connection *connection = link_connection_get(channel->connection_index);
 			if (connection->state > 2)
 			{
 				network_connection_close(connection, 3);
 				network_observer_update_connection(observer, i);
 			}
-			network_connection_dispose(function_x7665e0(channel->connection_index));
+			network_connection_dispose(link_connection_get(channel->connection_index));
 			channel->connection_index = NONE;
 		}
 	}
@@ -2399,7 +2399,7 @@ void s_network_observer::function_776a0(long channel_index)
 	long const *index_reference = &channel_index;
 	s_network_observer_channel *channel = &observer->channels[*index_reference];
 	if (!channel->state || channel->connection_index == NONE) return;
-	s_network_connection *connection = function_x7665e0(channel->connection_index);
+	s_network_connection *connection = link_connection_get(channel->connection_index);
 	if (channel->state == 1)
 	{
 		long started = channel->time;
@@ -2540,7 +2540,7 @@ local_3:
 				s_network_observer_channel *channel = &observer->channels[index];
 				if (channel->state && !memcmp(&remote, channel->remote_id, sizeof(remote)) && channel->owner_mask)
 				{
-					s_network_connection *connection = function_x7665e0(channel->connection_index);
+					s_network_connection *connection = link_connection_get(channel->connection_index);
 					s_type_99af70 previous;
 					network_connection_get_address(connection, &previous);
 					dword sequence_delta = request[0] - connection->remote_sequence;
@@ -2646,7 +2646,7 @@ void network_observer_recreate_connections(s_network_observer *observer)
 			function_11c9c0(name, sizeof(name), "%hd.%hd.%hd.%hd", ip >> 24, (ip >> 16) & 255, (ip >> 8) & 255, ip & 255);
 			long connection = network_connection_allocate((long)name, 0x38);
 			channel->connection_index = connection;
-			if (connection != NONE) function_x7665e0(connection)->owner = (c_connection_owner *)observer;
+			if (connection != NONE) link_connection_get(connection)->owner = (c_connection_owner *)observer;
 			network_observer_channel_check_connect(observer, i);
 			network_observer_update_connection(observer, i);
 			observer->function_776a0(i);

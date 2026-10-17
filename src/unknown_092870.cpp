@@ -273,7 +273,7 @@ long network_link_find_route(c_class_93590 *link, long kind, s_type_99af70 const
 		s_link_route *route = &link->m_routes[i];
 		if (link_address_match(address, &route->address))
 		{
-			s_network_connection *connection = function_x7665e0(route->connection_index);
+			s_network_connection *connection = link_connection_get(route->connection_index);
 			bool found;
 			switch (kind)
 			{
@@ -311,7 +311,7 @@ inline long network_link_find_connection(c_class_93590 *link, long kind, s_type_
 bool network_link_add_route(c_class_93590 *link, long connection_index, long kind, s_type_99af70 const *address)
 {
 	bool result = true;
-	s_network_connection *connection = function_x7665e0(connection_index);
+	s_network_connection *connection = link_connection_get(connection_index);
 	long existing;
 	if (connection->state > 2 && (connection->flags & 0x80))
 		existing = network_link_find_connection(link, 1, address);
@@ -323,10 +323,10 @@ bool network_link_add_route(c_class_93590 *link, long connection_index, long kin
 	{
 		if (existing != NONE)
 		{
-			if (connection->local_sequence - function_x7665e0(existing)->local_sequence == 0)
+			if (connection->local_sequence - link_connection_get(existing)->local_sequence == 0)
 				result = false;
 			else
-				network_connection_dispose(function_x7665e0(existing));
+				network_connection_dispose(link_connection_get(existing));
 		}
 		if (result)
 		{
@@ -349,13 +349,13 @@ bool network_link_add_route(c_class_93590 *link, long connection_index, long kin
 void network_link_close_connections(c_class_93590 *link)
 {
 	for (long i = 0; i < link->m_route_count; i++)
-		network_connection_close(function_x7665e0(link->m_routes[i].connection_index), 1);
+		network_connection_close(link_connection_get(link->m_routes[i].connection_index), 1);
 	link->m_route_count = 0;
 }
 
 /* a connection's update (lane D's region, not decompiled yet:
    src/stubs/lane_j.cpp) */
-void __stdcall function_0883c0(s_network_connection *connection);
+void __stdcall link_connection_update(s_network_connection *connection);
 
 /* updates the routes' connections and closes those whose route was dropped */
 // @retail 0x93090
@@ -364,8 +364,8 @@ void network_link_update_connections(c_class_93590 *link)
 	for (long i = 0; i < link->m_route_count; i++)
 	{
 		s_link_route *route = &link->m_routes[i];
-		s_network_connection *connection = function_x7665e0(route->connection_index);
-		function_0883c0(connection);
+		s_network_connection *connection = link_connection_get(route->connection_index);
+		link_connection_update(connection);
 		if (route->pending)
 		{
 			if (connection->state > 2)
@@ -550,7 +550,7 @@ void network_link_send_out_of_band(c_class_93590 *link, s_bitstream const *strea
 void network_link_send_connection_packet(c_class_93590 *link, long connection_index, s_bitstream const *stream, long extra_size, void const *extra, long *size_out)
 {
 	long result = 0;
-	s_network_connection *connection = function_x7665e0(connection_index);
+	s_network_connection *connection = link_connection_get(connection_index);
 	s_link_packet packet;
 	memset(&packet, 0, sizeof(packet));
 	if (connection->state != 0 && connection->state != 1)
@@ -630,7 +630,7 @@ void network_link_receive_packet(c_class_93590 *link, s_link_packet const *packe
 			long connection_index = link->m_routes[route_index].connection_index;
 			if (connection_index != NONE)
 			{
-				s_network_connection *connection = function_x7665e0(connection_index);
+				s_network_connection *connection = link_connection_get(connection_index);
 				if (packet->payload_size > 0)
 				{
 					s_bitstream stream;

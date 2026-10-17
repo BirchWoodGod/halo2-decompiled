@@ -936,7 +936,7 @@ void __stdcall function_865d0(c_simulation_view *view)
  c_simulation_view *const *view_reference = &view;
  while (view->established() && view->unknownac != 0)
  {
-  s_network_connection *connection = function_x7665e0(view->unknown3c);
+  s_network_connection *connection = link_connection_get(view->unknown3c);
   if (connection->state != 5 || !(connection->flags & 0x10)) break;
   s_network_stream_header *stream = network_stream_get(connection->stream_index);
   if ((512 - (stream->window.next - stream->window.end)) * 32 < 0x600) break;
