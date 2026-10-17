@@ -73,6 +73,8 @@ struct s_anim_data
 	byte unknown8;
 	byte type;
 	short count;
+
+	void movement_get(vector3f *out, long index, real *w);
 };
 
 struct s_vec4 { vector3f v; real w; };
@@ -90,7 +92,7 @@ PRIVATE __forceinline void function_20aa71(vector3f *arg_0, byte const *arg_1)
 }
 
 // @retail 0x20aa70
-void function_20aa70(vector3f *out, s_anim_data *data, long index_, real *w)
+void s_anim_data::movement_get(vector3f *out, long index_, real *w)
 {
 	short index = (short)index_;
 	s_anim_header *h;
@@ -98,24 +100,24 @@ void function_20aa70(vector3f *out, s_anim_data *data, long index_, real *w)
 
 	*out = *g_4687a4;
 	*w = 0.0f;
-	switch (data->type)
+	switch (type)
 	{
 	case 1:
-		h = data->header;
-		p = data->base + h->unknown6 + h->unknown1 + index * 8 + h->unknownc + h->unknown0;
+		h = header;
+		p = base + h->unknown6 + h->unknown1 + index * 8 + h->unknownc + h->unknown0;
 		((dword *)out)[0] = ((dword *)p)[0];
 		((dword *)out)[1] = ((dword *)p)[1];
 		break;
 	case 2:
-		h = data->header;
-		p = data->base + h->unknown6 + h->unknown1 + index * 12 + h->unknownc + h->unknown0;
+		h = header;
+		p = base + h->unknown6 + h->unknown1 + index * 12 + h->unknownc + h->unknown0;
 		((dword *)out)[0] = ((dword *)p)[0];
 		((dword *)out)[1] = ((dword *)p)[1];
 		*w = ((real *)p)[2];
 		break;
 	case 3:
-		h = data->header;
-		p = data->base + h->unknown6 + h->unknown1 + index * 16 + h->unknownc + h->unknown0;
+		h = header;
+		p = base + h->unknown6 + h->unknown1 + index * 16 + h->unknownc + h->unknown0;
 		function_20aa71(out, p);
 		*w = ((real *)p)[3];
 		break;

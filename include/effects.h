@@ -424,6 +424,11 @@ void function_175270(s_particle_system_datum *particle_system, s_particle_system
 /* effects (src/unknown_175bd0.cpp) */
 void function_1774f0(long effect_index);
 void effect_remove_event_slot(long effect_index, long value);
-long function_176780(long object_index, s_effect_owner const *owner, real scale_a, long tag_index, real scale_b, point3f const *origin, vector3f const *direction);
+long function_176780(s_effect_owner const *owner, long object_index, real scale_a, long tag_index, real scale_b, point3f const *origin, vector3f const *direction);
+/* the object-first argument order; the definition takes the owner first, as retail passes it */
+inline long function_176780(long object_index, s_effect_owner const *owner, real scale_a, long tag_index, real scale_b, point3f const *origin, vector3f const *direction)
+{
+	return function_176780(owner, object_index, scale_a, tag_index, scale_b, origin, direction);
+}
 
 #endif
