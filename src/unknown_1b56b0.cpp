@@ -85,7 +85,7 @@ struct s_clump_iterator_1b57f0
 	long next_index;
 };
 
-static inline s_actor_view *clump_iterator_next_1b57f0(s_clump_iterator_1b57f0 *iterator)
+static inline s_actor_view *clump_actor_iterator_advance_1b57f0(s_clump_iterator_1b57f0 *iterator)
 {
 	s_actor_view *member = 0;
 
@@ -118,7 +118,7 @@ short __stdcall function_1b57f0(long actor_index, s_slot *slot)
 			s_actor_view *other;
 
 			iterator.next_index = element_502420_get(actor->unknown07c)->first_actor_index;
-			while ((other = clump_iterator_next_1b57f0(&iterator)) != 0)
+			while ((other = clump_actor_iterator_advance_1b57f0(&iterator)) != 0)
 			{
 				long other_index = iterator.index;
 
