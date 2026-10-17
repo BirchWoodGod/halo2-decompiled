@@ -141,16 +141,10 @@ bool function_181db0(long index, vector3f *result)
 		{
 			first = 0.0f - first;
 			second = 0.0f - second;
-			vector3f a, b;
-			a.i = basis->first.i * first;
-			a.j = basis->first.j * first;
-			a.k = basis->first.k * first;
-			b.i = basis->second.i * second;
-			b.j = basis->second.j * second;
-			b.k = basis->second.k * second;
-			result->i = b.i + a.i;
-			result->j = b.j + a.j;
-			result->k = b.k + a.k;
+			vector3f *out = *(vector3f *const volatile *)&result;
+			out->i = (real)(basis->second.i * second) + (real)(basis->first.i * first);
+			out->j = (real)(basis->second.j * second) + (real)(basis->first.j * first);
+			out->k = (real)(basis->second.k * second) + (real)(basis->first.k * first);
 		}
 	}
 	return valid;
