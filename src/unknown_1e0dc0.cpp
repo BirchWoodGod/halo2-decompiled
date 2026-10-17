@@ -25,6 +25,7 @@ long __stdcall function_1e0160(long squad_index, long entry_index, long unit_ind
 // @retail 0x1e0dc0
 long function_1e0dc0(short team, long unit_index, short request_value, short squad_index)
 {
+	long result = NONE;
 	const long *unit_reference = &unit_index;
 	const short *request_reference = &request_value;
 	const short *squad_reference = &squad_index;
@@ -77,7 +78,6 @@ long function_1e0dc0(short team, long unit_index, short request_value, short squ
 		definition_index = *(long *)(unit + 0x3d8);
 	else
 		definition_index = *(long *)(g_4e3b44[*(long *)unit & 0xffff].bytes + 0x304);
-	long result;
 	if (definition_index != NONE)
 	{
 		result = function_1e0160(*squad_reference, definition_index, *unit_reference, false);
@@ -93,7 +93,5 @@ long function_1e0dc0(short team, long unit_index, short request_value, short squ
 				function_114b60(NONE, 0x15, actor_get(result)->unknown018, 0xd, NULL);
 		}
 	}
-	else
-		result = NONE;
 	return result;
 }

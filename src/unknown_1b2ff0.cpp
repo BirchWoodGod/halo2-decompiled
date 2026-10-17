@@ -91,12 +91,18 @@ s_slot_handler_2 g_47e1c0 =
 bool __stdcall function_1b3070(long actor_index, s_squad_choice *choice)
 {
 	s_actor_view *actor = actor_get(actor_index);
-	short current = 0;
-	real best_score = -3.402823466e38f;
-	short best = NONE;
-	short best_encounter = NONE;
-	short best_squad = NONE;
-	short previous = NONE;
+	short current;
+	real best_score;
+	short best;
+	short best_encounter;
+	short best_squad;
+	short previous;
+	previous = NONE;
+	current = 0;
+	best_squad = NONE;
+	best_encounter = NONE;
+	best = NONE;
+	best_score = -3.402823466e38f;
 	s_squad_iterator iterator;
 	function_204ec0(&iterator, (short)actor->unknown030, 5, actor->unknown26c != NONE);
 	short squad = function_205010(&iterator);
