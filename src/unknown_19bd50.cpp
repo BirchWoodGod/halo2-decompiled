@@ -107,7 +107,7 @@ D3DTexture *function_1cfb0(s_bitmap_view *bitmap);
 void *function_1d5e0(s_bitmap_view *bitmap, long wait, long *pitch);
 bool function_12cb80(s_bitmap_data *bitmap);
 char *level_path_print(s_level_path *path, char const *format, ...);
-s_type_acf665 *function_136710(s_type_acf665 *file, bool replace, const char *name);
+s_type_acf665 *file_ref_create(s_type_acf665 *file, bool replace, const char *name);
 bool function_1368f0(s_type_acf665 *file);
 
 // @retail 0x19be00
@@ -172,7 +172,7 @@ bool __stdcall function_19bfd0(s_content_item *item)
 	s_type_acf665 file;
 	s_map_package package;
 	package.flags = 0;
-	function_136710(&file, true, item->directory);
+	file_ref_create(&file, true, item->directory);
 	bool result = false;
 	if ((byte)file.flags & 1)
 		function_1373c0(file.path);
@@ -184,7 +184,7 @@ bool __stdcall function_19bfd0(s_content_item *item)
 		result = function_136970(&file, 1, &error);
 		if (!result)
 			return result;
-		result = function_136ca0(&file, 0x2d3fc, &package, false);
+		result = file_ref_read(&file, 0x2d3fc, &package, false);
 		function_136bb0(&file);
 		if (result)
 			return function_19be00(item, &package);

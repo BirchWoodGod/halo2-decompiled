@@ -6,7 +6,7 @@
 
 struct s_location;
 bool function_1e13f0(long arg_0);
-bool function_1e1500(long arg_0);
+bool actor_update_bsp_locations(long arg_0);
 void function_1e22d0(long arg_0, bool arg_1);
 void function_203fb0(long arg_0);
 void function_203d70(long arg_0, short arg_1, bool arg_2);
@@ -16,7 +16,7 @@ void function_cc590(long arg_0);
 void function_b9a90(long arg_0);
 void function_b7360(long arg_0);
 void __stdcall function_b8540(long arg_0);
-void function_109290(long arg_0, long arg_1, long arg_2, long arg_3);
+void object_dispatch_moved(long arg_0, long arg_1, long arg_2, long arg_3);
 bool __stdcall function_b7430(long arg_0, point3f const *arg_1, vector3f const *arg_2, vector3f const *arg_3,
     s_location const *arg_4, bool arg_5, bool arg_6, bool arg_7, bool arg_8);
 
@@ -206,7 +206,7 @@ void function_275380(long arg_0)
                         }
                         point3f local_14 = local_12;
                         long local_15 = local_9->field_18;
-                        function_109290(local_15,(long)&local_14,0,0);
+                        object_dispatch_moved(local_15,(long)&local_14,0,0);
                         if (!function_b7430(local_15,&local_14,NULL,NULL,NULL,true,true,false,false))
                         {
                             if (g_4e6948->mode != 4 || *(long *)((byte *)handler_object_get(local_15)+0xd4) == NONE)
@@ -215,7 +215,7 @@ void function_275380(long arg_0)
                         function_b7360(local_15);
                         local_4[local_11 >> 5] |= 1UL << (local_11 & 31);
                         local_3++;
-                        if (function_1e1500(local_8))
+                        if (actor_update_bsp_locations(local_8))
                         {
                             if (local_9->field_34 == local_0.field_18)
                             {

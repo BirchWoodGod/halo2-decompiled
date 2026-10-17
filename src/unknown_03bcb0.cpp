@@ -257,24 +257,24 @@ bool function_0226d0(void);
 // @retail 0x15d70
 long function_15d70(long tag, long stage, long pass, bool first, bool second)
 {
-	(void)&pass; (void)&first; (void)&second;
 	byte *definition = g_4e3b44[tag & 0xffff].bytes;
-	long result = NONE;
+	long result = 0;
 	byte *groups = record_format_groups(tag);
 	long group = *(word *)(*(byte **)(groups + 4) + pass * 10) & 0x1ff;
-	word range = (*(word **)(groups + 0xc))[group + stage];
-	if (range > 0x1ff)
+	long count = (*(word **)(groups + 0xc))[group + stage] >> 9;
+	if (count > 0)
 	{
-		result = 0;
 		switch (stage)
 		{
-		case 3: result = function_0226d0() ? NONE : 3; break;
 		case 10: result = function_30cd0(second, first); break;
 		case 11: result = function_30d10(*(word *)(definition + 0x3e) != 0, true, second); break;
 		case 12: result = function_30da0(*(word *)(definition + 0x3e) != 0, true); break;
 		case 13: result = function_30e00(*(word *)(definition + 0x3e) != 0); break;
+		case 3: result = function_0226d0() ? NONE : 3; break;
 		}
 	}
+	else
+		result = NONE;
 	return result;
 }
 

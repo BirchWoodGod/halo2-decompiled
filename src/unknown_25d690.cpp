@@ -1620,7 +1620,7 @@ void __stdcall function_25b120(long arg_0, long arg_1, bool arg_2)
 	}
 }
 
-void *function_1e51a0(long arg_0);
+void *actor_get_character_situation_entry(long arg_0);
 
 // @retail 0x25ae40
 void function_25ae40(long arg_0, long arg_1, bool arg_2)
@@ -1644,7 +1644,7 @@ void function_25ae40(long arg_0, long arg_1, bool arg_2)
 	}
 	if (local_1->type == 1 && arg_2)
 	{
-		byte *local_3 = (byte *)function_1e51a0(arg_0);
+		byte *local_3 = (byte *)actor_get_character_situation_entry(arg_0);
 		if (local_3 && *(real *)(local_3 + 0x30) > local_1->unknown28)
 		{
 			vector3f local_4;

@@ -7,7 +7,7 @@
 #include "unknown_0259d0.h"
 #include "files.h"
 
-s_type_acf665 *function_136710(s_type_acf665 *file, bool replace, const char *name);
+s_type_acf665 *file_ref_create(s_type_acf665 *file, bool replace, const char *name);
 bool function_1368f0(s_type_acf665 *file);
 char *csprintf_256(char *buffer, const char *format, ...);
 void function_156090(char const *name, dword flags);
@@ -58,7 +58,7 @@ bool attract_mode_movie_path(char *path, char const *name)
 	s_type_acf665 file;
 
 	csprintf_256(path, "d:\\bink\\%s_%d.bik", name, 60);
-	function_1368f0(function_136710(&file, false, path));
+	function_1368f0(file_ref_create(&file, false, path));
 	return true;
 }
 

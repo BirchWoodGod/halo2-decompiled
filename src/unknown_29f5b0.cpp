@@ -16,7 +16,7 @@
 #include "unknown_272b70.h"
 #include "unit_requests.h"
 #include "unknown_11a4d0.h"
-#include "unknown_134d20.h"
+#include "scenario_ramps.h"
 #include "unknown_0bbf40.h"
 #include "unknown_10aca0.h"
 #include "command_scripts.h"
@@ -634,7 +634,7 @@ real objects_distance_to_object(long list_index, long object_index)
 		point3f origin;
 		function_b9dd0(object_index, &origin);
 		long reference_index;
-		long list_object_index = function_1dee50(list_index, &reference_index);
+		long list_object_index = script_list_head_object(list_index, &reference_index);
 		while (list_object_index != NONE)
 		{
 			point3f point;
@@ -764,7 +764,7 @@ real objects_distance_to_flag(long list_index, short cutscene_flag_index)
 	{
 		point3f *position = &((s_scenario_cutscene_flags_view *)g_4e0350)->cutscene_flags[cutscene_flag_index].position;
 		long reference_index;
-		long list_object_index = function_1dee50(list_index, &reference_index);
+		long list_object_index = script_list_head_object(list_index, &reference_index);
 		while (list_object_index != NONE)
 		{
 			point3f point;
@@ -801,7 +801,7 @@ extern s_record_pool *g_4f55d4;
 long object_list_get_element(long list_index, short index)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = script_list_head_object(list_index, &reference_index);
 	while (index > 0 && object_index != NONE)
 	{
 		object_index = function_x457076(&reference_index);
@@ -853,7 +853,7 @@ void function_2a0380(long object_index, long region_name, short state)
 void function_2a03d0(long list_index, bool flag)
 {
 	long reference_index;
-	long object_index = function_1dee50(list_index, &reference_index);
+	long object_index = script_list_head_object(list_index, &reference_index);
 	while (object_index != NONE)
 	{
 		if (flag)
@@ -3116,7 +3116,7 @@ s_type_f4462a const g_44bba4 = { _hs_type_void, 0, function_2a2f80, NULL, 4, { _
 
 long function_10a460(long object_index);
 
-bool function_10a660(long object_index, long animation_name, short frame, long other_object_index, bool a, bool b, long animation_graph_index);
+bool scenery_animation_begin(long object_index, long animation_name, short frame, long other_object_index, bool a, bool b, long animation_graph_index);
 
 /* 184: void (scenery, arg_0e6cbc, string_handle) */
 // @retail 0x2a2fd0
@@ -3126,7 +3126,7 @@ void __stdcall function_2a2fd0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], 0, NONE, true, false, arguments[1]);
+		scenery_animation_begin(arguments[0], arguments[2], 0, NONE, true, false, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -3141,7 +3141,7 @@ void __stdcall function_2a3020(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], 0, NONE, true, true, arguments[1]);
+		scenery_animation_begin(arguments[0], arguments[2], 0, NONE, true, true, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -3156,7 +3156,7 @@ void __stdcall function_2a3070(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], 0, arguments[3], true, false, arguments[1]);
+		scenery_animation_begin(arguments[0], arguments[2], 0, arguments[3], true, false, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -3171,7 +3171,7 @@ void __stdcall function_2a30c0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], 0, arguments[3], true, true, arguments[1]);
+		scenery_animation_begin(arguments[0], arguments[2], 0, arguments[3], true, true, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -3186,7 +3186,7 @@ void __stdcall function_2a3110(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_10a660(arguments[0], arguments[2], *(short *)&arguments[3], NONE, true, false, arguments[1]);
+		scenery_animation_begin(arguments[0], arguments[2], *(short *)&arguments[3], NONE, true, false, arguments[1]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -10036,7 +10036,7 @@ void __stdcall function_2aba10(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, function_135180(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]));
+		function_209ae0(thread_index, scenario_ramp_start_eased(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]));
 	}
 }
 
@@ -10102,7 +10102,7 @@ void __stdcall function_2abb50(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44f240 = { _hs_type_long_integer, 0, function_2abb50, NULL, 2, { _hs_type_string_id, _hs_type_real } };
 
-real function_1352e0(long name, bool flag);
+real scenario_ramp_current_value(long name, bool flag);
 
 /* 854: real (string_handle, boolean) */
 // @retail 0x2abbc0
@@ -10113,14 +10113,14 @@ void __stdcall function_2abbc0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = function_1352e0(arguments[0], *(bool *)&arguments[1]);
+		*(real *)&result = scenario_ramp_current_value(arguments[0], *(bool *)&arguments[1]);
 		function_209ae0(thread_index, result);
 	}
 }
 
 s_type_f4462a const g_44f254 = { _hs_type_real, 0, function_2abbc0, NULL, 2, { _hs_type_string_id, _hs_type_boolean } };
 
-real __stdcall function_134fe0(long index, real value);
+real __stdcall scenario_ramp_evaluate(long index, real value);
 inline real function_xa57cf5(long name, bool flag)
 {
 	long index = NONE;
@@ -10130,7 +10130,7 @@ inline real function_xa57cf5(long name, bool flag)
 	{
 		value = state->start_value;
 		if (flag)
-			value = function_134fe0(index, value);
+			value = scenario_ramp_evaluate(index, value);
 	}
 	return value;
 }
@@ -10161,7 +10161,7 @@ inline real interpolator_get_target_value(long name, bool flag)
 	{
 		value = state->target_value;
 		if (flag)
-			value = function_134fe0(index, value);
+			value = scenario_ramp_evaluate(index, value);
 	}
 	return value;
 }
@@ -10190,12 +10190,12 @@ void __stdcall function_2abd30(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		hs_return_real(thread_index, interpolator_get_value18(arguments[0]));
+		hs_return_real(thread_index, scenario_ramp_accumulated_input(arguments[0]));
 }
 
 s_type_f4462a const g_44f290 = { _hs_type_real, 0, function_2abd30, NULL, 1, { _hs_type_string_id } };
 
-real function_1353a0(long name);
+real scenario_ramp_progress(long name);
 
 /* 858: real (string_handle) */
 // @retail 0x2abd80
@@ -10206,7 +10206,7 @@ void __stdcall function_2abd80(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = function_1353a0(arguments[0]);
+		*(real *)&result = scenario_ramp_progress(arguments[0]);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -10220,7 +10220,7 @@ void __stdcall function_2abdd0(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		hs_return_real(thread_index, interpolator_get_time10(arguments[0]));
+		hs_return_real(thread_index, scenario_ramp_start_time(arguments[0]));
 }
 
 s_type_f4462a const g_44f2b8 = { _hs_type_real, 0, function_2abdd0, NULL, 1, { _hs_type_string_id } };
@@ -10246,7 +10246,7 @@ inline real interpolator_convert_value(long name, real value_in, bool flag)
 	{
 		value = value_in;
 		if (flag)
-			value = function_134fe0(index, value);
+			value = scenario_ramp_evaluate(index, value);
 	}
 	return value;
 }
@@ -10268,7 +10268,7 @@ void __stdcall function_2abe70(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44f2e0 = { _hs_type_real, 0, function_2abe70, NULL, 3, { _hs_type_string_id, _hs_type_real, _hs_type_boolean } };
 
-real function_135530(long name, real value, bool flag);
+real scenario_ramp_value_at_fraction(long name, real value, bool flag);
 
 /* 862: real (string_handle, real, boolean) */
 // @retail 0x2abf00
@@ -10279,14 +10279,14 @@ void __stdcall function_2abf00(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = function_135530(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
+		*(real *)&result = scenario_ramp_value_at_fraction(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
 		function_209ae0(thread_index, result);
 	}
 }
 
 s_type_f4462a const g_44f2f8 = { _hs_type_real, 0, function_2abf00, NULL, 3, { _hs_type_string_id, _hs_type_real, _hs_type_boolean } };
 
-real function_1355b0(long name, real value, bool flag);
+real scenario_ramp_value_at_time(long name, real value, bool flag);
 
 /* 863: real (string_handle, real, boolean) */
 // @retail 0x2abf60
@@ -10297,14 +10297,14 @@ void __stdcall function_2abf60(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = function_1355b0(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
+		*(real *)&result = scenario_ramp_value_at_time(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
 		function_209ae0(thread_index, result);
 	}
 }
 
 s_type_f4462a const g_44f310 = { _hs_type_real, 0, function_2abf60, NULL, 3, { _hs_type_string_id, _hs_type_real, _hs_type_boolean } };
 
-real function_135680(long name, real value, bool flag);
+real scenario_ramp_value_after(long name, real value, bool flag);
 
 /* 864: real (string_handle, real, boolean) */
 // @retail 0x2abfc0
@@ -10315,7 +10315,7 @@ void __stdcall function_2abfc0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		*(real *)&result = function_135680(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
+		*(real *)&result = scenario_ramp_value_after(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
 		function_209ae0(thread_index, result);
 	}
 }
@@ -10326,7 +10326,7 @@ s_type_f4462a const g_44f328 = { _hs_type_real, 0, function_2abfc0, NULL, 3, { _
 // @retail 0x2ac020
 void __stdcall function_2ac020(short function_index, long thread_index, bool initialize)
 {
-	function_135750();
+	scenario_ramps_stop_all();
 	function_209ae0(thread_index, 0);
 }
 
@@ -10336,7 +10336,7 @@ s_type_f4462a const g_44f340 = { _hs_type_void, 0, function_2ac020, NULL, 0 };
 // @retail 0x2ac040
 void __stdcall function_2ac040(short function_index, long thread_index, bool initialize)
 {
-	function_135790();
+	scenario_ramps_resume_all();
 	function_209ae0(thread_index, 0);
 }
 
@@ -10346,7 +10346,7 @@ s_type_f4462a const g_44f350 = { _hs_type_void, 0, function_2ac040, NULL, 0 };
 // @retail 0x2ac060
 void __stdcall function_2ac060(short function_index, long thread_index, bool initialize)
 {
-	function_135820();
+	scenario_ramps_toggle_last_used();
 	function_209ae0(thread_index, 0);
 }
 
@@ -10451,7 +10451,7 @@ inline bool function_2ac270_get(long index)
 	return false;
 }
 
-void function_1df3e0(long value);
+void hud_message_show_once(long value);
 
 /* 876: void (long_integer) */
 // @retail 0x2ac230
@@ -10461,7 +10461,7 @@ void __stdcall function_2ac230(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_1df3e0(arguments[0]);
+		hud_message_show_once(arguments[0]);
 		function_209ae0(thread_index, 0);
 	}
 }

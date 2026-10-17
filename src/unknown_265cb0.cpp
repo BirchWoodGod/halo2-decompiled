@@ -201,7 +201,7 @@ real __stdcall function_265d30(long actor_index, long prop_index)
 	return (real)(range_score + state_score) + (real)special_score + direction_bonus + distance_bonus + view_bonus + current_bonus;
 }
 
-void *function_1e51a0(long actor_index);
+void *actor_get_character_situation_entry(long actor_index);
 bool function_11bf30(s_location const *location);
 
 struct s_perception_origin_view
@@ -220,7 +220,7 @@ short function_263ed0(long actor_index, s_perception_origin_view const *origin, 
 	short const *type_reference = &type;
 	short const *mode_reference = &mode;
 	s_actor_view *actor = actor_get(actor_index);
-	byte *settings = (byte *)function_1e51a0(actor_index);
+	byte *settings = (byte *)actor_get_character_situation_entry(actor_index);
 	short result = 0;
 	if (settings && type && origin->location.cluster_index != NONE && location->cluster_index != NONE)
 	{
@@ -274,7 +274,7 @@ struct s_distance_rates_view
 // @retail 0x263d70
 void function_263d70(long actor_index, real distance, real rate, real scale, real *secondary, real *primary)
 {
-	s_distance_rates_view *settings = (s_distance_rates_view *)function_1e51a0(actor_index);
+	s_distance_rates_view *settings = (s_distance_rates_view *)actor_get_character_situation_entry(actor_index);
 	real *const *primary_reference = &primary;
 	real *const *secondary_reference = &secondary;
 	real a = 0.0f;
@@ -376,7 +376,7 @@ short function_263810(point3f const *origin, long actor_index, point3f const *po
 	if (mode == 0 || mode == 1)
 	{
 		s_actor_view *actor = actor_get(actor_index);
-		byte *settings = (byte *)function_1e51a0(actor_index);
+		byte *settings = (byte *)actor_get_character_situation_entry(actor_index);
 		if (settings)
 		{
 			real range = *(real *)(settings + 4);
@@ -1416,7 +1416,7 @@ long function_264260(vector3f const *direction, vector3f const *facing, real dis
 }
 
 
-void *function_1e51a0(long actor_index);
+void *actor_get_character_situation_entry(long actor_index);
 
 short const g_44ae58[4][4] =
 {
@@ -1436,7 +1436,7 @@ struct s_prop_rate_definition
 real function_2683f0(long actor_index, long node_index, short type)
 {
 	real result = 0.0f;
-	s_prop_rate_definition *definition = (s_prop_rate_definition *)function_1e51a0(actor_index);
+	s_prop_rate_definition *definition = (s_prop_rate_definition *)actor_get_character_situation_entry(actor_index);
 	if (definition)
 	{
 		s_prop_datum *node = prop_ref_get(node_index);
