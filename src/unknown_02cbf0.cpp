@@ -34,6 +34,21 @@ void *function_44940(short index, bool instance);
 long function_2d000(long object_tag, long tag, long index);
 __declspec(noinline) void *function_449e0(short index, bool load, bool instance);
 
+/* retail inlines 0x16ae0's body at the first two uses in 0x2cbf0 */
+static __forceinline long floor_to_long_inline(real value)
+{
+	__asm {
+		movss xmm0, value
+		cvttss2si eax, xmm0
+		cvtsi2ss xmm1, eax
+		cmpneqss xmm1, xmm0
+		cmpltss xmm0, g_45dbd8
+		andps xmm0, xmm1
+		movmskps ecx, xmm0
+		sub eax, ecx
+	}
+}
+
 // @retail 0x2cbf0
 short function_2cbf0(long geometry, byte category, long instance, dword flags,
     long tag, dword key, long material, byte *object, short mask, byte mode,
@@ -41,8 +56,8 @@ short function_2cbf0(long geometry, byte category, long instance, dword flags,
     bool outside, bool whole, bool first_component, real first_opacity,
     real second_opacity, real depth, byte level, point3f const *position, real radius)
 {
-    volatile long index = g_4c0b78.current++;
-    if (index >= 850 || geometry == NONE)
+    long index = g_4c0b78.current++;
+    if (index >= 850 || *(long const volatile *)&geometry == NONE)
     {
         --g_4c0b78.current;
         return NONE;
@@ -84,16 +99,7 @@ short function_2cbf0(long geometry, byte category, long instance, dword flags,
             bounds->x1 = bounds->y1 = -3.4028234663852886e+38f;
         }
         else
-        {
-            s_view view;
-            view.position = g_4b9da0;
-            view.bounds.top = g_4b9dd0;
-            view.bounds.left = g_4b9dd2;
-            view.bounds.bottom = g_4b9dd4;
-            view.bounds.right = g_4b9dd6;
-            s_camera camera = g_4b9e14;
-            function_30290(position, &view, &camera, radius, bounds);
-        }
+            function_30290(position, (s_view const *)&g_4b9da0, &g_4b9e14, radius, bounds);
     }
     *(short *)(entry->unknown10 + 8) = mask;
     g_4c0b78.unknown0c[850 + index] = 0xff;
@@ -105,21 +111,31 @@ short function_2cbf0(long geometry, byte category, long instance, dword flags,
     }
     real scaled = intensity * 0.25f;
     long value;
-    if (function_016ae0(scaled) < 0) value = 0;
-    else if (function_016ae0(scaled) > 255) value = 255;
+    if (floor_to_long_inline(scaled) < 0) value = 0;
+    else if (floor_to_long_inline(scaled) > 255) value = 255;
     else value = function_016ae0(scaled);
     g_4c0b78.unknown0c[index] = (byte)value;
-    if (object && object_index != NONE)
+    byte *target = *(byte **)entry->unknown10;
+    if (target && object_index != NONE)
     {
-        real opacity = (first_component ? first_opacity : second_opacity) * 256.0f;
-        long amount = (long)opacity;
-        if (amount < 0) amount = 0;
-        else if (amount > 255) amount = 255;
-        object[first_component ? 0x76 : 0x77] = (byte)amount;
+        if (first_component)
+        {
+            long amount = (long)(first_opacity * 256.0f);
+            if (amount < 0) target[0x76] = 0;
+            else if (amount > 255) target[0x76] = 255;
+            else target[0x76] = (byte)amount;
+        }
+        else
+        {
+            long amount = (long)(second_opacity * 256.0f);
+            if (amount < 0) amount = 0;
+            else if (amount > 255) amount = 255;
+            target[0x77] = (byte)amount;
+        }
     }
     byte *section = (byte *)function_44940((short)index, (bool)((flags >> 12) & 1));
     entry->flags = (entry->flags & 0x1fffffff) | ((dword)*(word *)(section + 0x14) << 29);
-    long object_tag = object ? *(long *)object : NONE;
+    long object_tag = *(byte **)entry->unknown10 ? **(long **)entry->unknown10 : NONE;
     long kind = function_2d000(object_tag, entry->tag, (entry->flags >> 18) & 0x7ff);
     entry->unknown00 = (entry->unknown00 & 0x1fffffff) | ((dword)kind << 29);
     bool local_99c7da = (bool)((entry->unknown00 >> 12) & 1);

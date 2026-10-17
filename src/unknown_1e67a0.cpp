@@ -576,6 +576,18 @@ void function_1e6980(s_time_entry *entries, short a, byte b)
 bool g_46fcc4 = true;
 bool g_51e9bc;
 
+/* the approximate reciprocal square root, read from and written to memory */
+PRIVATE __forceinline real inverse_sqrt_1e6360(real squared)
+{
+ real inverse;
+ __asm
+ {
+  rsqrtss xmm0, squared
+  movss inverse, xmm0
+ }
+ return inverse;
+}
+
 // @retail 0x1e6360
 void function_1e6360(s_biped_physics_output *output, real rate, long object_index, real blend)
 {
@@ -620,8 +632,7 @@ void function_1e6360(s_biped_physics_output *output, real rate, long object_inde
   real length_squared = direction.k * direction.k + direction.j * direction.j + direction.i * direction.i;
   if (length_squared != 0.0f)
   {
-   real inverse;
-   _mm_store_ss(&inverse, _mm_rsqrt_ss(_mm_load_ss(&length_squared)));
+   real inverse = inverse_sqrt_1e6360(length_squared);
    direction.i *= inverse;
    direction.j *= inverse;
    direction.k *= inverse;

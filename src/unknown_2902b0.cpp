@@ -147,7 +147,7 @@ void __stdcall function_b8540(long object_index);
 void __stdcall swarm_delete(long arg_0);
 long function_1e06b0(long tag_index);
 void function_11dfb0(vector2f const *rotation, vector3f *forward, vector3f *up);
-bool function_1f34b0(long actor_index, vector3f const *normal, point3f const *point, real distance, short ticks);
+bool function_1f34b0(long actor_index, point3f const *point, vector3f const *normal, real distance, short ticks);
 void function_b9fc0(long object_index, vector3f *forward, vector3f *up);
 real function_30bf0(vector3f *v);
 point3f *function_b9dd0(long object_index, point3f *result);
@@ -247,7 +247,7 @@ void __stdcall function_2902b0(long arg_0, long arg_1, long arg_2, long arg_3,
 			direction.i = (real)(cos(placement.field14) * cos(placement.field18));
 			direction.j = (real)(sin(placement.field14) * cos(placement.field18));
 			direction.k = (real)sin(placement.field18);
-			function_1f34b0(actor_index, &direction, &point, placement.field38, NONE);
+			function_1f34b0(actor_index, &point, &direction, placement.field38, NONE);
 		}
 		if (actor->unit_index != NONE)
 		{
