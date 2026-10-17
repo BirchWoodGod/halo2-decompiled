@@ -540,7 +540,7 @@ dword function_bee60(long object_index);
 void function_146bf0();
 void havok_object_detach(long object_index);
 void function_278f00();
-void function_108bf0(long object_index);
+void object_dispatch_remove(long object_index);
 void __stdcall function_bc300(long object_index);
 
 // @retail 0xb8460
@@ -573,7 +573,7 @@ void __stdcall function_b8460(long object_index, bool detach)
         function_278f00();
         function_146bf0();
     }
-    function_108bf0(object_index);
+    object_dispatch_remove(object_index);
     function_bc300(object_index);
 }
 
@@ -799,7 +799,7 @@ bool __stdcall function_bdef0(long object_index)
 }
 
 
-void function_1091b0(long object_index);
+void object_dispatch_physics_detached(long object_index);
 void __stdcall function_1c35f0(long object_index);
 
 // @retail 0xb73b0
@@ -816,7 +816,7 @@ void function_b73b0(long object_index)
         function_278f00();
         function_146bf0();
     }
-    function_1091b0(object_index);
+    object_dispatch_physics_detached(object_index);
     function_146bf0();
     function_1c35f0(object_index);
     function_278f00();
@@ -939,7 +939,7 @@ void function_b8b70(long object_index);
 void __stdcall function_10a250(long object_index);
 void function_bf090(long object_index);
 void function_15b220(long object_index, long slot);
-void __stdcall function_109400(long object_index);
+void __stdcall object_list_erase(long object_index);
 void function_bb950(long object_index, bool add, long delta);
 void function_a7a60(long object_index);
 void function_10ace0(long object_index);
@@ -964,7 +964,7 @@ void __stdcall function_b8540(long object_index)
     *(long *)((byte *)object + 0xa4) = NONE;
     signed char slot = *(signed char *)((byte *)object + 0xaf);
     if (slot != NONE) function_15b220(object_index, slot);
-    function_109400(object_index);
+    object_list_erase(object_index);
     function_bb950(object_index, false, NONE);
     function_a7a60(object_index);
     function_10ace0(object_index);
@@ -1335,9 +1335,9 @@ void __stdcall function_bc300(long index);
 bool function_bc380(long index, long field, long size, long alignment);
 bool function_bf9a0(long index, long *render_model, long *arg_0e6cbc_2);
 void function_b8b70(long index);
-bool function_108a90(long index, long placement, long failed);
-void function_108b80(long index);
-void function_108bf0(long index);
+bool object_dispatch_create(long index, long placement, long failed);
+void object_dispatch_finish_creation(long index);
+void object_dispatch_remove(long index);
 void function_ba540(long index, string_handle name);
 void __stdcall function_ba590(long index, dword mask);
 void __stdcall function_be240(long index, dword colors, color3f const *values);
@@ -1350,7 +1350,7 @@ void function_be690(long index);
 long function_176780(long index, s_effect_owner const *owner, real scale_a,
     long tag, real scale_b, point3f const *point, vector3f const *direction);
 void function_2e1e0(long index);
-void function_109390(long index);
+void object_list_insert(long index);
 long function_b8820();
 bool havok_object_type_can_have_component(long tag);
 
@@ -1385,7 +1385,7 @@ extern long *g_4de2d0;
 bool function_d5060(s_scenario_block *palette, volatile long type, long index,
     s_type_4f0dcc const *datum, bool enabled, s_object_placement_data *data);
 bool function_a7640(s_effect_object_placement *data);
-void function_108b10(long index, long datum);
+void object_dispatch_place(long index, long datum);
 void function_bf050(long object_index, short name_index);
 void __stdcall function_a7870(long index);
 long function_bf760(long const *unique_id);
@@ -1407,7 +1407,7 @@ long function_bf0f0(s_type_4f0dcc const *datum, long type, long index,
     result = function_b7b40(creation);
     if (result != NONE)
     {
-        function_108b10(result, (long)datum);
+        object_dispatch_place(result, (long)datum);
         if (*(short *)(fields + 2) != NONE) function_bf050(result, *(short *)(fields + 2));
         function_a7870(result);
     }

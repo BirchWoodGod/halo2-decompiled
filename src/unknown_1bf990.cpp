@@ -24,7 +24,7 @@ struct s_slot_vehicle_board
 	byte unknown28[0x40 - 0x28];
 };
 
-/* the block of the actor's character tag function_1e4ad0 returns */
+/* the block of the actor's character tag character_vehicle_settings_get returns */
 struct s_character_vehicle
 {
 	byte flags;
@@ -42,7 +42,7 @@ struct s_vehicle_board_unit_tag
 	s_unit_seat_definition *seats;
 };
 
-long function_1e4ad0(long index);
+long character_vehicle_settings_get(long index);
 bool function_10f630(long object_index, long *first, long *second);
 bool function_1bf7f0(long actor_index, short seat_index, long object_index);
 
@@ -83,7 +83,7 @@ short __stdcall function_1bf990(long actor_index)
 
 	if (!actor->unknown224 && actor->prop_index != NONE && actor->unknown26c == NONE && actor->unknown018 != NONE)
 	{
-		s_character_vehicle *character = (s_character_vehicle *)function_1e4ad0(actor->unknown054);
+		s_character_vehicle *character = (s_character_vehicle *)character_vehicle_settings_get(actor->unknown054);
 
 		if (character)
 		{
@@ -160,7 +160,7 @@ PRIVATE __forceinline word function_1bfd01(long arg_0, s_slot *arg_1, bool arg_2
 				state->boarding = false;
 				if (seated)
 				{
-					s_character_vehicle *character = (s_character_vehicle *)function_1e4ad0(actor->unknown054);
+					s_character_vehicle *character = (s_character_vehicle *)character_vehicle_settings_get(actor->unknown054);
 
 					if (character && (!function_1e2030(arg_0) || !(node->unknown28 > character->unknown08)))
 					{
@@ -243,7 +243,7 @@ bool __stdcall function_1bfb10(long actor_index, s_slot *slot)
     if (object_header_get(vehicle_index)->type == 1)
     {
         byte *movement = (byte *)function_1e4a50(actor->unknown054);
-        byte *boarding = (byte *)function_1e4ad0(actor->unknown054);
+        byte *boarding = (byte *)character_vehicle_settings_get(actor->unknown054);
         bool vertical = (boarding[0] & 1) && (actor->unknown229 || (movement && (movement[0] & 0x20)));
         short seat = function_1bf890(actor_index, vehicle_index, unit->unknown1fc, vertical);
         if (seat != NONE)

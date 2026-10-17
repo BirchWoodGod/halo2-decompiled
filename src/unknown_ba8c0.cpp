@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "unknown_0bad50.h"
 
-bool function_108d90(long object_index, long name, real *value, bool *enabled);
+bool object_dispatch_query_function_value(long object_index, long name, real *value, bool *enabled);
 bool function_10aac0(long object_index, long name, real *value, long *index);
 real function_13bb90(s_tag_data const *function, real input, real range);
 bool __stdcall function_bab40(long object_index, long name, real *value);
@@ -26,7 +26,7 @@ bool function_ba8c0(s_object_function_ab const *function, long object_index, rea
         if (function_10aac0(object_index, input_name, out, &index))
             return true;
     }
-    function_108d90(object_index, function->input_name, &value, &enabled);
+    object_dispatch_query_function_value(object_index, function->input_name, &value, &enabled);
     if ((enabled || implicit_enable) && !periodic)
     {
         if (function->flags & 1)
@@ -60,7 +60,7 @@ bool function_ba8c0(s_object_function_ab const *function, long object_index, rea
     {
         real ignored = 0.0f;
         bool gate = false;
-        function_108d90(object_index, function->enable_name, &ignored, &gate);
+        object_dispatch_query_function_value(object_index, function->enable_name, &ignored, &gate);
         if (!gate)
             enabled = false;
     }

@@ -379,7 +379,7 @@ struct s_model_render_ab
 };
 
 transform4x3f *function_b8c00(long object_index, long *node_count);
-void function_109140(long object_index, long count, long nodes);
+void object_dispatch_adjust_node_matrices(long object_index, long count, long nodes);
 
 // @retail 0xbe1d0
 void function_be1d0(long object_index)
@@ -393,7 +393,7 @@ void function_be1d0(long object_index)
 		{
 			long count;
 			transform4x3f *nodes = function_b8c00(object_index, &count);
-			function_109140(object_index, count, (long)nodes);
+			object_dispatch_adjust_node_matrices(object_index, count, (long)nodes);
 		}
 	}
 }
@@ -865,7 +865,7 @@ struct s_post_physics_header_ab
 };
 void __stdcall function_bc5e0(long object_index);
 void __stdcall function_1d3920(byte *component, dword *mask, real value);
-void function_108cd0(long object_index);
+void object_dispatch_late_update(long object_index);
 void __stdcall function_bef30(long object_index, long remove, long add, long siblings, bool own_flags);
 
 struct s_light_link_ab
@@ -976,7 +976,7 @@ void __stdcall function_bc820(long object_index)
             function_1d3920(component, mask, 0.0f);
         }
     }
-    function_108cd0(object_index);
+    object_dispatch_late_update(object_index);
     if (TEST_FIELD_BIT(((s_post_physics_object_ab volatile *)object)->flag2))
         *(word *)((byte *)object + 0xc0) |= 2;
     else
@@ -996,7 +996,7 @@ void __stdcall function_bc820(long object_index)
 
 
 void function_a9570(long object_index);
-bool function_108c60(long object_index);
+bool object_dispatch_update(long object_index);
 bool function_d5de0(long object_index);
 bool __stdcall function_be8e0(long object_index);
 struct s_havok_component;
@@ -1024,7 +1024,7 @@ bool __stdcall function_bc470(long object_index)
             if (animation->graph_tag_index != NONE)
                 active = animation->blend_counters_update();
         }
-        active |= function_108c60(object_index);
+        active |= object_dispatch_update(object_index);
         active |= function_d5de0(object_index);
         active |= function_be8e0(object_index);
         long child = object->child;

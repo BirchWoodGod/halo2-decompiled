@@ -24,7 +24,7 @@ struct s_sound_source_description
 
 long function_189ee0(long tag_index);
 real sound_permutation_reference_duration(long definition_index, s_sound_permutation_reference const *reference);
-void function_109220(long object_index, long tag_index, long sound_index);
+void object_dispatch_sound_started(long object_index, long tag_index, long sound_index);
 extern s_sound_source_callbacks const g_444b3c;
 void function_1892a0(s_sound_source_description *description, point3f const *position, vector3f const *direction, short value, long tag_index, long object_index);
 long function_18d5b0(long label);
@@ -98,7 +98,7 @@ void __stdcall function_189cd0(long tag_index, long object_index, real scale, lo
 					&g_444b3c, scale, playback, (char const *)&slot->permutation);
 				if (sound_index != NONE && request_object != NONE)
 				{
-					function_109220(request_object, tag_index, sound_index);
+					object_dispatch_sound_started(request_object, tag_index, sound_index);
 				}
 			}
 			slot->source_index = sound_index;

@@ -6323,7 +6323,7 @@ __declspec(noinline) void function_245c0(s_245c0_state *state, real *histogram, 
 void __stdcall function_214f0(real passes, real distortion, real strength, real falloff,
     real scale, bool blend, bool preserve);
 bool function_022710();
-real function_134fc0(long index);
+real scenario_ramp_evaluate_current(long index);
 
 // @retail 0x13870
 void __stdcall function_13870(bool finish, bool blur)
@@ -6378,9 +6378,9 @@ void __stdcall function_13870(bool finish, bool blur)
                     real *weights = scratch.weights;
                     weights[0] = 0.0f; weights[1] = 0.0f; weights[2] = 0.0f; weights[3] = 0.0f;
                     if (*(short *)(entry + 0x20) != NONE)
-                        weights[0] = function_134fc0(*(short *)(entry + 0x20));
+                        weights[0] = scenario_ramp_evaluate_current(*(short *)(entry + 0x20));
                     if (*(short *)(entry + 0x22) != NONE)
-                        weights[1] = function_134fc0(*(short *)(entry + 0x22));
+                        weights[1] = scenario_ramp_evaluate_current(*(short *)(entry + 0x22));
                     if (weights[0] != 0.0f || weights[1] != 0.0f)
                         function_2d140(*(long *)(entry + 0x14), weights, 2, 2, grid);
                 }
