@@ -3,7 +3,6 @@
 #include "globals.h"
 #include "unknown_1cec30.h"
 
-void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, transform4x3f *matrix);
 void havok_component_rigid_body_point_velocity_get(long rigid_body_index, s_havok_component *component,
 	point3f const *point, vector3f *velocity);
 void function_141590(transform4x3f const *in, transform4x3f *out);
@@ -35,7 +34,7 @@ bool function_182020(long component_index, vector3f *previous_velocity, point3f 
 			transform4x3f inverse;
 			transform4x3f relative;
 			vector3f velocity_sample;
-			havok_component_rigid_body_matrix_get(body_index, component, &body_matrix);
+			component->rigid_body_matrix_get(body_index, &body_matrix);
 			function_141590(&body_matrix, &inverse);
 			function_142a60(transform, &inverse, &relative);
 			function_141590(&relative, &relative);
