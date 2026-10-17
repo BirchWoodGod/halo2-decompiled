@@ -209,12 +209,13 @@ void function_1fc4b0(s_tracked_point *tracked, s_tracking_state const *state, s_
 
 	s_tracked_point *const *tracked_reference = &tracked;
 	function_1fc660(*tracked_reference, state, output);
+	short ticks = g_510c54->field_2_3;
 	velocity.i = state->velocity.i * g_510c54->rate + state->unknown38.x - state->unknown2c.x;
 	velocity.j = state->velocity.j * g_510c54->rate + state->unknown38.y - state->unknown2c.y;
 	velocity.k = state->velocity.k * g_510c54->rate + state->unknown38.z - state->unknown2c.z;
-	velocity.i *= (real)g_510c54->field_2_3;
-	velocity.j *= (real)g_510c54->field_2_3;
-	velocity.k *= (real)g_510c54->field_2_3;
+	velocity.i *= (real)ticks;
+	velocity.j *= (real)ticks;
+	velocity.k *= (real)ticks;
 	delta.i = velocity.i - state->velocity.i;
 	delta.j = velocity.j - state->velocity.j;
 	delta.k = velocity.k - state->velocity.k;
