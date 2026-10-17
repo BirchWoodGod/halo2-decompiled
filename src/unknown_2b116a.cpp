@@ -621,7 +621,7 @@ long c_widget_45ad60::v6()
 	return 0;
 }
 
-/* a player's profile (unknown_18f576.cpp) */
+/* a player's profile (player_slots.cpp) */
 struct s_player_profile
 {
 	dword data[0x78];
