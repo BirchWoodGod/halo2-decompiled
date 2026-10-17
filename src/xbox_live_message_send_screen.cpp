@@ -7,11 +7,12 @@
 #include "unknown_19b516.h"
 #include "unknown_234c64.h"
 #include "online_message_entries.h"
+#include "xbox_live_message_send_screen.h"
 
 // @flags /O1 /Oi /Gr
 
-/* UNKNOWN_2B7B48.CPP: the screen that writes a message (text
-   and voice) and sends it to the chosen players */
+/* XBOX_LIVE_MESSAGE_SEND_SCREEN.CPP: the screen that writes an Xbox Live
+   message (text and voice) and sends it to the chosen players */
 
 struct s_message;
 void function_149f49(s_message *message, word a, dword *id, short b, long c, long d, long e);
@@ -35,88 +36,15 @@ long function_08eff0(s_state_block *block, long controller_index, XUID const *re
 long function_08ef90(s_state_block *block, long controller_index, const char *gamertag);
 c_class_1473c9 *__stdcall function_2c9012(s_screen_parameters *parameters);
 
-/* the voice message being recorded: its data, size and length */
-dword g_504940;
-byte g_504948[0x499a];
-dword g_5092e4;
+/* the voice message being recorded: its size, data and length (the voice
+   recording screen fills them in) */
+dword g_voice_message_size;
+byte g_voice_message_data[0x499a];
+dword g_voice_message_length;
 
-/* the player the online screens act on (function_14887e) */
-struct s_message_send_selection
-{
-	long type;
-	union
-	{
-		XONLINE_USER user;
-		XONLINE_FRIEND friend_;
-	};
-	byte unknown[0x78 - 4 - sizeof(XONLINE_USER)];
-};
-
-/* the voice recording screen that 0x2c9012 loads: where it records */
-struct s_voice_record_screen_view
-{
-	byte unknown000[0x61c];
-	byte *data;
-	long maximum_size;
-	dword *size;
-	dword *length;
-};
-
-/* "xbox live message send list" (vtable 0x45c068): send, edit the text,
-   record a voice message */
-class c_xbox_live_message_send_list : public c_class_1474e8
-{
-public:
-	c_xbox_live_message_send_list(word user_flags);
-	virtual ~c_xbox_live_message_send_list();
-
-	/* makes the message block */
-	virtual void v1();
-	/* folded with c_squad_privacy_setting_list's */
-	virtual long get_item_count() { return 3; }
-	virtual void v20(c_class_1a2c81 *widget, long index);
-
-	void handle_item(s_controller_reference **controller, long *item);
-	void send(s_controller_reference **controller);
-	void function_2b7da6(s_controller_reference **controller);
-	void set_default_text();
-
-	c_class_14750b items[3];
-	/* 1 and 2: a reply, 3: a friend request, 4: a message */
-	long type;
-	s_state_block *block;
-	word text[0x100];
-	XUID const *recipients;
-	long recipient_count;
-	long task_index;
-	/* send to the gamertag of the settings (function_14887e) */
-	bool to_gamertag;
-	byte unknown41d[3];
-	c_list_item_handler handler;
-};
-
-/* the screen (vtable 0x45bff8) */
-class c_xbox_live_message_send_screen : public c_screen_with_menu
-{
-public:
-	c_xbox_live_message_send_screen(long a, long b, word user_flags);
-
-	/* shows the title, the text and the voice message's length */
-	virtual void v3();
-	/* ignores input once the message is sent */
-	virtual bool v10(s_widget_event *event);
-	virtual screen_load_proc get_load_proc();
-
-	c_xbox_live_message_send_list list;
-	bool sent;
-	byte unknowna4d[3];
-	long valuea50;
-};
-
-void function_2b7de4(s_controller_reference **controller);
-
+/* makes the screen for a message of this type */
 // @retail 0x2b8045
-c_class_1473c9 *function_2b8045(s_screen_parameters *parameters, long type, bool to_gamertag)
+c_class_1473c9 *xbox_live_message_send_screen_new(s_screen_parameters *parameters, long type, bool to_gamertag)
 {
 	c_xbox_live_message_send_screen *screen = new c_xbox_live_message_send_screen(parameters->a, parameters->b, parameters->user_flags);
 
@@ -130,72 +58,75 @@ c_class_1473c9 *function_2b8045(s_screen_parameters *parameters, long type, bool
 	return screen;
 }
 
+/* the screen's load procedures, one per type and recipient */
 // @retail 0x2b8099
-c_class_1473c9 *__stdcall function_2b8099(s_screen_parameters *parameters)
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type1(s_screen_parameters *parameters)
 {
-	return function_2b8045(parameters, 1, false);
+	return xbox_live_message_send_screen_new(parameters, 1, false);
 }
 
 // @retail 0x2b80a9
-c_class_1473c9 *__stdcall function_2b80a9(s_screen_parameters *parameters)
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type2(s_screen_parameters *parameters)
 {
-	return function_2b8045(parameters, 2, false);
+	return xbox_live_message_send_screen_new(parameters, 2, false);
 }
 
 // @retail 0x2b80b9
-c_class_1473c9 *__stdcall function_2b80b9(s_screen_parameters *parameters)
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type1_to_gamertag(s_screen_parameters *parameters)
 {
-	return function_2b8045(parameters, 1, true);
+	return xbox_live_message_send_screen_new(parameters, 1, true);
 }
 
 // @retail 0x2b80c9
-c_class_1473c9 *__stdcall function_2b80c9(s_screen_parameters *parameters)
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type2_to_gamertag(s_screen_parameters *parameters)
 {
-	return function_2b8045(parameters, 2, true);
+	return xbox_live_message_send_screen_new(parameters, 2, true);
 }
 
 // @retail 0x2b80d9
-c_class_1473c9 *__stdcall function_2b80d9(s_screen_parameters *parameters)
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type3(s_screen_parameters *parameters)
 {
-	return function_2b8045(parameters, 3, false);
+	return xbox_live_message_send_screen_new(parameters, 3, false);
 }
 
 // @retail 0x2b80e9
-c_class_1473c9 *__stdcall function_2b80e9(s_screen_parameters *parameters)
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type4(s_screen_parameters *parameters)
 {
-	return function_2b8045(parameters, 4, false);
+	return xbox_live_message_send_screen_new(parameters, 4, false);
 }
 
+/* the load procedure that makes this screen again */
 // @retail 0x2b80f9
 screen_load_proc c_xbox_live_message_send_screen::get_load_proc()
 {
 	switch (list.type)
 	{
 	case 1:
-		return list.to_gamertag ? function_2b80b9 : function_2b8099;
+		return list.to_gamertag ? xbox_live_message_send_screen_load_type1_to_gamertag : xbox_live_message_send_screen_load_type1;
 	case 2:
 		if (list.to_gamertag)
 		{
-			return function_2b80c9;
+			return xbox_live_message_send_screen_load_type2_to_gamertag;
 		}
 		else
 		{
-			return function_2b80a9;
+			return xbox_live_message_send_screen_load_type2;
 		}
 	case 3:
-		return function_2b80d9;
+		return xbox_live_message_send_screen_load_type3;
 	case 4:
-		return function_2b80e9;
+		return xbox_live_message_send_screen_load_type4;
 	}
 	return 0;
 }
 
+/* the screen, with the list as its menu */
 // @retail 0x2b8143
 c_xbox_live_message_send_screen::c_xbox_live_message_send_screen(long a, long b, word user_flags) :
 	c_screen_with_menu(0xd7, a, b, user_flags, &list),
 	list(user_flags)
 {
-	valuea50 = 0;
+	opener = 0;
 	sent = false;
 }
 
@@ -226,17 +157,17 @@ void c_xbox_live_message_send_screen::v3()
 		((c_text_widget_45a5e0 *)&title)->function_253b1a(0x1b0002d1);
 		break;
 	case 3:
-		if (valuea50 == 1)
+		if (opener == 1)
 			((c_text_widget_45a5e0 *)&title)->function_253b1a(0x260002cf);
-		else if (valuea50 == 2)
+		else if (opener == 2)
 			((c_text_widget_45a5e0 *)&title)->function_253b1a(0x280002d0);
 		else
 			((c_text_widget_45a5e0 *)&title)->function_253b1a(0x1b0002ce);
 		break;
 	default:
-		if (valuea50 == 1)
+		if (opener == 1)
 			((c_text_widget_45a5e0 *)&title)->function_253b1a(0x1f0002d6);
-		else if (valuea50 == 2)
+		else if (opener == 2)
 			((c_text_widget_45a5e0 *)&title)->function_253b1a(0x210002d7);
 		else
 			((c_text_widget_45a5e0 *)&title)->function_253b1a(0x140002d5);
@@ -248,11 +179,11 @@ void c_xbox_live_message_send_screen::v3()
 	}
 	if (meter)
 	{
-		meter->value84 = (real)g_5092e4 * 6.6666667e-5f;
+		meter->value84 = (real)g_voice_message_length * 6.6666667e-5f;
 	}
 	if (length_text)
 	{
-		if (g_5092e4 > 0)
+		if (g_voice_message_length > 0)
 			length_text->function_253b1a(0x120002e1);
 		else
 			length_text->function_253b1a(0x110002e2);
@@ -276,6 +207,7 @@ void c_xbox_live_message_send_screen::v3()
 	}
 }
 
+/* adds the send item, and the text and voice items when the user is online */
 // @retail 0x2b7b48
 c_xbox_live_message_send_list::c_xbox_live_message_send_list(word user_flags) :
 	c_class_1474e8(user_flags),
@@ -290,9 +222,9 @@ c_xbox_live_message_send_list::c_xbox_live_message_send_list(word user_flags) :
 	bool online;
 
 	text[0] = 0;
-	memset(g_504948, 0, sizeof(g_504948));
-	g_504940 = 0;
-	g_5092e4 = 0;
+	memset(g_voice_message_data, 0, sizeof(g_voice_message_data));
+	g_voice_message_size = 0;
+	g_voice_message_length = 0;
 	data = user_interface_data_new("xbox live message send list", 3, 4);
 	function_16b790(data);
 	online = function_1906da(get_controller_index());
@@ -307,6 +239,7 @@ c_xbox_live_message_send_list::c_xbox_live_message_send_list(word user_flags) :
 
 // @retail 0x2b7c6a deleting c_xbox_live_message_send_list
 
+/* frees the message block when it was not sent */
 // @retail 0x2b7c86
 c_xbox_live_message_send_list::~c_xbox_live_message_send_list()
 {
@@ -321,35 +254,37 @@ c_xbox_live_message_send_list::~c_xbox_live_message_send_list()
 void c_xbox_live_message_send_list::v1()
 {
 	s_state_block *memory = (s_state_block *)function_1a47fd(sizeof(s_state_block));
-	s_state_block *local_8dd4ff;
+	s_state_block *allocated_block;
 
 	if (memory)
 	{
 		function_08eeb0(memory);
-		local_8dd4ff = memory;
+		allocated_block = memory;
 	}
 	else
 	{
-		local_8dd4ff = 0;
+		allocated_block = 0;
 	}
-	block = local_8dd4ff;
+	block = allocated_block;
 	((c_widget *)this)->c_widget::v9();
 }
 
+/* the items' texts */
 // @retail 0x2b7d00
 void c_xbox_live_message_send_list::v20(c_class_1a2c81 *widget, long index)
 {
 	s_list_item_text table[3];
 
-	table[0].item = 0;
+	table[0].item = _message_send_item_send;
 	table[0].string_handle = 0xc0002a6;
-	table[1].item = 1;
+	table[1].item = _message_send_item_edit_text;
 	table[1].string_handle = 0x13000601;
-	table[2].item = 2;
+	table[2].item = _message_send_item_record_voice;
 	table[2].string_handle = 0x14000602;
 	function_24c75c(this, widget, table, 0, 3);
 }
 
+/* runs the chosen item, unless the message is already sent */
 // @retail 0x2b7d40
 void c_xbox_live_message_send_list::handle_item(s_controller_reference **controller, long *item)
 {
@@ -359,14 +294,14 @@ void c_xbox_live_message_send_list::handle_item(s_controller_reference **control
 		{
 			switch (*item & 0xffff)
 			{
-			case 0:
+			case _message_send_item_send:
 				send(controller);
 				break;
-			case 1:
-				function_2b7da6(controller);
+			case _message_send_item_edit_text:
+				open_text_editor(controller);
 				break;
-			case 2:
-				function_2b7de4(controller);
+			case _message_send_item_record_voice:
+				xbox_live_message_send_record_voice(controller);
 				break;
 			}
 		}
@@ -379,7 +314,7 @@ void c_xbox_live_message_send_list::handle_item(s_controller_reference **control
 
 /* lets the user write the text, starting from the default one */
 // @retail 0x2b7da6
-void c_xbox_live_message_send_list::function_2b7da6(s_controller_reference **controller)
+void c_xbox_live_message_send_list::open_text_editor(s_controller_reference **controller)
 {
 	unsigned long length = 0;
 
@@ -396,7 +331,7 @@ void c_xbox_live_message_send_list::function_2b7da6(s_controller_reference **con
 
 /* opens the voice recording screen */
 // @retail 0x2b7de4
-void function_2b7de4(s_controller_reference **controller)
+void xbox_live_message_send_record_voice(s_controller_reference **controller)
 {
 	if (voice_port_can_talk((*controller)->controller_index))
 	{
@@ -406,14 +341,14 @@ void function_2b7de4(s_controller_reference **controller)
 		parameters.field_c = 0;
 		function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 1, 4, (long)function_2c9012);
 		screen = (s_voice_record_screen_view *)parameters.load(&parameters);
-		g_504940 = 0;
-		g_5092e4 = 0;
+		g_voice_message_size = 0;
+		g_voice_message_length = 0;
 		if (screen)
 		{
-			screen->data = g_504948;
-			screen->maximum_size = sizeof(g_504948);
-			screen->size = &g_504940;
-			screen->length = &g_5092e4;
+			screen->data = g_voice_message_data;
+			screen->maximum_size = sizeof(g_voice_message_data);
+			screen->size = &g_voice_message_size;
+			screen->length = &g_voice_message_length;
 		}
 	}
 	else
@@ -459,7 +394,7 @@ void c_xbox_live_message_send_list::send(s_controller_reference **controller)
 			count = 0;
 	}
 	voice = false;
-	if (g_504940 > 0 && g_5092e4 > 0 && voice_data_is_wave((const long *)g_504948, g_504940))
+	if (g_voice_message_size > 0 && g_voice_message_length > 0 && voice_data_is_wave((const long *)g_voice_message_data, g_voice_message_size))
 	{
 		voice = true;
 	}
@@ -475,7 +410,7 @@ void c_xbox_live_message_send_list::send(s_controller_reference **controller)
 		online_message_block_set_text(block, (const wchar_t *)text);
 		if (voice)
 		{
-			online_message_block_set_values(block, (long)g_504940, (long)g_504948, g_5092e4);
+			online_message_block_set_values(block, (long)g_voice_message_size, (long)g_voice_message_data, g_voice_message_length);
 		}
 		block->unknown4 = type;
 		if (!to_gamertag)
