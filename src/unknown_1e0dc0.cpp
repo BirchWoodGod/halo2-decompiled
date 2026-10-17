@@ -22,6 +22,8 @@ bool function_1e11b0(long actor_index, bool active);
 bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra);
 long __stdcall function_1e0160(long squad_index, long entry_index, long unit_index, bool flag);
 
+void function_1e04a0(long primary_tag, long character_index, long unit_index, long secondary_tag, short grenade_type);
+
 // @retail 0x1e0dc0
 long function_1e0dc0(short team, long unit_index, short request_value, short squad_index)
 {
@@ -31,47 +33,7 @@ long function_1e0dc0(short team, long unit_index, short request_value, short squ
 	const short *squad_reference = &squad_index;
 	byte *unit = (byte *)ai_object_get(*unit_reference);
 	function_caf00(*unit_reference);
-	real *limits = (real *)function_1e4a10(*(long *)(unit + 0x3d8));
-	if (limits)
-	{
-		short difficulty = g_4e6948->state == 1 ? g_4e6948->difficulty : (short)1;
-		real body, shield;
-		switch (difficulty)
-		{
-		case 3:
-			body = limits[3];
-			shield = limits[4];
-			if (body <= 0.0f && shield <= 0.0f)
-			{
-				body = limits[1];
-				shield = limits[2];
-			}
-			break;
-		case 2:
-			if (limits[3] <= 0.0f && limits[4] <= 0.0f)
-			{
-				body = limits[1];
-				shield = limits[2];
-			}
-			else
-			{
-				body = (limits[1] + limits[3]) * 0.5f;
-				shield = (limits[4] + limits[2]) * 0.5f;
-			}
-			break;
-		default:
-			body = limits[1];
-			shield = limits[2];
-			break;
-		}
-		if (g_4e6948->state == 1 && g_4f55e8)
-		{
-			body *= 2.0f;
-			shield *= 2.0f;
-		}
-		if (body > 0.0f || shield > 0.0f)
-			function_d5c90(*unit_reference, &body, &shield);
-	}
+	function_1e04a0(NONE, *(long *)(unit + 0x3d8), *unit_reference, NONE, NONE);
 	long definition_index;
 	if (*(long *)(unit + 0x3d8) != NONE &&
 		(*(short *)(unit + 0x138) == team || function_1df5d0(*(short *)(unit + 0x138), team)))

@@ -1041,38 +1041,37 @@ long __stdcall function_1e0850(long character_index, long squad_index, s_203780 
 // @retail 0x1e04a0
 void function_1e04a0(long primary_tag, long character_index, long unit_index, long secondary_tag, short grenade_type)
 {
-	byte *bounds = (byte *)function_1e4a10(character_index);
-	if (bounds)
+	real *limits = (real *)function_1e4a10(character_index);
+	if (limits)
 	{
-		real body;
-		real shield;
-		short difficulty = g_4e6948->state == 1 ? g_4e6948->difficulty : 1;
+		short difficulty = g_4e6948->state == 1 ? g_4e6948->difficulty : (short)1;
+		real body, shield;
 		switch (difficulty)
 		{
 		case 3:
-			body = *(real *)(bounds + 0xc);
-			shield = *(real *)(bounds + 0x10);
-			if (!(0.0f < body) && !(0.0f < shield))
+			body = limits[3];
+			shield = limits[4];
+			if (body <= 0.0f && shield <= 0.0f)
 			{
-				body = *(real *)(bounds + 4);
-				shield = *(real *)(bounds + 8);
+				body = limits[1];
+				shield = limits[2];
 			}
 			break;
 		case 2:
-			if (0.0f < *(real *)(bounds + 0xc) || 0.0f < *(real *)(bounds + 0x10))
+			if (limits[3] <= 0.0f && limits[4] <= 0.0f)
 			{
-				body = (*(real *)(bounds + 4) + *(real *)(bounds + 0xc)) * 0.5f;
-				shield = (*(real *)(bounds + 0x10) + *(real *)(bounds + 8)) * 0.5f;
+				body = limits[1];
+				shield = limits[2];
 			}
 			else
 			{
-				body = *(real *)(bounds + 4);
-				shield = *(real *)(bounds + 8);
+				body = (limits[1] + limits[3]) * 0.5f;
+				shield = (limits[4] + limits[2]) * 0.5f;
 			}
 			break;
 		default:
-			body = *(real *)(bounds + 4);
-			shield = *(real *)(bounds + 8);
+			body = limits[1];
+			shield = limits[2];
 			break;
 		}
 		if (g_4e6948->state == 1 && g_4f55e8)

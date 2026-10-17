@@ -81,7 +81,6 @@ struct s_animation_view
 #define OBJECT_STATE_33E(object) ((s_object_state_33e *)((byte *)(object) + (object)->state_offset))
 
 s_animation *function_1daea0(s_graph_tag *graph, c_type_709360 animation_id);
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name);
 real function_1ccb40(c_animation_channel const *channel);
 
 // @retail 0x10db60
@@ -200,7 +199,7 @@ long function_10f720(long object_index, bool first)
 
 static __forceinline void named_animation_copy(c_type_709360 *out, s_graph_tag *graph, long name)
 {
-	c_type_709360 value = function_1dd0b0(graph, name);
+	c_type_709360 value = graph->animation_by_name(name);
 	memcpy(out, &value, sizeof(value));
 }
 
@@ -227,7 +226,7 @@ void function_10e920(long object_index)
 
 	memset(&state->block_5c, 0, sizeof(state->block_5c));
 	state->block_5c.value_6c = NONE;
-	c_type_709360 animation = function_1dd0b0(GRAPH_GET(animation_state->graph_tag_index), 0x800004d);
+	c_type_709360 animation = GRAPH_GET(animation_state->graph_tag_index)->animation_by_name(0x800004d);
 	state->block_5c.animation_5c = animation;
 }
 

@@ -349,7 +349,6 @@ void function_10e920(long object_index);
 void function_10dbc0(long object_index);
 long render_model_find_named_entry(long render_model_index, long name);
 void function_11b710(long unit_index, long field_7c);
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name);
 s_animation *function_1daea0(s_graph_tag *graph, c_type_709360 animation_id);
 
 // @retail 0x111590
@@ -1038,7 +1037,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 
 		if (graph)
 		{
-			c_type_709360 first_id = function_1dd0b0(graph, animation_name);
+			c_type_709360 first_id = graph->animation_by_name(animation_name);
 			if (first_id.index == NONE)
 				goto done_1101e0;
 
@@ -1054,7 +1053,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 				goto done_1101e0;
 			}
 
-			c_type_709360 animation_id = function_1dd0b0(GRAPH_GET(state->graph_tag_index), animation_name);
+			c_type_709360 animation_id = GRAPH_GET(state->graph_tag_index)->animation_by_name(animation_name);
 			function_10f260(unit_index);
 
 			word channel_flags = flag ? 0x4003 : 0x4001;
