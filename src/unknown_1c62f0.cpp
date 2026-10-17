@@ -166,10 +166,17 @@ void c_animation_channel_movement_get(c_animation_channel const *channel, vector
 	*value = 0.0f;
 	if (channel->animation_id.index != NONE)
 	{
-		s_animation_data data;
+		struct s_movement_1c6dc0 : s_animation_data
+		{
+			__forceinline void movement_get(vector3f *vector, long frame, real *value)
+			{
+				function_20aa70(vector, (s_anim_data *)this, frame, value);
+			}
+		};
+		s_movement_1c6dc0 data;
 
 		c_animation_channel_data_get(channel, &data);
-		function_20aa70(vector, (s_anim_data *)&data, frame, value);
+		data.movement_get(vector, frame, value);
 	}
 }
 
@@ -181,10 +188,17 @@ bool c_animation_channel_frame_sample(c_animation_channel const *channel, real f
 	if (channel->graph_tag_index != NONE && channel->animation_id.index != NONE)
 	{
 		long frame_index = real_truncate(frame);
-		s_animation_data data;
+		struct s_sample_1c6c80 : s_animation_data
+		{
+			__forceinline void frame_sample(vector3f *delta, vector3f *position, long frame_index)
+			{
+				function_20ad40((s_anim_data *)this, delta, position, frame_index);
+			}
+		};
+		s_sample_1c6c80 data;
 
 		c_animation_channel_data_get(channel, &data);
-		function_20ad40((s_anim_data *)((dword)&data & ~3UL), delta, position, frame_index);
+		data.frame_sample(delta, position, frame_index);
 		result = true;
 	}
 	return result;
