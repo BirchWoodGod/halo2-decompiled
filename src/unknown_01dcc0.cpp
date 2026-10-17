@@ -140,21 +140,26 @@ void *function_01dd20(long index, long element)
 bool function_01dd60(long index, long *width, long *height)
 {
 	s_unknown_01dcc0 *e = &g_4b4b58[index];
+	bool result;
 	if (e->data != 0 && !e->flag95)
 	{
 		*width = e->width;
 		*height = e->height;
-		return true;
+		result = true;
 	}
-	if (index == 0 || index == 3 || index == 0x18)
+	else if (index == 0 || index == 3 || index == 0x18)
 	{
 		*width = 0x280;
 		*height = 0x1e0;
-		return true;
+		result = true;
 	}
-	*width = 0;
-	*height = 0;
-	return false;
+	else
+	{
+		*width = 0;
+		*height = 0;
+		result = false;
+	}
+	return result;
 }
 
 // @retail 0x1ddd0
@@ -311,6 +316,8 @@ PRIVATE __forceinline void *allocate_entry_bytes(long index, long size)
     return result;
 }
 
+/* Entry 9's allocations start again twice below: each restart hands out
+   the entry's data itself and sets the offset past that first block. */
 // @retail 0x1d770
 bool function_1d770()
 {
@@ -323,11 +330,11 @@ bool function_1d770()
         (function_1df20(10, 2, 128, 128, false, true, 1, allocate_entry_bytes(9, 65536))) &&
         (function_1df20(11, 2, 128, 128, false, true, 1, allocate_entry_bytes(9, 65536))) &&
         (function_1df20(12, 2, 128, 128, false, true, 1, allocate_entry_bytes(9, 65536))) &&
-        (*(long *)g_4b4b58[9].unknown8c = 0, function_1df20(7, 2, 160, 120, false, true, 1, allocate_entry_bytes(9, 92160))) &&
+        (*(long *)g_4b4b58[9].unknown8c = 92160, function_1df20(7, 2, 160, 120, false, true, 1, g_4b4b58[9].data)) &&
         (function_1df20(8, 2, 160, 120, false, true, 1, allocate_entry_bytes(9, 92160))) &&
         (function_1df20(19, 2, 320, 240, false, true, 1, allocate_entry_bytes(9, 307200))) &&
         (function_1df20(13, 2, 256, 256, false, false, 3, g_4b4b58[9].data)) &&
-        (*(long *)g_4b4b58[9].unknown8c = 0, function_1df20(21, 2, 512, 256, false, false, 1, allocate_entry_bytes(9, 524288))) &&
+        (*(long *)g_4b4b58[9].unknown8c = 524288, function_1df20(21, 2, 512, 256, false, false, 1, g_4b4b58[9].data)) &&
         (function_1df20(22, 2, 512, 256, false, false, 1, allocate_entry_bytes(9, 524288)));
     *(long *)g_4b4b58[9].unknown8c = 0;
     if (!success) goto failure;
@@ -338,8 +345,8 @@ bool function_1d770()
     data = allocate_entry_bytes(9, 307200);
     if (!function_1df20(27, 2, 320, 240, false, true, 1, data)) goto failure;
     if (!function_1df20(23, 2, 320, 240, false, true, 1, g_4b4b58[1].data)) goto failure;
-    if (!function_1db10(15, 64, 64, 0, false)) goto failure;
-    return true;
+    if (function_1db10(15, 64, 64, 0, false))
+        return true;
 failure:
     return false;
 }
