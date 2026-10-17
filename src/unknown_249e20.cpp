@@ -126,12 +126,11 @@ void function_249c90(dword *bits_a, s_structure_bsp_view *bsp, long index, dword
 {
 	if (bsp->audibility_count > 0)
 	{
-		s_structure_audibility *local_0 = bsp->audibility;
-		long count = (bsp->cluster_count + 31) >> 5;
-		dword *bits = local_0->bits;
+		s_structure_audibility *audibility = bsp->audibility;
 		long row = 2 * index;
-		dword *source_b = bits + count * (row + 1);
-		dword *source_a = bits + count * row;
+		long count = (bsp->cluster_count + 31) >> 5;
+		dword *source_b = audibility->bits + count * (row + 1);
+		dword *source_a = audibility->bits + count * row;
 
 		memcpy(bits_a, source_a, count * sizeof(dword));
 		memcpy(bits_b, source_b, ((bsp->cluster_count + 31) >> 5) * sizeof(dword));
