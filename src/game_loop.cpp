@@ -547,8 +547,8 @@ void game_launch_file_wake_script(void)
 /* 0x150820 (unknown_1502e0.cpp): ors the clusters the players (or only the
    local players) see into the mask */
 void function_150820(dword *bits, bool local_only);
-/* 0x13e3e0 (unknown_13e210.cpp): destination = a | b, over bit_count bits */
-void function_13e3e0(dword const *a, dword const *b, dword *destination, long bit_count);
+/* 0x13e3e0 (bitset.cpp): destination = a | b, over bit_count bits */
+void bitset_or(dword const *a, dword const *b, dword *destination, long bit_count);
 long camera_scripting_cluster_get(void);
 
 /* both cluster mask functions match only with inline_depth(0) (without it
@@ -589,7 +589,7 @@ void game_visible_clusters_get(dword *clusters, bool local_only, long unused)
 		short cluster = player->location.cluster_index;
 		if (cluster != NONE)
 		{
-			function_13e3e0(clusters,
+			bitset_or(clusters,
 				bsp->cluster_visibility + GAME_CLUSTER_MASK_DWORDS(bsp->cluster_count) * cluster, clusters, bsp->cluster_count);
 		}
 	}
@@ -598,7 +598,7 @@ void game_visible_clusters_get(dword *clusters, bool local_only, long unused)
 		short camera_cluster = (short)camera_scripting_cluster_get();
 		if (camera_cluster != NONE)
 		{
-			function_13e3e0(clusters,
+			bitset_or(clusters,
 				bsp->cluster_visibility + GAME_CLUSTER_MASK_DWORDS(bsp->cluster_count) * camera_cluster, clusters, bsp->cluster_count);
 		}
 	}
@@ -622,7 +622,7 @@ void game_clusters_update(void)
 	game_visible_clusters_get(g_4e6948->locally_visible_clusters, true, 0);
 	if (function_1c9b50(actor_clusters, (short)bsp->cluster_count))
 	{
-		function_13e3e0(g_4e6948->visible_clusters, actor_clusters, g_4e6948->active_clusters, bsp->cluster_count);
+		bitset_or(g_4e6948->visible_clusters, actor_clusters, g_4e6948->active_clusters, bsp->cluster_count);
 	}
 	else
 	{
@@ -632,7 +632,7 @@ void game_clusters_update(void)
 	if (cluster != NONE)
 	{
 		dword *active = g_4e6948->active_clusters;
-		function_13e3e0(active, bsp->cluster_visibility + GAME_CLUSTER_MASK_DWORDS(bsp->cluster_count) * cluster, active, bsp->cluster_count);
+		bitset_or(active, bsp->cluster_visibility + GAME_CLUSTER_MASK_DWORDS(bsp->cluster_count) * cluster, active, bsp->cluster_count);
 	}
 	if (memcmp(old_visible, g_4e6948->visible_clusters, sizeof(old_visible)))
 	{

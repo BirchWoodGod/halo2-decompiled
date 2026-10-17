@@ -1049,18 +1049,14 @@ bool function_1ca670(void)
 
 void function_200240(long object_index, long target_index);
 
-#pragma optimize("y", off)
+#pragma optimize("gy", off)
 // @retail 0x1ca9f0
 void __stdcall function_1ca9f0(long object_index, long target_index)
 {
-	(void)&object_index;
-	(void)&target_index;
-	s_ai_globals *local_0 = g_4f55d0;
-	long local_1 = *(volatile byte const *)&local_0->active;
-	if (local_1)
+	if (g_4f55d0->active)
 		function_200240(object_index, target_index);
 }
-#pragma optimize("y", on)
+#pragma optimize("gy", on)
 
 
 void hash_table_initialize(hash_table *table);

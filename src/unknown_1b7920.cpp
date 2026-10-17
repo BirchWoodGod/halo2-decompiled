@@ -77,7 +77,8 @@ bool __stdcall function_1b79d0(long actor_index, s_slot *slot)
 	if (view && view->unknown10 != NONE && character)
 	{
 		s_slot_1e *state = (s_slot_1e *)slot;
-		real ticks = character->unknown08 + function_x82e52f(&g_4e7408->unknown0, __FILE__, __LINE__) * 2.0f;
+		real sample = function_x82e52f(&g_4e7408->unknown0, __FILE__, __LINE__);
+		real ticks = character->unknown08 + sample * 2.0f;
 		real delay = function_259d0(&g_4e7408->unknown0, __FILE__, __LINE__, character->unknown1c, character->unknown20);
 		real seconds;
 		long value;
@@ -100,7 +101,7 @@ bool __stdcall function_1b79d0(long actor_index, s_slot *slot)
 			fistp value
 		}
 		state->delay = (short)value;
-		return true;
+		result = true;
 	}
 	return result;
 }

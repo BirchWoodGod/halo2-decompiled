@@ -33,7 +33,7 @@ s_screen_definition *function_22f871(c_class_1473c9 *screen);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 void parse_text(word *string);
 bool function_13ee20(word const *string, long font);
-bool function_140420(word c);
+bool unicode_character_is_private_use(word c);
 void function_236299(long sound);
 void __stdcall function_215e60(long index);
 bool function_216120(word *string, long type);
@@ -866,7 +866,7 @@ void c_virtual_keyboard_screen::press_key(short key)
 			{
 				word character = text[index];
 
-				if (function_140420(character))
+				if (unicode_character_is_private_use(character))
 				{
 					character = 0x25a1;
 				}

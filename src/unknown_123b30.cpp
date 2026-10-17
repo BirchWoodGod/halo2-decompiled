@@ -50,14 +50,9 @@ void *game_state_malloc_aligned(
 	long alignment_bits)
 {
 	long alignment = 1 << alignment_bits;
-	long aligned_size = (size + alignment + 3) & ~3;
-	byte *result = game_state_globals.base_address + game_state_globals.cpu_allocation_size;
-	long mask;
+	byte *result = (byte *)function_123d40(name, type, size + alignment);
+	long mask = alignment - 1;
 
-	game_state_globals.cpu_allocation_size += aligned_size;
-	function_163ba0(&game_state_globals.allocation_size_checksum, &aligned_size, sizeof(aligned_size));
-
-	mask = alignment - 1;
 	return (void *)((dword)(result + mask) & ~mask);
 }
 

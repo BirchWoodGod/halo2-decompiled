@@ -14,7 +14,7 @@ struct s_13c051
 	short field_6;
 };
 
-void function_13c050(s_13c051 const *arg_2, dword arg_1);
+void interface_rectangle_fill(struct short_rectangle2d const *arg_2, dword arg_1);
 
 // @retail 0x13e635
 void function_13e635(void)
@@ -28,7 +28,7 @@ void function_13e635(void)
 			local_1.field_2 = 0;
 			local_1.field_4 = 241;
 			local_1.field_6 = 640;
-			function_13c050(&local_1, 0xff000000);
+			interface_rectangle_fill((short_rectangle2d const *)&local_1, 0xff000000);
 			if (g_4ba04c > 2)
 			{
 				if (g_4ba04c == 3)
@@ -37,7 +37,7 @@ void function_13e635(void)
 					local_1.field_2 = 319;
 					local_1.field_4 = 480;
 					local_1.field_6 = 321;
-					function_13c050(&local_1, 0xff000000);
+					interface_rectangle_fill((short_rectangle2d const *)&local_1, 0xff000000);
 				}
 				else
 				{
@@ -45,7 +45,7 @@ void function_13e635(void)
 					local_1.field_2 = 319;
 					local_1.field_4 = 480;
 					local_1.field_6 = 321;
-					function_13c050(&local_1, 0xff000000);
+					interface_rectangle_fill((short_rectangle2d const *)&local_1, 0xff000000);
 				}
 			}
 		}
@@ -55,7 +55,7 @@ void function_13e635(void)
 			local_1.field_2 = 319;
 			local_1.field_4 = 480;
 			local_1.field_6 = 321;
-			function_13c050(&local_1, 0xff000000);
+			interface_rectangle_fill((short_rectangle2d const *)&local_1, 0xff000000);
 			if (g_4ba04c > 2)
 			{
 				if (g_4ba04c == 3)
@@ -64,7 +64,7 @@ void function_13e635(void)
 					local_1.field_0 = 239;
 					local_1.field_4 = 241;
 					local_1.field_6 = 640;
-					function_13c050(&local_1, 0xff000000);
+					interface_rectangle_fill((short_rectangle2d const *)&local_1, 0xff000000);
 				}
 				else
 				{
@@ -72,7 +72,7 @@ void function_13e635(void)
 					local_1.field_0 = 239;
 					local_1.field_4 = 241;
 					local_1.field_6 = 640;
-					function_13c050(&local_1, 0xff000000);
+					interface_rectangle_fill((short_rectangle2d const *)&local_1, 0xff000000);
 				}
 			}
 		}

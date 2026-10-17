@@ -113,7 +113,7 @@ bool s_lookup::initialize(long object_handle)
 /* ---- a three-level table of items, walked by a packed position ---- */
 struct s_item
 {
-	byte first;
+	signed char first;
 	byte unknown01[3];
 	byte data[0x40];
 };
@@ -192,8 +192,9 @@ bool s_iterator::advance()
   sub_index = sub;
 		s = &table->groups[g].subs[sub_index];
 
-		long sub_count = s ? s->count : 0;
-		if (s && item + 1 < sub_count)
+		long sub_count = 0;
+		if (s) sub_count = s->count;
+		if (item + 1 < sub_count)
 		{
 			item_index = item + 1;
 			next = false;
