@@ -741,22 +741,22 @@ void function_bfa40(long object_index, long node_mask)
     byte *model = g_4e3b44[model_index & 0xffff].bytes;
     if (*(long *)(model + 4) == NONE)
         return;
+    transform4x3f *parent = 0;
+    bool parent_mirrored = false;
     transform4x3f *matrices = (transform4x3f *)(object + *(short *)(object + 0x116));
     rigid_transform_scaled *orientations = (rigid_transform_scaled *)(object + *(short volatile *)(object + 0x112));
     long count = (dword)(long)*(short *)(object + 0x110) / sizeof(rigid_transform_scaled);
     long parent_index = *(long *)(object + 0x14);
-    transform4x3f *parent = 0;
-    bool parent_mirrored = false;
     if (parent_index != NONE)
     {
         parent = function_b8bd0(parent_index, *(char *)(object + 0x18));
         byte *local_be682a = (byte *)((s_object_transform_header *)g_4e0300->data)[parent_index & 0xffff].object;
         parent_mirrored = (*(dword *)(local_be682a + 4) >> 10) & 1;
     }
-    struct { transform4x3f relative, root, inverse_parent, inverse_root; } workspace;
+    transform4x3f relative, root, inverse_parent, inverse_root;
     function_bdc40((point3f *)(object + 0x64), (vector3f *)(object + 0x70), (vector3f *)(object + 0x7c),
-        *(real *)(object + 0xa0), (*(dword *)(object + 4) >> 10) & 1, parent, parent_mirrored, &workspace.root);
-    function_141590(&workspace.root, &workspace.inverse_root);
+        *(real *)(object + 0xa0), (*(dword *)(object + 4) >> 10) & 1, parent, parent_mirrored, &root);
+    function_141590(&root, &inverse_root);
     for (long i = 0; i < count; ++i)
     {
         if (!node_mask || (((dword *)node_mask)[i >> 5] & (1 << (i & 31))))
@@ -764,16 +764,16 @@ void function_bfa40(long object_index, long node_mask)
             short node_parent = *(short *)(*(byte **)(model + 0x7c) + i * 0x5c + 4);
             if ((dword)(long)node_parent != (dword)NONE)
             {
-                function_141590(&matrices[node_parent], &workspace.inverse_parent);
-                function_142a60(&workspace.inverse_parent, &matrices[i], &workspace.relative);
-                function_141f60(&workspace.relative.rotation, &orientations[i].rotation);
-                orientations[i].position = workspace.relative.position;
-                orientations[i].scale = workspace.relative.scale;
+                function_141590(&matrices[node_parent], &inverse_parent);
+                function_142a60(&inverse_parent, &matrices[i], &relative);
+                function_141f60(&relative.rotation, &orientations[i].rotation);
+                orientations[i].position = relative.position;
+                orientations[i].scale = relative.scale;
             }
             else
             {
-                function_142a60(&workspace.inverse_root, &matrices[i], &workspace.relative);
-                orientation_from_matrix4x3(&workspace.relative, &orientations[i]);
+                function_142a60(&inverse_root, &matrices[i], &relative);
+                orientation_from_matrix4x3(&relative, &orientations[i]);
             }
         }
     }
