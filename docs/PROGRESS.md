@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-17: 8975 functions match
+
+```
+matched 8975 of 11321 game functions (1252495 of 2784283 bytes, 44.98%)
+```
+
+1 new matches, none lost:
+- @BirchWoodGod's #535: `0x1e13f0` match.
+
+## 2026-10-17: 8974 functions match
+
+```
+matched 8974 of 11321 game functions (1252229 of 2784283 bytes, 44.97%)
+```
+
+2 new matches, none lost:
+- @BirchWoodGod's #534: `0x57080` and `0x577d0` match.
+
 ## 2026-10-17: 8972 functions match
 
 ```
