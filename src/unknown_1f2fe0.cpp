@@ -198,7 +198,7 @@ bool function_1f3430(long actor_index)
 
 /* keeps the actor on the near side of a plane for some ticks */
 // @retail 0x1f34b0
-bool function_1f34b0(long actor_index, vector3f const *normal, point3f const *point, real distance, short ticks)
+bool function_1f34b0(long actor_index, point3f const *point, vector3f const *normal, real distance, short ticks)
 {
 	s_actor_moving *actor = actor_moving_get(actor_index);
 	plane3f *plane = &actor->unknown608;

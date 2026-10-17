@@ -176,7 +176,7 @@ static inline void contrail_location_from_point(s_location *location, point3f *p
 }
 
 void function_17b850(void);
-real function_17bef0(dword flags, real lower, real scale, real upper, byte bit);
+real function_17bef0(dword flags, real lower, real scale, real upper, long bit);
 void function_17bf80(s_contrail_datum *contrail);
 short function_17c040(long contrail_index, real dt);
 void function_17c880(long contrail_index);
@@ -470,22 +470,18 @@ void function_17bc40(real dt)
 	}
 }
 
-__declspec(noinline) real function_17bef0(dword flags, real lower, real scale, real upper, byte bit);
+__declspec(noinline) real function_17bef0(dword flags, real lower, real scale, real upper, long bit);
 
 // @retail 0x17bef0
-real function_17bef0(dword flags, real lower, real scale, real upper, byte bit)
+real function_17bef0(dword flags, real lower, real scale, real upper, long bit)
 {
-	byte const *bit_argument = &bit;
-	long bit_value = *bit_argument;
-	dword const *flags_reference = &flags;
+	/* only the low byte of the bit index is read, once */
+	byte b = (byte)*(long const *)&bit;
 	real base = lower;
-
-	if (*flags_reference & (1 << bit_value))
+	if (flags & (1 << b))
 		base = scale * lower;
-
 	real range = upper - lower;
-
-	if (*flags_reference & (1 << (byte)(bit_value + 1)))
+	if (flags & (1 << (byte)(b + 1)))
 		range = range * scale;
 	return base + range * ((real)_random(&g_4e7408->seed, __FILE__, __LINE__) * (1.f / 65535.f));
 }

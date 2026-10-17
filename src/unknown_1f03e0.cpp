@@ -624,26 +624,26 @@ PRIVATE __forceinline vector3f function_1f0873(vector3f const &arg_0, vector3f c
 #pragma optimize("", on)
 PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f const *arg_2, byte const *arg_3)
 {
-    byte *settings = *(byte **)(arg_3 + 8);
-    struct s_1f0875 { unsigned field_0:1; unsigned field_1:1; unsigned field_2:1; unsigned field_3:1; unsigned field_4:1; unsigned field_5:27; };
-    union { dword field_0; s_1f0875 field_4; } local_7;
-    local_7.field_0 = *(dword *)(arg_3 + 0x14);
-    bool flying = ((*(dword *)settings >> 3) & 1) != 0;
-    volatile bool gravity = local_7.field_4.field_3 != 0;
-    bool damping = local_7.field_4.field_4 != 0;
+#define settings (*(byte **)(arg_3 + 8))
+    dword mode = *(dword *)settings;
+    dword flags = *(dword *)(arg_3 + 0x14);
+    bool damping = ((flags >> 4) & 1) != 0;
+    bool flying = ((mode >> 3) & 1) != 0;
+    bool direct = ((flags >> 2) & 1) != 0;
+    volatile bool gravity = ((flags >> 3) & 1) != 0;
     vector3f const &input = *(vector3f const *)(arg_3 + 0x138);
     vector3f const &facing = *(vector3f const *)(arg_3 + 0x9c);
     vector3f const &up = *(vector3f const *)(arg_3 + 0x100);
     vector3f const &normal = *(vector3f const *)(arg_3 + 0x8c);
     vector3f const &basis = *(vector3f const *)(arg_3 + 0x118);
     vector3f *velocity = (vector3f *)(arg_0 + 0xc);
-    real scale = *(real *)(arg_3 + 0x20);
-    if (!(local_7.field_4.field_0))
+    if (!(flags & 1))
     {
         vector3f left;
         left.i = facing.k * up.j - up.k * facing.j;
         left.j = up.k * facing.i - up.i * facing.k;
         left.k = up.i * facing.j - up.j * facing.i;
+        real scale = *(real *)(arg_3 + 0x20);
         real local_0 = input.i * scale;
         real local_1 = input.j * scale;
         real local_2 = input.k * scale;
@@ -658,11 +658,11 @@ PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f co
         (*(real volatile *)&velocity->k) += up.k * local_2;
         gravity = false;
     }
-    else if (local_7.field_4.field_2)
+    else if (direct)
     {
         vector3f delta;
-        delta.i = scale * (facing.i * input.i - facing.j * input.j) - arg_2->i;
-        delta.j = scale * (facing.j * input.i + facing.i * input.j) - arg_2->j;
+        delta.i = (*(real *)(arg_3 + 0x20)) * (facing.i * input.i - facing.j * input.j) - arg_2->i;
+        delta.j = (*(real *)(arg_3 + 0x20)) * (facing.j * input.i + facing.i * input.j) - arg_2->j;
         point2f limited = { delta.i, delta.j };
         real step = *(real *)(arg_3 + 0x148) * g_510c54->rate;
         if (normalize2d(&limited) > step)
@@ -745,7 +745,7 @@ PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f co
                     (*(real *)(settings + 0x64) - *(real *)(settings + 0x60));
         }
         vector3f delta;
-        function_1f087d(&delta, &desired, scale * magnitude, arg_2);
+        function_1f087d(&delta, &desired, (*(real *)(arg_3 + 0x20)) * magnitude, arg_2);
         vector3f limited = delta;
         real step = *(real *)(arg_3 + 0x144) * g_510c54->rate;
         if (function_30bf0(&limited) > step)
@@ -771,7 +771,7 @@ PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f co
             limited.k -= *(real *)(arg_3 + 0x130) * g_510c54->rate;
         function_1f087c(velocity, arg_2, &limited);
     }
-    if (!((*(dword *)settings >> 2) & 1) && !(local_7.field_4.field_2))
+    if (!((*(dword *)settings >> 2) & 1) && !(*(dword const *)(arg_3 + 0x14) & 4))
     {
         if (*(long *)(arg_1 + 0xc) != NONE && *(long *)(arg_1 + 0xc) == g_510c54->game_time - 1)
         {
@@ -790,9 +790,10 @@ PRIVATE __forceinline void function_1f087a(byte *arg_0, byte *arg_1, vector3f co
     else
         *(dword *)arg_0 &= ~1;
 }
+#undef settings
 
 // @retail 0x1f0870
-void function_1f0870(vector3f const *current, byte *history, byte const *state, byte *out)
+void function_1f0870(byte *history, vector3f const *current, byte const *state, byte *out)
 {
     function_1f087a(out, history, current, state);
 }
@@ -835,7 +836,8 @@ void __stdcall function_1f0450(s_shape_state *history, byte *out, s_shape_carrie
         if (carrier)
         {
             velocity = carrier_velocity;
-            *(dword *)out |= 8;
+            byte *const *out_reference = &out;
+            *(dword *)*out_reference |= 8;
             *(matrix3x3 *)(out + 0x30) = rotation;
         }
     }
@@ -860,7 +862,7 @@ void __stdcall function_1f0450(s_shape_state *history, byte *out, s_shape_carrie
             current.k += delta_velocity.k;
         }
     }
-    function_1f0870(&current, (byte *)history, data, out);
+    function_1f0870((byte *)history, &current, data, out);
     if (override_velocity)
     {
         *(real *)(out + 0xc) += *(real *)(out + 0x64);
@@ -901,63 +903,75 @@ bool function_1f2250(vector3f const *velocity, byte const *request, vector3f con
     bool moving, vector3f *out, long *surface, real *speed, long *object_index)
 {
     byte *component = g_51e9b8->data + (*(long *)(request + 0x40) & 0xffff) * 0xa0;
-    byte *settings = *(byte **)request;
     vector3f relative = *input;
     *speed = 0.0f;
     *out = *g_4687b0;
     *surface = NONE;
     *object_index = NONE;
-    long count = 0;
+    volatile long count = 0;
     long indices[3];
-    if (moving)
+    if (!moving)
+    {
+        if (*(long *)(request + 4) != NONE)
+        {
+            vector3f object_velocity;
+            if (function_109fd0(*(long *)(request + 4), &object_velocity))
+            {
+                relative.i -= object_velocity.i;
+                relative.j -= object_velocity.j;
+                relative.k -= object_velocity.k;
+            }
+        }
+    }
+    else
     {
         relative.i -= velocity->i;
         relative.j -= velocity->j;
         relative.k -= velocity->k;
     }
-    else if (*(long *)(request + 4) != NONE)
-    {
-        vector3f object_velocity;
-        if (function_109fd0(*(long *)(request + 4), &object_velocity))
-        {
-            relative.i -= object_velocity.i;
-            relative.j -= object_velocity.j;
-            relative.k -= object_velocity.k;
-        }
-    }
     vector3f desired = relative;
-    bool stepping = ((*(dword *)(request + 0x18) >> 1) & 1) != 0;
     if (*(long *)(request + 0x44) != NONE)
     {
-        for (long i = 0; i < *(long *)(component + 0x8c); ++i)
+        long contacts = *(long *)(component + 0x8c);
+        for (long i = 0; i < contacts; ++i)
         {
             byte *contact = *(byte **)(component + 0x88) + i * 0x48;
-            if (*(long *)(contact + 0x14) == *(long *)(request + 0x44) &&
-                *(real *)(contact + 0x30) > *(real *)(settings + 0x54) &&
-                function_1f2e60((s_shape_ground *)contact, moving, velocity, stepping,
-                    (point3f const *)(request + 0x1c), *(real *)(settings + 0xc)))
+            if (*(long *)(request + 0x44) == *(long *)(contact + 0x14) &&
+                *(real *)(contact + 0x30) > *(real *)((*(byte **)request) + 0x54) &&
+                function_1f2e60((s_shape_ground *)contact, moving, velocity, (((*(dword *)(request + 0x18) >> 1) & 1) != 0),
+                    (point3f const *)(request + 0x1c), *(real *)((*(byte **)request) + 0xc)))
             {
-                desired = shape_scale(*(vector3f *)(contact + 0x28), -1.0f);
+                desired.i = *(real *)(contact + 0x28) * -1.0f;
+                desired.j = *(real *)(contact + 0x2c) * -1.0f;
+                desired.k = *(real *)(contact + 0x30) * -1.0f;
                 break;
             }
         }
     }
-    if ((*(dword *)settings >> 3) & 1)
+    if ((*(dword *)(*(byte **)request) >> 3) & 1)
     {
-        if (stepping)
-            desired = shape_subtract(desired, *(vector3f *)((byte *)velocity + 0x64));
+        if (((*(dword *)(request + 0x18) & 2) != 0))
+            {
+                desired.i -= *(real *)((byte *)velocity + 0x64);
+                desired.j -= *(real *)((byte *)velocity + 0x68);
+                desired.k -= *(real *)((byte *)velocity + 0x6c);
+            }
     }
     else
     {
-        if (!stepping)
+        if (!((*(dword *)(request + 0x18) & 2) != 0))
         {
             if (*(long *)(request + 8) == *(long *)(request + 4))
                 desired = *g_4687bc;
             else if (desired.k < 0.0f)
                 desired.k *= 30.0f;
         }
-        if (stepping)
-            desired = shape_subtract(desired, *(vector3f *)((byte *)velocity + 0x64));
+        if (((*(dword *)(request + 0x18) & 2) != 0))
+            {
+                desired.i -= *(real *)((byte *)velocity + 0x64);
+                desired.j -= *(real *)((byte *)velocity + 0x68);
+                desired.k -= *(real *)((byte *)velocity + 0x6c);
+            }
         else if (length_sq3f((vector3f const *)(request + 0x34)) == 0.0f)
             desired = *g_4687bc;
     }
@@ -972,9 +986,9 @@ bool function_1f2250(vector3f const *velocity, byte const *request, vector3f con
             for (long i = 0; i < contacts; ++i)
             {
                 byte *contact = *(byte **)(component + 0x88) + i * 0x48;
-                if (function_1f2e60((s_shape_ground *)contact, moving, velocity, stepping,
-                    (point3f const *)(request + 0x1c), *(real *)(settings + 0xc)) &&
-                    (!stepping || *(long *)(request + 0x44) == NONE || *(long *)(request + 0x44) == *(long *)(contact + 0x14)))
+                if (function_1f2e60((s_shape_ground *)contact, moving, velocity, (((*(dword *)(request + 0x18) >> 1) & 1) != 0),
+                    (point3f const *)(request + 0x1c), *(real *)((*(byte **)request) + 0xc)) &&
+                    (!((*(dword *)(request + 0x18) & 2) != 0) || *(long *)(request + 0x44) == NONE || *(long *)(request + 0x44) == *(long *)(contact + 0x14)))
                 {
                     real dot = dot3f(&direction, (vector3f *)(contact + 0x28));
                     if (dot < -0.025f && dot < minimum)
@@ -986,9 +1000,12 @@ bool function_1f2250(vector3f const *velocity, byte const *request, vector3f con
             }
             if (selected == NONE)
             {
-                if (count || !((*(dword *)settings >> 3) & 1) || !contacts)
+                if (count || !((*(dword *)(*(byte **)request) >> 3) & 1) || !contacts)
                     break;
-                desired = shape_scale(*(vector3f *)(*(byte **)(component + 0x88) + 0x28), -1.0f);
+                byte *first = *(byte **)(component + 0x88);
+                desired.i = *(real *)(first + 0x28) * -1.0f;
+                desired.j = *(real *)(first + 0x2c) * -1.0f;
+                desired.k = *(real *)(first + 0x30) * -1.0f;
                 direction = desired;
                 minimum = -1.0f;
                 selected = 0;
@@ -1014,22 +1031,22 @@ bool function_1f2250(vector3f const *velocity, byte const *request, vector3f con
         }
         function_1f2a80(velocity, request, moving, &desired, indices, count, out);
     }
-    real height = *(real *)(request + 0x24) + *(real *)(settings + 0xc);
+    real height = *(real *)(request + 0x24) + *(real *)((*(byte **)request) + 0xc);
     for (long i = 0; i < *(long *)(component + 0x8c); ++i)
     {
         byte *contact = *(byte **)(component + 0x88) + i * 0x48;
-        if (function_1f2e60((s_shape_ground *)contact, moving, velocity, stepping,
-            (point3f const *)(request + 0x1c), *(real *)(settings + 0xc)))
+        if (function_1f2e60((s_shape_ground *)contact, moving, velocity, (((*(dword *)(request + 0x18) >> 1) & 1) != 0),
+            (point3f const *)(request + 0x1c), *(real *)((*(byte **)request) + 0xc)))
         {
             real projection = 0.0f - shape_dot(*(vector3f *)(contact + 0x28), relative);
-            if (stepping && height - 0.001f > *(real *)(contact + 0x24) && projection > *speed)
+            if (((*(dword *)(request + 0x18) & 2) != 0) && height - 0.001f > *(real *)(contact + 0x24) && projection > *speed)
                 *speed = projection;
         }
         long object = *(long *)(contact + 0x18);
         if (object != NONE && (*object_index == NONE || ((1 << g_4e0300->data[(object & 0xffff) * 12 + 3]) & 1)))
             *object_index = object;
     }
-    return count && out->k > *(real *)(settings + 0x54);
+    return count && out->k > *(real *)((*(byte **)request) + 0x54);
 }
 
 
