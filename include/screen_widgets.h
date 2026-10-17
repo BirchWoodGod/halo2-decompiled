@@ -653,7 +653,7 @@ class c_class_1473c9 : public c_class_1a2c81
 public:
 	c_class_1473c9(long screen_id, long a, long b, word user_flags);
 
-	/* 0x2300ea: a press of B or back leaves the screen (unknown_2300cf.cpp) */
+	/* 0x2300ea: a press of B or back leaves the screen (screen_widget_core.cpp) */
 	virtual bool v10(s_widget_event *event);
 	virtual bool v16();
 
@@ -673,7 +673,7 @@ public:
 	virtual screen_load_proc get_load_proc() { return 0; }
 	virtual bool v27();
 
-	/* unknown_2300cf.cpp */
+	/* screen_widget_core.cpp */
 	s_screen_pane *get_current_pane();
 	s_screen_pane *get_first_pane();
 	short get_first_pane_value();
@@ -686,18 +686,24 @@ public:
 	/* places the newly loaded screen in its window (unknown_147f6d.cpp) */
 	void function_147f6d(s_screen_parameters *parameters);
 
-	/* the delegate's method (unknown_2300cf.cpp) */
-	void function_230427(short *delta);
+	/* the delegate's method: shows the pane at this offset from the first
+	   (screen_widget_core.cpp) */
+	void select_pane(short *pane_offset);
 
 	long screen_id;
+	/* the window channel (v20) and index (v21) the screen opens in */
 	long a;
 	long b;
 	long next_widget_id;
 	c_text_widget_458940 title;
 	c_text_widget_458940 subtitle;
+	/* the pane shown (NONE for none) */
 	short value5f0;
+	/* set once the bitmaps load (v19); the screen id is fixed from then */
 	bool value5f2;
+	/* the first pane select_pane counts from */
 	char value5f3;
+	/* the definition's flag 5: ignores the windows over it (v27) */
 	bool value5f4;
 	byte unknown5f5[3];
 	c_screen_delegate delegate;
@@ -707,7 +713,7 @@ public:
 class c_screen_with_menu : public c_class_1473c9
 {
 public:
-	c_screen_with_menu(long screen_id, long a, long b, word user_flags, void *list);
+	c_screen_with_menu(long screen_id, long channel, long window_slot, word user_flags, void *list);
 
 	/* builds the screen around its list */
 	virtual void v18(void *parameters);

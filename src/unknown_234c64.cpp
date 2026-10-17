@@ -30,8 +30,8 @@ long function_199d7c(void);
 word function_19022f(void);
 c_class_1473c9 *__stdcall function_2b72e6(s_screen_parameters *request);
 c_class_1473c9 *__stdcall function_2b7333(s_screen_parameters *request);
-bool function_23029a(c_class_1473c9 *screen);
-real function_230374(c_class_1473c9 *screen);
+bool screen_higher_channel_window_in_use(c_class_1473c9 *screen);
+real screen_get_fade(c_class_1473c9 *screen);
 __declspec(noinline) void function_235756(real fade);
 void function_2359ce(c_window_channel_459a34 *channel);
 void function_235abc(c_window_channel_459a34 *channel);
@@ -145,19 +145,19 @@ void c_window_channel::render(long window)
 	real fade = 0.f;
 	short mode = g_54d5a8;
 
-	if (previous && function_23029a(previous))
+	if (previous && screen_higher_channel_window_in_use(previous))
 	{
-		fade = function_230374(previous);
+		fade = screen_get_fade(previous);
 		fading = true;
 	}
-	if (current && function_23029a(current))
+	if (current && screen_higher_channel_window_in_use(current))
 	{
-		fade += function_230374(current);
+		fade += screen_get_fade(current);
 		fading = true;
 	}
-	if (next && function_23029a(next))
+	if (next && screen_higher_channel_window_in_use(next))
 	{
-		fade += function_230374(next);
+		fade += screen_get_fade(next);
 		fading = true;
 	}
 
@@ -168,7 +168,7 @@ void c_window_channel::render(long window)
 	{
 		if (!tint && current)
 		{
-			fade += function_230374(current);
+			fade += screen_get_fade(current);
 			tint = current->screen_id != 0xd4;
 		}
 		fading = false;

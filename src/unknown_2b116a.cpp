@@ -1191,7 +1191,7 @@ void c_thumbstick_settings_screen::v3()
 				break;
 			}
 			datum = list.get_focused_datum();
-			function_230427((short *)&datum);
+			select_pane((short *)&datum);
 			value8b8 = type;
 		}
 	}
@@ -1359,7 +1359,7 @@ void c_button_settings_screen::v3()
 				break;
 			}
 			datum = list.get_focused_datum();
-			function_230427((short *)&datum);
+			select_pane((short *)&datum);
 			value8b8 = type;
 		}
 	}
@@ -5642,7 +5642,7 @@ void function_2b10a3(dword const *appearance, c_class_2b0b5e *widget, long type)
 struct s_friend_request { byte data[0x6a2]; };
 bool friend_request_get(s_friend_request *request);
 bool friends_list_task_running();
-bool function_230265(c_class_1473c9 *screen);
+bool screen_lower_channel_window_in_use(c_class_1473c9 *screen);
 void friends_lists_get_user(XUID const *xuid, bool *listed_friend, bool *is_player, dword *flags, DWORD *title_id, bool *in_session, XONLINE_FRIEND *details);
 bool xuid_equal(XUID const *a, XUID const *b, bool compare_guest_number);
 bool network_session_interface_has_user(XUID const *xuid);
@@ -5754,7 +5754,7 @@ PRIVATE void update_player_actions_2b55ae(c_y_menu_player_selected_list *list)
 void c_y_menu_player_selected_list::v3()
 {
     ((c_widget *)this)->c_widget::v11();
-    if (!value3a4 && !function_230265(get_screen()) && friends_list_task_running())
+    if (!value3a4 && !screen_lower_channel_window_in_use(get_screen()) && friends_list_task_running())
         update_player_actions_2b55ae(this);
 }
 
