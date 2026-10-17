@@ -1532,7 +1532,7 @@ void __stdcall function_65530(long user_index)
    (const s_cached_player_source *)user->properties, true, false);
 }
 
-bool function_138800(void);
+bool game_loop_running(void);
 long map_location_progress_get(char const *map_name);
 real __stdcall function_122dd0(byte *map_name, long mode, long type);
 bool __stdcall function_163890(char const *map_name, long mode);
@@ -1578,7 +1578,7 @@ void function_065340(void)
 		if (session->get_values_4d08(&first_id, &second_id, &name) &&
 			second_id != NONE && name[0])
 		{
-			if (function_138800() && g_4e6948->position_a == first_id &&
+			if (game_loop_running() && g_4e6948->position_a == first_id &&
 				g_4e6948->position_b == second_id &&
 				!strncmp((char const *)name, g_4e6948->name, 0x104))
 			{

@@ -62,7 +62,7 @@ void function_137e40(void);
 void function_d5560(bool arg_0);
 void function_c09c0(long arg_0);
 void function_158530(void);
-void function_138f10(void);
+void game_launch_file_wake_script(void);
 void function_200d80(void);
 bool function_18eaa0(s_18eaa0 const *arg_0);
 void __stdcall function_18f0a0(s_18f0a0 const *arg_0);
@@ -86,7 +86,7 @@ bool function_18f000(s_18e700 const *arg_0)
         if (g_4cf770 && !((s_18e701 *)g_4cf77c)->field_2f)
             ((s_18e701 *)g_4cf77c)->field_2f = true;
         function_158530();
-        function_138f10();
+        game_launch_file_wake_script();
         long local_2 = g_4e6948->mode;
         long local_3 = g_4e6948->state;
         if (local_2 != 4 && (local_3 == 1 || local_3 == 2))

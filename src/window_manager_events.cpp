@@ -23,7 +23,7 @@ void function_23538b(c_window_channel *channel);
 
 bool function_1900a5(long player);
 bool __stdcall function_148e6d(long user_index);
-bool function_138800();
+bool game_loop_running();
 long function_147f4f();
 c_class_1473c9 *__stdcall function_231995(s_screen_parameters *request);
 long function_199d7c(void);
@@ -369,7 +369,7 @@ bool window_manager_main_menu_focused(void)
 {
 	bool result = false;
 
-	if (function_138800() && g_4e6948->state == 3)
+	if (game_loop_running() && g_4e6948->state == 3)
 	{
 		long screen = function_147f4f();
 

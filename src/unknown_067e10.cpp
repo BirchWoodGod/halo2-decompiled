@@ -1091,7 +1091,7 @@ void function_69fe0(c_class_6a600 *world)
 }
 
 /* the game's main update (not decompiled yet: src/stubs/lane_d.cpp) */
-void function_137fe0(void);
+void game_loop_tick(void);
 
 long g_4cf774;
 
@@ -1178,7 +1178,7 @@ void function_69350(c_class_6a600 *world, bool value)
 	{
 		bool buffered;
 		while (function_69300(world, &buffered) > 0)
-			function_137fe0();
+			game_loop_tick();
 	}
 }
 
@@ -1334,7 +1334,7 @@ valid:
 			bool buffered;
 			if (function_69300(world, &buffered) <= 0)
 				break;
-			function_137fe0();
+			game_loop_tick();
 		}
 		result = true;
 	}
@@ -1954,7 +1954,7 @@ void function_687b0(void)
 
 bool function_83220(s_simulation_world_owner *watcher);
 bool function_138860(void);
-bool function_138a10(void);
+bool game_finish_countdown_done(void);
 bool function_138840(void);
 void __stdcall function_18f1c0(long value);
 
@@ -1987,7 +1987,7 @@ void function_680f0(void)
  }
  {
   bool (*query_mode)(void) = function_138860;
-  bool (*query_pending)(void) = function_138a10;
+  bool (*query_pending)(void) = game_finish_countdown_done;
   bool (*query_network)(void) = function_138840;
   if (query_mode() && query_pending() && !query_network()) function_18f1c0(6);
  }

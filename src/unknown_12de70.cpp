@@ -562,7 +562,7 @@ void __stdcall function_12e290(long block_index)
 	record_pool_release(g_4e648c, block_index);
 }
 
-bool function_138800();
+bool game_loop_running();
 bool function_138840();
 struct s_unknown_13bf00_flags_view
 {
@@ -581,7 +581,7 @@ void function_12e480(void)
 {
 	if (g_47ff3c && g_4e64b0)
 	{
-		if (g_4e64a0 <= 0 && (!g_510c50 || !((s_unknown_13bf00_flags_view *)g_510c50)->flag5) && function_138800() &&
+		if (g_4e64a0 <= 0 && (!g_510c50 || !((s_unknown_13bf00_flags_view *)g_510c50)->flag5) && game_loop_running() &&
 			g_4e6948->state == 1 && !function_138840())
 		{
 			dword time = GetTickCount();

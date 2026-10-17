@@ -257,7 +257,7 @@ void function_148523()
 	window_manager_window_2_start_animation();
 }
 
-bool function_138800();
+bool game_loop_running();
 bool function_138820();
 void function_199e2e(bool close);
 bool __stdcall function_236917(long controller_index);
@@ -346,7 +346,7 @@ void function_1486b8(long error, bool keep)
 		break;
 	}
 
-	bool in_game = function_138800() && g_4e6948->state == 1 && !function_138820();
+	bool in_game = game_loop_running() && g_4e6948->state == 1 && !function_138820();
 	if (dialog_id == 0x38 && in_game)
 	{
 		choice = false;
@@ -1591,7 +1591,7 @@ void __stdcall function_1479c3(real elapsed)
         function_223a21();
     }
     main_menu_music_update((s_main_menu_music *)&g_54d598.main_menu_music);
-    if (function_138800() && g_4e6948->state == 3 && window_manager_main_menu_focused())
+    if (game_loop_running() && g_4e6948->state == 3 && window_manager_main_menu_focused())
     {
         g_54e7fc = g_54d5b8;
     }
@@ -1652,7 +1652,7 @@ void function_147af1(long index, long fallback_index, c_render_window *window)
             }
             else
                 color = 0;
-            if (function_138800() && (g_4e6948->state == 1 || g_4e6948->state == 2))
+            if (game_loop_running() && (g_4e6948->state == 1 || g_4e6948->state == 2))
                 color = 0;
             if (color)
                 (*window_reference)->function_147cdb(color);

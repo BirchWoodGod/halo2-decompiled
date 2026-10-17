@@ -23,7 +23,7 @@ long function_15e730(void);
 void function_277380(void);
 void function_13bff0(void);
 void function_13ca80(void);
-void function_1388e0(void);
+void game_finish(void);
 bool function_226190(void);
 void function_24cdaf(void);
 bool function_187ec0(void);
