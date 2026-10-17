@@ -46,9 +46,6 @@ struct s_prop_node_view;
 
 
 
-// @stub 0x1b2770
-void __stdcall function_1b2770(long actor_index, s_slot *slot) { }
-
 struct s_squad_choice;
 
 
