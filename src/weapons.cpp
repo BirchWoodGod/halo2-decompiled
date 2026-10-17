@@ -2482,7 +2482,7 @@ struct s_scenario_weapon_view
 };
 
 // @retail 0xfda00
-void __stdcall function_fda00(long weapon_index, s_scenario_weapon_view *placement)
+long __stdcall function_fda00(long weapon_index, s_scenario_weapon_view *placement)
 {
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
@@ -2500,9 +2500,13 @@ void __stdcall function_fda00(long weapon_index, s_scenario_weapon_view *placeme
 	function_b9b90(weapon_index, TEST_FIELD_BIT(placement->flags.at_rest));
 	dword *flags = (dword *)((byte *)weapon + 4);
 	*flags |= 0x8000;
-	weapon->item_flag7 = !TEST_FIELD_BIT(placement->flags.accelerates);
+	if (!TEST_FIELD_BIT(placement->flags.accelerates))
+		((s_weapon_item_flags_view *)weapon)->flag7 = true;
+	else
+		((s_weapon_item_flags_view *)weapon)->flag7 = false;
 	if (!TEST_FIELD_BIT(placement->flags.at_rest))
 		*(real *)((byte *)weapon + 0x6c) += 0.05f;
+	return weapon_index;
 }
 
 // @retail 0xfdad0
@@ -2806,7 +2810,7 @@ struct s_weapon_type_definition_view
 	short scenario_size;
 	void *unknown10[7];
 	bool (__stdcall *create)(long, void *, bool *);
-	void (__stdcall *place)(long, s_scenario_weapon_view *);
+	long (__stdcall *place)(long, s_scenario_weapon_view *);
 	void *unknown34[3];
 	bool (__stdcall *update)(long);
 	void *unknown44[2];

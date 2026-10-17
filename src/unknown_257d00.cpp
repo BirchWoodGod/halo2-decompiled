@@ -1164,6 +1164,10 @@ void function_259e70(long cs_index)
 #define cs_point_get(reference) \
 	(&((s_cs_scenario_view *)g_4e0350)->script_data->point_sets[((reference) >> 16) & 0xffff].points[(reference) & 0xffff])
 
+/* the point set a command script reference's high word names */
+#define cs_point_set_get(set_index) \
+	(&((s_cs_scenario_view *)g_4e0350)->script_data->point_sets[(set_index)])
+
 #pragma inline_depth(0)
 // @retail 0x259ec0
 bool function_259ec0(long actor_index, long cs_index)
@@ -1310,17 +1314,13 @@ bool function_25ab50(long reference)
 		if (scenario->script_data_count > 0)
 		{
 			long set_index = (reference >> 16) & 0xffff;
-			long point_index = reference & 0xffff;
 
-			if (set_index >= 0)
+			if (set_index >= 0 && set_index < scenario->script_data->point_set_count)
 			{
-				if (set_index < scenario->script_data->point_set_count)
-				{
-					if (point_index >= 0 && point_index < scenario->script_data->point_sets[set_index].point_count)
-					{
-						result = true;
-					}
-				}
+				long point_index = reference & 0xffff;
+
+				if (point_index >= 0 && point_index < cs_point_set_get(set_index)->point_count)
+					result = true;
 			}
 		}
 	}
