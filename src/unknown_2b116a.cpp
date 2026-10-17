@@ -3621,8 +3621,8 @@ void function_238c69(long mode, long type, word *name, long maximum_count, long 
 c_class_1473c9 *__stdcall function_23764f(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2ba666(s_screen_parameters *parameters);
 bool __stdcall function_2523b7(long controller);
-bool __stdcall function_236973(long controller);
-bool __stdcall function_236989(long controller);
+bool __stdcall dialog_callback_dashboard_memory_for_profile(long controller);
+bool __stdcall dialog_callback_dashboard_memory_for_game_variant(long controller);
 
 // @retail 0x2ba6a4
 bool __stdcall function_2ba6a4(long controller)
@@ -3673,7 +3673,7 @@ void function_2ba8e9(long controller)
 	}
 	else
 	{
-		dialog_choice_show(3, 0x4e, 4, 1 << controller, function_236973, function_2523b7, 0);
+		dialog_choice_show(3, 0x4e, 4, 1 << controller, dialog_callback_dashboard_memory_for_profile, function_2523b7, 0);
 	}
 }
 
@@ -3731,7 +3731,7 @@ void function_2ba9f4(long controller)
 	}
 	else
 	{
-		dialog_choice_show(3, 0x4f, 4, 1 << controller, function_236989, function_2523b7, 0);
+		dialog_choice_show(3, 0x4f, 4, 1 << controller, dialog_callback_dashboard_memory_for_game_variant, function_2523b7, 0);
 	}
 }
 
@@ -5512,7 +5512,7 @@ void function_28980(long index);
 
 struct s_main_menu_music;
 real main_menu_music_silence_fraction(s_main_menu_music const *music);
-dword function_235ca9();
+dword main_menu_music_silence_time();
 real __stdcall function_122dd0(byte *map_name, long mode, long type);
 
 // @retail 0x2c52e7
@@ -5520,7 +5520,7 @@ void __stdcall function_2c52e7(char const *map_name)
 {
 	real progress = function_122dd0((byte *)map_name, 0, 0);
 	real step = 1.0f;
-	real duration = (real)(long)function_235ca9();
+	real duration = (real)(long)main_menu_music_silence_time();
 	dword now = GetTickCount();
 	dword elapsed_ticks = now - g_509338;
 	g_509338 = now;

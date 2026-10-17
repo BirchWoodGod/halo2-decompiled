@@ -207,10 +207,15 @@ void function_1fc4b0(s_tracked_point *tracked, s_tracking_state const *state, s_
 	vector3f delta;
 	real limit;
 
-	function_1fc660(tracked, state, output);
-	velocity.i = (state->velocity.i * g_510c54->rate + state->unknown38.x - state->unknown2c.x) * (real)g_510c54->field_2_3;
-	velocity.j = (state->velocity.j * g_510c54->rate + state->unknown38.y - state->unknown2c.y) * (real)g_510c54->field_2_3;
-	velocity.k = (state->velocity.k * g_510c54->rate + state->unknown38.z - state->unknown2c.z) * (real)g_510c54->field_2_3;
+	s_tracked_point *const *tracked_reference = &tracked;
+	function_1fc660(*tracked_reference, state, output);
+	short ticks = g_510c54->field_2_3;
+	velocity.i = state->velocity.i * g_510c54->rate + state->unknown38.x - state->unknown2c.x;
+	velocity.j = state->velocity.j * g_510c54->rate + state->unknown38.y - state->unknown2c.y;
+	velocity.k = state->velocity.k * g_510c54->rate + state->unknown38.z - state->unknown2c.z;
+	velocity.i *= (real)ticks;
+	velocity.j *= (real)ticks;
+	velocity.k *= (real)ticks;
 	delta.i = velocity.i - state->velocity.i;
 	delta.j = velocity.j - state->velocity.j;
 	delta.k = velocity.k - state->velocity.k;
@@ -221,9 +226,11 @@ void function_1fc4b0(s_tracked_point *tracked, s_tracking_state const *state, s_
 	{
 		real scale = limit / ((real)sqrt(length_sq3f(&delta)) * g_510c54->rate);
 
-		output->velocity.i = state->velocity.i + scale * delta.i;
-		output->velocity.j = state->velocity.j + scale * delta.j;
-		output->velocity.k = state->velocity.k + scale * delta.k;
+		vector3f correction;
+		local_scale3d(&delta, scale, &correction);
+		output->velocity.i = state->velocity.i + correction.i;
+		output->velocity.j = state->velocity.j + correction.j;
+		output->velocity.k = state->velocity.k + correction.k;
 	}
 	else
 	{

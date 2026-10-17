@@ -1133,9 +1133,9 @@ void function_a9570(long index)
   else
   {
    s_z_copy_state state;
-   memset(&state, 0, sizeof(state));
+   z_copy_state_clear(&state);
    function_a9820((long *)&state, index);
-   long changed = false;
+   bool changed = false;
    if (state.flags & 1)
    {
     function_a9a70(index, &state);

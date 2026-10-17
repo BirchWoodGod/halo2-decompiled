@@ -184,7 +184,7 @@ void c_list_45d078::handle_item(s_controller_reference **controller, long *item)
 }
 
 /* the tag references a category's options are read from (the list
-   function_236a3a finds by its id) */
+   game_variant_settings_find_category finds by its id) */
 struct s_option_reference
 {
 	long group;
@@ -199,14 +199,14 @@ struct s_option_reference_list
 	s_option_reference *references;
 };
 
-struct s_reference_list;
-s_reference_list *function_236a3a(long id);
+struct s_game_variant_setting_category;
+s_game_variant_setting_category *game_variant_settings_find_category(long category_id);
 
 /* one item per option of the category: each holds its option's tag */
 // @retail 0x2c7b7d
 void c_list_45d078::v17()
 {
-	value68c = (long)(s_option_reference_list *)function_236a3a(value688);
+	value68c = (long)(s_option_reference_list *)game_variant_settings_find_category(value688);
 	if (value68c && ((s_option_reference_list *)value68c)->count > 0)
 	{
 		data = user_interface_data_new("variant category options list", ((s_option_reference_list *)value68c)->count, 8);
@@ -1289,10 +1289,10 @@ screen_load_proc c_screen_45d140::get_load_proc()
    one setting of the variant can take ---- */
 
 void function_1a0180(long tag_index, long string_handle, word *buffer);
-long *function_2369b3(long id);
-struct s_indexed_block;
-struct s_indexed_entry;
-s_indexed_entry *function_236aa9(s_indexed_block *block, long id);
+struct s_game_variant_setting_definition;
+s_game_variant_setting_definition *game_variant_settings_find_setting(long setting_index);
+struct s_game_variant_setting_option;
+s_game_variant_setting_option *game_variant_setting_find_option(s_game_variant_setting_definition *setting, long value);
 long function_2374f0(void *base, long index);
 void function_2373be(long index, void *base, long value);
 bool __stdcall function_19a728(s_game_variant *variant);
@@ -1419,7 +1419,7 @@ void c_list_45d078::v20(c_class_1a2c81 *item, long unused)
 				s_game_variant *variant = variant_settings_get_variant(alternate, &buffer);
 				long value = function_2374f0(variant, *datum->value);
 				s_variant_setting_definition *definition = (s_variant_setting_definition *)datum->value;
-				s_variant_setting_option *option = (s_variant_setting_option *)function_236aa9((s_indexed_block *)definition, value);
+				s_variant_setting_option *option = (s_variant_setting_option *)game_variant_setting_find_option((s_game_variant_setting_definition *)definition, value);
 				word text[0x100];
 
 				text[0] = 0;
@@ -1446,7 +1446,7 @@ c_variant_parameter_setting_list::c_variant_parameter_setting_list(word user_fla
 // @retail 0x2c7f7f
 void c_variant_parameter_setting_list::v17()
 {
-	definition = (s_variant_setting_definition *)function_2369b3(setting_index);
+	definition = (s_variant_setting_definition *)game_variant_settings_find_setting(setting_index);
 	if (definition && definition->option_count > 0)
 	{
 		data = user_interface_data_new("variant parameter setting list", definition->option_count, 8);
@@ -1587,7 +1587,7 @@ void c_variant_parameter_setting_screen::v19()
 	word buffer[0x100];
 	c_class_1a2c81 *title = find_child(6, 0, false);
 	c_class_1a2c81 *description = find_child(6, 2, false);
-	s_variant_setting_definition *definition = (s_variant_setting_definition *)function_2369b3(list.setting_index);
+	s_variant_setting_definition *definition = (s_variant_setting_definition *)game_variant_settings_find_setting(list.setting_index);
 
 	if (definition && definition->string_list_index != NONE)
 	{
@@ -3923,7 +3923,7 @@ void c_choose_player_color_list::v20(c_class_1a2c81 *widget, long index)
 }
 
 long player_emblem_list_get_string_id(byte index);
-long function_2365e0(long type);
+long player_model_get_string_id(long model);
 
 // @retail 0x2cb0d3
 void c_choose_emblem_list::v20(c_class_1a2c81 *widget, long index)
@@ -3943,7 +3943,7 @@ void c_choose_model_list::v20(c_class_1a2c81 *widget, long index)
 
 	if (text)
 	{
-		text->function_253b1a(function_2365e0(widget_item(widget)->value70 & 0xffff));
+		text->function_253b1a(player_model_get_string_id(widget_item(widget)->value70 & 0xffff));
 	}
 }
 
@@ -4086,7 +4086,7 @@ void c_multiplayer_settings_edit_list::v20(c_class_1a2c81 *widget, long index)
 		{
 		case 0:
 			name->function_253b1a(0xc0002f8);
-			value->function_253b1a(function_2365e0((char)g_54e5d0.settings.model));
+			value->function_253b1a(player_model_get_string_id((char)g_54e5d0.settings.model));
 			break;
 		case 4:
 			name->function_253b1a(0x120002fc);

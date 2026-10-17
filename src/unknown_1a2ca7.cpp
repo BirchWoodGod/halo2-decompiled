@@ -1174,38 +1174,65 @@ bool __stdcall clan_member_compare(void const *a, void const *b, void const *con
 	if (a10)
 	{
 		if (!b10)
-			return false;
+		{
+			result = false;
+			goto done;
+		}
 	}
 	else if (b10)
 	{
-		return true;
+		result = true;
+		goto done;
 	}
 	else if (a11)
 	{
 		if (!b11)
-			return true;
+		{
+			result = true;
+			goto done;
+		}
 	}
 	else if (b11)
 	{
-		return false;
+		result = false;
+		goto done;
 	}
 	else
 	{
 		if (b0 && !a0)
-			return true;
+		{
+			result = true;
+			goto done;
+		}
 		if (a0 && !b0)
-			return false;
+		{
+			result = false;
+			goto done;
+		}
 		if (b_c0 && !a_c0)
-			return true;
+		{
+			result = true;
+			goto done;
+		}
 		if (a_c0 && !b_c0)
-			return false;
+		{
+			result = false;
+			goto done;
+		}
 		if (b9 && !a9)
-			return true;
+		{
+			result = true;
+			goto done;
+		}
 		if (a9 && !b9)
-			return false;
+		{
+			result = false;
+			goto done;
+		}
 	}
 	if (strncmp(player_a->gamertag, player_b->gamertag, 16) > 0)
-		return true;
+		result = true;
+done:
 	return result;
 }
 

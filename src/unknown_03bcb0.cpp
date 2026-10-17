@@ -653,11 +653,13 @@ bool function_1bf50(long level, long tag, real distance, long *out)
         }
     }
     *out = selected;
+    long result;
     if (selected < 0)
-        *out = 0;
+        result = 0;
     else
-        *out = selected > count - 1 ? count - 1 : selected;
-    return *out < count;
+        result = selected > count - 1 ? count - 1 : selected;
+    *out = result;
+    return result < count;
 }
 
 void function_1cf50(void);
