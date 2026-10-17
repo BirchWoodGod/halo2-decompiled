@@ -86,7 +86,7 @@ struct s_z_initial_state
 // @retail 0xa5bd0
 bool function_a5bd0(s_entity_info const *info, s_z_initial_state *state)
 {
-    bool volatile result = false;
+    bool result = false;
 	if (function_122c10(0x6f626a65, info->definition_index))
 	{
 		byte *definition = g_4e3b44[info->definition_index & 0xffff].bytes;
@@ -99,16 +99,12 @@ bool function_a5bd0(s_entity_info const *info, s_z_initial_state *state)
 			s_z_initial_placement_type *type = (s_z_initial_placement_type *)g_468630[*(short *)definition];
 			if (type->placements_offset != NONE && type->palette_offset != NONE)
 			{
-				s_z_initial_placement_type *placement_type = (s_z_initial_placement_type *)g_468630[*(short *)definition];
-				long placement_size = placement_type->placement_size;
-				s_z_initial_placement_block *block = (s_z_initial_placement_block *)((byte *)g_4e0350 + placement_type->placements_offset);
-				long index = info->field0;
-				long clamped = index < 0 ? 0 : index;
-				if (block->count - 1 < clamped)
-					clamped = block->count - 1;
-				if (clamped == index)
+				long placement_size = ((s_z_initial_placement_type *)g_468630[*(short *)definition])->placement_size;
+				s_z_initial_placement_block *block = (s_z_initial_placement_block *)((byte *)g_4e0350 + ((s_z_initial_placement_type *)g_468630[*(short *)definition])->placements_offset);
+				long clamped = info->field0 < 0 ? 0 : (block->count - 1 < info->field0 ? block->count - 1 : info->field0);
+				if (clamped == info->field0)
 				{
-					s_z_initial_placement *placement = (s_z_initial_placement *)(block->data + index * placement_size);
+					s_z_initial_placement *placement = (s_z_initial_placement *)(block->data + info->field0 * placement_size);
 					state->position = placement->position;
 					function_11df60(&placement->rotation, &state->forward, &state->up);
 					state->scale = placement->scale > 0.0f ? placement->scale : 1.0f;
@@ -132,9 +128,8 @@ bool function_a5bd0(s_entity_info const *info, s_z_initial_state *state)
 					state->value48 = 1.0f;
 				state->value61 = settings[0xe0];
 			}
-			long value = *(long *)(model + 0x70);
-			if (value > 0)
-				state->value50 = (byte)value;
+			if (*(long *)(model + 0x70) > 0)
+				state->value50 = (byte)*(long *)(model + 0x70);
 		}
 		result = true;
 	}

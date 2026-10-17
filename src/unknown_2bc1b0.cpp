@@ -20,6 +20,12 @@ struct s_state_2bc1
 {
 	byte unknown00[0xc];
 	long markers[3];
+	/* each team's countdown to its next point while a player holds its
+	   item, and the points counted so far in this hold */
+	char point_timers[3];
+	char point_tallies[3];
+	/* how long each team's item has been away from home */
+	short ticks_away[3];
 };
 
 long player_find_unit_item_of_type(long player_index, long type);
@@ -147,11 +153,11 @@ void function_2bc1f0(long team)
 				if (object_index != NONE)
 				{
 					function_15e050(object_index, (short)team);
-					char mode = g_4e6948->mode;
-					s_event event;
-					game_engine_event_initialize_inline(&event, 4, 1);
-					if (mode != 4)
+					if (g_4e6948->mode != 4)
 					{
+						s_event event;
+
+						game_engine_event_initialize_inline(&event, 4, 1);
 						function_a7c50(&event);
 						function_19eb30(&event);
 					}
@@ -201,56 +207,108 @@ bool function_162b90(long item_index);
 void function_1972a0(long player_index, long value14, long value10);
 void function_2bce70(long player_index);
 
+/* a team's item, as these functions read it (function_15e410's entries) */
+struct s_team_item_2bc1
+{
+	long object_index;
+	short value04;
+	byte unknown06[0xc - 6];
+	long player_index;
+};
+
+/* an item object, as 0x2bc990 reads it */
+struct s_item_object_2bc1
+{
+	long definition_index;
+	dword flags;
+	byte unknown08[0x14 - 8];
+	long parent_index;
+	byte unknown18[0x12c - 0x18];
+	byte flags12c;
+};
+
+/* updates a team's item each tick: how long it has been away from home, its
+   return home once it has waited too long, and the points of the player
+   holding it */
 // @retail 0x2bc990
 void __stdcall function_2bc990(long team)
 {
 	long const *team_reference = &team;
-	byte *entry = (byte *)function_15e410((short)*team_reference);
-	if (!entry || *(long *)entry == NONE) return;
-	long object_index = *(long *)entry;
-	byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
-	dword maximum = g_510c54->field_2_3 * 40;
-	point3f position;
-	function_10da60(object_index, &position);
-	if (*(long *)(entry + 0xc) == NONE && team_ball_away_from_home(team))
+	s_team_item_2bc1 *entry = (s_team_item_2bc1 *)function_15e410((short)*team_reference);
+
+	if (entry && entry->object_index != NONE)
 	{
-		dword ticks = *(short *)(((byte *)g_51ecc4) + team * 2 + 0x1e) + 1;
-		if (ticks > maximum) ticks = maximum;
-		*(short *)(((byte *)g_51ecc4) + team * 2 + 0x1e) = (short)ticks;
-	}
-	else *(short *)(((byte *)g_51ecc4) + team * 2 + 0x1e) = 0;
-	byte *current = *(byte **)(g_4e0300->data + (*(long *)entry & 0xffff) * 12 + 8);
-	byte *definition = g_4e3b44[*(long *)current & 0xffff].bytes;
-	if (*(short *)(definition + 0x290) == 2 && !(object[0x12c] & 1) &&
-		((dword)*(short *)(((byte *)g_51ecc4) + team * 2 + 0x1e) >= (dword)maximum || function_162b90(*(long *)entry)) &&
-		*(long *)(object + 0x14) == NONE && (*(dword *)(object + 4) & 0x100))
-	{
-		s_event event;
-		game_engine_event_initialize_inline(&event, 4, 4);
-		function_19eb90(&event);
-		function_2bc340(team);
-	}
-	if (*(long *)(entry + 0xc) != NONE)
-	{
-		char &timer = *(char *)(((byte *)g_51ecc4) + team + 0x18);
-		if (timer != NONE && --timer <= 0)
+		s_item_object_2bc1 *object = (s_item_object_2bc1 *)((s_object_header_2bc1 *)g_4e0300->data)[entry->object_index & 0xffff].object;
+		dword maximum = g_510c54->field_2_3 * 40;
+		point3f position;
+		s_state_2bc1 *state;
+
+		function_10da60(entry->object_index, &position);
+		if (entry->player_index == NONE && team_ball_away_from_home(team))
 		{
-			function_1972a0(*(long *)(entry + 0xc), 3, *(short *)(entry + 4));
-			function_2bce70(*(long *)(entry + 0xc));
-				((byte *)g_51ecc4)[team + 0x18] = (byte)g_510c54->field_2_3;
-			char &count = *(char *)(((byte *)g_51ecc4) + team + 0x1b);
-			++count;
-			function_15b930(*(long *)(entry + 0xc), function_15eaf0(), 0x17, 1);
-			if (count % 5 == 0)
+			dword ticks;
+
+			state = (s_state_2bc1 *)g_51ecc4;
+			ticks = state->ticks_away[team] + 1;
+			if (ticks > maximum)
+				ticks = maximum;
+			state->ticks_away[team] = (short)ticks;
+		}
+		else
+		{
+			state = (s_state_2bc1 *)g_51ecc4;
+			state->ticks_away[team] = 0;
+		}
+
+		/* the item's object, read again for its definition */
+		s_item_object_2bc1 *current = (s_item_object_2bc1 *)((s_object_header_2bc1 *)g_4e0300->data)[entry->object_index & 0xffff].object;
+		byte *definition = g_4e3b44[current->definition_index & 0xffff].bytes;
+
+		if (*(short *)(definition + 0x290) == 2 && !(object->flags12c & 1) &&
+			((dword)state->ticks_away[team] >= maximum || function_162b90(entry->object_index)) &&
+			object->parent_index == NONE && (bool)((object->flags >> 8) & 1))
+		{
+			s_event event;
+
+			game_engine_event_initialize_inline(&event, 4, 4);
+			function_19eb90(&event);
+			function_2bc340(team);
+			state = (s_state_2bc1 *)g_51ecc4;
+		}
+		if (entry->player_index != NONE)
+		{
+			char timer = state->point_timers[team];
+
+			if (timer != NONE)
 			{
-				s_event event;
-				game_engine_event_initialize_inline(&event, 4, 5);
-				game_engine_event_set_cause_player(&event, *(long *)(entry + 0xc));
-				function_19eb90(&event);
+				timer--;
+				state->point_timers[team] = timer;
+				if (timer <= 0)
+				{
+					function_1972a0(entry->player_index, 3, entry->value04);
+					function_2bce70(entry->player_index);
+					state = (s_state_2bc1 *)g_51ecc4;
+					state->point_timers[team] = (char)g_510c54->field_2_3;
+					char *count = &state->point_tallies[team];
+
+					(*count)++;
+					function_15b930(entry->player_index, function_15eaf0(), 0x17, 1);
+					if (*count % 5 == 0)
+					{
+						s_event event;
+
+						game_engine_event_initialize_inline(&event, 4, 5);
+						game_engine_event_set_cause_player(&event, entry->player_index);
+						function_19eb90(&event);
+					}
+				}
 			}
 		}
+		else
+		{
+			state->point_tallies[team] = 0;
+		}
 	}
-	else ((byte *)g_51ecc4)[team + 0x1b] = 0;
 }
 
 // @retail 0x2bce70
