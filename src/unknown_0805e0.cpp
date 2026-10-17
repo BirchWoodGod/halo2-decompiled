@@ -460,7 +460,6 @@ void function_7f930(void)
 struct file_reference_data;
 void async_create_file_blocking(file_reference_data const *s_type_acf665, dword access_flags, long disposition, dword file_flags, long category, s_file_handle *file);
 bool function_1368f0(s_type_acf665 *file);
-bool function_136e90(s_type_acf665 *file, dword *size);
 
 char const g_450c68[] = "z:\\player_configuration_cache.dat";
 bool g_467260 = true;
@@ -483,12 +482,12 @@ bool function_7fa40(void)
 	if (function_1368f0(&local_1))
 	{
 		dword local_2 = 0;
-		if (function_136e90(&local_1, &local_2) && local_2 == 0x8e4c)
+		if (file_ref_size(&local_1, &local_2) && local_2 == 0x8e4c)
 		{
 			dword local_3;
 			if (function_136970(&local_1, 1, &local_3))
 			{
-				if (function_136ca0(&local_1, 0x8e4c, &g_4cf970, true))
+				if (file_ref_read(&local_1, 0x8e4c, &g_4cf970, true))
 				{
 					dword local_4 = NONE;
 					function_163ba0(&local_4, &g_4cf978, 0x8e44);
