@@ -1378,11 +1378,15 @@ void c_text_widget_45a5e0::function_253b1a(long string_handle)
 		c_class_1473c9 *screen = get_screen();
 		if (screen)
 		{
-			word buffer[0x100];
+			struct s_string_buffer
+			{
+				word text[0x100];
+				void load(c_widget *screen, long handle) { screen->function_230134(handle, text); }
+			} buffer;
 
-			buffer[0] = 0;
-			((c_widget *)screen)->function_230134(string_handle, buffer);
-			function_22f52e()->set_text(buffer);
+			buffer.text[0] = 0;
+			buffer.load((c_widget *)screen, string_handle);
+			function_22f52e()->set_text(buffer.text);
 		}
 	}
 }
