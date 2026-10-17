@@ -2546,35 +2546,38 @@ bool __stdcall function_ccba0(long unit_index, long grenade_index)
 	return result;
 }
 
+/* an iterator over the units (as 0xfa9a0's over the projectiles): the
+   current one, then the object iterator */
+struct s_unit_list_iterator
+{
+	s_unit *datum;
+	s_type_f1af8e iterator;
+};
+
 /* finds a unit that is dying or down: object flags 22, 26 or 27 in its
    animation state, or in animation 0xc000043 or 0xd000042 without flag 2
    at +0x33e and bit 0 at its animation's +0x6c */
 // @retail 0xcc170
 bool __stdcall function_cc170(long *value)
 {
-	s_type_f1af8e iterator;
-	s_unit *object;
+	s_unit_list_iterator iterator;
 
-	function_bae80(&iterator, 3, 1);
-	while ((object = (s_unit *)function_baeb0(&iterator)) != 0)
+	function_bae80(&iterator.iterator, 3, 1);
+	while ((iterator.datum = (s_unit *)function_baeb0(&iterator.iterator)) != 0)
 	{
-		long unit_index = iterator.object_index;
+		long unit_index = iterator.iterator.object_index;
 		s_unit *unit = UNIT_GET(unit_index);
-		s_unit_animation *animation = UNIT_ANIMATION(unit);
-		long name = NONE;
+		long name = unit_animation_name(unit_index);
+		s_unit *object = iterator.datum;
 
-		if (animation->unknown68 != NONE && animation->unknown00 != NONE && animation->unknown06 != NONE)
-		{
-			name = animation->name;
-		}
-		if ((*(dword *)((byte *)unit + unit->unknown346 + 4) >> 22) & 1 ||
-			(*(dword *)((byte *)unit + unit->unknown346 + 4) >> 26) & 1 ||
-			(*(dword *)((byte *)unit + unit->unknown346 + 4) >> 27) & 1)
+		if (TEST_FIELD_BIT((*(dword *)((byte *)unit + unit->unknown346 + 4) >> 22) & 1) ||
+			TEST_FIELD_BIT((*(dword *)((byte *)unit + unit->unknown346 + 4) >> 26) & 1) ||
+			TEST_FIELD_BIT((*(dword *)((byte *)unit + unit->unknown346 + 4) >> 27) & 1))
 		{
 			*value = unit_index;
 			return true;
 		}
-		if ((name == 0xc000043 || name == 0xd000042) && !((*((byte *)object + object->unknown33e) >> 2) & 1) &&
+		if ((name == 0xc000043 || name == 0xd000042) && !TEST_FIELD_BIT((*((byte *)object + object->unknown33e) >> 2) & 1) &&
 			!(*((byte *)object + object->animation_offset + 0x6c) & 1))
 		{
 			*value = unit_index;
@@ -3134,16 +3137,23 @@ bool __stdcall function_cc460(long object_index)
 		TEST_FIELD_BIT((root->unknownc0 >> 6) & 1) && root->unknownb4 != NONE)
 	{
 		s_havok_component *component = havok_component_get(root->unknownb4);
-		short rigid_body_index = function_0b67a0((s_small_index const *)component);
+		long rigid_body_index = function_0b67a0((s_small_index const *)component);
 
 		if (rigid_body_index != NONE)
 		{
-			byte *rigid_body = (byte *)havok_component_rigid_body_get(rigid_body_index, component);
-
-			if (!rigid_body[0x40] && !havok_component_rigid_body_keyframed(rigid_body_index, component))
+			if (!((byte *)havok_component_rigid_body_get(rigid_body_index, component))[0x40] &&
+				!havok_component_rigid_body_keyframed(rigid_body_index, component))
 			{
-				point3f point = *(point3f *)(*(byte **)(rigid_body + 0x3c) + 0x70);
+				point3f const *position =
+					(point3f const *)(*(byte **)((byte *)havok_component_rigid_body_get(rigid_body_index, component) + 0x3c) + 0x70);
+				real z = position->z;
+				real x = position->x;
+				real y = position->y;
+				point3f point;
 
+				point.x = x;
+				point.y = y;
+				point.z = z;
 				if (function_168f40(0x14800005, (s_vehicle_ray const *)&point, root_index, object_index))
 				{
 					result = true;
@@ -4429,68 +4439,72 @@ bool __stdcall function_cba50(long unit_index, vector3f *direction, bool looking
 		enabled = (state[0] >> 5) & 1;
 		limits = (real const *)(state + 4);
 	}
-	if (!enabled)
+	if (enabled)
 	{
-		return clamped;
-	}
-	vector3f forward;
-	vector3f up;
+		vector3f up;
+		vector3f forward;
 
-	function_b9fc0(unit_index, &forward, &up);
-	if (looking)
-	{
-		vector3f left;
-
-		up = unit->unknown168;
-		left.i = up.k * forward.j - forward.k * up.j;
-		left.j = forward.k * up.i - up.k * forward.i;
-		left.k = forward.i * up.j - forward.j * up.i;
-		forward.i = left.k * up.j - left.j * up.k;
-		forward.j = up.k * left.i - left.k * up.i;
-		forward.k = left.j * up.i - left.i * up.j;
-		if (function_30bf0(&forward) == 0.0f)
+		function_b9fc0(unit_index, &forward, &up);
+		if (looking)
 		{
-			function_30bf0(function_11d000(&up, &forward));
+			vector3f left;
+
+			forward = unit->unknown168;
+			left.i = forward.k * up.j - up.k * forward.j;
+			left.j = up.k * forward.i - forward.k * up.i;
+			left.k = up.i * forward.j - up.j * forward.i;
+			up.i = left.k * forward.j - left.j * forward.k;
+			up.j = forward.k * left.i - left.k * forward.i;
+			up.k = left.j * forward.i - left.i * forward.j;
+			if (function_30bf0(&up) == 0.0f)
+			{
+				function_30bf0(function_11d000(&forward, &up));
+			}
 		}
-	}
-	transform4x3f matrix;
-	function_1420f0(&matrix, g_468788, &forward, &up);
-	real x = matrix.forward.k * direction->k + matrix.forward.j * direction->j + matrix.forward.i * direction->i;
-	real y = matrix.left.k * direction->k + matrix.left.j * direction->j + matrix.left.i * direction->i;
-	real z = matrix.up.k * direction->k + matrix.up.j * direction->j + matrix.up.i * direction->i;
-	real yaw = (real)atan2(y, x);
-	real pitch = (real)atan2(z, (real)sqrt(y * y + x * x));
+		transform4x3f matrix;
+		function_1420f0(&matrix, g_468788, &forward, &up);
+		real i = direction->i;
+		real j = direction->j;
+		real k = direction->k;
+		vector3f local;
 
-	if (limits[0] > yaw)
-	{
-		yaw = limits[0];
-		clamped = true;
-	}
-	else if (yaw > limits[1])
-	{
-		yaw = limits[1];
-		clamped = true;
-	}
-	if (limits[2] > pitch)
-	{
-		pitch = limits[2];
-		clamped = true;
-	}
-	else if (pitch > limits[3])
-	{
-		pitch = limits[3];
-		clamped = true;
-	}
-	if (clamped)
-	{
-		real cosine = (real)cos(pitch);
-		real forward_scale = (real)cos(yaw) * cosine;
-		real left_scale = (real)sin(yaw) * cosine;
-		real up_scale = (real)sin(pitch);
+		local.i = matrix.forward.k * k + matrix.forward.j * j + matrix.forward.i * i;
+		local.j = matrix.left.k * k + matrix.left.j * j + matrix.left.i * i;
+		local.k = matrix.up.k * k + matrix.up.j * j + matrix.up.i * i;
+		real yaw = (real)atan2(local.j, local.i);
+		real pitch = (real)atan2(local.k, (real)sqrt(local.j * local.j + local.i * local.i));
 
-		direction->i = matrix.up.i * up_scale + left_scale * matrix.left.i + matrix.forward.i * forward_scale;
-		direction->j = matrix.up.j * up_scale + left_scale * matrix.left.j + matrix.forward.j * forward_scale;
-		direction->k = matrix.up.k * up_scale + left_scale * matrix.left.k + matrix.forward.k * forward_scale;
+		if (limits[0] > yaw)
+		{
+			yaw = limits[0];
+			clamped = true;
+		}
+		else if (yaw > limits[1])
+		{
+			yaw = limits[1];
+			clamped = true;
+		}
+		if (limits[2] > pitch)
+		{
+			pitch = limits[2];
+			clamped = true;
+		}
+		else if (pitch > limits[3])
+		{
+			pitch = limits[3];
+			clamped = true;
+		}
+		if (clamped)
+		{
+			real cosine = (real)cos(pitch);
+			real forward_scale = (real)cos(yaw) * cosine;
+			real left_scale = (real)sin(yaw) * cosine;
+			real up_scale = (real)sin(pitch);
+
+			direction->i = matrix.up.i * up_scale + left_scale * matrix.left.i + matrix.forward.i * forward_scale;
+			direction->j = matrix.up.j * up_scale + left_scale * matrix.left.j + matrix.forward.j * forward_scale;
+			direction->k = matrix.up.k * up_scale + left_scale * matrix.left.k + matrix.forward.k * forward_scale;
+		}
 	}
 	return clamped;
 }
