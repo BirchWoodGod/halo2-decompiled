@@ -1477,7 +1477,7 @@ struct s_13c051
     short field_6;
 };
 
-void function_13c050(s_13c051 const *bounds, dword color);
+void interface_rectangle_fill(short_rectangle2d const *bounds, dword color);
 
 // @retail 0x147cbc
 void function_147cbc(s_13c051 const *window, dword color)
@@ -1485,7 +1485,7 @@ void function_147cbc(s_13c051 const *window, dword color)
     s_13c051 bounds = *window;
     /* The color argument stays in its stack slot. */
     dword const *color_reference = &color;
-    function_13c050(&bounds, *color_reference);
+    interface_rectangle_fill((short_rectangle2d const *)&bounds, *color_reference);
 }
 
 // @retail 0x147cdb
@@ -1498,7 +1498,7 @@ void c_render_window::function_147cdb(dword color)
     bounds.field_4 += top;
     bounds.field_2 += left;
     bounds.field_6 += left;
-    function_13c050(&bounds, color);
+    interface_rectangle_fill((short_rectangle2d const *)&bounds, color);
 }
 
 void __stdcall function_215e60(long file_index);
