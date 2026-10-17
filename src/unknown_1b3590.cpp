@@ -86,12 +86,11 @@ short __stdcall function_1b3590(long actor_index, s_slot *slot, bool active)
 }
 
 // @retail 0x1b3600
-bool __stdcall function_1b3600(long actor_index, s_slot *slot)
+bool __stdcall function_1b3600(long actor_index, s_slot *volatile slot)
 {
 	s_actor_view *actor = actor_get(actor_index);
 	bool local_0 = actor->unknown040;
-	s_slot *volatile *local_1 = &slot;
-	s_slot_64 *state = (s_slot_64 *)*local_1;
+	s_slot_64 *state = (s_slot_64 *)slot;
 	bool result = true;
 
 	if (local_0 && !state->unknown17)
@@ -196,37 +195,47 @@ short __stdcall function_1b3820(long actor_index, s_slot *slot, bool active)
 	return result;
 }
 
+/* (retail reads slot from its argument twice, once for the target and once
+   after the distance test: the parameter is volatile for that) */
 // @retail 0x1b3880
-void __stdcall function_1b3880(long actor_index, s_slot *slot)
+void __stdcall function_1b3880(long actor_index, s_slot *volatile slot)
 {
 	s_actor_view *actor = actor_get(actor_index);
 
 	if (actor->prop_index != NONE)
 	{
-		s_prop_node_view *volatile node = (s_prop_node_view *)datum_get_inlined(g_502418, actor->prop_index);
-		s_slot_64 *state = (s_slot_64 *)slot;
-		vector3f delta;
+		s_prop_node_view *node = (s_prop_node_view *)datum_get_inlined(g_502418, actor->prop_index);
+		s_type_c3b527 *target = &((s_slot_64 *)slot)->unknown1c;
+		real distance_squared;
 
-		if (state->unknown1c.output_index == NONE)
+		if (target->output_index == NONE)
 		{
-			vector3d_from_points3d(&state->unknown1c.point, &actor->position, &delta);
+			vector3f v;
+
+			vector3d_from_points3d(&target->point, &actor->position, &v);
+			distance_squared = (v.k * v.k + v.i * v.i) + v.j * v.j;
 		}
 		else
 		{
 			point3f point;
+			vector3f v;
 
-			function_210850(&state->unknown1c, &point);
-			vector3d_from_points3d(&point, &actor->position, &delta);
+			function_210850(target, &point);
+			vector3d_from_points3d(&point, &actor->position, &v);
+			distance_squared = (v.j * v.j + v.k * v.k) + v.i * v.i;
 		}
 		actor->unknown41c = 3;
 		actor->unknown420 = 2;
 		actor->unknown430 = 2;
 		actor->unknown434 = 2;
 		actor->unknown444 = NONE;
-		if (length_sq3f(&delta) < 2.25f)
+		if (distance_squared < 2.25f)
 		{
+			s_slot_64 *state;
+
 			actor->unknown488 = true;
 			actor->unknown4a2 = true;
+			state = (s_slot_64 *)slot;
 			if (!state->unknown16 && node)
 			{
 				function_1fb7e0(0x60, actor_index, NULL, node->object_index, NONE);
@@ -260,65 +269,62 @@ short __stdcall function_1b39e0(long actor_index)
 	return (short)result;
 }
 
-PRIVATE __forceinline s_prop_node_view *function_1b3a82(s_record_pool *arg_0, long arg_1)
-{
-    byte *local_0 = arg_0->data;
-    return (s_prop_node_view *)(local_0 + (arg_1 & 0xffff) * sizeof(s_prop_node_view));
-}
-
 // @retail 0x1b3a80
 bool __stdcall function_1b3a80(long actor_index, s_slot *slot)
 {
     s_1b36e0 *local_0 = (s_1b36e0 *)((byte *)slot + 0xc);
     long local_1 = actor_get(actor_index)->first_prop_index;
-    long local_2;
+    long local_2 = NONE;
+
     while (local_1 != NONE)
     {
-        s_prop_node_view *local_3 = function_1b3a82(g_502418, local_1);
-        local_2 = local_1;
+        s_prop_node_view *local_3 = prop_node_get(local_1);
+        long local_10 = local_1;
+
         local_1 = local_3->next_index;
-        if (local_3->type == 7 && local_3->unknown28 < 3.5f &&
-            prop_node_state(local_3)->unknown00 != NONE &&
-            !(object_get(local_3->object_index)->unknownb2 & 1))
+        if (local_3->type != 7) continue;
+        if (!(local_3->unknown28 < 3.5f)) continue;
+        if (prop_node_state(local_3)->unknown00 == NONE) continue;
+        if (object_get(local_3->object_index)->unknownb2 & 1) continue;
+        local_2 = local_10;
+        break;
+    }
+    if (local_2 != NONE)
+    {
+        s_prop_node_view *local_3 = prop_node_get(local_2);
+        s_prop_state_view *local_4 = prop_node_state(local_3);
+        byte *local_5 = &object_get(local_3->object_index)->unknownb2;
+        *local_5 |= 1;
+        memset(local_0, 0, sizeof(*local_0));
+        real local_6 = g_510c54->field_2_3 * 15.0f;
+        long local_7;
+        __asm
         {
-            goto local_9;
+            fld local_6
+            fistp local_7
         }
+        local_0->field_6 = (short)local_7;
+        local_6 = g_510c54->field_2_3 * 4.0f;
+        __asm
+        {
+            fld local_6
+            fistp local_7
+        }
+        local_0->field_4 = (short)local_7;
+        local_0->field_0 = local_2;
+        local_0->field_24 = 1.5f;
+        function_26c2d0(local_2);
+        local_0->field_8 = 2;
+        local_0->field_10 = local_4->unknown48;
+        local_0->field_20 = *(long *)((byte *)local_4 + 0x44);
+        local_0->field_a = false;
+        local_0->field_b = false;
+        long local_8 = actor_get(actor_index)->unknown018;
+        if (local_8 != NONE)
+            function_20ba60(0x62, local_8, local_3->object_index, NONE, NONE, NULL);
+        return true;
     }
     return false;
-local_9:
-
-    s_prop_node_view *local_3 = function_1b3a82(g_502418, local_2);
-    s_prop_state_view *local_4 = prop_node_state(local_3);
-    byte *local_5 = &object_get(local_3->object_index)->unknownb2;
-    *local_5 |= 1;
-    memset(local_0, 0, sizeof(*local_0));
-    real local_6 = g_510c54->field_2_3 * 15.0f;
-    long local_7;
-    __asm
-    {
-        fld local_6
-        fistp local_7
-    }
-    local_0->field_6 = (short)local_7;
-    local_6 = g_510c54->field_2_3 * 4.0f;
-    __asm
-    {
-        fld local_6
-        fistp local_7
-    }
-    local_0->field_4 = (short)local_7;
-    local_0->field_0 = local_2;
-    local_0->field_24 = 1.5f;
-    function_26c2d0(local_2);
-    local_0->field_8 = 2;
-    local_0->field_10 = local_4->unknown48;
-    local_0->field_20 = *(long *)((byte *)local_4 + 0x44);
-    local_0->field_a = false;
-    local_0->field_b = false;
-    long local_8 = actor_get(actor_index)->unknown018;
-    if (local_8 != NONE)
-        function_20ba60(0x62, local_8, local_3->object_index, NONE, NONE, NULL);
-    return true;
 }
 
 
