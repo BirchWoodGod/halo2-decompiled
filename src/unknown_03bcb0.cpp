@@ -817,9 +817,8 @@ void function_3d000(real const *state)
 {
     real direction[4] = { 1.0f, -1.0f, -1.0f, 0.5f };
     D3DDevice_SetVertexShaderConstant(-75, direction, 1);
-    double sine = sin(state[30]);
-    direction[0] = (real)(cos(state[29]) * sine);
-    direction[1] = (real)(sin(state[29]) * sine);
+    direction[0] = (real)(cos(state[29]) * sin(state[30]));
+    direction[1] = (real)(sin(state[29]) * sin(state[30]));
     direction[2] = (real)cos(state[30]);
     direction[3] = state[25];
     real mapped[4];
@@ -840,6 +839,7 @@ void function_3d000(real const *state)
         direction[1] = 0.0f - inverse_range * local_low_high_record.a;
         direction[2] = 0.0f;
         direction[3] = 0.0f;
+        D3DDevice_SetVertexShaderConstant(-72, direction, 1);
     }
     else
     {
@@ -847,8 +847,8 @@ void function_3d000(real const *state)
         direction[1] = 0.0f;
         direction[2] = 0.0f;
         direction[3] = 0.0f;
+        D3DDevice_SetVertexShaderConstant(-72, direction, 1);
     }
-    D3DDevice_SetVertexShaderConstant(-72, direction, 1);
     D3DDevice_SetRenderState(D3DRS_TEXTUREFACTOR, pack_color3f((color3f const *)(state + 22)));
     real parameters[4];
     memcpy(parameters, state + 36, sizeof(parameters));

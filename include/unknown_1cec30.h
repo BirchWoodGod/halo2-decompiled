@@ -429,6 +429,8 @@ struct s_havok_component
 	void initialize(long object_index);
 	void function_1d3d20(long node_index, dword *updated, dword const *restore,
 		rigid_transform_scaled *orientations, long unknown);
+
+	bool rigid_body_keyframed(long rigid_body_index);
 };
 
 inline s_havok_component *havok_component_get(long component_index)
@@ -439,6 +441,12 @@ inline s_havok_component *havok_component_get(long component_index)
 inline hkRigidBody *havok_component_rigid_body_get(long rigid_body_index, s_havok_component const *component)
 {
 	return component->rigid_bodies[rigid_body_index].rigid_body;
+}
+
+/* the free-function spelling of s_havok_component::rigid_body_keyframed */
+inline bool havok_component_rigid_body_keyframed(long rigid_body_index, s_havok_component *component)
+{
+	return component->rigid_body_keyframed(rigid_body_index);
 }
 
 /* the component's main rigid body (unknown18), NONE when it has none */

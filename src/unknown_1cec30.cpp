@@ -773,9 +773,9 @@ real havok_component_rigid_body_mass_get(long rigid_body_index, s_havok_componen
 }
 
 // @retail 0x1d0c00
-bool havok_component_rigid_body_keyframed(long rigid_body_index, s_havok_component *component)
+bool s_havok_component::rigid_body_keyframed(long rigid_body_index)
 {
-	return havok_component_rigid_body_get(rigid_body_index, component)->m_motion->getType() == 6;
+	return havok_component_rigid_body_get(rigid_body_index, this)->m_motion->getType() == 6;
 }
 
 // @retail 0x1d0dd0
