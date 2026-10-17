@@ -198,8 +198,8 @@ void function_1936e0(long type, s_built_variant *variant, dword field_8, long de
 		variant->points[i] = points[i];
 }
 
-void function_1939f0(long scale, long first, long last, long *points);
-void function_193a50(long *points, long team_size, long last_team, long first_team, long scale);
+void matchmaking_hopper_build_player_start_delays(long scale, long first, long last, long *points);
+void matchmaking_hopper_build_team_start_delays(long *points, long team_size, long last_team, long first_team, long scale);
 
 /* fills a variant of type 4 */
 // @retail 0x193ac0
@@ -207,7 +207,7 @@ void function_193ac0(s_built_variant *variant, long name_string, long descriptio
 {
 	long points[16];
 
-	function_193a50(points, settings->team_size, settings->last_team, settings->first_team, scale);
+	matchmaking_hopper_build_team_start_delays(points, settings->team_size, settings->last_team, settings->first_team, scale);
 	function_1936e0(4, variant, field_8, description_string, scale, points, field_59c, name_string);
 	variant->settings.type4 = *settings;
 }
@@ -218,7 +218,7 @@ void function_193b30(s_built_variant *variant, long name_string, long descriptio
 {
 	long points[16];
 
-	function_193a50(points, settings->team_size, settings->last_team, settings->first_team, scale);
+	matchmaking_hopper_build_team_start_delays(points, settings->team_size, settings->last_team, settings->first_team, scale);
 	function_1936e0(3, variant, field_8, description_string, scale, points, field_59c, name_string);
 	variant->settings.team = *settings;
 }
@@ -229,7 +229,7 @@ void function_193ba0(long scale, bool flag, s_built_variant *variant, long name_
 {
 	long points[16];
 
-	function_1939f0(scale, settings->first, settings->last, points);
+	matchmaking_hopper_build_player_start_delays(scale, settings->first, settings->last, points);
 	function_1936e0(flag ? 2 : 1, variant, field_8, description_string, scale, points, field_59c, name_string);
 	variant->settings.place = *settings;
 }
@@ -240,7 +240,7 @@ void function_193c00(s_built_variant *variant, long name_string, long descriptio
 {
 	long points[16];
 
-	function_193a50(points, settings->team_size, settings->last_team, settings->first_team, 0);
+	matchmaking_hopper_build_team_start_delays(points, settings->team_size, settings->last_team, settings->first_team, 0);
 	function_1936e0(5, variant, field_8, description_string, 0, points, field_59c, name_string);
 	variant->settings.type5 = *settings;
 }
