@@ -24,18 +24,18 @@ long function_19a161(void);
 #include "unknown_24fa12.h"
 
 struct s_session_screen_state;
-long function_24fa23(s_session_screen_state const *screen);
+long session_lobby_screen_any_team_valid(s_session_screen_state const *screen);
 bool function_592f0(void);
 bool function_19a902(void);
 bool network_session_interface_local_machine_is_host(void);
 
 // @retail 0x250dae
-void function_250dae(c_screen_24fd74 *screen)
+void function_250dae(c_session_lobby_screen *screen)
 {
     if (ANIMATION_FLAG(screen->animation, 1))
         return;
     bool connected = function_592f0();
-    bool enabled = function_592f0() && !(byte)function_24fa23((s_session_screen_state *)screen) &&
+    bool enabled = function_592f0() && !(byte)session_lobby_screen_any_team_valid((s_session_screen_state *)screen) &&
         !function_19a902() && network_session_interface_local_machine_is_host();
     c_class_1a2c81 *text = 0;
     switch (screen->mode)
@@ -150,7 +150,7 @@ void function_25092c(s_game_variant *variant, long index, c_class_1a2c81 *widget
 
 /* shows the network connection's state in the mode's text */
 // @retail 0x250155
-void c_screen_24fd74::function_250155()
+void c_session_lobby_screen::function_250155()
 {
 	long index;
 
@@ -1769,7 +1769,7 @@ void function_250a43(byte *data, c_class_1a2c81 *bitmap)
 
 /* closes channel 3's settings screens (10, 0x14, 0x15) while 0x19a902 holds */
 // @retail 0x250eb7
-void c_screen_24fd74::function_250eb7()
+void c_session_lobby_screen::function_250eb7()
 {
 	if (function_19a902() && ((byte)function_148222(3, 4, 10) || (byte)function_148222(3, 4, 0x14) || (byte)function_148222(3, 4, 0x15)))
 	{
@@ -1789,7 +1789,7 @@ void c_screen_24fd74::function_250eb7()
 }
 
 // @retail 0x250cda
-void c_screen_24fd74::function_250cda(long index, bool update)
+void c_session_lobby_screen::function_250cda(long index, bool update)
 {
 	byte *data = network_session_interface_get_data_4db0();
 
@@ -1839,7 +1839,7 @@ struct s_session_flags_view
 /* steps a valid slot's team by delta, wrapping around the team count (to no
    team as well when the session allows it) */
 // @retail 0x250d5c
-void c_screen_24fd74::change_team(long index, long delta)
+void c_session_lobby_screen::change_team(long index, long delta)
 {
 	if (teams[index].valid)
 	{
@@ -1866,7 +1866,7 @@ void c_screen_24fd74::change_team(long index, long delta)
 }
 
 // @retail 0x250f3a
-void c_screen_24fd74::function_250f3a(byte *data)
+void c_session_lobby_screen::function_250f3a(byte *data)
 {
 	if (value812 != (byte)function_251364((s_session_player_view *)data))
 	{
@@ -1901,7 +1901,7 @@ extern dword g_54d5b8;
 /* shows the session's state in a dialog once; a live session leaves it three
    seconds later */
 // @retail 0x250804
-void c_screen_24fd74::show_session_state()
+void c_session_lobby_screen::show_session_state()
 {
 	long state = network_session_manager_get_value49f8();
 	dword shown_time = state_shown_time;
@@ -1952,7 +1952,7 @@ bool function_19a78e(long controller, long countdown, long minimum);
 /* follows the countdown's stage (with a sound at each new one) and, when
    asked, signs the first player with a slot in */
 // @retail 0x250a8b
-void c_screen_24fd74::update_countdown(bool signed_in_needed)
+void c_session_lobby_screen::update_countdown(bool signed_in_needed)
 {
 	if (function_19a902())
 	{
@@ -2015,7 +2015,7 @@ bool network_session_interface_local_machine_is_host(void);
 c_class_1473c9 *__stdcall function_2bbacb(s_screen_parameters *parameters);
 
 // @retail 0x250fb3
-void c_screen_24fd74::handle_lobby_choice(s_controller_reference **controller, long *item)
+void c_session_lobby_screen::handle_lobby_choice(s_controller_reference **controller, long *item)
 {
 	/* the callback's controller reference stays on the stack */
 	s_controller_reference ***controller_reference = &controller;
@@ -2053,7 +2053,7 @@ long function_19a279(void);
 void function_1905bf(long controller, bool flag);
 
 // @retail 0x250b1e
-bool c_screen_24fd74::v10(s_widget_event *event)
+bool c_session_lobby_screen::v10(s_widget_event *event)
 {
 	bool unready = network_session_manager_session_unready();
 	long result = 1;
@@ -2270,7 +2270,7 @@ void function_250332(c_class_1a2c81 *screen)
 
 /* a text by the mode, shown with a value block by 0x19a161 */
 // @retail 0x2508a8
-void c_screen_24fd74::function_2508a8()
+void c_session_lobby_screen::function_2508a8()
 {
 	long index;
 
@@ -2375,7 +2375,7 @@ static __forceinline long local_player_find(long const *local_list, long player)
 /* fills the lobby's player list (players, count of them), with the local
    players' chosen teams; hides the slots past the count */
 // @retail 0x25042d
-void function_25042d(c_screen_24fd74 *screen, long valid, s_session_flags_view *session, long *players, long *local_list, long count)
+void function_25042d(c_session_lobby_screen *screen, long valid, s_session_flags_view *session, long *players, long *local_list, long count)
 {
 	long shown_count = count;
 	bool in_matchmaking = function_199994();
@@ -2972,7 +2972,7 @@ long function_230195(s_screen_definition *definition, long block_index, long ind
 bool function_19a107(void);
 
 // @retail 0x2501c0
-void function_2501c0(c_screen_24fd74 *screen, s_game_variant *variant)
+void function_2501c0(c_session_lobby_screen *screen, s_game_variant *variant)
 {
     short indices[5];
     long extra;

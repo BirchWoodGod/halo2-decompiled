@@ -1158,7 +1158,7 @@ bool function_199dc9(long a, long b, long c)
 
 void function_1487c3(long a, long b, long load, long c, long d);
 class c_online_task_screen;
-void __stdcall function_2523bc(c_online_task_screen *screen);
+void __stdcall session_leave_task_screen_begin(c_online_task_screen *screen);
 
 /* leaves the sessions and goes back to the main menu. Retail keeps close in
    a stack slot and pushes it from there, as its address being taken does */
@@ -1169,7 +1169,7 @@ void function_199e3c(long controller)
 	bool const *close_reference = &close;
 
 	function_199e2e(close);
-	function_1487c3(controller, NONE, (long)function_2523bc, 0, 0);
+	function_1487c3(controller, NONE, (long)session_leave_task_screen_begin, 0, 0);
 }
 
 long __stdcall function_63e90(long index);
@@ -1560,9 +1560,9 @@ long function_147f4f();
 void network_session_manager_leave_session_a(bool close);
 void network_session_manager_leave_session_b(bool close);
 c_class_1473c9 *window_manager_open_channel_5_screen(short user_flags, long load);
-c_class_1473c9 *__stdcall function_2521f8(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall session_joining_screen_load(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2519bb(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_24fa4c(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall session_lobby_screen_load(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_24f8c6(s_screen_parameters *parameters);
 
 /* when the session state no longer fits the menu a screen belongs to, opens
@@ -1574,7 +1574,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 	{
 		if (screen_id != 0xe7)
 		{
-			window_manager_open_channel_5_screen(function_1901fc(), (long)function_2521f8);
+			window_manager_open_channel_5_screen(function_1901fc(), (long)session_joining_screen_load);
 		}
 	}
 	else if (!state || state == menu)
@@ -1639,7 +1639,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 
 				if (in_game & players)
 				{
-					window_manager_open_channel_5_screen(NONE, (long)function_24fa4c);
+					window_manager_open_channel_5_screen(NONE, (long)session_lobby_screen_load);
 					return;
 				}
 				stay = false;
