@@ -154,11 +154,13 @@ void function_2b9750(s_particle_2b96 const *other, s_particle_2b96 const *partic
     delta.k = particle->position.z - other->position.z;
     delta.i = particle->position.x - other->position.x;
     delta.j = particle->position.y - other->position.y;
-    real normalized_squared = delta.k * delta.k + delta.j * delta.j + delta.i * delta.i;
+    real normalized_squared = particle_separation_squared_values(delta.k, delta.j, delta.i);
     if (normalized_squared != 0.0f)
     {
         real inverse = inverse_sqrt_2b96(normalized_squared);
-        scale_particle_vector_2b(inverse, &delta);
+        delta.k *= inverse;
+        delta.i *= inverse;
+        delta.j *= inverse;
     }
     if (ratio < 1.0f)
         scale = 0.0f - ratio * scale;
