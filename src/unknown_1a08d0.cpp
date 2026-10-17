@@ -123,8 +123,6 @@ long function_1a0b40(
 	case 3:
 	case 4:
 		creation_disposition = OPEN_ALWAYS;
-		if (disposition == 4)
-			create_path = true;
 		break;
 	case 5:
 		creation_disposition = TRUNCATE_EXISTING;
@@ -132,6 +130,9 @@ long function_1a0b40(
 	default:
 		__assume(0);
 	}
+
+	if (disposition == 4)
+		create_path = true;
 
 	if (access_flags & 1)
 		access = GENERIC_READ;

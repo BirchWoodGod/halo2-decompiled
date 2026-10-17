@@ -264,7 +264,7 @@ bool __stdcall dialog_callback_dashboard_network_configuration(long controller_i
 bool __stdcall dialog_callback_leave_sessions(long controller_index);
 bool __stdcall dialog_callback_dashboard_online_menu(long controller);
 bool __stdcall dialog_callback_sign_out_to_main_menu(long controller);
-bool __stdcall function_2323ab(long controller_index);
+bool __stdcall pause_game_quit_confirmed(long controller_index);
 
 /* shows the dialog of a lost connection or failed sign in (by the error),
    unless one shows already, and leaves the game for most of them */
@@ -351,7 +351,7 @@ void function_1486b8(long error, bool keep)
 	{
 		choice = false;
 		dialog_id = 0xb8;
-		first = function_2323ab;
+		first = pause_game_quit_confirmed;
 	}
 	if (!window_manager_window_has_dialog(1, 4, dialog_id))
 	{
@@ -1262,7 +1262,7 @@ void function_1906b4(void);
 bool function_199df9(bool offline, bool system_link);
 void function_199a57(void);
 void function_199a03(long mode);
-c_class_1473c9 *__stdcall function_22f11e(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall press_start_screen_open(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall legalese_open(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall main_menu_open(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2310b7(s_screen_parameters *parameters);
@@ -1374,7 +1374,7 @@ void __stdcall function_1483c3(long reason)
 		parameters.type = 4;
 		parameters.b = 4;
 		memset(parameters.id, NONE, sizeof(parameters.id));
-		parameters.load = function_22f11e;
+		parameters.load = press_start_screen_open;
 		if (count == 0)
 		{
 			if (g_54d598.value08 && !g_55e734)
