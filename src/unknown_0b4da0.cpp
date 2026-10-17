@@ -279,16 +279,13 @@ short function_b5110(s_transport_endpoint *endpoint, void const *buffer, short l
 			if (sent == -1)
 			{
 				long error = WSAGetLastError();
-				long code;
 				if (error == WSAEWOULDBLOCK)
-					code = -2;
+					result = -2;
 				else if (error == WSAEHOSTUNREACH)
-					code = -1;
-				else
-					code = -3;
-				return (short)code;
+					result = -1;
 			}
-			result = sent;
+			else
+				result = sent;
 		}
 	}
 	return result;
