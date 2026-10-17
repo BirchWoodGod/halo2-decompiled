@@ -96,7 +96,7 @@ struct s_stats_state
 struct s_game_engine_data
 {
 	byte unknown00[0x18];
-	byte bytes18[3];
+	char bytes18[3];
 };
 
 struct s_tag_b
@@ -722,7 +722,7 @@ void c_game_engine_derived::v45(long a, long b)
 
 	if (index >= 0 && index < 3)
 	{
-		g_51ecc4->bytes18[index] = ((byte *)g_510c54)[2];
+		g_51ecc4->bytes18[index] = (char)g_510c54->field_2_3;
 		if (b != NONE)
 		{
 			long owner = ((s_object_header *)objects->data)[b & 0xffff].object->owner;
@@ -742,28 +742,26 @@ void c_game_engine_derived::v45(long a, long b)
 // @retail 0x2bc4f0
 void c_game_engine_derived::v46(long a, long b)
 {
-	s_record_pool *objects = g_4e0300;
-	s_object_header *headers = (s_object_header *)objects->data;
-	s_object *object = headers[a & 0xffff].object;
-	long index = object->s17e;
-	long none = NONE;
+	s_object_header *headers = (s_object_header *)g_4e0300->data;
+	long index = headers[a & 0xffff].object->s17e;
 
 	if (index >= 0 && index < 3)
 	{
-		if (b != none)
+		if (b != NONE)
 		{
 			long owner = headers[b & 0xffff].object->owner;
-			if (owner != none)
+
+			if (owner != NONE)
 			{
 				s_event e;
-				long team = event_player_get(owner)->team;
+
 				game_engine_event_initialize_inline(&e, 4, 3);
 				e.cause_player_index = owner;
-				e.cause_team = team;
+				e.cause_team = event_player_get(owner)->team;
 				function_19eb90(&e);
 			}
 		}
-		g_51ecc4->bytes18[index] = (byte)none;
+		g_51ecc4->bytes18[index] = NONE;
 	}
 }
 
