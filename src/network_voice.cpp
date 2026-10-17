@@ -2098,7 +2098,6 @@ static __forceinline long function_53e31(c_class_58d20 *session)
 // @retail 0x53e30
 void function_53e30(void)
 {
-	long best = 0;
 	g_4c9878.unknown00 = NONE;
 	if (voice_available())
 	{
@@ -2112,12 +2111,13 @@ void function_53e30(void)
 			{
 				if (current == host)
 				{
+					long best = 0;
 					long selected = NONE;
 					long count = *(long *)(membership + 8);
 					for (long i = 0; i < count; i++)
 					{
 						byte *member = membership + 0xc + i * 0x10c;
-						if (i != current && *(long *)(member + 0x98) != 3 &&
+						if (current != i && *(long *)(member + 0x98) != 3 &&
 							*(long *)(member + 0x90) >= g_network_configuration.valuee4 &&
 							*(long *)(member + 0x94) >= g_network_configuration.valuee0 &&
 							*(dword *)(member + 0x9c) == (1U << count) - 1 && *(long *)(member + 0x94) > best)
