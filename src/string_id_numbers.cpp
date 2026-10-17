@@ -1,58 +1,12 @@
 // @flags /O2 /Gr
+/* STRING_ID_NUMBERS.CPP: the string ids of the numbers 0 to 100, which the
+   team name and default player name lookups pass to function_1a0180. Moved
+   here from unknown_19fc70.cpp. */
+
 #include "unknown_11c920.h"
-#include "globals.h"
-#include "engine_peer.h"
 
-struct s_player_view
-{
-	byte unknown00[0xc0];
-	char slot;
-};
-
-// the per-slot score table of the multiplayer globals (0x304)
-struct s_slot_view
-{
-	byte unknown00[4];
-	short value;
-	byte unknown06[0x1c - 6];
-};
-
-// @retail 0x19fc70
-long function_19fc70(dword player_index)
-{
-	c_engine_peer *engine = g_55e4d0[g_4e9ae8->engine_index];
-	byte *base = 0;
-	if (engine)
-	{
-		base = (byte *)g_4e9ae8 + 0x304;
-	}
-	long result = 0;
-
-	if (base)
-	{
-		byte *player = g_4e8c24->data + (player_index & 0xffff) * 0x21c;
-		bool flag = false;
-		if (engine)
-		{
-			flag = TEST_FIELD_BIT(g_4e6948->flags184.bit0);
-		}
-		if (flag)
-		{
-			char slot = ((s_player_view *)player)->slot;
-			if (slot != -1)
-			{
-				result = *(short *)(base + slot * 18 + 0x1c4);
-			}
-		}
-		else
-		{
-			result = ((s_slot_view *)base)[player_index & 0xffff].value;
-		}
-	}
-
-	return result;
-}
-
+/* the string id of a number from 0 to 100, or 0 out of range: ids 0x30a to
+   0x36e, with the number of digits (1, 2 or 3) in the top byte */
 // @retail 0x19fd00
 long function_19fd00(long index)
 {

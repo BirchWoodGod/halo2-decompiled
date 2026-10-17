@@ -1363,7 +1363,7 @@ void __stdcall function_be240(long object_index, dword color_mask, color3f const
 void function_15e050(long object_index, short value);
 bool function_15f330(s_player_appearance const *appearance, short team_index, color3f *colors);
 bool function_15b7c0(long delta, long player_index);
-long function_19fc70(dword player_index);
+long game_engine_get_player_score(dword player_index);
 void player_announce_points_to_win(long player_index, long score);
 
 /* The territory item uses its holder's four appearance colors. */
@@ -1528,10 +1528,10 @@ void territories_update_scores()
 			if ((short)state->w60[i] != NONE && state->l70[i] != NONE)
 			{
 				long holder = state->l70[i];
-				long old_score = function_19fc70(holder);
+				long old_score = game_engine_get_player_score(holder);
 
 				function_15b7c0(1, holder);
-				long score = function_19fc70(holder);
+				long score = game_engine_get_player_score(holder);
 				if (score != old_score)
 				{
 					player_announce_points_to_win(holder, score);
@@ -1884,7 +1884,7 @@ void function_2be670(s_polygon_2be *hill)
 bool function_15b2f0();
 bool function_15b7c0(long delta, long player_index);
 void function_1972a0(long player_index, long value14, long value10);
-long function_19fc70(dword player_index);
+long game_engine_get_player_score(dword player_index);
 void player_announce_points_to_win(long player_index, long score);
 
 // @retail 0x2beee0
@@ -1958,9 +1958,9 @@ void function_2beee0()
                         }
                         if (award)
                         {
-                            long score = function_19fc70(members.index);
+                            long score = game_engine_get_player_score(members.index);
                             function_15b7c0(1, members.index);
-                            long updated = function_19fc70(members.index);
+                            long updated = game_engine_get_player_score(members.index);
                             last = members.index;
                             if (score != updated)
                                 player_announce_points_to_win(members.index, updated);
@@ -1982,10 +1982,10 @@ void function_2beee0()
         {
             if (members.player->time_inside && members.player->time_inside % g_510c54->field_2_3 == 0)
             {
-                long score = function_19fc70(members.index);
+                long score = game_engine_get_player_score(members.index);
                 function_1972a0(members.index, 4, NONE);
                 function_15b7c0(1, members.index);
-                long updated = function_19fc70(members.index);
+                long updated = game_engine_get_player_score(members.index);
                 if (score != updated)
                     player_announce_points_to_win(members.index, updated);
             }

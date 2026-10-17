@@ -302,7 +302,7 @@ void __stdcall function_2153dd(long player, long profile_index, s_player_profile
 void __stdcall function_18fcc4(long controller, s_player_profile *profile, long profile_index);
 void function_147dbe(s_controller_event *event);
 bool __stdcall function_148f36(long controller);
-bool function_1a0660(long profile_index, s_player_profile *profile);
+bool player_profile_store(long profile_index, s_player_profile *profile);
 long function_abc70(long index, XUID const *xuid);
 
 /* unknown_2172a0.cpp */
@@ -700,14 +700,7 @@ long function_1904ff(long index)
 	return result;
 }
 
-/* the profile's keys (unknown_1a06a0.cpp) */
-struct s_key_set
-{
-	byte unknown00[0xec];
-	long keys[4];
-};
-
-void function_1a06f0(s_key_set *set, long *best_key, long *best_index);
+void player_profile_get_highest_key(s_player_profile *profile, long *best_key, long *best_index);
 
 /* the best key of the controller's profile */
 // @retail 0x19052c
@@ -719,7 +712,7 @@ void function_19052c(long index, long *best_key, long *best_index)
 	player_slot_get_profile(index, &profile, &profile_index);
 	if (profile_index != NONE)
 	{
-		function_1a06f0((s_key_set *)&profile, best_key, best_index);
+		player_profile_get_highest_key(&profile, best_key, best_index);
 	}
 	else
 	{
@@ -773,7 +766,7 @@ void function_1905bf(long controller, bool flag)
 }
 
 short player_slot_count_active(void);
-bool function_1a0540(long file_index, s_player_profile_settings *settings);
+bool player_profile_load(long file_index, s_player_profile_settings *settings);
 void function_120df0(long index, wchar_t const *name);
 c_class_1473c9 *__stdcall function_24b4a9(s_screen_parameters *parameters);
 
@@ -791,7 +784,7 @@ void function_19060a(long controller, long profile_index)
 	else
 		select = false;
 	slot = player_slot_profile_get(controller);
-	function_1a0540(profile_index, &settings);
+	player_profile_load(profile_index, &settings);
 	slot->initialize(controller);
 	slot->set_profile_index(profile_index);
 	function_120df0(controller, (wchar_t const *)settings.name);
@@ -1217,7 +1210,7 @@ void function_190e37(void)
 
 		if ((*(dword *)controller & 0x10) && (*(dword *)controller & 0x40))
 		{
-			function_1a0660(controller->profile_index, &controller->profile);
+			player_profile_store(controller->profile_index, &controller->profile);
 		}
 	}
 }

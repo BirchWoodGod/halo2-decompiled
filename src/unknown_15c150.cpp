@@ -42,7 +42,7 @@ void function_23f000();
 void function_159ac0();
 void __stdcall function_15ae70(s_netgame_entry_state *entries);
 void function_162de0();
-void function_19cd10();
+void teleporters_update();
 bool function_15eb20(long player_index);
 void function_15b270(long player_index);
 void __stdcall function_15bb20(long player_index);
@@ -83,7 +83,7 @@ void function_15c150()
 		function_159ac0();
 		function_15ae70((s_netgame_entry_state *)((byte *)g_4e9ae8 + 0x7dc));
 		function_162de0();
-		if (g_4e6948->mode != 4) function_19cd10();
+		if (g_4e6948->mode != 4) teleporters_update();
 		s_transition_player_iterator iterator;
 		iterator.data = g_4e8c24;
 		iterator.datum_index = NONE;
