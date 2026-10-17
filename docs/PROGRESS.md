@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-16: 8932 functions match
+
+```
+matched 8932 of 11321 game functions (1239714 of 2784283 bytes, 44.53%)
+```
+
+5 new matches, none lost:
+- @BirchWoodGod's #519: `0x14f60`, `0x15ec0`, `0x1d770`, `0x1dd60` and `0x1e5e0` match.
+
+## 2026-10-16: 8927 functions match
+
+```
+matched 8927 of 11321 game functions (1235990 of 2784283 bytes, 44.39%)
+```
+
+5 new matches, none lost:
+- @BirchWoodGod's #517: `0x91400`, `0x915d0`, `0x91690`, `0x916e0` and `0x91fc0` match.
+
 ## 2026-10-16: 8922 functions match
 
 ```

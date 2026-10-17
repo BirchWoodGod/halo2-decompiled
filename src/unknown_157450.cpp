@@ -2287,14 +2287,14 @@ void function_15fe70(long player_index)
 	}
 }
 
-void function_1389c0(void);
+void game_finish_countdown_start(void);
 
 // @retail 0x15ba00
 void function_15ba00(void)
 {
 	if (!g_4e6948->flag1128 && g_4e6948->mode != 4)
 	{
-		function_1389c0();
+		game_finish_countdown_start();
 	}
 }
 
@@ -2494,7 +2494,7 @@ void function_15b3a0(long player_or_team, bool value)
 		}
 		if (!g_4e6948->flag1128 && g_4e6948->mode != 4)
 		{
-			function_1389c0();
+			game_finish_countdown_start();
 		}
 	}
 	else

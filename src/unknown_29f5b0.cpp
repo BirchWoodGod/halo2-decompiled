@@ -7687,7 +7687,7 @@ void __stdcall function_2a8dc0(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44d570 = { _hs_type_void, 0, function_2a8dc0, NULL, 1, { _hs_type_object } };
 
-void function_138a40(short point_index);
+void game_focus_point_set(short point_index);
 
 /* 471: void (cutscene_camera_point) */
 // @retail 0x2a8e30
@@ -7697,7 +7697,7 @@ void __stdcall function_2a8e30(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_138a40(*(short *)&arguments[0]);
+		game_focus_point_set(*(short *)&arguments[0]);
 		function_209ae0(thread_index, 0);
 	}
 }
@@ -8331,13 +8331,13 @@ s_type_f4462a const g_44dbf4 = { _hs_type_void, 0, function_2a9960, NULL, 2, { _
 // @retail 0x2a99b0
 void __stdcall function_2a99b0(short function_index, long thread_index, bool initialize)
 {
-	function_1388e0();
+	game_finish();
 	function_209ae0(thread_index, 0);
 }
 
 s_type_f4462a const g_44dc2c = { _hs_type_void, 0, function_2a99b0, NULL, 0 };
 
-void function_138960(bool start);
+void game_revert_countdown_set(bool start);
 
 /* 567: void (boolean) */
 // @retail 0x2a99d0
@@ -8347,7 +8347,7 @@ void __stdcall function_2a99d0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_138960(*(bool *)&arguments[0]);
+		game_revert_countdown_set(*(bool *)&arguments[0]);
 		function_209ae0(thread_index, 0);
 	}
 }
