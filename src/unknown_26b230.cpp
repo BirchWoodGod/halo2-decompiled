@@ -34,6 +34,8 @@ void function_26a210(long clump_index);
 void function_26b290(long clump_index);
 __declspec(noinline) void function_268840();
 
+static __forceinline long real_to_long(real value);
+
 // @retail 0x268510
 void function_268510()
 {

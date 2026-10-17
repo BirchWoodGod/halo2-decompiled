@@ -158,11 +158,12 @@ struct s_world_player_input
 	byte unknown2a[0x21c - 0x2a];
 };
 
+// Retail calls both initializers out of line.
+#pragma inline_depth(0)
 // @retail 0x694c0
 void function_694c0(c_class_6a600 *world, long player_index)
 {
-	long const *player_reference = &player_index;
-	long index = (word)*player_reference;
+	long index = player_index & 0xffff;
 	s_world_player_input *player = &((s_world_player_input *)g_4e8c24->data)[index];
 	short local_index = player->local_index;
 	bool local = local_index != NONE;
@@ -170,7 +171,7 @@ void function_694c0(c_class_6a600 *world, long player_index)
 	switch (g_4e6948->mode)
 	{
 	case 1: kind = 0; break;
-	case 2: kind = local ? 0 : 3; break;
+	case 2:
 	case 3: kind = local ? 0 : 3; break;
 	case 4: kind = local ? 1 : 5; break;
 	case 5: kind = local ? 0 : 4; break;
@@ -181,6 +182,7 @@ void function_694c0(c_class_6a600 *world, long player_index)
 	simulation_controller_initialize((s_simulation_controller *)&world->players[index], world,
 		index, player_index, kind, &player->machine, &player->key);
 }
+#pragma inline_depth()
 
 // @retail 0x6a690
 long function_6a690(long index, c_class_6a600 *world, long value)

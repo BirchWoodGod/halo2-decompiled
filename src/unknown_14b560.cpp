@@ -842,7 +842,9 @@ bool __stdcall function_14df40(long *unit_index)
 		}
 		else
 		{
+#pragma inline_depth(0)
 			s_unit_vehicle_view *vehicle = (s_unit_vehicle_view *)function_badc0(function_baf40(unit_object->parent_index), 2);
+#pragma inline_depth()
 
 			if (vehicle &&
 				TEST_FIELD_BIT(((s_vehicle_definition_view *)g_4e3b44[vehicle->definition_index & 0xffff].bytes)->flags.bit6) &&

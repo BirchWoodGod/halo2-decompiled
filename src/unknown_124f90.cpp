@@ -2566,6 +2566,8 @@ struct s_driver_voice_index_view
 	byte unknown04[0x6c - 4];
 };
 
+static __forceinline short sound_voice_find_available_channel(char type);
+
 static inline short sound_voice_find_available_channel(char type)
 {
 	s_sound_system_channels_view *system = (s_sound_system_channels_view *)g_4e6380;
