@@ -18,6 +18,13 @@ struct s_balance_player
 	long index;
 
 	s_balance_player();
+	bool has_index(long player_index) const
+	{
+		bool result = false;
+		if (index == player_index)
+			result = true;
+		return result;
+	}
 };
 
 struct s_balance_party
@@ -35,6 +42,22 @@ struct s_balance_party
 		total = 0;
 		flagged = false;
 		id = NONE;
+	}
+	/* whether slot i holds a player; the loops that walk a party test it
+	   at the top of each pass */
+	bool slot_in_use(long i) const
+	{
+		bool result = false;
+		if (i < count)
+			result = true;
+		return result;
+	}
+	bool same_id(s_balance_party const *other) const
+	{
+		bool result = false;
+		if (id == other->id)
+			result = true;
+		return result;
 	}
 	void add_player(s_balance_player const *player);
 	void remove_player(s_balance_player const *player);
@@ -148,12 +171,8 @@ void s_balance_party::remove_player(s_balance_player const *player)
 {
 	long index = player->index;
 	long i = 0;
-	for (;;)
-	{
-		if (players[i].index == index)
-			break;
+	while (!players[i].has_index(index))
 		i++;
-	}
 	count--;
 	for (; i < count; i++)
 		players[i] = players[i + 1];
@@ -173,49 +192,31 @@ s_balance_team *__stdcall function_91620(s_balance_team *team)
 	return new (*team_slot) s_balance_team;
 }
 
-#pragma optimize("s", on)
 // @retail 0x91690
 void s_balance_team::add_party(s_balance_party const *party)
 {
-	s_balance_party const *local_0 = party;
-	parties[party_count] = *local_0;
+	parties[party_count] = *party;
 	party_count++;
-	long local_1 = 0;
-	s_balance_player const *local_2 = local_0->players;
-	for (;;)
-	{
-		if (local_1 >= *(long volatile *)&local_0->count)
-			break;
-		players.add_player(local_2);
-		local_1++;
-		local_2++;
-	}
-	if (local_0->flagged)
+	for (long i = 0; party->slot_in_use(i); i++)
+		players.add_player(&party->players[i]);
+	if (party->flagged)
 		flagged_count++;
 }
-#pragma optimize("", on)
 
-#pragma optimize("s", on)
 // @retail 0x916e0
 void s_balance_team::remove_party(s_balance_party const *party)
 {
-	long id = party->id;
 	long i = 0;
-	for (;;)
-	{
-		if (parties[i].id == id)
-			break;
+	while (!parties[i].same_id(party))
 		i++;
-	}
 	party_count--;
 	for (; i < party_count; i++)
 		parties[i] = parties[i + 1];
-	for (long j = 0; j < party->count; j++)
+	for (long j = 0; party->slot_in_use(j); j++)
 		players.remove_player(&party->players[j]);
 	if (party->flagged)
 		flagged_count--;
 }
-#pragma optimize("", on)
 
 // @retail 0x91760
 void s_balance_team::remove_largest_party(s_balance_party *party)
@@ -469,16 +470,8 @@ static __forceinline void function_91fc1(s_balance_team *arg_0, s_balance_party 
 {
     arg_0->parties[arg_0->party_count] = *arg_1;
     arg_0->party_count++;
-    long local_0 = 0;
-    s_balance_player const *local_2 = arg_1->players;
-    for (;;)
-    {
-        if (local_0 >= *(volatile long const *)&arg_1->count)
-            break;
-        function_91fc2(&arg_0->players, local_2);
-        ++local_0;
-        ++local_2;
-    }
+    for (long i = 0; arg_1->slot_in_use(i); i++)
+        function_91fc2(&arg_0->players, &arg_1->players[i]);
     if (arg_1->flagged)
         arg_0->flagged_count++;
 }
@@ -504,7 +497,7 @@ bool balance_teams(long team_count, long maximum_team_size, bool flag_parties, l
 	function_91620(&pool);
 	for (i = 0; i < MAXIMUM_PARTIES; i++)
 	{
-		if (*(volatile long *)&parties[i].count > 0)
+		if (parties[i].count > 0)
 		{
 			parties[i].id = i;
 			if (flag_parties && parties[i].count >= flag_minimum && parties[i].count <= flag_maximum)
