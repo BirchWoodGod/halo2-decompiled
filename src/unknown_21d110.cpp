@@ -527,17 +527,10 @@ bool __stdcall sound_effect_only_update(long object_index, long tag_index, s_sou
 {
 	long effect_index = sound_effect_marker(marker)->link.effect_index;
 	s_sound_effect *effect = (s_sound_effect *)datum_get_inlined(function_x39bdd5(), effect_index);
-	if (effect && !TEST_FIELD_BIT(effect->flag0))
-	{
-		volatile bool local_0 = true;
-		if (!TEST_FIELD_BIT(effect->flag4))
-		{
-			sound_effect_update_location(effect_index, location);
-			return local_0;
-		}
-		return true;
-	}
-	return false;
+	bool result = effect && !TEST_FIELD_BIT(effect->flag0);
+	if (result && !TEST_FIELD_BIT(effect->flag4))
+		sound_effect_update_location(effect_index, location);
+	return result;
 }
 
 // @retail 0x21d9f0
