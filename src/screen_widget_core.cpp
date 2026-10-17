@@ -1,7 +1,10 @@
 // @flags /O1 /arch:SSE /Gr
-/* UNKNOWN_2300CF.CPP: the screen widget's own methods and the screen with a
-   list (the vtables at 0x458840 and 0x4588c0); the widget and screen
-   constructors they build on (0x22e27b, 0x22f5ca) are in unknown_22e27b.cpp */
+/* SCREEN_WIDGET_CORE.CPP: the screen widget (c_class_1473c9, vtable
+   0x458840): its definition tag and panes, its window channel and index,
+   the focus it remembers, its fade, and the screen with a list
+   (c_screen_with_menu, vtable 0x4588c0). The widget and screen constructors
+   they build on (0x22e27b, 0x22f5ca) are in unknown_22e27b.cpp, building the
+   panes in unknown_22f6ca.cpp. */
 
 #include "unknown_11c920.h"
 #include "screen_widgets.h"
@@ -13,7 +16,7 @@ void function_1a0180(long tag_index, long string_handle, word *buffer);
 void function_22fba9(c_class_1473c9 *screen);
 void __stdcall function_22fc08(c_class_1473c9 *screen);
 
-/* the screen's definition tag */
+/* the screen's definition tag, or 0 when its screen id names none */
 // @retail 0x22f871
 s_screen_definition *function_22f871(c_class_1473c9 *screen)
 {
@@ -27,7 +30,7 @@ s_screen_definition *function_22f871(c_class_1473c9 *screen)
 	return definition;
 }
 
-/* the pane the screen shows */
+/* the pane the screen shows, or 0 when it shows none */
 // @retail 0x22f899
 s_screen_pane *c_class_1473c9::get_current_pane()
 {
@@ -45,6 +48,7 @@ s_screen_pane *c_class_1473c9::get_current_pane()
 	return active_pane_ptr;
 }
 
+/* the first pane of the screen's definition */
 // @retail 0x22f8c7
 s_screen_pane *c_class_1473c9::get_first_pane()
 {
@@ -65,6 +69,8 @@ struct s_screen_group_view
 	c_class_1473c9 *current;
 };
 
+/* slot 16: whether the screen shows and its animation has ended; in a
+   group, only while it is the current one */
 // @retail 0x22f6ab
 bool c_class_1473c9::v16()
 {
@@ -79,6 +85,7 @@ bool c_class_1473c9::v16()
 
 void function_23625d(long tag_index);
 
+/* slot 19: loads the bitmaps of the screen's definition */
 // @retail 0x22f672
 void c_class_1473c9::v19()
 {
@@ -97,12 +104,15 @@ void c_class_1473c9::v19()
 	}
 }
 
+/* slot 27: whether the screen ignores the windows over it (its
+   definition's flag 5, see screen_higher_channel_window_in_use) */
 // @retail 0x1473c9
 bool c_class_1473c9::v27()
 {
 	return value5f4;
 }
 
+/* the value at offset 2 of the definition's first pane */
 // @retail 0x2300cf
 short c_class_1473c9::get_first_pane_value()
 {
@@ -116,6 +126,7 @@ short c_class_1473c9::get_first_pane_value()
 	return result;
 }
 
+/* slot 20: the screen's window channel */
 // @retail 0x23012c
 long c_class_1473c9::v20()
 {
@@ -138,6 +149,8 @@ bool c_class_1473c9::set_screen_id(long id)
 	return result;
 }
 
+/* one value of one value block of a screen definition, 0 when either
+   index is out of range */
 // @retail 0x230195
 long function_230195(s_screen_definition *definition, long block_index, long index)
 {
@@ -158,6 +171,7 @@ long function_230195(s_screen_definition *definition, long block_index, long ind
 	return result;
 }
 
+/* one value of one value block of the screen's definition */
 // @retail 0x230172
 long c_class_1473c9::get_definition_value(long block_index, long index)
 {
@@ -171,6 +185,7 @@ long c_class_1473c9::get_definition_value(long block_index, long index)
 	return result;
 }
 
+/* slot 24: remembers the focused widget's id and the list's focused datum */
 // @retail 0x2301c3
 void c_class_1473c9::v24(s_screen_focus *focus)
 {
@@ -195,6 +210,8 @@ void c_class_1473c9::v24(s_screen_focus *focus)
 	focus->datum = datum;
 }
 
+/* slot 25: focuses the remembered datum of the list, or else the
+   remembered widget */
 // @retail 0x23021e
 void c_class_1473c9::v25(s_screen_focus *focus)
 {
@@ -217,6 +234,7 @@ void c_class_1473c9::v25(s_screen_focus *focus)
 	}
 }
 
+/* slot 10: a press of B or back (button 1 or 13) leaves the window's screen */
 // @retail 0x2300ea
 bool c_class_1473c9::v10(s_widget_event *event)
 {
@@ -233,6 +251,8 @@ bool c_class_1473c9::v10(s_widget_event *event)
 	return c_class_1a2c81::v10(event);
 }
 
+/* the string with this handle from the screen definition's string list
+   (an empty string for NONE) */
 // @retail 0x230134
 void c_widget::function_230134(long string_handle, word *buffer)
 {
@@ -250,7 +270,7 @@ bool window_manager_channel_window_in_use(long channel, long index);
 
 /* whether a window of a lower channel with the same index is in use */
 // @retail 0x230265
-bool function_230265(c_class_1473c9 *screen)
+bool screen_lower_channel_window_in_use(c_class_1473c9 *screen)
 {
 	long index = screen->v21();
 	long channel = screen->v20();
@@ -270,7 +290,7 @@ bool function_230265(c_class_1473c9 *screen)
 /* whether a window over the screen's (with the same index) is in use: the
    channels lie in the order 0, 1, 3, 2, 4, 5 */
 // @retail 0x23029a
-bool function_23029a(c_class_1473c9 *screen)
+bool screen_higher_channel_window_in_use(c_class_1473c9 *screen)
 {
 	long index = screen->v21();
 	long channel = screen->v20();
@@ -286,23 +306,15 @@ bool function_23029a(c_class_1473c9 *screen)
 				window_manager_channel_window_in_use(5, index);
 			break;
 		case 1:
-			if (window_manager_channel_window_in_use(3, index))
-			{
-				goto channel_busy;
-			}
+			result = window_manager_channel_window_in_use(3, index) || window_manager_channel_window_in_use(2, index) ||
+				window_manager_channel_window_in_use(4, index) || window_manager_channel_window_in_use(5, index);
+			break;
 		case 3:
-			if (window_manager_channel_window_in_use(2, index))
-			{
-				goto channel_busy;
-			}
+			result = window_manager_channel_window_in_use(2, index) || window_manager_channel_window_in_use(4, index) ||
+				window_manager_channel_window_in_use(5, index);
+			break;
 		case 2:
-			if (window_manager_channel_window_in_use(4, index) || window_manager_channel_window_in_use(5, index))
-			{
-channel_busy:
-				result = true;
-				break;
-			}
-			result = false;
+			result = window_manager_channel_window_in_use(4, index) || window_manager_channel_window_in_use(5, index);
 			break;
 		case 4:
 			result = window_manager_channel_window_in_use(5, index);
@@ -318,7 +330,7 @@ channel_busy:
 /* how far the screen has faded in (its animation's flag 0) or not yet faded
    out (flag 1) */
 // @retail 0x230374
-real function_230374(c_class_1473c9 *screen)
+real screen_get_fade(c_class_1473c9 *screen)
 {
 	real result;
 
@@ -364,23 +376,27 @@ real function_230374(c_class_1473c9 *screen)
 	return result;
 }
 
+/* the delegate's method: shows the pane at this offset from the screen's
+   first pane (value5f3), rebuilding its widgets */
 // @retail 0x230427
-void c_class_1473c9::function_230427(short *delta)
+void c_class_1473c9::select_pane(short *pane_offset)
 {
-	short value = value5f3 + *delta;
+	short pane_index = value5f3 + *pane_offset;
 	function_22fba9(this);
-	value5f0 = value;
+	value5f0 = pane_index;
 	function_22fc08(this);
 }
 
+/* the screen with a list */
 // @retail 0x230451
-c_screen_with_menu::c_screen_with_menu(long screen_id, long a, long b, word user_flags, void *list) :
-	c_class_1473c9(screen_id, a, b, user_flags),
+c_screen_with_menu::c_screen_with_menu(long screen_id, long channel, long window_slot, word user_flags, void *list) :
+	c_class_1473c9(screen_id, channel, window_slot, user_flags),
 	list(list)
 {
 }
 
-/* builds the screen from its definition, the list making its one pane */
+/* slot 18: builds the screen from its definition, the list making its one
+   pane */
 // @retail 0x23047e
 void c_screen_with_menu::v18(void *parameters)
 {

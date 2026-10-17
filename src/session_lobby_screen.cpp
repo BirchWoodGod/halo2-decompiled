@@ -129,7 +129,7 @@ void session_lobby_screen_update_pane(c_session_lobby_screen *screen)
 	if (mode != screen->mode)
 	{
 		long pane = mode;
-		screen->function_230427((short *)&pane);
+		screen->select_pane((short *)&pane);
 		screen->mode = mode;
 	}
 }

@@ -446,7 +446,7 @@ void c_class_1474e8::assign_items(long datum)
 				if (focused_datum != NONE)
 				{
 					/* 0x230427 reads the datum's low word */
-					screen->function_230427((short *)&focused_datum);
+					screen->select_pane((short *)&focused_datum);
 				}
 			}
 		}
