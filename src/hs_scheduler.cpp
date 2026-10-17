@@ -82,7 +82,7 @@ void hs_scheduler_update(void)
 				break;
 			long absolute_index = thread_index & 0xffff;
 			s_hs_thread *thread = (s_hs_thread *)(threads->data + absolute_index * sizeof(s_hs_thread));
-			if (thread->type != _hs_thread_type_static_script && thread->sleep_until >= 0 && thread->sleep_until <= current_time)
+			if (thread->type != _hs_thread_kind_static_script && thread->sleep_until >= 0 && thread->sleep_until <= current_time)
 			{
 				function_209850(thread_index);
 				threads = g_4f9384;
@@ -171,7 +171,7 @@ void hs_temporary_data_release(void)
 		for (long thread_index = hs_data_iterate_next(threads, NONE); thread_index != NONE; thread_index = hs_data_iterate_next(threads, thread_index))
 		{
 			s_hs_thread *thread = (s_hs_thread *)(threads->data + (thread_index & 0xffff) * sizeof(s_hs_thread));
-			if (thread->type == _hs_thread_type_runtime_evaluate)
+			if (thread->type == _hs_thread_kind_runtime_evaluate)
 				record_pool_release(threads, thread_index);
 		}
 	}

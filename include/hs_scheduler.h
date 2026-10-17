@@ -42,13 +42,13 @@ enum
 };
 
 /* what started a thread (s_hs_thread::type) */
-enum e_hs_thread_type
+enum e_hs_thread_kind
 {
-	_hs_thread_type_script = 0,				/* one per scenario script, at map start */
-	_hs_thread_type_global_initialize,		/* evaluates the globals' initial values */
-	_hs_thread_type_runtime_evaluate,		/* an expression run from outside; may sleep */
-	_hs_thread_type_expression_evaluate,	/* an expression run to completion at once */
-	_hs_thread_type_static_script			/* a static script called on demand */
+	_hs_thread_kind_script = 0,				/* one per scenario script, at map start */
+	_hs_thread_kind_global_initialize,		/* evaluates the globals' initial values */
+	_hs_thread_kind_runtime_evaluate,		/* an expression run from outside; may sleep */
+	_hs_thread_kind_expression_evaluate,	/* an expression run to completion at once */
+	_hs_thread_kind_static_script			/* a static script called on demand */
 };
 
 /* s_hs_thread::flags */
@@ -86,7 +86,7 @@ typedef char assert_hs_frame_size[(sizeof(s_hs_frame) == 0x10) ? 1 : -1];
 struct s_hs_thread
 {
 	short salt;
-	byte type;					/* e_hs_thread_type */
+	byte type;					/* e_hs_thread_kind */
 	byte flags;					/* e_hs_thread_flags */
 	long script_index;			/* NONE for an expression thread */
 	long sleep_until;
@@ -94,7 +94,7 @@ struct s_hs_thread
 	s_hs_frame *frame;			/* the top of the stack */
 	long result;
 	s_hs_frame stack;			/* the bottom frame; the rest grow above it */
-	byte stack_data[0x418 - 0x28];
+	byte stack_bytes[0x418 - 0x28];
 };
 typedef char assert_hs_thread_size[(sizeof(s_hs_thread) == 0x418) ? 1 : -1];
 typedef char assert_hs_thread_frame[(offsetof(s_hs_thread, frame) == 0x10) ? 1 : -1];
