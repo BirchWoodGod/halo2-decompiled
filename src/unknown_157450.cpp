@@ -5462,9 +5462,9 @@ void function_1ec4b0(void);
 void function_1fb2f0(void);
 void function_1fb330(void);
 void function_1fb350(void);
-void function_20a700(void);
-void function_20a750(void);
-void function_20a7d0(void);
+void hs_init(void);
+void hs_map_begin(void);
+void hs_map_end(void);
 void script_nodes_dispose(void);
 void function_20aee0(void);
 void function_20af50(void);
@@ -5548,7 +5548,7 @@ s_subsystem_440dd8 const g_440dd8[68] =
     { function_13e5c7, function_3361a4, interface_initialize_for_new_map, interface_dispose_from_old_map, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_13bf00, function_175f40, function_13bf60, function_13bfc0, NULL, NULL, NULL, NULL, NULL },
-    { function_20a700, script_nodes_dispose, function_20a750, function_20a7d0, NULL, NULL, NULL, NULL, NULL },
+    { hs_init, script_nodes_dispose, hs_map_begin, hs_map_end, NULL, NULL, NULL, NULL, NULL },
     { function_1fb2f0, function_175f40, function_1fb330, function_1fb350, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_d4de0, function_175f40, function_d4e20, function_175f40, function_d4e30, function_175f40, (t_subsystem_440dd8_callback_18)function_d4e60, NULL, NULL },

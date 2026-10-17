@@ -276,7 +276,7 @@ struct s_51ecb4_datum
 
 extern s_record_pool *g_51ecb4;
 
-/* the script threads (0x418 bytes each, g_4f9384 of unknown_209ae0.cpp) */
+/* the script threads (0x418 bytes each, g_4f9384 of hs_evaluation.cpp) */
 struct s_hs_thread_view
 {
 	byte unknown000[8];
@@ -300,7 +300,7 @@ inline void hs_thread_set_sleep(long thread_index, long sleep_until)
 /* returns a real from a script function; retail function not identified */
 inline void hs_return_real(long thread_index, real value)
 {
-	function_209ae0(thread_index, *(long *)&value);
+	hs_thread_return_value(thread_index, *(long *)&value);
 }
 
 inline long game_seconds_to_ticks_round(real seconds)
@@ -1249,7 +1249,7 @@ void __stdcall function_2a0c40(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = !*(bool *)&arguments[0];
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -1270,7 +1270,7 @@ void __stdcall function_2a0c90(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		real result = real_pin(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, *(long *)&result);
+		hs_thread_return_value(thread_index, *(long *)&result);
 	}
 }
 
@@ -1280,7 +1280,7 @@ s_type_f4462a const g_44b23c = { _hs_type_real, 0, function_2a0c90, NULL, 3, { _
 // @retail 0x2a0d10
 void __stdcall function_2a0d10(short function_index, long thread_index, bool initialize)
 {
-	function_209ae0(thread_index, function_29f480());
+	hs_thread_return_value(thread_index, function_29f480());
 }
 
 s_type_f4462a const g_44b268 = { _hs_type_object_list, 0, function_2a0d10, NULL, 0 };
@@ -1296,7 +1296,7 @@ void __stdcall function_2a0d30(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_1ec4c0(*(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1334,7 +1334,7 @@ void __stdcall function_2a0d70(short function_index, long thread_index, bool ini
 				g_51e9c8->bits[trigger_volume->kill_volume_index >> 5] |= 1 << (trigger_volume->kill_volume_index & 31);
 
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1349,7 +1349,7 @@ void __stdcall function_2a0df0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_29f5b0(*(short *)&arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1375,7 +1375,7 @@ void __stdcall function_2a0e40(short function_index, long thread_index, bool ini
 				inside = true;
 		}
 		*(bool *)&result = inside;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -1393,7 +1393,7 @@ void __stdcall function_2a0ec0(short function_index, long thread_index, bool ini
 		long list_index = arguments[1];
 		long trigger_volume_index = *(short *)&arguments[0];
 		*(bool *)&result = function_29f6c0(list_index, trigger_volume_index, false);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -1411,7 +1411,7 @@ void __stdcall function_2a0f20(short function_index, long thread_index, bool ini
 		long list_index = arguments[1];
 		long trigger_volume_index = *(short *)&arguments[0];
 		*(bool *)&result = function_29f6c0(list_index, trigger_volume_index, true);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -1427,7 +1427,7 @@ void __stdcall function_2a0f80(short function_index, long thread_index, bool ini
 	{
 		long trigger_volume_index = *(short *)&arguments[0];
 		long list_index = function_11c5f0(trigger_volume_index, NONE);
-		function_209ae0(thread_index, list_index);
+		hs_thread_return_value(thread_index, list_index);
 	}
 }
 
@@ -1441,7 +1441,7 @@ void __stdcall function_2a0fc0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, function_11c5f0(*(short *)&arguments[0], arguments[1]));
+		hs_thread_return_value(thread_index, function_11c5f0(*(short *)&arguments[0], arguments[1]));
 	}
 }
 
@@ -1454,7 +1454,7 @@ void __stdcall function_2a1010(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, object_list_get_element(arguments[0], *(short *)&arguments[1]));
+		hs_thread_return_value(thread_index, object_list_get_element(arguments[0], *(short *)&arguments[1]));
 }
 
 s_type_f4462a const g_44b318 = { _hs_type_object, 0, function_2a1010, NULL, 2, { _hs_type_object_list, _hs_type_short_integer } };
@@ -1473,7 +1473,7 @@ void __stdcall function_2a1060(short function_index, long thread_index, bool ini
 		if (list_index != NONE)
 			count = ((s_object_list_datum *)g_4f55d8->data)[list_index & 0xffff].count;
 		*(short *)&result = count;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -1504,7 +1504,7 @@ void __stdcall function_2a10d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_1defb0(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -1519,7 +1519,7 @@ void __stdcall function_2a1120(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a05f0(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1534,7 +1534,7 @@ void __stdcall function_2a1170(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0650(arguments[0], arguments[1], arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1549,7 +1549,7 @@ void __stdcall function_2a11c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		damage_at_cutscene_flag(*(short *)&arguments[1], arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1564,7 +1564,7 @@ void __stdcall function_2a1210(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a07c0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1579,7 +1579,7 @@ void __stdcall function_2a1260(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0730(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1594,7 +1594,7 @@ void __stdcall function_2a12f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		object_name_function_bb670(*(short *)&arguments[0], false);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1609,7 +1609,7 @@ void __stdcall function_2a1340(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		object_name_function_bb670(*(short *)&arguments[0], true);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1624,7 +1624,7 @@ void __stdcall function_2a1390(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_29fd80(*(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1639,7 +1639,7 @@ void __stdcall function_2a13e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_29ff60((char const *)arguments[0], function_29fd40);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1653,7 +1653,7 @@ void __stdcall function_2a1430(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_29ff60((char const *)arguments[0], function_29fd60);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1667,7 +1667,7 @@ void __stdcall function_2a1480(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_29ff60((char const *)arguments[0], function_29fd80);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1683,7 +1683,7 @@ void __stdcall function_2a14d0(short function_index, long thread_index, bool ini
 		long object_index = arguments[0];
 		if (object_index != NONE && !function_beb30(object_index))
 			function_b8540(object_index);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1698,7 +1698,7 @@ void __stdcall function_2a1520(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_29ff60((char const *)arguments[0], function_29fdd0);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1708,7 +1708,7 @@ s_type_f4462a const g_44b45c = { _hs_type_void, 0, function_2a1520, NULL, 1, { _
 void __stdcall function_2a1570(short function_index, long thread_index, bool initialize)
 {
 	function_29fe10(NONE);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44b470 = { _hs_type_void, 0, function_2a1570, NULL, 0 };
@@ -1729,7 +1729,7 @@ void __stdcall function_2a1590(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_29fe10(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1744,7 +1744,7 @@ void __stdcall function_2a15d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0580(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1763,7 +1763,7 @@ void __stdcall function_2a1610(short function_index, long thread_index, bool ini
 		long object_index = arguments[0];
 		if (object_index != NONE)
 			function_b9c60(object_index, *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1778,7 +1778,7 @@ void __stdcall function_2a1660(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		object_function_b9d70(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1793,7 +1793,7 @@ void __stdcall function_2a16b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		object_globals_set_value_70(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1810,7 +1810,7 @@ void __stdcall function_2a1720(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10ab80(arguments[0], arguments[1], *(real *)&arguments[2], *(real *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1832,7 +1832,7 @@ void __stdcall function_2a1770(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10aca0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1847,7 +1847,7 @@ void __stdcall function_2a17c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10ace0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1863,7 +1863,7 @@ void __stdcall function_2a1800(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10ad40(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1884,7 +1884,7 @@ void __stdcall function_2a1850(short function_index, long thread_index, bool ini
 			word *flags = &object->flags_c0;
 			SET_FLAG(*flags, 10, *(bool *)&arguments[1]);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1903,7 +1903,7 @@ void __stdcall function_2a18d0(short function_index, long thread_index, bool ini
 		long object_index = arguments[0];
 		if (object_index != NONE)
 			function_b9b90(object_index, false);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1924,7 +1924,7 @@ void __stdcall function_2a1920(short function_index, long thread_index, bool ini
 			byte *flags = &object->flags19;
 			SET_FLAG(*flags, 1, *(bool *)&arguments[1]);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1945,7 +1945,7 @@ void __stdcall function_2a19a0(short function_index, long thread_index, bool ini
 			byte *flags = &object->flags19;
 			SET_FLAG(*flags, 0, *(bool *)&arguments[1]);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -1974,7 +1974,7 @@ void __stdcall function_2a1a20(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		real result = object_get_body_vitality(arguments[0]);
-		function_209ae0(thread_index, *(long *)&result);
+		hs_thread_return_value(thread_index, *(long *)&result);
 	}
 }
 
@@ -2004,7 +2004,7 @@ void __stdcall function_2a1a90(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		real result = object_get_shield_vitality(arguments[0]);
-		function_209ae0(thread_index, *(long *)&result);
+		hs_thread_return_value(thread_index, *(long *)&result);
 	}
 }
 
@@ -2020,7 +2020,7 @@ void __stdcall function_2a1b00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10ad90(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2041,7 +2041,7 @@ void __stdcall function_2a1b50(short function_index, long thread_index, bool ini
 			word *flags = &object->flags_c0;
 			SET_FLAG(*flags, 7, !*(bool *)&arguments[1]);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2059,7 +2059,7 @@ void __stdcall function_2a1bd0(short function_index, long thread_index, bool ini
 		long parent_index = NONE;
 		if (object_index != NONE)
 			parent_index = object_get(object_index)->parent_index;
-		function_209ae0(thread_index, parent_index);
+		hs_thread_return_value(thread_index, parent_index);
 	}
 }
 
@@ -2077,7 +2077,7 @@ void __stdcall function_2a1c30(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10af20(arguments[0], arguments[1], arguments[2], arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2091,7 +2091,7 @@ void __stdcall function_2a1c80(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, function_10ae60(arguments[0], arguments[1]));
+		hs_thread_return_value(thread_index, function_10ae60(arguments[0], arguments[1]));
 	}
 }
 
@@ -2113,7 +2113,7 @@ void __stdcall function_2a1cc0(short function_index, long thread_index, bool ini
 		long object_index = arguments[1];
 		if (parent_index != NONE && object_index != NONE && ((s_object_header_2a1cc0 *)g_4e0300->data)[object_index & 0xffff].object->parent_object_index == parent_index)
 			function_b9a90(object_index);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2128,7 +2128,7 @@ void __stdcall function_2a1d30(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10af80(arguments[0], *(real *)&arguments[1], *(short *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2145,7 +2145,7 @@ void __stdcall function_2a1d80(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10b010(arguments[0], *(real *)&arguments[1], 0.0f, 0.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2160,7 +2160,7 @@ void __stdcall function_2a1dd0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10b010(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2181,7 +2181,7 @@ void __stdcall function_2a1e20(short function_index, long thread_index, bool ini
 			dword *flags = &object->flags;
 			SET_FLAG(*flags, 17, true);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2201,7 +2201,7 @@ void __stdcall function_2a1e80(short function_index, long thread_index, bool ini
 		short count = function_d88f0(object_index, marker_name);
 		bool found = count > 0;
 		*(byte *)&result = found;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -2217,7 +2217,7 @@ void __stdcall function_2a1ee0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_d88f0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -2234,7 +2234,7 @@ void __stdcall function_2a1f40(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_d8a40(arguments[0], arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2255,7 +2255,7 @@ void __stdcall function_2a1f90(short function_index, long thread_index, bool ini
 			word *flags = &object->flags_10a;
 			SET_FLAG(*flags, 14, *(bool *)&arguments[1]);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2273,7 +2273,7 @@ void __stdcall function_2a2010(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_dc310(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -2286,7 +2286,7 @@ void __stdcall function_2a2060(short function_index, long thread_index, bool ini
 	s_object_globals_view *globals = (s_object_globals_view *)g_4de2f4;
 	globals->field_1 = true;
 	globals->field_2 = false;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44b714 = { _hs_type_void, 0, function_2a2060, NULL, 0 };
@@ -2298,7 +2298,7 @@ void __stdcall function_2a2080(short function_index, long thread_index, bool ini
 	s_object_globals_view *globals = (s_object_globals_view *)g_4de2f4;
 	globals->field_1 = true;
 	globals->field_2 = true;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44b724 = { _hs_type_void, 0, function_2a2080, NULL, 0 };
@@ -2317,7 +2317,7 @@ inline void object_globals_set_point_1c(real x, real y, real z)
 void __stdcall function_2a20a0(short function_index, long thread_index, bool initialize)
 {
 	function_159ac0();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44b734 = { _hs_type_void, 0, function_2a20a0, NULL, 0 };
@@ -2333,7 +2333,7 @@ void __stdcall function_2a20c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_d87e0(arguments[0], false);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2348,7 +2348,7 @@ void __stdcall function_2a2100(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_d87e0(arguments[0], true);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2363,7 +2363,7 @@ void __stdcall function_2a2140(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_bbf40(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2380,7 +2380,7 @@ void __stdcall function_2a2190(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_bc100(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2395,7 +2395,7 @@ void __stdcall function_2a21e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_bc150(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2410,7 +2410,7 @@ void __stdcall function_2a2230(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_bbf80(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2425,7 +2425,7 @@ void __stdcall function_2a2280(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_bbfc0(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3], *(real *)&arguments[4]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2440,7 +2440,7 @@ void __stdcall function_2a22d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_bc070(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3], *(real *)&arguments[4]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2455,7 +2455,7 @@ void __stdcall function_2a2320(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		object_globals_set_point_1c(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2481,7 +2481,7 @@ void __stdcall function_2a2380(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a03d0(arguments[0], false);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2497,7 +2497,7 @@ void __stdcall function_2a23c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a03d0(arguments[0], true);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2517,7 +2517,7 @@ void __stdcall function_2a2400(short function_index, long thread_index, bool ini
 		long definition_index = arguments[0];
 		if (definition_index != NONE)
 			function_16e5e0((s_predicted_resource_block const *)(g_4e3b44[definition_index & 0xffff].bytes + 0xb4), 2);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2534,7 +2534,7 @@ void __stdcall function_2a2470(short function_index, long thread_index, bool ini
 		long definition_index = arguments[0];
 		if (definition_index != NONE)
 			function_16e5e0((s_predicted_resource_block const *)(g_4e3b44[definition_index & 0xffff].bytes + 0xb4), 1);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2549,7 +2549,7 @@ void __stdcall function_2a24e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_29ffb0(arguments[0], *(short *)&arguments[1], true, true);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2564,7 +2564,7 @@ void __stdcall function_2a2530(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_29ffb0(arguments[0], *(short *)&arguments[1], false, true);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2579,7 +2579,7 @@ void __stdcall function_2a2580(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		object_set_shield_fraction(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2594,7 +2594,7 @@ void __stdcall function_2a2610(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0310(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2611,7 +2611,7 @@ void __stdcall function_2a2660(short function_index, long thread_index, bool ini
 		long object_index = arguments[0];
 		if (object_index != NONE)
 			object_get(object_index)->value_104 = 0x7fff;
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2635,7 +2635,7 @@ void __stdcall function_2a26c0(short function_index, long thread_index, bool ini
 		long object_index = arguments[0];
 		if (object_index != NONE)
 			function_ba410(object_index, arguments[1], arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2650,7 +2650,7 @@ void __stdcall function_2a2710(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0380(arguments[0], arguments[1], *(short *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2666,7 +2666,7 @@ void __stdcall function_2a2760(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_29f850(arguments[0], arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -2682,7 +2682,7 @@ void __stdcall function_2a27c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_29f970(arguments[0], *(short *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -2721,7 +2721,7 @@ void __stdcall function_2a28c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0470(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2738,7 +2738,7 @@ void __stdcall function_2a2910(short function_index, long thread_index, bool ini
 		long definition_index = arguments[0];
 		if (definition_index != NONE)
 			function_16e5e0((s_predicted_resource_block const *)(g_4e3b44[definition_index & 0xffff].bytes + 0x2c), 0);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2807,7 +2807,7 @@ void __stdcall function_2a2970(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a04f0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2817,7 +2817,7 @@ s_type_f4462a const g_44b9ac = { _hs_type_void, 0, function_2a2970, NULL, 1, { _
 // @retail 0x2a29b0
 void __stdcall function_2a29b0(short function_index, long thread_index, bool initialize)
 {
-	function_209ae0(thread_index, function_15e730());
+	hs_thread_return_value(thread_index, function_15e730());
 }
 
 s_type_f4462a const g_44b9f4 = { _hs_type_object_list, 0, function_2a29b0, NULL, 0 };
@@ -2832,7 +2832,7 @@ void __stdcall function_2a29d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_xd39e7a(&g_4e7408->unknown0, *(short *)&arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -2855,7 +2855,7 @@ void __stdcall function_2a2a50(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		real result = real_random_range(*(real *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, *(long *)&result);
+		hs_thread_return_value(thread_index, *(long *)&result);
 	}
 }
 
@@ -2871,7 +2871,7 @@ void __stdcall function_2a2ad0(short function_index, long thread_index, bool ini
 	globals->unknown8 = 0.0011f;
 	globals->unknown18 = 0;
 	globals->vector = *g_4687a4;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44ba2c = { _hs_type_void, 0, function_2a2ad0, NULL, 0 };
@@ -2885,7 +2885,7 @@ void __stdcall function_2a2b30(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_51e9c4->unknown0 = *(real *)&arguments[0] * 4.1712594f;
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2909,7 +2909,7 @@ void __stdcall function_2a2b80(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a2b80_set_vector(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2935,7 +2935,7 @@ void __stdcall function_2a2be0(short function_index, long thread_index, bool ini
 			fistp ticks
 		}
 		g_51e9c4->unknown18 = ticks + game_time_now;
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2950,7 +2950,7 @@ void __stdcall function_2a2c70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*g_4ed280 = *(byte *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -2961,7 +2961,7 @@ s_type_f4462a const g_44bae0 = { _hs_type_void, 0, function_2a2c70, NULL, 1, { _
 void __stdcall function_2a2cb0(short function_index, long thread_index, bool initialize)
 {
 	memset(g_4ed280, 0xff, 0x4201);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44baf4 = { _hs_type_void, 0, function_2a2cb0, NULL, 0 };
@@ -2978,7 +2978,7 @@ void __stdcall function_2a2ce0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_1fb360(arguments[0], (word)arguments[1], 0);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -2994,7 +2994,7 @@ void __stdcall function_2a2d40(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_1fb360(arguments[0], (word)arguments[1], 8);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3010,7 +3010,7 @@ void __stdcall function_2a2da0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_1fb360(arguments[0], (word)arguments[1], 0x10);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3028,7 +3028,7 @@ void __stdcall function_2a2e00(short function_index, long thread_index, bool ini
 		s_recorded_animation *animation = recorded_animation_find(NULL, object_index);
 		if (animation)
 			animation->flags |= 3;
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3044,7 +3044,7 @@ void __stdcall function_2a2e50(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = (short)recorded_animation_get_frames(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3062,7 +3062,7 @@ void __stdcall function_2a2ea0(short function_index, long thread_index, bool ini
 		bool value = *(bool *)&arguments[0];
 		g_5107e8->flag8 = value;
 		*(bool *)&result = value;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3079,7 +3079,7 @@ void __stdcall function_2a2f00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_25600(arguments[0], arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3092,7 +3092,7 @@ void __stdcall function_2a2f50(short function_index, long thread_index, bool ini
 	memset(g_4b9970, 0, sizeof(g_4b9970));
 	g_4b9970[0] = NONE;
 	g_5093fc = false;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44bb94 = { _hs_type_void, 0, function_2a2f50, NULL, 0 };
@@ -3108,7 +3108,7 @@ void __stdcall function_2a2f80(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_30e30(arguments[1], arguments[2], *(bool *)&arguments[0], *(real *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3127,7 +3127,7 @@ void __stdcall function_2a2fd0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		scenery_animation_begin(arguments[0], arguments[2], 0, NONE, true, false, arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3142,7 +3142,7 @@ void __stdcall function_2a3020(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		scenery_animation_begin(arguments[0], arguments[2], 0, NONE, true, true, arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3157,7 +3157,7 @@ void __stdcall function_2a3070(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		scenery_animation_begin(arguments[0], arguments[2], 0, arguments[3], true, false, arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3172,7 +3172,7 @@ void __stdcall function_2a30c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		scenery_animation_begin(arguments[0], arguments[2], 0, arguments[3], true, true, arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3187,7 +3187,7 @@ void __stdcall function_2a3110(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		scenery_animation_begin(arguments[0], arguments[2], *(short *)&arguments[3], NONE, true, false, arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3204,7 +3204,7 @@ void __stdcall function_2a3170(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_10a3f0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3220,7 +3220,7 @@ void __stdcall function_2a31b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = (short)function_10a460(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3241,7 +3241,7 @@ void __stdcall function_2a3200(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a7f0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3256,7 +3256,7 @@ void __stdcall function_2a3250(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a830(arguments[0], *(bool *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3271,7 +3271,7 @@ void __stdcall function_2a32a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a8c0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3286,7 +3286,7 @@ void __stdcall function_2a32e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a910(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3308,7 +3308,7 @@ void __stdcall function_2a3320(short function_index, long thread_index, bool ini
 			SET_FLAG(*flags, 5, true);
 			function_b7360(unit_index);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3330,7 +3330,7 @@ void __stdcall function_2a3390(short function_index, long thread_index, bool ini
 			SET_FLAG(*flags, 6, true);
 			function_b7360(unit_index);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3346,7 +3346,7 @@ void __stdcall function_2a3400(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_11a960(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3370,7 +3370,7 @@ void __stdcall function_2a3450(short function_index, long thread_index, bool ini
 		}
 		ticks = (ticks - 2 > 0) ? ticks - 2 : 0;
 		*(short *)&result = (short)ticks;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3387,7 +3387,7 @@ void __stdcall function_2a34d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11b710(arguments[0], 0x7000101);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3409,7 +3409,7 @@ void __stdcall function_2a3520(short function_index, long thread_index, bool ini
 		bool interpolate = *(bool *)&arguments[3];
 		long unit_index = arguments[0];
 		*(bool *)&result = function_11b520(unit_index, graph, name, interpolate, NONE, false);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3429,7 +3429,7 @@ void __stdcall function_2a3590(short function_index, long thread_index, bool ini
 		bool interpolate = *(bool *)&arguments[3];
 		long unit_index = arguments[0];
 		*(bool *)&result = function_11b520(unit_index, graph, name, interpolate, NONE, true);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3450,7 +3450,7 @@ void __stdcall function_2a3600(short function_index, long thread_index, bool ini
 		long graph_index = arguments[1];
 		long unit = arguments[0];
 		*(bool *)&result = function_11b520(unit, graph_index, animation_name, interpolate, object_index, false);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3471,7 +3471,7 @@ void __stdcall function_2a3670(short function_index, long thread_index, bool ini
 		long graph_index = arguments[1];
 		long unit = arguments[0];
 		*(bool *)&result = function_11b520(unit, graph_index, animation_name, interpolate, object_index, true);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3489,7 +3489,7 @@ void __stdcall function_2a36e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_11a9a0(arguments[0], arguments[1], arguments[2], *(bool *)&arguments[3]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3507,7 +3507,7 @@ void __stdcall function_2a3740(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_11b4a0(arguments[0], arguments[1], arguments[2], *(bool *)&arguments[3], *(short *)&arguments[4]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3523,7 +3523,7 @@ void __stdcall function_2a37a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_11b930(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3538,7 +3538,7 @@ void __stdcall function_2a37f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_object_globals_view *)g_4de2f4)->flag80 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3553,7 +3553,7 @@ void __stdcall function_2a3840(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_object_globals_view *)g_4de2f4)->flag81 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3574,7 +3574,7 @@ void __stdcall function_2a3890(short function_index, long thread_index, bool ini
 			dword *flags = &unit->unit_flags;
 			SET_FLAG(*flags, 1, *(bool *)&arguments[1]);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3600,7 +3600,7 @@ void __stdcall function_2a3910(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = unit_get_value_138(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3624,7 +3624,7 @@ void __stdcall function_2a3970(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11b3e0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3639,7 +3639,7 @@ void __stdcall function_2a39c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11b420(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3655,7 +3655,7 @@ void __stdcall function_2a3a10(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = unit_test_flag12(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3679,7 +3679,7 @@ void __stdcall function_2a3a80(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11b460(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3696,7 +3696,7 @@ void __stdcall function_2a3ad0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11ade0(arguments[0], arguments[1], arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3711,7 +3711,7 @@ void __stdcall function_2a3b20(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11af10(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3727,7 +3727,7 @@ void __stdcall function_2a3b70(short function_index, long thread_index, bool ini
 	{
 		if (arguments[0] != NONE)
 			function_10e9f0(arguments[0], *(short *)&arguments[1], 1.0f, 1.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3742,7 +3742,7 @@ void __stdcall function_2a3bd0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		unit_function_10e9a0(arguments[0], arguments[1], 1.0f, 1.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3757,7 +3757,7 @@ void __stdcall function_2a3c30(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		unit_function_10e9a0(arguments[0], arguments[1], *(real *)&arguments[2], (real)*(short *)&arguments[3] * (1.0f / 30.0f));
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3772,7 +3772,7 @@ void __stdcall function_2a3ca0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_1130a0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3788,7 +3788,7 @@ void __stdcall function_2a3ce0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = unit_has_index_1fc(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3804,7 +3804,7 @@ void __stdcall function_2a3d50(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_11ac30(arguments[0], arguments[1], arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3820,7 +3820,7 @@ void __stdcall function_2a3db0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_11ab60(arguments[0], arguments[1], arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3837,7 +3837,7 @@ void __stdcall function_2a3e10(short function_index, long thread_index, bool ini
 		s_unit *unit = (s_unit *)function_badc0(arguments[0], 3);
 		if (unit)
 			SET_FLAG(unit->unit_flags, 17, *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3860,7 +3860,7 @@ void __stdcall function_2a3e90(short function_index, long thread_index, bool ini
 			if (unit->parent_index != NONE && ((s_unit *)unit)->index_1fc != NONE)
 				function_e68c0(0x1d, unit_index);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3875,7 +3875,7 @@ void __stdcall function_2a3f10(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11af90(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3896,7 +3896,7 @@ void __stdcall function_2a3f60(short function_index, long thread_index, bool ini
 		long unit_index = arguments[0];
 		if (unit_index != NONE && !TEST_FIELD_BIT(object_get(unit_index)->flag_10a_2))
 			function_d5c90(unit_index, &body_vitality, &shield_vitality);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3911,7 +3911,7 @@ void __stdcall function_2a3ff0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a220(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3929,7 +3929,7 @@ void __stdcall function_2a4040(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a320(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3944,7 +3944,7 @@ void __stdcall function_2a4090(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a430(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -3960,7 +3960,7 @@ void __stdcall function_2a40e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_11b0c0(arguments[0], arguments[1], arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3976,7 +3976,7 @@ void __stdcall function_2a4140(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_11b2b0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -3996,7 +3996,7 @@ void __stdcall function_2a41a0(short function_index, long thread_index, bool ini
 			s_unit *unit = (s_unit *)object_get(unit_index);
 			*(long *)((byte *)unit + unit->offset_33e + 0x2c) = arguments[1];
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4017,7 +4017,7 @@ inline long unit_get_index_248(long unit_index)
 void __stdcall function_2a4210(short function_index, long thread_index, bool initialize)
 {
 	function_11b350();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44c2e8 = { _hs_type_void, 0, function_2a4210, NULL, 0 };
@@ -4031,7 +4031,7 @@ void __stdcall function_2a4230(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, function_11b040(arguments[0]));
+		hs_thread_return_value(thread_index, function_11b040(arguments[0]));
 }
 
 s_type_f4462a const g_44c2f8 = { _hs_type_object_list, 0, function_2a4230, NULL, 1, { _hs_type_unit } };
@@ -4043,7 +4043,7 @@ void __stdcall function_2a4270(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, unit_get_index_248(arguments[0]));
+		hs_thread_return_value(thread_index, unit_get_index_248(arguments[0]));
 }
 
 s_type_f4462a const g_44c30c = { _hs_type_unit, 0, function_2a4270, NULL, 1, { _hs_type_unit } };
@@ -4065,7 +4065,7 @@ void __stdcall function_2a42c0(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, unit_get_index_24c(arguments[0]));
+		hs_thread_return_value(thread_index, unit_get_index_24c(arguments[0]));
 }
 
 s_type_f4462a const g_44c320 = { _hs_type_unit, 0, function_2a42c0, NULL, 1, { _hs_type_unit } };
@@ -4090,7 +4090,7 @@ void __stdcall function_2a4310(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = unit_get_count_23e(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -4106,7 +4106,7 @@ void __stdcall function_2a43e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_11a4d0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -4121,7 +4121,7 @@ void __stdcall function_2a4440(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11ab10(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4136,7 +4136,7 @@ void __stdcall function_2a4490(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11aac0(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4151,7 +4151,7 @@ void __stdcall function_2a44e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a680(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4166,7 +4166,7 @@ void __stdcall function_2a4520(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a570(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4181,7 +4181,7 @@ void __stdcall function_2a4570(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_11a770(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4199,7 +4199,7 @@ void __stdcall function_2a45c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_cce00(arguments[0], *(short *)&arguments[1], *(bool *)&arguments[2], *(bool *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4214,7 +4214,7 @@ void __stdcall function_2a4610(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_102a00(arguments[0], arguments[1], *(bool *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4229,7 +4229,7 @@ void __stdcall function_2a4660(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_object_globals_view *)g_4de2f4)->flag82 = !*(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4250,7 +4250,7 @@ void __stdcall function_2a46b0(short function_index, long thread_index, bool ini
 			if (device)
 				SET_FLAG(device->device_flags, 4, *(bool *)&arguments[1]);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4275,7 +4275,7 @@ void __stdcall function_2a4730(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_107190(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4290,7 +4290,7 @@ void __stdcall function_2a4780(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		real result = function_xae0e9a(arguments[0]);
-		function_209ae0(thread_index, *(long *)&result);
+		hs_thread_return_value(thread_index, *(long *)&result);
 	}
 }
 
@@ -4316,7 +4316,7 @@ void __stdcall function_2a47f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_107140(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -4331,7 +4331,7 @@ void __stdcall function_2a4850(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		real result = function_xb7fa2a(arguments[0]);
-		function_209ae0(thread_index, *(long *)&result);
+		hs_thread_return_value(thread_index, *(long *)&result);
 	}
 }
 
@@ -4353,7 +4353,7 @@ void __stdcall function_2a48c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_107370(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4368,7 +4368,7 @@ void __stdcall function_2a4910(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		real result = device_group_get(arguments[0]);
-		function_209ae0(thread_index, *(long *)&result);
+		hs_thread_return_value(thread_index, *(long *)&result);
 	}
 }
 
@@ -4384,7 +4384,7 @@ void __stdcall function_2a4970(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_1071e0(arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -4400,7 +4400,7 @@ void __stdcall function_2a49d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_107430(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4417,7 +4417,7 @@ void __stdcall function_2a4a20(short function_index, long thread_index, bool ini
 		s_device *device = (s_device *)function_badc0(arguments[0], 0x80);
 		if (device)
 			SET_FLAG(device->device_flags, 2, *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4432,7 +4432,7 @@ void __stdcall function_2a4aa0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_107590(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4447,7 +4447,7 @@ void __stdcall function_2a4af0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_1075e0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4463,7 +4463,7 @@ void __stdcall function_2a4b40(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_107630(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4479,7 +4479,7 @@ void __stdcall function_2a4b90(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_107ed0(arguments[0], arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -4497,7 +4497,7 @@ void __stdcall function_2a4bf0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_108530(arguments[0], arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -4514,7 +4514,7 @@ void __stdcall function_2a4c50(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_108600(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3], *(real *)&arguments[4], *(bool *)&arguments[5]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4531,7 +4531,7 @@ void __stdcall function_2a4cb0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_108670(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3], *(real *)&arguments[4]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4546,7 +4546,7 @@ void __stdcall function_2a4d00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_4f55d0->enabled = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4558,7 +4558,7 @@ void __stdcall function_2a4d40(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = g_4f55d0->enabled;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44c660 = { _hs_type_boolean, 0, function_2a4d40, NULL, 0 };
@@ -4572,7 +4572,7 @@ void __stdcall function_2a4d70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_4f55d0->unknown340 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4587,7 +4587,7 @@ void __stdcall function_2a4dc0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_4f55d0->unknown20 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4624,7 +4624,7 @@ void __stdcall function_2a4e10(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, ai_get_unit(arguments[0]));
+		hs_thread_return_value(thread_index, ai_get_unit(arguments[0]));
 }
 
 s_type_f4462a const g_44c6bc = { _hs_type_object, 0, function_2a4e10, NULL, 1, { _hs_type_ai } };
@@ -4641,7 +4641,7 @@ void __stdcall function_2a4e80(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273040(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4656,7 +4656,7 @@ void __stdcall function_2a4ed0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2730c0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4677,7 +4677,7 @@ void __stdcall function_2a4f20(short function_index, long thread_index, bool ini
 			if (unit->index_12c != NONE)
 				function_1e1a00(unit->index_12c, 0);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4692,7 +4692,7 @@ void __stdcall function_2a4f90(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273150(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4709,7 +4709,7 @@ void __stdcall function_2a4fd0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273480(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4733,7 +4733,7 @@ void __stdcall function_2a5010(short function_index, long thread_index, bool ini
 				function_201520(value, (short)ai_index, NONE, 0, 1);
 			g_4f55d0->unknown364 = ai_index;
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4750,7 +4750,7 @@ void __stdcall function_2a5080(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2735c0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4765,7 +4765,7 @@ void __stdcall function_2a50d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273200(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4781,7 +4781,7 @@ void __stdcall function_2a5120(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_2732e0(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -4798,7 +4798,7 @@ void __stdcall function_2a5170(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273670(arguments[0], false);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4813,7 +4813,7 @@ void __stdcall function_2a51c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273670(arguments[0], true);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4828,7 +4828,7 @@ void __stdcall function_2a5210(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2736c0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4841,7 +4841,7 @@ void function_1c84a0(long a, bool b);
 void __stdcall function_2a5250(short function_index, long thread_index, bool initialize)
 {
 	function_1c84a0(NONE, 0);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44c7d4 = { _hs_type_void, 0, function_2a5250, NULL, 0 };
@@ -4855,7 +4855,7 @@ void __stdcall function_2a5270(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2738a0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4870,7 +4870,7 @@ void __stdcall function_2a52c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273900(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4885,7 +4885,7 @@ void __stdcall function_2a5310(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2739d0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4900,7 +4900,7 @@ void __stdcall function_2a5360(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273ac0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4915,7 +4915,7 @@ void __stdcall function_2a53b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273d30(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4932,7 +4932,7 @@ void __stdcall function_2a5400(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273eb0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4947,7 +4947,7 @@ void __stdcall function_2a5450(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_273ef0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4966,7 +4966,7 @@ void __stdcall function_2a54a0(short function_index, long thread_index, bool ini
 		long squad_index = arguments[1];
 		if (!(squad_index & 0xc0000000))
 			function_274140(arguments[0], squad_index & 0xffff);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4981,7 +4981,7 @@ void __stdcall function_2a54f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2742f0(*(short *)&arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -4996,7 +4996,7 @@ void __stdcall function_2a5540(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		allegiance_remove(*(short *)&arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5013,7 +5013,7 @@ void __stdcall function_2a55a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_274e70(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5030,7 +5030,7 @@ void __stdcall function_2a55f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_274f30(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5045,7 +5045,7 @@ void __stdcall function_2a5640(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_275160(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5060,7 +5060,7 @@ void __stdcall function_2a5690(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_275270(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5079,7 +5079,7 @@ void __stdcall function_2a56e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_275380(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5094,7 +5094,7 @@ void __stdcall function_2a5720(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2758b0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5109,7 +5109,7 @@ void __stdcall function_2a5760(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_275a50(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5124,7 +5124,7 @@ void __stdcall function_2a57b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_275ad0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5139,7 +5139,7 @@ void __stdcall function_2a5800(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_275b20(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5156,7 +5156,7 @@ void __stdcall function_2a5850(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_275b60(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5172,7 +5172,7 @@ void __stdcall function_2a58a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = false;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5190,7 +5190,7 @@ void __stdcall function_2a58f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_274090(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5206,7 +5206,7 @@ void __stdcall function_2a5940(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = (short)function_273f30(arguments[0], 0, NULL, NULL);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5257,7 +5257,7 @@ void __stdcall function_2a5a70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = (short)function_273f30(arguments[0], 1, NULL, NULL);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5273,7 +5273,7 @@ void __stdcall function_2a5ad0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = (short)function_273f30(arguments[0], 2, NULL, NULL);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5298,7 +5298,7 @@ void __stdcall function_2a5b30(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, function_272ea0(arguments[0]));
+		hs_thread_return_value(thread_index, function_272ea0(arguments[0]));
 	}
 }
 
@@ -5314,7 +5314,7 @@ void __stdcall function_2a5b70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = allegiance_broken(*(short *)&arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5331,7 +5331,7 @@ void __stdcall function_2a5c10(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_275cb0(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5347,7 +5347,7 @@ void __stdcall function_2a5c60(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_275d70(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5361,7 +5361,7 @@ void __stdcall function_2a5cb0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, function_272ff0(arguments[0]));
+		hs_thread_return_value(thread_index, function_272ff0(arguments[0]));
 	}
 }
 
@@ -5379,7 +5379,7 @@ void __stdcall function_2a5cf0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_275d10((char const *)arguments[0], arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5391,7 +5391,7 @@ void __stdcall function_2a5d50(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = false;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44cad4 = { _hs_type_boolean, 0, function_2a5d50, NULL, 0 };
@@ -5591,7 +5591,7 @@ void __stdcall function_2a5d70(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, function_275e20(arguments[0]));
+		hs_thread_return_value(thread_index, function_275e20(arguments[0]));
 }
 
 s_type_f4462a const g_44caf4 = { _hs_type_vehicle, 0, function_2a5d70, NULL, 1, { _hs_type_ai } };
@@ -5604,7 +5604,7 @@ void __stdcall function_2a5db0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, ai_index_get_starting_location_vehicle(arguments[0]));
+		hs_thread_return_value(thread_index, ai_index_get_starting_location_vehicle(arguments[0]));
 	}
 }
 
@@ -5620,7 +5620,7 @@ void __stdcall function_2a5e00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_275eb0(arguments[0], arguments[1], *(bool *)&arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5636,7 +5636,7 @@ void __stdcall function_2a5e60(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_275fc0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5651,7 +5651,7 @@ void __stdcall function_2a5ec0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_274a50(arguments[0], arguments[1], arguments[2], false);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5666,7 +5666,7 @@ void __stdcall function_2a5f10(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_274a50(arguments[0], arguments[1], NONE, false);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5681,7 +5681,7 @@ void __stdcall function_2a5f60(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_274a50(arguments[0], arguments[1], arguments[2], true);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5696,7 +5696,7 @@ void __stdcall function_2a5fb0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_274a50(arguments[0], arguments[1], NONE, true);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5712,7 +5712,7 @@ void __stdcall function_2a6000(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_274470(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5727,7 +5727,7 @@ void __stdcall function_2a6050(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_274da0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5742,7 +5742,7 @@ void __stdcall function_2a60a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_274da0(arguments[0], NONE);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5765,7 +5765,7 @@ void __stdcall function_2a60f0(short function_index, long thread_index, bool ini
 		if (vehicle_index != NONE)
 			value = function_f5dc0(vehicle_index);
 		*(bool *)&result = value;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5785,7 +5785,7 @@ void __stdcall function_2a6150(short function_index, long thread_index, bool ini
 		request.type = 0x21;
 		request.type1c.object_index = NONE;
 		function_e6900(unit_index, &request);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -5801,7 +5801,7 @@ void __stdcall function_2a61b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_276050(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5830,7 +5830,7 @@ void __stdcall function_2a6200(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = flock_set_active_named(arguments[0], true);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5846,7 +5846,7 @@ void __stdcall function_2a6270(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = flock_set_active_named(arguments[0], false);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5864,7 +5864,7 @@ void __stdcall function_2a62e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_2763f0(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5894,7 +5894,7 @@ void __stdcall function_2a6330(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = flock_delete_named(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5910,7 +5910,7 @@ void __stdcall function_2a6390(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_276380(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -5929,7 +5929,7 @@ void __stdcall function_2a63e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		real value = (real)function_276160(arguments[0], arguments[1]);
-		function_209ae0(thread_index, *(long *)&value);
+		hs_thread_return_value(thread_index, *(long *)&value);
 	}
 }
 
@@ -5946,7 +5946,7 @@ void __stdcall function_2a6440(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		real value = (real)function_2761d0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, *(long *)&value);
+		hs_thread_return_value(thread_index, *(long *)&value);
 	}
 }
 
@@ -5972,7 +5972,7 @@ void __stdcall function_2a64a0(short function_index, long thread_index, bool ini
 			fistp ticks
 		}
 		duration = (real)(short)ticks;
-		function_209ae0(thread_index, *(long *)&duration);
+		hs_thread_return_value(thread_index, *(long *)&duration);
 	}
 }
 
@@ -5999,7 +5999,7 @@ void __stdcall function_2a6530(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = ai_scene_start(arguments[0], *(short *)&arguments[1], arguments[2], NONE, NONE);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -6015,7 +6015,7 @@ void __stdcall function_2a65a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = ai_scene_start(arguments[0], *(short *)&arguments[1], arguments[2], arguments[3], NONE);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -6031,7 +6031,7 @@ void __stdcall function_2a6610(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = ai_scene_start(arguments[0], *(short *)&arguments[1], arguments[2], arguments[3], arguments[4]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -6046,7 +6046,7 @@ void __stdcall function_2a6680(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2764c0(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6061,7 +6061,7 @@ void __stdcall function_2a66d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276440(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6076,7 +6076,7 @@ void __stdcall function_2a6720(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276480(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6091,7 +6091,7 @@ void __stdcall function_2a6770(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276500(*(short *)&arguments[0], arguments[1], arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6106,7 +6106,7 @@ void __stdcall function_2a67c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276560(*(short *)&arguments[0], arguments[1], arguments[2], arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6122,7 +6122,7 @@ void __stdcall function_2a6810(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_2766f0(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -6138,7 +6138,7 @@ void __stdcall function_2a6870(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_276770(arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -6154,7 +6154,7 @@ void __stdcall function_2a68d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(short *)&result = function_2767f0(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -6171,7 +6171,7 @@ void __stdcall function_2a6920(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2768d0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6196,7 +6196,7 @@ void __stdcall function_2a6980(short function_index, long thread_index, bool ini
 			if (script->joint_index != NONE)
 				function_258340(participant_index, script->joint_index);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6212,7 +6212,7 @@ void __stdcall function_2a6a10(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276860(arguments[0], 0);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6228,7 +6228,7 @@ void __stdcall function_2a6a70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276860(arguments[0], 1);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6244,7 +6244,7 @@ void __stdcall function_2a6ad0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276860(arguments[0], 2);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6260,7 +6260,7 @@ void __stdcall function_2a6b30(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_point(0xf, arguments[0], 0.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6276,7 +6276,7 @@ void __stdcall function_2a6bc0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_point(0xf, arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6292,7 +6292,7 @@ void __stdcall function_2a6c50(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_points(0x11, arguments[0], arguments[1], 0.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6308,7 +6308,7 @@ void __stdcall function_2a6ce0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_points(0x11, arguments[0], arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6324,7 +6324,7 @@ void __stdcall function_2a6d70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_point(0x10, arguments[0], 0.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6340,7 +6340,7 @@ void __stdcall function_2a6e00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_point(0x10, arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6356,7 +6356,7 @@ void __stdcall function_2a6e90(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_point(1, arguments[0], 0.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6372,7 +6372,7 @@ void __stdcall function_2a6f20(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_point(1, arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6388,7 +6388,7 @@ void __stdcall function_2a6fb0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_points(2, arguments[0], arguments[1], 0.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6404,7 +6404,7 @@ void __stdcall function_2a7040(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_points(2, arguments[0], arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6420,7 +6420,7 @@ void __stdcall function_2a70d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_index_pair(3, arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6436,7 +6436,7 @@ void __stdcall function_2a7160(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_index(0x13, arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6454,7 +6454,7 @@ void __stdcall function_2a71e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2769d0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6475,7 +6475,7 @@ void __stdcall function_2a7240(short function_index, long thread_index, bool ini
 			active = true;
 	}
 	*(bool *)&result = active;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44cf2c = { _hs_type_boolean, 0, function_2a7240, NULL, 0 };
@@ -6489,7 +6489,7 @@ void __stdcall function_2a72a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_target(2, *(bool *)&arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6504,7 +6504,7 @@ void __stdcall function_2a7310(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2770c0(*(bool *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6519,7 +6519,7 @@ void __stdcall function_2a7350(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_target(1, *(bool *)&arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6566,7 +6566,7 @@ void __stdcall function_2a73c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276f80(*(bool *)&arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6581,7 +6581,7 @@ void __stdcall function_2a7410(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276fd0(*(bool *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6596,7 +6596,7 @@ void __stdcall function_2a7450(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_277060(*(bool *)&arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6611,7 +6611,7 @@ void __stdcall function_2a74a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_look_at_point(*(bool *)&arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6637,7 +6637,7 @@ void __stdcall function_2a7520(short function_index, long thread_index, bool ini
 				script->flag51 = true;
 			}
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6652,7 +6652,7 @@ void __stdcall function_2a75a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_look_at_object(*(bool *)&arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6667,7 +6667,7 @@ void __stdcall function_2a7620(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_277120(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6683,7 +6683,7 @@ void __stdcall function_2a7690(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_277250(*(real *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6701,7 +6701,7 @@ void __stdcall function_2a76f0(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag45 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6716,7 +6716,7 @@ void __stdcall function_2a7750(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2771d0(*(bool *)&arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6731,7 +6731,7 @@ void __stdcall function_2a7790(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_277210(*(bool *)&arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6746,7 +6746,7 @@ void __stdcall function_2a77d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_value_68(*(real *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6761,7 +6761,7 @@ void __stdcall function_2a7850(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_index_short(5, arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6777,7 +6777,7 @@ void __stdcall function_2a78e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_reals(7, *(real *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6793,7 +6793,7 @@ void __stdcall function_2a7970(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_reals(8, *(real *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6809,7 +6809,7 @@ void __stdcall function_2a7a00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_short(0xb, *(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6829,7 +6829,7 @@ void __stdcall function_2a7a80(short function_index, long thread_index, bool ini
 		{
 			function_2760a0(g_50240c, script_index, 0, arguments[0], 1.0f, 1.0f);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6849,7 +6849,7 @@ void __stdcall function_2a7b00(short function_index, long thread_index, bool ini
 		{
 			function_2760a0(g_50240c, script_index, 0, arguments[0], *(real *)&arguments[1], 1.0f);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6869,7 +6869,7 @@ void __stdcall function_2a7b80(short function_index, long thread_index, bool ini
 		{
 			function_2760a0(g_50240c, script_index, 0, arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6887,7 +6887,7 @@ void __stdcall function_2a7c00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_18a380(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6903,7 +6903,7 @@ void __stdcall function_2a7c60(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2772b0(arguments[0], arguments[1], *(real *)&arguments[2], *(bool *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6915,7 +6915,7 @@ s_type_f4462a const g_44d110 = { _hs_type_void, 1, function_2a7c60, NULL, 4, { _
 void __stdcall function_2a7cd0(short function_index, long thread_index, bool initialize)
 {
 	function_277380();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44d128 = { _hs_type_void, 0, function_2a7cd0, NULL, 0 };
@@ -6934,7 +6934,7 @@ void __stdcall function_2a7cf0(short function_index, long thread_index, bool ini
 		{
 			function_291ea0(arguments[0], g_50240c, g_502410, NULL);
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6950,7 +6950,7 @@ void __stdcall function_2a7d70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_short(0xd, *(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -6968,7 +6968,7 @@ void __stdcall function_2a7df0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2773d0(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -6983,7 +6983,7 @@ void __stdcall function_2a7e40(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2775d0(*(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7000,7 +7000,7 @@ void __stdcall function_2a7e80(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag5c = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7015,7 +7015,7 @@ void __stdcall function_2a7ee0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_value_60(*(bool *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7029,7 +7029,7 @@ void __stdcall function_2a7f60(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -7046,7 +7046,7 @@ void __stdcall function_2a7fc0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_index(6, arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -7062,7 +7062,7 @@ void __stdcall function_2a8040(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_short(0xe, *(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -7078,7 +7078,7 @@ void __stdcall function_2a80c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_277620(*(short *)&arguments[0], arguments[1], arguments[2], arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -7094,7 +7094,7 @@ void __stdcall function_2a8130(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_index(0x15, arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -7110,7 +7110,7 @@ void __stdcall function_2a81b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276b40(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -7126,7 +7126,7 @@ void __stdcall function_2a8220(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276c00(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -7142,7 +7142,7 @@ void __stdcall function_2a8290(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276cc0(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -7158,7 +7158,7 @@ void __stdcall function_2a8300(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_276d50(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 		hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 	}
 }
@@ -7173,7 +7173,7 @@ void __stdcall function_2a8370(short function_index, long thread_index, bool ini
 {
 	if (g_502410 != NONE)
 		function_259e70(g_502410);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 	hs_thread_set_sleep(thread_index, k_hs_sleep_command_script);
 }
 
@@ -7190,7 +7190,7 @@ void __stdcall function_2a83b0(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag75 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7205,7 +7205,7 @@ void __stdcall function_2a8410(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_value_70(*(bool *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7220,7 +7220,7 @@ void __stdcall function_2a8480(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_277680(*(real *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7237,7 +7237,7 @@ void __stdcall function_2a84c0(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag74 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7254,7 +7254,7 @@ void __stdcall function_2a8520(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag79 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7271,7 +7271,7 @@ void __stdcall function_2a8580(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag7a = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7288,7 +7288,7 @@ void __stdcall function_2a85e0(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->value7c = *(short *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7303,7 +7303,7 @@ void __stdcall function_2a8640(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_flag_7f(*(bool *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7320,7 +7320,7 @@ void __stdcall function_2a86b0(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag80 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7337,7 +7337,7 @@ void __stdcall function_2a8710(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag81 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7354,7 +7354,7 @@ void __stdcall function_2a8770(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag82 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7371,7 +7371,7 @@ void __stdcall function_2a87d0(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag83 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7386,7 +7386,7 @@ void __stdcall function_2a8830(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_style(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7401,7 +7401,7 @@ void __stdcall function_2a88a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		command_script_set_value_84(*(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7418,7 +7418,7 @@ void __stdcall function_2a8910(short function_index, long thread_index, bool ini
 		long index = g_502410;
 		if (index != NONE)
 			command_script_get(index)->flag76 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7435,7 +7435,7 @@ void __stdcall function_2a8970(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_155a30(*(bool *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7452,7 +7452,7 @@ void __stdcall function_2a89b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16c2f0(*(short *)&arguments[0], *(short *)&arguments[1], NONE);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7467,7 +7467,7 @@ void __stdcall function_2a8a00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16c2f0(*(short *)&arguments[0], *(short *)&arguments[1], arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7484,7 +7484,7 @@ void __stdcall function_2a8a50(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16bf70(arguments[0], arguments[1], NONE, NONE);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7499,7 +7499,7 @@ void __stdcall function_2a8aa0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16bf70(arguments[0], arguments[1], arguments[2], *(short *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7516,7 +7516,7 @@ void __stdcall function_2a8af0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16c110(arguments[0], arguments[1], arguments[2], *(short *)&arguments[3], arguments[4]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7533,7 +7533,7 @@ void __stdcall function_2a8b40(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16c0b0(*(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7554,7 +7554,7 @@ void __stdcall function_2a8b80(short function_index, long thread_index, bool ini
 			((s_510c6c_view *)g_510c6c)->flag1 = true;
 			((s_510c6c_view *)g_510c6c)->unit_index = unit_index;
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7573,7 +7573,7 @@ void __stdcall function_2a8bd0(short function_index, long thread_index, bool ini
 		fistp ticks
 	}
 	*(short *)&result = (short)ticks;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d49c = { _hs_type_short_integer, 0, function_2a8bd0, NULL, 0 };
@@ -7587,7 +7587,7 @@ void __stdcall function_2a8c20(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16c740(*(real *)&arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7604,7 +7604,7 @@ void __stdcall function_2a8c70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16c4f0(*(short *)&arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7621,7 +7621,7 @@ void __stdcall function_2a8cc0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16c5f0(*(short *)&arguments[0], *(short *)&arguments[1], *(short *)&arguments[2], *(short *)&arguments[3], *(real *)&arguments[4], *(short *)&arguments[5], *(real *)&arguments[6]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7642,7 +7642,7 @@ void __stdcall function_2a8d30(short function_index, long thread_index, bool ini
 	}
 	*(short *)&result = 1;
 done:
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d550 = { _hs_type_game_difficulty, 0, function_2a8d30, NULL, 0 };
@@ -7657,7 +7657,7 @@ void __stdcall function_2a8d70(short function_index, long thread_index, bool ini
 		*(short *)&result = options->difficulty;
 	else
 		*(short *)&result = 1;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d560 = { _hs_type_game_difficulty, 0, function_2a8d70, NULL, 0 };
@@ -7681,7 +7681,7 @@ void __stdcall function_2a8dc0(short function_index, long thread_index, bool ini
 			options->value11fc = object_index;
 			options->value11fa = 1;
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7698,7 +7698,7 @@ void __stdcall function_2a8e30(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		game_focus_point_set(*(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7709,7 +7709,7 @@ s_type_f4462a const g_44d584 = { _hs_type_void, 0, function_2a8e30, NULL, 1, { _
 void __stdcall function_2a8e70(short function_index, long thread_index, bool initialize)
 {
 	g_4e6948->value11fa = 0;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44d598 = { _hs_type_void, 0, function_2a8e70, NULL, 0 };
@@ -7724,7 +7724,7 @@ void __stdcall function_2a8e90(short function_index, long thread_index, bool ini
 		entry->index = NONE;
 		entry->flag = false;
 	}
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44d5a8 = { _hs_type_void, 0, function_2a8e90, NULL, 0 };
@@ -7738,7 +7738,7 @@ void __stdcall function_2a8ee0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_4e8c20_view *)g_4e8c20)->flag6 = !*(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7753,7 +7753,7 @@ void __stdcall function_2a8f30(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_4e8c20_view *)g_4e8c20)->flag7 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -7765,7 +7765,7 @@ void __stdcall function_2a8f80(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = function_14ed80();
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d5e0 = { _hs_type_boolean, 0, function_2a8f80, NULL, 0 };
@@ -7776,7 +7776,7 @@ void __stdcall function_2a8fa0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = function_14ece0();
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d5f0 = { _hs_type_boolean, 0, function_2a8fa0, NULL, 0 };
@@ -7794,7 +7794,7 @@ void __stdcall function_2a8fc0(short function_index, long thread_index, bool ini
 		dword *flags = &g_4ed284->flags10;
 		SET_FLAG(*flags, 0, !value);
 		*(bool *)&result = value;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -7807,7 +7807,7 @@ void __stdcall function_2a9020(short function_index, long thread_index, bool ini
 	s_unknown_185ab0 *globals = g_4ed284;
 	globals->flags4 = 0;
 	globals->flags8 = 0;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44d614 = { _hs_type_void, 0, function_2a9020, NULL, 0 };
@@ -7818,7 +7818,7 @@ void __stdcall function_2a9040(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit1);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d624 = { _hs_type_boolean, 0, function_2a9040, NULL, 0 };
@@ -7829,7 +7829,7 @@ void __stdcall function_2a9070(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit4);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d634 = { _hs_type_boolean, 0, function_2a9070, NULL, 0 };
@@ -7840,7 +7840,7 @@ void __stdcall function_2a90a0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit5);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d644 = { _hs_type_boolean, 0, function_2a90a0, NULL, 0 };
@@ -7851,7 +7851,7 @@ void __stdcall function_2a90d0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit20);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d654 = { _hs_type_boolean, 0, function_2a90d0, NULL, 0 };
@@ -7862,7 +7862,7 @@ void __stdcall function_2a9100(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit9);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d664 = { _hs_type_boolean, 0, function_2a9100, NULL, 0 };
@@ -7873,7 +7873,7 @@ void __stdcall function_2a9130(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit7);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d674 = { _hs_type_boolean, 0, function_2a9130, NULL, 0 };
@@ -7884,7 +7884,7 @@ void __stdcall function_2a9160(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit8);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d684 = { _hs_type_boolean, 0, function_2a9160, NULL, 0 };
@@ -7895,7 +7895,7 @@ void __stdcall function_2a9190(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit6);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d694 = { _hs_type_boolean, 0, function_2a9190, NULL, 0 };
@@ -7909,7 +7909,7 @@ void __stdcall function_2a91c0(short function_index, long thread_index, bool ini
 	globals->bits8.bit0 = true;
 	globals->bitsc.bit0 = true;
 	*(bool *)&result = TEST_FIELD_BIT(globals->bits4.bit0);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d6a4 = { _hs_type_boolean, 0, function_2a91c0, NULL, 0 };
@@ -7923,7 +7923,7 @@ void __stdcall function_2a9200(short function_index, long thread_index, bool ini
 	globals->bits8.bit2 = true;
 	globals->bitsc.bit2 = true;
 	*(bool *)&result = TEST_FIELD_BIT(globals->bits4.bit2);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d6b4 = { _hs_type_boolean, 0, function_2a9200, NULL, 0 };
@@ -7937,7 +7937,7 @@ void __stdcall function_2a9240(short function_index, long thread_index, bool ini
 	globals->bits8.bit3 = true;
 	globals->bitsc.bit3 = true;
 	*(bool *)&result = TEST_FIELD_BIT(globals->bits4.bit3);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d6c4 = { _hs_type_boolean, 0, function_2a9240, NULL, 0 };
@@ -7948,7 +7948,7 @@ void __stdcall function_2a9280(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit10);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d6d4 = { _hs_type_boolean, 0, function_2a9280, NULL, 0 };
@@ -7959,7 +7959,7 @@ void __stdcall function_2a92b0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit11);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d6e4 = { _hs_type_boolean, 0, function_2a92b0, NULL, 0 };
@@ -7970,7 +7970,7 @@ void __stdcall function_2a92e0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit12);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d6f4 = { _hs_type_boolean, 0, function_2a92e0, NULL, 0 };
@@ -7981,7 +7981,7 @@ void __stdcall function_2a9310(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit13);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d704 = { _hs_type_boolean, 0, function_2a9310, NULL, 0 };
@@ -7992,7 +7992,7 @@ void __stdcall function_2a9340(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = (g_4ed284->flags4 & 0x3c00) != 0;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d714 = { _hs_type_boolean, 0, function_2a9340, NULL, 0 };
@@ -8003,7 +8003,7 @@ void __stdcall function_2a9370(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = (g_4ed284->flags4 & 0x3c000) != 0;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d724 = { _hs_type_boolean, 0, function_2a9370, NULL, 0 };
@@ -8014,7 +8014,7 @@ void __stdcall function_2a93a0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit18);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d734 = { _hs_type_boolean, 0, function_2a93a0, NULL, 0 };
@@ -8025,7 +8025,7 @@ void __stdcall function_2a93d0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit19);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d744 = { _hs_type_boolean, 0, function_2a93d0, NULL, 0 };
@@ -8040,7 +8040,7 @@ void __stdcall function_2a9400(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = function_187f30() >= g_54e880;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d754 = { _hs_type_boolean, 0, function_2a9400, NULL, 0 };
@@ -8051,7 +8051,7 @@ void __stdcall function_2a9430(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = -function_187f30() >= g_54e880;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d764 = { _hs_type_boolean, 0, function_2a9430, NULL, 0 };
@@ -8069,7 +8069,7 @@ void __stdcall function_2a9470(short function_index, long thread_index, bool ini
 	flag_set(globals->flagsc, 12, true);
 	flag_set(globals->flagsc, 13, true);
 	globals->flags4 |= FLAG(21);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44d774 = { _hs_type_void, 0, function_2a9470, NULL, 0 };
@@ -8082,7 +8082,7 @@ void __stdcall function_2a94b0(short function_index, long thread_index, bool ini
 	flag_set(globals->flagsc, 12, true);
 	flag_set(globals->flagsc, 13, true);
 	globals->flags4 |= FLAG(22);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44d784 = { _hs_type_void, 0, function_2a94b0, NULL, 0 };
@@ -8094,7 +8094,7 @@ void __stdcall function_2a94f0(short function_index, long thread_index, bool ini
 	s_unknown_185ab0 *globals = g_4ed284;
 	flag_set(globals->flagsc, 12, false);
 	flag_set(globals->flagsc, 13, false);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44d794 = { _hs_type_void, 0, function_2a94f0, NULL, 0 };
@@ -8105,7 +8105,7 @@ void __stdcall function_2a9520(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit23);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d7a4 = { _hs_type_boolean, 0, function_2a9520, NULL, 0 };
@@ -8116,7 +8116,7 @@ void __stdcall function_2a9550(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = TEST_FIELD_BIT(g_4ed284->bits4.bit24);
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d7b4 = { _hs_type_boolean, 0, function_2a9550, NULL, 0 };
@@ -8127,7 +8127,7 @@ void __stdcall function_2a95c0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(short *)&result = g_4686c4;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44d810 = { _hs_type_short_integer, 0, function_2a95c0, NULL, 0 };
@@ -8156,7 +8156,7 @@ void __stdcall function_2a95f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_146860(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8171,7 +8171,7 @@ void __stdcall function_2a9640(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_154220(*(real *)&arguments[0], *(short *)&arguments[3], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8186,7 +8186,7 @@ void __stdcall function_2a9690(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		point_timer_start(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(short *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8197,7 +8197,7 @@ s_type_f4462a const g_44db38 = { _hs_type_void, 0, function_2a9690, NULL, 4, { _
 void __stdcall function_2a9740(short function_index, long thread_index, bool initialize)
 {
 	function_13bff0();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44db50 = { _hs_type_void, 0, function_2a9740, NULL, 0 };
@@ -8207,7 +8207,7 @@ s_type_f4462a const g_44db50 = { _hs_type_void, 0, function_2a9740, NULL, 0 };
 void __stdcall function_2a9760(short function_index, long thread_index, bool initialize)
 {
 	function_13ca80();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44db60 = { _hs_type_void, 0, function_2a9760, NULL, 0 };
@@ -8217,7 +8217,7 @@ s_type_f4462a const g_44db60 = { _hs_type_void, 0, function_2a9760, NULL, 0 };
 void __stdcall function_2a9780(short function_index, long thread_index, bool initialize)
 {
 	((s_510c50_view *)g_510c50)->flag6 = true;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44db70 = { _hs_type_void, 0, function_2a9780, NULL, 0 };
@@ -8227,7 +8227,7 @@ s_type_f4462a const g_44db70 = { _hs_type_void, 0, function_2a9780, NULL, 0 };
 void __stdcall function_2a97a0(short function_index, long thread_index, bool initialize)
 {
 	((s_510c50_view *)g_510c50)->flag6 = false;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44db80 = { _hs_type_void, 0, function_2a97a0, NULL, 0 };
@@ -8241,7 +8241,7 @@ void __stdcall function_2a97c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_510c50_view *)g_510c50)->flag4 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8259,7 +8259,7 @@ void __stdcall function_2a9810(short function_index, long thread_index, bool ini
 		s_510c50_view *state = (s_510c50_view *)g_510c50;
 		state->flag4 = value;
 		state->value0 = value ? 1.0f : 0.0f;
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8274,7 +8274,7 @@ void __stdcall function_2a9870(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_13c1e0(*(short *)&arguments[0], 0.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8289,7 +8289,7 @@ void __stdcall function_2a98c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_13c1e0(*(short *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8304,7 +8304,7 @@ void __stdcall function_2a9910(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_510c50_view *)g_510c50)->flag7 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8321,7 +8321,7 @@ void __stdcall function_2a9960(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_13cb50(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8332,7 +8332,7 @@ s_type_f4462a const g_44dbf4 = { _hs_type_void, 0, function_2a9960, NULL, 2, { _
 void __stdcall function_2a99b0(short function_index, long thread_index, bool initialize)
 {
 	game_finish();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44dc2c = { _hs_type_void, 0, function_2a99b0, NULL, 0 };
@@ -8348,7 +8348,7 @@ void __stdcall function_2a99d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		game_revert_countdown_set(*(bool *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8361,7 +8361,7 @@ void __stdcall function_2a9a10(short function_index, long thread_index, bool ini
 	main_globals.unknown6f = true;
 	main_globals.unknown75 = true;
 	main_globals.unknown74 = true;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44dc50 = { _hs_type_void, 0, function_2a9a10, NULL, 0 };
@@ -8373,7 +8373,7 @@ void __stdcall function_2a9a30(short function_index, long thread_index, bool ini
 	long result = 0;
 	s_game_options_view *options = g_4e6948;
 	*(bool *)&result = options->state == 1 && options->flag134;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44dc60 = { _hs_type_boolean, 0, function_2a9a30, NULL, 0 };
@@ -8384,7 +8384,7 @@ void __stdcall function_2a9a70(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = g_4e6948->flag130;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44dc70 = { _hs_type_boolean, 0, function_2a9a70, NULL, 0 };
@@ -8416,7 +8416,7 @@ void __stdcall function_2a9aa0(short function_index, long thread_index, bool ini
 			globals->flag0 = value;
 			globals->time4 = g_4e6948 && g_4e6948->flag1120 ? g_510c54->game_time : 0;
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8435,7 +8435,7 @@ inline void core_load_name(char const *name)
 void __stdcall function_2a9b20(short function_index, long thread_index, bool initialize)
 {
 	core_load_name("core");
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44dcdc = { _hs_type_void, 0, function_2a9b20, NULL, 0 };
@@ -8449,7 +8449,7 @@ void __stdcall function_2a9b50(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		core_load_name((char const *)arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8461,7 +8461,7 @@ void __stdcall function_2a9bb0(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = function_226190();
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44dd80 = { _hs_type_boolean, 0, function_2a9bb0, NULL, 0 };
@@ -8473,7 +8473,7 @@ void __stdcall function_2a9bd0(short function_index, long thread_index, bool ini
 	long result = 0;
 	long value;
 	*(bool *)&result = !function_fa9a0(&value) && !((s_4e8c20_view *)g_4e8c20)->flag5;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44dd90 = { _hs_type_boolean, 0, function_2a9bd0, NULL, 0 };
@@ -8484,7 +8484,7 @@ void __stdcall function_2a9c10(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = function_225fe0();
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44dda0 = { _hs_type_boolean, 0, function_2a9c10, NULL, 0 };
@@ -8494,7 +8494,7 @@ s_type_f4462a const g_44dda0 = { _hs_type_boolean, 0, function_2a9c10, NULL, 0 }
 void __stdcall function_2a9c30(short function_index, long thread_index, bool initialize)
 {
 	sequence_start_stage(1);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44ddb0 = { _hs_type_void, 0, function_2a9c30, NULL, 0 };
@@ -8504,7 +8504,7 @@ s_type_f4462a const g_44ddb0 = { _hs_type_void, 0, function_2a9c30, NULL, 0 };
 void __stdcall function_2a9c70(short function_index, long thread_index, bool initialize)
 {
 	g_4701ec.stage = 0;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44ddc0 = { _hs_type_void, 0, function_2a9c70, NULL, 0 };
@@ -8514,7 +8514,7 @@ s_type_f4462a const g_44ddc0 = { _hs_type_void, 0, function_2a9c70, NULL, 0 };
 void __stdcall function_2a9c90(short function_index, long thread_index, bool initialize)
 {
 	sequence_start_stage(2);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44ddd0 = { _hs_type_void, 0, function_2a9c90, NULL, 0 };
@@ -8524,7 +8524,7 @@ s_type_f4462a const g_44ddd0 = { _hs_type_void, 0, function_2a9c90, NULL, 0 };
 void __stdcall function_2a9cd0(short function_index, long thread_index, bool initialize)
 {
 	sequence_start_stage(3);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44dde0 = { _hs_type_void, 0, function_2a9cd0, NULL, 0 };
@@ -8538,7 +8538,7 @@ void __stdcall function_2a9d10(short function_index, long thread_index, bool ini
 	if (main_globals.save_map || g_4701ec.stage != 0)
 		active = true;
 	*(bool *)&result = active;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44ddf0 = { _hs_type_boolean, 0, function_2a9d10, NULL, 0 };
@@ -8549,7 +8549,7 @@ void __stdcall function_2a9d40(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = game_state_globals.game_time == g_510c54->game_time;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44de00 = { _hs_type_boolean, 0, function_2a9d40, NULL, 0 };
@@ -8582,7 +8582,7 @@ void __stdcall function_2a9d70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		sound_definition_request_first_chunk(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8597,7 +8597,7 @@ void __stdcall function_2a9e00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_189cd0(arguments[0], arguments[1], *(real *)&arguments[2], g_444ae0, g_444ae0, NONE, 0);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8618,7 +8618,7 @@ void __stdcall function_2a9e60(short function_index, long thread_index, bool ini
 		gains.fifth = function_2197f0(*(real *)&arguments[4]);
 		gains.fourth = function_2197f0(*(real *)&arguments[3]);
 		function_189cd0(arguments[0], arguments[1], *(real *)&arguments[2], gains.fourth, gains.fifth, NONE, 0);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8633,7 +8633,7 @@ void __stdcall function_2a9ed0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_189cd0(arguments[0], arguments[1], *(real *)&arguments[2], g_444ae0, g_444ae0, arguments[3], 0);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8651,7 +8651,7 @@ void __stdcall function_2a9f30(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, function_18a1c0(arguments[0]));
+		hs_thread_return_value(thread_index, function_18a1c0(arguments[0]));
 }
 
 s_type_f4462a const g_44dea8 = { _hs_type_long_integer, 0, function_2a9f30, NULL, 1, { _hs_type_sound } };
@@ -8674,7 +8674,7 @@ void __stdcall function_2a9f70(short function_index, long thread_index, bool ini
 			fld ticks_real
 			fistp rounded
 		}
-		function_209ae0(thread_index, rounded);
+		hs_thread_return_value(thread_index, rounded);
 	}
 }
 
@@ -8692,7 +8692,7 @@ void __stdcall function_2a9fe0(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, function_18a240(arguments[0]));
+		hs_thread_return_value(thread_index, function_18a240(arguments[0]));
 }
 
 s_type_f4462a const g_44ded0 = { _hs_type_long_integer, 0, function_2a9fe0, NULL, 1, { _hs_type_sound } };
@@ -8706,7 +8706,7 @@ void __stdcall function_2aa020(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_18a380(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8721,7 +8721,7 @@ void __stdcall function_2aa060(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_189b20(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8736,7 +8736,7 @@ void __stdcall function_2aa0f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_18a430(arguments[0], arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8751,7 +8751,7 @@ void __stdcall function_2aa140(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_18a4d0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8766,7 +8766,7 @@ void __stdcall function_2aa180(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_18a530(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8781,7 +8781,7 @@ void __stdcall function_2aa1c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		looping_sound_set_scale(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8809,7 +8809,7 @@ void __stdcall function_2aa240(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		looping_sound_set_flag4(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8835,7 +8835,7 @@ void __stdcall function_2aa2c0(short function_index, long thread_index, bool ini
 		_ReadWriteBarrier();
 		real duration = (real)*(short *)&arguments[2] * (1.0f / 30.0f);
 		function_221980((char const *)arguments[0], gain, duration);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 #pragma function(_ReadWriteBarrier)
@@ -8851,7 +8851,7 @@ void __stdcall function_2aa330(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_xb8400b((char const *)arguments[0], *(real *)&arguments[1], *(short *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8866,7 +8866,7 @@ void __stdcall function_2aa3a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_221a20((char const *)arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8883,7 +8883,7 @@ void __stdcall function_2aa3f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_225ef0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8900,7 +8900,7 @@ void __stdcall function_2aa430(short function_index, long thread_index, bool ini
 		s_51ebf4_view *state = (s_51ebf4_view *)g_51ebf4;
 		if (state->flag14 && state->id20 == arguments[0])
 			state->value24 = *(real *)&arguments[1];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8917,7 +8917,7 @@ void __stdcall function_2aa480(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_f0fd0(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8935,7 +8935,7 @@ void __stdcall function_2aa4c0(short function_index, long thread_index, bool ini
 		long result = 0;
 		if (vehicle_index != NONE)
 			result = ((s_vehicle *)object_get(vehicle_index))->value_3ac;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -8961,7 +8961,7 @@ void __stdcall function_2aa520(short function_index, long thread_index, bool ini
 				function_b7360(unit_index);
 			}
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8976,7 +8976,7 @@ void __stdcall function_2aa590(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_13b306(*(real *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -8994,7 +8994,7 @@ void __stdcall function_2aa5e0(short function_index, long thread_index, bool ini
 		bool value = *(bool *)&arguments[0];
 		g_510c4c->flag1d2 = value;
 		*(bool *)&result = value;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -9012,7 +9012,7 @@ void __stdcall function_2aa640(short function_index, long thread_index, bool ini
 		bool value = *(bool *)&arguments[0];
 		((s_510c98_view *)g_510c98)->flag1 = value;
 		*(bool *)&result = value;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -9030,7 +9030,7 @@ void __stdcall function_2aa6a0(short function_index, long thread_index, bool ini
 		bool value = *(bool *)&arguments[0];
 		((s_510c98_view *)g_510c98)->flag2 = value;
 		*(bool *)&result = value;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -9049,7 +9049,7 @@ void __stdcall function_2aa700(short function_index, long thread_index, bool ini
 		if (value && !hud->flag1384)
 			hud->time1380 = g_510c54->game_time;
 		hud->flag1384 = value;
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9062,7 +9062,7 @@ void __stdcall function_2aa770(short function_index, long thread_index, bool ini
 	s_hud_state_view *hud = (s_hud_state_view *)g_5023f4;
 	if (hud->flag1384)
 		hud->time1380 = g_510c54->game_time;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44e0f8 = { _hs_type_void, 0, function_2aa770, NULL, 0 };
@@ -9076,7 +9076,7 @@ void __stdcall function_2aa7a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_51e9c0_view *)g_51e9c0)->flag6c4 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9091,7 +9091,7 @@ void __stdcall function_2aa7f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_51e9c0_view *)g_51e9c0)->value6c0 = arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9106,7 +9106,7 @@ void __stdcall function_2aa840(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_51e9c0_view *)g_51e9c0)->flag6c5 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9125,7 +9125,7 @@ inline void point_timer_set_point(real x, real y, real z)
 void __stdcall function_2aa890(short function_index, long thread_index, bool initialize)
 {
 	function_1e7800();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44e144 = { _hs_type_void, 0, function_2aa890, NULL, 0 };
@@ -9135,7 +9135,7 @@ s_type_f4462a const g_44e144 = { _hs_type_void, 0, function_2aa890, NULL, 0 };
 void __stdcall function_2aa8b0(short function_index, long thread_index, bool initialize)
 {
 	function_1e78b0();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44e154 = { _hs_type_void, 0, function_2aa8b0, NULL, 0 };
@@ -9145,7 +9145,7 @@ s_type_f4462a const g_44e154 = { _hs_type_void, 0, function_2aa8b0, NULL, 0 };
 void __stdcall function_2aa8d0(short function_index, long thread_index, bool initialize)
 {
 	function_1e7960();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44e164 = { _hs_type_void, 0, function_2aa8d0, NULL, 0 };
@@ -9186,7 +9186,7 @@ void __stdcall function_2aa8f0(short function_index, long thread_index, bool ini
 		long player_index = unit_get_player_index(unit_index);
 		if (player_index != NONE)
 			function_24d6d7(player_index, type, false, cutscene_flag_index, value);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9201,7 +9201,7 @@ void __stdcall function_2aa970(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		unit_activate_nav_point(*(short *)&arguments[0], arguments[1], true, arguments[2], *(real *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9216,7 +9216,7 @@ void __stdcall function_2aa9f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_24d7ac(*(short *)&arguments[0], *(short *)&arguments[1], false, *(short *)&arguments[2], *(real *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9231,7 +9231,7 @@ void __stdcall function_2aaa50(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_24d7ac(*(short *)&arguments[0], *(short *)&arguments[1], true, arguments[2], *(real *)&arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9250,7 +9250,7 @@ void __stdcall function_2aaab0(short function_index, long thread_index, bool ini
 		long player_index = unit_get_player_index(unit_index);
 		if (player_index != NONE)
 			function_24d806(player_index, false, cutscene_flag_index);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9265,7 +9265,7 @@ void __stdcall function_2aab10(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		unit_deactivate_nav_point(arguments[0], true, arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9280,7 +9280,7 @@ void __stdcall function_2aab70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_24d877(*(short *)&arguments[0], false, *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9295,7 +9295,7 @@ void __stdcall function_2aabc0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_24d877(*(short *)&arguments[0], true, arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9310,7 +9310,7 @@ void __stdcall function_2aac10(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		point_timer_set_point(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9332,7 +9332,7 @@ void __stdcall function_2aac70(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		point_timer_set_angles(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9353,7 +9353,7 @@ void __stdcall function_2aace0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		state_502120_set_values(*(real *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9378,7 +9378,7 @@ void __stdcall function_2aad30(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		point_timer_set_value(arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9397,7 +9397,7 @@ void __stdcall function_2aadb0(short function_index, long thread_index, bool ini
 		state->timer24 = ticks;
 		state->timer26 = ticks;
 		state->flags |= FLAG(1);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9408,7 +9408,7 @@ s_type_f4462a const g_44e2f8 = { _hs_type_void, 0, function_2aadb0, NULL, 1, { _
 void __stdcall function_2aae20(short function_index, long thread_index, bool initialize)
 {
 	function_24cdaf();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44e3ac = { _hs_type_void, 0, function_2aae20, NULL, 0 };
@@ -9422,7 +9422,7 @@ void __stdcall function_2aae40(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_24c831(*(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9437,7 +9437,7 @@ void __stdcall function_2aae90(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_24c878(*(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9452,7 +9452,7 @@ void __stdcall function_2aaee0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_24c8e2(*(short *)&arguments[0], *(short *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9469,7 +9469,7 @@ void __stdcall function_2aaf30(short function_index, long thread_index, bool ini
 		short minutes = *(short *)&arguments[0];
 		short seconds = *(short *)&arguments[1];
 		((s_hud_state_view *)g_5023f4)->ticks139e = (short)((minutes * 60 + seconds) * g_510c54->field_2_3);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9491,7 +9491,7 @@ void __stdcall function_2aaf90(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		hud_set_position(*(short *)&arguments[0], *(short *)&arguments[1], *(short *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9506,7 +9506,7 @@ void __stdcall function_2ab010(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_hud_state_view *)g_5023f4)->flag13a7 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9521,7 +9521,7 @@ void __stdcall function_2ab060(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_24c93f(*(bool *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9554,7 +9554,7 @@ void __stdcall function_2ab0a0(short function_index, long thread_index, bool ini
 		script_ticks = (short)rounded;
 	}
 	*(short *)&result = script_ticks;
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44e44c = { _hs_type_short_integer, 0, function_2ab0a0, NULL, 0 };
@@ -9564,7 +9564,7 @@ s_type_f4462a const g_44e44c = { _hs_type_short_integer, 0, function_2ab0a0, NUL
 // @retail 0x2ab130
 void __stdcall function_2ab130(short function_index, long thread_index, bool initialize)
 {
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44b588 = { _hs_type_void, 0, function_2ab130, NULL, 0 };
@@ -9584,7 +9584,7 @@ void __stdcall function_2ab140(short function_index, long thread_index, bool ini
 			if (index >= 0 && index < 4)
 				globals->values180[index] = *(real *)&arguments[1];
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9608,7 +9608,7 @@ void __stdcall function_2ab1a0(short function_index, long thread_index, bool ini
 			}
 			globals->flagac = true;
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9623,7 +9623,7 @@ void __stdcall function_2ab210(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_01fc30(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3], *(real *)&arguments[4], *(real *)&arguments[5], *(real *)&arguments[6]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9650,7 +9650,7 @@ void __stdcall function_2ab270(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		timed_effect_start_fade(*(real *)&arguments[0], 1.0f);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9665,7 +9665,7 @@ void __stdcall function_2ab2f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		timed_effect_start_fade(*(real *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9682,7 +9682,7 @@ void __stdcall function_2ab370(short function_index, long thread_index, bool ini
 		if (g_4b5690 && !g_4b569d)
 			g_4b569d = true;
 	}
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44e75c = { _hs_type_void, 0, function_2ab370, NULL, 0 };
@@ -9698,7 +9698,7 @@ void __stdcall function_2ab3b0(short function_index, long thread_index, bool ini
 		s_timed_effect_view *globals = (s_timed_effect_view *)g_5093e0;
 		if (globals)
 			globals->value190 = *(real *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9715,7 +9715,7 @@ void __stdcall function_2ab400(short function_index, long thread_index, bool ini
 		s_timed_effect_view *globals = (s_timed_effect_view *)g_5093e0;
 		if (globals)
 			globals->value194 = *(real *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9743,7 +9743,7 @@ void __stdcall function_2ab450(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		timed_effect_start_blend(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9758,7 +9758,7 @@ void __stdcall function_2ab4e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_0204b0(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9771,7 +9771,7 @@ void __stdcall function_2ab520(short function_index, long thread_index, bool ini
 	s_timed_effect_view *globals = (s_timed_effect_view *)g_5093e0;
 	if (globals)
 		globals->flag1ac = true;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44e7c0 = { _hs_type_void, 0, function_2ab520, NULL, 0 };
@@ -9802,7 +9802,7 @@ void __stdcall function_2ab540(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		timed_effect_set_colors(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3], *(real *)&arguments[4], *(real *)&arguments[5], *(real *)&arguments[6], *(real *)&arguments[7]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9815,7 +9815,7 @@ void __stdcall function_2ab600(short function_index, long thread_index, bool ini
 	s_timed_effect_view *globals = (s_timed_effect_view *)g_5093e0;
 	if (globals)
 		globals->flag1b4 = false;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44e7f0 = { _hs_type_void, 0, function_2ab600, NULL, 0 };
@@ -9830,7 +9830,7 @@ void __stdcall function_2ab670(short function_index, long thread_index, bool ini
 	{
 		g_4b72b1 = *(bool *)&arguments[1];
 		g_4b72b0 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9844,7 +9844,7 @@ void __stdcall function_2ab6c0(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44b254 = { _hs_type_void, 0, function_2ab6c0, NULL, 1, { _hs_type_string } };
@@ -9858,7 +9858,7 @@ void __stdcall function_2ab700(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_187df0(*(bool *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9870,7 +9870,7 @@ void __stdcall function_2ab740(short function_index, long thread_index, bool ini
 {
 	long result = 0;
 	*(bool *)&result = function_187ec0();
-	function_209ae0(thread_index, result);
+	hs_thread_return_value(thread_index, result);
 }
 
 s_type_f4462a const g_44e8d0 = { _hs_type_boolean, 0, function_2ab740, NULL, 0 };
@@ -9882,7 +9882,7 @@ void __stdcall function_2ab760(short function_index, long thread_index, bool ini
 	s_type_f4462a *definition = function_xca4acb(function_index);
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
-		function_209ae0(thread_index, function_2a0960(*(short *)&arguments[0]));
+		hs_thread_return_value(thread_index, function_2a0960(*(short *)&arguments[0]));
 }
 
 s_type_f4462a const g_44e8f4 = { _hs_type_long_integer, 0, function_2ab760, NULL, 1, { _hs_type_short_integer } };
@@ -9892,7 +9892,7 @@ s_type_f4462a const g_44e8f4 = { _hs_type_long_integer, 0, function_2ab760, NULL
 void __stdcall function_2ab7a0(short function_index, long thread_index, bool initialize)
 {
 	memset(g_502248, 0, 5 * sizeof(long));
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44ea94 = { _hs_type_void, 0, function_2ab7a0, NULL, 0 };
@@ -9908,7 +9908,7 @@ void __stdcall function_2ab7d0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_22c041(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9928,7 +9928,7 @@ void __stdcall function_2ab810(short function_index, long thread_index, bool ini
 			for (long i = 0; i <= last; i++)
 				g_502248[i] = 2;
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9943,7 +9943,7 @@ void __stdcall function_2ab880(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		((s_input_globals_view *)&g_4e61b8)->feedback_suppressed = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -9961,7 +9961,7 @@ void __stdcall function_2ab8c0(short function_index, long thread_index, bool ini
 	path[0] = 0;
 	if (attract_mode_movie_path(path, "credits"))
 		function_156090(path, 0x40c);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44eca4 = { _hs_type_void, 0, function_2ab8c0, NULL, 0 };
@@ -9970,7 +9970,7 @@ s_type_f4462a const g_44eca4 = { _hs_type_void, 0, function_2ab8c0, NULL, 0 };
 // @retail 0x2ab910
 void __stdcall function_2ab910(short function_index, long thread_index, bool initialize)
 {
-	function_209ae0(thread_index, bink_playback_ticks_remaining());
+	hs_thread_return_value(thread_index, bink_playback_ticks_remaining());
 }
 
 s_type_f4462a const g_44ecb4 = { _hs_type_long_integer, 0, function_2ab910, NULL, 0 };
@@ -9995,7 +9995,7 @@ void __stdcall function_2ab980(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, function_bf950(arguments[0], arguments[1]));
+		hs_thread_return_value(thread_index, function_bf950(arguments[0], arguments[1]));
 	}
 }
 
@@ -10022,7 +10022,7 @@ void __stdcall function_2ab9c0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, interpolator_start(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]));
+		hs_thread_return_value(thread_index, interpolator_start(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]));
 	}
 }
 
@@ -10036,7 +10036,7 @@ void __stdcall function_2aba10(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, scenario_ramp_start_eased(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]));
+		hs_thread_return_value(thread_index, scenario_ramp_start_eased(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]));
 	}
 }
 
@@ -10050,7 +10050,7 @@ void __stdcall function_2aba60(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, interpolator_stop(arguments[0]));
+		hs_thread_return_value(thread_index, interpolator_stop(arguments[0]));
 	}
 }
 
@@ -10064,7 +10064,7 @@ void __stdcall function_2abac0(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		function_209ae0(thread_index, interpolator_resume(arguments[0]));
+		hs_thread_return_value(thread_index, interpolator_resume(arguments[0]));
 	}
 }
 
@@ -10080,7 +10080,7 @@ void __stdcall function_2abb00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = interpolator_exists(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10096,7 +10096,7 @@ void __stdcall function_2abb50(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		long first_argument = arguments[0];
-		function_209ae0(thread_index, interpolator_set(first_argument, *(real *)&arguments[1]));
+		hs_thread_return_value(thread_index, interpolator_set(first_argument, *(real *)&arguments[1]));
 	}
 }
 
@@ -10114,7 +10114,7 @@ void __stdcall function_2abbc0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(real *)&result = scenario_ramp_current_value(arguments[0], *(bool *)&arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10146,7 +10146,7 @@ void __stdcall function_2abc10(short function_index, long thread_index, bool ini
 	{
 		long first_argument = arguments[0];
 		*(real *)&result = function_xa57cf5(first_argument, *(bool *)&arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10177,7 +10177,7 @@ void __stdcall function_2abca0(short function_index, long thread_index, bool ini
 	{
 		long first_argument = arguments[0];
 		*(real *)&result = interpolator_get_target_value(first_argument, *(bool *)&arguments[1]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10207,7 +10207,7 @@ void __stdcall function_2abd80(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(real *)&result = scenario_ramp_progress(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10262,7 +10262,7 @@ void __stdcall function_2abe70(short function_index, long thread_index, bool ini
 	{
 		long first_argument = arguments[0];
 		*(real *)&result = interpolator_convert_value(first_argument, *(real *)&arguments[1], *(bool *)&arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10280,7 +10280,7 @@ void __stdcall function_2abf00(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(real *)&result = scenario_ramp_value_at_fraction(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10298,7 +10298,7 @@ void __stdcall function_2abf60(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(real *)&result = scenario_ramp_value_at_time(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10316,7 +10316,7 @@ void __stdcall function_2abfc0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(real *)&result = scenario_ramp_value_after(arguments[0], *(real *)&arguments[1], *(bool *)&arguments[2]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10327,7 +10327,7 @@ s_type_f4462a const g_44f328 = { _hs_type_real, 0, function_2abfc0, NULL, 3, { _
 void __stdcall function_2ac020(short function_index, long thread_index, bool initialize)
 {
 	scenario_ramps_stop_all();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f340 = { _hs_type_void, 0, function_2ac020, NULL, 0 };
@@ -10337,7 +10337,7 @@ s_type_f4462a const g_44f340 = { _hs_type_void, 0, function_2ac020, NULL, 0 };
 void __stdcall function_2ac040(short function_index, long thread_index, bool initialize)
 {
 	scenario_ramps_resume_all();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f350 = { _hs_type_void, 0, function_2ac040, NULL, 0 };
@@ -10347,7 +10347,7 @@ s_type_f4462a const g_44f350 = { _hs_type_void, 0, function_2ac040, NULL, 0 };
 void __stdcall function_2ac060(short function_index, long thread_index, bool initialize)
 {
 	scenario_ramps_toggle_last_used();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f360 = { _hs_type_void, 0, function_2ac060, NULL, 0 };
@@ -10361,7 +10361,7 @@ void __stdcall function_2ac080(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0aa0(*(real *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10376,7 +10376,7 @@ void __stdcall function_2ac0c0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0b20(*(real *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10391,7 +10391,7 @@ void __stdcall function_2ac100(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0ba0(*(real *)&arguments[0], *(real *)&arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10406,7 +10406,7 @@ void __stdcall function_2ac150(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_13c250(arguments[0], arguments[1], arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10423,7 +10423,7 @@ void __stdcall function_2ac1a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_13c5a0(arguments[0], arguments[1], arguments[2], arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10438,7 +10438,7 @@ void __stdcall function_2ac1f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5107ee = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10462,7 +10462,7 @@ void __stdcall function_2ac230(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		hud_message_show_once(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10478,7 +10478,7 @@ void __stdcall function_2ac270(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		*(bool *)&result = function_2ac270_get(arguments[0]);
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10510,7 +10510,7 @@ void __stdcall function_2ac2f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		looping_sound_set_volumes(*(real *)&arguments[0], *(real *)&arguments[1], *(real *)&arguments[2], *(real *)&arguments[3], arguments[4], *(real *)&arguments[5]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10521,7 +10521,7 @@ s_type_f4462a const g_44f43c = { _hs_type_void, 0, function_2ac2f0, NULL, 6, { _
 void __stdcall function_2ac380(short function_index, long thread_index, bool initialize)
 {
 	function_1915f0();
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f458 = { _hs_type_void, 0, function_2ac380, NULL, 0 };
@@ -10531,7 +10531,7 @@ s_type_f4462a const g_44f458 = { _hs_type_void, 0, function_2ac380, NULL, 0 };
 void __stdcall function_2ac3a0(short function_index, long thread_index, bool initialize)
 {
 	sequence_start_stage(4);
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f468 = { _hs_type_void, 0, function_2ac3a0, NULL, 0 };
@@ -10541,7 +10541,7 @@ s_type_f4462a const g_44f468 = { _hs_type_void, 0, function_2ac3a0, NULL, 0 };
 void __stdcall function_2ac3e0(short function_index, long thread_index, bool initialize)
 {
 	((s_510c50_view *)g_510c50)->flag22 = true;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f478 = { _hs_type_void, 0, function_2ac3e0, NULL, 0 };
@@ -10555,7 +10555,7 @@ void __stdcall function_2ac400(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_4ed288->flag240 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10572,7 +10572,7 @@ void __stdcall function_2ac450(short function_index, long thread_index, bool ini
 		real value = *(real *)&arguments[0];
 		value = PIN(value, 0.0f, 5.0f);
 		((s_timed_effect_view *)g_5093e0)->value3f8 = value;
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10591,7 +10591,7 @@ void __stdcall function_2ac4b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16e330(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10606,7 +10606,7 @@ void __stdcall function_2ac500(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16e510(*(short *)&arguments[0], arguments[1], *(bool *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10623,7 +10623,7 @@ void __stdcall function_2ac550(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_16e5a0(*(short *)&arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10655,7 +10655,7 @@ void __stdcall function_2ac5a0(short function_index, long thread_index, bool ini
 			s_bitmap_group_view *group = (s_bitmap_group_view *)g_4e3b44[bitmap_index & 0xffff].bytes;
 			texture_cache_bitmap_request((s_bitmap_data *)(group->bitmaps + arguments[1] * 0x74));
 		}
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10665,7 +10665,7 @@ s_type_f4462a const g_44f4f0 = { _hs_type_void, 0, function_2ac5a0, NULL, 2, { _
 // @retail 0x2ac600
 void __stdcall function_2ac600(short function_index, long thread_index, bool initialize)
 {
-	function_209ae0(thread_index, 0x37);
+	hs_thread_return_value(thread_index, 0x37);
 }
 
 s_type_f4462a const g_44f504 = { _hs_type_long_integer, 0, function_2ac600, NULL, 0 };
@@ -10679,7 +10679,7 @@ void __stdcall function_2ac620(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->flag0 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10694,7 +10694,7 @@ void __stdcall function_2ac660(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->flag1 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10709,7 +10709,7 @@ void __stdcall function_2ac6b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->value4 = *(real *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10724,7 +10724,7 @@ void __stdcall function_2ac700(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->value8 = *(real *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10739,7 +10739,7 @@ void __stdcall function_2ac750(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->valuec = *(real *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10754,7 +10754,7 @@ void __stdcall function_2ac7a0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->value10 = *(real *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10769,7 +10769,7 @@ void __stdcall function_2ac7f0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->value14 = *(real *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10784,7 +10784,7 @@ void __stdcall function_2ac840(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->flag18 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10799,7 +10799,7 @@ void __stdcall function_2ac890(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->flag19 = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10814,7 +10814,7 @@ void __stdcall function_2ac8e0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->flag1a = *(bool *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10829,7 +10829,7 @@ void __stdcall function_2ac930(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->value1c = *(real *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10844,7 +10844,7 @@ void __stdcall function_2ac980(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		g_5093e4->value20 = *(real *)&arguments[0];
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10855,7 +10855,7 @@ s_type_f4462a const g_44f5f0 = { _hs_type_void, 0, function_2ac980, NULL, 1, { _
 void __stdcall function_2ac9d0(short function_index, long thread_index, bool initialize)
 {
 	g_4ea936 = true;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f604 = { _hs_type_void, 0, function_2ac9d0, NULL, 0 };
@@ -10865,7 +10865,7 @@ s_type_f4462a const g_44f604 = { _hs_type_void, 0, function_2ac9d0, NULL, 0 };
 void __stdcall function_2ac9f0(short function_index, long thread_index, bool initialize)
 {
 	g_4ed288->flag241 = true;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f614 = { _hs_type_void, 0, function_2ac9f0, NULL, 0 };
@@ -10875,7 +10875,7 @@ s_type_f4462a const g_44f614 = { _hs_type_void, 0, function_2ac9f0, NULL, 0 };
 void __stdcall function_2aca10(short function_index, long thread_index, bool initialize)
 {
 	g_509415 = false;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f660 = { _hs_type_void, 0, function_2aca10, NULL, 0 };
@@ -10885,7 +10885,7 @@ s_type_f4462a const g_44f660 = { _hs_type_void, 0, function_2aca10, NULL, 0 };
 void __stdcall function_2aca30(short function_index, long thread_index, bool initialize)
 {
 	g_509415 = true;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44f670 = { _hs_type_void, 0, function_2aca30, NULL, 0 };
@@ -10899,7 +10899,7 @@ void __stdcall function_2a12b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_2a0840(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10922,7 +10922,7 @@ void __stdcall function_2a4380(short function_index, long thread_index, bool ini
 		if (unit_index != NONE && definition_index != NONE)
 			has_weapon = unit_has_weapon_definition(unit_index, definition_index);
 		*(bool *)&result = has_weapon;
-		function_209ae0(thread_index, result);
+		hs_thread_return_value(thread_index, result);
 	}
 }
 
@@ -10939,7 +10939,7 @@ void __stdcall function_2a9580(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_12b850(*(short *)&arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10957,7 +10957,7 @@ void __stdcall function_2aa0b0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		looping_sound_definition_request_first_chunks(arguments[0]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10974,7 +10974,7 @@ void __stdcall function_2ab620(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_0204f0(arguments[0], *(real *)&arguments[1], *(real *)&arguments[2]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -10991,7 +10991,7 @@ void __stdcall function_2ab930(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_21f490(arguments[0], arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -11010,7 +11010,7 @@ void __stdcall function_2aca50(short function_index, long thread_index, bool ini
 		long graph_index = arguments[0];
 		if (graph_index != NONE)
 			function_1dd0b0((s_graph_tag *)g_4e3b44[graph_index & 0xffff].bytes, arguments[1]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
@@ -11027,7 +11027,7 @@ void __stdcall function_2a9db0(short function_index, long thread_index, bool ini
 	if (arguments)
 	{
 		function_189a50(arguments[0], arguments[1], *(real *)&arguments[2], arguments[3]);
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	}
 }
 
