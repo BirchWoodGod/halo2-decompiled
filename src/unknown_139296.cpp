@@ -626,9 +626,10 @@ PRIVATE __forceinline s_new_hud_user *pulse_user(long index)
 // @retail 0x2003dc
 void function_2003dc(long user_index)
 {
-	char *ticks = (char *)pulse_user(user_index) + 0x2d;
-	for (long i = 0; i < 9; i++, ticks += 4)
+	s_new_hud_user *user = pulse_user(user_index);
+	for (long i = 0; i < 9; i++)
 	{
+		char *ticks = (char *)user + 0x2d + i * 4;
 		if (ticks[-1] > 0)
 		{
 			if (--ticks[-1] == 0)

@@ -95,7 +95,6 @@ struct s_9cca0
 // @retail 0x9cca0
 bool c_breakable_surface_damage_event_definition::v11(long arg_0, long const *arg_1, long arg_2, void const *arg_3)
 {
-    volatile bool local_2 = false;
     s_9cca0 local_1;
     byte const *local_0 = (byte const *)arg_3;
     if (function_122c10(0x6a707421, *(long const *)(local_0 + 0x30)))
@@ -106,8 +105,8 @@ bool c_breakable_surface_damage_event_definition::v11(long arg_0, long const *ar
         local_1.field_20 = *(long const *)(local_0 + 0x10);
         local_1.field_30 = *(vector3f const *)(local_0 + 0x24);
         local_1.field_3c = *(vector3f const *)(local_0 + 0x18);
-        local_1.field_7c = -1;
         local_1.field_0 = *(long const *)(local_0 + 0x30);
+        local_1.field_7c = -1;
         if (*g_4ed280 && local_1.field_0 != NONE)
             function_184440(*(long const *)local_0, *(long const *)(local_0 + 4), (s_18444a const *)&local_1, *(long const *)(local_0 + 8));
     }

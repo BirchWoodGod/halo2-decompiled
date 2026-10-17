@@ -2351,6 +2351,8 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     if (strength > 1.0f) strength = 1.0f;
     else if (strength <= 0.0f) return;
     if (!g_4b99b0[1] && alternate_target) return;
+    real default_source[4];
+    real default_destination[4];
     real width = 1.0f, height = 1.0f;
     if (tag != NONE)
     {
@@ -2385,10 +2387,12 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, 2);
     D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 2);
     D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
+#pragma inline_depth(0)
     function_0224f0(0, D3DTSS_MAXANISOTROPY, 0);
     function_0224f0(0, D3DTSS_MIPMAPLODBIAS, 0);
     function_0224f0(0, D3DTSS_COLORSIGN, 0);
     function_0224f0(0, D3DTSS_ALPHAKILL, 0);
+#pragma inline_depth(255)
     function_1cf50();
     memset(&g_484f68, 0, sizeof(g_484f68));
     g_484f68.PSTextureModes = 1;
@@ -2428,15 +2432,17 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     function_1ccf0(&g_484f68);
     function_1cc30(12);
     function_1c710(g_51f0f0);
-    real default_source[4] = { 0.0f, width, 0.0f, height };
-    real default_destination[4];
+    default_source[0] = 0.0f;
+    default_source[1] = width;
+    default_source[2] = 0.0f;
+    default_source[3] = height;
     default_destination[0] = 320.0f - width * 0.5f;
     default_destination[1] = 320.0f + width * 0.5f;
     default_destination[2] = 240.0f - height * 0.5f + arg_af5a49;
     default_destination[3] = arg_af5a49 + height * 0.5f + 240.0f;
     if (!source) source = default_source;
     if (!destination) destination = default_destination;
-    D3DDevice_Begin(D3DPT_QUADLIST);
+    D3DDevice_Begin(D3DPT_TRIANGLEFAN);
     real inverse_width = 1.0f / width;
     real inverse_height = 1.0f / height;
     D3DDevice_SetVertexData2f(1, source[0] * inverse_width, source[2] * inverse_height);
@@ -2558,6 +2564,15 @@ bool __stdcall function_23690(s_coefficient_layout const *layout, short order, l
     return true;
 }
 
+/* a corner of the unit square, rotated by an angle and scaled, as a texture
+   coordinate pair in [0, 1] */
+static __forceinline void texture_corner_rotate(real x, real y, real cosine, real sine,
+    real scale, real *coordinates)
+{
+    coordinates[0] = ((x * cosine - y * sine) * scale + 1.0f) * 0.5f;
+    coordinates[1] = ((x * sine + y * cosine) * scale + 1.0f) * 0.5f;
+}
+
 // @retail 0x29b00
 void __stdcall function_29b00(long tag, long first_bitmap, real first_alpha,
     real first_angle, real first_scale, long second_bitmap, real second_alpha,
@@ -2572,9 +2587,10 @@ void __stdcall function_29b00(long tag, long first_bitmap, real first_alpha,
         width = (real)*(short *)(bitmap + 4);
         height = (real)*(short *)(bitmap + 6);
     }
-    short target = 0;
-    if (!screen_target) target = *(short *)(g_4b99b0 + 0x34);
-    function_14bc0(target, 0, false);
+    if (screen_target)
+        function_14bc0(0, 0, false);
+    else
+        function_14bc0(*(short *)(g_4b99b0 + 0x34), 0, false);
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
     function_0222d0(D3DRS_SRCBLEND, 1);
@@ -2607,10 +2623,8 @@ void __stdcall function_29b00(long tag, long first_bitmap, real first_alpha,
     memset(&g_484f68, 0, sizeof(g_484f68));
     g_484f68.PSTextureModes = 0x21;
     g_484f68.PSCombinerCount = 0x11002;
-    first_alpha = first_alpha < 0.0f ? 0.0f : first_alpha > 1.0f ? 1.0f : first_alpha;
-    second_alpha = second_alpha < 0.0f ? 0.0f : second_alpha > 1.0f ? 1.0f : second_alpha;
-    g_484f68.PSConstant0[0] = function_131fc0(first_alpha);
-    g_484f68.PSConstant1[0] = function_131fc0(second_alpha);
+    g_484f68.PSConstant0[0] = function_131fc0(first_alpha < 0.0f ? 0.0f : first_alpha > 1.0f ? 1.0f : first_alpha);
+    g_484f68.PSConstant1[0] = function_131fc0(second_alpha < 0.0f ? 0.0f : second_alpha > 1.0f ? 1.0f : second_alpha);
     g_484f68.PSRGBInputs[0] = 0x8110912;
     g_484f68.PSRGBOutputs[0] = 0xc00;
     g_484f68.PSFinalCombinerInputsABCD = 0xc;
@@ -2635,50 +2649,32 @@ void __stdcall function_29b00(long tag, long first_bitmap, real first_alpha,
     if (second_scale == 0.0f) second_scale = 1.0f;
     real first_coordinates[8], second_coordinates[8];
     real cosine = (real)cos(first_angle), sine = (real)sin(first_angle);
-    first_coordinates[0] = ((sine - cosine) * first_scale + 1.0f) * 0.5f;
-    first_coordinates[1] = ((-cosine - sine) * first_scale + 1.0f) * 0.5f;
-    first_coordinates[2] = ((cosine + sine) * first_scale + 1.0f) * 0.5f;
-    first_coordinates[3] = ((sine - cosine) * first_scale + 1.0f) * 0.5f;
-    first_coordinates[4] = ((cosine - sine) * first_scale + 1.0f) * 0.5f;
-    first_coordinates[5] = ((sine + cosine) * first_scale + 1.0f) * 0.5f;
-    first_coordinates[6] = ((-cosine - sine) * first_scale + 1.0f) * 0.5f;
-    first_coordinates[7] = ((cosine - sine) * first_scale + 1.0f) * 0.5f;
+    texture_corner_rotate(-1.0f, -1.0f, cosine, sine, first_scale, &first_coordinates[0]);
+    texture_corner_rotate(1.0f, -1.0f, cosine, sine, first_scale, &first_coordinates[2]);
+    texture_corner_rotate(1.0f, 1.0f, cosine, sine, first_scale, &first_coordinates[4]);
+    texture_corner_rotate(-1.0f, 1.0f, cosine, sine, first_scale, &first_coordinates[6]);
     cosine = (real)cos(second_angle); sine = (real)sin(second_angle);
-    second_coordinates[0] = ((sine - cosine) * second_scale + 1.0f) * 0.5f;
-    second_coordinates[1] = ((-cosine - sine) * second_scale + 1.0f) * 0.5f;
-    second_coordinates[2] = ((cosine + sine) * second_scale + 1.0f) * 0.5f;
-    second_coordinates[3] = ((sine - cosine) * second_scale + 1.0f) * 0.5f;
-    second_coordinates[4] = ((cosine - sine) * second_scale + 1.0f) * 0.5f;
-    second_coordinates[5] = ((sine + cosine) * second_scale + 1.0f) * 0.5f;
-    second_coordinates[6] = ((-cosine - sine) * second_scale + 1.0f) * 0.5f;
-    second_coordinates[7] = ((cosine - sine) * second_scale + 1.0f) * 0.5f;
+    texture_corner_rotate(-1.0f, -1.0f, cosine, sine, second_scale, &second_coordinates[0]);
+    texture_corner_rotate(1.0f, -1.0f, cosine, sine, second_scale, &second_coordinates[2]);
+    texture_corner_rotate(1.0f, 1.0f, cosine, sine, second_scale, &second_coordinates[4]);
+    texture_corner_rotate(-1.0f, 1.0f, cosine, sine, second_scale, &second_coordinates[6]);
 #pragma inline_depth(0)
-    D3DDevice_Begin(D3DPT_QUADLIST);
-#pragma inline_depth(255)
-#pragma inline_depth(0)
+    D3DDevice_Begin(D3DPT_TRIANGLEFAN);
     D3DDevice_SetVertexData2f(1, first_coordinates[0], first_coordinates[1]);
-#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(2, second_coordinates[0], second_coordinates[1]);
-#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, bounds[0], bounds[2], 16777215.0f, 16777215.0f);
-#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, first_coordinates[2], first_coordinates[3]);
     D3DDevice_SetVertexData2f(2, second_coordinates[2], second_coordinates[3]);
-#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, bounds[1], bounds[2], 16777215.0f, 16777215.0f);
-#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, first_coordinates[4], first_coordinates[5]);
     D3DDevice_SetVertexData2f(2, second_coordinates[4], second_coordinates[5]);
-#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, bounds[1], bounds[3], 16777215.0f, 16777215.0f);
-#pragma inline_depth(255)
     D3DDevice_SetVertexData2f(1, first_coordinates[6], first_coordinates[7]);
     D3DDevice_SetVertexData2f(2, second_coordinates[6], second_coordinates[7]);
-#pragma inline_depth(0)
     D3DDevice_SetVertexData4f(0, bounds[0], bounds[3], 16777215.0f, 16777215.0f);
-#pragma inline_depth(255)
     D3DDevice_End();
 }
+#pragma inline_depth(255)
 
 struct s_bitmap_view;
 struct s_type_7ba8e9;
