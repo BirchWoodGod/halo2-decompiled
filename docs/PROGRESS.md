@@ -2,6 +2,33 @@
 
 The newest entry comes first.
 
+## 2026-10-16: 8922 functions match
+
+```
+matched 8922 of 11321 game functions (1234823 of 2784283 bytes, 44.35%)
+```
+
+12 new matches, none lost:
+- Machine 3's batch 59 (#518): `0x5fa30`, `0x63f50`, `0x63ff0`, `0x76aa0`, `0xb8ca0`, `0xbfa40`, `0xc0040`, `0x11c5f0`, `0x122c10`, `0x1f2fe0`, `0x2003dc` and `0x26c180` match.
+
+## 2026-10-16: 8910 functions match
+
+```
+matched 8910 of 11321 game functions (1231523 of 2784283 bytes, 44.23%)
+```
+
+3 new matches, none lost:
+- @BirchWoodGod's #508, #509: `0x7f190`, `0x7fa40` and `0x1b52a0` match.
+
+## 2026-10-16: 8907 functions match
+
+```
+matched 8907 of 11321 game functions (1230810 of 2784283 bytes, 44.21%)
+```
+
+4 new matches, none lost:
+- @BirchWoodGod's #514: `0x216c70`, `0x216ce0`, `0x2174b0` and `0x217520` match.
+
 ## 2026-10-16: 8903 functions match
 
 ```

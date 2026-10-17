@@ -57,7 +57,7 @@ struct s_object_functions_definition_ab
     long count;
     s_object_function_ab *functions;
 };
-bool function_108d90(long object_index, long name, real *value, bool *enabled);
+bool object_dispatch_query_function_value(long object_index, long name, real *value, bool *enabled);
 bool function_10aac0(long object_index, long name, real *value, long *index);
 bool function_ba8c0(s_object_function_ab const *function, long object_index, real *out);
 
@@ -85,7 +85,7 @@ bool __stdcall function_bab40(volatile long object_index, long name, real *value
         *saved_value = 1.0f;
         return true;
     }
-    if (object_index != NONE && !function_108d90(object_index, name, saved_value, &enabled))
+    if (object_index != NONE && !object_dispatch_query_function_value(object_index, name, saved_value, &enabled))
     {
         object = ((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
         s_object_functions_definition_ab *definition = (s_object_functions_definition_ab *)g_4e3b44[*(long *)object & 0xffff].bytes;

@@ -453,7 +453,7 @@ bool network_session_create_key(c_class_58d20 *session, long local, long mode)
 			XNKID kid = entry->kid;
 			XNKEY key = entry->key;
 			network_session_set_key(session, local_value, &kid, &key);
-			return true;
+			result = true;
 		}
 	}
 	return result;
@@ -1364,22 +1364,21 @@ bool network_session_parameters_set_summary(c_class_58d20 *session, const s_sess
 	return local_0;
 }
 
+static inline char *function_x91aa57(char *destination, const char *source, dword size)
+{
+	strncpy(destination, source, size);
+	destination[size - 1] = 0;
+	return destination;
+}
+
 // @retail 0x5b790
-bool network_session_parameters_set_value4d08(c_class_58d20 *session, const char *string, long value4d08, long value4d0c)
+bool network_session_parameters_set_value4d08(c_class_58d20 *session, long value4d08, long value4d0c, const char *string)
 {
 	bool result = false;
 
 	if (session_state_is_live(session) && function_058d50(session))
 	{
-		if (session->function_058d20())
-		{
-			session->value4d08 = value4d08;
-			session->value4d0c = value4d0c;
-			strncpy(session->string4d10, string, sizeof(session->string4d10));
-			session->string4d10[sizeof(session->string4d10) - 1] = 0;
-			session->update_count++;
-		}
-		else
+		if (!session->function_058d20())
 		{
 			s_network_message_parameters_request request;
 			parameters_request_initialize(session, &request);
@@ -1389,6 +1388,13 @@ bool network_session_parameters_set_value4d08(c_class_58d20 *session, const char
 			strncpy(request.string4d10, string, sizeof(request.string4d10));
 			request.string4d10[sizeof(request.string4d10) - 1] = 0;
 			network_session_send_to_host(session, _network_message_type_parameters_request, sizeof(request), &request);
+		}
+		else
+		{
+			session->value4d08 = value4d08;
+			session->value4d0c = value4d0c;
+			function_x91aa57(session->string4d10, string, sizeof(session->string4d10));
+			session->update_count++;
 		}
 		result = true;
 	}
@@ -2907,13 +2913,6 @@ long c_class_58d20::find_member_by_channel(long channel_index)
 
 struct s_session_summary;
 bool session_summary_valid(const s_session_summary *summary);
-
-static inline char *function_x91aa57(char *destination, const char *source, dword size)
-{
-	strncpy(destination, source, size);
-	destination[size - 1] = 0;
-	return destination;
-}
 
 // @retail 0x5dac0
 bool network_session_handle_parameters_request(const s_network_message_parameters_request *message, c_class_58d20 *session, long remote_index)

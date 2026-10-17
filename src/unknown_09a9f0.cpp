@@ -11,8 +11,8 @@
 #define OBJECT_HEADER(index) (&((s_object_header *)g_4e0300->data)[(index) & 0xFFFF])
 #define OBJECT(index) (OBJECT_HEADER(index)->object)
 
-void function_108e10(long object_index);
-void function_108e80(long object_index);
+void object_dispatch_attach_simulation_entity(long object_index);
+void object_dispatch_detach_simulation_entity(long object_index);
 __declspec(noinline) void function_bb7b0(long object_index);
 // @retail 0x9f9d0
 long c_turret_entity_definition::v0()
@@ -237,7 +237,7 @@ bool c_object_type_definition::v22(s_entity *entity, long b, s_entity_info *info
         if (!(OBJECT_HEADER(entity->object_index)->flags & 0x10))
         {
             OBJECT(entity->object_index)->field_d4 = entity->field0;
-            function_108e10(entity->object_index);
+            object_dispatch_attach_simulation_entity(entity->object_index);
             result = true;
             if (value)
             {
@@ -360,7 +360,7 @@ bool c_turret_entity_definition::v30(long index)
 	long field14 = object->field14;
 	if (field14 != NONE)
 	{
-		function_108e80(index);
+		object_dispatch_detach_simulation_entity(index);
 		object->field_d4 = NONE;
 		object->field_d8 = 0;
 		result = true;

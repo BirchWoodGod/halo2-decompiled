@@ -808,7 +808,7 @@ void function_1caa40(long object_index, point3f *position)
 {
 	s_ai_position_object *object = (s_ai_position_object *)((s_ai_object_header *)g_4e0300->data)[object_index & 0xffff].object;
 	long type_mask = 1 << object->type;
-	bool use_marker = (type_mask & 3) || (type_mask & 0x1000);
+	bool use_marker = (type_mask & 0x1003) != 0;
 
 	if (use_marker)
 	{

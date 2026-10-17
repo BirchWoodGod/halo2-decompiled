@@ -741,22 +741,22 @@ void function_bfa40(long object_index, long node_mask)
     byte *model = g_4e3b44[model_index & 0xffff].bytes;
     if (*(long *)(model + 4) == NONE)
         return;
+    transform4x3f *parent = 0;
+    bool parent_mirrored = false;
     transform4x3f *matrices = (transform4x3f *)(object + *(short *)(object + 0x116));
     rigid_transform_scaled *orientations = (rigid_transform_scaled *)(object + *(short volatile *)(object + 0x112));
     long count = (dword)(long)*(short *)(object + 0x110) / sizeof(rigid_transform_scaled);
     long parent_index = *(long *)(object + 0x14);
-    transform4x3f *parent = 0;
-    bool parent_mirrored = false;
     if (parent_index != NONE)
     {
         parent = function_b8bd0(parent_index, *(char *)(object + 0x18));
         byte *local_be682a = (byte *)((s_object_transform_header *)g_4e0300->data)[parent_index & 0xffff].object;
         parent_mirrored = (*(dword *)(local_be682a + 4) >> 10) & 1;
     }
-    struct { transform4x3f relative, root, inverse_parent, inverse_root; } workspace;
+    transform4x3f relative, root, inverse_parent, inverse_root;
     function_bdc40((point3f *)(object + 0x64), (vector3f *)(object + 0x70), (vector3f *)(object + 0x7c),
-        *(real *)(object + 0xa0), (*(dword *)(object + 4) >> 10) & 1, parent, parent_mirrored, &workspace.root);
-    function_141590(&workspace.root, &workspace.inverse_root);
+        *(real *)(object + 0xa0), (*(dword *)(object + 4) >> 10) & 1, parent, parent_mirrored, &root);
+    function_141590(&root, &inverse_root);
     for (long i = 0; i < count; ++i)
     {
         if (!node_mask || (((dword *)node_mask)[i >> 5] & (1 << (i & 31))))
@@ -764,23 +764,23 @@ void function_bfa40(long object_index, long node_mask)
             short node_parent = *(short *)(*(byte **)(model + 0x7c) + i * 0x5c + 4);
             if ((dword)(long)node_parent != (dword)NONE)
             {
-                function_141590(&matrices[node_parent], &workspace.inverse_parent);
-                function_142a60(&workspace.inverse_parent, &matrices[i], &workspace.relative);
-                function_141f60(&workspace.relative.rotation, &orientations[i].rotation);
-                orientations[i].position = workspace.relative.position;
-                orientations[i].scale = workspace.relative.scale;
+                function_141590(&matrices[node_parent], &inverse_parent);
+                function_142a60(&inverse_parent, &matrices[i], &relative);
+                function_141f60(&relative.rotation, &orientations[i].rotation);
+                orientations[i].position = relative.position;
+                orientations[i].scale = relative.scale;
             }
             else
             {
-                function_142a60(&workspace.inverse_root, &matrices[i], &workspace.relative);
-                orientation_from_matrix4x3(&workspace.relative, &orientations[i]);
+                function_142a60(&inverse_root, &matrices[i], &relative);
+                orientation_from_matrix4x3(&relative, &orientations[i]);
             }
         }
     }
 }
 
 long bit_vector_highest_set_bit(dword const *bits, long bit_count);
-void function_109050(long object_index, long a, long b, long c);
+void object_dispatch_adjust_node_orientations(long object_index, long a, long b, long c);
 struct s_1d9240;
 void function_1d9470(s_1d9240 const *p, long count, dword const *mask, s_blend_orientation const *targets,
     s_blend_orientation *orientations);
@@ -805,7 +805,7 @@ void function_bdb60(long object_index, s_16760c_render_model *render_model, s_an
                 (real_quaternion_transform *)orientations, 0, object_index, node_count);
         }
         function_bd970(object_index, render_model, state, node_mask, node_count, orientations);
-        function_109050(object_index, node_mask, node_count, (long)orientations);
+        object_dispatch_adjust_node_orientations(object_index, node_mask, node_count, (long)orientations);
         if (state->unknown64.unknown1 && !(state->unknown64.unknown3 & 2))
         {
             byte *object = (byte *)((s_object_transform_header *)g_4e0300->data)[object_index & 0xffff].object;
@@ -843,7 +843,7 @@ void __stdcall function_b7880(long object_index, long node_index, point3f const 
 
 
 struct s_location;
-void function_109290(long object_index, long position, long forward, long up);
+void object_dispatch_moved(long object_index, long position, long forward, long up);
 bool __stdcall function_b7430(long object_index, point3f const *position, vector3f const *forward, vector3f const *up,
     s_location const *location, bool a, bool b, bool c, bool d);
 void __stdcall function_b8540(long object_index);
@@ -873,7 +873,7 @@ void function_b75a0(long object_index, point3f const *point, vector3f const *for
         saved_up = *up;
         up_copy = &saved_up;
     }
-    function_109290(object_index, (long)position_copy, (long)forward_copy, (long)up_copy);
+    object_dispatch_moved(object_index, (long)position_copy, (long)forward_copy, (long)up_copy);
     if (!function_b7430(object_index, position_copy, forward_copy, up_copy, location, true, true, unknown, false))
     {
         bool attached = false;
@@ -1074,7 +1074,7 @@ void function_0bfed0(long node_count, dword *mask);
 struct s_index_triple;
 bool function_0b6780(s_index_triple const *triple);
 
-void function_1090d0(long object_index, long matrices);
+void object_dispatch_adjust_root_matrix(long object_index, long matrices);
 
 void __stdcall function_1421f0(transform4x3f *out, rigid_transform_scaled const *orientation);
 bool function_a98b0(long index, vector3f *position);
@@ -1181,7 +1181,7 @@ void __stdcall function_bd090(long object_index)
                 function_1421f0(&root, &orientations[0]);
                 function_142a60(&base, &root, matrices);
             }
-            function_1090d0(object_index, (long)matrices);
+            object_dispatch_adjust_root_matrix(object_index, (long)matrices);
         }
         for (long node = 1; node < *(long *)(render_model + 0x48); node++)
         {

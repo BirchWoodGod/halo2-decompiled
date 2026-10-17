@@ -579,7 +579,7 @@ void __stdcall function_215e60(long file_index)
 extern long g_55c154;
 long function_217590(long memory_unit);
 bool function_216d70(char *path, const char *directory, long type);
-s_type_acf665 *function_136710(s_type_acf665 *file, bool replace, const char *name);
+s_type_acf665 *file_ref_create(s_type_acf665 *file, bool replace, const char *name);
 bool saved_game_file_write_save_image(long type, s_saved_game_file_location *location);
 long saved_game_file_type_size_in_blocks(long type);
 bool saved_game_storage_has_free_blocks(long blocks);
@@ -628,7 +628,7 @@ long function_215c00(long type, wchar_t const *display_name)
                         char path[256];
                         __int64 state;
                     } file;
-                    if (function_136710((s_type_acf665 *)&file, false, path) &&
+                    if (file_ref_create((s_type_acf665 *)&file, false, path) &&
                         function_1367d0((s_type_acf665 *)&file) &&
                         saved_game_file_write_save_image(type, (s_saved_game_file_location *)directory) &&
                         function_216990(0, (c_location_record const *)&location, &index))
@@ -662,24 +662,19 @@ long function_215c00(long type, wchar_t const *display_name)
 struct s_saved_game_read;
 struct s_saved_game_file_task;
 char *function_122810(char *path, const char *suffix);
-bool signed_file_read_begin(void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task, const char *path);
-bool signed_file_write_begin(void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task, const char *path);
+bool signed_file_read_begin(const char *path, void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task);
+bool signed_file_write_begin(const char *path, void *header, dword header_size, void *body, dword body_size, bool non_roamable, s_saved_game_file_task *task);
 
 // @retail 0x2174b0
 bool __stdcall function_2174b0(long file_index, void *header, long header_size, void *body, long body_size, s_saved_game_read *task)
 {
-    (void)&header;
-    (void)&header_size;
-    (void)&body;
-    (void)&body_size;
-    (void)&task;
     bool result = false;
     char path[256];
     path[0] = 0;
     if (function_2160b0(file_index, path))
     {
         function_122810(path, "auxilary.bin");
-        result = signed_file_read_begin(header, header_size, body, body_size, false, (s_saved_game_file_task *)task, path);
+        result = signed_file_read_begin(path, header, header_size, body, body_size, false, (s_saved_game_file_task *)task);
     }
     return result;
 }
@@ -687,18 +682,13 @@ bool __stdcall function_2174b0(long file_index, void *header, long header_size, 
 // @retail 0x217520
 bool __stdcall function_217520(long file_index, void const *header, long header_size, void const *body, long body_size, s_saved_game_read *task)
 {
-    (void)&header;
-    (void)&header_size;
-    (void)&body;
-    (void)&body_size;
-    (void)&task;
     bool result = false;
     char path[256];
     path[0] = 0;
     if (function_2160b0(file_index, path))
     {
         function_122810(path, "auxilary.bin");
-        result = signed_file_write_begin((void *)header, header_size, (void *)body, body_size, false, (s_saved_game_file_task *)task, path);
+        result = signed_file_write_begin(path, (void *)header, header_size, (void *)body, body_size, false, (s_saved_game_file_task *)task);
     }
     return result;
 }

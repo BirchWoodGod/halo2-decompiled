@@ -12,7 +12,7 @@
 
 long function_189ee0(long tag_index);
 real sound_permutation_reference_duration(long definition_index, s_sound_permutation_reference const *reference);
-void function_109220(long object_index, long tag_index, long sound_index);
+void object_dispatch_sound_started(long object_index, long tag_index, long sound_index);
 extern s_sound_source_callbacks const g_444b3c;
 
 struct s_sound_tag_flags

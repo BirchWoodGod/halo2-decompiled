@@ -804,12 +804,12 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 	s_animation_names names;
 	s_animation_names found;
 	c_type_709360 animation_id;
-	bool loops = true;
 
 	names.mode = mode;
 	names.weapon_class = weapon_class;
 	names.weapon_type = weapon_type;
 	names.set = set;
+	bool loops = true;
 	if (channel_valid(&channels[0]))
 	{
 		loops = !TEST_FIELD_BIT(function_1daea0(graph_tag_get(channels[0].graph_tag_index), channels[0].animation_id)->flag1);
@@ -823,7 +823,6 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 		animation_id.index != NONE && !(state_flags & 8))
 	{
 		c_type_709360 transition_id;
-		c_type_709360 blend_id;
 		bool blend = false;
 		real fraction;
 		long transition_set;
@@ -865,6 +864,7 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 					fraction = PIN(fraction, 0.0f, 1.0f);
 				}
 			}
+			c_type_709360 blend_id;
 			transition_set = NONE;
 			if (!(state_flags & 0x100))
 			{
@@ -924,7 +924,7 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 	}
 	if (!(state_flags & 4))
 	{
-		return result;
+		goto animation_done;
 	}
 	result = true;
 
@@ -953,6 +953,7 @@ names_store:
 			}
 		}
 	}
+animation_done:
 	return result;
 }
 

@@ -1,3 +1,4 @@
+#include "effects.h"
 #include "unknown_11c920.h"
 #include "unknown_0259d0.h"
 #include "camera_storage.h"
@@ -46,21 +47,14 @@ extern "C" void _ReadWriteBarrier(void);
 // @retail 0xc0040
 void function_c0040()
 {
-	s_record_pool *array = g_4e030c;
-	array->valid = true;
-	record_pool_release_all(array);
+	data_make_valid_inlined(g_4e030c);
 	_ReadWriteBarrier();
 	g_5107e8->flag8 = true;
 	_ReadWriteBarrier();
 	memset(g_4e0310, 0xff, 512 * sizeof(long));
+	data_make_valid_inlined((s_record_pool *)g_4e0318);
 	_ReadWriteBarrier();
-	array = (s_record_pool *)g_4e0318;
-	array->valid = true;
-	record_pool_release_all(array);
-	_ReadWriteBarrier();
-	array = (s_record_pool *)g_4e0314;
-	array->valid = true;
-	record_pool_release_all(array);
+	data_make_valid_inlined((s_record_pool *)g_4e0314);
 	_ReadWriteBarrier();
 	g_5107e8->flag0 = false;
 	g_5107e8->time4 = 0;
