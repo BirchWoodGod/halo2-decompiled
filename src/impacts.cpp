@@ -138,7 +138,6 @@ point3f *function_b9dd0(long object_index, point3f *result);
 real function_30bf0(vector3f *v);
 
 /* the havok components (src/unknown_1cec30.cpp, src/unknown_0dc3a0.cpp) */
-void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, transform4x3f *matrix);
 void havok_component_contact_properties_get(s_havok_component const *component, long contact_index, long *property_a, long *property_b);
 void function_141590(transform4x3f const *in, transform4x3f *out);
 
@@ -795,7 +794,7 @@ void impact_local_positions_update(
 	transform4x3f matrix;
 	transform4x3f inverse;
 
-	havok_component_rigid_body_matrix_get(rigid_body_index_a, havok_component_get(impact->component_a), &matrix);
+	havok_component_get(impact->component_a)->rigid_body_matrix_get(rigid_body_index_a, &matrix);
 	if (impact->shape.type != NONE)
 	{
 		impact->position = matrix.position;
@@ -806,7 +805,7 @@ void impact_local_positions_update(
 		function_2281a1(&inverse, &impact->position, &impact->local_position_a);
 		if (impact->component_b != NONE)
 		{
-			havok_component_rigid_body_matrix_get(rigid_body_index_b, havok_component_get(impact->component_b), &matrix);
+			havok_component_get(impact->component_b)->rigid_body_matrix_get(rigid_body_index_b, &matrix);
 			function_141590(&matrix, &inverse);
 			function_2281a1(&inverse, &impact->position, &impact->local_position_b);
 		}
@@ -844,7 +843,7 @@ void impact_orientation_get(
 	{
 		transform4x3f matrix;
 
-		havok_component_rigid_body_matrix_get(rigid_body_index, havok_component_get(impact->component_a), &matrix);
+		havok_component_get(impact->component_a)->rigid_body_matrix_get(rigid_body_index, &matrix);
 		*position = matrix.position;
 		*forward = matrix.forward;
 		*up = matrix.up;
@@ -1802,13 +1801,13 @@ void function_228770(
 	{
 		transform4x3f matrix;
 
-		havok_component_rigid_body_matrix_get(rigid_body_index_a, component, &matrix);
+		component->rigid_body_matrix_get(rigid_body_index_a, &matrix);
 		function_2281a1(&matrix, &impact->local_position_a, &impact->position);
 		if (impact->component_b != NONE)
 		{
 			point3f position_b;
 
-			havok_component_rigid_body_matrix_get(rigid_body_index_b, havok_component_get(impact->component_b), &matrix);
+			havok_component_get(impact->component_b)->rigid_body_matrix_get(rigid_body_index_b, &matrix);
 			function_2281a1(&matrix, &impact->local_position_b, &position_b);
 			impact->position.x += (position_b.x - impact->position.x) * 0.5f;
 			impact->position.y += (position_b.y - impact->position.y) * 0.5f;
@@ -2020,7 +2019,7 @@ void function_226a60(
 						long impact_index;
 
 						havok_component_contact_properties_get(component, i, &rigid_body_index_a, &rigid_body_index_b);
-						havok_component_rigid_body_matrix_get(rigid_body_index_a, component, &matrix);
+						component->rigid_body_matrix_get(rigid_body_index_a, &matrix);
 						impact_data_set(&data, false, component_index, rigid_body_index_a, *(c_type_47f957 const *)&material->material_a,
 							rigid_body_index_b != NONE ? component_index : NONE, rigid_body_index_b, *(c_type_47f957 const *)&material->material_b,
 							&matrix.position, &matrix.forward, NONE, &shape);

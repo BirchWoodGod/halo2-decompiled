@@ -54,8 +54,6 @@ void function_ba3d0(long index);
 void function_be1d0(long index);
 void __stdcall function_b8890(long index);
 void function_be690(long index);
-long function_176780(long index, s_effect_owner const *owner, real scale_a,
-    long tag, real scale_b, point3f const *point, vector3f const *direction);
 void function_2e1e0(long index);
 void object_list_insert(long index);
 long function_b8820();
@@ -234,7 +232,7 @@ long __stdcall function_b7b40(void *creation)
         function_be690(result);
         object_dispatch_finish_creation(result);
         long effect = *(long *)(definition + 0x50);
-        if (effect != NONE) function_176780(result, (s_effect_owner const *)(placement + 0x68), 0.0f, effect, 0.0f, 0, 0);
+        if (effect != NONE) function_176780((s_effect_owner const *)(placement + 0x68), result, 0.0f, effect, 0.0f, 0, 0);
         function_2e1e0(result);
         if (hidden) *(dword *)(object + 4) |= 0x20000;
         else *(dword *)(object + 4) &= ~0x20000;

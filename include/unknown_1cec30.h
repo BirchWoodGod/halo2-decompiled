@@ -431,6 +431,7 @@ struct s_havok_component
 		rigid_transform_scaled *orientations, long unknown);
 
 	bool rigid_body_keyframed(long rigid_body_index);
+	void rigid_body_matrix_get(long rigid_body_index, struct transform4x3f *matrix);
 };
 
 inline s_havok_component *havok_component_get(long component_index)
@@ -441,6 +442,12 @@ inline s_havok_component *havok_component_get(long component_index)
 inline hkRigidBody *havok_component_rigid_body_get(long rigid_body_index, s_havok_component const *component)
 {
 	return component->rigid_bodies[rigid_body_index].rigid_body;
+}
+
+/* the free-function spelling of s_havok_component::rigid_body_matrix_get */
+inline void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, struct transform4x3f *matrix)
+{
+	component->rigid_body_matrix_get(rigid_body_index, matrix);
 }
 
 /* the free-function spelling of s_havok_component::rigid_body_keyframed */

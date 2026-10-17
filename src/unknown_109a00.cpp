@@ -1,5 +1,6 @@
 #include "unknown_11c920.h"
 #include "globals.h"
+#include "unknown_1cec30.h"
 #include "object_list.h"
 #include "unknown_1428b0.h"
 
@@ -262,7 +263,6 @@ struct s_carrier_physics_definition
 };
 
 struct s_havok_component;
-void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, transform4x3f *matrix);
 real function_30bf0(vector3f *vector);
 void function_141590(transform4x3f const *in, transform4x3f *out);
 
@@ -351,7 +351,7 @@ void function_109660(long object_index, long entry_index)
 					entry->previous_center = entry->center;
 					entry->valid = true;
 				}
-				havok_component_rigid_body_matrix_get(body_index, (s_havok_component *)component, &entry->current_transform);
+				((s_havok_component *)component)->rigid_body_matrix_get(body_index, &entry->current_transform);
 				carrier_body_velocity_get(component->bodies[body_index].body, &entry->velocity);
 				carrier_body_angular_velocity_get(component->bodies[body_index].body, &entry->angular_velocity);
 				*(vector3f *)&entry->center = *(vector3f *)&component->bodies[body_index].body->motion->center;
