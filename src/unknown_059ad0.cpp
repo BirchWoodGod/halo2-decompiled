@@ -3010,15 +3010,10 @@ bool network_session_handle_parameters_request(const s_network_message_parameter
 			name[31] = 0;
 			changed = true;
 		}
-		if (message->change_value49a1)
+		if (message->change_value49a1 && memcmp(session->data49a1, &message->value49a1, sizeof(message->value49a1)) != 0)
 		{
-			byte current = *(volatile byte *)&session->data49a1[0];
-			byte value = message->value49a1;
-			if ((byte)(current - value))
-			{
-				session->data49a1[0] = value;
-				changed = true;
-			}
+			session->data49a1[0] = message->value49a1;
+			changed = true;
 		}
 		if (message->change_value5dd0 && session->value5dd0 != message->value5dd0)
 		{
