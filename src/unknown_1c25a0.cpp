@@ -219,10 +219,10 @@ struct s_velocity_object_header
 // @retail 0x1c4b00
 void function_1c4b00(long object_index, void *linear, void *angular, long force)
 {
-	long component_index = *(volatile long const *)&havok_object_get(object_index)->havok_component_index;
-	if (component_index != NONE)
+	s_havok_object *object = havok_object_get(object_index);
+	if (object->havok_component_index != NONE)
 	{
-		s_havok_component *component = havok_component_get(component_index);
+		s_havok_component *component = havok_component_get(object->havok_component_index);
 		if ((byte)force || havok_component_any_rigid_body_active(component))
 		{
 			if ((1 << ((s_velocity_object_header *)g_4e0300->data)[object_index & 0xffff].type) & 2)
