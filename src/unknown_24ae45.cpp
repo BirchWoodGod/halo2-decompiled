@@ -251,7 +251,7 @@ void c_gamertag_select_list::v20(c_class_1a2c81 *widget, long index)
 }
 
 unsigned long function_11c9a0(char const *string, unsigned long size);
-bool function_1a0540(long file_index, s_player_profile_settings *settings);
+bool player_profile_load(long file_index, s_player_profile_settings *settings);
 bool function_24b5bc(char const *a, char const *b);
 
 /* focuses the gamertag the controller's profile last signed in with */
@@ -263,7 +263,7 @@ void c_gamertag_select_list::focus_signed_in_gamertag()
 
 	long profile_index = player_slot_profile_get(controller_index)->profile_index;
 
-	if (function_1a0540(profile_index, &settings))
+	if (player_profile_load(profile_index, &settings))
 	{
 		char gamertag[16];
 

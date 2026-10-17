@@ -193,7 +193,7 @@ void c_game_engine_45c7a8::v2(long unused, long list_pointer)
 }
 
 bool function_15b7c0(long delta, long player_index);
-long function_19fc70(dword player_index);
+long game_engine_get_player_score(dword player_index);
 void player_announce_points_to_win(long player_index, long score);
 void function_10da60(long item_index, point3f *position);
 bool team_ball_away_from_home(long team);
@@ -259,7 +259,7 @@ void function_2bce70(long player_index)
 	if (g_55e4d0[g_4e9ae8->engine_index] && g_4e9ae8->w6c == 1 &&
 		(g_4e6948->mode == 4 || g_4e9ae8->lc04 == 1))
 	{
-		long old_score = function_19fc70(player_index);
+		long old_score = game_engine_get_player_score(player_index);
 
 		if (function_15b7c0(1, player_index))
 		{
@@ -271,7 +271,7 @@ void function_2bce70(long player_index)
 			}
 			function_15b930(player_index, by_team, 0x17, 1);
 		}
-		long score = function_19fc70(player_index);
+		long score = game_engine_get_player_score(player_index);
 		if (old_score != score)
 		{
 			player_announce_points_to_win(player_index, score);

@@ -157,7 +157,7 @@ bool player_iterator_next(long *iterator);
 void function_b58c0(long index, dword mask);
 void function_1523c0();
 void function_23aea0(void);
-void function_19cad0(void);
+void teleporters_initialize(void);
 void function_23f0a0(void);
 void function_157790(void);
 void function_157670(void);
@@ -278,7 +278,7 @@ void function_1574c0(void)
 	if (game_engine_get())
 	{
 		function_23aea0();
-		function_19cad0();
+		teleporters_initialize();
 		function_23f0a0();
 		function_15ace0(globals->netgame_entries);
 		if (!game_engine_get()->p1())
