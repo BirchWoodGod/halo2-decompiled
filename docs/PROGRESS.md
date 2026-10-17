@@ -2,6 +2,33 @@
 
 The newest entry comes first.
 
+## 2026-10-17: 8997 functions match
+
+```
+matched 8997 of 11321 game functions (1257651 of 2784283 bytes, 45.17%)
+```
+
+3 new matches, none lost:
+- @BirchWoodGod's #543: `0x1c6f60`, `0x1c7100` and `0x1c7200` match.
+
+## 2026-10-17: 8994 functions match
+
+```
+matched 8994 of 11321 game functions (1256759 of 2784283 bytes, 45.14%)
+```
+
+3 new matches, none lost:
+- @BirchWoodGod's #542: `0xa5650`, `0xa5850` and `0xa5bd0` match.
+
+## 2026-10-17: 8991 functions match
+
+```
+matched 8991 of 11321 game functions (1255985 of 2784283 bytes, 45.11%)
+```
+
+2 new matches, none lost:
+- Our key lane's round 20 (machine 3's loan): `0x178bc0` and `0x293b30` match.
+
 ## 2026-10-17: 8989 functions match
 
 ```

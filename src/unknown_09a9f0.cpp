@@ -231,13 +231,14 @@ bool c_object_type_definition::v22(s_entity *entity, long b, s_entity_info *info
 {
     bool result = false;
     long value = d;
-    entity->object_index = v29(b, info, &value, e, f);
-    if (entity->object_index != NONE)
+    long object_index = v29(b, info, &value, e, f);
+    entity->object_index = object_index;
+    if (object_index != NONE)
     {
-        if (!(OBJECT_HEADER(entity->object_index)->flags & 0x10))
+        if (!(OBJECT_HEADER(object_index)->flags & 0x10))
         {
-            OBJECT(entity->object_index)->field_d4 = entity->field0;
-            object_dispatch_attach_simulation_entity(entity->object_index);
+            OBJECT(object_index)->field_d4 = entity->field0;
+            object_dispatch_attach_simulation_entity(object_index);
             result = true;
             if (value)
             {
