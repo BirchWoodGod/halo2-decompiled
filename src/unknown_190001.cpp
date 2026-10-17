@@ -1424,7 +1424,7 @@ struct s_scenario_type_view
 	short type;
 };
 
-bool function_2365f7(void);
+bool controller_reconnect_dialog_allowed(void);
 long function_146840(void);
 void function_125a90(long value);
 
@@ -1439,7 +1439,7 @@ void function_18f9be(void)
 	{
 		if (g_551ae0[index])
 		{
-			if (!function_18f973() && function_2365f7())
+			if (!function_18f973() && controller_reconnect_dialog_allowed())
 			{
 				short type;
 
