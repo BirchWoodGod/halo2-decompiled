@@ -416,12 +416,12 @@ void prop_state_initialize(s_type_5cfb45 *state)
 // @retail 0x25c440
 void prop_view_initialize(s_type_f95cd3 *view)
 {
-	view->unknown06 = 4;
-	view->unknown8c = 4;
 	view->unknown10 = NONE;
 	view->unknown14 = NONE;
 	view->unknown50 = NONE;
 	view->unknown8a = 0;
+	view->unknown06 = 4;
+	view->unknown8c = 4;
 	view->unknown54 = 0.f;
 	view->unknown58 = 0.f;
 	view->unknown5c = 0.f;

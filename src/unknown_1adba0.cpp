@@ -531,34 +531,38 @@ struct s_1ae441
 short __stdcall function_1ae440(long arg_0, s_slot *arg_1)
 {
 	s_actor_view *local_0 = actor_get(arg_0);
-	if (local_0->prop_index != NONE && !function_110ab0(local_0->unknown018) && g_4f55d0->unknown340)
+	if (local_0->prop_index != NONE)
 	{
-		s_prop_node_view *local_1 = prop_node_get(local_0->prop_index);
-		s_prop_state_view *local_2 = prop_node_state(local_1);
-		if (local_1->unknown24 >= 1 && local_1->unknown24 <= 2 && local_2->unknown3c != NONE)
+		long unit_index = local_0->unknown018;
+		if (!function_110ab0(unit_index) && g_4f55d0->unknown340)
 		{
-			s_1ae681 *local_3 = (s_1ae681 *)function_1e5380(arg_0);
-			if (local_3 && local_3->field_6 != NONE)
+			s_prop_node_view *local_1 = prop_node_get(local_0->prop_index);
+			s_prop_state_view *local_2 = prop_node_state(local_1);
+			if (local_1->unknown24 >= 1 && local_1->unknown24 <= 2 && local_2->unknown3c != NONE)
 			{
-				real local_4 = function_1e9700(0x18) * local_3->field_28;
-				long local_5 = ((s_1ae680 *)local_0)->field_7c8;
-				if (local_5 == NONE || (g_4e6948->state == 1 && g_4f55e5) || (real)(g_510c54->game_time - local_5) * g_510c54->rate >= local_4)
+				s_1ae681 *local_3 = (s_1ae681 *)function_1e5380(arg_0);
+				if (local_3 && local_3->field_6 != NONE)
 				{
-					real local_6 = function_1c9ee0(((s_1ae441 *)local_3)->field_30) * function_1e9700(0x17);
-					if (g_4e6948->state == 1 && g_4f55e5)
-						local_6 = 1.0f;
-					if (local_6 > function_259a0(&g_4e7408->unknown0) && local_0->unknown07c != NONE)
+					real local_4 = function_1e9700(0x18) * local_3->field_28;
+					long local_5 = ((s_1ae680 *)local_0)->field_7c8;
+					if (local_5 == NONE || (g_4e6948->state == 1 && g_4f55e5) || (real)(g_510c54->game_time - local_5) * g_510c54->rate >= local_4)
 					{
-						function_26c2d0(local_0->prop_index);
-						s_1ae440 *local_7 = (s_1ae440 *)local_2;
-						vector3f local_8;
-						function_210770(local_7->field_48.output_index, &local_7->field_1c, &local_8);
-						s_type_c3b527 local_9 = local_7->field_48;
-						local_9.point.x += local_8.i * 1.5f;
-						local_9.point.y += local_8.j * 1.5f;
-						local_9.point.z += local_8.k * 1.5f;
-						if (function_255b10(arg_0, &local_9, local_0->prop_index, false))
-							function_1fb7e0(0x1c, arg_0, NULL, local_1->object_index, NONE);
+						real local_6 = function_1c9ee0(((s_1ae441 *)local_3)->field_30) * function_1e9700(0x17);
+						if (g_4e6948->state == 1 && g_4f55e5)
+							local_6 = 1.0f;
+						if (local_6 > function_259a0(&g_4e7408->unknown0) && local_0->unknown07c != NONE)
+						{
+							function_26c2d0(local_0->prop_index);
+							s_1ae440 *local_7 = (s_1ae440 *)local_2;
+							vector3f local_8;
+							function_210770(local_7->field_48.output_index, &local_7->field_1c, &local_8);
+							s_type_c3b527 local_9 = local_7->field_48;
+							local_9.point.x += local_8.i * 1.5f;
+							local_9.point.y += local_8.j * 1.5f;
+							local_9.point.z += local_8.k * 1.5f;
+							if (function_255b10(arg_0, &local_9, local_0->prop_index, false))
+								function_1fb7e0(0x1c, arg_0, NULL, local_1->object_index, NONE);
+						}
 					}
 				}
 			}
