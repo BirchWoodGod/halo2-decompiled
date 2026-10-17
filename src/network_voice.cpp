@@ -2259,19 +2259,20 @@ void __stdcall function_577d0(s_voice_player_settings *settings)
 					if ((mask & (1 << other)) && !(local_mask & (1 << other)) &&
 						function_54df0(other) && !function_589e0(other))
 					{
-						bool allowed;
 						if (!function_53d40())
-							allowed = true;
+							settings->unknown84[local] |= 1 << other;
 						else if (function_53d90())
-							allowed = !juggernaut_is((short)local) && !juggernaut_is((short)other);
+						{
+							if (!juggernaut_is((short)local) && !juggernaut_is((short)other))
+								settings->unknown84[local] |= 1 << other;
+						}
 						else
 						{
 							long team = (char)players[local].propertiesa8[0x7c];
 							long other_team = (char)players[other].propertiesa8[0x7c];
-							allowed = team != NONE && other_team != NONE && team == other_team;
+							if (team != NONE && other_team != NONE && team == other_team)
+								settings->unknown84[local] |= 1 << other;
 						}
-						if (allowed)
-							settings->unknown84[local] |= 1 << other;
 					}
 				}
 			}
@@ -2335,7 +2336,8 @@ static __forceinline long voice_proximity_object(long player_index)
 	return object_index;
 }
 
-#pragma optimize("s", on)
+/* the players each local player hears by distance; retail calls
+   function_caf90 at both positions, so those calls are kept out of line */
 // @retail 0x57080
 void __stdcall function_57080(s_voice_player_values *values)
 {
@@ -2356,7 +2358,9 @@ void __stdcall function_57080(s_voice_player_values *values)
 			if (object != NONE)
 			{
 				point3f position;
+#pragma inline_depth(0)
 				function_caf90(object, &position);
+#pragma inline_depth()
 				for (long j = 0; j < 16; j++)
 				{
 					dword bit = 1 << j;
@@ -2366,15 +2370,19 @@ void __stdcall function_57080(s_voice_player_values *values)
 						if (other != NONE)
 						{
 							point3f other_position;
+#pragma inline_depth(0)
 							function_caf90(other, &other_position);
-							real z = other_position.z - position.z;
+#pragma inline_depth()
 							real x = other_position.x - position.x;
 							real y = other_position.y - position.y;
-							real squared = z * z + x * x + y * y;
+							real z = other_position.z - position.z;
+							real squared = z * z;
+							squared += x * x;
+							squared += y * y;
 							real range = 8.0f;
 							if (g_510c94)
 								range = g_510c94->motion_sensor_range;
-							if (range + 1.5f >= sqrtf(squared))
+							if (sqrtf(squared) <= range + 1.5f)
 								values->values[i] |= bit;
 						}
 					}
@@ -2383,7 +2391,6 @@ void __stdcall function_57080(s_voice_player_values *values)
 		}
 	}
 }
-#pragma optimize("", on)
 
 static __forceinline bool function_56790(dword arg_0, long arg_1)
 {
@@ -2811,10 +2818,9 @@ void __stdcall function_56df0(s_voice_player_settings *settings, long talker, lo
 {
 	// The retail entry reads the talker from its stack argument slot.
 	long const *talker_reference = &talker;
-	long voice_mode = 0;
+	bool active = false;
 	if (settings->initialized && voice_available())
-		voice_mode = g_4c9878.mode;
-	bool active = voice_mode == 1;
+		active = g_4c9878.mode == 1;
 	if (active && voice_xhv_has_remote_talker(&g_476fc8, *talker_reference))
 	{
 		dword local = voice_get_local_player_mask();
@@ -2826,13 +2832,14 @@ void __stdcall function_56df0(s_voice_player_settings *settings, long talker, lo
 			if ((local & (1 << player)) && function_54df0(player) && valid)
 			{
 				long requested = function_57c20(settings, player, talker, mode);
-				route = function_57d60(requested, player, talker);
+				long result = function_57d60(requested, player, talker);
 				if (requested == 1) settings->unknown148[talker] = g_510c54->game_time;
-				if (route == 3) choices[player].distance = function_57a80(player, talker);
+				if (result == 3) choices[player].distance = function_57a80(player, talker);
+				route = result;
 				if (route) settings->unknownc4 |= 1 << talker;
 			}
-			choices[player].player = player;
 			choices[player].mode = route;
+			choices[player].player = player;
 		}
 		function_57eb0(settings, talker, choices, 16);
 	}
