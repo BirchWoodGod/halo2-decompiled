@@ -8014,7 +8014,7 @@ va,size,owner,style,evidence,name,object,calls,source,status
 0022d13d,336,game,size,ebp packed,,,0013e9c0 0013ed90 0013fac0 0022d2ee 002360c3,src/unknown_22e27b.cpp,matched
 0022d28d,42,game,size,packed,,,00140420,src/user_interface_text_parser.cpp,matched
 0022d2b7,55,game,size,ebp packed,,,0008cc20 0013fac0 0022d2ee,src/user_interface_text_parser.cpp,matched
-0022d2ee,360,game,size,ebp packed,,,003207ed 00320870 00320890 00321ce4,src/user_interface_text_parser.cpp,todo
+0022d2ee,360,game,size,ebp packed,,,003207ed 00320870 00320890 00321ce4,src/user_interface_text_parser.cpp,matched
 0022d456,173,game,size,packed,,,000649c0 0008cc20 00148350 001a0180,src/user_interface_text_parser.cpp,todo
 0022d503,43,game,size,packed,,,000649c0 0008cc20,src/user_interface_text_parser.cpp,matched
 0022d52e,56,game,size,ebp packed,,,000641f0 0008cc20 001944c0,src/user_interface_text_parser.cpp,matched
