@@ -15,16 +15,25 @@
 
 s_direction_face g_475480[32];
 
+/* the vector helpers retail expands inline here */
+static __inline real vector3f_dot(vector3f const *a, vector3f const *b)
+{
+	return a->i * b->i + a->j * b->j + a->k * b->k;
+}
+
+static __inline vector3f *vector3f_scale(vector3f const *v, real s, vector3f *result)
+{
+	result->i = s * v->i;
+	result->j = s * v->j;
+	result->k = s * v->k;
+	return result;
+}
+
 static __inline real normalize3d(vector3f *v)
 {
-	real m = (real)sqrt(v->j * v->j + (v->i * v->i + v->k * v->k));
+	real m = (real)sqrt(vector3f_dot(v, v));
 	if (!(fabs(m) < k_real_epsilon))
-	{
-		real inv = 1.f / m;
-		v->i = inv * v->i;
-		v->j = inv * v->j;
-		v->k = v->k * inv;
-	}
+		vector3f_scale(v, 1.f / m, v);
 	else
 		m = 0.f;
 	return m;
@@ -77,10 +86,10 @@ static __forceinline void decode_direction_194d30(long index, vector3f *directio
 {
 	real x = (real)(index & 0x3f) * (1.f / 63.f);
 	real y = (real)((index >> 6) & 0x3f) * (1.f / 63.f);
-	s_direction_face const *face = &g_475480[index >> 12];
 	x = x * 2.f;
 	y = y * 2.f;
 	real z = 0.f;
+	s_direction_face const *face = &g_475480[index >> 12];
 	if (face->scale != 1.f)
 	{
 		x = face->scale * x;
