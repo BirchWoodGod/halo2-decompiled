@@ -68,16 +68,10 @@ struct s_file_write_flags
 {
 	dword bits;
 
-	explicit s_file_write_flags(dword value) { bits = value; }
+	s_file_write_flags(dword value) { bits = value; }
 };
 
 long function_1a1050(s_file_handle file, void const *buffer, dword size, dword offset, s_file_write_flags flags, long category, long priority, dword *bytes_written, bool volatile *done);
-
-/* the same write with the options given as their bits */
-inline long function_1a1050(s_file_handle file, void const *buffer, dword size, dword offset, dword flags, long category, long priority, dword *bytes_written, bool volatile *done)
-{
-	return function_1a1050(file, buffer, size, offset, s_file_write_flags(flags), category, priority, bytes_written, done);
-}
 
 long async_copy_position(s_file_handle source, s_file_handle destination, void *buffer, dword size, dword source_offset, dword destination_offset, long category, long priority, dword *bytes_copied, bool volatile *done);
 long function_1a1310(s_file_handle file, dword size, long category, long priority, bool *success, bool volatile *done);

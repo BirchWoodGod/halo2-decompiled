@@ -13,29 +13,41 @@ struct s_fixed_memory_entry
 	long size;
 };
 
+/* places an allocation at the offset (rounded up to 16 bytes for an
+   alignment above 1) when it ends within the limit, and fills its entry */
 // @retail 0x22c330
 void *c_havok_fixed_memory::function_22c330(long alignment, long limit,
-	long offset, long size, s_fixed_memory_entry *entry)
+	long size, long offset, s_fixed_memory_entry *entry)
 {
-	void *buffer = m_buffer;
 	void *result = NULL;
 	if (limit >= offset)
 	{
 		switch (alignment)
 		{
-		case 2: offset = (offset + 15) & ~15; break;
-		case 4: offset = (offset + 15) & ~15; break;
-		case 8: offset = (offset + 15) & ~15; break;
-		case 16: offset = (offset + 15) & ~15; break;
-		case 0: break;
-		case 1: break;
-		default: __assume(0);
-		}
-		if (limit >= size + offset)
+		case 1:
+			if (limit >= size + offset)
+			{
+				entry->offset = offset;
+				entry->size = size;
+				result = (byte *)m_buffer + offset;
+			}
+			break;
+		case 2:
+		case 4:
+		case 8:
+		case 16:
 		{
-			entry->offset = offset;
-			entry->size = size;
-			result = (byte *)buffer + offset;
+			long aligned_offset = (offset + 15) & ~15;
+			if (limit >= aligned_offset + size)
+			{
+				entry->offset = aligned_offset;
+				entry->size = size;
+				result = (byte *)m_buffer + aligned_offset;
+			}
+			break;
+		}
+		default:
+			__assume(0);
 		}
 	}
 	return result;
@@ -169,7 +181,7 @@ void *c_havok_fixed_memory::allocate_aligned(long alignment, long size, long mem
             long limit = current->offset;
             if (limit >= size + offset)
             {
-                result = function_22c330(alignment, limit, offset, size, &entry);
+                result = function_22c330(alignment, limit, size, offset, &entry);
                 if (result)
                 {
                     m_count++;
