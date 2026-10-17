@@ -23,7 +23,7 @@ struct s_state_2bc1
 	/* each team's countdown to its next point while a player holds its
 	   item, and the points counted so far in this hold */
 	char point_timers[3];
-	char point_counts[3];
+	char point_tallies[3];
 	/* how long each team's item has been away from home */
 	short ticks_away[3];
 };
@@ -289,7 +289,7 @@ void __stdcall function_2bc990(long team)
 					function_2bce70(entry->player_index);
 					state = (s_state_2bc1 *)g_51ecc4;
 					state->point_timers[team] = (char)g_510c54->field_2_3;
-					char *count = &state->point_counts[team];
+					char *count = &state->point_tallies[team];
 
 					(*count)++;
 					function_15b930(entry->player_index, function_15eaf0(), 0x17, 1);
@@ -306,7 +306,7 @@ void __stdcall function_2bc990(long team)
 		}
 		else
 		{
-			state->point_counts[team] = 0;
+			state->point_tallies[team] = 0;
 		}
 	}
 }
