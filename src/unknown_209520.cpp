@@ -119,9 +119,9 @@ inline s_hs_script *hs_script_get(long script_index)
 	return &((s_hs_scenario_view *)g_4e0350)->scripts[script_index];
 }
 
-long function_209e70(short script_index);
-void __stdcall function_209c80(long thread_index);
-void function_209ae0(long thread_index, long value);
+long hs_thread_for_script(short script_index);
+void __stdcall hs_thread_wake(long thread_index);
+void hs_thread_return_value(long thread_index, long value);
 
 // @retail 0x208c40
 void __stdcall function_208c40(short function_index, long thread_index, bool initialize)
@@ -129,10 +129,10 @@ void __stdcall function_208c40(short function_index, long thread_index, bool ini
 	s_hs_expression *expression = hs_expression_get(hs_thread_get(thread_index)->frame->expression_index);
 	s_hs_expression *name = hs_expression_get(expression->value);
 	s_hs_expression *argument = hs_expression_get(*(long *)((byte *)name + 8));
-	long target = function_209e70((short)argument->value);
+	long target = hs_thread_for_script((short)argument->value);
 	if (target != NONE)
-		function_209c80(target);
-	function_209ae0(thread_index, 0);
+		hs_thread_wake(target);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44b1f8 = { _hs_type_void, 2, function_208c40, "<script name>", 0, { 0 } };
@@ -148,11 +148,11 @@ void __stdcall function_208750(short function_index, long thread_index, bool ini
 	{
 		long script_index;
 		function_2099f0(thread_index, &script_index, argument_index);
-		target = function_209e70((short)script_index);
+		target = hs_thread_for_script((short)script_index);
 	}
 	if (target != NONE)
 		hs_thread_get(target)->sleep_until = -2;
-	function_209ae0(thread_index, 0);
+	hs_thread_return_value(thread_index, 0);
 }
 
 s_type_f4462a const g_44b1d8 = { _hs_type_void, 2, function_208750, "[<script>]", 0, { 0 } };
@@ -228,7 +228,7 @@ void __stdcall function_208570(short function_index, long thread_index, bool ini
 		}
 		}
 		result.b = comparison;
-		function_209ae0(thread_index, result.d);
+		hs_thread_return_value(thread_index, result.d);
 	}
 }
 
@@ -253,7 +253,7 @@ void __stdcall function_2084c0(short function_index, long thread_index, bool ini
 		if (function_index == 14)
 			equal = !equal;
 		result.b = equal;
-		function_209ae0(thread_index, result.d);
+		hs_thread_return_value(thread_index, result.d);
 	}
 }
 
@@ -387,7 +387,7 @@ long function_20a290(long thread_index, short value_type, short type, long value
 long g_4f938c = NONE;
 bool g_4f9388;
 
-void function_209ae0(long thread_index, long value);
+void hs_thread_return_value(long thread_index, long value);
 
 /* room for a value in the thread's current frame */
 static inline long *hs_frame_allocate_value(long thread_index)
@@ -432,14 +432,14 @@ void __stdcall function_207ef0(short function_index, long thread_index, bool ini
 			*branch = *(long *)((byte *)then_expression + 8);
 			if (*branch == NONE)
 			{
-				function_209ae0(thread_index, 0);
+				hs_thread_return_value(thread_index, 0);
 				return;
 			}
 		}
 		function_2099f0(thread_index, value, *branch);
 	}
 	else
-		function_209ae0(thread_index, *value);
+		hs_thread_return_value(thread_index, *value);
 }
 
 s_type_f4462a const g_44b0b8 = { _hs_type_passthrough, 2, function_207ef0, "<boolean> <then> [<else>]", 0, { 0 } };
@@ -487,7 +487,7 @@ void __stdcall function_208310(short function_index, long thread_index, bool ini
 	{
 		script_value returned;
 		returned.r = *result;
-		function_209ae0(thread_index, returned.d);
+		hs_thread_return_value(thread_index, returned.d);
 	}
 }
 
@@ -532,7 +532,7 @@ void __stdcall function_2081e0(short function_index, long thread_index, bool ini
 	{
 		script_value returned;
 		returned.b = *result;
-		function_209ae0(thread_index, returned.d);
+		hs_thread_return_value(thread_index, returned.d);
 	}
 }
 
@@ -575,7 +575,7 @@ void __stdcall function_2087e0(short function_index, long thread_index, bool ini
 		if (*state != 0)
 		{
 			if (*(short *)script != NONE)
-				target = function_209e70(*(short *)script);
+				target = hs_thread_for_script(*(short *)script);
 			long delay_value;
 			if (target != NONE && (delay_value = *(short *)delay) >= 0)
 			{
@@ -602,7 +602,7 @@ void __stdcall function_2087e0(short function_index, long thread_index, bool ini
 					}
 				}
 			}
-			function_209ae0(thread_index, 0);
+			hs_thread_return_value(thread_index, 0);
 		}
 	}
 }
@@ -670,7 +670,7 @@ void __stdcall function_2089b0(short function_index, long thread_index, bool ini
 	if (*timeout != NONE)
 		duration = hs_delay_ticks(*timeout);
 	if (*(bool *)condition || (duration != NONE && g_510c54->game_time >= *start + duration))
-		function_209ae0(thread_index, 0);
+		hs_thread_return_value(thread_index, 0);
 	else
 	{
 		expression = hs_expression_get(thread->frame->expression_index);
@@ -728,7 +728,7 @@ void __stdcall function_207cf0(short function_index, long thread_index, bool ini
 		}
 	}
 	if (offset == *count)
-		function_209ae0(thread_index, *result);
+		hs_thread_return_value(thread_index, *result);
 }
 
 s_type_f4462a const g_44b0a8 = { _hs_type_passthrough, 2, function_207cf0, "<expression(s)>", 0, { 0 } };
@@ -752,7 +752,7 @@ void __stdcall function_207c20(short function_index, long thread_index, bool ini
 		*next = *(long *)((byte *)hs_expression_get(*next) + 8);
 	}
 	else
-		function_209ae0(thread_index, *result);
+		hs_thread_return_value(thread_index, *result);
 }
 
 s_type_f4462a const g_44b098 = { _hs_type_passthrough, 2, function_207c20, "<expression(s)>", 0, { 0 } };
@@ -781,12 +781,12 @@ void __stdcall function_208f10(short function_index, long thread_index, bool ini
 			byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
 			long type_mask = 1 << object[0xaa];
 			if (g_4456d4[(short)(function_index - 23)] & type_mask)
-				function_209ae0(thread_index, object_index);
+				hs_thread_return_value(thread_index, object_index);
 			else
-				function_209ae0(thread_index, NONE);
+				hs_thread_return_value(thread_index, NONE);
 		}
 		else
-			function_209ae0(thread_index, NONE);
+			hs_thread_return_value(thread_index, NONE);
 	}
 }
 
@@ -806,7 +806,7 @@ void function_209bf0(long thread_index, short script_index, bool initialize)
 	}
 	else
 	{
-		function_209ae0(thread_index, *value);
+		hs_thread_return_value(thread_index, *value);
 	}
 }
 
@@ -955,7 +955,7 @@ void __stdcall function_208070(short function_index, long thread_index, bool ini
         function_20a2e0(index);
         long index_long = index;
         long slot = (index_long & 0x8000) ? (index_long & 0x7fff) : (index_long & 0x7fff) + 0x41d;
-        function_209ae0(thread_index, ((s_hs_global_value *)g_4f9380->data)[slot].value.d);
+        hs_thread_return_value(thread_index, ((s_hs_global_value *)g_4f9380->data)[slot].value.d);
     }
 }
 
@@ -1016,7 +1016,7 @@ void function_2090a0(void)
 }
 
 
-void function_209290(void);
+void hs_scheduler_map_end(void);
 
 // @retail 0x2093d0
 long __stdcall function_2093d0(long expression_index, bool option)
@@ -1050,39 +1050,39 @@ long __stdcall function_2093d0(long expression_index, bool option)
             }
         }
         if (initialized)
-            function_209290();
+            hs_scheduler_map_end();
     }
     return result;
 }
 
 
 typedef void (__stdcall *t_script_value_formatter)(long, long, char *, long);
-void __stdcall function_208cc0(long unused, bool value, char *buffer, long maximum_count);
-void __stdcall function_208d10(long unused, real value, char *buffer, long maximum_count);
-void __stdcall function_208d40(long unused, short value, char *buffer, long maximum_count);
-void __stdcall function_208d70(long unused, long value, char *buffer, long maximum_count);
-void __stdcall function_208da0(long unused, char const *value, char *buffer, long maximum_count);
-void __stdcall function_208dd0(short table_index, short name_index, char *buffer, long maximum_count);
+void __stdcall hs_boolean_format(long unused, bool value, char *buffer, long maximum_count);
+void __stdcall hs_real_format(long unused, real value, char *buffer, long maximum_count);
+void __stdcall hs_short_integer_format(long unused, short value, char *buffer, long maximum_count);
+void __stdcall hs_long_integer_format(long unused, long value, char *buffer, long maximum_count);
+void __stdcall hs_string_format(long unused, char const *value, char *buffer, long maximum_count);
+void __stdcall hs_enum_format(short table_index, short name_index, char *buffer, long maximum_count);
 
 // Retail's complete value formatter table, including the unsupported types.
 PRIVATE t_script_value_formatter const g_46fd70[62] =
 {
     0, 0, 0, 0, 0,
-    (t_script_value_formatter)function_208cc0,
-    (t_script_value_formatter)function_208d10,
-    (t_script_value_formatter)function_208d40,
-    (t_script_value_formatter)function_208d70,
-    (t_script_value_formatter)function_208da0,
+    (t_script_value_formatter)hs_boolean_format,
+    (t_script_value_formatter)hs_real_format,
+    (t_script_value_formatter)hs_short_integer_format,
+    (t_script_value_formatter)hs_long_integer_format,
+    (t_script_value_formatter)hs_string_format,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0,
-    (t_script_value_formatter)function_208dd0,
-    (t_script_value_formatter)function_208dd0,
-    (t_script_value_formatter)function_208dd0,
-    (t_script_value_formatter)function_208dd0,
-    (t_script_value_formatter)function_208dd0,
-    (t_script_value_formatter)function_208dd0,
+    (t_script_value_formatter)hs_enum_format,
+    (t_script_value_formatter)hs_enum_format,
+    (t_script_value_formatter)hs_enum_format,
+    (t_script_value_formatter)hs_enum_format,
+    (t_script_value_formatter)hs_enum_format,
+    (t_script_value_formatter)hs_enum_format,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
@@ -1106,7 +1106,7 @@ void __stdcall function_208e10(short function_index, long thread_index, bool ini
         s_hs_expression *argument = hs_expression_get(*(long *)((byte *)name + 8));
         if ((thread->flags & 4) && g_46fd70[argument->type])
             ((t_local_formatter)g_46fd70[argument->type])(argument->type, *value, buffer, sizeof(buffer));
-        function_209ae0(thread_index, 0);
+        hs_thread_return_value(thread_index, 0);
     }
 }
 
