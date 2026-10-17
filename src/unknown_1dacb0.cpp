@@ -5,7 +5,7 @@
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_1dacb0.h"
-#include "unknown_123680.h"
+#include "animation_cache.h"
 #include "unknown_0259d0.h"
 #include "unknown_11cb00.h"
 
@@ -27,7 +27,7 @@ inline void graph_animation_request(s_graph_tag *graph, long animation_index)
 
 		if (resource->streamed)
 		{
-			function_1236f0(resource, true);
+			animation_cache_request_resource(resource, true);
 		}
 	}
 }
@@ -358,7 +358,7 @@ byte *function_1dd7c0(s_graph_tag *graph, c_type_709360 animation_id)
 	{
 		s_cache_resource *resource = &graph->resources[animation->resource_index];
 
-		return (byte *)function_1237e0(resource, animation->name) + animation->resource_offset;
+		return (byte *)animation_cache_get_resource(resource, animation->name) + animation->resource_offset;
 	}
 	return animation->data;
 }
@@ -390,7 +390,7 @@ void function_1ddab0(s_graph_tag *graph)
 
 		if (resource->streamed)
 		{
-			function_1236f0(resource, false);
+			animation_cache_request_resource(resource, false);
 		}
 	}
 }
@@ -452,7 +452,7 @@ PRIVATE __forceinline void graph_type_resources_request(s_graph_tag *graph, long
 
 					if (resource->streamed)
 					{
-						function_1236f0(resource, true);
+						animation_cache_request_resource(resource, true);
 					}
 				}
 			}
@@ -464,7 +464,7 @@ PRIVATE __forceinline void graph_type_resources_request(s_graph_tag *graph, long
 
 					if (resource->streamed)
 					{
-						function_1236f0(resource, false);
+						animation_cache_request_resource(resource, false);
 					}
 				}
 			}

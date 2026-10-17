@@ -125,7 +125,7 @@ void game_revert_countdown_update();
 void game_finish_countdown_update();
 void function_226050(void);
 void function_13c680(void);
-void function_123430(void);
+void animation_cache_update(void);
 void function_225730(void);
 void function_165dc1(void);
 void function_153950(void);
@@ -157,7 +157,7 @@ static __forceinline void game_loop_tick_update(s_simulation_block_data *block)
 	game_finish_countdown_update();
 	function_226050();
 	function_13c680();
-	function_123430();
+	animation_cache_update();
 	function_225730();
 	function_165dc1();
 	function_153950();
@@ -197,7 +197,7 @@ void game_loop_tick(void)
 /* never set by the decompiled code */
 bool g_4f55e7;
 
-void function_123ed0();
+void game_state_rollback_done();
 
 /* whether a campaign is running with the options' flag at +0x134 */
 // @retail 0x138820
@@ -285,7 +285,7 @@ void game_revert_countdown_set(bool start)
 				fistp ticks
 			}
 			g_4e6948->revert_ticks_left = ticks;
-			function_123ed0();
+			game_state_rollback_done();
 		}
 	}
 	else if (g_4e6948->flag1121)
