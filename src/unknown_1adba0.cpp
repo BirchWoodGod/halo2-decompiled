@@ -317,9 +317,9 @@ bool __stdcall function_1aded0(long actor_index, s_slot *slot)
 	{
 		real delay = function_1aded1(entry->unknown14, entry->unknown18);
 		real duration = function_1aded1(entry->unknown1c, entry->unknown20);
-		real local_0 = (real)g_510c54->field_2_3;
 		{
-			real ticks = local_0 * delay;
+			real rate = g_510c54->field_2_3;
+			real ticks = rate * delay;
 			long rounded;
 			__asm
 			{
@@ -329,7 +329,8 @@ bool __stdcall function_1aded0(long actor_index, s_slot *slot)
 			state->ticks = (short)rounded;
 		}
 		{
-			real ticks = local_0 * duration;
+			real rate = g_510c54->field_2_3;
+			real ticks = rate * duration;
 			long rounded;
 			__asm
 			{

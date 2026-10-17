@@ -30,7 +30,7 @@ void function_190186(long controller);
 void function_190728(long index);
 void function_18fee9(XONLINE_USER const *user, long index);
 void online_get_logon_users(XONLINE_USER *users);
-bool __stdcall function_236937(long controller_index);
+bool __stdcall dialog_callback_dashboard_online_menu(long controller_index);
 extern bool g_50944f;
 bool __stdcall function_24ba7d(long controller_index);
 
@@ -279,7 +279,7 @@ void s_player_slot_profile::task_succeeded()
 		function_190728(player);
 		if (g_50944f)
 		{
-			dialog_choice_show(1, 0x28, 4, 1 << player, function_236937, 0, 0);
+			dialog_choice_show(1, 0x28, 4, 1 << player, dialog_callback_dashboard_online_menu, 0, 0);
 			g_50944f = false;
 		}
 	}

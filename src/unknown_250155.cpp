@@ -83,11 +83,11 @@ void function_250dae(c_screen_24fd74 *screen)
     }
 }
 
-struct s_reference_list;
-struct s_indexed_block;
-struct s_indexed_entry;
-s_reference_list *function_236a3a(long id);
-s_indexed_entry *function_236aa9(s_indexed_block *block, long id);
+struct s_game_variant_setting_category;
+struct s_game_variant_setting_definition;
+struct s_game_variant_setting_option;
+s_game_variant_setting_category *game_variant_settings_find_category(long category_id);
+s_game_variant_setting_option *game_variant_setting_find_option(s_game_variant_setting_definition *setting, long value);
 long function_2374f0(void *base, long index);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
 dword function_217b70(word const *text);
@@ -127,14 +127,14 @@ void function_25092c(s_game_variant *variant, long index, c_class_1a2c81 *widget
     case 9: group = 30; break;
     default: group = NONE; break;
     }
-    s_setting_reference_list_view *list = (s_setting_reference_list_view *)function_236a3a(group);
+    s_setting_reference_list_view *list = (s_setting_reference_list_view *)game_variant_settings_find_category(group);
     if (list && index >= 0 && index < list->count)
     {
         s_setting_reference_list_view::s_reference const *reference = &list->references[index];
         if (reference->index != NONE)
         {
             s_setting_definition_view *definition = (s_setting_definition_view *)g_4e3b44[reference->index & 0xffff].bytes;
-            s_indexed_entry *option = function_236aa9((s_indexed_block *)definition, function_2374f0(variant, definition->field_index));
+            s_game_variant_setting_option *option = game_variant_setting_find_option((s_game_variant_setting_definition *)definition, function_2374f0(variant, definition->field_index));
             function_1a0180(definition->string_list, definition->title, title);
             if (option)
                 function_1a0180(definition->string_list, *(long *)((byte *)option + 8), value);

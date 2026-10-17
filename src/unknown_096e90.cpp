@@ -150,74 +150,68 @@ void c_vtable_450d1c::v3(s_node_450d1c *node, long a2, long a3, long key, s_bits
 	long const *items;
 	if (requests != 0 && requests->key == key)
 		request = requests;
-	if (!unknown09)
+	if (!unknown09 && !request)
 	{
-		if (!request)
+		s_request_450d1c *block = (s_request_450d1c *)function_96e90(sizeof(s_request_450d1c));
+		if (block)
 		{
-			s_request_450d1c *block = (s_request_450d1c *)function_96e90(sizeof(s_request_450d1c));
-			if (block)
+			block->key = NONE;
+			block->links = 0;
+			block->next = 0;
+			block->next = requests;
+			requests = block;
+			request_count++;
+			request = block;
+			block->links = 0;
+			block->key = key;
+		}
+		else
+		{
+			request = 0;
+			unknown09 = 1;
+		}
+	}
+	if (!unknown09 && request)
+	{
+		s_link_450d1c *link = (s_link_450d1c *)function_96e90(sizeof(s_link_450d1c));
+		if (link)
+		{
+			link->node = 0;
+			link->next = 0;
+			stream->checkpoints[stream->checkpoint_count] = stream->bit_position;
+			stream->checkpoint_count++;
+			stream_write_bit(stream, true);
+			sender_write_type(stream, node->unknown04);
+			items = &node->unknown10;
+			long remaining = 2;
+			do
 			{
-				block->key = NONE;
-				block->links = 0;
-				block->next = 0;
-				block->next = requests;
-				requests = block;
-				request_count++;
-				request = block;
-				block->links = 0;
-				block->key = key;
+				long item = *items;
+				stream_write_bit(stream, item != NONE);
+				if (item != NONE)
+					simulation_write_entity_identifier(item, stream);
+				items++;
+			} while (--remaining);
+			if (node->size > 0)
+				function_97241(this, node, stream);
+			if ((stream->size_in_bytes << 3) - stream->bit_position >= reserved_bits)
+			{
+				stream->checkpoint_count--;
+				link->next = request->links;
+				request->links = link;
+				link->node = node;
+				pending--;
+				unknown24++;
+				node->done_mask |= 1 << player;
 			}
 			else
 			{
-				*(s_request_450d1c *volatile *)&request = 0;
-				unknown09 = 1;
+				function_194710(stream, true);
+				function_97242(link);
 			}
 		}
-		if (!unknown09 && request)
-		{
-			s_link_450d1c *link = (s_link_450d1c *)function_96e90(sizeof(s_link_450d1c));
-			if (link)
-			{
-				link->node = 0;
-				link->next = 0;
-				stream->checkpoints[stream->checkpoint_count] = stream->bit_position;
-				stream->checkpoint_count++;
-				stream_write_bit(stream, true);
-				sender_write_type(stream, node->unknown04);
-				items = &node->unknown10;
-				long remaining = 2;
-				long local_8;
-				do
-				{
-					long item = *items;
-					stream_write_bit(stream, item != NONE);
-					if (item != NONE)
-						simulation_write_entity_identifier(item, stream);
-					items++;
-					local_8 = *(long volatile *)&remaining - 1;
-					*(long volatile *)&remaining = local_8;
-				} while (local_8);
-				if (node->size > 0)
-					function_97241(this, node, stream);
-				if ((stream->size_in_bytes << 3) - stream->bit_position >= reserved_bits)
-				{
-					stream->checkpoint_count--;
-					link->next = request->links;
-					request->links = link;
-					link->node = node;
-					pending--;
-					unknown24++;
-					node->done_mask |= 1 << player;
-				}
-				else
-				{
-					function_194710(stream, true);
-					function_97242(link);
-				}
-			}
-			else
-				unknown09 = 1;
-		}
+		else
+			unknown09 = 1;
 	}
 }
 
