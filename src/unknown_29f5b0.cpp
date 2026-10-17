@@ -10997,7 +10997,6 @@ void __stdcall function_2ab930(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44ecd8 = { _hs_type_void, 0, function_2ab930, NULL, 2, { _hs_type_long_integer, _hs_type_long_integer } };
 
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name); /* arg_0e6cbc.cpp */
 
 /* 908: void (arg_0e6cbc, string_handle) */
 // @retail 0x2aca50
@@ -11009,7 +11008,7 @@ void __stdcall function_2aca50(short function_index, long thread_index, bool ini
 	{
 		long graph_index = arguments[0];
 		if (graph_index != NONE)
-			function_1dd0b0((s_graph_tag *)g_4e3b44[graph_index & 0xffff].bytes, arguments[1]);
+			((s_graph_tag *)g_4e3b44[graph_index & 0xffff].bytes)->animation_by_name(arguments[1]);
 		hs_thread_return_value(thread_index, 0);
 	}
 }
