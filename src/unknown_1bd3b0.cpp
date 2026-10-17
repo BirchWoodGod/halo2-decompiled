@@ -315,16 +315,13 @@ struct s_1bdad0_target
 	short next_id;
 };
 
-extern "C" void _ReadWriteBarrier(void);
-#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x1bdad0
 bool __stdcall function_1bdad0(long actor_index, s_slot *slot, long index)
 {
+	bool result = true;
 	s_actor_view *actor = actor_get(actor_index);
 	s_5d_element *element = (s_5d_element *)index;
 	s_1bdad0_target *target = (s_1bdad0_target *)&element->object_index;
-    _ReadWriteBarrier();
-	bool result = true;
 	s_1bd610 *movement = (s_1bd610 *)((byte *)slot + 0x1c);
 	long object_index = target->object_index;
 

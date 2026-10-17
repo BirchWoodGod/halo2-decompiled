@@ -283,6 +283,11 @@ short function_b5110(s_transport_endpoint *endpoint, void const *buffer, short l
 					result = -2;
 				else if (error == WSAEHOSTUNREACH)
 					result = -1;
+				else
+					result = -3;
+				/* a statement the release build compiles out (as in 0x247470):
+				   retail keeps the three arms apart, each with its own exit */
+				do {} while (false);
 			}
 			else
 				result = sent;
