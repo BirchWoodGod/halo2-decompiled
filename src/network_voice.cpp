@@ -1285,12 +1285,18 @@ long function_55c40(s_voice_queue *queue, long player, byte *cursor, byte *outpu
 	if (*(bool *)&queue->unknown00)
 	{
 		dword player_bit = 1 << player;
-		if (!(*(word *)queue->unknown08 & player_bit))
-			return NONE;
+		if (!voice_channel_has_player((s_voice_channel const *)queue, player))
+		{
+			result = NONE;
+			goto done;
+		}
 		long clamped = player < 0 ? 0 : player > 15 ? 15 : player;
 		if (clamped != player)
-			return NONE;
-		dword kept = (1 << queue->count) - 1;
+		{
+			result = NONE;
+			goto done;
+		}
+		volatile dword kept = (1 << queue->count) - 1;
 		long written = 0;
 		long entry_size = include_mask ? 13 : 11;
 		capacity -= 2;
@@ -1333,6 +1339,7 @@ long function_55c40(s_voice_queue *queue, long player, byte *cursor, byte *outpu
 				*(word *)queue->unknown08 |= *(word *)((byte *)&queue->entries[i] + 6);
 		}
 	}
+done:
 	return result;
 }
 
