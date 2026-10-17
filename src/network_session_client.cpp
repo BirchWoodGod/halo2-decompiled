@@ -619,8 +619,8 @@ bool function_06e720(c_class_58d20 *session)
 
 void function_148823();
 void window_manager_reset_all_windows();
-bool __stdcall function_236917(long controller);
-bool __stdcall function_236953(long controller);
+bool __stdcall dialog_callback_dashboard_network_configuration(long controller);
+bool __stdcall dialog_callback_sign_out_to_main_menu(long controller);
 bool __stdcall function_2323ab(long controller);
 void network_session_check_tracking(c_class_58d20 *session);
 void network_session_close(c_class_58d20 *session);
@@ -640,7 +640,7 @@ void function_6d270(void)
  function_148823();
  window_manager_reset_all_windows();
  long id = 0x38;
- dialog_choice_callback accept = function_236917;
+ dialog_choice_callback accept = dialog_callback_dashboard_network_configuration;
  bool choice = true;
  if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 1 && !g_4e6948->flag134)
  {
@@ -652,7 +652,7 @@ void function_6d270(void)
  if (!session_dialog_is(g_54d598.windows_1[4].next, id) && !present)
  {
   if (choice)
-   dialog_choice_show(1, id, 4, (word)-1, accept, function_236953, 0);
+   dialog_choice_show(1, id, 4, (word)-1, accept, dialog_callback_sign_out_to_main_menu, 0);
   else
    dialog_ok_show(1, id, 4, (word)-1, accept, 0);
  }

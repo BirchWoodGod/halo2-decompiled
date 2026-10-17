@@ -21,7 +21,7 @@ bool game_loop_running();
 bool function_163870(void);
 bool network_session_manager_session_unready(void);
 long function_147f4f();
-dword function_235ca9(void);
+dword main_menu_music_silence_time(void);
 
 /* whether the main menu may count down to the attract movie, and how long
    it waits (in milliseconds) */
@@ -40,7 +40,7 @@ bool function_223976(void)
 	{
 		dword idle_time = g_54d5b8 - (g_51ebec > g_54d5bc ? g_51ebec : g_54d5bc);
 		bool local_b608f1 = function_147f4f() == 9 || function_147f4f() == 6;
-		dword delay = function_235ca9();
+		dword delay = main_menu_music_silence_time();
 
 		g_4701b8 = !(idle_time >= g_4701bc - delay && local_b608f1);
 		if (idle_time >= g_4701bc && local_b608f1)

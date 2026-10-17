@@ -242,9 +242,9 @@ c_class_1473c9 *__stdcall function_24b4a9(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_25240c(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_252433(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_25245a(s_screen_parameters *parameters);
-bool __stdcall function_236877(long controller_index);
-bool __stdcall function_2368c1(long controller_index);
-bool __stdcall function_236917(long controller_index);
+bool __stdcall dialog_callback_split_screen_sign_in(long controller_index);
+bool __stdcall dialog_callback_system_link_sign_in(long controller_index);
+bool __stdcall dialog_callback_dashboard_network_configuration(long controller_index);
 
 extern bool g_54d5a0;
 
@@ -309,7 +309,7 @@ void __stdcall main_menu_list_choose_xbox_live(c_main_menu_list *list, s_control
 	}
 	else
 	{
-		dialog_choice_show(1, 0x23, 4, 1 << (*controller)->controller_index, function_236917, 0, 0);
+		dialog_choice_show(1, 0x23, 4, 1 << (*controller)->controller_index, dialog_callback_dashboard_network_configuration, 0, 0);
 	}
 }
 
@@ -328,7 +328,7 @@ void main_menu_list_choose_split_screen(s_controller_reference **controller)
 		parameters.field_c = 0;
 		if (function_6c7e0())
 		{
-			dialog_choice_show(3, 0x78, 4, 1 << (*controller)->controller_index, function_236877, 0, 0);
+			dialog_choice_show(3, 0x78, 4, 1 << (*controller)->controller_index, dialog_callback_split_screen_sign_in, 0, 0);
 		}
 		else
 		{
@@ -355,7 +355,7 @@ void main_menu_list_choose_system_link(s_controller_reference **controller)
 		parameters.field_c = 0;
 		if (function_6c7e0())
 		{
-			dialog_choice_show(3, 0x78, 4, 1 << (*controller)->controller_index, function_2368c1, 0, 0);
+			dialog_choice_show(3, 0x78, 4, 1 << (*controller)->controller_index, dialog_callback_system_link_sign_in, 0, 0);
 		}
 		else if (connected)
 		{

@@ -12,6 +12,7 @@
 
 #include "unknown_234c64.h"
 #include "unknown_19d220.h"
+#include "game_variant_settings.h"
 #include <stddef.h>
 
 /* the game modes: the shared globals each picks, and the window manager's
@@ -63,46 +64,14 @@ struct s_user_interface_shared_globals
 	/* the screen definitions the window manager looks up by id (0x148098) */
 	long screen_count;
 	s_tag_reference_8 *screens;
-	/* the game variant settings tag (s_game_variant_settings) */
+	/* the game variant settings tag (s_game_variant_settings,
+	   game_variant_settings.h) */
 	s_tag_reference_8 game_variant_settings;
 	/* the string list of the game variants' names (0x1936e0) */
 	s_tag_reference_8 game_variant_strings;
 };
 typedef char assert_ui_mode_definition_size[(sizeof(s_user_interface_shared_globals) == 0x20) ? 1 : -1];
 typedef char assert_ui_mode_definition_settings[(offsetof(s_user_interface_shared_globals, game_variant_settings.tag_index) == 0x14) ? 1 : -1];
-
-/* one default setting of a game variant: the setting's index and its value
-   (stored by 0x2373be) */
-struct s_game_variant_default_setting
-{
-	long setting_index;
-	long value;
-};
-typedef char assert_game_variant_default_setting_size[(sizeof(s_game_variant_default_setting) == 0x8) ? 1 : -1];
-
-/* the default settings of one game engine type (0x14 bytes) */
-struct s_game_engine_default_settings
-{
-	byte unknown00[8];
-	long setting_count;
-	s_game_variant_default_setting *settings;
-	byte unknown10[4];
-};
-typedef char assert_game_engine_default_settings_size[(sizeof(s_game_engine_default_settings) == 0x14) ? 1 : -1];
-
-/* the game variant settings tag (the part read here): the preset variants
-   (read by 0x149f88) and the default settings of each game engine type,
-   indexed by engine type - 1 (the engine types run from 1 to 9) */
-struct s_game_variant_settings
-{
-	byte unknown00[0x24];
-	long preset_string_list_index;
-	long preset_count;
-	void *presets;
-	s_game_engine_default_settings engines[9];
-};
-typedef char assert_game_variant_settings_engines[(offsetof(s_game_variant_settings, engines) == 0x30) ? 1 : -1];
-typedef char assert_game_variant_settings_size[(sizeof(s_game_variant_settings) == 0xe4) ? 1 : -1];
 
 /* ui_definition.cpp (ui_definition_get is declared in
    unknown_234c64.h, ui_definition_get_skin in unknown_19b516.h) */
