@@ -857,11 +857,14 @@ void function_239292(long controller_index)
 // @retail 0x2399da
 bool __stdcall function_2399da(long controller_index)
 {
+	/* the selected clan's details are copied out but not used; the clan
+	   comes from the user's own slot */
+	s_window_manager_754 selected_team;
 	s_friend_request team;
 	XONLINE_TEAM_MEMBER member;
 	long task_index;
 
-	function_14896e((s_window_manager_754 *)&team, (s_window_manager_df6 *)&member);
+	function_14896e(&selected_team, (s_window_manager_df6 *)&member);
 	player_slot_get_identity(controller_index, (s_player_identity *)&team);
 	member.TeamMemberProperties.dwPrivileges = 3;
 	task_index = online_team_member_set_rank(controller_index, &team.xuid, &member);
@@ -904,19 +907,19 @@ void __stdcall function_2393ae(long controller_index, long rank)
 		}
 		friends_lists_get_user(xuid, &arg_a721be, &is_player, &flags, &title_id, &in_session, NULL);
 		may_change = (bool)((flags >> 11) & 1);
-		if (!(!have_member))
-		{} else {
-			if (may_change)
-			{
-				member.xuidTeamMember = *xuid;
-				strncpy(member.szGamertag, name, 0x10);
-				member.szGamertag[0xf] = 0;
-			}
-			else
-			{
-				dialog_ok_show(1, 0x6e, 4, 1 << controller_index, 0, 0);
-				return;
-			}
+		if (have_member)
+		{
+		}
+		else if (may_change)
+		{
+			member.xuidTeamMember = *xuid;
+			strncpy(member.szGamertag, name, 0x10);
+			member.szGamertag[0xf] = 0;
+		}
+		else
+		{
+			dialog_ok_show(1, 0x6e, 4, 1 << controller_index, 0, 0);
+			return;
 		}
 		{
 			function_18ffc3(controller_index, (s_player_slot_blockb82 *)&membership);
