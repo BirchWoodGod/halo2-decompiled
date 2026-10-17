@@ -131,9 +131,9 @@ long network_observer_find_channel_by_machine(s_network_observer *observer, cons
 	long result = NONE;
 	for (long i = 0; i < MAXIMUM_OBSERVER_CHANNELS; i++)
 	{
-		s_network_observer_channel *channel = &observer->channels[i];
-		if (channel->state && (channel->owner_mask & (1 << owner)))
+		if (observer->channels[i].state && (observer->channels[i].owner_mask & (1 << owner)))
 		{
+			s_network_observer_channel *channel = &observer->channels[i];
 			s_session_machine_address machine = *(s_session_machine_address *)((byte *)channel->remote_id + 0xa);
 			if (memcmp(address, &machine, sizeof(machine)) == 0)
 			{
