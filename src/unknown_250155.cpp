@@ -875,7 +875,7 @@ void function_19a864(void);
 bool function_199967(void);
 long function_199d7c(void);
 long network_session_manager_get_value49ac(void);
-short function_18f93a(void);
+short player_slot_count_signed_in_non_guests(void);
 short player_slot_count_active(void);
 bool function_1900a5(long player);
 void function_199e3c(long controller);
@@ -1038,7 +1038,7 @@ bool __stdcall function_251345(long controller)
 // @retail 0x251242
 void function_251242(long controller)
 {
-	if (function_18f93a() == 1 && !function_1900a5(controller))
+	if (player_slot_count_signed_in_non_guests() == 1 && !function_1900a5(controller))
 	{
 		function_199e3c(controller);
 	}
@@ -1080,7 +1080,7 @@ void function_2512f8(long controller, bool choice)
 // @retail 0x2511b6
 void function_2511b6(long controller)
 {
-	long count = function_18f93a();
+	long count = player_slot_count_signed_in_non_guests();
 	long players = function_199f34();
 
 	if (function_1900a5(controller) || count == 1 && players <= count)
@@ -1714,8 +1714,8 @@ bool c_matchmaking_screen::v10(s_widget_event *event)
 long function_148222(long channel, long index, long screen_id);
 void function_148241(long channel, long index, long screen_id);
 bool function_19a902(void);
-long player_slot_get_value1fc(long index);
-long function_190262(long value);
+long player_slot_get_team(long index);
+long player_slot_iterate_next(long value);
 long function_19aa17(long value);
 void function_18fe9e(long index);
 
@@ -1884,9 +1884,9 @@ void c_screen_24fd74::function_250f3a(byte *data)
 					team_count = *(long *)(data + 0xb4);
 				}
 			}
-			teams[index].team = (short)(player_slot_get_value1fc(index) % team_count);
+			teams[index].team = (short)(player_slot_get_team(index) % team_count);
 			function_250cda(index, false);
-			index = function_190262(index);
+			index = player_slot_iterate_next(index);
 		}
 		while (index != NONE);
 	}
@@ -1978,7 +1978,7 @@ void c_screen_24fd74::update_countdown(bool signed_in_needed)
 
 		if (state != 4 && (state <= 8 || state > 10))
 		{
-			for (long controller = 0; controller != NONE; controller = function_190262(controller))
+			for (long controller = 0; controller != NONE; controller = player_slot_iterate_next(controller))
 			{
 				if (((s_player_slot_view_04 *)g_54e8e0)[controller].value04 != NONE)
 				{

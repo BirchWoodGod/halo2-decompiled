@@ -2022,7 +2022,7 @@ void c_screen_45d408::v19()
 
 /* ---- the settings menus ---- */
 
-/* a player's profile (unknown_18f576.cpp) */
+/* a player's profile (player_slots.cpp) */
 struct s_player_profile
 {
 	dword data[0x78];

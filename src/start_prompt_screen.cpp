@@ -49,7 +49,7 @@ static __forceinline void bitmap_tag_load(long tag_index)
 }
 class c_widget;
 bool function_22f0ff(c_widget *widget);
-long function_190262(long value);
+long player_slot_iterate_next(long value);
 word function_1901fc(void);
 bool online_get_accepted_game_invite(XONLINE_ACCEPTED_GAMEINVITE *invite);
 long minimal_storage_size_in_blocks();
@@ -218,7 +218,7 @@ void c_press_start_screen::v3()
 				function_236299(5);
 				break;
 			}
-			user_index = function_190262(user_index);
+			user_index = player_slot_iterate_next(user_index);
 		} while (user_index != NONE);
 	}
 	definition = function_22f871(this);

@@ -27,7 +27,7 @@ bool game_loop_running();
 long function_147f4f();
 c_class_1473c9 *__stdcall online_y_menu_open(s_screen_parameters *request);
 long function_199d7c(void);
-long function_18fa4d(long mode);
+long player_slot_find_signed_in(long mode);
 void __stdcall function_238ea7(long user_index);
 void __stdcall function_238eb5(long user_index, long type);
 
@@ -266,7 +266,7 @@ void window_manager_send_pending_join(void)
 	{
 		if (function_6c7e0())
 		{
-			long user_index = function_18fa4d(0);
+			long user_index = player_slot_find_signed_in(0);
 
 			if (user_index != NONE)
 			{
@@ -422,7 +422,7 @@ void window_manager_update_team_task(void)
 			online_teams_enumerate_get_results(g_54d598.team_task, &count, teams);
 			if ((long)count > 0)
 			{
-				long controller_index = function_18fa4d(1);
+				long controller_index = player_slot_find_signed_in(1);
 
 				if (controller_index >= 0 && controller_index < 4)
 				{

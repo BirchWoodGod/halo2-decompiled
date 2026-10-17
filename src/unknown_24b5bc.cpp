@@ -9,7 +9,7 @@
 #include "unknown_19b510.h"
 
 bool player_profile_load(long profile_index, s_player_profile_settings *settings);
-void __stdcall function_18fb34(long player, s_player_profile_settings *settings, long profile_index);
+void __stdcall player_slot_set_profile(long player, s_player_profile_settings *settings, long profile_index);
 void function_120df0(long index, wchar_t const *name);
 void function_190001(long index, char const *name);
 bool window_manager_channel_in_use(long channel);
@@ -101,7 +101,7 @@ void s_player_slot_profile::set_profile(long profile_index)
 			strncpy(name, user.szGamertag, 16);
 			name[15] = 0;
 		}
-		function_18fb34(player, &settings, this->profile_index);
+		player_slot_set_profile(player, &settings, this->profile_index);
 		function_120df0(player, (wchar_t const *)settings.name);
 		function_190001(player, name);
 	}
@@ -124,7 +124,7 @@ void s_player_slot_profile::sign_in(player_sign_in_callback callback)
 			char name[16] = { 0 };
 
 			task_type = 0;
-			function_18fb34(player, &settings, profile_index);
+			player_slot_set_profile(player, &settings, profile_index);
 			function_120df0(player, (wchar_t const *)settings.name);
 			function_190001(player, name);
 			if (callback)
@@ -272,7 +272,7 @@ void s_player_slot_profile::task_succeeded()
 	{
 		task_type = 0;
 		function_190074(player, true);
-		function_18fb34(player, &settings, profile_index);
+		player_slot_set_profile(player, &settings, profile_index);
 		function_120df0(player, (wchar_t const *)settings.name);
 		function_18fee9(&user, player);
 		function_190001(player, user.szGamertag);

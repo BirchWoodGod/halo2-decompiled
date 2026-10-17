@@ -1268,7 +1268,7 @@ void clan_members_sort()
 }
 
 void function_18ff47(long player, dword *out);
-bool function_18ff64(long index);
+bool player_slot_live_tasks_pending(long index);
 long function_75890(long time);
 void online_team_members_enumerate_get_results(long task_index, DWORD *count, XUID *members);
 void online_team_member_get_details(long task_index, XUID const *arg_9da427, XONLINE_TEAM_MEMBER *member);
@@ -1364,7 +1364,7 @@ void clan_members_update()
 	}
 	else if (!g_global_4acf62.friend_request.valid)
 	{
-		if (!function_18ff64(g_global_4acf62.controller_index))
+		if (!player_slot_live_tasks_pending(g_global_4acf62.controller_index))
 		{
 			g_global_4acf62.friend_request.valid = player_slot_get_identity(g_global_4acf62.controller_index, (s_player_identity *)&g_global_4acf62.friend_request.request);
 			if (g_global_4acf62.friend_request.valid)
@@ -1386,7 +1386,7 @@ void clan_members_update()
 	{
 		long timeout = g_4cf76c * 1000;
 
-		if (!function_18ff64(g_global_4acf62.controller_index) &&
+		if (!player_slot_live_tasks_pending(g_global_4acf62.controller_index) &&
 			function_75890(g_global_4acf62.clan_members_time) > timeout)
 		{
 			g_global_4acf62.friend_request.valid = player_slot_get_identity(g_global_4acf62.controller_index, (s_player_identity *)&g_global_4acf62.friend_request.request);
