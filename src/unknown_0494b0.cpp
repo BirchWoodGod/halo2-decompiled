@@ -5,6 +5,7 @@
 #include "unknown_11c920.h"
 #include "camera_storage.h"
 #include <xtl.h>
+#include "sampler_state.h"
 #include "globals.h"
 
 PRIVATE bool test_bit(dword flags, long bit)
@@ -195,33 +196,34 @@ void function_1beb0(void)
 // @retail 0x47ea0
 void function_47ea0(short stage, byte flags)
 {
-	if (flags & 1)
+	byte const *flags_reference = &flags;
+	if (*flags_reference & 1)
 	{
-		D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, D3DTADDRESS_BORDER);
-		D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, D3DTADDRESS_BORDER);
+		sampler_state_write(stage, D3DTSS_ADDRESSU, D3DTADDRESS_BORDER);
+		sampler_state_write(stage, D3DTSS_ADDRESSV, D3DTADDRESS_BORDER);
 	}
 	else
 	{
-		D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
-		D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+		sampler_state_write(stage, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+		sampler_state_write(stage, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
 	}
-	if (flags & 2)
+	if (*flags_reference & 2)
 	{
-		D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-		D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, D3DTEXF_POINT);
-		D3DDevice_SetTextureStageState(stage, D3DTSS_MIPFILTER, D3DTEXF_POINT);
+		sampler_state_write(stage, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+		sampler_state_write(stage, D3DTSS_MINFILTER, D3DTEXF_POINT);
+		sampler_state_write(stage, D3DTSS_MIPFILTER, D3DTEXF_POINT);
 	}
 	else
 	{
-		D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-		D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-		D3DDevice_SetTextureStageState(stage, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+		sampler_state_write(stage, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+		sampler_state_write(stage, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+		sampler_state_write(stage, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
 	}
-	D3DDevice_SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
-	D3DDevice_SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
-	D3DDevice_SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
-	D3DDevice_SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
-	D3DDevice_SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
+	sampler_state_write(stage, D3DTSS_MAXANISOTROPY, 0);
+	sampler_state_write(stage, D3DTSS_MIPMAPLODBIAS, 0);
+	sampler_state_write(stage, D3DTSS_MAXMIPLEVEL, 0);
+	sampler_state_write(stage, D3DTSS_COLORSIGN, 0);
+	sampler_state_write(stage, D3DTSS_ALPHAKILL, 0);
 }
 
 extern byte *g_485a80;

@@ -3,6 +3,7 @@
 #include "reset_storage.h"
 #include "shader_storage.h"
 #include <xtl.h>
+#include "sampler_state.h"
 #include <string.h>
 struct s_render_reset_state;
 struct s_shader_cache;
@@ -25,13 +26,6 @@ dword function_1cc30(long index);
 void function_1c620(s_shader_cache *state, long a, long b, long c, byte const *descriptor);
 void __stdcall function_1c710(void *state);
 byte const g_43f7b9[6] = { 0x2d, 0, 2, 3, 0x10, 0xff };
-
-/* one texture stage state through the device's inline setter; the type comes
-   by reference, so each call keeps its own update of the dirty flags */
-static __forceinline void sampler_state_write(DWORD stage, D3DTEXTURESTAGESTATETYPE const &type, DWORD value)
-{
-    D3DDevice_SetTextureStageState(stage, type, value);
-}
 
 // @retail 0x43a40
 void __stdcall function_43a40(long mode)
