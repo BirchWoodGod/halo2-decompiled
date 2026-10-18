@@ -280,14 +280,18 @@ bool __stdcall function_1bc980(long actor_index, s_slot *slot)
 
 		state->unknown17 = true;
 		function_26c180(state->unknown10);
-		if (other->unknown27c.unknown10 == NONE)
-			return false;
-		if (!function_1f4460(actor_index, &other->unknown27c.point, other->unknown27c.unknown10, NONE, false) && state->unknown15)
+		if (other->unknown27c.unknown10 != NONE)
 		{
-			state->unknown10 = function_1bc5d0(actor_index, state->unknown10);
-			state->unknown17 = false;
-			return state->unknown10 != NONE;
+			result = function_1f4460(actor_index, &other->unknown27c.point, other->unknown27c.unknown10, NONE, false);
+			if (!result && state->unknown15)
+			{
+				state->unknown10 = function_1bc5d0(actor_index, state->unknown10);
+				state->unknown17 = false;
+				result = state->unknown10 != NONE;
+			}
 		}
+		else
+			result = false;
 	}
 	return result;
 }
