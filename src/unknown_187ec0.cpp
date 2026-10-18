@@ -396,11 +396,14 @@ real function_188370(long type)
 
 bool function_172750(long mode, point3f const *point, real radius);
 
+/* element_index starts the parent walk of 0x1882d0's fallback lookup, and
+   entry_element_index (the fifth argument, which retail reads into esi) is
+   the element whose values and seat entries are looked up */
 // @retail 0x1883e0
-void function_1883e0(long tag_index, bool ignore_distance, point3f const *point, short element_index, long unused, long index, long variant,
+void function_1883e0(long tag_index, bool ignore_distance, point3f const *point, short element_index, long entry_element_index, long index, long variant,
 	long *first_value04, long *second_value04, long *first_value, long *second_value, long *first_value0c, long *second_value0c)
 {
-	s_globals_element *element = globals_element_get((s_globals_element_block_view *)g_4e034c, element_index);
+	s_globals_element *element = globals_element_get((s_globals_element_block_view *)g_4e034c, (short)entry_element_index);
 	long first_index = index == 13 ? 14 : index;
 	long first04 = NONE;
 	long second04 = NONE;
@@ -416,16 +419,16 @@ void function_1883e0(long tag_index, bool ignore_distance, point3f const *point,
 
 		if (tag_index != NONE)
 		{
-			first_entry = function_188130(tag_index, first_index, 0, element_index);
-			second_entry = function_188130(tag_index, index, 1, element_index);
+			first_entry = function_188130(tag_index, first_index, 0, (short)entry_element_index);
+			second_entry = function_188130(tag_index, index, 1, (short)entry_element_index);
 		}
 		if (!first_entry)
 		{
-			first_entry = function_1882d0(0, element_index, first_index, element_index);
+			first_entry = function_1882d0(0, element_index, first_index, (short)entry_element_index);
 		}
 		if (!second_entry)
 		{
-			second_entry = function_1882d0(1, element_index, index, element_index);
+			second_entry = function_1882d0(1, element_index, index, (short)entry_element_index);
 		}
 
 		if (first_entry)
@@ -505,7 +508,7 @@ long function_189400(s_sound_position const *position, long object_index, long t
 
 // @retail 0x188180
 void function_188180(point3f const *point, vector3f const *forward, long tag_index, long object_index, long index, long variant,
-	long unused, long effect_value, s_location const *location, real scale)
+	long entry_element_index, long effect_value, s_location const *location, real scale)
 {
 	long first_values[3];
 	long second_values[3];
@@ -521,7 +524,7 @@ void function_188180(point3f const *point, vector3f const *forward, long tag_ind
 	first_values[0] = NONE;
 	first_values[1] = NONE;
 	first_values[2] = NONE;
-	function_1883e0(tag_index, false, point, g_47d8e0, unused, index, variant,
+	function_1883e0(tag_index, false, point, g_47d8e0, entry_element_index, index, variant,
 		&first_values[0], &second_values[0], &first_values[1], &second_values[1], &first_values[2], &second_values[2]);
 
 	for (dword i = 0; i < sizeof(second_values) / sizeof(second_values[0]); i++)

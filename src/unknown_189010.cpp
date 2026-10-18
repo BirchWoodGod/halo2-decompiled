@@ -78,10 +78,8 @@ void function_1892a0(short value, point3f const *position, vector3f const *direc
 {
 	description->position = *position;
 	description->direction = *direction;
-	byte local_0 = value == NONE;
-	--local_0;
 	description->value24 = NONE;
-	description->value0 = (char)(local_0 & value);
+	description->value0 = value == NONE ? (char)0 : (char)value;
 
 	if (object_index != NONE && function_189010(tag_index, object_index))
 	{
