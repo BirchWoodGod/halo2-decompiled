@@ -66,8 +66,8 @@ short function_2cbf0(long arg_1, byte arg_2, long arg_3, dword arg_4,
 void function_133f70(s_133f70 const *arg_1, bool arg_2)
 {
 	volatile long local_1 = 0;
-	s_133f70 const *local_12 = arg_1;
-	if (local_12->field_166 > 0)
+	s_133f70 const *volatile local_12 = arg_1;
+	if (arg_1->field_166 > 0)
 	{
 		long local_13 = 0x18;
 		long local_14 = 0;
@@ -88,7 +88,7 @@ void function_133f70(s_133f70 const *arg_1, bool arg_2)
 						byte const *local_6 = g_4e3b44[*(long *)local_5 & 0xffff].bytes;
 						if (*(short const *)(local_6 + 0x290) != 0)
 						{
-							local_3 = *local_12;
+							memcpy(&local_3, local_12, sizeof(local_3));
 							local_3.field_1c0 = 0x1f;
 							local_3.field_1c4 = NONE;
 							local_3.field_1cc = false;
