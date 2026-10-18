@@ -1174,10 +1174,10 @@ void network_session_get_member_latency(s_session_member_latency *latency, c_cla
 	}
 }
 
-static inline long network_session_time_matches(long a, long b)
+static inline long network_session_time_matches(s_session_id key)
 {
 	long result = 0;
-	if (g_510520.a == a && g_510520.b == b)
+	if (*(__int64 *)&g_510520 == *(__int64 *)&key)
 		result = function_73b10(g_510540.a, g_510540.b);
 	return result;
 }
@@ -1186,7 +1186,12 @@ static inline long session_get_value_49f0(c_class_58d20 *session)
 {
 	long result = 0;
 	if (SESSION_STATE_IS_LIVE(session->state) && session->flag49e8)
-		result = network_session_time_matches(session->value49f0, session->value49f4);
+	{
+		s_session_id key;
+		key.a = session->value49f0;
+		key.b = session->value49f4;
+		result = network_session_time_matches(key);
+	}
 	return result;
 }
 
