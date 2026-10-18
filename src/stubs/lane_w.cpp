@@ -64,8 +64,6 @@ struct s_view_camera;
 struct s_view_source;
 
 
-// @stub 0x132d0
-void __stdcall function_132d0(s_frame_view_2c560 const *) {}
 
 // @stub 0x3bd00
 bool __stdcall function_3bd00(real, dword) { return true; }
