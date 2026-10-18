@@ -308,22 +308,30 @@ void __stdcall function_c3cf0(short pass, long liquid_index)
             long count;
             if (function_3e9c0(liquid->object_index))
             {
-                count = first_person_weapon_get_markers(liquid->object_index, definition->enabled,
+                long marker_name = definition->enabled;
+                long object_index = liquid->object_index;
+                count = first_person_weapon_get_markers(object_index, marker_name,
                     (s_first_person_marker *)&marker, 1);
                 local_287b6e = 1;
             }
             else
-                count = function_b8d30(liquid->object_index, definition->enabled, &marker, 1, false);
+            {
+                long marker_name = definition->enabled;
+                long object_index = liquid->object_index;
+                count = function_b8d30(object_index, marker_name, &marker, 1, false);
+            }
             if (count > 0)
             {
                 real opacity;
                 if (definition->kind != 0)
                 {
-                    opacity = (time - liquid->time - (1.0f / 3.0f)) * -3.0f;
-                    if (opacity < 0.0f)
+                    real faded = (time - liquid->time - (1.0f / 3.0f)) * -3.0f;
+                    if (faded < 0.0f)
                         return;
-                    if (opacity > 1.0f)
+                    if (faded > 1.0f)
                         opacity = 1.0f;
+                    else
+                        opacity = faded;
                 }
                 else
                     opacity = liquid->value;
