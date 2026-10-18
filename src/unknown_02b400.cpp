@@ -720,7 +720,8 @@ void function_27aa0(void)
     byte *bitmap = g_4e3b44[*(long *)(definition + 0x18) & 0xffff].bytes;
     g_4b9a00 = g_485600;
     if (g_485607) g_4b9a00 = 4;
-    real blend = (real)((cos((double)g_485618.forward.k * 3.1415927410125732f) + 1.0f) * 0.5f);
+    double blend_cos = cos((double)g_485618.forward.k * 3.1415927410125732f);
+    real blend = (real)((blend_cos + 1.0f) * 0.5f);
     g_4b9d8c = 19;
     g_4b9d90 = 0.5f;
     g_4b9d94 = *(real *)(definition + 0x20) * (1.0f - blend) + *(real *)(definition + 0x1c) * blend;

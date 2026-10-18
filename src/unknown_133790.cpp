@@ -100,7 +100,7 @@ void function_134240(s_bit_vector_pool *arg_1);
 dword function_1332f0(s_bit_vector_pool const *arg_1, word arg_2);
 void function_133f70(s_133f70 const *arg_1, bool arg_2);
 void function_4baf0(long arg_1, real arg_2, byte *arg_3, byte *arg_4);
-void function_4b5d0(long, long, real, byte *, byte *, bool, real, bool);
+void function_4b5d0(long, long, bool, real, real, s_133f70 *, point3f const *, bool);
 typedef void (*t_function_4b5d0_133790)(long arg_1, long arg_2, bool arg_3, real arg_4, real arg_5,
     s_133f70 *arg_6, point3f const *arg_7, bool arg_8);
 bool function_133790(s_bit_vector_pool *arg_1, short arg_2, bool arg_3, long *arg_4, long arg_5, bool arg_6);
