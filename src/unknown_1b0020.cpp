@@ -64,11 +64,10 @@ s_slot_handler_2 g_47dec0 =
 bool function_1b02a0(long actor_index)
 {
 	bool result = false;
-	s_reference invalid_reference = g_470fa0;
 	s_record_pool *actors = g_4f55f0;
 	s_actor_view *actor = (s_actor_view *)(actors->data + (actor_index & 0xffff) * sizeof(s_actor_view));
 
-	if (!REFERENCE_EQUAL(actor->unknown418, invalid_reference))
+	if (!REFERENCE_EQUAL(actor->unknown418, g_470fa0))
 	{
 		s_type_c3b527 *target = (s_type_c3b527 *)function_262b40(actor->unknown418);
 
@@ -82,15 +81,13 @@ bool function_1b02a0(long actor_index)
 				goto done;
 			}
 
-			volatile real radius = function_1e3920(actor_index);
+			real radius = function_1e3920(actor_index);
 			point3f point;
 			vector3f offset;
 
 			function_210850(target, &point);
 			vector3d_from_points3d(&actor->position, &point, &offset);
-			real distance_squared = offset.j * offset.j + offset.i * offset.i + offset.k * offset.k;
-			real distance = radius;
-			if (distance * distance > distance_squared)
+			if (offset.j * offset.j + offset.i * offset.i + offset.k * offset.k < radius * radius)
 			{
 				if (actor->unknown344 == NONE)
 				{
@@ -100,8 +97,8 @@ bool function_1b02a0(long actor_index)
 				bool waiting = false;
 				s_prop_view_fields *view = prop_view_fields_get(actor->unknown344);
 
-				if (view && (view->unknown06 == 0 || view->unknown06 == 1))
-					waiting = true;
+				if (view)
+					waiting = view->unknown06 == 0 || view->unknown06 == 1;
 				result = !waiting;
 			}
 		}
