@@ -1969,11 +1969,10 @@ bool __stdcall function_1a5370(s_sort_weight_view const *arg_0, point3f const *a
 			{
 				g_51e99c = (s_sort_globals *)arg_0;
 				qsort(local_1, local_4, sizeof(s_sort_candidate_view), (int (__cdecl *)(void const *, void const *))function_1a66f0);
-				real *volatile local_7 = &local_1[0].radius;
-                for (long local_5 = 0; local_5 < local_4; local_5++, local_7 = (real *)((byte *)local_7 + 0x60))
+				for (long local_5 = 0; local_5 < local_4; local_5++)
 				{
-					real *local_8 = local_7;
-                    if (function_1a67f0(arg_1, (point3f *)((byte *)local_8 - 0x0c), *(long *)((byte *)local_8 - 0x14), arg_3))
+					s_sort_candidate_view *local_8 = &local_1[local_5];
+					if (function_1a67f0(arg_1, &local_8->point, local_8->object_index, arg_3))
 					{
 						*arg_5 = local_1[local_5];
 						local_0 = true;

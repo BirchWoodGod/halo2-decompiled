@@ -1935,7 +1935,7 @@ PRIVATE inline long squad_tick_round(real ticks)
 // @retail 0x201ea0
 void function_201ea0(void)
 {
-    short elapsed = (short)squad_tick_round((real)g_510c54->field_2_3);
+    long elapsed = (short)squad_tick_round((real)g_510c54->field_2_3);
     dword const *clusters = (dword const *)((byte *)g_4e6948 + 0x1138);
     byte *structure = (byte *)g_4e0348;
     s_squad_record_iterator squads;

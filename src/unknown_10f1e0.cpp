@@ -662,26 +662,20 @@ void function_114330(long unit_index)
 // @retail 0x113410
 void function_113410(long unit_index)
 {
-	long const *index_reference = &unit_index;
-	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(*index_reference);
+	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_unit_animation_control *control = UNIT_ANIMATION_CONTROL(unit);
 	s_animation_state *state = UNIT_ANIMATION_STATE(unit);
 
 	if (state)
 	{
+		long first_set = NONE;
+		long second_set = NONE;
 		long weapon_class = state->unknown74;
 		long weapon_type = state->unknown78;
 		long other_weapon_type = control->weapon_type;
-		long first_set = NONE;
-		long second_set = NONE;
 
 		switch (state->unknown7c)
 		{
-		case 0x400004a:
-		case 0x5000049:
-		case 0xc000058:
-			if (unit->parent_index != NONE)
-				break;
 		case 0x400000c:
 		case 0x700005c:
 		case 0x700005d:
@@ -693,9 +687,18 @@ void function_113410(long unit_index)
 		case 0xa00000f:
 		case 0xb000059:
 		case 0xb00005a:
+		case 0xc000058:
 		case 0xc00005b:
 			first_set = 0xc000026;
 			second_set = 0xe000028;
+			break;
+		case 0x400004a:
+		case 0x5000049:
+			if (unit->parent_index == NONE)
+			{
+				first_set = 0xc000026;
+				second_set = 0xe000028;
+			}
 			break;
 		case 0x9000015:
 		case 0x9000016:
@@ -730,8 +733,10 @@ void function_113410(long unit_index)
 		}
 		else
 		{
-			control->animation_104 = c_type_709360();
-			control->animation_108 = c_type_709360();
+			control->animation_104.graph_index = NONE;
+			control->animation_104.index = NONE;
+			control->animation_108.graph_index = NONE;
+			control->animation_108.index = NONE;
 			control->animation_10c = state->overlay_or_animation_get(weapon_class, 0x400060b, weapon_type);
 			control->animation_110 = state->overlay_or_animation_get(weapon_class, 0x400060b, weapon_type);
 		}

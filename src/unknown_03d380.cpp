@@ -319,13 +319,13 @@ void __stdcall function_1264c0(dword flags)
 {
 	bool b = (flags >> 5) & 1;
 	bool a = (flags >> 6) & 1;
-	s_4e6380 *globals = g_4e6380;
+
 
 	/* neither pause (0) nor resume (1): only clears the paused flag */
 	if (!b)
 		function_125a90(2);
 
-	if (globals->flag78)
+	if (g_4e6380->flag78)
 	{
 		long datum;
 
@@ -373,7 +373,7 @@ void __stdcall function_1264c0(dword flags)
 	}
 
 	dword ticks = GetTickCount();
-	globals = g_4e6380;
+	s_4e6380 *globals = g_4e6380;
 	globals->unknown80 = ticks;
 	globals->unknown1f8 = NONE;
 	globals->unknown200 = NONE;

@@ -171,8 +171,8 @@ void function_aa260(long selection, long object_index, vector3f const *linear, l
 					difference.i = linear->i - desired_linear.i;
 					difference.j = linear->j - desired_linear.j;
 					difference.k = linear->k - desired_linear.k;
-					if (mode == 2 && !(difference.k * difference.k + difference.i * difference.i +
-						difference.j * difference.j > 0.06f))
+					if (mode == 2 && !(difference.j * difference.j +
+						(difference.i * difference.i + difference.k * difference.k) > 0.06f))
 						change_linear = false;
 					else desired_linear = *linear;
 				}

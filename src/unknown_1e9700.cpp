@@ -650,10 +650,8 @@ void function_22a664(s_widget_quad_2b11 const *quad, s_float_rect const *coordin
 	long bitmap_index, long sequence, long color);
 
 // @retail 0x1e9140
-bool __stdcall function_1e9140(s_request_screen_bounds const *volatile bounds)
+bool __stdcall function_1e9140(s_request_screen_bounds const *bounds)
 {
-	// Retail keeps the bounds argument on the stack through the texture lookups.
-	s_request_screen_bounds const *volatile const *bounds_reference = &bounds;
 	byte *definition = (byte *)g_510c94;
 	long color = *(long *)(definition + 0x444);
 	bool result = true;
@@ -664,15 +662,24 @@ bool __stdcall function_1e9140(s_request_screen_bounds const *volatile bounds)
 		long player_index = g_4e8c20->entries[g_4b9ed8];
 		if (player_index != NONE)
 		{
-			byte state = g_4e8c24->data[(player_index & 0xffff) * 0x21c + 0x88];
-			alternate = state == 1 || state == 3;
+			byte *player = g_4e8c24->data + (player_index & 0xffff) * 0x21c;
+			alternate = player[0x88] == 1 || player[0x88] == 3;
 		}
 	}
-byte *textures = definition + (alternate ? 0x20 : 0);
- corner = *(long *)(textures + 0x45c);
- diagonal = *(long *)(textures + 0x44c);
- edge = *(long *)(textures + 0x454);
- center = *(long *)(textures + 0x464);
+	if (alternate)
+	{
+		corner = *(long *)(definition + 0x47c);
+		diagonal = *(long *)(definition + 0x46c);
+		edge = *(long *)(definition + 0x474);
+		center = *(long *)(definition + 0x484);
+	}
+	else
+	{
+		corner = *(long *)(definition + 0x45c);
+		diagonal = *(long *)(definition + 0x44c);
+		edge = *(long *)(definition + 0x454);
+		center = *(long *)(definition + 0x464);
+	}
 	if (color != NONE && corner != NONE && diagonal != NONE && edge != NONE && center != NONE)
 	{
 		s_bitmap_data *corner_bitmap = *(s_bitmap_data **)(g_4e3b44[corner & 0xffff].bytes + 0x48);
@@ -689,21 +696,23 @@ byte *textures = definition + (alternate ? 0x20 : 0);
 			return false;
 		if (result)
 		{
-			s_request_screen_bounds const *input = *bounds_reference;
+			s_request_screen_bounds const *input = bounds;
 			s_request_screen_bounds inner;
-			inner.left = input->left + 8 + g_4b9dd2;
-			inner.right = input->right - 8 + g_4b9dd2;
-			inner.bottom = input->bottom - 8 + g_4b9dd0;
-			inner.top = input->top + 8 + g_4b9dd0;
-			struct { s_request_screen_bounds piece; real coordinates[4]; point2f points[4]; } draw;
- s_request_screen_bounds &piece = draw.piece;
- piece = inner;
-			real (&coordinates)[4] = draw.coordinates;
+			inner.left = input->left + 8;
+			inner.top = input->top + 8;
+			inner.right = input->right - 8;
+			inner.bottom = input->bottom - 8;
+			inner.left += g_4b9dd2;
+			inner.right += g_4b9dd2;
+			inner.bottom += g_4b9dd0;
+			inner.top += g_4b9dd0;
+			s_request_screen_bounds piece = inner;
+			real coordinates[4];
 			coordinates[0] = 0.0f;
 			coordinates[1] = 1.0f;
 			coordinates[2] = 0.0f;
 			coordinates[3] = 1.0f;
-			point2f (&points)[4] = draw.points;
+			point2f points[4];
 			function_1e90b0(&piece, points, 0);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, center, 0, color);
 			short top = inner.top - 10;
@@ -713,8 +722,8 @@ byte *textures = definition + (alternate ? 0x20 : 0);
 			piece.bottom = inner.top;
 			function_1e90b0(&piece, points, 0);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, edge, 0, color);
-			short bottom = inner.bottom + 10;
 			piece.top = inner.bottom;
+			short bottom = inner.bottom + 10;
 			piece.bottom = bottom;
 			piece.left = inner.left;
 			piece.right = inner.right;

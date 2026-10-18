@@ -80,21 +80,23 @@ void function_262800(long actor_index, s_reference reference, bool unknown);
 // @retail 0x1b89d0
 void __stdcall function_1b89d0(long actor_index, s_slot *slot)
 {
-	s_actor_view *actor = actor_get(actor_index);
+	long prop_index = actor_get(actor_index)->prop_index;
 	s_slot_23 *state = (s_slot_23 *)slot;
 
-	if (actor->prop_index != NONE)
+	if (prop_index != NONE)
 	{
-		s_prop_node_view *node = prop_node_get(actor->prop_index);
+		s_prop_node_view *node = prop_node_get(prop_index);
 		s_prop_view_fields *view = prop_node_view(node);
 
 		if (view)
 		{
+			s_actor_view *actor = actor_get(actor_index);
 			if (state->unknown0c)
 				return;
 
-			state->unknown0c = state->unknown0d && function_1f86f0(actor_index);
-			if (state->unknown0c)
+			bool ready = state->unknown0d && function_1f86f0(actor_index);
+			state->unknown0c = ready;
+			if (ready)
 			{
 				if (!state->unknown1b || !state->unknown1d || state->unknown1c)
 					return;
@@ -130,7 +132,8 @@ void __stdcall function_1b8ae0(long actor_index, s_slot *slot)
 		else if (state->unknown0e > 0)
 			state->unknown0e--;
 
-		if (actor_get(actor_index)->unknown50c && actor_get(actor_index)->unknown504 == 1 &&
+		s_actor_view *current = actor_get(actor_index);
+		if (current->unknown50c && current->unknown504 == 1 &&
 			function_1f8940(actor_index) >= 2.0f && state->unknown0e <= 0)
 		{
 			actor->unknown41c = 3;

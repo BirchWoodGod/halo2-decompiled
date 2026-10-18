@@ -378,6 +378,12 @@ struct s_ai_script_clump_object
 
 void __stdcall function_1e1a00(long index, long value);
 
+/* an object, or NULL for NONE */
+inline s_slot_object_view *object_get_or_null(long object_index)
+{
+	return object_index == NONE ? NULL : object_get(object_index);
+}
+
 /* resets (1e1a00) the actor of every object in an object list */
 // @retail 0x273150
 void function_273150(long list_index)
@@ -387,7 +393,7 @@ void function_273150(long list_index)
 
 	while (object_index != NONE)
 	{
-		s_slot_object_view *object = object_get(object_index);
+		s_slot_object_view *object = object_get_or_null(object_index);
 
 		if (object->actor_index != NONE)
 			function_1e1a00(object->actor_index, 0);

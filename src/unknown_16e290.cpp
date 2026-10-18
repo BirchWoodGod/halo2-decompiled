@@ -234,10 +234,7 @@ struct s_16f120_state
 struct s_unknown_13bf00;
 extern s_unknown_13bf00 *g_510c50;
 
-static inline bool local_user_in_use(long user_index)
-{
-	return g_4e8c20->entries[user_index] != NONE;
-}
+bool function_14ddc0(long local_player_index);
 
 // @retail 0x16f120
 void function_16f120(void)
@@ -246,11 +243,11 @@ void function_16f120(void)
 
 	for (user_index = 0; user_index < 4; user_index++)
 	{
-		if (user_index != NONE && local_user_in_use(user_index))
+		if (function_14ddc0(user_index))
 		{
-			s_player_state *state = &g_4e9bd4[user_index].state;
-
-			function_11bed0((s_location *)state->unknown0c, &state->position);
+#pragma inline_depth(0)
+			function_11bed0((s_location *)g_4e9bd4[user_index].state.unknown0c, &g_4e9bd4[user_index].state.position);
+#pragma inline_depth()
 		}
 	}
 	if ((!g_510c50 || !((s_16f120_state *)g_510c50)->active) && g_510c54->game_time > 0)
@@ -1398,9 +1395,10 @@ void function_170630(long player_index);
 // @retail 0x16fe90
 void function_16fe90(long user_index)
 {
-	byte *state = (byte *)&g_4e9bd4[user_index];
+	s_16f190_observer *observer = (s_16f190_observer *)&g_4e9bd4[user_index];
+	byte *state = (byte *)observer;
 	real *time = (real *)(state + 0x9c);
-	if (!(((s_16f190_observer *)g_4e9bd4)[user_index].command->flags & 0x20))
+	if (!(observer->command->flags & 0x20))
 	{
 		function_170bb0((real *)(state + 0x320), (real *)(state + 0x10c), (real *)(state + 0xc));
 		function_16ff10(user_index);

@@ -2036,10 +2036,11 @@ bool __stdcall function_1d44f0(s_havok_component *component, point3f *center, re
             volatile long local_0 = 0;
             for (long i = 0; i < (*component_reference)->rigid_bodies.size;)
             {
+                long node_count = (*component_reference)->rigid_bodies.data[i].node_count;
                 s_havok_component_rigid_body *body = &(*component_reference)->rigid_bodies.data[i];
                 void *shape = (byte *)body->rigid_body + 0xc;
                 real padding = 0.0f;
-                for (long j = 0; j < body->node_count; ++j)
+                for (long j = 0; j < node_count; ++j)
                 {
                     padding = padding > physics->bodies[body->nodes[j]].padding ? padding : physics->bodies[body->nodes[j]].padding;
                 }

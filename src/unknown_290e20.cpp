@@ -155,20 +155,21 @@ real function_291800(long arg_0, s_291800 const *arg_1, s_291801 const *arg_2,
 local_8:
 		{
 			s_291803 *local_9 = (s_291803 *)g_4e3b44[(*(long *)((byte *)local_2 + 0x54)) & 0xffff].bytes;
-			if (local_9->field_2c <= 0)
+			long local_20 = local_9->field_2c;
+			if (local_20 <= 0)
 				goto local_16;
+			long const *local_18 = arg_1->field_c;
 			for (short local_10 = 0; local_10 < local_17; local_10++)
 			{
-				long local_21 = arg_1->field_c[local_10];
 				for (short local_11 = 0; local_11 < arg_3; local_11++)
 				{
-					if (arg_2->field_50[local_11] == local_21)
+					if (arg_2->field_50[local_11] == local_18[local_10])
 					goto local_13;
 				}
-				for (short local_12 = 0; local_12 < local_9->field_2c; local_12++)
+				for (short local_12 = 0; local_12 < local_20; local_12++)
 				{
 					s_291802 const *local_19 = &local_9->field_30[local_12];
-					if (local_19->field_8 == local_21)
+					if (local_19->field_8 == local_18[local_10])
 					{
 						*arg_4 = local_19->field_8;
 						*arg_5 = local_19->field_4;
@@ -501,7 +502,7 @@ void __stdcall function_2919e0(s_ai_scene *scene, s_ai_scene_assignment *assignm
 // @retail 0x291b40
 bool function_291b40(long name, short command_script_index, long ai_index, long ai_index2, long ai_index3)
 {
-	volatile bool result = false;
+	bool result = false;
 	s_scenario_ai_scenes_view *scenario = (s_scenario_ai_scenes_view *)g_4e0350;
 	short scene_index;
 
@@ -514,7 +515,7 @@ bool function_291b40(long name, short command_script_index, long ai_index, long 
 			short assignment_count = 0;
 
 			if (!(scene->flags & 1) && (((dword *)g_5044d0)[scene_index >> 5] & (1 << (scene_index & 0x1f))))
-				return result;
+				goto done;
 
 			if (scene->trigger_count > 0 && scene->triggers->condition_count > 0)
 			{
@@ -557,11 +558,11 @@ bool function_291b40(long name, short command_script_index, long ai_index, long 
 					}
 					else if (!any)
 					{
-						return result;
+						goto done;
 					}
 				}
 				if (!all)
-					return result;
+					goto done;
 			}
 
 		assign:
@@ -593,9 +594,9 @@ bool function_291b40(long name, short command_script_index, long ai_index, long 
 					for (k = 0; k < scene->role_count; k++)
 					{
 						s_ai_scene_actor *actor = &((s_ai_scene_actor *)g_4f55f0->data)[assignment->actor_indices[k] & 0xffff];
-						s_ai_scene_unit *unit = ((s_ai_scene_unit_header *)g_4e0300->data)[actor->unit_index & 0xffff].unit;
 						short variant_index = assignment->variant_indices[k];
 						long local_dbe893 = assignment->variant_names[k];
+						s_ai_scene_unit *unit = ((s_ai_scene_unit_header *)g_4e0300->data)[actor->unit_index & 0xffff].unit;
 						if (((s_ai_scene_unit_variant *)((byte *)unit + unit->variant_offset))->local_dbe893 != local_dbe893 &&
 							local_dbe893 && variant_index != NONE)
 						{
@@ -615,10 +616,11 @@ bool function_291b40(long name, short command_script_index, long ai_index, long 
 						((dword *)g_5044d0)[scene_index >> 5] |= 1 << (scene_index & 0x1f);
 				}
 			}
-			return result;
+			goto done;
 		}
 	}
 
+	done:
 	return result;
 }
 

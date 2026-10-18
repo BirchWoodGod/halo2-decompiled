@@ -160,12 +160,14 @@ bool c_unit_melee_damage_event_definition::v11(long arg_0, long const *arg_1, lo
     byte local_6 = local_2[0x18];
     if ((local_6 & 0x3f) >= 0x2a)
         local_6 &= 0xc0;
-    short local_7 = *(short const *)(local_2 + 0x10);
+    struct s_9f883 { signed short field_0 : 16; };
+    s_9f883 local_7;
+    local_7.field_0 = *(short const *)(local_2 + 0x10);
     byte *local_8 = 0;
-    if (local_7 != -1 && local_7 >= 0 && local_7 < *(long *)((byte *)g_4e034c + 0x150))
-        local_8 = *(byte **)((byte *)g_4e034c + 0x154) + local_7 * 0xb4;
+    if (local_7.field_0 != -1 && local_7.field_0 >= 0 && local_7.field_0 < *(long *)((byte *)g_4e034c + 0x150))
+        local_8 = *(byte **)((byte *)g_4e034c + 0x154) + local_7.field_0 * 0xb4;
     if (!local_8)
-        local_7 = g_47d8e0;
+        local_7.field_0 = g_47d8e0;
     if (local_0 != NONE)
     {
         byte *local_9 = (byte *)((s_object_header *)g_4e0300->data)[local_0 & 0xffff].object;
@@ -177,7 +179,7 @@ bool c_unit_melee_damage_event_definition::v11(long arg_0, long const *arg_1, lo
             local_10.field_4 = local_3;
             local_10.field_8 = local_4;
             local_10.field_c = local_5;
-            local_10.field_10 = local_7;
+            local_10.field_10 = local_7.field_0;
             local_10.field_14 = *(real const *)(local_2 + 0x14);
             local_10.field_18 = local_6;
             function_cfc90(local_0, *(long const *)local_2, (s_unit_melee_hit const *)&local_10);
@@ -216,7 +218,6 @@ struct s_9c610
     dword field_50;
 };
 
-#pragma inline_depth(0)
 // @retail 0x9c610
 bool c_damage_aftermath_event_definition::v11(long arg_0, long const *arg_1, long arg_2, void const *arg_3)
 {
@@ -227,8 +228,7 @@ bool c_damage_aftermath_event_definition::v11(long arg_0, long const *arg_1, lon
     {
         byte const *local_3 = (byte const *)arg_3;
         long local_4 = NONE;
-        long &local_5 = *(long *)&arg_1;
-        local_5 = NONE;
+        long local_5 = NONE;
         short local_6 = *(short const *)(local_3 + 8);
         if (local_6 != -1)
         {
@@ -246,38 +246,37 @@ bool c_damage_aftermath_event_definition::v11(long arg_0, long const *arg_1, lon
         }
         if (function_122c10(0x6a707421, *(long const *)local_3))
         {
-            short local_11 = *(short volatile *)&local_5;
+            short local_11 = (short)local_5;
             s_9c610 local_10;
             memset(&local_10, 0, sizeof(local_10));
-            local_10.field_8 = *(long const *)local_3;
-            local_10.field_10 = local_1;
+            local_10.field_10 = local_2;
             local_10.field_c = local_4;
             local_10.field_14 = local_11;
+            local_10.field_8 = *(long const *)local_3;
             if (local_3[0xa])
                 local_10.field_18 = *(vector3f const *)(local_3 + 0xc);
-            local_10.field_4 = *(dword const *)(local_3 + 0x20);
             local_10.field_34 = *(real const *)(local_3 + 0x18);
             local_10.field_38 = *(real const *)(local_3 + 0x1c);
-            local_10.field_3c = *(short const *)(local_3 + 0x2c);
-            local_10.field_40 = *(short const *)(local_3 + 0x2e);
-            local_10.field_44 = *(real const *)(local_3 + 0x28);
-            local_10.field_48 = *(real const *)(local_3 + 0x24);
             local_10.field_50 = *(dword const *)(local_3 + 0x30);
+            local_10.field_3c = *(short const *)(local_3 + 0x2c);
+            local_10.field_44 = *(real const *)(local_3 + 0x28);
+            local_10.field_40 = *(short const *)(local_3 + 0x2e);
+            local_10.field_48 = *(real const *)(local_3 + 0x24);
             local_10.field_0 = local_3[0x34];
             local_10.field_30 = 0.0f;
-            function_b9dd0(local_2, &local_10.field_24);
+            local_10.field_4 = *(dword const *)(local_3 + 0x20);
+            function_b9dd0(local_1, &local_10.field_24);
             local_10.field_4c = 0.0f;
             if (local_3[0x20] & 2)
-                function_d6a70(local_2);
-            function_d9640((s_damage_report const *)&local_10, local_2);
-            if (g_4e0300->data[(local_2 & 0xffff) * 12 + 3] == 0 && (*(char const *)(local_3 + 0x20) < 0))
-                function_e4a20((point3f const *)(local_3 + 0xc), *(short const *)(local_3 + 0x2e), local_2, false);
+                function_d6a70(local_1);
+            function_d9640((s_damage_report const *)&local_10, local_1);
+            if (g_4e0300->data[(local_1 & 0xffff) * 12 + 3] == 0 && (local_3[0x20] & 0x80))
+                function_e4a20((point3f const *)(local_3 + 0xc), *(short const *)(local_3 + 0x2e), local_1, false);
         }
         local_0 = true;
     }
     return local_0;
 }
-#pragma inline_depth(255)
 
 struct s_object;
 s_object *function_badc0(long arg_0, dword arg_1);

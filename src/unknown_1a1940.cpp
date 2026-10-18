@@ -117,11 +117,11 @@ void *c_page_heap::allocate_pages(long alignment_mask, long size, long unused)
 		}
 		if (free_run)
 			break;
-		long next = index + 1;
-		if (next <= checked)
-			next = checked;
+		++index;
+		if (index <= checked)
+			index = checked;
 		long align_mask = (1 << alignment_mask) - 1;
-		index = first + ((next - first + align_mask) & ~align_mask);
+		index = first + ((index - first + align_mask) & ~align_mask);
 		end = index + pages;
 	}
 	if (index + pages <= page_count)
