@@ -111,10 +111,10 @@ short __stdcall function_272af0(s_match_globals *structure, point3f const *point
 
 PRIVATE __forceinline byte function_1b69e6(long arg_0, long arg_1)
 {
+    byte result = 0;
     s_actor_view *actor = actor_get(arg_1);
     s_prop_node_view *node = prop_node_get(arg_0);
     s_prop_view_fields *view = prop_node_view(node);
-    byte result = 0;
     if (view)
     {
         s_2605d0_request request;
