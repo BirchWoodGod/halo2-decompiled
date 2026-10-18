@@ -144,7 +144,7 @@ collision:
 
 // The selection result must be supplied by the caller in addition to mode.
 // @retail 0xaa260
-void function_aa260(long selection, vector3f const *linear, long object_index, long mode,
+void function_aa260(long selection, long object_index, vector3f const *linear, long mode,
 	point3f const *position, vector3f const *forward, vector3f const *up, vector3f const *angular)
 {
 	switch (selection)
@@ -216,13 +216,10 @@ void function_aab40(long object_index, point3f const *position, vector3f const *
     vector3f const *up, vector3f const *linear, vector3f const *angular)
 {
     bool update = true;
-    vector3f const *const *angular_reference = &angular;
-    s_record_pool *objects = g_4e0300;
-    byte *header = objects->data + (object_index & 0xffff) * 12;
-    byte *object = *(byte **)(header + 8);
+    byte *object = *(byte **)(g_4e0300->data + (object_index & 0xffff) * 12 + 8);
     if (position)
     {
-        bool type_zero = header[3] == 0;
+        bool type_zero = g_4e0300->data[(object_index & 0xffff) * 12 + 3] == 0;
         vector3f delta;
         vector3d_from_points3d((point3f *)(object + 0x64), position, &delta);
         bool moved = (real)(delta.j * delta.j) + (real)(delta.k * delta.k) +
@@ -247,5 +244,5 @@ void function_aab40(long object_index, point3f const *position, vector3f const *
     }
     else function_a9640(object_index);
     function_b75a0(object_index, position, forward, up, NULL, false);
-    function_b77d0(object_index, linear, *angular_reference);
+    function_b77d0(object_index, linear, angular);
 }

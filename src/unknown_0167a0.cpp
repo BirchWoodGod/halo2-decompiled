@@ -1206,15 +1206,17 @@ void function_17420(byte *state, long stage, long group, long pass, long variant
         if ((*(dword const *)stage_entry & (1 << group)) &&
             group < (*(word const *)(stage_entry + 4) >> 9))
         {
-            word packed = ((word const *)*(byte **)(definition + 0x28))[
-                (*(word const *)(stage_entry + 4) & 0x1ff) + group];
-            if (pass < (packed >> 9))
+            s_packed_shader_range const *group_range =
+                (s_packed_shader_range const *)*(byte **)(definition + 0x28) +
+                (*(word const *)(stage_entry + 4) & 0x1ff) + group;
+            if (pass < (long)group_range->count())
             {
-                packed = ((word const *)*(byte **)(definition + 0x30))[(packed & 0x1ff) + pass];
-                if (variant < (packed >> 9))
+                s_packed_shader_range const *pass_range =
+                    (s_packed_shader_range const *)*(byte **)(definition + 0x30) + group_range->index() + pass;
+                if (variant < (long)pass_range->count())
                 {
                     word const *entry = (word const *)(*(byte **)(definition + 0x38) +
-                        ((packed & 0x1ff) + variant) * 10);
+                        (pass_range->index() + variant) * 10);
                     function_176a0(state, (s_packed_shader_range const *)(entry + 3));
                     function_17960(state, entry + 4);
                     function_17b60(state, (s_packed_shader_range const *)(entry + 1));

@@ -1321,14 +1321,17 @@ struct s_batch_cache_4b5d0
     byte lighting[0x54];
 };
 
+struct s_133f70;
+
 // @retail 0x4b5d0
-void function_4b5d0(long object_index, long override, real priority, byte *output,
-    byte *unused, bool project_nodes, real distance, bool force)
+void function_4b5d0(long object_index, long override, bool force, real distance, real priority,
+    s_133f70 *record, point3f const *unused, bool project_nodes)
 {
+    byte *output = (byte *)record;
     (void)&object_index; (void)&override; (void)&priority;
     (void)&output; (void)&unused; (void)&project_nodes;
     transform4x3f projected[255];
-    short failed = 0;
+    long failed = 0;
     signed char initial_level = -1;
     long entries = function_4bcc0(output, object_index, distance, override,
         (bool *)(output + 0x168), force, &initial_level);
@@ -1352,7 +1355,6 @@ void function_4b5d0(long object_index, long override, real priority, byte *outpu
         long *count = (long *)(output + 0x14) + slot;
         long *handle = (long *)output + slot;
         s_batch_cache_4b5d0 **cache_slot = (s_batch_cache_4b5d0 **)(output + 0x44) + slot;
-        signed char *sections = (signed char *)(output + 0x71 + slot * 16);
         function_3d4f0(*(bool *)(output + 0x168), (short)index, &flags, source_object,
             tag, &nodes, &node_count, object_index);
         signed char previous = -1;
@@ -1369,14 +1371,19 @@ void function_4b5d0(long object_index, long override, real priority, byte *outpu
         *cache_slot = cache_index == NONE ? NULL :
             (s_batch_cache_4b5d0 *)(g_509434->data + (cache_index & 0xffff) * 0x100 + 0x44);
         output[slot + 0x6c] = (byte)(flags & 1);
-        bool cached = previous != -1 && *cache_slot && (*cache_slot)->handle != NONE &&
-            (*cache_slot)->stamp == ((g_4ba034 & 0x3fffffff) | ((dword)g_4ba050 << 30));
-        if (cached) *(short *)(output + 0x164) = previous;
+        bool reuse = false;
+        if (previous != -1 && *cache_slot && (*cache_slot)->handle != NONE &&
+            (*cache_slot)->stamp == ((g_4ba034 & 0x3fffffff) | ((dword)g_4ba050 << 30)))
+        {
+            reuse = true;
+            *(short *)(output + 0x164) = previous;
+        }
         bool fallback;
+        signed char *sections = (signed char *)(output + 0x71 + slot * 16);
         bool success = function_4c190(count, object_index, *(bool *)(output + 0x168), *tag,
             (short *)(output + 0x164), previous, sections, &fallback);
         bool level_changed = *(short *)(output + 0x164) != initial_level;
-        bool reuse = cached && !fallback;
+        reuse &= !fallback;
         if (reuse && level_changed) reuse = false;
         if ((index > 0 && level_changed) || !success)
         {
