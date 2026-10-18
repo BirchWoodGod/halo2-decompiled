@@ -313,10 +313,8 @@ long function_b4810(long kind, long controller, struct _XUID owner, wchar_t cons
 long function_b4450(long kind, long controller, struct _XUID owner, wchar_t const *filename, byte *buffer, dword size, long *task_out)
 {
     (void)&controller;
-    long *const volatile *output_reference = &task_out;
-    task_out = *output_reference;
-    long result = 1;
     *task_out = NONE;
+    long result = 1;
     long facility = storage_facility_ab(kind);
     wchar_t path[0x100];
     dword path_size = 0x100;
@@ -330,10 +328,10 @@ long function_b4450(long kind, long controller, struct _XUID owner, wchar_t cons
             if (status >= 0)
             {
                 *task_out = task_index;
-                task->controller_index = controller;
+                result = 0;
                 task->flags = 1;
                 task->type = 0x2a;
-                result = 0;
+                task->controller_index = controller;
                 goto done;
             }
             result = storage_error_ab(status);
