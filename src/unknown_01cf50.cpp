@@ -3631,23 +3631,25 @@ void function_2dd30()
         D3DDevice_SetStipple(function_1c290(1.0f));
         g_4b8494 = 1.0f;
     }
-    function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
+    function_0222d0(D3DRS_CULLMODE, 0);
     function_0222d0(D3DRS_COLORWRITEENABLE, 0);
+    function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
-    function_0222d0(D3DRS_ZWRITEENABLE, 0);
     function_0222d0(D3DRS_ZENABLE, 2);
     function_0222d0(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-    function_0222d0(D3DRS_CULLMODE, 0);
-    function_0222d0(D3DRS_STENCILENABLE, 0);
+    function_0222d0(D3DRS_ZWRITEENABLE, 0);
     function_0222d0(D3DRS_ZBIAS, 0);
+    function_0222d0(D3DRS_SAMPLEALPHA, 0);
+    g_51f3c8[1][0] = NULL;
+    g_51f3c8[1][1] = NULL;
+    g_51f3c8[1][2] = NULL;
+    g_51f3c8[1][3] = NULL;
     function_1cf50();
-    D3DPIXELSHADERDEF program;
-    memset(&program, 0, sizeof(program));
-    program.PSCombinerCount = 0x11001;
-    program.PSFinalCombinerInputsABCD = 0;
-    program.PSFinalCombinerInputsEFG = 0;
-    g_484f68 = program;
-    D3DDevice_SetPixelShaderProgram(&program);
+    memset(&g_484f68, 0, sizeof(g_484f68));
+    g_484f68.PSCombinerCount = 0x11001;
+    g_484f68.PSFinalCombinerInputsABCD = 0;
+    g_484f68.PSFinalCombinerInputsEFG = 0;
+    D3DDevice_SetPixelShaderProgram(&g_484f68);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x54), 0);
     function_1c710(g_51f0f0);
     if (g_485898 < 4 || g_485898 > 7)
@@ -3885,10 +3887,12 @@ void function_40890(void)
 {
 	if (!g_485870) return;
 	color4f color, inverse;
-	color.alpha = inverse.alpha = g_485878 * g_485874;
-	color.red = g_48587c * g_485874;
-	color.green = g_485880 * g_485874;
-	color.blue = g_485884 * g_485874;
+	color.red = g_485874 * g_48587c;
+	real alpha = g_485878 * g_485874;
+	color.green = g_485874 * g_485880;
+	color.alpha = alpha;
+	inverse.alpha = alpha;
+	color.blue = g_485874 * g_485884;
 	inverse.red = (1.0f - g_48587c) * g_485874;
 	inverse.green = (1.0f - g_485880) * g_485874;
 	inverse.blue = (1.0f - g_485884) * g_485874;
@@ -3945,7 +3949,7 @@ void function_40890(void)
 		rgb_inputs = 0x1411120;
 		local_617c45 = 0;
 		break;
-	default:
+	case 6:
 		function_0222d0(D3DRS_SRCBLEND, 1);
 		function_0222d0(D3DRS_DESTBLEND, 0x8002);
 		function_0222d0(D3DRS_BLENDOP, 0x8006);
@@ -3953,10 +3957,18 @@ void function_40890(void)
 		rgb_inputs = 0x11200000;
 		local_617c45 = 0;
 		break;
+	default:
+		__assume(0);
 	}
 	function_0222d0(D3DRS_ALPHATESTENABLE, 0);
-	function_0222d0(D3DRS_ZENABLE, 0);
-	function_0222d0(D3DRS_ZBIAS, 0);
+	{
+		/* retail has function_0222d0 inlined here, the library call left out of line */
+		extern dword g_4b81fc[];
+		g_4b81fc[D3DRS_ZENABLE] = 0;
+		D3DDevice_SetRenderState_ZEnable(0);
+		g_4b81fc[D3DRS_ZBIAS] = 0;
+		D3DDevice_SetRenderState_ZBias(0);
+	}
 	function_1cc30(13);
 	function_1c710(g_51f0f0);
 	real x = 1.0f / (short)(g_48564e - g_48564a);
@@ -3968,21 +3980,19 @@ void function_40890(void)
 		0, 0, 0, 1.0f,
 		0, 0, 0, 1.0f
 	};
-	D3DDevice_SetVertexShaderConstant(81, constants, 5);
-	D3DPIXELSHADERDEF program;
-	memset(&program, 0, sizeof(program));
-	program.PSAlphaInputs[0] = local_617c45;
-	program.PSRGBInputs[0] = rgb_inputs;
-	program.PSCombinerCount = 1;
-	program.PSConstant0[0] = constant;
-	program.PSAlphaOutputs[0] = 0xc00;
-	program.PSRGBOutputs[0] = 0xc00;
-	program.PSFinalCombinerInputsABCD = 0xc;
-	program.PSFinalCombinerInputsEFG = 0x1c00;
-	g_484f68 = program;
-	function_15180(&program);
-	short width = g_48564e - g_48564a;
+	D3DDevice_SetVertexShaderConstantNotInline(81 + 96, constants, 4 * 5);
+	memset(&g_484f68, 0, sizeof(g_484f68));
+	g_484f68.PSAlphaInputs[0] = local_617c45;
+	g_484f68.PSRGBInputs[0] = rgb_inputs;
+	g_484f68.PSCombinerCount = 1;
+	g_484f68.PSConstant0[0] = constant;
+	g_484f68.PSAlphaOutputs[0] = 0xc00;
+	g_484f68.PSRGBOutputs[0] = 0xc00;
+	g_484f68.PSFinalCombinerInputsABCD = 0xc;
+	g_484f68.PSFinalCombinerInputsEFG = 0x1c00;
+	function_15180(&g_484f68);
 	short height = g_48564c - g_485648;
+	short width = g_48564e - g_48564a;
 	function_1cf50();
 	D3DDevice_Begin(D3DPT_TRIANGLEFAN);
 	D3DDevice_SetVertexData2s(0, 0, 0);

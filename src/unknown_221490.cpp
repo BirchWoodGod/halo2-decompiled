@@ -343,20 +343,21 @@ void function_221900(
 	if (delta > 0.0f)
 	{
 		fade = g_502118;
-		real *local_0 = &fade->time;
+		real volatile *local_0 = &fade->time;
 		for (i = 0; i < k_sound_class_count; i++, local_0 += 4)
 		{
+			real remaining = *local_0;
 			if (*local_0 > delta)
 			{
 				dword target_bits = ((dword *)local_0)[-2];
 				dword current_bits = ((dword *)local_0)[-1];
 				real target = *(real *)&target_bits;
 				real current = *(real *)&current_bits;
-				real local_1 = delta / *local_0;
+				real local_1 = delta / remaining;
 				real result = (target - current) * local_1 + current;
 
 				((dword *)local_0)[-1] = *(dword *)&result;
-				*local_0 = *local_0 - delta;
+				*local_0 = remaining - delta;
 			}
 			else
 			{
