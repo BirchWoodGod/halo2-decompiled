@@ -337,32 +337,29 @@ void function_2218f0(void)
 void function_221900(
 	real delta)
 {
-	s_sound_class_fade *fade;
-	long i;
-
 	if (delta > 0.0f)
 	{
-		fade = g_502118;
-		real volatile *local_0 = &fade->time;
-		for (i = 0; i < k_sound_class_count; i++, local_0 += 4)
+		real volatile *class_fade_time = &g_502118->time;
+		for (long i = 0; i < k_sound_class_count; i++, class_fade_time += 4)
 		{
-			real remaining = *local_0;
-			if (*local_0 > delta)
+			real time_left = *class_fade_time;
+			if (time_left > delta)
 			{
-				dword target_bits = ((dword *)local_0)[-2];
-				dword current_bits = ((dword *)local_0)[-1];
+				dword target_bits = ((dword *)class_fade_time)[-2];
+				dword current_bits = ((dword *)class_fade_time)[-1];
 				real target = *(real *)&target_bits;
 				real current = *(real *)&current_bits;
-				real local_1 = delta / remaining;
-				real result = (target - current) * local_1 + current;
-
-				((dword *)local_0)[-1] = *(dword *)&result;
-				*local_0 = remaining - delta;
+				/* the same local holds this step's fraction */
+				time_left = delta / time_left;
+				real result = (target - current) * time_left + current;
+				((dword *)class_fade_time)[-1] = *(dword *)&result;
+				time_left = *class_fade_time - delta;
+				*class_fade_time = time_left;
 			}
 			else
 			{
-				((dword *)local_0)[-1] = ((dword *)local_0)[-2];
-				*local_0 = 0.0f;
+				((dword *)class_fade_time)[-1] = ((dword *)class_fade_time)[-2];
+				*class_fade_time = 0.0f;
 			}
 		}
 	}

@@ -3972,10 +3972,9 @@ void function_40890(void)
 	function_1cc30(13);
 	function_1c710(g_51f0f0);
 	real x = 1.0f / (short)(g_48564e - g_48564a);
-	real y = 1.0f / (short)(g_48564c - g_485648);
 	real constants[20] = {
 		2.0f * x, 0, 0, -1.0f - x,
-		0, -2.0f * y, 0, 1.0f + y,
+		0, -2.0f * (1.0f / (short)(g_48564c - g_485648)), 0, 1.0f + 1.0f / (short)(g_48564c - g_485648),
 		0, 0, 0, 0.5f,
 		0, 0, 0, 1.0f,
 		0, 0, 0, 1.0f
