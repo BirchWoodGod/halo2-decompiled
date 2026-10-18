@@ -72,6 +72,10 @@ address range or by source file:
      bytes, inside any maintainer lane, and the lanes then leave it alone.
    - Only another person's claim (an `@user` row) is off limits.
    - A claim with no activity for two weeks lapses.
+   - Merged work is open for follow-up, but ask its author first, on the
+     issue or on their pull request. If they haven't answered within 7 days,
+     others may go ahead. The author's work and credit stay, and the change
+     is noted on the issue.
 
    `python tools/open_work.py --claims claims.md` lists what is open, with
    the claim line to use. It takes a saved copy of the issue. A group of
@@ -97,6 +101,11 @@ address range or by source file:
 - Near-misses are fine to commit with their markers; the checker re-tests
   them on every build, and they often match once their callers or callees
   land. `python tools/near.py` counts those near-misses from the csv, with no XBE.
+- If a near miss gets a call's argument registers wrong, the callee probably
+  doesn't match yet (see
+  [Calling conventions under LTCG](docs/DECOMPILING.md#calling-conventions-under-ltcg)).
+  If someone else holds that callee, say so in your pull request or on the
+  Active claims issue, and we'll sort it out with them.
 - You don't need to commit `config/functions.csv`; we regenerate its
   statuses when we merge.
 
@@ -111,6 +120,12 @@ address range or by source file:
 - Mark the pull request ready when you want it merged. We check it against
   current `main` and merge it with a merge commit, so your authorship stays
   in the history.
+- Every merge also runs the provenance checks described in
+  [PROVENANCE.md](PROVENANCE.md). Now and then they flag a name that happens
+  to match one the project excludes, even though you chose it from the code.
+  We'll ask you to rename it. If you'd rather we did it, say so, and with
+  "Allow edits by maintainers" on we push the rename to your branch before
+  merging.
 
 ## Licence
 

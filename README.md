@@ -14,6 +14,14 @@ Microsoft, Bungie or 343 Industries. **Read [LEGAL.md](LEGAL.md)** for the
 project's scope, what it does not contain, and its rules for contributions,
 and [PROVENANCE.md](PROVENANCE.md) for where its information comes from.
 
+**This is a community-driven decompilation.** It is built in the open by many
+people: contributors who claim a range and send pull requests, and maintainers
+who review, merge and keep the build honest. Many of the people working on it,
+the maintainer included, work alongside AI coding agents such as Claude and
+Codex, and every change still has to pass the same byte-for-byte check and
+review. Everyone who has helped is credited in
+[The community](#the-community).
+
 **Contributors are welcome.** No prior decompilation experience is needed,
 only patience and some C. **New here? Start with
 [docs/START_HERE.md](docs/START_HERE.md):** the setup checklist, how to claim
@@ -48,12 +56,12 @@ Analysis, documentation and review do not need it.
 
 ## Status
 
-Decompilation is under way, and 9062 retail functions now match byte for
+Decompilation is under way, and 9072 retail functions now match byte for
 byte. The checker reports:
 
 ```
-matched 9062 of 11321 game functions (1285831 of 2784283 bytes, 46.18%)
-matched 9062 of 17219 functions in scope (1285831 of 3739273 bytes, 34.39%)
+matched 9072 of 11321 game functions (1289819 of 2784283 bytes, 46.32%)
+matched 9072 of 16711 functions in scope (1289819 of 3681964 bytes, 35.03%)
 ```
 
 Matched code so far includes:
@@ -107,8 +115,15 @@ So the work runs in stages:
    decisions all reproduce. The test sources are in `spike/`.
 2. **Project set-up (done).** The function inventory, the build with each
    source file's flags, the checker and the ready queue.
-3. **Decompilation (in progress)**, from the leaf functions up.
-4. **Native port.**
+3. **Decompilation (in progress)**, from the leaf functions up. What has
+   worked best on this build, such as fixing a callee's calling convention so
+   its callers match, and the pitfalls (aligned locals, link order), is
+   collected in [docs/DECOMPILING.md](docs/DECOMPILING.md).
+4. **Readability (in progress, alongside 3).** Once a group of functions
+   matches, it gets names from what the code does, structs for the data it
+   reads, and a source file named after its subsystem, without changing a byte
+   of the build.
+5. **Native port.**
 
 ## Build and check
 
@@ -171,9 +186,54 @@ ready-made prompt for AI coding agents.
    [docs/DECOMPILING.md](docs/DECOMPILING.md) explains the conventions and
    the compiler's quirks.
 
+Not ready to write code? Analysis helps too: several contributors have
+mapped a function or a subsystem in a `docs/` note that the next person then
+decompiled.
+
 Details are in [CONTRIBUTING.md](CONTRIBUTING.md), including the
 [contribution provenance policy](CONTRIBUTING.md#contribution-provenance).
 Questions are welcome as issues.
+
+## The community
+
+Thank you to everyone who has contributed to this project so far:
+
+- [@Banshee64](https://github.com/Banshee64), the first contributor: input,
+  team allegiances, Bink playback, looping sounds, damage, projectiles, unit
+  actions, vehicles, path search, cloth, recorded animations and devices, and
+  then the match-tuning of all of it.
+- [@coldspear](https://github.com/coldspear): much of the tooling (the
+  permuter's mutations, `masked.py`, the near-miss report, claim-aware
+  `ready.py`, the decomp.dev report and the hardening of the disc and XBE
+  readers), and analysis documents for the object core, weapons, surface
+  lighting, Havok, the Xbox Live logon and more.
+- [@BirchWoodGod](https://github.com/BirchWoodGod): matched ranges all over
+  the game, from units and bipeds to network voice, team balancing, map paths,
+  animation channels and lights, analysis of the network channel and session
+  search code, and the published analysis credited below.
+- [@BrassMonkey71](https://github.com/BrassMonkey71): matched functions in the
+  unit and biped code, AI and elsewhere.
+- [@mjshfrvstj-sys](https://github.com/mjshfrvstj-sys): the CI that runs the
+  Python tests on every pull request, and disc-image tests.
+- [@mrv777](https://github.com/mrv777): an analysis of the capture the flag and
+  assault objects.
+- [@RWayne93](https://github.com/RWayne93): online messages, and a documented
+  near miss.
+- [@andrewnakas](https://github.com/andrewnakas): the inventory fix that took
+  WMADEC's data tables out of the function list.
+
+[@kirklandsig](https://github.com/kirklandsig) maintains the project: runs the
+build, reviews and merges every pull request, and keeps the
+[Active claims](https://github.com/kirklandsig/halo2-decompiled/issues/9)
+table. Much of the maintainer's own decompilation runs in automated lanes
+driven by **Claude** (Anthropic) and **Codex** (OpenAI): AI coding agents that
+write and tune the source under the same checks and provenance rules as
+everyone else, with each batch reviewed before it lands. Many contributors use
+the same tools. The techniques in [docs/DECOMPILING.md](docs/DECOMPILING.md)
+were worked out by all of them, people and agents alike, and the commit
+history credits each change to its author.
+
+Want to be on this list? See [How to help](#how-to-help).
 
 ## Credits
 

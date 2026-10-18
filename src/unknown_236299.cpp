@@ -696,10 +696,6 @@ void function_23675a(s_bitmap_view *bitmap, s_texture_rect const *texture, dword
 // @retail 0x235e5e
 void function_235e5e(s_sprite_element *element, s_float_rect *from, s_float_rect *to, dword color, long clamp, long mode)
 {
-	(void)&to;
-	(void)&color;
-	(void)&clamp;
-	(void)&mode;
 	real width = element->width;
 	real height = element->height;
 	real draw_width = from->x1 - from->x0;
@@ -711,17 +707,19 @@ void function_235e5e(s_sprite_element *element, s_float_rect *from, s_float_rect
 	texture.bottom = draw_height / (1.0f > height ? 1.0f : height);
 	if ((byte)clamp)
 	{
-		if (*(volatile real *)&texture.right > 1.0f)
+		if (texture.right > 1.0f)
 			texture.right = 1.0f;
 		if (texture.bottom > 1.0f)
 			texture.bottom = 1.0f;
 	}
 	if (((byte *)element)[0xe] & 0x10)
 	{
-		texture.right = width * *(volatile real *)&texture.right;
-		texture.left = width * texture.left;
-		texture.top = height * texture.top;
-		texture.bottom = height * texture.bottom;
+		real scale_width = element->width;
+		real scale_height = element->height;
+		texture.left = scale_width * texture.left;
+		texture.right = scale_width * texture.right;
+		texture.top = scale_height * texture.top;
+		texture.bottom = scale_height * texture.bottom;
 	}
 	function_23675a((s_bitmap_view *)element, &texture, color, (short)mode, to);
 }
