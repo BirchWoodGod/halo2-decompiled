@@ -206,7 +206,8 @@ void function_1d9470(s_1d9240 const *p, long count, dword const *mask, s_blend_o
 		{
 			if (!mask || (mask[i >> 5] & (1 << (i & 0x1f))))
 			{
-				real dot = orientations->quaternion[0] * targets->quaternion[0] +
+				real first_product = orientations->quaternion[0] * targets->quaternion[0];
+				real dot = first_product +
 					targets->quaternion[1] * orientations->quaternion[1] +
 					targets->quaternion[2] * orientations->quaternion[2] +
 					orientations->quaternion[3] * targets->quaternion[3];

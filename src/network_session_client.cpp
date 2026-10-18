@@ -576,7 +576,7 @@ bool function_06e720(c_class_58d20 *session)
 		{
 			s_session_summary *summary = session->flag49fd ? (s_session_summary *)session->data4a00 : NULL;
 			s_unknown_108 machines;
-			__declspec(align(8)) s_session_player players[16];
+			s_session_player players[16];
 			memset(&machines, 0, sizeof(machines));
 			memset(players, 0, sizeof(players));
 			machines.data[0] = (1 << session->member_count) - 1;
