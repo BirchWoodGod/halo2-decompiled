@@ -97,7 +97,10 @@ This is the procedure for one function, written for a person or a subagent.
    differs. Leave the function with its marker. The checker records it as
    `near` or `todo` with the first difference, so someone can come back to
    it. `python tools/near.py` lists every near-miss in the csv by source
-   file (count and size) and does not need the XBE.
+   file (count and size) and does not need the XBE. If what differs is the
+   registers a call's arguments travel in, the callee is usually the problem,
+   not your function: see
+   [Calling conventions under LTCG](#calling-conventions-under-ltcg).
 
 ## The fast check
 
@@ -145,6 +148,55 @@ The first caveat compares with the last full build, so it says nothing about
 a function whose source you changed since (only its unchanged callees are
 compared), and nothing at all after a header change until the next plain
 check.
+
+## Calling conventions under LTCG
+
+On this build, many near misses come down to how arguments travel rather
+than to the body. This is what contributors and the maintainer's lanes have
+learned so far:
+
+- **A function that doesn't match yet decides its callers' code.** LTCG
+  chooses each internal function's convention from its own body: which
+  arguments go in registers and which stay on the stack. If our version of a
+  callee differs from retail's, its convention can differ too, and then every
+  caller that passes it arguments differs, however right the caller's own
+  source is. Before you tune a near function, check whether the calls it gets
+  wrong go to functions that don't match yet. Fixing that one callee often
+  matches several callers without touching them. Many recent matches came
+  this way.
+- **Read retail's evidence.** `ret N` at the end of a function says how many
+  bytes of arguments it takes from the stack. What each caller loads into
+  `eax`, `ecx`, `edx`, `ebx`, `esi` or `edi` just before the call says which
+  arguments travel in registers. Compare both with ours.
+- **When an argument stays on the stack.** As far as we have seen, LTCG
+  leaves an argument on the stack when the callee takes its address, uses it
+  only once as a memory operand, or keeps it in `ebp` or a callee-saved
+  register and also uses it elsewhere. To move an argument between a register
+  and the stack, change how the body uses it, not how it is declared.
+- **Idioms that have worked:**
+  - reordering a function's parameters, with every call site changed to match;
+  - removing a `volatile` that keeps parameters on the stack where retail has
+    them in registers;
+  - reading a parameter at its later use as `*(T const volatile *)&parameter`,
+    or a field as `*(long volatile *)&pointer->field`.
+
+  Try a plain-source fix first. A `volatile` access is acceptable only on a
+  parameter, a local or data reached through a pointer, never on a global
+  (see [What not to do](#what-not-to-do)), and it needs a comment saying why.
+  These idioms change how a value travels, never which value; see the
+  permuter's [false matches](#near-functions-the-permuter).
+- **Aligned locals block register arguments.** A local declared
+  `__declspec(align(N))`, an `__m128` local or an `_mm_*` store makes the
+  compiler align the frame (`ebp` keeps the old `esp`, then `and esp, -N`).
+  Under LTCG such a function stops taking arguments in `ebx`, even where the
+  realignment is optimised away. If retail's prologue aligns the same way,
+  keep it. If it doesn't, write the stores as plain `float` stores, or through
+  a helper that takes a pointer, and the register arguments come back.
+- **Link order.** Sources link in name order, so a file named after its
+  subsystem links before every `unknown_*` file. The code LTCG generates for a
+  few functions depends on the order in which it reaches them. When you rename
+  or move a file, run the full check; if a match is lost, choose a name that
+  keeps the file's place relative to its neighbours.
 
 ## Stand-ins: marking functions
 
@@ -317,4 +369,12 @@ must still match.
 
 - Do not add `__declspec(noinline)` or other attributes Bungie's code would
   not have had. Stand-ins keep functions out of line.
+- Do not steer code generation through globals. That means: no taking a
+  global's address, or reading it through a `volatile` cast, as a trick (it
+  stops the compiler hoisting loads of that global in every function that
+  uses it); no reaching neighbouring globals by offsetting one global's
+  address; and no `volatile` function pointers as anchors. Write a global as
+  the data retail holds.
+- Do not keep an argument swap at a call to a function that doesn't match yet
+  (see [false matches](#near-functions-the-permuter)).
 - Do not commit anything from `orig/`, `sdk/` or `build/`.

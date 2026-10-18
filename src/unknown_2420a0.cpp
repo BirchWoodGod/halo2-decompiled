@@ -2308,7 +2308,7 @@ void __stdcall function_240820(long arg_0)
 			{
 				for (long local_18 = players_first_active_local_player(); local_18 != NONE; local_18 = function_14de10(local_18))
 				{
-					long local_19 = g_4e8c20->entries[local_18];
+					long local_19 = local_18 == NONE ? NONE : g_4e8c20->entries[local_18];
 					if (local_19 != NONE && ctf_player_get(local_19)->team == local_17)
 						function_2007b3(local_18, 8, 1, NONE);
 				}

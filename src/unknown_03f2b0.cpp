@@ -776,8 +776,9 @@ void *function_449e0(short index, bool load, bool instance)
 	return result;
 }
 
-PRIVATE __forceinline byte *visible_entry_geometry(s_44940_entry *entry)
+PRIVATE __forceinline byte *visible_entry_geometry(short index)
 {
+	s_44940_entry *entry = &g_4ba138[index];
 	if (entry->tag != NONE)
 	{
 		byte *definition = g_4e3b44[entry->tag & 0xffff].bytes;
@@ -785,16 +786,19 @@ PRIVATE __forceinline byte *visible_entry_geometry(s_44940_entry *entry)
 		return *(byte **)(sections + ((entry->flags >> 9) & 0x1ff) * 0x5c + 0x34);
 	}
 	byte *structure = (byte *)g_4e0348;
-	byte *section;
-	if (!((entry->unknown00 >> 12) & 1))
-		section = *(byte **)(structure + 0xa0) + ((entry->flags >> 9) & 0x1ff) * 0xb0;
+	byte *data;
+	if (!((byte)(entry->unknown00 >> 12) & 1))
+	{
+		byte *section = *(byte **)(structure + 0xa0) + ((entry->flags >> 9) & 0x1ff) * 0xb0;
+		data = *(byte **)(section + 0x50);
+	}
 	else
 	{
 		byte *instances = *(byte **)(structure + 0x144);
-		short index = *(short *)(instances + ((entry->flags >> 18) & 0x7ff) * 0x58 + 0x34);
-		section = *(byte **)(structure + 0x13c) + index * 0xc8;
+		short definition_index = *(short *)(instances + ((entry->flags >> 18) & 0x7ff) * 0x58 + 0x34);
+		data = (byte *)*(dword const *)(*(byte **)(structure + 0x13c) + definition_index * 0xc8 + 0x50);
 	}
-	return *(byte **)(section + 0x50);
+	return data;
 }
 
 struct s_render_part_context;
@@ -807,9 +811,8 @@ void function_41040(short index, long part_index, long group, byte weight,
 void function_458d0(short index, bool ranges, s_geometry_visibility_list const *first, s_geometry_visibility_list const *second)
 {
 	short const *index_reference = &index;
-	(void)&ranges; (void)&first; (void)&second;
+	byte *geometry = visible_entry_geometry(*index_reference);
 	s_44940_entry *entry = &g_4ba138[*index_reference];
-	byte *geometry = visible_entry_geometry(entry);
 	dword *mask = *(dword **)(entry->unknown10 + 4);
 	if (first->count > 0 || second->count > 0)
 		entry->unknown00 |= 1;
@@ -822,10 +825,8 @@ void function_458d0(short index, bool ranges, s_geometry_visibility_list const *
 		}
 		else
 		{
-			word *mapping = *(word **)(geometry + 0x34);
-			long offset = *(long *)(geometry + 8);
-			word end = mapping[(short)first->indices[i + 1] + offset];
-			for (long j = mapping[(short)first->indices[i] + offset]; j <= end; ++j)
+			word end = (*(word **)(geometry + 0x34))[(short)first->indices[i + 1] + *(long *)(geometry + 8)];
+			for (long j = (*(word **)(geometry + 0x34))[(short)first->indices[i] + *(long *)(geometry + 8)]; j <= end; ++j)
 			{
 				dword bit = (*(word **)(geometry + 0x34))[(short)j];
 				mask[bit >> 5] |= 1 << (bit & 31);
@@ -851,9 +852,8 @@ PRIVATE __forceinline void mark_visible_part(byte *geometry, long index, dword *
 void function_45a80(short index, bool ranges, s_geometry_visibility_list const *first, s_geometry_visibility_list const *second)
 {
 	short const *index_reference = &index;
-	(void)&ranges; (void)&first; (void)&second;
+	byte *geometry = visible_entry_geometry(*index_reference);
 	s_44940_entry *entry = &g_4ba138[*index_reference];
-	byte *geometry = visible_entry_geometry(entry);
 	dword *mask = *(dword **)(entry->unknown10 + 4);
 	if (first->count > 0 || second->count > 0)
 		entry->unknown00 |= 1;
@@ -863,10 +863,8 @@ void function_45a80(short index, bool ranges, s_geometry_visibility_list const *
 			mark_visible_part(geometry, (word)first->indices[i], mask);
 		else
 		{
-			word *mapping = *(word **)(geometry + 0x34);
-			long offset = *(long *)geometry + 2 * *(long *)(geometry + 8);
-			long end = mapping[(short)first->indices[i + 1] + offset];
-			for (long j = mapping[(short)first->indices[i] + offset]; j <= end; ++j)
+			word end = (*(word **)(geometry + 0x34))[(short)first->indices[i + 1] + *(long *)geometry + 2 * *(long *)(geometry + 8)];
+			for (long j = (*(word **)(geometry + 0x34))[(short)first->indices[i] + *(long *)geometry + 2 * *(long *)(geometry + 8)]; j <= end; ++j)
 			{
 				long part = (*(word **)(geometry + 0x34))[(short)j + 2 * *(long *)(geometry + 8)];
 				mark_visible_part(geometry, part, mask);
@@ -1323,14 +1321,17 @@ struct s_batch_cache_4b5d0
     byte lighting[0x54];
 };
 
+struct s_133f70;
+
 // @retail 0x4b5d0
-void function_4b5d0(long object_index, long override, real priority, byte *output,
-    byte *unused, bool project_nodes, real distance, bool force)
+void function_4b5d0(long object_index, long override, bool force, real distance, real priority,
+    s_133f70 *record, point3f const *unused, bool project_nodes)
 {
+    byte *output = (byte *)record;
     (void)&object_index; (void)&override; (void)&priority;
     (void)&output; (void)&unused; (void)&project_nodes;
     transform4x3f projected[255];
-    short failed = 0;
+    long failed = 0;
     signed char initial_level = -1;
     long entries = function_4bcc0(output, object_index, distance, override,
         (bool *)(output + 0x168), force, &initial_level);
@@ -1354,7 +1355,6 @@ void function_4b5d0(long object_index, long override, real priority, byte *outpu
         long *count = (long *)(output + 0x14) + slot;
         long *handle = (long *)output + slot;
         s_batch_cache_4b5d0 **cache_slot = (s_batch_cache_4b5d0 **)(output + 0x44) + slot;
-        signed char *sections = (signed char *)(output + 0x71 + slot * 16);
         function_3d4f0(*(bool *)(output + 0x168), (short)index, &flags, source_object,
             tag, &nodes, &node_count, object_index);
         signed char previous = -1;
@@ -1371,14 +1371,19 @@ void function_4b5d0(long object_index, long override, real priority, byte *outpu
         *cache_slot = cache_index == NONE ? NULL :
             (s_batch_cache_4b5d0 *)(g_509434->data + (cache_index & 0xffff) * 0x100 + 0x44);
         output[slot + 0x6c] = (byte)(flags & 1);
-        bool cached = previous != -1 && *cache_slot && (*cache_slot)->handle != NONE &&
-            (*cache_slot)->stamp == ((g_4ba034 & 0x3fffffff) | ((dword)g_4ba050 << 30));
-        if (cached) *(short *)(output + 0x164) = previous;
+        bool reuse = false;
+        if (previous != -1 && *cache_slot && (*cache_slot)->handle != NONE &&
+            (*cache_slot)->stamp == ((g_4ba034 & 0x3fffffff) | ((dword)g_4ba050 << 30)))
+        {
+            reuse = true;
+            *(short *)(output + 0x164) = previous;
+        }
         bool fallback;
+        signed char *sections = (signed char *)(output + 0x71 + slot * 16);
         bool success = function_4c190(count, object_index, *(bool *)(output + 0x168), *tag,
             (short *)(output + 0x164), previous, sections, &fallback);
         bool level_changed = *(short *)(output + 0x164) != initial_level;
-        bool reuse = cached && !fallback;
+        reuse &= !fallback;
         if (reuse && level_changed) reuse = false;
         if ((index > 0 && level_changed) || !success)
         {
