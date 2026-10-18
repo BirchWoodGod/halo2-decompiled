@@ -93,6 +93,24 @@ DATA_RANGES = {
     # `push 0x3929b8` at 0x390027; no call or jump from code lands inside, and
     # decoded as code the bytes are full of retf, iretd, into, in and out.
     (0x392510, 0x3a061c): 'WMADEC tables',
+    # DSOUND's constants, tables and variables, from after 0x385614 (ends `ret 4`
+    # at 0x385743) to the end of the section. Its code reads and writes them, for
+    # example `cmp dword ptr [0x386b0c], 0` at 0x37a154, `inc dword ptr
+    # [0x386b34]` at 0x379cd8 and `fmul qword ptr [0x385760]` at 0x37a058, and
+    # calls through a pointer table in them (`call dword ptr [0x3871cc]` at
+    # 0x379dc0); no direct call or jump lands inside.
+    (0x385748, 0x387384): 'DSOUND data',
+    # XNET's tables, from after 0x3dffcc (ends `ret 0x10` at 0x3e0127, then int3
+    # padding) to the end of the section: runs of 0xff, a zero-filled block and
+    # byte tables, read by `cmp esi, dword ptr [0x3e02e8]` at 0x3d9907 and `push
+    # 0x3e0190` at 0x3a4165; no call or jump lands inside.
+    (0x3e0130, 0x3e0400): 'XNET tables',
+    # D3D's tables, from after 0x403400 (ends `ret 8` at 0x40395e, then its jump
+    # table to 0x4039cc and int3 padding) to the end of the section's raw data.
+    # Read by `cmp eax, dword ptr [ecx*4 + 0x4039e8]` at 0x3fd840 and `fmul dword
+    # ptr [eax*4 + 0x404238]` at 0x3fd756, and called through as pointers (`call
+    # dword ptr [0x403af8]` at 0x3f937e); no direct call or jump lands inside.
+    (0x4039d0, 0x404dc4): 'D3D tables',
     # XPP: the dword 0xff and zero padding in front of 0x408940 (push ebp ;
     # mov ebp, esp); nothing refers to it
     (0x408933, 0x408940): 'padding before 0x408940',

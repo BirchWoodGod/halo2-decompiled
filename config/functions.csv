@@ -16279,75 +16279,6 @@ va,size,owner,style,evidence,name,object,calls,source,status
 003855b2,69,xdk:dsound,size,packed,,,,,todo
 003855f7,29,xdk:dsound,size,packed,,,0037d9ba 00383c46,,todo
 00385614,306,xdk:dsound,size,packed,,,0037d952 00383c2c 00383c74 00383d79 00385464 00385513,,todo
-00385748,553,xdk:dsound,unknown,pad,,,,,todo
-00385977,10,xdk:dsound,size,packed,,,,,todo
-00385987,815,xdk:dsound,size,packed,,,,,todo
-00385cb7,94,xdk:dsound,size,packed,,,,,todo
-00385d16,266,xdk:dsound,size,packed,,,,,todo
-00385e21,38,xdk:dsound,size,packed,,,,,todo
-00385e48,774,xdk:dsound,size,packed,,,,,todo
-0038614f,87,xdk:dsound,size,packed,,,,,todo
-003861a7,212,xdk:dsound,size,packed,,,,,todo
-0038627c,16,xdk:dsound,size,packed,,,,,todo
-0038628d,155,xdk:dsound,size,packed,,,,,todo
-00386329,21,xdk:dsound,size,packed,,,,,todo
-0038633e,68,xdk:dsound,size,packed,,,,,todo
-00386382,257,xdk:dsound,size,packed,,,,,todo
-00386483,239,xdk:dsound,size,packed,,,,,todo
-00386573,76,xdk:dsound,size,packed,,,,,todo
-003865c0,766,xdk:dsound,unknown,a16,,,,,todo
-003868be,41,xdk:dsound,size,packed,,,,,todo
-003868e9,56,xdk:dsound,size,packed,,,,,todo
-00386922,158,xdk:dsound,size,packed,,,,,todo
-003869c0,47,xdk:dsound,unknown,a16,,,,,todo
-003869ef,282,xdk:dsound,unknown,pad,,,,,todo
-00386b0b,29,xdk:dsound,size,packed,,,,,todo
-00386b2b,59,xdk:dsound,size,packed,,,,,todo
-00386b66,64,xdk:dsound,size,packed,,,,,todo
-00386ba6,35,xdk:dsound,size,packed,,,,,todo
-00386bca,12,xdk:dsound,size,packed,,,,,todo
-00386bd6,202,xdk:dsound,size,packed,,,,,todo
-00386ca1,9,xdk:dsound,size,packed,,,,,todo
-00386caa,20,xdk:dsound,size,packed,,,,,todo
-00386cbe,28,xdk:dsound,size,packed,,,,,todo
-00386cda,8,xdk:dsound,size,packed,,,,,todo
-00386ce2,24,xdk:dsound,size,packed,,,,,todo
-00386cfa,28,xdk:dsound,size,packed,,,,,todo
-00386d16,8,xdk:dsound,size,packed,,,,,todo
-00386d1e,52,xdk:dsound,size,packed,,,,,todo
-00386d52,64,xdk:dsound,size,packed,,,,,todo
-00386d92,12,xdk:dsound,size,packed,,,,,todo
-00386d9e,28,xdk:dsound,size,packed,,,,,todo
-00386dba,20,xdk:dsound,size,packed,,,,,todo
-00386dce,11,xdk:dsound,size,packed,,,,,todo
-00386dd9,25,xdk:dsound,unknown,pad,,,,,todo
-00386df2,32,xdk:dsound,size,packed,,,,,todo
-00386e12,130,xdk:dsound,size,packed,,,,,todo
-00386e95,23,xdk:dsound,size,packed,,,,,todo
-00386ead,6,xdk:dsound,size,packed,,,,,todo
-00386eb3,57,xdk:dsound,size,packed,,,,,todo
-00386eed,6,xdk:dsound,size,packed,,,,,todo
-00386ef3,51,xdk:dsound,size,packed,,,,,todo
-00386f26,20,xdk:dsound,size,packed,,,,,todo
-00386f3a,20,xdk:dsound,size,packed,,,,,todo
-00386f4e,20,xdk:dsound,size,packed,,,,,todo
-00386f62,16,xdk:dsound,size,packed,,,,,todo
-00386f72,20,xdk:dsound,size,packed,,,,,todo
-00386f86,20,xdk:dsound,size,packed,,,,,todo
-00386f9a,16,xdk:dsound,size,packed,,,,,todo
-00386faa,47,xdk:dsound,size,packed,,,,,todo
-00386fda,27,xdk:dsound,size,packed,,,,,todo
-00386ff6,6,xdk:dsound,size,packed,,,,,todo
-00386ffd,15,xdk:dsound,size,packed,,,,,todo
-0038700d,6,xdk:dsound,size,packed,,,,,todo
-00387013,23,xdk:dsound,size,packed,,,,,todo
-0038702a,38,xdk:dsound,size,packed,,,,,todo
-00387051,6,xdk:dsound,size,packed,,,,,todo
-00387057,23,xdk:dsound,size,packed,,,,,todo
-0038706e,48,xdk:dsound,size,packed,,,,,todo
-0038709e,72,xdk:dsound,size,packed,,,,,todo
-003870e6,34,xdk:dsound,size,packed,,,,,todo
-0038710a,2,xdk:dsound,size,packed,,,,,todo
 003873a0,68,xdk:wmadec,unknown,a16,,,,,todo
 003873e4,22,xdk:wmadec,size,packed,,,002d6426,,todo
 003873fa,265,xdk:wmadec,size,ebp packed,,,002d1d3e 002d1dab 002d2241 002d2488 003873e4 003880de 0038812a 00388aa9,,todo
@@ -17842,21 +17773,6 @@ va,size,owner,style,evidence,name,object,calls,source,status
 003dfe80,16,xdk:xnet,speed,a16 pad,,,,,todo
 003dfe90,316,xdk:xnet,unknown,a16,,,,,todo
 003dffcc,350,xdk:xnet,size,ebp packed,,,003d0732 003d0846 003d120e 003d409b 003dfe90,,todo
-003e0137,2,xdk:xnet,size,packed,,,,,todo
-003e0139,7,xdk:xnet,size,packed,,,,,todo
-003e0141,79,xdk:xnet,size,packed,,,,,todo
-003e0190,257,xdk:xnet,unknown,a16,,,,,todo
-003e0296,5,xdk:xnet,size,packed,,,003d41da,,todo
-003e02be,2,xdk:xnet,size,packed,,,,,todo
-003e02db,114,xdk:xnet,size,packed,,,245e73e7,,todo
-003e034e,104,xdk:xnet,size,packed,,,,,todo
-003e03b7,13,xdk:xnet,size,packed,,,,,todo
-003e03c4,3,xdk:xnet,size,packed,,,,,todo
-003e03c7,10,xdk:xnet,size,packed,,,,,todo
-003e03d1,5,xdk:xnet,size,packed,,,,,todo
-003e03d6,37,xdk:xnet,unknown,pad,,,,,todo
-003e03fc,1,xdk:xnet,size,packed,,,,,todo
-003e03fe,2,xdk:xnet,size,packed,,,,,todo
 003e0400,28,third:bink,unknown,a16,,,0036d300 0036d310,,todo
 003e0420,37,third:bink,speed,a16 pad,,,,,todo
 003e0450,74,third:bink,speed,a16 pad,,,,,todo
@@ -18341,20 +18257,6 @@ va,size,owner,style,evidence,name,object,calls,source,status
 00403320,51,xdk:d3d8,speed,a16 pad,,,00321980 0036d1e2,,todo
 00403360,156,xdk:d3d8,speed,a16 pad,,,,,todo
 00403400,1484,xdk:d3d8,speed,a16 pad,,,003faae0 00403360,,todo
-004039d0,432,xdk:d3d8,speed,a16 pad,,,,,todo
-00403b80,16,xdk:d3d8,speed,a16 pad,,,,,todo
-00403b93,2,xdk:d3d8,size,packed,,,,,todo
-00403b97,1102,xdk:d3d8,size,packed,,,,,todo
-00403fe7,214,xdk:d3d8,size,packed,,,,,todo
-004040c3,297,xdk:d3d8,size,packed,,,,,todo
-004041ef,18,xdk:d3d8,size,packed,,,,,todo
-00404204,297,xdk:d3d8,size,packed,,,,,todo
-0040432d,83,xdk:d3d8,size,packed,,,,,todo
-00404380,2306,xdk:d3d8,unknown,a16,,,,,todo
-00404c83,29,xdk:d3d8,size,packed,,,,,todo
-00404ca0,60,xdk:d3d8,unknown,a16,,,,,todo
-00404cdc,72,xdk:d3d8,size,packed,,,,,todo
-00404d24,160,xdk:d3d8,size,packed,,,,,todo
 004086c0,442,xdk:xapi,unknown,a16,,,,,todo
 0040887a,183,xdk:xapi,size,packed,,,,,todo
 00408940,268,xdk:xapi,unknown,a16 ebp,,,00408d4d 00408d84 00408d90 00409c2d 0040c1e9,,todo

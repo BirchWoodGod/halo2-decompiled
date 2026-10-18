@@ -257,6 +257,21 @@ def test_wmadec_code_reads_its_tables_as_data(retail_xbe):
     assert in_data(0x392830)
 
 
+@pytest.mark.retail
+@pytest.mark.parametrize('va, op_str, target', [
+    (0x37a154, 'dword ptr [0x386b0c], 0', 0x386b0c),               # DSOUND
+    (0x3d9907, 'esi, dword ptr [0x3e02e8]', 0x3e02e8),             # XNET
+    (0x3fd840, 'eax, dword ptr [ecx*4 + 0x4039e8]', 0x4039e8),     # D3D
+])
+def test_library_code_reads_its_section_tails_as_data(retail_xbe, va, op_str, target):
+    from xbe import Xbe
+    image = Xbe(retail_xbe)
+    md = Cs(CS_ARCH_X86, CS_MODE_32)
+    ins = next(md.disasm(image.read(va, 16), va))
+    assert (ins.mnemonic, ins.op_str) == ('cmp', op_str)
+    assert in_data(target)
+
+
 def test_every_known_start_has_its_own_row():
     rows = read_rows(FUNCTIONS_CSV)
     starts = sorted(rows)
