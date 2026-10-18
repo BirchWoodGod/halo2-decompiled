@@ -322,12 +322,9 @@ bool g_4f55dc[16];
 struct s_hud_state;
 extern s_hud_state *g_5023f4;
 
-struct s_hud_state_view
+/* the hud's script timer (at 0x1398; fields named by their hud offset) */
+struct s_hud_timer_view
 {
-	byte unknown0000[0x1380];
-	long time1380;
-	bool flag1384;
-	byte unknown1385[0x1398 - 0x1385];
 	long time1398;
 	short ticks139c;
 	short ticks139e;
@@ -336,6 +333,15 @@ struct s_hud_state_view
 	short corner13a4;
 	bool flag13a6;
 	bool flag13a7;
+};
+
+struct s_hud_state_view
+{
+	byte unknown0000[0x1380];
+	long time1380;
+	bool flag1384;
+	byte unknown1385[0x1398 - 0x1385];
+	s_hud_timer_view timer;
 };
 
 extern byte g_4ea936;
@@ -9469,7 +9475,7 @@ void __stdcall function_2aaf30(short function_index, long thread_index, bool ini
 	{
 		short minutes = *(short *)&arguments[0];
 		short seconds = *(short *)&arguments[1];
-		((s_hud_state_view *)g_5023f4)->ticks139e = (short)((minutes * 60 + seconds) * g_510c54->field_2_3);
+		((s_hud_state_view *)g_5023f4)->timer.ticks139e = (short)((minutes * 60 + seconds) * g_510c54->field_2_3);
 		hs_thread_return_value(thread_index, 0);
 	}
 }
@@ -9478,9 +9484,9 @@ s_type_f4462a const g_44e3f8 = { _hs_type_void, 0, function_2aaf30, NULL, 2, { _
 
 __forceinline void hud_set_position(short x, short y, short corner)
 {
-	((s_hud_state_view *)g_5023f4)->value13a0 = x;
-	((s_hud_state_view *)g_5023f4)->value13a2 = y;
-	((s_hud_state_view *)g_5023f4)->corner13a4 = PIN(corner, 0, 4);
+	((s_hud_state_view *)g_5023f4)->timer.value13a0 = x;
+	((s_hud_state_view *)g_5023f4)->timer.value13a2 = y;
+	((s_hud_state_view *)g_5023f4)->timer.corner13a4 = PIN(corner, 0, 4);
 }
 
 /* 669: void (short, short, hud_corner) */
@@ -9506,7 +9512,7 @@ void __stdcall function_2ab010(short function_index, long thread_index, bool ini
 	long *arguments = function_209d50(thread_index, definition->parameter_count, definition->parameter_types, initialize);
 	if (arguments)
 	{
-		((s_hud_state_view *)g_5023f4)->flag13a7 = *(bool *)&arguments[0];
+		((s_hud_state_view *)g_5023f4)->timer.flag13a7 = *(bool *)&arguments[0];
 		hs_thread_return_value(thread_index, 0);
 	}
 }
@@ -9528,6 +9534,12 @@ void __stdcall function_2ab060(short function_index, long thread_index, bool ini
 
 s_type_f4462a const g_44e438 = { _hs_type_void, 0, function_2ab060, NULL, 1, { _hs_type_boolean } };
 
+/* the ticks left on the hud's script timer */
+static inline short hud_timer_ticks_left(const s_hud_timer_view *timer)
+{
+	return timer->ticks139c - (short)(g_510c54->game_time - timer->time1398);
+}
+
 /* 672: short () */
 // @retail 0x2ab0a0
 void __stdcall function_2ab0a0(short function_index, long thread_index, bool initialize)
@@ -9535,15 +9547,16 @@ void __stdcall function_2ab0a0(short function_index, long thread_index, bool ini
 	long result = 0;
 	s_hud_state_view *hud = (s_hud_state_view *)g_5023f4;
 	short ticks = 0;
-	if (hud->flag13a7)
+	if (hud->timer.flag13a7)
 	{
-		ticks = hud->ticks139c;
-		if (ticks != NONE && !hud->flag13a6)
-			ticks = ticks + (short)hud->time1398 - (short)g_510c54->game_time;
+		ticks = hud->timer.ticks139c;
+		if (ticks != NONE && !hud->timer.flag13a6)
+			ticks = hud_timer_ticks_left(&hud->timer);
 	}
-	short script_ticks;
-	script_ticks = NONE;
-	if (ticks != NONE)
+	long script_ticks;
+	if (ticks == NONE)
+		script_ticks = NONE;
+	else
 	{
 		real ticks_real = (real)ticks * g_510c54->rate * 30.0f;
 		long rounded;
@@ -9552,9 +9565,9 @@ void __stdcall function_2ab0a0(short function_index, long thread_index, bool ini
 			fld ticks_real
 			fistp rounded
 		}
-		script_ticks = (short)rounded;
+		script_ticks = rounded;
 	}
-	*(short *)&result = script_ticks;
+	*(short *)&result = (short)script_ticks;
 	hs_thread_return_value(thread_index, result);
 }
 
