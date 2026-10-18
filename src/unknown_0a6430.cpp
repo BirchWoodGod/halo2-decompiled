@@ -5,7 +5,7 @@
 // @flags /O2 /arch:SSE /Gr
 
 long __stdcall function_a9f70(long object_index, long mode, point3f const *position);
-void function_aa260(long selection, vector3f const *linear, long object_index, long mode,
+void function_aa260(long selection, long object_index, vector3f const *linear, long mode,
 	point3f const *position, vector3f const *forward, vector3f const *up, vector3f const *angular);
 bool function_a76b0(long index, long which);
 void function_dc0a0(long index);
@@ -51,7 +51,7 @@ void function_a6430(long mask, long object_index, long state_address)
 			if (mask & 0x20) angular = (vector3f const *)(state + 0x34);
 			long mode = function_a76b0(object_index, 0) ? 1 : 0;
 			long selection = function_a9f70(object_index, mode, position);
-			function_aa260(selection, linear, object_index, mode, position, forward, up, angular);
+			function_aa260(selection, object_index, linear, mode, position, forward, up, angular);
 		}
 	}
 	if (mask & 8)

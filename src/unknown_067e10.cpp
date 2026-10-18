@@ -1316,22 +1316,20 @@ bool simulation_world_queue_block(c_class_6a600 *world, const s_simulation_block
 		goto invalid;
 	if (expected > data->size)
 		goto done;
-	if (data->size != expected || (world->unknown18 != 4 && !world->flag25))
+	if (data->size != expected)
 		goto invalid;
-	goto valid;
+	if (world->unknown18 == 4 || world->flag25)
+		goto valid;
 
 invalid:
 	world->flag2c = true;
 	goto done;
 
 valid:
-	if (!(function_6ab90(world, data)))
+	if (function_6ab90(world, data))
 	{
-		g_4cf771 = true;
-	}
-	else
-	{
-		while (world->flag25 && g_4e6948 && g_4e6948->flag1120 && !(g_4cf770 && g_4cf772) && !world->flag2c)
+		bool flag25 = world->flag25;
+		while (flag25 && g_4e6948 && g_4e6948->flag1120 && !(g_4cf770 && g_4cf772) && !world->flag2c)
 		{
 			bool buffered;
 			if (function_69300(world, &buffered) <= 0)
@@ -1339,6 +1337,10 @@ valid:
 			game_loop_tick();
 		}
 		result = true;
+	}
+	else
+	{
+		g_4cf771 = true;
 	}
 
 done:

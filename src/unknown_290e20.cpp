@@ -157,20 +157,21 @@ local_8:
 			s_291803 *local_9 = (s_291803 *)g_4e3b44[(*(long *)((byte *)local_2 + 0x54)) & 0xffff].bytes;
 			if (local_9->field_2c <= 0)
 				goto local_16;
-			long const *local_18 = arg_1->field_c;
 			for (short local_10 = 0; local_10 < local_17; local_10++)
 			{
+				long local_21 = arg_1->field_c[local_10];
 				for (short local_11 = 0; local_11 < arg_3; local_11++)
 				{
-					if (arg_2->field_50[local_11] == local_18[local_10])
+					if (arg_2->field_50[local_11] == local_21)
 					goto local_13;
 				}
 				for (short local_12 = 0; local_12 < local_9->field_2c; local_12++)
 				{
-					if (local_9->field_30[local_12].field_8 == local_18[local_10])
+					s_291802 const *local_19 = &local_9->field_30[local_12];
+					if (local_19->field_8 == local_21)
 					{
-						*arg_4 = local_9->field_30[local_12].field_8;
-						*arg_5 = local_9->field_30[local_12].field_4;
+						*arg_4 = local_19->field_8;
+						*arg_5 = local_19->field_4;
 						local_3 = false;
 						goto local_15;
 					}

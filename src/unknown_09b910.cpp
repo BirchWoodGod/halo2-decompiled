@@ -1458,11 +1458,11 @@ bool c_weapon_pickup_event::v11(long a, long const *entities, volatile long c, v
 bool c_weapon_effect_event::v11(long a, long const *entities, long c, void const *data)
 {
     long object = function_a58d0(entities[0]);
-    if (object != NONE)
+    if (object == NONE) return false;
     {
         byte *object_data = ((s_z_event_header *)g_4e0300->data)[object & 0xffff].object;
         byte *definition = g_4e3b44[*(long *)object_data & 0xffff].bytes;
-        if (*(short *)(definition + 0x290) == 1)
+        if (*(short *)(definition + 0x290) != 1) return false;
         {
             long global_tag = *(long *)((byte *)g_4e034c + 0x16c);
             byte *settings = *(byte **)(*(byte **)(g_4e3b44[global_tag & 0xffff].bytes + 0xc) + 0x534);
@@ -1478,15 +1478,15 @@ bool c_weapon_effect_event::v11(long a, long const *entities, long c, void const
             {
                 vector3f up = *g_4687b0;
                 s_effect_marker markers[5];
-                markers[4].position = markers[3].position = markers[2].position =
-                    markers[1].position = markers[0].position = *(point3f const *)(event + 4);
-                markers[0].forward = up;
+                markers[0].position = markers[1].position = markers[2].position =
+                    markers[3].position = markers[4].position = *(point3f const *)(event + 4);
+                markers[0].forward = *g_4687b0;
                 markers[1].forward = *g_4687bc;
-                markers[2].forward = up;
-                _mm_store_ss(&markers[3].forward.i, _mm_sub_ss(_mm_setzero_ps(), _mm_load_ss(&up.i)));
-                _mm_store_ss(&markers[3].forward.j, _mm_sub_ss(_mm_setzero_ps(), _mm_load_ss(&up.j)));
-                _mm_store_ss(&markers[3].forward.k, _mm_sub_ss(_mm_setzero_ps(), _mm_load_ss(&up.k)));
-                markers[4].forward = up;
+                markers[2].forward = *g_4687b0;
+                markers[3].forward.i = 0.0f - up.i;
+                markers[3].forward.j = 0.0f - up.j;
+                markers[3].forward.k = 0.0f - up.k;
+                markers[4].forward = *g_4687b0;
                 markers[0].name = 0x700054c;
                 markers[1].name = 0x70000c0;
                 markers[2].name = 0x20000ca;
@@ -1494,15 +1494,22 @@ bool c_weapon_effect_event::v11(long a, long const *entities, long c, void const
                 markers[4].name = 0x400054f;
                 s_effect_parameters parameters;
                 memset(&parameters, 0, sizeof(parameters));
-                parameters.flags = 4;
-                parameters.tag_index = effect;
-                parameters.object_index = NONE;
-                parameters.owner.unknown0 = parameters.owner.unknown4 = NONE;
-                parameters.owner.unknown8 = parameters.unknown18 = NONE;
-                parameters.markers = markers;
-                parameters.marker_count = 5;
-                parameters.scale_a = parameters.scale_b = 1.0f;
                 parameters.color_a = parameters.color_b = 0xff808080;
+                parameters.unknown34 = 0;
+                parameters.unknown38 = 0;
+                parameters.unknown3c = 0;
+                parameters.unknown30 = 0;
+                parameters.source = NULL;
+                parameters.unknown18 = NONE;
+                parameters.object_index = NONE;
+                parameters.scale_a = parameters.scale_b = 1.0f;
+                parameters.owner.unknown4 = NONE;
+                parameters.owner.unknown0 = NONE;
+                parameters.owner.unknown8 = NONE;
+                parameters.tag_index = effect;
+                parameters.marker_count = 5;
+                parameters.markers = markers;
+                parameters.flags = 4;
                 effect_new_from_parameters(&parameters);
             }
         }
