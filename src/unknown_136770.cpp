@@ -108,9 +108,9 @@ void function_136fc0(s_type_b56524 *find)
 // @retail 0x137000
 bool function_137000(s_type_b56524 *find, file_reference_data *file, s_file_time *time)
 {
+	short depth = find->depth;
 	char buffer[256] = {0};
 	bool result = false;
-	short depth = find->depth;
 	char *path = find->path;
 	WIN32_FIND_DATA *data = &find->data;
 
@@ -120,10 +120,7 @@ bool function_137000(s_type_b56524 *find, file_reference_data *file, s_file_time
 		if (*handle == INVALID_HANDLE_VALUE)
 		{
 			function_1374c0(buffer, path);
-			if (find->root[0])
-			{
-				find_files_path_append(buffer, find->root);
-			}
+			find_files_path_append(buffer, find->root);
 			*handle = FindFirstFileA(buffer, data);
 			if (*handle == INVALID_HANDLE_VALUE)
 			{

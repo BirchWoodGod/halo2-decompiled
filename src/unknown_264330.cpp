@@ -264,7 +264,9 @@ void __stdcall function_264330(long actor_index, long prop_ref_index, s_2641c0 *
 	byte *object = *(byte **)(g_4e0300->data + (reference->object_index & 0xffff) * 12 + 8);
 	byte *prop = (byte *)prop_get(reference->prop_index);
 	long time = g_510c54->game_time;
-	byte *unit = ((1 << object[0xaa]) & 3) ? object : NULL;
+	byte *unit = NULL;
+	if ((1 << object[0xaa]) & 3)
+		unit = object;
 	bool update = false;
 	if ((reference->state >= 1 && reference->state <= 2) || force ||
 		(reference->state >= 1 && reference->unknown26 > 0))
