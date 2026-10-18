@@ -1157,8 +1157,8 @@ short function_1bb1d0(long actor_index, long object_index, s_object_seat const *
             }
         }
         if (reject_single && eligible == 1)
-            return NONE;
-        if (result != NONE)
+            result = NONE;
+        else if (result != NONE)
         {
             if (chosen_object)
                 *chosen_object = best_object;

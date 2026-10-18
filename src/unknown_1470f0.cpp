@@ -105,6 +105,7 @@ void *c_game_havok_memory::allocate_aligned(long alignment, long size, long memo
 	return result;
 }
 
+#pragma intrinsic(_ReadWriteBarrier)
 // @retail 0x147240
 void c_game_havok_memory::deallocate_aligned(void *address)
 {
@@ -112,6 +113,7 @@ void c_game_havok_memory::deallocate_aligned(void *address)
 	{
 		if (((long)((byte *)g_479898 + 0x4340) <= (long)address && ((long)((byte *)g_479898 + 0xf0340) > (long)address || (byte *)g_479898 + 0xf0340 == address)))
 		{
+			_ReadWriteBarrier();
 			g_479898->deallocate_aligned(address);
 		}
 		else if (((long)((byte *)g_479894 + 0x30) <= (long)address && ((long)((byte *)g_479894 + 0x15030) > (long)address || (byte *)g_479894 + 0x15030 == address)))
@@ -128,6 +130,7 @@ void c_game_havok_memory::deallocate_aligned(void *address)
 		}
 	}
 }
+#pragma function(_ReadWriteBarrier)
 
 // @retail 0x1472c0
 void *c_game_havok_memory::allocate16(long size, long memory_class)

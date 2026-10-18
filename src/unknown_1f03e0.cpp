@@ -436,7 +436,10 @@ void function_1f2a80(vector3f const *velocity, byte const *request, bool moving,
                 function_30bf0(&average);
                 real dot_a = a->i * desired->i + desired->k * a->k + a->j * desired->j;
                 real dot_average = desired->i * average.i + desired->k * average.k + desired->j * average.j;
-                *out = dot_average > dot_a ? *a : average;
+                if (dot_average > dot_a)
+                    *out = *a;
+                else
+                    *out = average;
             }
         }
         break;

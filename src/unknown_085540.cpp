@@ -934,14 +934,14 @@ void __stdcall function_865d0(c_simulation_view *view)
 {
  // Keep the retail stack argument under whole-program optimization.
  c_simulation_view *const *view_reference = &view;
+ struct { short kind; short size; long value; } header;
+ byte payload[1024];
  while (view->established() && view->unknownac != 0)
  {
   s_link_connection *connection = link_connection_get(view->unknown3c);
   if (connection->state != 5 || !(connection->flags & 0x10)) break;
   s_network_stream_header *stream = network_stream_get(connection->stream_index);
   if ((512 - (stream->window.next - stream->window.end)) * 32 < 0x600) break;
-  struct { short kind; short size; long value; } header;
-  byte payload[1024];
   s_ring_buffer *buffer = (s_ring_buffer *)&view->unknown9c;
   buffer->read_wrapped(buffer->start, sizeof(header), &header);
   buffer->start = (buffer->start + (long)sizeof(header)) % buffer->size;
