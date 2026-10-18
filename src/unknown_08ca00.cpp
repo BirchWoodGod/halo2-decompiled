@@ -5,16 +5,11 @@
 #include "unknown_11c920.h"
 #include "files.h"
 #include <string.h>
+#include "pending_messages.h"
 
-/* the message of the day's state: its flags (bit 1: there is a message) and
-   its length */
-struct s_message_of_the_day_globals
-{
-	dword flags;
-	short length;
-};
-
-s_message_of_the_day_globals g_479784;
+/* the request that receives the message of the day: its flags (bit 1: there
+   is a message) and its kind */
+s_pending_message_header g_479780;
 char const *g_4672b8 = "message_of_the_day.dat";
 
 static inline void function_x454397(s_type_acf665 *reference)
@@ -43,7 +38,7 @@ void message_of_the_day_get_file(s_type_acf665 *file)
 // @retail 0x8ca50
 bool message_of_the_day_available(void)
 {
-	if (g_479784.length != 0 && (g_479784.flags & 2))
+	if (g_479780.kind != 0 && (g_479780.flags & 2))
 		return true;
 	return false;
 }

@@ -96,8 +96,8 @@ void function_30290(point3f const *p, s_view const *view, s_camera const *camera
 		real m8c = camera->unknown8c;
 		real m9c = camera->unknown9c;
 		real left = view->bounds.left * 0.5f;
-		real right = view->bounds.right * 0.5f;
 		real top = view->bounds.top * 0.5f;
+		real right = view->bounds.right * 0.5f;
 		real bottom = view->bounds.bottom * 0.5f;
 
 		real xz = cx * cx + cz * cz;
@@ -108,11 +108,11 @@ void function_30290(point3f const *p, s_view const *view, s_camera const *camera
 			real root = (real)sqrt(disc);
 			real k = radius_value / xz;
 			real za = cz - (cz * radius_value + root * cx) * k;
-			real xa = cx - (cx * radius_value + root * cz) * k;
 			real zb = cz - (cz * radius_value - root * cx) * k;
 			real xb = cx - (cx * radius_value - root * cz) * k;
 			if (za > 0.01f)
 			{
+				real xa = cx - (cx * radius_value + root * cz) * k;
 				real n = xa / za * m78 + m98;
 				bounds->x0 = (1.f - n) * left + (n + 1.f) * right;
 			}
@@ -139,11 +139,11 @@ void function_30290(point3f const *p, s_view const *view, s_camera const *camera
 			real root = (real)sqrt(disc2);
 			real k = radius_value / yz;
 			real za = cz - (cz * radius_value + root * cy) * k;
-			real ya = cy - (cy * radius_value + root * cz) * k;
 			real zb = cz - (cz * radius_value - root * cy) * k;
 			real yb = cy - (cy * radius_value - root * cz) * k;
 			if (za > 0.01f)
 			{
+				real ya = cy - (cy * radius_value + root * cz) * k;
 				real n = ya / za * m8c + m9c;
 				bounds->y0 = (1.f - n) * top + (n + 1.f) * bottom;
 			}

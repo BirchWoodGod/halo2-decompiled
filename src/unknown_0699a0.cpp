@@ -133,9 +133,10 @@ long function_699a0(long index, void *table)
 	}
 	else if (index < 32)
 	{
-		byte *slot = (byte *)table + index * 0x90;
-		if (*(long *)(slot - 0x90 + 0x8fc) != NONE)
-			handle = *(long *)slot;
+		/* retail tests the word at (index - 16) * 0x90 + 0x8fc, 4 bytes
+		   below the entry's handle */
+		if (*(long *)((byte *)table + (index - 16) * 0x90 + 0x8fc) != NONE)
+			handle = *(long *)((byte *)table + index * 0x90);
 	}
 	return handle;
 }

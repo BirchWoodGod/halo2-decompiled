@@ -25,7 +25,6 @@ struct s_graph_name_entry
 void function_279d80(s_graph_tag *graph, c_type_709360 animation_id, long node_count, real frame, real weight,
 	s_graph_inheritance *inheritance, dword const *node_mask, real_quaternion_transform *transforms, bool interpolate);
 matrix3x3 *function_141e10(matrix3x3 *out, quaternionf const *q);
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name);
 void function_1dd1c0(s_graph_tag *graph, transform4x3f *matrices, rigid_transform_scaled const *orientations,
 	transform4x3f const *root);
 
@@ -1093,7 +1092,7 @@ void s_animation_state::transition_offset_compute()
 // @retail 0x1cbd10
 c_type_709360 s_animation_state::animation_find(long name)
 {
-	return function_1dd0b0(graph_get(), name);
+	return graph_get()->animation_by_name(name);
 }
 
 // @retail 0x1cbd50
@@ -1210,7 +1209,7 @@ bool s_animation_state::channel_play_named(c_animation_channel *channel, long na
 
 	if (graph_tag_index != NONE)
 	{
-		c_type_709360 animation_id = function_1dd0b0(graph_get(), name);
+		c_type_709360 animation_id = graph_get()->animation_by_name(name);
 
 		if (animation_id.index != NONE)
 		{
@@ -1524,9 +1523,12 @@ bool s_animation_state::channel_refresh(c_animation_channel *channel, long weapo
 		{
 			if (animation_id.graph_index == old_animation_id.graph_index && animation_id.index == old_animation_id.index)
 			{
-				return true;
+				result = true;
 			}
-			result = channel_start(channel, animation_id, name, NONE, NONE, kind, channel->flags);
+			else
+			{
+				result = channel_start(channel, animation_id, name, NONE, NONE, kind, channel->flags);
+			}
 		}
 		if (!result)
 		{

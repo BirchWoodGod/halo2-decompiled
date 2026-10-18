@@ -101,10 +101,12 @@ __forceinline void function_2992ba(short arg_0, bool arg_1, real arg_2, point2f 
 }
 
 // @retail 0x298d90
-void function_298d90(volatile long arg_0, long arg_1, s_298c30 const *arg_2, point2f const *arg_3,
+void function_298d90(long arg_0, long arg_1, s_298c30 const *arg_2, point2f const *arg_3,
 	point2f const *arg_4, point2f const *arg_5, real arg_6, point2f const *arg_7, point2f const *arg_8)
 {
-	(void)arg_0;
+	long const *const local_28 = &arg_0;
+	long local_29 = *local_28;
+	(void)local_29;
 	point2f const *const *local_26 = &arg_3;
 	s_slot_object_view *local_0 = object_get(arg_1);
 	point2f local_1 = { arg_7->x + arg_8->x, arg_7->y + arg_8->y };
@@ -112,12 +114,14 @@ void function_298d90(volatile long arg_0, long arg_1, s_298c30 const *arg_2, poi
 	function_298df3(&local_2);
 	point2f local_27;
 	point2f local_3[2];
-	local_3[0].x = arg_4->x * -arg_6 + arg_7->x;
-	local_3[0].y = arg_4->y * -arg_6 + arg_7->y;
+	real local_30 = -arg_6;
+	local_3[0].x = arg_4->x * local_30 + arg_7->x;
+	local_3[0].y = arg_4->y * local_30 + arg_7->y;
 	local_3[1].x = arg_4->x * arg_6 + arg_7->x;
 	local_3[1].y = arg_4->y * arg_6 + arg_7->y;
 	bool local_4 = local_2.x * (*local_26)->x + local_2.y * (*local_26)->y >= 0.0;
-	real local_5 = *(real *)((byte *)local_0 + 0x8c) * (*local_26)->y + (*local_26)->x * *(real *)((byte *)local_0 + 0x88);
+	point2f const *local_31 = (point2f const *)((byte *)local_0 + 0x88);
+	real local_5 = local_31->y * (*local_26)->y + (*local_26)->x * local_31->x;
 	short local_6 = 0;
 	for (short local_7 = 0; local_7 < 2; local_7++)
 	{

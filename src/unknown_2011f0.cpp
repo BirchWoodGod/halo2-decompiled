@@ -4,7 +4,7 @@
 #include "squads.h"
 
 void __stdcall function_201100(long arg_0, dword *arg_1);
-void __stdcall function_202e90(long arg_0, long arg_1, long arg_2);
+void __stdcall function_202e90(long arg_0, short arg_1, long arg_2);
 bool function_204390(long arg_0);
 void function_203360(long arg_0);
 void function_201ea0(void);

@@ -193,7 +193,7 @@ void async_create_file_blocking(file_reference_data const *s_type_acf665, dword 
 /* reads a small text file (the font table) into a string; false when it
    is missing or empty */
 // @retail 0x121a40
-bool file_read_string(s_type_acf665 const *reference, char *buffer, long size)
+bool file_read_string(s_type_acf665 const *reference, long size, char *buffer)
 {
 	bool result = false;
 	s_file_handle file;
@@ -259,7 +259,7 @@ long font_table_parse(char const *text, s_type_acf665 const *directory, s_type_a
 	return count;
 }
 
-long function_136770(file_reference_data *directory, dword flags, long maximum_count, file_reference_data *files);
+long function_136770(dword flags, file_reference_data *directory, long maximum_count, file_reference_data *files);
 bool function_1367d0(s_type_acf665 *file);
 bool file_ref_delete(s_type_acf665 *file);
 
@@ -277,20 +277,17 @@ bool function_121b00(void)
 	s_type_acf665 destination;
 	s_type_acf665 table;
 	s_type_acf665 output;
-	struct
-	{
-		s_type_acf665 old_files[11];
-		s_type_acf665 source_files[11];
-		s_type_acf665 destination_files[11];
-	} files;
+	s_type_acf665 old_files[11];
+	s_type_acf665 source_files[11];
+	s_type_acf665 destination_files[11];
 	char name[256];
 	char path[256];
 	char table_name[256];
 	char text[0x800];
 	FILETIME time;
+	FILETIME saved_time;
 	bool volatile done;
 	s_file_handle input;
-	s_file_handle target;
 	dword bytes_written;
 	bool result;
 	fonts_get_source_directory(&source);
@@ -303,7 +300,6 @@ bool function_121b00(void)
 	if (result)
 	{
 		{
-			FILETIME saved_time;
 			long language = global_preferences_globals.current.unknown1c;
 			memcpy(&saved_time, global_preferences_globals.current.unknown24, sizeof(saved_time));
 			if (CompareFileTime(&saved_time, &time) == 0)
@@ -319,15 +315,15 @@ bool function_121b00(void)
 			global_preferences_flush();
 		}
 		global_preferences_flush();
-		result = file_read_string(&table, text, sizeof(text));
+		result = file_read_string(&table, sizeof(text), text);
 		if (result)
 		{
-			long count = font_table_parse(text, &source, files.source_files, 11);
-			font_table_parse(text, &destination, files.destination_files, 11);
+			long count = font_table_parse(text, &source, source_files, 11);
+			font_table_parse(text, &destination, destination_files, 11);
 			if (function_1368f0(&destination))
 			{
-				long old_count = function_136770((file_reference_data *)&destination, 0, 11, (file_reference_data *)files.old_files);
-				for (long i = 0; i < old_count; i++) file_ref_delete(&files.old_files[i]);
+				long old_count = function_136770(0, (file_reference_data *)&destination, 11, (file_reference_data *)old_files);
+				for (long i = 0; i < old_count; i++) file_ref_delete(&old_files[i]);
 			}
 			else function_1367d0(&destination);
 			path[0] = 0;
@@ -344,10 +340,12 @@ bool function_121b00(void)
 			font_copy_wait(&done);
 			for (long i = 0; i < count; i++)
 			{
-				async_create_file_blocking((file_reference_data *)&files.source_files[i], 1, 0, 4, 7, &input);
+				s_file_handle target;
+
+				async_create_file_blocking((file_reference_data *)&source_files[i], 1, 0, 4, 7, &input);
 				result = input.handle != INVALID_HANDLE_VALUE;
 				if (!result) goto failed;
-				async_create_file_blocking((file_reference_data *)&files.destination_files[i], 2, 2, 4, 7, &target);
+				async_create_file_blocking((file_reference_data *)&destination_files[i], 2, 2, 4, 7, &target);
 				result = target.handle != INVALID_HANDLE_VALUE;
 				if (!result) goto failed;
 				result = async_copy_file(input, target, 7);

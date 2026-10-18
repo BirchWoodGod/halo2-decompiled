@@ -436,7 +436,8 @@ void c_animation_channel::sample(real weight, dword const *node_mask, long node_
 
 	if (unknown10 && animation->type)
 	{
-		function_1dd9d0(graph_tag_get(graph_tag_index), animation_id);
+		c_type_709360 id = animation_id;
+		function_1dd9d0(graph_tag_get(graph_tag_index), id);
 		return;
 	}
 	channel_flags = flags;
@@ -463,12 +464,10 @@ void c_animation_channel::sample(real weight, dword const *node_mask, long node_
 	inheritance = NULL;
 	if (animation_id.index != NONE && animation_id.graph_index != NONE)
 	{
-		s_graph_tag *graph = (s_graph_tag *)tags[graph_tag_index & 0xffff].bytes;
-
-		inheritance = function_1daff0(graph, animation_id);
-		tags = g_4e3b44;
+		inheritance = function_1daff0(graph_tag_get(*(volatile long const *)&graph_tag_index), animation_id);
 	}
-	function_279d80((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes, animation_id, node_count, frame_position, weight, inheritance, mask, transforms,
+	c_type_709360 id = animation_id;
+	function_279d80(graph_tag_get(graph_tag_index), id, node_count, frame_position, weight, inheritance, mask, transforms,
 		interpolate);
 }
 /* the graph's sound or effect an animation's event names, or NULL */
@@ -791,7 +790,8 @@ void c_animation_channel::sample_aiming(real yaw, real pitch, real weight, dword
 			{
 				inheritance = function_1daff0(graph_tag_get(*(volatile long const *)&graph_tag_index), animation_id);
 			}
-			function_279e40(screen, graph_tag_get(*(volatile long const *)&graph_tag_index), animation_id, node_count, yaw, pitch, weight,
+			c_type_709360 id = animation_id;
+			function_279e40(screen, graph_tag_get(graph_tag_index), id, node_count, yaw, pitch, weight,
 				inheritance, mask, transforms);
 		}
 	}
@@ -822,9 +822,9 @@ void c_animation_channel::sample_ratio(real ratio, real weight, long node_count,
 	inheritance = NULL;
 	if (animation_id.index != NONE && animation_id.graph_index != NONE)
 	{
-		inheritance = function_1daff0((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes, animation_id);
-		tags = g_4e3b44;
+		inheritance = function_1daff0(graph_tag_get(*(volatile long const *)&graph_tag_index), animation_id);
 	}
-	function_27a060((s_graph_tag *)tags[graph_tag_index & 0xffff].bytes, animation_id, node_count, ratio, weight, inheritance, mask,
+	c_type_709360 id = animation_id;
+	function_27a060(graph_tag_get(graph_tag_index), id, node_count, ratio, weight, inheritance, mask,
 		transforms);
 }

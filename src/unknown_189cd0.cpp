@@ -26,7 +26,7 @@ long function_189ee0(long tag_index);
 real sound_permutation_reference_duration(long definition_index, s_sound_permutation_reference const *reference);
 void object_dispatch_sound_started(long object_index, long tag_index, long sound_index);
 extern s_sound_source_callbacks const g_444b3c;
-void function_1892a0(s_sound_source_description *description, point3f const *position, vector3f const *direction, short value, long tag_index, long object_index);
+void function_1892a0(short value, point3f const *position, vector3f const *direction, long tag_index, long object_index, s_sound_source_description *description);
 long function_18d5b0(long label);
 long function_189fe0(s_sound_request const *request, long tag_index);
 long function_189340(long object_index, long tag_index, long audible, s_sound_marker const *marker, s_sound_source_callbacks const *source, real scale, long platform_playback, char const *variant);
@@ -85,8 +85,8 @@ void __stdcall function_189cd0(long tag_index, long object_index, real scale, lo
 				{
 					s_object_marker local_4f80fe;
 					function_b8d30(object, 0x4000095, &local_4f80fe, 1, false);
-					function_1892a0(&description, &local_4f80fe.node_matrix.position,
-						&local_4f80fe.node_matrix.forward, local_4f80fe.node_index, tag_index, object);
+					function_1892a0(local_4f80fe.node_index, &local_4f80fe.node_matrix.position,
+						&local_4f80fe.node_matrix.forward, tag_index, object, &description);
 				}
 				if (spatialization)
 					description.flags |= 1;

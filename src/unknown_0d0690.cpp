@@ -1130,8 +1130,9 @@ bool function_d37f0(s_lighting_parameter_block *block, long type, s_effect_color
 	s_lighting_record *record, color3f const *base, color3f const *lightmap)
 {
 	s_lighting_parameters *parameters = NULL;
+	long count = block->count;
 	dword mask = 1 << (type + 1);
-	for (long i = 0; i < block->count; i++)
+	for (long i = 0; i < count; i++)
 	{
 		if ((block->entries[i].flags & mask) || (block->entries[i].flags & 1))
 			parameters = &block->entries[i];
@@ -1141,7 +1142,8 @@ bool function_d37f0(s_lighting_parameter_block *block, long type, s_effect_color
 	vector3f const *input_normal = (vector3f const *)query;
 	vector3f normal = { input_normal->i, input_normal->j, input_normal->k };
 	real length = (real)sqrt(input_normal->i * input_normal->i + input_normal->j * input_normal->j + input_normal->k * input_normal->k);
-	record->length = length;
+	s_lighting_record *const *record_reference = &record;
+	(*record_reference)->length = length;
 	lighting_normalize_ordered(&normal, (normal.k * normal.k + normal.j * normal.j) + normal.i * normal.i);
 	color3f adjusted;
 	adjusted.red = lightmap->red + parameters->bias;
@@ -1198,16 +1200,20 @@ real function_30bf0(vector3f *vector);
 // @retail 0xd4080
 void function_d4080(s_effect_color_query const *query, long type, s_lighting_record *record, bool flag)
 {
-	(void)&flag;
+	bool const *const flag_reference = &flag;
+	bool flag_value = *flag_reference;
+	(void)flag_value;
 	vector3f const *input_normal = (vector3f const *)query;
 	real length = (real)sqrt(input_normal->i * input_normal->i + input_normal->j * input_normal->j + input_normal->k * input_normal->k);
+	volatile bool mobile = false;
+	if (type == 0 || type == 1 || type == 2)
+		mobile = true;
 	vector3f normal = *input_normal;
-	volatile bool mobile = type == 0 || type == 1 || type == 2;
 	record->length = lighting_normalize_ordered(&normal, (normal.i * normal.i + normal.k * normal.k) + normal.j * normal.j);
 	color3f base, lightmap;
 	unpack_color3f(query->color_a, &base);
 	unpack_color3f(query->color_b, &lightmap);
-	volatile long tag_index = *(long *)((byte *)g_4e0350 + 0x33c);
+	long tag_index = *(long *)((byte *)g_4e0350 + 0x33c);
 	if (tag_index == NONE)
 		tag_index = *(long *)((byte *)g_4e034c + 0x184);
 	s_lighting_parameter_block *block = (s_lighting_parameter_block *)g_4e3b44[tag_index & 0xffff].bytes;
@@ -1378,6 +1384,7 @@ bool function_d30d0(long tag, long flags, real u, real v, color3f *out)
 {
     bool result = true;
     byte temporary[0x74];
+    s_bitmap_data *sample_bitmap;
     s_bitmap_data *bitmap = NULL;
     if (tag != NONE)
     {
@@ -1391,13 +1398,15 @@ bool function_d30d0(long tag, long flags, real u, real v, color3f *out)
     {
         if (!function_d15e0(bitmap, 0.0f))
         {
-            if (*(void **)((byte *)bitmap + 0x54))
+            void *data = *(void **)((byte *)bitmap + 0x54);
+            sample_bitmap = bitmap;
+            if (data)
                 goto sample;
-            function_12360((s_bitmap_view *)bitmap, 0.0f);
+            function_12360((s_bitmap_view *)sample_bitmap, 0.0f);
         }
         else if (result = function_1d2f0((D3DSurface *)function_d15e0(bitmap, 0.0f), temporary))
         {
-            bitmap = (s_bitmap_data *)temporary;
+            sample_bitmap = (s_bitmap_data *)temporary;
             goto sample;
         }
     }
@@ -1407,7 +1416,7 @@ bool function_d30d0(long tag, long flags, real u, real v, color3f *out)
     return false;
 sample:
     point2f uv = { u, v };
-    unpack_color3f(function_1362b0((s_type_7ba8e9 const *)bitmap, &uv, 1.0f), out);
+    unpack_color3f(function_1362b0((s_type_7ba8e9 const *)sample_bitmap, &uv, 1.0f), out);
     return result;
 }
 

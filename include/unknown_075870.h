@@ -101,7 +101,7 @@ struct s_network_observer_configuration
 
 /* what the connections report their traffic to (the observer, vtable
    0x450e10) */
-class c_network_connection_listener
+class c_link_connection_listener
 {
 public:
 	virtual void packet_sent(long connection_index, long size, bool flag) {}
@@ -112,7 +112,7 @@ public:
 	virtual bool connection_v05(long connection_index, bool a, bool b, bool c, bool *arg_0, bool *arg_1, long *arg_2, long *arg_3, long arg_4, byte *arg_5) { return false; }
 };
 
-struct s_network_observer : public c_network_connection_listener
+struct s_network_observer : public c_link_connection_listener
 {
 	void function_79c00(long index, bool pass_on);
 	void function_776a0(long channel_index);

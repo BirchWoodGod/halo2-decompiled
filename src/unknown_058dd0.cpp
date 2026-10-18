@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-void function_07ad80(long count, byte *buffer);
+void transport_get_random_bytes(long count, byte *buffer);
 bool network_session_host_leave_to_peer(c_class_58d20 *session, long peer_index);
 struct s_surface_description;
 s_surface_description *function_192e60(long index);
@@ -916,7 +916,7 @@ void function_06e620(c_class_58d20 *s)
 		long now = time(NULL);
 		long seed = rand() ^ GetTickCount() ^ now;
 		long id[2];
-		function_07ad80(sizeof(id), (byte *)id);
+		transport_get_random_bytes(sizeof(id), (byte *)id);
 		s->set_values_4da0(id[0], id[1]);
 		s->set_value_4da8(seed);
 		s->clear_value_49c4();
@@ -1645,7 +1645,7 @@ bool function_71480(c_session_state_matchmaking *state)
 						network_session_host_set_summary(other, (const s_session_summary *)((byte *)state + 0x630));
 						network_session_parameters_set_value4dac(other, value);
 						network_session_parameters_set_data4db0(other, (const s_session_data4db0 *)settings);
-						function_07ad80(8, (byte *)&original);
+						transport_get_random_bytes(8, (byte *)&original);
 						other->set_values_4da0(original.a, original.b);
 						if (*(long *)(manager + 8)) *(long *)(manager + 8) = 0;
 						network_session_set_mode(session, 11);

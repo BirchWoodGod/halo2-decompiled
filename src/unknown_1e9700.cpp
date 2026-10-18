@@ -639,7 +639,7 @@ struct s_request_screen_bounds
 	short top, left, bottom, right;
 };
 
-void function_1e90b0(long first, point2f *points, s_request_screen_bounds const *bounds);
+void function_1e90b0(s_request_screen_bounds const *bounds, point2f *points, long first);
 
 struct s_bitmap_data;
 struct D3DTexture;
@@ -690,7 +690,7 @@ byte *textures = definition + (alternate ? 0x20 : 0);
 		if (result)
 		{
 			s_request_screen_bounds const *input = *bounds_reference;
-			__declspec(align(8)) s_request_screen_bounds inner;
+			s_request_screen_bounds inner;
 			inner.left = input->left + 8 + g_4b9dd2;
 			inner.right = input->right - 8 + g_4b9dd2;
 			inner.bottom = input->bottom - 8 + g_4b9dd0;
@@ -699,64 +699,64 @@ byte *textures = definition + (alternate ? 0x20 : 0);
  s_request_screen_bounds &piece = draw.piece;
  piece = inner;
 			real (&coordinates)[4] = draw.coordinates;
-			_mm_store_ss(&coordinates[0], _mm_setzero_ps());
-			_mm_store_ss(&coordinates[1], _mm_set_ss(1.0f));
-			_mm_store_ss(&coordinates[2], _mm_setzero_ps());
-			_mm_store_ss(&coordinates[3], _mm_set_ss(1.0f));
+			coordinates[0] = 0.0f;
+			coordinates[1] = 1.0f;
+			coordinates[2] = 0.0f;
+			coordinates[3] = 1.0f;
 			point2f (&points)[4] = draw.points;
-			function_1e90b0(0, points, &piece);
+			function_1e90b0(&piece, points, 0);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, center, 0, color);
 			short top = inner.top - 10;
 			piece.top = top;
 			piece.left = inner.left;
 			piece.right = inner.right;
 			piece.bottom = inner.top;
-			function_1e90b0(0, points, &piece);
+			function_1e90b0(&piece, points, 0);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, edge, 0, color);
 			short bottom = inner.bottom + 10;
 			piece.top = inner.bottom;
 			piece.bottom = bottom;
 			piece.left = inner.left;
 			piece.right = inner.right;
-			function_1e90b0(2, points, &piece);
+			function_1e90b0(&piece, points, 2);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, edge, 0, color);
 			short left = inner.left - 10;
 			piece.left = left;
 			piece.bottom = inner.bottom;
 			piece.top = inner.top;
 			piece.right = inner.left;
-			function_1e90b0(1, points, &piece);
+			function_1e90b0(&piece, points, 1);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, edge, 0, color);
 			short right = inner.right + 10;
 			piece.right = right;
 			piece.bottom = inner.bottom;
 			piece.left = inner.right;
 			piece.top = inner.top;
-			function_1e90b0(3, points, &piece);
+			function_1e90b0(&piece, points, 3);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, edge, 0, color);
 			piece.left = left;
 			piece.top = top;
 			piece.right = inner.left;
 			piece.bottom = inner.top;
-			function_1e90b0(0, points, &piece);
+			function_1e90b0(&piece, points, 0);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, corner, 0, color);
 			piece.top = inner.bottom;
 			piece.right = right;
 			piece.bottom = bottom;
 			piece.left = inner.right;
-			function_1e90b0(2, points, &piece);
+			function_1e90b0(&piece, points, 2);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, corner, 0, color);
 			piece.left = inner.right;
 			piece.top = top;
 			piece.right = right;
 			piece.bottom = inner.top;
-			function_1e90b0(0, points, &piece);
+			function_1e90b0(&piece, points, 0);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, diagonal, 0, color);
 			piece.left = left;
 			piece.top = inner.bottom;
 			piece.bottom = bottom;
 			piece.right = inner.left;
-			function_1e90b0(2, points, &piece);
+			function_1e90b0(&piece, points, 2);
 			function_22a664((s_widget_quad_2b11 const *)points, (s_float_rect const *)coordinates, diagonal, 0, color);
 		}
 	}
@@ -911,7 +911,7 @@ void function_1e6fe0(long local_player_index)
 }
 
 // @retail 0x1e90b0
-void function_1e90b0(long first, point2f *points, const s_request_screen_bounds *bounds)
+void function_1e90b0(const s_request_screen_bounds *bounds, point2f *points, long first)
 {
 	real left = (real)bounds->left;
 	real right = (real)bounds->right;

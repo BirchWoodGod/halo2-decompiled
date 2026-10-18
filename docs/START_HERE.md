@@ -7,6 +7,12 @@ or similar) and review what it does.
 
 No decompilation experience is needed. Some C helps.
 
+This is a community project. You'll be working alongside other contributors,
+many of them with AI agents of their own, and alongside the maintainer's
+automated Claude and Codex lanes. The claims issue in step 2 keeps everyone
+out of each other's way, and everyone whose work is merged is credited in the
+README's [community list](../README.md#the-community).
+
 ## 1. Set up (once)
 
 - [ ] **Your own copy of Halo 2** for the original Xbox, which you are legally
@@ -29,8 +35,8 @@ No decompilation experience is needed. Some C helps.
   `export MSYS_NO_PATHCONV=1`.
 - [ ] **Check it works:** run `python tools/check.py`. It builds the whole
   game and takes several minutes. It ends with a line like
-  `matched N of 11318 game functions`, and N should equal the number in the
-  README's [Status](../README.md#status). If it does, you're
+  `matched N of M game functions`, and both numbers should equal those in the
+  README's [Status](../README.md#status). If they do, you're
   ready. It exits with code 1 while any function differs, which is normal.
 
 `orig/`, `sdk/` and `build/` are git-ignored. Never commit anything from them.
@@ -66,6 +72,10 @@ holds (an `@user` row on that issue), and the lanes will leave it alone.
    That is your claim; the maintainers add it to the issue. A claim with no
    activity for two weeks lapses.
 
+Want to improve code someone else wrote and already merged? Ask its author
+first, on the claims issue or their pull request. If they haven't answered
+within 7 days, you may go ahead; their work and credit stay.
+
 ## 3. Decompile
 
 To work by hand, follow [DECOMPILING.md](DECOMPILING.md). To work with an AI
@@ -83,7 +93,7 @@ First read docs/START_HERE.md, README.md (Build and check), CONTRIBUTING.md, PRO
 Setup check. Stop and tell me if any step fails:
 1. `orig/default.xbe` exists (or `RETAIL_XBE` points to it) and its SHA-256 is 03215919bb7163259257d361f4c7bf802a7ab12aa85e2689436369b5c427935d.
 2. `sdk/xbox/bin/vc71/cl.exe` exists (or `XDK_DIR` points to the `xbox` folder).
-3. `python tools/check.py` runs to the end. Record its "matched N of 11318 game functions" line and copy `config/functions.csv` to `build/baseline.csv`.
+3. `python tools/check.py` runs to the end. Record its "matched N of M game functions" line and copy `config/functions.csv` to `build/baseline.csv`.
 
 Finding work, if my claim above is "none yet":
 1. Save issue #9 with `gh issue view 9 -R kirklandsig/halo2-decompiled --json body -q .body > build/claims.md`. If the GitHub CLI isn't available, ask me to paste the issue's text into that file.
@@ -96,14 +106,16 @@ Work loop:
 1. Find candidates in my claim: the functions `python tools/ready.py` lists, and the near misses `python tools/near.py --list` lists. Start with the smallest.
 2. For each function, read retail's code with `python tools/disasm.py <va>`. Write or tune the C++ in the right `src/` file, with `// @retail 0x<va>` on the line above it, and stub callees that aren't decompiled yet as docs/DECOMPILING.md describes.
 3. After each change, run `python tools/check.py --fast <va> ...` for the function and its matched callers and callees, in one command. It takes seconds, but only the plain check counts: before you keep a change and before you finish a function, run `python tools/check.py <va> ...` for them, and if a `CAVEAT` line appeared, trust the plain check (docs/DECOMPILING.md, "The fast check").
-4. When a function is down to a few differing instructions and your own edits stop helping, run `python tools/permute.py <va> --fast --anneal --jobs 1 --time-limit 600 --write-only-match`. Then move on; don't spend more than about 20 attempts on one function.
-5. Never keep a change that makes a function that matched before stop matching.
+4. If what differs is the registers a call's arguments travel in, or retail's `ret N`, check whether that callee matches yet. Under LTCG an unmatched callee's body decides how its arguments travel, so fix the callee first if it is in my claim, and tell me if it isn't (docs/DECOMPILING.md, "Calling conventions under LTCG"). Aligned locals (`__declspec(align)`, `__m128`, `_mm_*` stores) stop a function taking arguments in `ebx`; use them only where retail's prologue aligns its frame too.
+5. When a function is down to a few differing instructions and your own edits stop helping, run `python tools/permute.py <va> --fast --anneal --jobs 1 --time-limit 600 --write-only-match`. Then move on; don't spend more than about 20 attempts on one function.
+6. Never keep a change that makes a function that matched before stop matching.
 
 Rules:
 - Provenance: never use or copy anything from leaked source code, PDBs, linker maps, internal or debug builds, or datasets derived from them: no names, strings, comments or code. Don't look up Halo 2 symbol names online. Name things by what they do, or use the `function_<va>` and `unknown_<va>` placeholders.
 - Stay inside my claim. Outside it, change only declarations, or the arguments at a call site when a fix needs it, and list every such change.
 - No false matches: never swap the arguments at a call to a function that doesn't match yet, unless you also change that function's definition and every other call site the same way. The bytes can match while the code passes the wrong values.
-- Don't add attributes Bungie's code wouldn't have had, and don't cast a global's own address to `volatile`.
+- Don't add attributes Bungie's code wouldn't have had.
+- Don't steer code generation through globals: don't take a global's address or read it through a `volatile` cast as a trick, don't offset one global's address to reach its neighbours, and don't use `volatile` function pointers as anchors. Prefer a plain-source fix; `volatile` is acceptable only on a local, a parameter or data reached through a pointer, with a comment saying why.
 - Never commit anything from `orig/`, `sdk/` or `build/`, or any game or SDK file. Commit with my GitHub no-reply email address.
 
 Finish:

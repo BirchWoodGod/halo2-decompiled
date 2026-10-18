@@ -322,7 +322,7 @@ void function_1374c0(char *dest, const char *path)
 }
 
 // @retail 0x136770
-long function_136770(file_reference_data *directory, dword flags, long maximum_count, file_reference_data *files)
+long function_136770(dword flags, file_reference_data *directory, long maximum_count, file_reference_data *files)
 {
 	s_type_b56524 find;
 	long count = 0;

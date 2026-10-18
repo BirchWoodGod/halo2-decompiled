@@ -401,20 +401,18 @@ bool __stdcall function_85140(const s_simulation_player_update *update)
  bool special = update->field_2_2;
  record.active = true;
  record.field_2_2 = special;
- long value04;
  if (!special)
  {
   record.machine = update->machine;
   record.controller_index = (short)update->controller_index;
-  value04 = update->unknown20;
+  record.value04 = update->unknown20;
  }
  else
  {
   record.controller_index = NONE;
-  value04 = NONE;
+  record.value04 = NONE;
  }
  memcpy(record.key, update->key, sizeof(record.key));
- record.value04 = value04;
  memcpy(record.configuration, update->configuration, sizeof(record.configuration));
  char *team = (char *)record.configuration + 0x7c;
  if (*team != NONE)

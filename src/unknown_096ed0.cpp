@@ -632,110 +632,103 @@ static inline void records_relink(s_handle_node *head, s_handle_node *stop, long
 	}
 }
 
-static __forceinline s_handle_node *function_992d1(s_handle_node **&arg_0, long arg_1)
-{
-	s_handle_node *local_0 = *arg_0;
-	while (local_0)
-	{
-		if (local_0->handle == arg_1)
-			break;
-		arg_0 = &local_0->next;
-		local_0 = *arg_0;
-	}
-	return local_0;
-}
-
 // @retail 0x992d0
 void c_handle_table_450cd0::v8(long handle, bool flag)
 {
 	s_handle_node **head_link = &head;
-	s_handle_node **link = head_link;
-	s_handle_node *node = function_992d1(link, handle);
-	if (node != 0)
+	s_handle_node **link = &head;
+	s_handle_node *node = *link;
+	while (node != 0)
 	{
-		s_handle_record *record = node->records;
-		if (record != 0)
+		if (node->handle == handle)
 		{
-			do
+			s_handle_record *record = node->records;
+			if (record != 0)
 			{
-				long record_handle = record->handle;
-				s_handle_record *next_record = record->next;
-				long index = record_handle & 0x3ff;
-				s_handle_peer *peer = &table->peers[index];
-				if (!flag)
+				do
 				{
-					dword mask = record->mask;
-					for (s_handle_node *other = node->next; other != 0; other = other->next)
-					{
-						for (s_handle_record *candidate = other->records; candidate != 0; candidate = candidate->next)
-						{
-							if (candidate->handle == record_handle)
-								mask &= ~candidate->mask;
-						}
-					}
-					if (mask != 0 && entries[index].unknown04 == 0 && entries[index].state == 3)
-					{
-						if (!(peer->mask & (1 << shift)))
-							unknown5034++;
-					}
-					entries[index].unknown04 |= mask;
-				}
-				else
-					unknown5030++;
-				records_relink(*head_link, node, record_handle, record);
-				free_block(record);
-				record = next_record;
-			}
-			while (record != 0);
-		}
-
-		s_handle_item *item = node->items;
-		if (item != 0)
-		{
-			do
-			{
-				long item_handle = item->handle;
-				s_handle_item *next_item = item->next;
-				long offset = (item_handle & 0x3ff) * sizeof(s_handle_peer);
-				s_handle_peer *peer = (s_handle_peer *)((byte *)table->peers + offset);
-				if (item->kind == 1)
-				{
+					long record_handle = record->handle;
+					s_handle_record *next_record = record->next;
+					long index = record_handle & 0x3ff;
+					s_handle_peer *peer = &table->peers[index];
 					if (!flag)
 					{
-						if (peer->mask & (1 << shift))
-							function_99690(this, item_handle, 3);
-						else
-							function_99690(this, item_handle, 1);
+						dword mask = record->mask;
+						for (s_handle_node *other = node->next; other != 0; other = other->next)
+						{
+							for (s_handle_record *candidate = other->records; candidate != 0; candidate = candidate->next)
+							{
+								if (candidate->handle == record_handle)
+									mask &= ~candidate->mask;
+							}
+						}
+						if (mask != 0 && entries[index].unknown04 == 0 && entries[index].state == 3)
+						{
+							if (!(peer->mask & (1 << shift)))
+								unknown5034++;
+						}
+						entries[index].unknown04 |= mask;
 					}
 					else
-					{
-						function_99690(this, item_handle, 3);
-						unknown5028++;
-					}
+						unknown5030++;
+					records_relink(*head_link, node, record_handle, record);
+					free_block(record);
+					record = next_record;
 				}
-				else if (!flag)
-					function_99690(this, item_handle, 3);
-				else
-				{
-					function_99690(this, item_handle, 0);
-					peer->mask &= ~(1 << shift);
-					s_handle_peers *peers = table;
-					if (((s_handle_peer *)((byte *)peers->peers + offset))->mask == 0)
-					{
-						peers->owner->v12(item_handle);
-						byte *flags = (byte *)peers->peers + offset;
-						*flags &= 0xfe;
-					}
-					unknown5038++;
-				}
-				free_block(item);
-				item = next_item;
+				while (record != 0);
 			}
-			while (item != 0);
-		}
 
-		*link = node->next;
-		free_block(node);
+			s_handle_item *item = node->items;
+			if (item != 0)
+			{
+				do
+				{
+					long item_handle = item->handle;
+					s_handle_item *next_item = item->next;
+					long offset = (item_handle & 0x3ff) * sizeof(s_handle_peer);
+					s_handle_peer *peer = (s_handle_peer *)((byte *)table->peers + offset);
+					if (item->kind == 1)
+					{
+						if (!flag)
+						{
+							if (peer->mask & (1 << shift))
+								function_99690(this, item_handle, 3);
+							else
+								function_99690(this, item_handle, 1);
+						}
+						else
+						{
+							function_99690(this, item_handle, 3);
+							unknown5028++;
+						}
+					}
+					else if (!flag)
+						function_99690(this, item_handle, 3);
+					else
+					{
+						function_99690(this, item_handle, 0);
+						peer->mask &= ~(1 << shift);
+						s_handle_peers *peers = table;
+						if (((s_handle_peer *)((byte *)peers->peers + offset))->mask == 0)
+						{
+							peers->owner->v12(item_handle);
+							byte *flags = (byte *)peers->peers + offset;
+							*flags &= 0xfe;
+						}
+						unknown5038++;
+					}
+					free_block(item);
+					item = next_item;
+				}
+				while (item != 0);
+			}
+
+			*link = node->next;
+			free_block(node);
+			return;
+		}
+		link = &node->next;
+		node = *link;
 	}
 }
 // @retail 0x98cf0

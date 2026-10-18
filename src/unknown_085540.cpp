@@ -42,7 +42,7 @@ void function_85880(c_simulation_view *view)
 {
 	if (view->state)
 		view->set_state(0, NONE);
-	((s_network_connection *)g_4d87d4)[view->unknown3c].callback = 0;
+	((s_link_connection *)g_4d87d4)[view->unknown3c].callback = 0;
 	view->unknown44[0] = 0;
 	if (view->type == 3 || view->type == 4)
 	{
@@ -679,7 +679,7 @@ long network_observer_attach_channel(s_network_observer *observer, long owner_in
 void function_97f60(s_handle_peers *peers, long index, c_handle_table_450cd0 *table);
 void replication_table_attach_sender(s_handle_peers *peers, long index, c_handle_table_450cd0 *table);
 void __stdcall function_68550(c_simulation_view *view);
-void network_connection_callback_initialize(s_connection_callback *callback, c_connection_client *const *clients,
+void link_connection_callback_initialize(s_connection_callback *callback, c_connection_client *const *clients,
  void *context, void (__stdcall *function)(void *), long count, const dword *types, bool active);
 
 static __forceinline void view_add_child(c_vtable_450cf4 *aggregate, long index, c_interface_450c94 *child)
@@ -704,7 +704,7 @@ void function_85650(c_simulation_view *view, s_network_observer *observer, const
 {
  network_observer_attach_channel(observer, 3, address);
  long connection_index = observer->channels[channel_index].connection_index;
- s_network_connection *connection = &((s_network_connection *)g_4d87d4)[connection_index];
+ s_link_connection *connection = &((s_link_connection *)g_4d87d4)[connection_index];
  view->unknown3c = connection_index;
  view->observer = observer;
  view->channel_index = channel_index;
@@ -765,7 +765,7 @@ void function_85650(c_simulation_view *view, s_network_observer *observer, const
  }
  bool active = view->world->state != 3 && view->world->state != 5;
  s_connection_callback *callback = (s_connection_callback *)view->unknown44;
- network_connection_callback_initialize(callback, clients, view,
+ link_connection_callback_initialize(callback, clients, view,
   (void (__stdcall *)(void *))function_68550, count, types, active);
  connection->callback = callback;
  view->flag78 = false;
@@ -936,7 +936,7 @@ void __stdcall function_865d0(c_simulation_view *view)
  c_simulation_view *const *view_reference = &view;
  while (view->established() && view->unknownac != 0)
  {
-  s_network_connection *connection = function_x7665e0(view->unknown3c);
+  s_link_connection *connection = link_connection_get(view->unknown3c);
   if (connection->state != 5 || !(connection->flags & 0x10)) break;
   s_network_stream_header *stream = network_stream_get(connection->stream_index);
   if ((512 - (stream->window.next - stream->window.end)) * 32 < 0x600) break;

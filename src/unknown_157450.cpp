@@ -1507,11 +1507,10 @@ void function_15cd90(long player_index, short identifier, long other_player_inde
 
 		if (game_engine_get()->p27(other_team, team))
 		{
-			s_engine_player_mark *mark = player->marks;
-			long i;
-
-			for (i = 8; i != 0; i--, mark++)
+			for (long i = 0; i < 8; i++)
 			{
+				s_engine_player_mark *mark = &player->marks[i];
+
 				if (mark->identifier == identifier)
 				{
 					function_196e60(player_index & 0xffff, 5, function_196ef0(mark->code), 1);

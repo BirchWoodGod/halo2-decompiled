@@ -187,7 +187,7 @@ void function_1b0540(long actor_index, s_follow_search_state *state)
 }
 
 
-bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra);
+bool unit_submit_entry_request(short fallback_index, short entry_index, long unit_index, long priority, void const *extra);
 
 #pragma inline_depth(0)
 // @retail 0x1b0020
@@ -205,7 +205,7 @@ void __stdcall function_1b0020(long actor_index, s_slot *slot)
             --*(short *)((byte *)slot + 0x22);
         else
         {
-            function_114b60(NONE, 0xc, unit_index, 0xd, 0);
+            unit_submit_entry_request(0xc, NONE, unit_index, 0xd, 0);
             dword *local_0 = &g_4e7408->unknown0;
             *local_0 = 1664525 * *local_0 + 1013904223;
             real local_1 = (real)(*local_0 >> 16) * (1.f / 65535.f);

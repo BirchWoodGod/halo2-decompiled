@@ -1083,12 +1083,14 @@ void function_2511b6(long controller)
 	long count = player_slot_count_signed_in_non_guests();
 	long players = function_199f34();
 
-	if (function_1900a5(controller) || count == 1 && players <= count)
+	if (function_1900a5(controller))
 	{
 		function_251242(controller);
 	}
 	else if (count == 1)
 	{
+		if (players > count)
+		{
 			if (function_592f0())
 			{
 				function_2512f8(controller, players == 2);
@@ -1098,13 +1100,18 @@ void function_2511b6(long controller)
 				function_25122f(controller);
 				if (function_1900ff(controller) > 0)
 				{
-						function_2512d3(controller);
+					function_2512d3(controller);
 				}
 				else
 				{
-						function_251284(controller);
+					function_251284(controller);
 				}
 			}
+		}
+		else
+		{
+			function_251242(controller);
+		}
 	}
 	else if (function_1900ff(controller) > 0)
 	{
@@ -2292,29 +2299,20 @@ void c_session_lobby_screen::function_2508a8()
 	c_text_widget_45a5e0 *text = (c_text_widget_45a5e0 *)find_text((short)index);
 	if (text)
 	{
-		bool show = true;
-		if (!function_19a935() || function_199f34() > 1)
-			show = false;
+		bool show = function_19a935() && function_199f34() <= 1;
 
 		text->value6e = show;
 		if (show)
 		{
-			long value = 2;
-
-			switch (function_19a161())
-			{
-			case 2:
-				value = 0;
-				break;
-			case 1:
-				value = 1;
-				break;
-			default:
-				if (function_19989d() == 6)
-					value = 3;
-				break;
-			}
-			function_253c3a(1, value, text);
+			long state = function_19a161();
+			if (state == 2)
+				function_253c3a(1, 0, text);
+			else if (state == 1)
+				function_253c3a(1, 1, text);
+			else if (function_19989d() != 6)
+				function_253c3a(1, 2, text);
+			else
+				function_253c3a(1, 3, text);
 		}
 	}
 }

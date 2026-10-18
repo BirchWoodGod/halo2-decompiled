@@ -55,7 +55,7 @@ bool network_session_handle_player_properties(c_class_58d20 *session, long remot
 bool __stdcall function_07b140(void *x, long a, long ten, long twelve, void *local);
 
 /* src/unknown_0820f0.cpp */
-void network_connection_close(s_network_connection *connection, long reason);
+void link_connection_close(s_link_connection *connection, long reason);
 
 /* lane D's session handlers, not decompiled yet (src/stubs/lane_j.cpp) */
 void __stdcall function_061570(c_class_58d20 *session, bool flag);
@@ -73,11 +73,11 @@ void __stdcall function_094310(c_class_938e0 *handler, const s_session_id *messa
 void __stdcall function_094330(c_class_938e0 *handler, const s_session_id *message, const s_type_99af70 *address);
 
 /* src/unknown_075870.cpp, src/unknown_0820f0.cpp */
-inline __declspec(noinline) bool network_connection_get_address(s_network_connection *connection, s_type_99af70 *address);
-void network_connection_establish(s_network_connection *connection, long remote_sequence);
+inline __declspec(noinline) bool link_connection_get_address(s_link_connection *connection, s_type_99af70 *address);
+void link_connection_establish(s_link_connection *connection, long remote_sequence);
 
 /* lane D's region: a connection's reconnect (src/stubs/lane_j.cpp) */
-void network_connection_connect(const s_type_99af70 *address, s_network_connection *connection, bool initiator);
+void link_connection_connect(const s_type_99af70 *address, s_link_connection *connection, bool initiator);
 
 struct s_type_3de205
 {
@@ -437,7 +437,7 @@ void c_class_938e0::function_944a0(const s_session_id *message, long remote_inde
 		s_type_67cfcd reply;
 		memset(&reply, 0, sizeof(reply));
 		reply.session_id = *message;
-		function_095580(network_stream_get(function_x7665e0(remote_index)->stream_index), 0x13, sizeof(reply), &reply);
+		function_095580(network_stream_get(link_connection_get(remote_index)->stream_index), 0x13, sizeof(reply), &reply);
 	}
 }
 
@@ -728,9 +728,9 @@ struct s_type_ac8d96
 	long identifier;
 };
 
-#define CONNECTION(index) (&((s_network_connection *)g_4d87d4)[index])
+#define CONNECTION(index) (&((s_link_connection *)g_4d87d4)[index])
 
-static __forceinline void function_94ae1(s_type_2c88a0 const *arg_0, s_network_connection *arg_1)
+static __forceinline void function_94ae1(s_type_2c88a0 const *arg_0, s_link_connection *arg_1)
 {
 	switch (arg_0->reason)
 	{
@@ -739,7 +739,7 @@ static __forceinline void function_94ae1(s_type_2c88a0 const *arg_0, s_network_c
 	case 2:
 	case 5:
 	case 6:
-		network_connection_close(arg_1, 5);
+		link_connection_close(arg_1, 5);
 		break;
 	case 3:
 	case 4:
@@ -750,7 +750,7 @@ static __forceinline void function_94ae1(s_type_2c88a0 const *arg_0, s_network_c
 	}
 }
 
-static __forceinline void function_94ae2(s_network_connection *arg_0, long arg_1)
+static __forceinline void function_94ae2(s_link_connection *arg_0, long arg_1)
 {
 	switch (arg_1)
 	{
@@ -759,7 +759,7 @@ static __forceinline void function_94ae2(s_network_connection *arg_0, long arg_1
 	case 2:
 	case 5:
 	case 6:
-		network_connection_close(arg_0, 5);
+		link_connection_close(arg_0, 5);
 		break;
 	case 3:
 	case 4:
@@ -773,7 +773,7 @@ static __forceinline void function_94ae2(s_network_connection *arg_0, long arg_1
 // @retail 0x94ae0
 void network_message_handle_connect_refuse(long connection_index, const s_type_2c88a0 *message)
 {
-	s_network_connection *connection = CONNECTION(connection_index);
+	s_link_connection *connection = CONNECTION(connection_index);
 	long state = connection->state;
 	if (state > 2 && state != 5)
 	{
@@ -789,27 +789,27 @@ void network_message_handle_connect_refuse(long connection_index, const s_type_2
 // @retail 0x94b40
 void network_message_handle_connect_establish(long connection_index, const s_type_3de205 *message)
 {
-	s_network_connection *connection = CONNECTION(connection_index);
+	s_link_connection *connection = CONNECTION(connection_index);
 	long state = connection->state;
 	if (state > 2 && connection->local_sequence == message->identifier)
 	{
 		if (state >= 4 && connection->remote_sequence != message->remote_identifier)
 		{
 			s_type_99af70 address;
-			network_connection_get_address(connection, &address);
-			network_connection_close(connection, 6);
-			network_connection_connect(&address, connection, false);
+			link_connection_get_address(connection, &address);
+			link_connection_close(connection, 6);
+			link_connection_connect(&address, connection, false);
 		}
-		network_connection_establish(connection, message->remote_identifier);
+		link_connection_establish(connection, message->remote_identifier);
 	}
 }
 
 // @retail 0x94bb0
 void network_message_handle_connect_closed(long connection_index, const s_type_ac8d96 *message)
 {
-	s_network_connection *connection = CONNECTION(connection_index);
+	s_link_connection *connection = CONNECTION(connection_index);
 	if (connection->state > 2 && connection->local_sequence == message->identifier)
-		network_connection_close(connection, 10);
+		link_connection_close(connection, 10);
 }
 
 /* the message types a connection's channel delivers to the handler; the
@@ -817,20 +817,20 @@ void network_message_handle_connect_closed(long connection_index, const s_type_a
 // @retail 0x93aa0
 void c_class_938e0::function_93aa0(long channel_index, long message_type, long message_size, const void *message)
 {
-	s_network_connection *connection = CONNECTION(channel_index);
+	s_link_connection *connection = CONNECTION(channel_index);
 	s_type_99af70 address;
 	switch (message_type)
 	{
 	case 11:
-		if (connection->state == 5 && network_connection_get_address(connection, &address))
+		if (connection->state == 5 && link_connection_get_address(connection, &address))
 			function_94270((const s_session_id *)message, &address);
 		return;
 	case 13:
-		if (connection->state == 5 && network_connection_get_address(connection, &address))
+		if (connection->state == 5 && link_connection_get_address(connection, &address))
 			function_094310(this, (const s_session_id *)message, &address);
 		return;
 	case 14:
-		if (connection->state == 5 && network_connection_get_address(connection, &address))
+		if (connection->state == 5 && link_connection_get_address(connection, &address))
 			function_094330(this, (const s_session_id *)message, &address);
 		return;
 	case 15:
@@ -846,7 +846,7 @@ void c_class_938e0::function_93aa0(long channel_index, long message_type, long m
 			function_943d0((const s_session_id *)message, channel_index);
 		return;
 	case 18:
-		if (connection->state == 5 && network_connection_get_address(connection, &address))
+		if (connection->state == 5 && link_connection_get_address(connection, &address))
 			function_94420((const s_session_id *)message, &address);
 		return;
 	case 19:
@@ -862,11 +862,11 @@ void c_class_938e0::function_93aa0(long channel_index, long message_type, long m
 			function_944a0((const s_session_id *)message, channel_index);
 		return;
 	case 22:
-		if (connection->state == 5 && network_connection_get_address(connection, &address))
+		if (connection->state == 5 && link_connection_get_address(connection, &address))
 			function_94520((const s_session_id *)message, &address);
 		return;
 	case 23:
-		if (connection->state == 5 && network_connection_get_address(connection, &address))
+		if (connection->state == 5 && link_connection_get_address(connection, &address))
 			handle_peer_reestablish((const s_session_id *)message, &address);
 		return;
 	case 25:

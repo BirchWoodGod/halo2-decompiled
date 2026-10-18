@@ -554,7 +554,7 @@ s_slot_handler_1 g_47e7a8 =
 // @retail 0x1b7000
 short __stdcall function_1b7000(long actor_index, s_slot *slot)
 {
-	long result = g_46fbe4;
+	short result = g_46fbe4;
 	s_actor_view *actor = actor_get(actor_index);
 
 	if (actor->prop_index != NONE)
@@ -580,15 +580,10 @@ short __stdcall function_1b7000(long actor_index, s_slot *slot)
 				if (time == NONE || (g_510c54->game_time - time) * g_510c54->rate > delay)
 				{
 					result = 0x10;
-					goto local_0;
 				}
 			}
 		}
-
-		result = g_46fbe4;
 	}
-
-local_0:
 	return result;
 }
 

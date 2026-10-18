@@ -101,6 +101,15 @@ public:
 	bool found;
 };
 
+/* the entity behind the last node of a hit's chain, if that node is one */
+static __forceinline hkEntity *query_node_entity(s_node *node)
+{
+	s_query_node *last = (s_query_node *)node->get_last();
+	if (last->type == 1)
+		return last->entity;
+	return 0;
+}
+
 // @retail 0x1829b0
 void c_nearest_query_callback::query(s_node *node, s_query_hit const *hit)
 {
@@ -111,18 +120,11 @@ void c_nearest_query_callback::query(s_node *node, s_query_hit const *hit)
 		s_query_result *query_result = result;
 		if (query_result->fraction > distance)
 		{
-			hkEntity *entity = 0;
 			excluded = excluded_component;
-			if (excluded != NONE)
-			{
-				s_query_node *last = (s_query_node *)node->get_last();
-				distance = *(real const volatile *)&distance;
-				if (last->type == 1)
-					entity = last->entity;
-			}
+			hkEntity *entity = excluded != NONE ? query_node_entity(node) : 0;
 			bool include = true;
-			if (entity)
-				include = havok_entity_component_index_get(entity) != excluded;
+			if (entity && havok_entity_component_index_get(entity) == excluded)
+				include = false;
 			if (include)
 			{
 				vector3f normal;
@@ -202,17 +204,15 @@ void __stdcall function_1821d0(long component_index, real scale,
 	s_query_batch_result *results, long count)
 {
 	s_query_component *component = &((s_query_component *)g_51e9b8->data)[component_index & 0xffff];
-	dword local_0 = component->flags.has_shape;
-	c_query_shape *shape = NULL;
-	if (TEST_FIELD_BIT(local_0))
-		shape = component->shape;
+	c_query_shape *shape = TEST_FIELD_BIT(component->flags.has_shape) ? component->shape : NULL;
 	for (long i = 0; i < count; i++)
 	{
 		results[i].found = false;
 		results[i].fraction = FLT_MAX;
 		results[i].index = NONE;
 		results[i].other_index = NONE;
-		results[i].material = g_54e898;
+		// read through a pointer: retail reloads the default material on every pass
+		results[i].material = *(short const *)&g_54e898;
 		results[i].flag2c = false;
 	}
 	if (shape)

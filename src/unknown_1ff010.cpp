@@ -414,7 +414,9 @@ bool __stdcall function_1ff010(long arg_0, point3f const *arg_1)
     bool local_0 = false;
     s_actor_view *local_3 = actor_get(arg_0);
     byte *local_4 = (byte *)function_1e5380(arg_0);
-    if (local_4)
+    /* without a weapon the shared exit returns the false result */
+    if (!local_4)
+        goto done;
     {
         point3f local_5;
         function_210850((s_type_c3b527 const *)((byte *)local_3 + 0x7d0), &local_5);
@@ -430,29 +432,29 @@ bool __stdcall function_1ff010(long arg_0, point3f const *arg_1)
             (real const *)((byte *)local_3 + 0x7f4), *(bool *)((byte *)local_3 + 0x7c6),
             &local_8, &local_9, &local_10, NULL, &local_11))
         {
-            point2f local_13;
-            local_13.x = local_8.i;
-            local_13.y = local_8.j;
-            if (!(normalize2d(&local_13) > 0.0f &&
-                local_3->unknown290.j * local_13.y + local_3->unknown290.i * local_13.x > 0.8660253882408142f))
-                return false;
-            vector3f local_14;
-            local_14.i = local_8.i * local_9;
-            local_14.j = local_8.j * local_9;
-            local_14.k = local_8.k * local_9;
-            real local_12;
-            if (local_11)
-                local_12 = 0.0f;
-            else
-                local_12 = function_fa170(local_7);
-            if (function_1c9290(arg_0, arg_1, &local_14, local_10, local_12,
-                *(long *)((byte *)local_3 + 0x7e4), local_3->unknown26c != NONE))
+            point2f local_13 = *(point2f *)&local_8;
+            if (normalize2d(&local_13) > 0.0f &&
+                local_3->unknown290.i * local_13.x + local_3->unknown290.j * local_13.y > 0.8660253882408142f)
             {
-                *(vector3f *)((byte *)local_3 + 0x7e8) = local_8;
-                *(real *)((byte *)local_3 + 0x7f4) = local_9;
-                local_0 = true;
+                vector3f local_14;
+                local_14.i = local_8.i * local_9;
+                local_14.j = local_8.j * local_9;
+                local_14.k = local_8.k * local_9;
+                real local_12;
+                if (local_11)
+                    local_12 = 0.0f;
+                else
+                    local_12 = function_fa170(local_7);
+                if (function_1c9290(arg_0, arg_1, &local_14, local_10, local_12,
+                    *(long *)((byte *)local_3 + 0x7e4), local_3->unknown26c != NONE))
+                {
+                    *(vector3f *)((byte *)local_3 + 0x7e8) = local_8;
+                    *(real *)((byte *)local_3 + 0x7f4) = local_9;
+                    local_0 = true;
+                }
             }
         }
     }
+done:
     return local_0;
 }

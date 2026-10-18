@@ -12,6 +12,7 @@
 #include <string.h>
 #include <math.h>
 #include <xtl.h>
+#include "sampler_state.h"
 #include "globals.h"
 #include "unknown_0259d0.h"
 #include "timed_effect.h"
@@ -1165,17 +1166,17 @@ bool __stdcall function_246a0(void *context)
     function_0222d0(D3DRS_ZWRITEENABLE, 0);
     function_0222d0(D3DRS_CULLMODE, 0);
     function_0222d0(D3DRS_STENCILENABLE, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_BORDER);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_BORDER);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_BORDER);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_BORDER);
+    sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_BORDER);
+    sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_BORDER);
+    sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+    sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    sampler_state_write(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
     memset(&g_484f68, 0, sizeof(g_484f68));
     g_484f68.PSTextureModes = 1;
     g_484f68.PSCombinerCount = 0x1001;
@@ -1310,43 +1311,41 @@ void __stdcall function_34a90(long target, short blend, dword color_write,
 // @retail 0x22070
 void __stdcall function_22070(real strength, real exponent)
 {
+    strength = strength > 0.0f ? PIN(pow(strength > 1.0f ? 1.0f : strength,
+        exponent > 0.0f ? exponent : 0.0f), 0.0f, 1.0f) : 0.0f;
     if (strength > 0.0f)
     {
-        strength = (real)PIN((real)pow((double)(strength <= 1.0f ? strength : 1.0f),
-            (double)(!(exponent > 0.0f) ? 0.0f : exponent)), 0.0f, 1.0f);
-        if (strength > 0.0f)
+        function_14f60(0, 18);
+        sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+        sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+        sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+        sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+        sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+        sampler_state_write(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+        memset(&g_484f68, 0, sizeof(g_484f68));
+        g_484f68.PSTextureModes = 1;
+        g_484f68.PSCombinerCount = 0x11001;
+        real alpha_scale = 255.0f;
+        long alpha = 0;
+        __asm
         {
-            function_14f60(0, 18);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
-            memset(&g_484f68, 0, sizeof(g_484f68));
-            g_484f68.PSTextureModes = 1;
-            g_484f68.PSCombinerCount = 0x11001;
-            real alpha_scale = 255.0f;
-            long alpha = 0;
-            __asm
-            {
-                fld strength
-                fld alpha_scale
-                fmulp st(1), st(0)
-                fistp alpha
-            }
-            g_484f68.PSFinalCombinerConstant0 = (dword)alpha << 24;
-            g_484f68.PSFinalCombinerInputsABCD = 0x8110000;
-            g_484f68.PSFinalCombinerInputsEFG = 0x1100;
-            function_1ccf0(&g_484f68);
-            function_34a90(g_4858b8, 7, 0x1010101, false, false,
-                1.0f, 0.0f, 1.0f, 1, false, false);
+            fld strength
+            fld alpha_scale
+            fmulp st(1), st(0)
+            fistp alpha
+            shl alpha, 24
         }
+        g_484f68.PSFinalCombinerConstant0 = (dword)alpha;
+        g_484f68.PSFinalCombinerInputsABCD = 0x8110000;
+        g_484f68.PSFinalCombinerInputsEFG = 0x1100;
+        function_1ccf0(&g_484f68);
+        function_34a90(g_4858b8, 7, 0x1010101, false, false,
+            1.0f, 0.0f, 1.0f, 1, false, false);
     }
 }
 
@@ -1356,32 +1355,29 @@ void function_34d90(long target, real const *weights, short blend, dword color_w
     bool full_surface, t_211a0_vertex vertex);
 void __stdcall function_351a0(long texture, long target);
 
-PRIVATE __forceinline void configure_filter_textures(long source)
+PRIVATE __forceinline void configure_filter_textures(long const &source)
 {
     for (long stage = 0; stage < 4; ++stage)
     {
         function_14f60(stage, (short)source);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+        sampler_state_write(stage, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(stage, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(stage, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(stage, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(stage, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+        sampler_state_write(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+        sampler_state_write(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+        sampler_state_write(stage, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(stage, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(stage, D3DTSS_MIPFILTER, D3DTEXF_NONE);
     }
 }
 
 // @retail 0x21360
 long function_21360(long source, real radius, real low, real high, long target,
-    long alternate, long passes, long unused, bool configure, bool full_surface, real scale)
+    long alternate, long passes, long output, bool configure, bool full_surface, real scale)
 {
-    (void)&unused;
-    bool const *configure_reference = &configure;
-    configure = *configure_reference;
     real current_radius = radius * 0.01666f;
     if (alternate == NONE)
         alternate = source;
@@ -1402,10 +1398,11 @@ long function_21360(long source, real radius, real low, real high, long target,
         alternate = source;
         current_radius *= 2.0f;
     }
-    if (alternate != NONE && alternate != source)
+    /* Copy the final pass to the requested output buffer. */
+    if (output != NONE && output != source)
     {
-        function_351a0(source, alternate);
-        source = alternate;
+        function_351a0(source, output);
+        source = output;
     }
     return source;
 }
@@ -1416,7 +1413,7 @@ long function_211a0(long source, real passes, real distortion, real falloff,
     real scale, real offset)
 {
     (void)&output;
-    real volatile pass = 0.0f;
+    real pass = 0.0f;
     if (alternate == NONE)
         alternate = source;
     if ((byte)configure)
@@ -1426,18 +1423,15 @@ long function_211a0(long source, real passes, real distortion, real falloff,
         real growth = (1.0f - falloff) + falloff * 2.0f;
         do
         {
-            real fraction = passes - pass;
-            if (fraction < 0.0f) fraction = 0.0f;
-            else if (fraction > 1.0f) fraction = 1.0f;
+            real fraction = PIN(passes - pass, 0.0f, 1.0f);
             if (fraction > 0.0f)
             {
                 configure_filter_textures(source);
                 function_34a90(target, 10, 0x1010101, false, false,
                     1.0f, fraction * distortion, 1.0f, 4, (bool)(byte)full_surface, false);
-                long next_source = target;
+                source = target;
                 target = alternate;
-                alternate = next_source;
-                source = next_source;
+                alternate = source;
             }
             distortion *= growth;
             pass += 1.0f;
@@ -1485,33 +1479,34 @@ void __stdcall function_21a80(real first, real second, real depth)
         if (first > 0.0f)
         {
             function_14f60(0, 18);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+            sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+            sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+            sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+            sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+            sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+            sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+            sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+            sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
+            sampler_state_write(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
             configure_filter_copy();
             function_34a90(5, 10, 0x1010101, false, false, 1.0f, 0.0f, 1.0f, 1, false, false);
             long filtered = function_211a0(5, first, 1.0f, 0.0f, 6, NONE, NONE, 1, 0, 0.0f, 0.0f);
-            depth = first > 1.0f ? 1.0f : first;
-            first = (real)PIN((real)pow((double)depth, 0.33000001311302185), 0.0f, 1.0f);
+            real amount = PIN(pow(first > 1.0f ? 1.0f : first, 0.33f), 0.0f, 1.0f);
             function_14f60(0, (short)filtered);
             function_15780(0, 4);
-            if (first < 1.0f)
+#pragma inline_depth(0)
+            if (amount < 1.0f)
             {
                 function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
                 function_0222d0(D3DRS_SRCBLEND, D3DBLEND_CONSTANTALPHA);
                 function_0222d0(D3DRS_DESTBLEND, D3DBLEND_INVCONSTANTALPHA);
-                function_0222d0(D3DRS_BLENDCOLOR, function_131fc0(first));
+                function_0222d0(D3DRS_BLENDCOLOR, function_131fc0(amount));
                 function_0222d0(D3DRS_BLENDOP, D3DBLENDOP_ADD);
             }
             else function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
+#pragma inline_depth(255)
             configure_filter_copy();
             function_34a90(18, NONE, 0x1010101, false, false, 1.0f, 0.0f, 1.0f, 1, false, false);
         }
@@ -1522,19 +1517,20 @@ void __stdcall function_21a80(real first, real second, real depth)
             configure_filter_copy();
             function_34a90(5, 10, 0x1010101, false, false, 1.0f, 0.0f, 1.0f, 1, false, false);
             long filtered = function_211a0(5, second, 1.0f, 0.0f, 6, NONE, NONE, 1, 0, 0.0f, 0.0f);
-            depth = second > 1.0f ? 1.0f : second;
-            first = (real)PIN((real)pow((double)depth, 0.33000001311302185), 0.0f, 1.0f);
+            real amount = PIN(pow(second > 1.0f ? 1.0f : second, 0.33f), 0.0f, 1.0f);
             function_14f60(0, (short)filtered);
             function_15780(0, 4);
-            if (first < 1.0f)
+#pragma inline_depth(0)
+            if (amount < 1.0f)
             {
                 function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
                 function_0222d0(D3DRS_SRCBLEND, D3DBLEND_CONSTANTALPHA);
                 function_0222d0(D3DRS_DESTBLEND, D3DBLEND_INVCONSTANTALPHA);
-                function_0222d0(D3DRS_BLENDCOLOR, function_131fc0(first));
+                function_0222d0(D3DRS_BLENDCOLOR, function_131fc0(amount));
                 function_0222d0(D3DRS_BLENDOP, D3DBLENDOP_ADD);
             }
             else function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
+#pragma inline_depth(255)
             configure_filter_copy();
             function_34a90(g_4858b8, NONE, 0x1010101, false, false, 1.0f, 0.0f, 1.0f, 1, false, false);
         }
@@ -1605,16 +1601,16 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         g_484f68.PSTextureModes = 0x8421;
         g_484f68.PSCombinerCount = 0x11004;
         g_484f68.PSAlphaInputs[0] = 0x18201920;
-        g_484f68.PSAlphaInputs[1] = 0x1a201b20;
-        g_484f68.PSAlphaInputs[2] = 0x1c201d20;
         g_484f68.PSAlphaOutputs[0] = 0x30c00;
+        g_484f68.PSAlphaInputs[1] = 0x1a201b20;
         g_484f68.PSAlphaOutputs[1] = 0x30d00;
+        g_484f68.PSAlphaInputs[2] = 0x1c201d20;
         g_484f68.PSAlphaOutputs[2] = 0x30c00;
         g_484f68.PSRGBInputs[0] = 0x8200920;
-        g_484f68.PSRGBInputs[1] = 0xa200b20;
-        g_484f68.PSRGBInputs[2] = 0xc200d20;
         g_484f68.PSRGBOutputs[0] = 0x30c00;
+        g_484f68.PSRGBInputs[1] = 0xa200b20;
         g_484f68.PSRGBOutputs[1] = 0x30d00;
+        g_484f68.PSRGBInputs[2] = 0xc200d20;
         g_484f68.PSRGBOutputs[2] = 0x30c00;
         color.alpha = 0.125f;
         color.red = distortion;
@@ -1636,8 +1632,9 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
             fld alpha_scale
             fmulp st(1), st(0)
             fistp distortion
+            shl distortion, 24
         }
-        g_484f68.PSFinalCombinerConstant1 = (dword)packed << 24;
+        g_484f68.PSFinalCombinerConstant1 = (dword)packed;
         g_484f68.PSFinalCombinerInputsABCD = ((g_485a74 ? 0x1c : 0) << 24) | 0xf000d;
         g_484f68.PSFinalCombinerInputsEFG = ((g_485a74 ? 0x1d : 0) | 0xc1100) << 8;
         function_1ccf0(&g_484f68);
@@ -1645,10 +1642,12 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         long filtered = function_211a0(7, passes, 1.0f, falloff, 8, NONE, NONE, 1, 0, scale, second_factor);
         function_14f60(0, (short)filtered);
         function_15780(0, 4);
+#pragma inline_depth(0)
         function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
         function_0222d0(D3DRS_SRCBLEND, blend ? 0x307 : 1);
         function_0222d0(D3DRS_DESTBLEND, !preserve);
         function_0222d0(D3DRS_BLENDOP, 0x8006);
+#pragma inline_depth(255)
         memset(&g_484f68, 0, sizeof(g_484f68));
         g_484f68.PSTextureModes = 1;
         g_484f68.PSCombinerCount = 0x11001;
@@ -1662,6 +1661,9 @@ void __stdcall function_214f0(real passes, real distortion, real strength, real 
         g_484f68.PSRGBInputs[0] = (g_485a74 ? 0x11 : 0) | 0x8011800;
         function_1ccf0(&g_484f68);
         function_34a90(g_4858b8, NONE, 0x1010101, false, false, 1.0f, 0.0f, 1.0f, 1, false, false);
-        function_14bc0((short)(g_4858b4 != NONE ? g_4858b4 : g_4858b8), 0, true);
+        if (g_4858b4 != NONE)
+            function_14bc0((short)g_4858b4, 0, true);
+        else
+            function_14bc0((short)g_4858b8, 0, true);
     }
 }

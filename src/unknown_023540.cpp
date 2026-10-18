@@ -16,6 +16,7 @@
 #include <string.h>
 #include <math.h>
 #include <xtl.h>
+#include "sampler_state.h"
 #include "geometry_cache.h"
 #include "unknown_234c64.h"
 
@@ -763,21 +764,22 @@ bool __stdcall function_27960(long mode, real const *bounds, real const *t, real
 	(void)&unused;
 	if (g_509400 <= 0.0f)
 		g_509400 = g_485ae0;
+	real x = g_509400;
 	switch (mode)
 	{
 	case 0:
 		out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
 		out[1] = (bounds[3] - bounds[2]) * t[1] + bounds[2];
 		{
-		real x = g_509400;
-		real scale = g_485ad4.hi / (g_485ad4.hi - g_485ad4.lo);
+		s_range const *range = &g_485ad4;
+		real scale = range->hi / (range->hi - range->lo);
 		real depth = scale * x;
-		depth -= g_485ad4.lo * scale;
+		depth -= range->lo * scale;
 		depth = depth / x * 16777215.0f;
 		if (0.0f > depth) depth = 0.0f;
 		else if (depth > 16777215.0f) depth = 16777215.0f;
 		out[2] = depth;
-		real reciprocal = x / g_485ad4.hi * 16777215.0f;
+		real reciprocal = x / range->hi * 16777215.0f;
 		if (0.0f > reciprocal) reciprocal = 0.0f;
 		else if (reciprocal > 16777215.0f) reciprocal = 16777215.0f;
 		out[3] = reciprocal;
@@ -1349,21 +1351,17 @@ bool __stdcall function_2b000(void *context)
     g_509400 = g_485ae0;
     function_14bc0(16, 0, false);
     function_14f60(0, (short)g_4858b8);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-#pragma inline_depth(0)
-    function_0224f0(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-#pragma inline_depth(255)
-#pragma inline_depth(0)
-    function_0224f0(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-#pragma inline_depth(255)
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
@@ -1390,17 +1388,17 @@ bool __stdcall function_296c0(long context)
     g_509400 = g_485ae0;
     function_14bc0(*(short *)(g_4b99b0 + 0x44), 0, false);
     function_14f60(0, *(short *)(g_4b99b0 + 0x34));
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
@@ -1427,17 +1425,17 @@ bool __stdcall function_276d0(void *context)
     g_509400 = g_485ae0;
     function_14bc0((short)g_4858b8, 0, false);
     function_14f60(0, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
 
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x1010101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
@@ -1464,40 +1462,42 @@ bool __stdcall function_276d0(void *context)
     return true;
 }
 
-// @retail 0x29080
+extern dword g_4b8438;
+
+// @retail 0x29080 standard
 bool __stdcall function_29080(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1])
         return false;
     g_509400 = g_485ae0;
     function_14bc0(*(short *)(g_4b99b0 + 0x44), 0, false);
-    function_14f60(0, g_4b99b0[1] ? *(short *)(g_4b99b0 + 0x38) : 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+    function_14f60(0, (short)(g_4b99b0[1] ? *(long *)(g_4b99b0 + 0x38) : 0));
+    sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
 
     if (g_4b99b0[1])
     {
         function_14f60(2, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MIPFILTER, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MAXANISOTROPY, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MIPMAPLODBIAS, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MAXMIPLEVEL, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_COLORSIGN, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(2, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+        sampler_state_write(2, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+        sampler_state_write(2, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+        sampler_state_write(2, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(2, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(2, D3DTSS_MIPFILTER, 0);
+        sampler_state_write(2, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(2, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(2, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(2, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(2, D3DTSS_ALPHAKILL, 0);
 
     }
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
@@ -1510,26 +1510,36 @@ bool __stdcall function_29080(long context)
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
     function_0222d0(D3DRS_CULLMODE, 0);
     function_0222d0(D3DRS_STENCILENABLE, 0);
-    function_0222d0(D3DRS_ZENABLE, 0);
+    g_4b8438 = 0;
+#pragma inline_depth(0)
+    D3DDevice_SetRenderState_ZEnable(0);
+#pragma inline_depth(255)
     function_0222d0(D3DRS_ZBIAS, 0);
     color3f const &color = *(color3f const *)(g_4b99b0 + 4);
-    memset(&g_484f68, 0, sizeof(g_484f68));
+    dword constant;
     if (g_4b99b0[1])
     {
+        memset(&g_484f68, 0, sizeof(g_484f68));
         g_484f68.PSTextureModes = 0x2621;
         g_484f68.PSDotMapping = 0x11;
         g_484f68.PSCombinerCount = 0x11001;
+        constant = pack_color3f(&color);
         g_484f68.PSFinalCombinerInputsABCD = 0xa010000;
+        g_484f68.PSFinalCombinerConstant0 = constant;
+        g_484f68.PSFinalCombinerInputsEFG = 0;
+        function_1ccf0(&g_484f68);
     }
     else
     {
+        memset(&g_484f68, 0, sizeof(g_484f68));
         g_484f68.PSTextureModes = 1;
         g_484f68.PSCombinerCount = 0x11001;
+        constant = pack_color3f(&color);
         g_484f68.PSFinalCombinerInputsABCD = 0x8010000;
+        g_484f68.PSFinalCombinerConstant0 = constant;
+        g_484f68.PSFinalCombinerInputsEFG = 0;
+        function_1ccf0(&g_484f68);
     }
-    g_484f68.PSFinalCombinerConstant0 = pack_color3f(&color);
-    g_484f68.PSFinalCombinerInputsEFG = 0;
-    function_1ccf0(&g_484f68);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
     function_1c710(g_51f0f0);
     return true;
@@ -1545,52 +1555,54 @@ bool __stdcall function_251b0(void *context)
     function_0222d0(D3DRS_ZWRITEENABLE, 0);
     function_0222d0(D3DRS_CULLMODE, 0);
     function_0222d0(D3DRS_STENCILENABLE, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+    sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
     if (!context)
     {
         function_14bc0(1, 0, true);
         function_14f60(0, g_4858b8);
         function_14f60(1, 15);
         function_14f60(2, 15);
-        D3DDevice_SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(1, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(1, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(1, D3DTSS_MIPFILTER, 0);
-        D3DDevice_SetTextureStageState(1, D3DTSS_MAXANISOTROPY, 0);
-        D3DDevice_SetTextureStageState(1, D3DTSS_MIPMAPLODBIAS, 0);
-        D3DDevice_SetTextureStageState(1, D3DTSS_MAXMIPLEVEL, 0);
-        D3DDevice_SetTextureStageState(1, D3DTSS_COLORSIGN, 0);
-        D3DDevice_SetTextureStageState(1, D3DTSS_ALPHAKILL, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MIPFILTER, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MAXANISOTROPY, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MIPMAPLODBIAS, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_MAXMIPLEVEL, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_COLORSIGN, 0);
-        D3DDevice_SetTextureStageState(2, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(1, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+        sampler_state_write(1, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+        sampler_state_write(1, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(1, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(1, D3DTSS_MIPFILTER, 0);
+        sampler_state_write(1, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(1, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(1, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(1, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(1, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(2, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+#pragma inline_depth(0)
+        function_0224f0(2, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+        function_0224f0(2, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+        function_0224f0(2, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+        function_0224f0(2, D3DTSS_MIPFILTER, 0);
+        function_0224f0(2, D3DTSS_MAXANISOTROPY, 0);
+        function_0224f0(2, D3DTSS_MIPMAPLODBIAS, 0);
+        function_0224f0(2, D3DTSS_MAXMIPLEVEL, 0);
+        function_0224f0(2, D3DTSS_COLORSIGN, 0);
+        function_0224f0(2, D3DTSS_ALPHAKILL, 0);
+#pragma inline_depth(255)
         memset(&g_484f68, 0, sizeof(g_484f68));
         g_484f68.PSTextureModes = 0x41e1;
         g_484f68.PSCombinerCount = 0x11002;
         g_484f68.PSConstant0[0] = 0xff0000;
         g_484f68.PSConstant1[0] = 0xff00;
-        g_484f68.PSConstant1[1] = 0xff;
         g_484f68.PSRGBInputs[0] = 0x9010a02;
-        g_484f68.PSRGBInputs[1] = 0xc200a02;
         g_484f68.PSRGBOutputs[0] = 0xc00;
+        g_484f68.PSConstant1[1] = 0xff;
+        g_484f68.PSRGBInputs[1] = 0xc200a02;
         g_484f68.PSRGBOutputs[1] = 0xc00;
         g_484f68.PSFinalCombinerInputsABCD = 0xc;
     }
@@ -1611,37 +1623,43 @@ bool __stdcall function_251b0(void *context)
 }
 
 
+/* the two colours after the filter buffer's flags */
+struct s_filter_colors
+{
+    byte flags[4];
+    color3f color;
+    color3f blend;
+};
+
 // @retail 0x29370 standard
 bool __stdcall function_29370(long context)
 {
     if (!g_4b99b0[0] && !g_4b99b0[1]) return false;
     g_509400 = g_485ae0;
     function_14bc0(*(short *)(g_4b99b0 + 0x44), 0, false);
-    { short stage = 0; if (stage < 4) do {
-        function_14f60(stage, *(short *)(g_4b99b0 + 0x38));
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MIPFILTER, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
-    
-++stage;
-} while (stage < 4); }
+    for (long stage = 0; stage < 4; stage++)
+    {
+        function_14f60((short)stage, *(short *)(g_4b99b0 + 0x38));
+        sampler_state_write(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+        sampler_state_write(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+        sampler_state_write(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+        sampler_state_write(stage, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(stage, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+        sampler_state_write(stage, D3DTSS_MIPFILTER, 0);
+        sampler_state_write(stage, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(stage, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(stage, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(stage, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(stage, D3DTSS_ALPHAKILL, 0);
+    }
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
-    function_0222d0(D3DRS_ALPHATESTENABLE, 1);
+    function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
     function_0222d0(D3DRS_SRCBLEND, D3DBLEND_ONE);
     function_0222d0(D3DRS_DESTBLEND, D3DBLEND_CONSTANTCOLOR);
-    color3f blend = *(color3f *)(g_4b99b0 + 0x10);
-    function_0222d0(D3DRS_BLENDCOLOR, pack_color3f(&blend));
+    function_0222d0(D3DRS_BLENDCOLOR, pack_color3f(&((s_filter_colors const *)&g_filter_buffer_storage)->blend));
     function_0222d0(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-    function_0222d0(D3DRS_ZWRITEENABLE, 0);
-    function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
+    function_0222d0(D3DRS_ALPHATESTENABLE, 0);
+    function_0222d0(D3DRS_CULLMODE, 0);
     function_0222d0(D3DRS_STENCILENABLE, 0);
     function_0222d0(D3DRS_ZENABLE, 0);
     function_0222d0(D3DRS_ZBIAS, 0);
@@ -1794,19 +1812,20 @@ bool __stdcall function_2b220(long mode, real const *bounds,
     real const *t, real *out, long unused)
 {
     if (g_509400 <= 0.0f) g_509400 = g_485ae0;
+    real depth_x = g_509400;
     switch (mode)
     {
     case 0:
         out[0] = (bounds[1] - bounds[0]) * t[0] + bounds[0];
         out[1] = (bounds[3] - bounds[2]) * t[1] + bounds[2];
         {
-            real depth_x = g_509400;
-            real depth_scale = g_485ad4.hi / (g_485ad4.hi - g_485ad4.lo);
-            real depth_value = (depth_scale * depth_x - g_485ad4.lo * depth_scale) / depth_x * 16777215.0f;
+            s_range const *range = &g_485ad4;
+            real depth_scale = range->hi / (range->hi - range->lo);
+            real depth_value = (depth_scale * depth_x - range->lo * depth_scale) / depth_x * 16777215.0f;
             if (0.0f > depth_value) depth_value = 0.0f;
             else if (depth_value > 16777215.0f) depth_value = 16777215.0f;
             out[2] = depth_value;
-            real depth_weight = depth_x / g_485ad4.hi;
+            real depth_weight = depth_x / range->hi;
             depth_weight = depth_weight * 16777215.0f;
             if (0.0f > depth_weight) depth_weight = 0.0f;
             else if (depth_weight > 16777215.0f) depth_weight = 16777215.0f;
@@ -1876,6 +1895,20 @@ void function_25d50(void)
 byte g_5093fd, g_5093fe;
 bool function_143c0(long tag, short index, short stage, real priority);
 
+/* the filter rows: an index word, then a colour per row */
+struct s_filter_row
+{
+    real index;
+    real unknown04;
+    color3f color;
+    real unknown14[9];
+};
+
+struct s_filter_rows
+{
+    s_filter_row header, first, second, third, fourth;
+};
+
 // @retail 0x26880
 bool __stdcall function_26880(void *context)
 {
@@ -1885,17 +1918,17 @@ bool __stdcall function_26880(void *context)
     {
         real const &index_bits = g_4b9c74[stage + 1][0];
         function_143c0(*(long *)(definition + 0x18), *(short *)&index_bits, (short)stage, 0.0f);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, 1);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, 1);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSW, 1);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, 2);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, 2);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MIPFILTER, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(stage, D3DTSS_ADDRESSU, 1);
+        sampler_state_write(stage, D3DTSS_ADDRESSV, 1);
+        sampler_state_write(stage, D3DTSS_ADDRESSW, 1);
+        sampler_state_write(stage, D3DTSS_MAGFILTER, 2);
+        sampler_state_write(stage, D3DTSS_MINFILTER, 2);
+        sampler_state_write(stage, D3DTSS_MIPFILTER, 0);
+        sampler_state_write(stage, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(stage, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(stage, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(stage, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(stage, D3DTSS_ALPHAKILL, 0);
     }
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x1010101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
@@ -1909,7 +1942,7 @@ bool __stdcall function_26880(void *context)
     if (!g_4b9d9c)
     {
         g_484f68.PSCombinerCount = 0x11004;
-        g_484f68.PSConstant0[0] = pack_color3f((color3f const *)(g_4b9c74[1] + 2));
+        g_484f68.PSConstant0[0] = pack_color3f(&((s_filter_rows const *)&g_4b9c74)->first.color);
 #pragma inline_depth(0)
         g_484f68.PSConstant1[0] = pack_color3f((color3f const *)(g_4b9c74[2] + 2));
         g_484f68.PSConstant0[1] = pack_color3f((color3f const *)(g_4b9c74[3] + 2));
@@ -1925,7 +1958,7 @@ bool __stdcall function_26880(void *context)
     else
     {
         g_484f68.PSCombinerCount = 0x11003;
-        g_484f68.PSConstant0[0] = pack_color3f((color3f const *)(g_4b9c74[1] + 2));
+        g_484f68.PSConstant0[0] = pack_color3f(&((s_filter_rows const *)&g_4b9c74)->first.color);
 #pragma inline_depth(0)
         g_484f68.PSConstant1[0] = pack_color3f((color3f const *)(g_4b9c74[2] + 2));
         g_484f68.PSConstant0[1] = pack_color3f((color3f const *)(g_4b9c74[3] + 2));
@@ -1978,14 +2011,24 @@ struct s_24ee0_state
 byte g_4b9370[2][3][256];
 extern long g_4ba04c;
 
+/* the surface's texture header, or NULL while it has no storage */
+static __forceinline void *surface_texture_get(long index)
+{
+    s_unknown_01dcc0 *entry = &g_4b4b58[index];
+    void *result = NULL;
+    if (entry->data && !entry->flag95)
+        result = entry->sub_header;
+    return result;
+}
+
 // @retail 0x24ee0
 void function_24ee0(s_24ee0_state const *state, short mode)
 {
     (void)&mode;
-    D3DTexture *texture = (D3DTexture *)function_01dcc0(15);
+    D3DTexture *texture = (D3DTexture *)surface_texture_get(15);
     texture->Size = 0;
     texture->Format = 0x06610629;
-    volatile long index = state->index;
+    long index = state->index;
     if (index < 0) index = 0;
     else if (index > 1) index = 1;
     real low = state->range.smoothed_low;
@@ -1999,15 +2042,14 @@ void function_24ee0(s_24ee0_state const *state, short mode)
         real value = (real)i * (1.0f / 255.0f);
         real result;
         if (value <= low) result = 0.0f;
-        else if (!(value >= high))
+        else if (value >= high) result = 1.0f;
+        else
         {
             result = (real)pow(((double)value - low) / ((double)high - low), (double)gamma);
             if (result < 0.0f) result = 0.0f;
             else if (result > 1.0f) result = 1.0f;
         }
-        else
-            result = 1.0f;
-        byte mapped = (byte)(long)((double)result * 255.0 + 0.5);
+        byte mapped = (byte)(long)(result * 255.0f + 0.5f);
         curve[i] = mapped;
         if (mode == 1 && g_4ba04c == 1)
         {
@@ -2031,11 +2073,10 @@ void function_24ee0(s_24ee0_state const *state, short mode)
             &bits, &pitch, &width, &height, &slice);
         for (long y = 0; y < 64; ++y)
         {
-            dword component = curve[y * 4];
-            dword outer = (component | 0xffffff00) << 8;
+            byte component = curve[y * 4];
             for (long x = 0; x < 64; ++x)
             {
-                dword color = ((curve[x * 4] | outer) << 8) | component;
+                dword color = D3DCOLOR_XRGB(component, curve[x * 4], component);
                 ((dword *)bits)[function_024e50((word)y, (word)x)] = color;
             }
         }
@@ -2222,22 +2263,30 @@ struct s_245c0_state
     dword frame_count;
 };
 
+/* queues the histogram read-back on the push buffer */
+static __forceinline void histogram_callback_insert(s_245c0_state *state)
+{
+    D3DDevice_InsertCallback(D3DCALLBACK_WRITE, (D3DCALLBACK)function_24970, (dword)state);
+}
+
 __declspec(noinline) void function_245c0(s_245c0_state *state, real *histogram, short mode);
 // @retail 0x245c0
 void function_245c0(s_245c0_state *state, real *histogram, short mode)
 {
     state->curve.histogram = histogram;
-    if ((word)(mode - 1) < 3)
+    switch (mode)
     {
+    case 1:
+    case 2:
+    case 3:
         if (!(state->frame_count & 7))
         {
             function_249f0();
             function_14bc0((short)g_4858b8, 0, true);
-            D3DDevice_InsertCallback(D3DCALLBACK_WRITE, (D3DCALLBACK)function_24970, (dword)state);
+            histogram_callback_insert(state);
         }
-    }
-    else
-    {
+        break;
+    default:
         state->curve.range.low = 0.0f;
         state->curve.range.high = 0.75f;
         state->curve.range.average = 0.4f;
@@ -2245,6 +2294,7 @@ void function_245c0(s_245c0_state *state, real *histogram, short mode)
         state->curve.range.smoothed_high = 0.75f;
         state->curve.range.smoothed_average = 0.4f;
         state->frame_count = 0;
+        break;
     }
     if (mode == 2 || !(state->frame_count & 7))
         function_24ee0(&state->curve, mode);
@@ -2253,17 +2303,17 @@ void function_245c0(s_245c0_state *state, real *histogram, short mode)
 
 PRIVATE __forceinline void configure_351a0_texture(long stage, D3DTEXTUREFILTERTYPE filter)
 {
-    D3DDevice_SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, filter);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, filter);
-    D3DDevice_SetTextureStageState(stage, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+    sampler_state_write(stage, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(stage, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(stage, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(stage, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(stage, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    sampler_state_write(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    sampler_state_write(stage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+    sampler_state_write(stage, D3DTSS_MAGFILTER, filter);
+    sampler_state_write(stage, D3DTSS_MINFILTER, filter);
+    sampler_state_write(stage, D3DTSS_MIPFILTER, D3DTEXF_NONE);
 }
 
 // @retail 0x351a0
@@ -2272,13 +2322,19 @@ void __stdcall function_351a0(long texture, long target)
     function_14bc0((short)target, 0, true);
     function_14f60(0, (short)texture);
     configure_351a0_texture(0, D3DTEXF_POINT);
+#pragma inline_depth(0)
     function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
+#pragma inline_depth(255)
+#pragma inline_depth(0)
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
+#pragma inline_depth(255)
     g_4b8450 = 0;
     D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
     g_4b8448 = 0;
     D3DDevice_SetRenderState(D3DRS_CULLMODE, 0);
+#pragma inline_depth(0)
     function_0222d0(D3DRS_STENCILENABLE, 0);
+#pragma inline_depth(255)
     memset(&g_484f68, 0, sizeof(g_484f68));
     g_484f68.PSTextureModes = 1;
     g_484f68.PSCombinerCount = 0x11001;
@@ -2297,7 +2353,7 @@ dword *function_1c290(real value);
 void __stdcall function_352e0(long target, bool multiple)
 {
     long count = multiple ? 4 : 1;
-    bool const volatile *multiple_reference = &multiple;
+    bool const *multiple_reference = &multiple;
     if (!(fabs(g_4b8494 - 1.0f) < 0.0001f))
     {
         D3DDevice_SetStipple(function_1c290(1.0f));
@@ -2306,34 +2362,34 @@ void __stdcall function_352e0(long target, bool multiple)
     if (target == NONE) target = 19;
     for (long stage = 0; stage < count; ++stage)
     {
-        function_14f60((short)stage, (short)g_4858b8);
+        function_14f60((short)stage, (short)*(long const *)&g_4858b8);
         configure_351a0_texture(stage, D3DTEXF_LINEAR);
     }
     memset(&g_484f68, 0, sizeof(g_484f68));
     dword output;
     if (*multiple_reference)
     {
+        output = 0x30c00;
         g_484f68.PSTextureModes = 0x8421;
         g_484f68.PSCombinerCount = 0x11004;
         g_484f68.PSAlphaInputs[0] = 0x18201920;
         g_484f68.PSAlphaInputs[1] = 0x1a201b20;
-        g_484f68.PSAlphaInputs[2] = 0x1c201d20;
         g_484f68.PSAlphaOutputs[1] = 0x30d00;
+        g_484f68.PSAlphaInputs[2] = 0x1c201d20;
         g_484f68.PSAlphaOutputs[2] = 0x30c00;
         g_484f68.PSRGBInputs[0] = 0x8200920;
         g_484f68.PSRGBInputs[1] = 0xa200b20;
-        g_484f68.PSRGBInputs[2] = 0xc200d20;
         g_484f68.PSRGBOutputs[1] = 0x30d00;
+        g_484f68.PSRGBInputs[2] = 0xc200d20;
         g_484f68.PSRGBOutputs[2] = 0x30c00;
-        output = 0x30c00;
     }
     else
     {
         g_484f68.PSTextureModes = 1;
         g_484f68.PSCombinerCount = 0x11001;
         g_484f68.PSAlphaInputs[0] = 0x18200000;
-        g_484f68.PSRGBInputs[0] = 0x8200000;
         output = 0xc0;
+        g_484f68.PSRGBInputs[0] = 0x8200000;
     }
     g_484f68.PSAlphaOutputs[0] = output;
     g_484f68.PSRGBOutputs[0] = output;
@@ -2355,9 +2411,10 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     real strength, bool blend, bool inverse, bool alternate_target,
     bool screen_target, bool simple, bool preserve_alpha)
 {
+    bool const *inverse_reference = &inverse;
     if ((!g_4b99b0[0] && !g_4b99b0[1]) || strength < 0.0f) return;
     if (strength > 1.0f) strength = 1.0f;
-    else if (strength <= 0.0f) return;
+    else if (!(strength > 0.0f)) return;
     if (!g_4b99b0[1] && alternate_target) return;
     real default_source[4];
     real default_destination[4];
@@ -2369,8 +2426,8 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
         {
             byte *bitmap = *(byte **)(definition + 0x48) + bitmap_index * 0x74;
             real w = (real)*(short *)(bitmap + 4);
-            real h = (real)*(short *)(bitmap + 6);
             width = 1.0f > w ? 1.0f : w;
+            real h = (real)*(short *)(bitmap + 6);
             height = 1.0f > h ? 1.0f : h;
         }
     }
@@ -2379,8 +2436,8 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     else function_14bc0(*(short *)(g_4b99b0 + 0x34), 0, false);
     function_0222d0(D3DRS_COLORWRITEENABLE, 0x10101);
     function_0222d0(D3DRS_ALPHABLENDENABLE, 1);
-    function_0222d0(D3DRS_SRCBLEND, inverse ? 0x306 : 1);
-    function_0222d0(D3DRS_DESTBLEND, inverse ? 0 : 0x303);
+    function_0222d0(D3DRS_SRCBLEND, *inverse_reference ? 0x306 : 1);
+    function_0222d0(D3DRS_DESTBLEND, *inverse_reference ? 0 : 0x303);
     function_0222d0(D3DRS_BLENDOP, blend && alternate_target ? 0xf006 : 0x8006);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
     function_0222d0(D3DRS_CULLMODE, 0);
@@ -2388,13 +2445,13 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
     function_0222d0(D3DRS_ZENABLE, 0);
     function_0222d0(D3DRS_ZBIAS, 0);
     function_144f0(tag, 0, 0, 0, (short)bitmap_index, 0.0f);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, 1);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, 1);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, 2);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, 2);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 2);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, 1);
+    sampler_state_write(0, D3DTSS_ADDRESSV, 1);
+    sampler_state_write(0, D3DTSS_ADDRESSW, 3);
+    sampler_state_write(0, D3DTSS_MAGFILTER, 2);
+    sampler_state_write(0, D3DTSS_MINFILTER, 2);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 2);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
 #pragma inline_depth(0)
     function_0224f0(0, D3DTSS_MAXANISOTROPY, 0);
     function_0224f0(0, D3DTSS_MIPMAPLODBIAS, 0);
@@ -2414,7 +2471,7 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
 #pragma inline_depth(255)
         g_484f68.PSConstant1[0] = 0xff;
         g_484f68.PSRGBInputs[0] = 0x8200211;
-        g_484f68.PSRGBOutputs[0] = inverse ? 0x800 : 0;
+        g_484f68.PSRGBOutputs[0] = *inverse_reference ? 0x800 : 0;
         g_484f68.PSConstant0[1] = function_131f40(strength, color);
         g_484f68.PSRGBInputs[1] = 0x8011811;
         g_484f68.PSRGBOutputs[1] = 0xcd;
@@ -2423,7 +2480,7 @@ void __stdcall function_2a8d0(long tag, long bitmap_index, real const *source,
 #pragma inline_depth(0)
         g_484f68.PSFinalCombinerConstant0 = function_131fc0(alpha);
 #pragma inline_depth(255)
-        g_484f68.PSFinalCombinerInputsABCD = ((inverse ? 0x11 : 0x20) | 0xf00) << 16;
+        g_484f68.PSFinalCombinerInputsABCD = ((*inverse_reference ? 0x11 : 0x20) | 0xf00) << 16;
         g_484f68.PSFinalCombinerInputsEFG = ((blend ? 0 : 0x1d) | 0xc0d00) << 8;
     }
     else
@@ -2614,17 +2671,17 @@ void __stdcall function_29b00(long tag, long first_bitmap, real first_alpha,
     {
         function_144f0(tag, (short)stage, 0, 0,
             (short)(stage == 0 ? first_bitmap : second_bitmap), 0.0f);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSU, 3);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSV, 3);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ADDRESSW, 3);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAGFILTER, 2);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MINFILTER, 2);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MIPFILTER, 2);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAXMIPLEVEL, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MAXANISOTROPY, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_MIPMAPLODBIAS, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_COLORSIGN, 0);
-        D3DDevice_SetTextureStageState(stage, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(stage, D3DTSS_ADDRESSU, 3);
+        sampler_state_write(stage, D3DTSS_ADDRESSV, 3);
+        sampler_state_write(stage, D3DTSS_ADDRESSW, 3);
+        sampler_state_write(stage, D3DTSS_MAGFILTER, 2);
+        sampler_state_write(stage, D3DTSS_MINFILTER, 2);
+        sampler_state_write(stage, D3DTSS_MIPFILTER, 2);
+        sampler_state_write(stage, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(stage, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(stage, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(stage, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(stage, D3DTSS_ALPHAKILL, 0);
         ++stage;
     } while (stage < 2);
     function_1cf50();
@@ -2700,7 +2757,7 @@ struct s_2a2f0_record
 
 #pragma inline_depth(0)
 // @retail 0x2a2f0
-void __stdcall function_2a2f0(volatile long tag, volatile real alpha)
+void __stdcall function_2a2f0(long tag, real alpha)
 {
     if (tag != NONE)
     {
@@ -2757,20 +2814,16 @@ void __stdcall function_2a2f0(volatile long tag, volatile real alpha)
             *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
         function_1c710(g_51f0f0);
         long definition_index = tag & 0xffff;
-        long i = 0;
-        long bitmap_offset = 0;
-        s_2a2f0_record *volatile record = records;
-        for (i = 0; bitmap_offset < 5 * 0x74; ++i, ++record, bitmap_offset += 0x74)
+        for (long i = 0; i < sizeof(records) / sizeof(records[0]); ++i)
         {
-            s_2a2f0_record *line = record;
             byte *definition = g_4e3b44[definition_index].bytes;
-            volatile real &height = *(volatile real *)&tag;
-            volatile real &width = alpha;
+            real &height = *(real *)&tag;
+            real &width = alpha;
             height = 1.0f;
             width = 1.0f;
             if (i < *(long *)(definition + 0x44))
             {
-                byte *bitmap = *(byte **)(definition + 0x48) + bitmap_offset;
+                byte *bitmap = *(byte **)(definition + 0x48) + i * 0x74;
                 real local_62a74a_2 = (real)*(short *)(bitmap + 4);
                 width = 1.0f;
                 if (!(local_62a74a_2 < 1.0f)) width = local_62a74a_2;
@@ -2780,11 +2833,12 @@ void __stdcall function_2a2f0(volatile long tag, volatile real alpha)
             }
             // Reload the count after the dimension writes.
             long count = *(volatile long *)(definition + 0x44);
-            byte *selected = NULL;
+            byte *selected;
             if (count > 0)
             {
                 short index = (short)((short)i % count);
-                if (definition && index >= 0 && index < count)
+                selected = NULL;
+                if (g_4e3b44[definition_index].bytes && index >= 0 && index < count)
                     selected = *(byte **)(definition + 0x48) + index * 0x74;
             }
             if (count > 0 && *(short *)(selected + 0xa) == 0)
@@ -2801,35 +2855,39 @@ void __stdcall function_2a2f0(volatile long tag, volatile real alpha)
                         if (bitmap)
                         {
                             g_51f3c8[1][0] = function_12310((s_bitmap_view *)bitmap, 0.0f);
-                            g_485af4[0] = *(short *)(bitmap + 4);
-                            g_485b04[0] = *(short *)(bitmap + 6);
+                            long width = *(short *)(bitmap + 4);
+                            long height = *(short *)(bitmap + 6);
+                            g_485af4[0] = width;
+                            g_485b04[0] = height;
                         }
                     }
                 }
             }
 #pragma inline_depth(255)
-            D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-            D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+            sampler_state_write(0, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            sampler_state_write(0, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            sampler_state_write(0, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+            sampler_state_write(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+            sampler_state_write(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+            sampler_state_write(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
+            sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+            sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+            sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+            sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+            sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
 #pragma inline_depth(0)
             function_1cf50();
-            real half_height = height * 0.5f;
-            real center = 240.0f - ((real)line->y - half_height);
+            s_2a2f0_record *line = &records[i];
+            real center = 240.0f - ((real)line->y - height * 0.5f);
             box2f bounds;
             bounds.x0 = 0.0f; bounds.x1 = 640.0f;
-            bounds.y0 = center - half_height;
-            bounds.y1 = center + half_height;
-            real time = 0.0f;
+            bounds.y0 = center - height * 0.5f;
+            bounds.y1 = center + height * 0.5f;
+            real time;
             if (g_510c54 && g_510c54->active)
                 time = g_510c54->game_time * g_510c54->rate;
+            else
+                time = 0.0f;
             real offset = 0.0f - line->speed * time;
             D3DDevice_Begin(D3DPT_TRIANGLEFAN);
             D3DDevice_SetVertexData2f(1, offset, 0.0f);
@@ -2909,38 +2967,38 @@ bool __stdcall function_3a5c0(byte const *configuration, real low, real high, lo
     }
     low = (real)(long)floor(low * 65536.0f) * (1.0f / 65536.0f);
     high = (real)(long)floor(high * 65536.0f) * (1.0f / 65536.0f);
-    if (!(high > low)) return false;
+    if (!(high > low)) goto failure;
     real inverse_span = 1.0f / (high - low);
     if (inverse_span > maximum)
     {
         real width = 1.0f / maximum;
         inverse_span = maximum;
-        if (small) return false;
+        if (small) goto failure;
         if (center) low = (low + high) * 0.5f - width * 0.5f;
         else if (shift) low = high - width;
-        else if (!clip) return false;
+        else if (!clip) goto failure;
     }
     if (low < 0.0f)
     {
         if (allow_negative) offset = clamp_filter_unit(0.0f - inverse_span * low);
-        else if (!shift || !clip) return false;
+        else if (!shift || !clip) goto failure;
         low = 0.0f;
     }
     if (!skip_state)
     {
         function_14bc0((short)g_4858b8, 0, true);
         function_14f60(0, 0);
-        D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, 3);
-        D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, 3);
-        D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, 3);
-        D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, 1);
-        D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, 1);
-        D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 0);
-        D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-        D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-        D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-        D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-        D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+        sampler_state_write(0, D3DTSS_ADDRESSU, 3);
+        sampler_state_write(0, D3DTSS_ADDRESSV, 3);
+        sampler_state_write(0, D3DTSS_ADDRESSW, 3);
+        sampler_state_write(0, D3DTSS_MAGFILTER, 1);
+        sampler_state_write(0, D3DTSS_MINFILTER, 1);
+        sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+        sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+        sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+        sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+        sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+        sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
         g_4b8308 = 0x1010101; D3DDevice_SetRenderState(D3DRS_COLORWRITEENABLE, 0x1010101);
         g_4b82e8 = 0; D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
         g_4b82ec = 0; D3DDevice_SetRenderState(D3DRS_ALPHATESTENABLE, 0);
@@ -3111,13 +3169,12 @@ bool __stdcall function_3a5c0(byte const *configuration, real low, real high, lo
         g_484f68.PSTextureModes = 0x8421;
         g_484f68.PSConstant0[4] = pack_color3f((color3f const *)(configuration + 4));
         g_484f68.PSConstant1[4] = pack_color3f((color3f const *)(configuration + 0x10));
-        long selector = configuration[0] ? 0x10 : 0;
-        g_484f68.PSRGBInputs[4] = ((((9 + selector) << 16) | (10 + selector)) << 8) | 0x10002;
+        g_484f68.PSRGBInputs[4] = (((((configuration[0] ? 0x10 : 0) + 9) << 16) | ((configuration[0] ? 0x10 : 0) + 10)) << 8) | 0x10002;
         g_484f68.PSRGBOutputs[4] = 0x3045;
         g_484f68.PSAlphaInputs[4] = 0x1d201d00 | (exponent > 3 ? 0x20 : 0);
         g_484f68.PSAlphaOutputs[4] = filter_output_shift(exponent, 1);
         g_484f68.PSConstant0[5] = pack_color3f((color3f const *)(configuration + 0x1c));
-        g_484f68.PSRGBInputs[5] = ((11 + selector) << 8) | 0x24250001;
+        g_484f68.PSRGBInputs[5] = (((configuration[0] ? 0x10 : 0) + 11) << 8) | 0x24250001;
         g_484f68.PSRGBOutputs[5] = 0x1045;
         g_484f68.PSAlphaInputs[5] = 0x1d201d00 | (exponent > 6 ? 0x20 : 0);
         g_484f68.PSAlphaOutputs[5] = filter_output_shift(exponent, 4);
@@ -3147,6 +3204,8 @@ bool __stdcall function_3a5c0(byte const *configuration, real low, real high, lo
         *depth_out = depth;
     }
     return true;
+failure:
+    return false;
 }
 
 dword g_4b8424;
@@ -3198,50 +3257,43 @@ void function_25a10(vector3f const *direction, point3f const *position, byte con
 extern dword g_4b8308, g_4b82e8, g_4b82f4, g_4b82f8, g_4b8324, g_4b82ec, g_4b8448, g_4b843c, g_4b8438, g_4b8450;
 dword __cdecl pack_color4f(color4f const *color);
 
+#define FILTER_PIN(x) ((x) < 0.0f ? 0.0f : (x) > 1.0f ? 1.0f : (x))
+
 // @retail 0x25e50
 bool __stdcall function_25e50(void *context)
 {
     if (g_48578c == 0.0f)
     {
-        byte configuration[0x6c];
-        memset(configuration, 0, sizeof(configuration));
-        *(vector3f *)(configuration + 0x1c) = g_485768;
-        *(real *)(configuration + 0x28) = g_485774;
-        *(color3f *)(configuration + 0x5c) = g_4857a8;
-        *(real *)(configuration + 0x68) = g_4857b4;
-        real depth = g_509400;
-        bool filtered = function_3a5c0(configuration, g_485778, g_48577c, 1,
-            false, false, false, false, &depth);
-        g_509400 = depth;
-        if (filtered)
+        if (function_3a5c0((byte const *)&g_48574c, g_485778, g_48577c, 1,
+                false, false, false, false, &g_509400))
             return true;
     }
     g_509400 = g_485ae0;
     function_14bc0((short)g_4858b8, 0, true);
     function_14f60(0, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, 1);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, 1);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, 3);
+    sampler_state_write(0, D3DTSS_ADDRESSV, 3);
+    sampler_state_write(0, D3DTSS_ADDRESSW, 3);
+    sampler_state_write(0, D3DTSS_MAGFILTER, 1);
+    sampler_state_write(0, D3DTSS_MINFILTER, 1);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
     function_143c0(*(long *)(g_485a80 + 0x14), 0, 2, 0.0f);
-    D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSU, 3);
-    D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSV, 3);
-    D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSW, 3);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MAGFILTER, 2);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MINFILTER, 2);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(2, D3DTSS_ADDRESSU, 3);
+    sampler_state_write(2, D3DTSS_ADDRESSV, 3);
+    sampler_state_write(2, D3DTSS_ADDRESSW, 3);
+    sampler_state_write(2, D3DTSS_MAGFILTER, 2);
+    sampler_state_write(2, D3DTSS_MINFILTER, 2);
+    sampler_state_write(2, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(2, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(2, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(2, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(2, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(2, D3DTSS_ALPHAKILL, 0);
     g_4b8308 = 0x1010101; D3DDevice_SetRenderState(D3DRS_COLORWRITEENABLE, 0x1010101);
     g_4b82e8 = 1; D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
     g_4b82f4 = 0x8001; D3DDevice_SetRenderState(D3DRS_SRCBLEND, 0x8001);
@@ -3252,58 +3304,60 @@ bool __stdcall function_25e50(void *context)
     g_4b8448 = 0; D3DDevice_SetRenderState(D3DRS_CULLMODE, 0);
     g_4b843c = 0; D3DDevice_SetRenderState(D3DRS_STENCILENABLE, 0);
     g_4b8438 = g_48575d ? 0 : 2; D3DDevice_SetRenderState(D3DRS_ZENABLE, g_4b8438);
+#pragma inline_depth(0)
     function_0222d0(D3DRS_ZWRITEENABLE, 0);
     function_0222d0(D3DRS_ZFUNC, g_48575d ? 0x207 : 0x204);
+#pragma inline_depth(255)
     g_4b8450 = 0; D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
-    color4f first, second, third;
-    first.alpha = clamp_filter_unit((1.0f - g_485868) * g_48578c);
-    first.red = clamp_filter_unit(g_485768.i * g_485774);
-    first.green = clamp_filter_unit(g_485768.j * g_485774);
-    first.blue = clamp_filter_unit(g_485768.k * g_485774);
-    second.alpha = clamp_filter_unit(g_485774 * g_485868);
-    second.red = clamp_filter_unit(g_485780.i * g_48578c);
-    second.green = clamp_filter_unit(g_485780.j * g_48578c);
-    second.blue = clamp_filter_unit(g_485780.k * g_48578c);
-    real first_alpha = clamp_filter_unit(g_485774);
-    real second_alpha = clamp_filter_unit(g_48578c);
-    third.alpha = clamp_filter_unit(g_4857b4);
-    third.red = clamp_filter_unit(g_4857a8.red);
-    third.green = clamp_filter_unit(g_4857a8.green);
-    third.blue = clamp_filter_unit(g_4857a8.blue);
-    dword first_pixel = pack_color4f(&first);
-    dword second_pixel = pack_color4f(&second);
-    dword first_alpha_pixel = function_131fc0(first_alpha);
-    dword second_alpha_pixel = function_131fc0(second_alpha);
-    dword third_pixel = pack_color4f(&third);
-    D3DPIXELSHADERDEF program;
-    memset(&program, 0, sizeof(program));
-    dword *fields = (dword *)&program;
+    byte const *settings = (byte const *)&g_48574c;
+    vector3f const &first_color = *(vector3f const *)(settings + 0x1c);
+    real const &second_scale = *(real const *)(settings + 0x40);
+    real const &first_scale = *(real const *)(settings + 0x28);
+    real const &mix = *(real const *)(settings + 0x11c);
+    vector3f const &second_color = *(vector3f const *)(settings + 0x34);
+    color3f const &third_color = *(color3f const *)(settings + 0x5c);
+    color4f colors[3];
+    colors[0].alpha = FILTER_PIN((1.0f - mix) * second_scale);
+    colors[0].red = FILTER_PIN(first_color.i * first_scale);
+    colors[0].green = FILTER_PIN(first_color.j * first_scale);
+    colors[0].blue = FILTER_PIN(first_color.k * first_scale);
+    colors[1].alpha = FILTER_PIN(first_scale * mix);
+    colors[1].red = FILTER_PIN(second_color.i * second_scale);
+    colors[1].green = FILTER_PIN(second_color.j * second_scale);
+    colors[1].blue = FILTER_PIN(second_color.k * second_scale);
+    real first_alpha = FILTER_PIN(first_scale);
+    real second_alpha = FILTER_PIN(second_scale);
+    colors[2].alpha = FILTER_PIN(*(real const *)(settings + 0x68));
+    colors[2].red = FILTER_PIN(third_color.red);
+    colors[2].green = FILTER_PIN(third_color.green);
+    colors[2].blue = FILTER_PIN(third_color.blue);
+    memset(&g_484f68, 0, sizeof(g_484f68));
+    dword *fields = (dword *)&g_484f68;
     fields[0xd8 / 4] = 0x2621;
     fields[0xdc / 4] = 0x44;
     fields[0xd4 / 4] = 0x11004;
+    fields[0x28 / 4] = pack_color4f(&colors[0]);
+    fields[0x48 / 4] = pack_color4f(&colors[1]);
     fields[0x88 / 4] = 0x10a021a;
     fields[0xb4 / 4] = 0xcd;
     fields[0x0 / 4] = 0x111a120a;
     fields[0x68 / 4] = 0xcd;
+    fields[0x2c / 4] = function_131fc0(first_alpha);
+    fields[0x4c / 4] = function_131fc0(second_alpha);
     fields[0x6c / 4] = 0xcd;
     fields[0x70 / 4] = 0xcd;
     fields[0x8c / 4] = 0xc3c0d3d;
     fields[0xb8 / 4] = 0xc00;
     fields[0x4 / 4] = 0x110a121a;
     fields[0x8 / 4] = 0x3c3d0820;
+    fields[0x34 / 4] = pack_color4f(&colors[2]);
     fields[0x94 / 4] = 0x3d0c1d01;
     fields[0xc0 / 4] = 0xc00;
     fields[0xc / 4] = 0x3d3c1d11;
     fields[0x74 / 4] = 0xc00;
     fields[0x20 / 4] = 0xc;
     fields[0x24 / 4] = 0x1c00;
-    fields[0x28 / 4] = first_pixel;
-    fields[0x48 / 4] = second_pixel;
-    fields[0x2c / 4] = first_alpha_pixel;
-    fields[0x4c / 4] = second_alpha_pixel;
-    fields[0x34 / 4] = third_pixel;
-    g_484f68 = program;
-    function_1ccf0(&program);
+    function_1ccf0(&g_484f68);
     function_1c590((s_shader_cache *)g_51f0f0, *(long *)(*(byte **)(g_485a80 + 0x5c) + 0x64), 0);
     function_1c710(g_51f0f0);
     return true;
@@ -3318,99 +3372,104 @@ bool __stdcall function_26e50(void *context)
     bool separate = !g_5093fe;
     if (!g_4b9d9c)
     {
-        byte configuration[0x20];
+        byte configuration[0x18];
+        memset(configuration, 0, sizeof(configuration));
         *(real *)(configuration + 0) = g_4857d4;
         *(real *)(configuration + 4) = g_4857d8;
         *(color3f *)(configuration + 8) = g_4857bc;
         configuration[0x14] = separate;
-        real depth = g_509400;
         bool filtered = function_3a5c0(configuration, g_4857dc, g_4857e0, 2,
-            false, false, true, false, &depth);
-        g_509400 = depth;
+            false, false, true, false, &g_509400);
         if (filtered)
         {
             function_14f60(1, 19);
-    D3DDevice_SetTextureStageState(1, D3DTSS_ADDRESSU, 3);
-    D3DDevice_SetTextureStageState(1, D3DTSS_ADDRESSV, 3);
-    D3DDevice_SetTextureStageState(1, D3DTSS_ADDRESSW, 3);
-    D3DDevice_SetTextureStageState(1, D3DTSS_MAGFILTER, 2);
-    D3DDevice_SetTextureStageState(1, D3DTSS_MINFILTER, 2);
-    D3DDevice_SetTextureStageState(1, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(1, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(1, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(1, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(1, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(1, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(1, D3DTSS_ADDRESSU, 3);
+    sampler_state_write(1, D3DTSS_ADDRESSV, 3);
+    sampler_state_write(1, D3DTSS_ADDRESSW, 3);
+    sampler_state_write(1, D3DTSS_MAGFILTER, 2);
+    sampler_state_write(1, D3DTSS_MINFILTER, 2);
+    sampler_state_write(1, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(1, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(1, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(1, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(1, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(1, D3DTSS_ALPHAKILL, 0);
             return true;
         }
     }
     g_509400 = g_485ae0;
-    function_14bc0(separate ? 3 : (short)g_4858b8, 0, false);
+    function_14bc0((short)(separate ? 3 : g_4858b8), 0, false);
     function_14f60(0, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSW, 3);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAGFILTER, 1);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MINFILTER, 1);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(0, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(0, D3DTSS_ADDRESSU, 3);
+    sampler_state_write(0, D3DTSS_ADDRESSV, 3);
+    sampler_state_write(0, D3DTSS_ADDRESSW, 3);
+    sampler_state_write(0, D3DTSS_MAGFILTER, 1);
+    sampler_state_write(0, D3DTSS_MINFILTER, 1);
+    sampler_state_write(0, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(0, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(0, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(0, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(0, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(0, D3DTSS_ALPHAKILL, 0);
     function_143c0(*(long *)(g_485a80 + 0x14), 0, 2, 0.0f);
-    D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSU, 3);
-    D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSV, 3);
-    D3DDevice_SetTextureStageState(2, D3DTSS_ADDRESSW, 3);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MAGFILTER, 2);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MINFILTER, 2);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(2, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(2, D3DTSS_ADDRESSU, 3);
+    sampler_state_write(2, D3DTSS_ADDRESSV, 3);
+    sampler_state_write(2, D3DTSS_ADDRESSW, 3);
+    sampler_state_write(2, D3DTSS_MAGFILTER, 2);
+    sampler_state_write(2, D3DTSS_MINFILTER, 2);
+    sampler_state_write(2, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(2, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(2, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(2, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(2, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(2, D3DTSS_ALPHAKILL, 0);
     function_14f60(3, 19);
-    D3DDevice_SetTextureStageState(3, D3DTSS_ADDRESSU, 3);
-    D3DDevice_SetTextureStageState(3, D3DTSS_ADDRESSV, 3);
-    D3DDevice_SetTextureStageState(3, D3DTSS_ADDRESSW, 3);
-    D3DDevice_SetTextureStageState(3, D3DTSS_MAGFILTER, 2);
-    D3DDevice_SetTextureStageState(3, D3DTSS_MINFILTER, 2);
-    D3DDevice_SetTextureStageState(3, D3DTSS_MIPFILTER, 0);
-    D3DDevice_SetTextureStageState(3, D3DTSS_MAXANISOTROPY, 0);
-    D3DDevice_SetTextureStageState(3, D3DTSS_MIPMAPLODBIAS, 0);
-    D3DDevice_SetTextureStageState(3, D3DTSS_MAXMIPLEVEL, 0);
-    D3DDevice_SetTextureStageState(3, D3DTSS_COLORSIGN, 0);
-    D3DDevice_SetTextureStageState(3, D3DTSS_ALPHAKILL, 0);
+    sampler_state_write(3, D3DTSS_ADDRESSU, 3);
+    sampler_state_write(3, D3DTSS_ADDRESSV, 3);
+    sampler_state_write(3, D3DTSS_ADDRESSW, 3);
+    sampler_state_write(3, D3DTSS_MAGFILTER, 2);
+    sampler_state_write(3, D3DTSS_MINFILTER, 2);
+    sampler_state_write(3, D3DTSS_MIPFILTER, 0);
+    sampler_state_write(3, D3DTSS_MAXANISOTROPY, 0);
+    sampler_state_write(3, D3DTSS_MIPMAPLODBIAS, 0);
+    sampler_state_write(3, D3DTSS_MAXMIPLEVEL, 0);
+    sampler_state_write(3, D3DTSS_COLORSIGN, 0);
+    sampler_state_write(3, D3DTSS_ALPHAKILL, 0);
     g_4b8308 = 0x1010101; D3DDevice_SetRenderState(D3DRS_COLORWRITEENABLE, 0x1010101);
     g_4b82e8 = 1; D3DDevice_SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
     g_4b82f4 = 0x8001; D3DDevice_SetRenderState(D3DRS_SRCBLEND, 0x8001);
+#pragma inline_depth(0)
     function_0222d0(D3DRS_DESTBLEND, 0x303);
     function_0222d0(D3DRS_BLENDOP, 0x8006);
     function_0222d0(D3DRS_BLENDCOLOR, 0xffffff);
     function_0222d0(D3DRS_ALPHATESTENABLE, 0);
+#pragma inline_depth(255)
     g_4b8448 = 0; D3DDevice_SetRenderState(D3DRS_CULLMODE, 0);
     g_4b843c = 0; D3DDevice_SetRenderState(D3DRS_STENCILENABLE, 0);
-    g_4b8438 = 0; D3DDevice_SetRenderState(D3DRS_ZENABLE, 0);
+    g_4b8438 = 0;
+#pragma inline_depth(0)
+    D3DDevice_SetRenderState_ZEnable(0);
+#pragma inline_depth(255)
     g_4b8450 = 0; D3DDevice_SetRenderState(D3DRS_ZBIAS, 0);
-    real colors[3][4];
-    colors[0][0] = g_4b9c74[1][5] < 0.0f ? 0.0f : (g_4b9c74[1][5] > 1.0f ? 1.0f : g_4b9c74[1][5]);
-    colors[0][1] = g_4b9c74[2][5] < 0.0f ? 0.0f : (g_4b9c74[2][5] > 1.0f ? 1.0f : g_4b9c74[2][5]);
-    colors[0][2] = g_4b9c74[3][5] < 0.0f ? 0.0f : (g_4b9c74[3][5] > 1.0f ? 1.0f : g_4b9c74[3][5]);
-    colors[0][3] = g_4b9c74[4][5] < 0.0f ? 0.0f : (g_4b9c74[4][5] > 1.0f ? 1.0f : g_4b9c74[4][5]);
-    colors[1][0] = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
-    colors[1][1] = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
-    colors[1][2] = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
-    colors[1][3] = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
-    colors[2][0] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
-    colors[2][1] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
-    colors[2][2] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
-    colors[2][3] = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
+    color4f first, second, third;
+    first.alpha = g_4b9c74[1][5] < 0.0f ? 0.0f : (g_4b9c74[1][5] > 1.0f ? 1.0f : g_4b9c74[1][5]);
+    first.red = g_4b9c74[2][5] < 0.0f ? 0.0f : (g_4b9c74[2][5] > 1.0f ? 1.0f : g_4b9c74[2][5]);
+    first.green = g_4b9c74[3][5] < 0.0f ? 0.0f : (g_4b9c74[3][5] > 1.0f ? 1.0f : g_4b9c74[3][5]);
+    first.blue = g_4b9c74[4][5] < 0.0f ? 0.0f : (g_4b9c74[4][5] > 1.0f ? 1.0f : g_4b9c74[4][5]);
+    second.alpha = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
+    second.red = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
+    second.green = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
+    second.blue = g_4857d4 < 0.0f ? 0.0f : (g_4857d4 > 1.0f ? 1.0f : g_4857d4);
+    third.alpha = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
+    third.red = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
+    third.green = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
+    third.blue = g_4857d8 < 0.0f ? 0.0f : (g_4857d8 > 1.0f ? 1.0f : g_4857d8);
     memset(&g_484f68, 0, sizeof(g_484f68));
     dword *fields = (dword *)&g_484f68;
     fields[0xd8 / 4] = 0xa621;
     fields[0xdc / 4] = 0x44;
     fields[0xd4 / 4] = 0x11006;
+    fields[0x28 / 4] = pack_color4f(&first);
     fields[0x0 / 4] = 0x1a20b120;
     fields[0x68 / 4] = 0x10c00;
     fields[0x88 / 4] = 0xa20a120;
@@ -3425,21 +3484,22 @@ bool __stdcall function_26e50(void *context)
     fields[0xbc / 4] = 0x3045;
     fields[0xc / 4] = 0x24251a1a;
     fields[0x74 / 4] = 0x58;
+    fields[0x38 / 4] = pack_color4f(&second);
+    fields[0x58 / 4] = pack_color4f(&third);
     fields[0x10 / 4] = 0x14150000;
     fields[0x78 / 4] = 0xc0;
     fields[0x98 / 4] = 0xa010a02;
     fields[0xc4 / 4] = 0xcd;
     fields[0x9c / 4] = 0x1c0c3c0d;
     fields[0xc8 / 4] = 0xc00;
-    fields[0x28 / 4] = pack_color4f((color4f *)colors[0]);
-    fields[0x38 / 4] = pack_color4f((color4f *)colors[1]);
-    fields[0x58 / 4] = pack_color4f((color4f *)colors[2]);
     if (separate)
     {
+#pragma inline_depth(0)
         function_0222d0(D3DRS_COLORWRITEENABLE, 1);
         function_0222d0(D3DRS_ALPHABLENDENABLE, 0);
+#pragma inline_depth(255)
         fields[0x20 / 4] = 0xc;
-        fields[0x24 / 4] = 1;
+        fields[0x24 / 4] = 0;
     }
     else
     {

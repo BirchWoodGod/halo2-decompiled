@@ -120,7 +120,7 @@ bool __stdcall function_1c19b0(long actor_index, vector3f const *direction, s_ty
 					fld seconds_extra
 					fistp ticks_extra
 				}
-				return function_1f34b0(actor_index, direction, &actor->position,
+				return function_1f34b0(actor_index, &actor->position, direction,
 					(i + 1) * 0.25f + distance + 0.5f, (short)((real)ticks * distance + (real)ticks_extra));
 			}
 		}

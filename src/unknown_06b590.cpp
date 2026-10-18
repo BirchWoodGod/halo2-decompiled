@@ -12,6 +12,7 @@
 #include "globals.h"
 #include "unknown_075870.h"
 #include "unknown_0662e0.h"
+#include "pending_messages.h"
 
 /* the services the logon asks for; the last one is not a Live service */
 struct s_online_service
@@ -335,11 +336,6 @@ long function_6c8b0(long controller, XONLINE_USER *user)
 
 
 
-struct s_message_of_the_day_globals
-{
- union { dword flags; word field_0; };
- short length;
-};
 struct s_game_variant_globals
 {
  dword unknown0;
@@ -347,7 +343,7 @@ struct s_game_variant_globals
  word count;
  word state;
 };
-extern s_message_of_the_day_globals g_479784;
+extern s_pending_message_header g_479780;
 extern s_game_variant_globals g_47d8f4;
 void __stdcall function_8e0f0(long index, long result);
 void online_tasks_dispose_all(void);
@@ -372,7 +368,7 @@ void function_6cb60(void)
  for (long i = 0; i < g_transport_globals.transition_function_count; i++)
   if (g_transport_globals.reset_functions[i])
    g_transport_globals.reset_functions[i](g_transport_globals.contexts[i]);
- g_479784.field_0 &= (word)~2;
+ g_479780.flags &= (word)~2;
  g_47d8f4.field_4 &= (word)~2;
  g_477058.field_4 &= (word)~2;
 }
