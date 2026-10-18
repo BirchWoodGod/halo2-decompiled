@@ -3285,7 +3285,7 @@ void transport_get_random_bytes(long count, byte *buffer);
 void network_session_enter_state_5(c_class_58d20 *session);
 extern "C" DWORD WINAPI XGetLanguage(void);
 
-// @retail 0x59bd0 standard
+// @retail 0x59bd0
 bool __stdcall network_session_host(c_class_58d20 *session, long mode, long local, const XNKID *kid, const XNKEY *key, long count, const dword *identities, const long *values, const s_session_id *id, long timeout)
 {
 	bool result = true;
@@ -4224,28 +4224,14 @@ void __stdcall function_609e0(c_class_58d20 *session, const byte *current, s_609
   wcsncpy(local_6, (const wchar_t *)(current + 0x568), 31);
   local_6[31] = 0;
  }
- const byte *local_11;
- if (arg_0.field_0)
- {
-  const byte *local_4 = *(const byte *volatile *)&arg_0.field_0;
-  if (current[0x5a8] == local_4[0x5a8])
-  {
-   local_4 = *(const byte *volatile *)&arg_0.field_0;
-   if (!memcmp(current + 0x5ac, local_4 + 0x5ac, 0x6c) && !memcmp(current + 0x618, local_4 + 0x618, 0xe40))
-   {
-    local_11 = local_4;
-    goto local_5;
-   }
-  }
- }
+ if (!arg_0.field_0 || current[0x5a8] != arg_0.field_0[0x5a8] || memcmp(current + 0x5ac, arg_0.field_0 + 0x5ac, 0x6c) || memcmp(current + 0x618, arg_0.field_0 + 0x618, 0xe40))
  {
   update[0x5b6] = true;
   update[0x5b7] = current[0x5a8];
-  local_11 = *(const byte *volatile *)&arg_0.field_0;
   memcpy(update + 0x5b8, current + 0x5ac, 0x6c);
   memcpy(update + 0x624, current + 0x618, 0xe40);
  }
-local_5:
+ const byte *local_11 = arg_0.field_0;
  if (!local_11 || memcmp(current + 0x29, local_11 + 0x29, 0x1))
  {
   update[0x1464] = true;
