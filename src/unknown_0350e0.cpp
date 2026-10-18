@@ -3001,7 +3001,10 @@ void function_4a1e0(s_view_source *source, s_view_camera *camera, long resource_
     byte *context = (byte *)g_547f88.context;
     g_4858bc = true;
     g_4858c4 = (byte *)flags;
-    g_4858cc = resource && *(short *)(resource + 0x54) != NONE ? *(long *)(resource + 0x4c) : NONE;
+    if (resource && *(short *)(resource + 0x54) != NONE)
+        g_4858cc = *(long *)(resource + 0x4c);
+    else
+        g_4858cc = NONE;
     byte *input = (byte *)source;
     g_485944 = *(vector3f *)(input + 0x50);
     g_485950 = *(vector3f *)(input + 0x5c);
@@ -3033,22 +3036,25 @@ void function_4a1e0(s_view_source *source, s_view_camera *camera, long resource_
     s_bounds3d bounds;
     if (resource)
     {
-        real x0, x1, y0, y1;
+        real const *clip_rect = (real const *)(context + 0xa4);
         if (function_1650a0((s_view const *)(context + 4),
                 (point3f const *)(resource + 0x28), &bounds, *(real *)(resource + 0x34))
-            && (x0 = *(real *)(context + 0xa4), x1 = *(real *)(context + 0xa8), x0 != x1)
-            && (y0 = *(real *)(context + 0xac), y1 = *(real *)(context + 0xb0), y0 != y1)
-            && x1 >= bounds.x0 && bounds.x1 >= x0
-            && y1 >= bounds.y0 && bounds.y1 >= y0)
+            && clip_rect[1] != clip_rect[0] && clip_rect[3] != clip_rect[2]
+            && clip_rect[1] >= bounds.x0 && bounds.x1 >= clip_rect[0]
+            && clip_rect[3] >= bounds.y0 && bounds.y1 >= clip_rect[2])
         {
-            real left = clamp_4a1e0(bounds.x0, x0, x1);
-            real right = clamp_4a1e0(bounds.x1, x0, x1);
-            real top = clamp_4a1e0(0.0f - bounds.y1, y0, y1);
-            real bottom = clamp_4a1e0(0.0f - bounds.y0, y0, y1);
-            bounds.x0 = (g_485a8a.a.v3 - g_485a8a.a.v1) * (left - x0) / (x1 - x0) + g_485a8a.a.v1;
-            bounds.x1 = (g_485a8a.a.v3 - g_485a8a.a.v1) * (right - x0) / (x1 - x0) + g_485a8a.a.v1;
-            bounds.y0 = (g_485a8a.a.v2 - g_485a8a.a.v0) * (top - y0) / (y1 - y0) + g_485a8a.a.v0;
-            bounds.y1 = (g_485a8a.a.v2 - g_485a8a.a.v0) * (bottom - y0) / (y1 - y0) + g_485a8a.a.v0;
+            real left = bounds.x0, right = bounds.x1;
+            real top = 0.0f - bounds.y1, bottom = 0.0f - bounds.y0;
+            if (clip_rect[0] > left) left = clip_rect[0]; else if (left > clip_rect[1]) left = clip_rect[1];
+            if (clip_rect[0] > right) right = clip_rect[0]; else if (right > clip_rect[1]) right = clip_rect[1];
+            if (clip_rect[2] > top) top = clip_rect[2]; else if (top > clip_rect[3]) top = clip_rect[3];
+            if (clip_rect[2] > bottom) bottom = clip_rect[2]; else if (bottom > clip_rect[3]) bottom = clip_rect[3];
+            short screen_left = g_485a8a.a.v1, screen_right = g_485a8a.a.v3;
+            bounds.x0 = (screen_right - screen_left) * (left - clip_rect[0]) / (clip_rect[1] - clip_rect[0]) + screen_left;
+            bounds.x1 = (screen_right - screen_left) * (right - clip_rect[0]) / (clip_rect[1] - clip_rect[0]) + screen_left;
+            short screen_top = g_485a8a.a.v0, screen_bottom = g_485a8a.a.v2;
+            bounds.y0 = (screen_bottom - screen_top) * (top - clip_rect[2]) / (clip_rect[3] - clip_rect[2]) + screen_top;
+            bounds.y1 = (screen_bottom - screen_top) * (bottom - clip_rect[2]) / (clip_rect[3] - clip_rect[2]) + screen_top;
             memcpy(g_485964, &bounds, sizeof(g_485964));
         }
         else

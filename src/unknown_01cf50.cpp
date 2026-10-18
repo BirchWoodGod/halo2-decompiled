@@ -3888,8 +3888,10 @@ void function_40890(void)
 	if (!g_485870) return;
 	color4f color, inverse;
 	color.red = g_485874 * g_48587c;
-	color.alpha = inverse.alpha = g_485874 * g_485878;
+	real alpha = g_485878 * g_485874;
 	color.green = g_485874 * g_485880;
+	color.alpha = alpha;
+	inverse.alpha = alpha;
 	color.blue = g_485874 * g_485884;
 	inverse.red = (1.0f - g_48587c) * g_485874;
 	inverse.green = (1.0f - g_485880) * g_485874;
@@ -3964,8 +3966,9 @@ void function_40890(void)
 		extern dword g_4b81fc[];
 		g_4b81fc[D3DRS_ZENABLE] = 0;
 		D3DDevice_SetRenderState_ZEnable(0);
+		g_4b81fc[D3DRS_ZBIAS] = 0;
+		D3DDevice_SetRenderState_ZBias(0);
 	}
-	function_0222d0(D3DRS_ZBIAS, 0);
 	function_1cc30(13);
 	function_1c710(g_51f0f0);
 	real x = 1.0f / (short)(g_48564e - g_48564a);
