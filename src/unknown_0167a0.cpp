@@ -6,6 +6,7 @@
 #include <string.h>
 #include <math.h>
 #include "effects.h"
+#include "sampler_state.h"
 
 struct s_packed_shader_range
 {
@@ -917,10 +918,9 @@ void __stdcall function_1a170(byte *state, s_packed_shader_range const *range)
 {
     if (range->count() <= 0) return;
     byte const *entry = *(byte **)(*(byte **)(state + 0x20) + 0x3c) + range->index() * 4;
-    for (long volatile i = 0; i < (long)range->count(); ++i, entry += 4)
+    for (long i = 0; i < (long)range->count(); entry += 4, ++i)
     {
-        s_texture_stage_parameter const *volatile parameter = &g_467020[entry[0]];
-        D3DRENDERSTATETYPE volatile setting = (D3DRENDERSTATETYPE)parameter->state;
+        s_texture_stage_parameter const *parameter = &g_467020[entry[0]];
         if (entry[1] == 1)
         {
             real value = ((real *)(state + 0x5c))[entry[3]];
@@ -930,20 +930,25 @@ void __stdcall function_1a170(byte *state, s_packed_shader_range const *range)
                 {
                     dword alpha = (dword)rounded_shader_alpha(value) << 24;
                     dword old = 0;
-                    D3DDevice_GetRenderState(setting, &old);
-                    D3DDevice_SetRenderState(setting, (old & 0xffffff) | alpha);
+                    D3DDevice_GetRenderState((D3DRENDERSTATETYPE)parameter->state, &old);
+                    D3DDevice_SetRenderState((D3DRENDERSTATETYPE)parameter->state, alpha ^ ((old ^ alpha) & 0xffffff));
                 }
                 break;
-            case 1: D3DDevice_SetRenderState(setting, *(dword *)&value); break;
-            case 2: D3DDevice_SetRenderState(setting, rounded_shader_integer(value)); break;
+            case 1: D3DDevice_SetRenderState((D3DRENDERSTATETYPE)parameter->state, *(dword *)&value); break;
+            case 2:
+                {
+                    dword integer_value = rounded_shader_integer(value);
+                    D3DDevice_SetRenderState((D3DRENDERSTATETYPE)parameter->state, integer_value);
+                }
+                break;
             }
         }
         else
         {
             dword color = pack_color3f((color3f *)(state + 0x108) + entry[3]);
             dword old = 0;
-            D3DDevice_GetRenderState(setting, &old);
-            D3DDevice_SetRenderState(setting, (old & 0xff000000) | (color & 0xffffff));
+            D3DDevice_GetRenderState((D3DRENDERSTATETYPE)parameter->state, &old);
+            D3DDevice_SetRenderState((D3DRENDERSTATETYPE)parameter->state, (old & 0xff000000) | (color & 0xffffff));
         }
     }
 }
@@ -1005,15 +1010,11 @@ void __stdcall function_1ab50(byte *state, s_packed_shader_range const *range)
     if (range->count() <= 0)
         return;
     byte *entry = *(byte **)(*(byte **)(state + 0x20) + 0x3c) + range->index() * 4;
-    for (long i = 0; i < (long)range->count(); ++i, entry += 4)
+    for (long i = 0; i < (long)range->count(); entry += 4, ++i)
     {
         s_texture_stage_parameter const *parameter = &g_46703c[entry[1]];
-        if (!(entry[2] == 1)) {
-            dword color = pack_color3f((color3f *)(state + 0x108) + entry[3]);
-            dword old;
-            D3DDevice_GetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, &old);
-            D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, (old & 0xff000000) | (color & 0xffffff));
-        } else {
+        if (entry[2] == 1)
+        {
             real value = ((real *)(state + 0x5c))[entry[3]];
             switch (parameter->value_type)
             {
@@ -1022,16 +1023,26 @@ void __stdcall function_1ab50(byte *state, s_packed_shader_range const *range)
                     dword alpha = (dword)rounded_shader_alpha(value) << 24;
                     dword old;
                     D3DDevice_GetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, &old);
-                    D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, (old & 0xffffff) | alpha);
+                    sampler_state_write(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, alpha ^ ((old ^ alpha) & 0xffffff));
                 }
                 break;
             case 1:
-                D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, *(dword *)&value);
+                sampler_state_write(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, *(dword *)&value);
                 break;
             case 2:
-                D3DDevice_SetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, rounded_shader_integer(value));
+                {
+                    dword integer_value = rounded_shader_integer(value);
+                    sampler_state_write(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, integer_value);
+                }
                 break;
             }
+        }
+        else
+        {
+            dword color = pack_color3f((color3f *)(state + 0x108) + entry[3]);
+            dword old;
+            D3DDevice_GetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, &old);
+            sampler_state_write(entry[0], (D3DTEXTURESTAGESTATETYPE)parameter->state, (old & 0xff000000) | (color & 0xffffff));
         }
     }
 }
@@ -1063,15 +1074,14 @@ void __stdcall function_18560(byte *context, s_packed_shader_range const *range)
     if (range->count() <= 0) return;
     byte *definition = *(byte **)(context + 0xc);
     byte *entry = *(byte **)(definition + 0x58) + range->index() * 4;
-    for (long i = 0; i < (long)range->count(); ++i, entry += 4)
+    for (long i = 0; i < (long)range->count(); entry += 4, ++i)
     {
         definition = *(byte **)(context + 0xc);
-        volatile word selection = (*(word **)(definition + 0x50))[entry[3]];
+        word selection = (*(word **)(definition + 0x50))[entry[3]];
         short index = (*(short **)(definition + 0x48))[(selection & 0x1ff) * 2];
         byte *parameter = *(byte **)(definition + 0x40) + index * 20;
-        s_1b230_function const *curve = (s_1b230_function *)(parameter + 12);
         s_texture_stage_parameter const *setting = &g_46703c[entry[1]];
-        D3DTEXTURESTAGESTATETYPE type = (D3DTEXTURESTAGESTATETYPE)setting->state;
+        s_1b230_function const *curve = (s_1b230_function *)(parameter + 12);
         if (entry[2] == 1)
         {
             real value = function_1b230(curve, *(long *)parameter, *(long *)(parameter + 4), *(real *)(parameter + 8));
@@ -1089,12 +1099,17 @@ void __stdcall function_18560(byte *context, s_packed_shader_range const *range)
                 {
                     dword alpha = (dword)rounded_shader_alpha(value) << 24;
                     dword previous;
-                    D3DDevice_GetTextureStageState(entry[0], type, &previous);
-                    D3DDevice_SetTextureStageState(entry[0], type, (previous & 0xffffff) | alpha);
+                    D3DDevice_GetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)setting->state, &previous);
+                    sampler_state_write(entry[0], (D3DTEXTURESTAGESTATETYPE)setting->state, alpha ^ ((previous ^ alpha) & 0xffffff));
                 }
                 break;
-            case 1: D3DDevice_SetTextureStageState(entry[0], type, *(dword *)&value); break;
-            case 2: D3DDevice_SetTextureStageState(entry[0], type, rounded_shader_integer(value)); break;
+            case 1: sampler_state_write(entry[0], (D3DTEXTURESTAGESTATETYPE)setting->state, *(dword *)&value); break;
+            case 2:
+                {
+                    dword integer_value = rounded_shader_integer(value);
+                    sampler_state_write(entry[0], (D3DTEXTURESTAGESTATETYPE)setting->state, integer_value);
+                }
+                break;
             }
         }
         else
@@ -1102,8 +1117,8 @@ void __stdcall function_18560(byte *context, s_packed_shader_range const *range)
             real value = function_1b230(curve, *(long *)parameter, *(long *)(parameter + 4), *(real *)(parameter + 8));
             dword color = function_13bc00((s_tag_data const *)curve, value);
             dword previous;
-            D3DDevice_GetTextureStageState(entry[0], type, &previous);
-            D3DDevice_SetTextureStageState(entry[0], type, (previous & 0xff000000) | (color & 0xffffff));
+            D3DDevice_GetTextureStageState(entry[0], (D3DTEXTURESTAGESTATETYPE)setting->state, &previous);
+            sampler_state_write(entry[0], (D3DTEXTURESTAGESTATETYPE)setting->state, (previous & 0xff000000) | (color & 0xffffff));
         }
     }
 }
