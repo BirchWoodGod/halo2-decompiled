@@ -10,7 +10,8 @@ struct s_frame_view_2c560
 {
     short index, mode;
     word unknown04;
-    byte flag06, unknown07;
+    byte flag06;
+    bool scaled;
     short location;
     byte unknown0a[2];
     point3f position;
