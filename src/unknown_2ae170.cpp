@@ -751,12 +751,10 @@ __forceinline void c_sound_effects::add_send(long mixbin, long mode, real gain, 
 		long gain_bits = *(long *)&gain;
 		volatile s_send_level first;
 		first.bits = gain_bits;
-		first.value = m_settings.gain + first.value;
-		sound_stream_append_mixbin(mixbins, mixbin, first.value);
+		sound_stream_append_mixbin(mixbins, mixbin, m_settings.gain + first.value);
 		volatile s_send_level second;
 		second.bits = gain_bits;
-		second.value = m_settings.gain + second.value;
-		sound_stream_append_mixbin(mixbins, mixbin, second.value);
+		sound_stream_append_mixbin(mixbins, mixbin, m_settings.gain + second.value);
 		break;
 	}
 	}

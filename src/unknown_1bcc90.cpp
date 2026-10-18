@@ -36,10 +36,10 @@ short __stdcall function_1bcc90(long actor_index)
 bool __stdcall function_1bcd00(long actor_index, s_slot *slot)
 {
 	bool result = true;
-	s_actor_view *actor = actor_get(actor_index);
 
-	if (actor->unknown040)
+	if (actor_get(actor_index)->unknown040)
 	{
+		s_actor_view *actor = actor_get(actor_index);
 		byte *scratch;
 		s_2605d0_request request;
 		long other_index;
