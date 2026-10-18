@@ -176,7 +176,7 @@ static inline void contrail_location_from_point(s_location *location, point3f *p
 }
 
 void function_17b850(void);
-real function_17bef0(dword flags, real lower, real scale, real upper, long bit);
+real function_17bef0(dword flags, real scale, real lower, real upper, long bit);
 void function_17bf80(s_contrail_datum *contrail);
 short function_17c040(long contrail_index, real dt);
 void function_17c880(long contrail_index);
@@ -470,10 +470,10 @@ void function_17bc40(real dt)
 	}
 }
 
-__declspec(noinline) real function_17bef0(dword flags, real lower, real scale, real upper, long bit);
+__declspec(noinline) real function_17bef0(dword flags, real scale, real lower, real upper, long bit);
 
 // @retail 0x17bef0
-real function_17bef0(dword flags, real lower, real scale, real upper, long bit)
+real function_17bef0(dword flags, real scale, real lower, real upper, long bit)
 {
 	/* only the low byte of the bit index is read, once */
 	byte b = (byte)*(long const *)&bit;
@@ -573,7 +573,7 @@ void function_17c0e0(long contrail_index, short count, bool force)
 		if (marker_count > 0)
 		{
 			word flags = definition->flags;
-			real speed = function_17bef0(flags, definition->velocity_lower, contrail->scale, definition->velocity_upper, 1);
+			real speed = function_17bef0(flags, contrail->scale, definition->velocity_lower, definition->velocity_upper, 1);
 			real cone_angle = contrail_scale_if_17c0e0(definition->flags, 8, contrail->scale, definition->cone_angle);
 			real inherited_velocity = contrail_scale_if_17c0e0(definition->flags, 0x10, contrail->scale, definition->inherited_velocity);
 
@@ -689,7 +689,7 @@ void __stdcall function_17c540(long contrail_index, real dt)
 						s_contrail_point_state *state = &definition->states[++point->state_index];
 
 						point->state_time = 0.0f;
-						real duration = function_17bef0(state->flags, state->duration_lower, point->scale, state->duration_upper, 0);
+						real duration = function_17bef0(state->flags, point->scale, state->duration_lower, state->duration_upper, 0);
 
 						point->state_rate = duration;
 						if (duration != 0.0f)
@@ -709,7 +709,7 @@ void __stdcall function_17c540(long contrail_index, real dt)
 						s_contrail_point_state *state = &definition->states[state_index];
 
 						point->state_time = 0.0f;
-						real duration = function_17bef0(state->flags, state->transition_lower, point->scale, state->transition_upper, 2);
+						real duration = function_17bef0(state->flags, point->scale, state->transition_lower, state->transition_upper, 2);
 
 						point->state_rate = duration;
 						if (duration != 0.0f)
