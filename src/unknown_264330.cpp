@@ -396,15 +396,14 @@ void function_262ba0(long actor_index)
 	bool sampled_one = false;
 	if (actor[0x44]) function_263210(actor_index);
 	function_265680(actor_index);
-	actor = (byte *)actor_get(actor_index);
-	long next = *(long *)(actor + 0x58);
+	long next = *(long *)((byte *)actor_get(actor_index) + 0x58);
 	while (next != NONE)
 	{
 		long index = next;
 		s_prop_datum *node = prop_ref_get(index);
 		byte *p = (byte *)node;
 		next = *(long *)(p + 0x2c);
-		long old_state = *(short *)(p + 0x24);
+		short old_state = *(short *)(p + 0x24);
 		bool sample = false, update = false;
 		function_263670(node);
 		if (!sampled_one && *(short *)(p + 0xc) >= *(short *)(actor + 0x50) && actor[0x48])
