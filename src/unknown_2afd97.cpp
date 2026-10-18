@@ -473,21 +473,24 @@ void function_2bacbc(c_class_1a2c81 *widget, s_widget_group_definition *group, s
 // @retail 0x2afdbc
 void c_widget_45ad18::place(s_widget_point *origin)
 {
-	s_widget_block_18 *grid_definition = definition;
-	if (grid_definition->tag_index != NONE)
+	if (definition->tag_index != NONE)
 	{
-		s_widget_group_definition *group = (s_widget_group_definition *)g_4e3b44[grid_definition->tag_index & 0xffff].bytes;
-		long columns = 1;
-		long rows = 1;
+		s_widget_group_definition *group = (s_widget_group_definition *)g_4e3b44[definition->tag_index & 0xffff].bytes;
+		long columns;
+		long rows;
 
-		if (grid_definition->rows > 1)
-			rows = grid_definition->rows;
-		if (grid_definition->columns > 1)
-			columns = grid_definition->columns;
+		if (definition->rows > 1)
+			rows = definition->rows;
+		else
+			rows = 1;
+		if (definition->columns > 1)
+			columns = definition->columns;
+		else
+			columns = 1;
 		long column;
 		long row;
 
-		switch (grid_definition->order)
+		switch (definition->order)
 		{
 		case 0:
 			row = index / columns;
@@ -505,9 +508,9 @@ void c_widget_45ad18::place(s_widget_point *origin)
 			s_widget_point point;
 			s_widget_bounds group_bounds;
 
-			point = *(s_widget_point *)((byte *)grid_definition + 0xc);
-			point.x += grid_definition->x_step * (short)column + origin->x;
-			point.y += grid_definition->y_step * (short)row + origin->y;
+			point = *(s_widget_point *)((byte *)definition + 0xc);
+			point.x += definition->x_step * (short)column + origin->x;
+			point.y += definition->y_step * (short)row + origin->y;
 			function_2bacbc(this, group, &point);
 			function_2bafa4(this, &group_bounds);
 			bounds = group_bounds;
