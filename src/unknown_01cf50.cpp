@@ -3159,7 +3159,7 @@ void __stdcall function_1e930(long opaque)
 bool g_55e6bc;
 
 // @retail 0x12d50
-void function_12d50(real const *projection, bool scaled, real *output)
+void function_12d50(bool scaled, real const *projection, real *output)
 {
     real constants[16];
     real near_plane = scaled ? 0.15f : 1.0f;
@@ -3481,8 +3481,8 @@ short __stdcall function_467c0(short first, short second, short count)
 // @retail 0x4d640
 void __stdcall function_4d640(short index, long mode, bool setup)
 {
-    (void)&index;
-    s_44940_entry *entry = &g_4ba138[index];
+    /* read from the stack: retail passes index there, and mode in edi */
+    s_44940_entry *entry = &g_4ba138[*(short const volatile *)&index];
     if (entry->unknown10[10] != 0xff)
     {
         real opacity = (real)entry->unknown10[10] * (1.0f / 255.0f);
@@ -3493,7 +3493,7 @@ void __stdcall function_4d640(short index, long mode, bool setup)
         }
     }
     if (entry->unknown00 & 0x800)
-        function_12d50(NULL, true, NULL);
+        function_12d50(true, NULL, NULL);
     if (mode == 1 || mode == 3)
     {
         if (g_485a75 || g_485a76)
@@ -3516,23 +3516,17 @@ void __stdcall function_4d640(short index, long mode, bool setup)
 // @retail 0x4d720
 void function_4d720(short index, long mode)
 {
-    short const *material_index = &index;
-    s_44940_entry *entry = &g_4ba138[index];
+    /* read from the stack: retail passes index there, and mode in edi */
+    s_44940_entry *entry = &g_4ba138[*(short const volatile *)&index];
     if (entry->unknown10[10] != 0xff && !(fabs(g_4b8494 - 1.0f) < 0.0001f))
     {
         D3DDevice_SetStipple(function_1c290(1.0f));
         g_4b8494 = 1.0f;
     }
     if (entry->unknown00 & 0x800)
-        function_12d50(NULL, false, NULL);
-    switch (mode)
-    {
-    case 1:
-    case 3:
-        if (g_485a75 || g_485a76 || (g_4ba138[*material_index].unknown00 & 0x4000))
-            function_15370(1);
-        break;
-    }
+        function_12d50(false, NULL, NULL);
+    if ((mode == 1 || mode == 3) && ((entry->unknown00 & 0x4000) || g_485a75 || g_485a76))
+        function_15370(1);
 }
 
 
@@ -3721,10 +3715,7 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     real scale;
     if (scaled && !g_5093fc)
     {
-        real input = g_4670c8;
-        if (input < 0.0625f) scale = 0.0625f;
-        else if (input > 1.0f) scale = 1.0f;
-        else scale = input;
+        scale = g_4670c8 < 0.0625f ? 0.0625f : g_4670c8 > 1.0f ? 1.0f : g_4670c8;
     }
     else scale = 1.0f;
     real bias = 0.03125f;
@@ -3736,7 +3727,7 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
         bias = 0.0f;
     }
     real constants[48];
-    function_12d50(projection, false, constants);
+    function_12d50(false, projection, constants);
     constants[16] = projection[14];
     constants[17] = projection[15];
     constants[18] = projection[16];
@@ -3759,11 +3750,11 @@ void function_12fa0(byte const *camera, real const *projection, bool scaled, lon
     constants[34] = 0.0f;
     constants[35] = ((width + 1.0f) * 0.5f + left) * scale + bias;
     constants[36] = 0.0f;
-    constants[37] = height * -0.5f * scale;
+    constants[37] = scale * (height * -0.5f);
     constants[38] = 0.0f;
     constants[39] = ((height + 1.0f) * 0.5f + top) * scale + bias;
     constants[40] = half_width * scale;
-    constants[41] = height * -0.5f * scale;
+    constants[41] = scale * (height * -0.5f);
     constants[42] = 16777215.0f;
     constants[43] = 0.0f;
     constants[44] = (half_width + left) * scale + 0.5f;
@@ -4735,7 +4726,7 @@ void function_4d9c0(byte const *source, long tag, byte value, short index,
         D3DDevice_SetRenderState(D3DRS_POLYGONOFFSETZSLOPESCALE, *(dword *)&slope);
     }
     function_1bd50(*(void **)entry->unknown10);
-    function_1bbf0(first, tag, second, third, fourth, scale);
+    function_1bbf0(first, second, tag, third, fourth, scale);
 }
 
 extern real g_4c19b0, g_4c19b4;

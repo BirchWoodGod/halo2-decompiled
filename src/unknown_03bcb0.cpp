@@ -694,9 +694,9 @@ long function_4daa0(bool filtered, bool strip, s_4daa0_geometry const *geometry,
         word *indices = geometry->indices + part->first;
         function_1cf50();
         D3DDevice_DrawIndexedVertices(strip ? D3DPT_TRIANGLESTRIP : D3DPT_TRIANGLELIST, count, indices);
-        return count;
+        result = count;
     }
-    if (strip)
+    else if (strip)
     {
         for (long i = part->subpart; i < part->subpart + part->subpart_count; ++i)
         {
@@ -876,7 +876,7 @@ extern long g_4858b8;
 void function_1c590(s_shader_cache *state, long tag, long index);
 void __stdcall function_1c710(void *state);
 void function_14bc0(short index, short element, bool use_depth);
-void function_12d50(real const *projection, bool scaled, real *output);
+void function_12d50(bool scaled, real const *projection, real *output);
 point3f g_4c1b08[4];
 
 #pragma inline_depth(0)
@@ -905,7 +905,7 @@ long __stdcall function_3bf20(s_slot *slot, byte *data)
     program.PSC1Mapping = 0xffffffff;
     program.PSFinalCombinerConstants = 0x1ff;
     D3DDevice_SetPixelShaderProgram(&program);
-    function_12d50(NULL, false, NULL);
+    function_12d50(false, NULL, NULL);
     D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
     D3DDevice_SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
     D3DDevice_SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
@@ -1567,7 +1567,7 @@ bool __stdcall function_3c3c0(bool render, bool clear)
         function_1bd50(g_4c1a90);
         function_1cdd0(0, 0);
         function_1bbf0(tag, 0, 3, 0, 0, 100000.0f);
-        function_12d50(0, false, 0);
+        function_12d50(false, 0, 0);
         function_3bf00(state);
         function_1c8a0((D3DPRIMITIVETYPE)8, *(word const **)(geometry + 0x24), *(long *)(geometry + 0x20));
     }

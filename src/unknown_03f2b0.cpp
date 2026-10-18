@@ -1069,57 +1069,82 @@ bool function_460d0(dword const *mask, short index, long part_index)
 	return result;
 }
 
+/* the render model sections, groups and variants, as read here */
+struct s_4c2b0_section
+{
+    byte unknown00[0x38];
+    s_geometry_block_info block;
+};
+
+struct s_4c2b0_variant
+{
+    byte unknown00[4];
+    short section_indices[6];
+};
+
+struct s_4c2b0_group
+{
+    byte unknown00[8];
+    long variant_count;
+    s_4c2b0_variant *variants;
+};
+
+struct s_4c2b0_definition
+{
+    byte unknown00[0x1c];
+    long group_count;
+    s_4c2b0_group *groups;
+    long section_count;
+    s_4c2b0_section *sections;
+};
+
 // @retail 0x4c2b0
 bool function_4c2b0(long tag, byte const *wanted, signed char *current, long level,
     bool request, signed char *sections, bool *fallback)
 {
-    struct { word available; bool result; } section_status;
     (void)&wanted; (void)&current; (void)&level;
     (void)&request; (void)&sections; (void)&fallback;
-    byte *definition = g_4e3b44[tag & 0xffff].bytes;
+    s_4c2b0_definition *definition = (s_4c2b0_definition *)g_4e3b44[tag & 0xffff].bytes;
     *fallback = false;
-    section_status.available = 0;
-    section_status.result = true;
-    for (long i = 0; i < *(long *)(definition + 0x1c); ++i)
+    word available = 0;
+    bool result = true;
+    for (long i = 0; i < definition->group_count; ++i)
     {
+        s_4c2b0_group *group = &definition->groups[i];
         long selection = wanted[i];
-        byte *group = *(byte **)(definition + 0x20) + i * 16;
-        if (selection != NONE && selection < *(long *)(group + 8))
+        if (selection != NONE && selection < group->variant_count)
         {
-            byte *variant = *(byte **)(group + 0xc) + selection * 16;
-            short section = ((short *)(variant + 4))[level];
-            s_geometry_block_info *block = (s_geometry_block_info *)(*(byte **)(definition + 0x28) + section * 0x5c + 0x38);
+            s_4c2b0_section *section = &definition->sections[group->variants[selection].section_indices[level]];
             if (request)
             {
-                if (function_12de70(block, 3)) section_status.available |= 1 << i;
+                if (function_12de70(&section->block, 3)) available |= 1 << i;
             }
             else
             {
-                if (function_12de70(block, 0)) section_status.available |= 1 << i;
+                if (function_12de70(&section->block, 0)) available |= 1 << i;
             }
         }
     }
-    for (long i = 0; i < *(long *)(definition + 0x1c); ++i)
+    for (long i = 0; i < definition->group_count; ++i)
     {
-        byte *group = *(byte **)(definition + 0x20) + i * 16;
-        if (section_status.available & (1 << i))
+        s_4c2b0_group *group = &definition->groups[i];
+        if (available & (1 << i))
         {
-            byte *variant = *(byte **)(group + 0xc) + (signed char)wanted[i] * 16;
-            sections[i] = (signed char)((short *)(variant + 4))[level];
+            sections[i] = (signed char)group->variants[(signed char)wanted[i]].section_indices[level];
             current[i] = wanted[i];
         }
         else if (wanted[i] != 0xff)
         {
             if (current[i] != -1)
             {
-                byte *variant = *(byte **)(group + 0xc) + current[i] * 16;
-                short section = ((short *)(variant + 4))[level];
-                if (function_12de70((s_geometry_block_info *)(*(byte **)(definition + 0x28) + section * 0x5c + 0x38), 0))
+                s_4c2b0_variant *variant = &group->variants[current[i]];
+                s_4c2b0_section *section = &definition->sections[variant->section_indices[level]];
+                if (function_12de70(&section->block, 0))
                 {
-                    sections[i] = (signed char)((short *)(variant + 4))[level];
+                    sections[i] = (signed char)variant->section_indices[level];
                     *fallback = true;
                 }
-                else section_status.result = false;
+                else result = false;
             }
             else
             {
@@ -1129,7 +1154,7 @@ bool function_4c2b0(long tag, byte const *wanted, signed char *current, long lev
         }
         else sections[i] = -1;
     }
-    return section_status.result;
+    return result;
 }
 
 struct s_light_shape_ab;
