@@ -2,6 +2,24 @@
 
 The newest entry comes first.
 
+## 2026-10-17: 9085 functions match
+
+```
+matched 9085 of 11321 game functions (1294047 of 2784283 bytes, 46.48%)
+```
+
+2 new matches, none lost:
+- Our key lane's round k3r7 (machine 3's loan): `0x2dd30` and `0xa36a0` match.
+
+## 2026-10-17: 9083 functions match
+
+```
+matched 9083 of 11321 game functions (1292850 of 2784283 bytes, 46.43%)
+```
+
+11 new matches, none lost:
+- Machine 3's batch 69 (#554): `0x17420`, `0x658c0`, `0x698e0`, `0x82980`, `0x85140`, `0xaab40`, `0x140960`, `0x1bc980`, `0x23dc40`, `0x2ab0a0` and `0x2afdbc` match.
+
 ## 2026-10-17: 9072 functions match
 
 ```

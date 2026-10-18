@@ -3590,7 +3590,7 @@ void function_125b40(void)
 			function_221900(local_0->elapsed_time);
 			function_127400(true);
 			looping_sound_controllers_update();
-			function_21b0e0(SOUND_SYSTEM->unknown7e[0] != 0);
+			function_21b0e0(*(bool *)&SOUND_SYSTEM->unknown7e[0]);
 			sound_voices_update_chunks();
 			function_128020();
 			function_1282d0();
@@ -3605,16 +3605,17 @@ void function_125b40(void)
 			while (local_6 != NONE)
 			{
 				function_221a70(local_6, &local_5);
+				long local_8 = NONE;
 				long local_7 = local_6 == NONE ? 0 : local_6 + 1;
-				local_6 = NONE;
 				for (; local_7 < 4; local_7++)
 				{
 					if (g_4e8c20->entries[local_7] != NONE)
 					{
-						local_6 = local_7;
+						local_8 = local_7;
 						break;
 					}
 				}
+				local_6 = local_8;
 			}
 			function_129380((vector3f const *const *)local_3, (vector3f const *const *)local_4);
 			function_1293f0();
