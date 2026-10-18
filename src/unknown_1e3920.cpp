@@ -986,7 +986,7 @@ long __stdcall function_1e0850(long character_index, long squad_index, s_203780 
 		direction.i = (real)(cos(*(real *)(data + 0x14)) * cos(*(real *)(data + 0x18)));
 		direction.j = (real)(sin(*(real *)(data + 0x14)) * cos(*(real *)(data + 0x18)));
 		direction.k = (real)sin(*(real *)(data + 0x18));
-		function_1f34b0(actor_index, &direction, &position, *(real *)(data + 0x38), NONE);
+		function_1f34b0(actor_index, &position, &direction, *(real *)(data + 0x38), NONE);
 	}
 	long unit = *(long *)(actor + 0x18);
 	if (unit != NONE)
