@@ -1311,7 +1311,8 @@ bool function_4c190(long *count, long object_index, bool defaults, long tag,
         current = (signed char *)zero;
         wanted = zero;
     }
-    bool result = function_4c2b0(tag, wanted, current, *level, true, sections, fallback);
+    short requested_level = *level;
+    bool result = function_4c2b0(tag, wanted, current, requested_level, true, sections, fallback);
     if (!result && fallback_level != -1)
     {
         result = function_4c2b0(tag, wanted, current, fallback_level, false, sections, fallback);

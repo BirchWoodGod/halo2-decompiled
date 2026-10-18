@@ -1395,10 +1395,10 @@ void function_170630(long player_index);
 // @retail 0x16fe90
 void function_16fe90(long user_index)
 {
-	s_16f190_observer *observer = (s_16f190_observer *)&g_4e9bd4[user_index];
-	byte *state = (byte *)observer;
+	s_16f190_observer *observers = (s_16f190_observer *)g_4e9bd4;
+	byte *state = (byte *)&observers[user_index];
 	real *time = (real *)(state + 0x9c);
-	if (!(observer->command->flags & 0x20))
+	if (!(observers[user_index].command->flags & 0x20))
 	{
 		function_170bb0((real *)(state + 0x320), (real *)(state + 0x10c), (real *)(state + 0xc));
 		function_16ff10(user_index);
