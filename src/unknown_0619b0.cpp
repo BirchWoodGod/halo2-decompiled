@@ -36,16 +36,12 @@ bool function_619b0(const s_session_member *members, long second_index, long fir
  long second_bits = count_bits(*(const dword *)second->properties.unknown74);
  long local_1 = first->player_count;
  long local_2 = second->player_count;
- if (first_bits > second_bits)
-  goto local_0;
- if (first_bits < second_bits)
-  return false;
- if (local_1 != local_2)
- {
-  if (local_1 >= local_2)
-   return false;
-local_0:
-  return true;
- }
- return session_member_score_order(first, second, player_count);
+ bool result;
+ if (first_bits >= second_bits && (first_bits > second_bits || local_1 < local_2))
+  result = true;
+ else if (first_bits < second_bits || local_1 > local_2)
+  result = false;
+ else
+  result = session_member_score_order(first, second, player_count);
+ return result;
 }

@@ -2991,8 +2991,12 @@ void function_32ce0(long object_index, real opacity)
 void function_4a1e0(s_view_source *source, s_view_camera *camera, long resource_index,
     s_view_flags *flags, real unused_scale, bool enabled, real scale)
 {
-    byte *resource = 0;
-    if (resource_index != NONE)
+    /* the unused scale stays on the stack */
+    real *unused_scale_reference = &unused_scale;
+    byte *resource;
+    if (resource_index == NONE)
+        resource = 0;
+    else
         resource = g_4e030c->data + (resource_index & 0xffff) * 0x110;
     byte *context = (byte *)g_547f88.context;
     g_4858bc = true;
@@ -3022,43 +3026,44 @@ void function_4a1e0(s_view_source *source, s_view_camera *camera, long resource_
     }
     vector3f first = g_485944;
     vector3f second = g_485950;
-    real input_scale = g_48595c;
     long mode = g_485a2c;
-    vector4f old_first, old_second;
-    memcpy(&old_first, g_485a0c, sizeof(old_first));
-    memcpy(&old_second, g_485a0c + 4, sizeof(old_second));
-    s_view_result result;
-    memcpy(&result, g_48597c, sizeof(result));
-    function_0497a0(source, &result, camera, flags, &first, &second, input_scale,
-        &mode, &old_first, &old_second);
-    memcpy(g_48597c, &result, sizeof(result));
-    memcpy(g_485a0c, &old_first, sizeof(old_first));
-    memcpy(g_485a0c + 4, &old_second, sizeof(old_second));
+    function_0497a0(source, (s_view_result *)g_48597c, camera, flags, &first, &second, g_48595c,
+        &mode, (vector4f *)g_485a0c, (vector4f *)(g_485a0c + 4));
     g_485a2c = mode;
     s_bounds3d bounds;
-    bool clipped = false;
-    if (resource && function_1650a0((s_view const *)(context + 4),
-        (point3f const *)(resource + 0x28), &bounds, *(real *)(resource + 0x34)))
+    if (resource)
     {
-        real x0 = *(real *)(context + 0xa4), x1 = *(real *)(context + 0xa8);
-        real y0 = *(real *)(context + 0xac), y1 = *(real *)(context + 0xb0);
-        if (x0 != x1 && y0 != y1 && x1 >= bounds.x0 && bounds.x1 >= x0
+        real x0, x1, y0, y1;
+        if (function_1650a0((s_view const *)(context + 4),
+                (point3f const *)(resource + 0x28), &bounds, *(real *)(resource + 0x34))
+            && (x0 = *(real *)(context + 0xa4), x1 = *(real *)(context + 0xa8), x0 != x1)
+            && (y0 = *(real *)(context + 0xac), y1 = *(real *)(context + 0xb0), y0 != y1)
+            && x1 >= bounds.x0 && bounds.x1 >= x0
             && y1 >= bounds.y0 && bounds.y1 >= y0)
         {
             real left = clamp_4a1e0(bounds.x0, x0, x1);
             real right = clamp_4a1e0(bounds.x1, x0, x1);
             real top = clamp_4a1e0(0.0f - bounds.y1, y0, y1);
             real bottom = clamp_4a1e0(0.0f - bounds.y0, y0, y1);
-            g_485964[0] = (g_485a8a.a.v3 - g_485a8a.a.v1) * (left - x0) / (x1 - x0) + g_485a8a.a.v1;
-            g_485964[1] = (g_485a8a.a.v3 - g_485a8a.a.v1) * (right - x0) / (x1 - x0) + g_485a8a.a.v1;
-            g_485964[2] = (g_485a8a.a.v2 - g_485a8a.a.v0) * (top - y0) / (y1 - y0) + g_485a8a.a.v0;
-            g_485964[3] = (g_485a8a.a.v2 - g_485a8a.a.v0) * (bottom - y0) / (y1 - y0) + g_485a8a.a.v0;
-            g_485964[4] = bounds.z0;
-            g_485964[5] = bounds.z1;
-            clipped = true;
+            bounds.x0 = (g_485a8a.a.v3 - g_485a8a.a.v1) * (left - x0) / (x1 - x0) + g_485a8a.a.v1;
+            bounds.x1 = (g_485a8a.a.v3 - g_485a8a.a.v1) * (right - x0) / (x1 - x0) + g_485a8a.a.v1;
+            bounds.y0 = (g_485a8a.a.v2 - g_485a8a.a.v0) * (top - y0) / (y1 - y0) + g_485a8a.a.v0;
+            bounds.y1 = (g_485a8a.a.v2 - g_485a8a.a.v0) * (bottom - y0) / (y1 - y0) + g_485a8a.a.v0;
+            memcpy(g_485964, &bounds, sizeof(g_485964));
         }
+        else
+        {
+            g_485964[0] = g_485a8a.a.v1;
+            g_485964[1] = g_485a8a.a.v3;
+            g_485964[2] = g_485a8a.a.v0;
+            g_485964[3] = g_485a8a.a.v2;
+            g_485964[4] = 0.0f - *(real *)(context + 0x8c);
+            g_485964[5] = 0.0f - *(real *)(context + 0x74);
+        }
+        g_4858d0 = true;
+        memcpy(g_485934, resource + 0x18, sizeof(g_485934));
     }
-    if (!clipped)
+    else
     {
         g_485964[0] = g_485a8a.a.v1;
         g_485964[1] = g_485a8a.a.v3;
@@ -3066,9 +3071,8 @@ void function_4a1e0(s_view_source *source, s_view_camera *camera, long resource_
         g_485964[3] = g_485a8a.a.v2;
         g_485964[4] = 0.0f - *(real *)(context + 0x8c);
         g_485964[5] = 0.0f - *(real *)(context + 0x74);
+        g_4858d0 = false;
     }
-    g_4858d0 = resource != 0;
-    if (resource) memcpy(g_485934, resource + 0x18, sizeof(g_485934));
     g_485a44 = enabled;
     function_3a550();
 }

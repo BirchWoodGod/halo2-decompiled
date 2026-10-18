@@ -503,7 +503,7 @@ static inline long font_character_pixel(long alpha, long color)
 /* decodes a character's run-length coded pixels to 16 bit pixels; returns
    how many pixels there are (with no destination it only counts them) */
 // @retail 0x122610
-long function_122610(long size, void *destination, void const *pixels)
+long function_122610(long size, void const *pixels, void *destination)
 {
 	long remaining = size;
 	long count = 0;
