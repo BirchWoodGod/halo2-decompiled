@@ -129,7 +129,11 @@ struct s_new_hud_globals
 struct s_13a720_status
 {
 	byte unknown00[0x1e];
-	word flags;
+	union
+	{
+		word flags;
+		byte low_flags;
+	};
 	byte unknown20[8];
 	real value28;
 	real value2c;
@@ -150,11 +154,11 @@ void function_13a720(long user_index, s_13a720_status const *status)
 {
 	s_new_hud_user *user = &((s_new_hud_globals *)g_510c4c)->users[user_index];
 	dword flags = 0;
-	if (!(status->flags & 4) && !(0.0f >= status->value28) && !function_13cb40())
+	if (!(status->low_flags & 4) && !(0.0f >= status->value28) && !function_13cb40())
 	{
 		if (user->value00 != -1.0f && function_15eb20(function_14de70(user_index)))
 		{
-			flags = (*(word volatile const *)&status->flags >> 9) & 1;
+			flags = (status->flags >> 9) & 1;
 			if (user->value00 > status->value2c)
 				flags |= 2;
 			else
@@ -397,7 +401,7 @@ void function_13a050(byte const *status, long user_index, long type, s_13ad48_it
 	*fourth_out = fourth;
 }
 
-void function_22a648(void);
+void new_hud_function_context_initialize(void);
 
 // @retail 0x139152
 void new_hud_initialize_for_new_map(void)
@@ -421,7 +425,7 @@ void new_hud_initialize_for_new_map(void)
 		globals->users[i].index08 = NONE;
 	}
 	memset(&globals->appearance, 0, sizeof(globals->appearance));
-	function_22a648();
+	new_hud_function_context_initialize();
 	function_13ac30();
 }
 
@@ -547,20 +551,18 @@ byte function_016a90();
 long function_13a690(long mode)
 {
 	long result = 0;
-	short width = g_4b9dd6 - g_4b9dd2;
 	short top = g_4b9dd0;
 	short bottom = g_4b9dd4;
 
-	if (width < 640 || (short)(bottom - top) < 480)
+	if ((short)(g_4b9dd6 - g_4b9dd2) < 640 || (short)(bottom - top) < 480)
 	{
-		result = 1;
-		if (width < 640 && (short)(bottom - top) < 480)
-		{
+		if ((short)(g_4b9dd6 - g_4b9dd2) < 640 && (short)(bottom - top) < 480)
 			result = 2;
-		}
-		else if (function_016a90() && mode == 3)
+		else
 		{
-			result = 2;
+			result = 1;
+			if (function_016a90() && mode == 3)
+				result = 2;
 		}
 	}
 
@@ -626,9 +628,10 @@ PRIVATE __forceinline s_new_hud_user *pulse_user(long index)
 // @retail 0x2003dc
 void function_2003dc(long user_index)
 {
-	char *ticks = (char *)pulse_user(user_index) + 0x2d;
-	for (long i = 0; i < 9; i++, ticks += 4)
+	s_new_hud_user *user = pulse_user(user_index);
+	for (long i = 0; i < 9; i++)
 	{
+		char *ticks = (char *)user + 0x2d + i * 4;
 		if (ticks[-1] > 0)
 		{
 			if (--ticks[-1] == 0)
@@ -1098,13 +1101,12 @@ bool function_13a3c6(long arg_1, long arg_2, byte const *arg_3, long arg_4)
 void function_13a532(long arg_1, long arg_2, byte const *arg_3, long arg_4)
 {
 	s_13a532 const *local_2 = (s_13a532 const *)g_4e3b44[arg_1 & 0xffff].bytes;
-    word local_6 = 0;
-    union s_13a533 { dword field_0; word field_1; };
-    s_13a533 local_5;
-    local_5.field_0 = 0;
-    word local_4 = 0;
     word local_3 = 0;
-    function_13a050(arg_3, arg_2, arg_4, (s_13ad48_item const **)&arg_4, &local_3, &local_4, &local_5.field_1, &local_6);
+    word local_4 = 0;
+    word local_5 = 0;
+    word local_6 = 0;
+    s_13ad48_item const *item;
+    function_13a050(arg_3, arg_2, arg_4, &item, &local_3, &local_4, &local_5, &local_6);
     if (local_2->field_20 > 0)
     {
         long local_8 = 0;
@@ -1112,13 +1114,11 @@ void function_13a532(long arg_1, long arg_2, byte const *arg_3, long arg_4)
         do
         {
             byte const *local_9 = local_2->field_24 + local_8;
-            word local_12 = (word)*(dword volatile *)&local_5.field_0;
-            s_condition_subject const *local_13 = (s_condition_subject const *)*(long volatile *)&arg_4;
             if (function_13ac87((s_condition_masks const *)(local_9 + 8), local_3, local_4,
-                local_6, local_12, local_13))
+                local_6, local_5, (s_condition_subject const *)item))
             {
                 real local_10[4];
-                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, (s_13ad48_item const *)arg_4);
+                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, item);
                 function_22b8e2((s_22b8e2 const *)local_9, arg_2, (color4f const *)local_10);
             }
             local_8 += 0x50;
@@ -1132,13 +1132,11 @@ void function_13a532(long arg_1, long arg_2, byte const *arg_3, long arg_4)
         do
         {
             byte const *local_9 = local_2->field_c + local_8;
-            word local_12 = (word)*(dword volatile *)&local_5.field_0;
-            s_condition_subject const *local_13 = (s_condition_subject const *)*(long volatile *)&arg_4;
             if (function_13ac87((s_condition_masks const *)(local_9 + 8), local_3, local_4,
-                local_6, local_12, local_13))
+                local_6, local_5, (s_condition_subject const *)item))
             {
                 real local_10[4];
-                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, (s_13ad48_item const *)arg_4);
+                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, item);
                 function_22aff1(arg_2, arg_3, local_9, local_10);
             }
             local_8 += 0x64;
@@ -1152,13 +1150,11 @@ void function_13a532(long arg_1, long arg_2, byte const *arg_3, long arg_4)
         do
         {
             byte const *local_9 = local_2->field_14 + local_8;
-            word local_12 = (word)*(dword volatile *)&local_5.field_0;
-            s_condition_subject const *local_13 = (s_condition_subject const *)*(long volatile *)&arg_4;
             if (function_13ac87((s_condition_masks const *)(local_9 + 8), local_3, local_4,
-                local_6, local_12, local_13))
+                local_6, local_5, (s_condition_subject const *)item))
             {
                 real local_10[4];
-                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, (s_13ad48_item const *)arg_4);
+                function_13ad48(arg_2, local_9 + 4, local_10, arg_3, item);
                 function_22aa16(arg_2, arg_3, local_9, local_10);
             }
             local_8 += 0x54;

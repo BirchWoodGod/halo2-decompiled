@@ -1152,7 +1152,7 @@ long function_1039a0(long object_index, long tag_index, long effect_index, real 
 		case 'effe':
 			result = effect_index;
 			if (!function_17b160(effect_index, tag_index))
-				result = function_176780(owner_index, NULL, scale_a, tag_index, scale_b, NULL, NULL);
+				result = function_176780((s_effect_owner const *)NULL, owner_index, scale_a, tag_index, scale_b, NULL, NULL);
 			break;
 		case 'snd!':
 			function_189060(unit_index, NONE, scale_a, g_468788, g_4687a8, tag_index);
@@ -1826,11 +1826,9 @@ bool __stdcall function_105c20(long weapon_index, long animation_name)
 
 					if (state.initialize(player_animation->graph_index, NONE, true))
 					{
-						c_type_709360 animation_id;
+						c_type_709360 animation_id = state.overlay_or_animation_get(NONE, animation_name, NONE);
 
-						animation_id = state.overlay_find(animation_name, state.unknown74, state.unknown78);
-						if (animation_id.index != NONE ||
-							(animation_id = state.animation_get(animation_name, state.unknown74, state.unknown78)).index != NONE)
+						if (animation_id.index != NONE)
 						{
 							long graph_index = player_animation->graph_index;
 
@@ -2484,7 +2482,7 @@ struct s_scenario_weapon_view
 };
 
 // @retail 0xfda00
-void __stdcall function_fda00(long weapon_index, s_scenario_weapon_view *placement)
+long __stdcall function_fda00(long weapon_index, s_scenario_weapon_view *placement)
 {
 	s_weapon *weapon = WEAPON_GET(weapon_index);
 	s_weapon_definition *definition = WEAPON_DEFINITION(weapon);
@@ -2502,9 +2500,13 @@ void __stdcall function_fda00(long weapon_index, s_scenario_weapon_view *placeme
 	function_b9b90(weapon_index, TEST_FIELD_BIT(placement->flags.at_rest));
 	dword *flags = (dword *)((byte *)weapon + 4);
 	*flags |= 0x8000;
-	weapon->item_flag7 = !TEST_FIELD_BIT(placement->flags.accelerates);
+	if (!TEST_FIELD_BIT(placement->flags.accelerates))
+		((s_weapon_item_flags_view *)weapon)->flag7 = true;
+	else
+		((s_weapon_item_flags_view *)weapon)->flag7 = false;
 	if (!TEST_FIELD_BIT(placement->flags.at_rest))
 		*(real *)((byte *)weapon + 0x6c) += 0.05f;
+	return weapon_index;
 }
 
 // @retail 0xfdad0
@@ -2808,7 +2810,7 @@ struct s_weapon_type_definition_view
 	short scenario_size;
 	void *unknown10[7];
 	bool (__stdcall *create)(long, void *, bool *);
-	void (__stdcall *place)(long, s_scenario_weapon_view *);
+	long (__stdcall *place)(long, s_scenario_weapon_view *);
 	void *unknown34[3];
 	bool (__stdcall *update)(long);
 	void *unknown44[2];

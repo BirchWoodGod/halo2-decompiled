@@ -949,34 +949,34 @@ void function_220790(s_sound_listener const *listener)
 	{
 		s_sound_listener_environment const *environment = &listener->environments[i];
 
-		if (memcmp(environment->reverb, &globals->reverbs[i], sizeof(s_sound_driver_reverb)) != 0 || !globals->unknown0000)
+		if (memcmp(environment->reverb, &SOUND_DRIVER_GLOBALS->reverbs[i], sizeof(s_sound_driver_reverb)) != 0 || !SOUND_DRIVER_GLOBALS->unknown0000)
 		{
-			globals->reverbs[i] = *environment->reverb;
-			globals->reverb_dirty[i] = true;
+			SOUND_DRIVER_GLOBALS->reverbs[i] = *environment->reverb;
+			SOUND_DRIVER_GLOBALS->reverb_dirty[i] = true;
 		}
-		if (memcmp(&globals->occlusions[i], &environment->occlusion, sizeof(s_sound_driver_occlusion)) != 0 || !globals->unknown0000)
+		if (memcmp(&SOUND_DRIVER_GLOBALS->occlusions[i], &environment->occlusion, sizeof(s_sound_driver_occlusion)) != 0 || !SOUND_DRIVER_GLOBALS->unknown0000)
 		{
-			globals->occlusions[i] = environment->occlusion;
-			globals->occlusion_dirty[i] = true;
+			SOUND_DRIVER_GLOBALS->occlusions[i] = environment->occlusion;
+			SOUND_DRIVER_GLOBALS->occlusion_dirty[i] = true;
 		}
-		if (!sound_real_equal(globals->reverb_scales[i], environment->scale, 0.0001f) || !globals->unknown0000)
+		if (!sound_real_equal(SOUND_DRIVER_GLOBALS->reverb_scales[i], environment->scale, 0.0001f) || !SOUND_DRIVER_GLOBALS->unknown0000)
 		{
-			globals->reverb_scales[i] = environment->scale;
-			globals->occlusion_dirty[i] = true;
+			SOUND_DRIVER_GLOBALS->reverb_scales[i] = environment->scale;
+			SOUND_DRIVER_GLOBALS->occlusion_dirty[i] = true;
 		}
 	}
 
 	for (i = environment_count; i < k_sound_driver_reverb_count; i++)
 	{
-		if (memcmp(&g_44a2a0, &globals->reverbs[i], sizeof(s_sound_driver_reverb)) != 0 || !globals->unknown0000)
+		if (memcmp(&g_44a2a0, &SOUND_DRIVER_GLOBALS->reverbs[i], sizeof(s_sound_driver_reverb)) != 0 || !SOUND_DRIVER_GLOBALS->unknown0000)
 		{
-			globals->reverbs[i] = g_44a2a0;
-			globals->reverb_dirty[i] = true;
+			SOUND_DRIVER_GLOBALS->reverbs[i] = g_44a2a0;
+			SOUND_DRIVER_GLOBALS->reverb_dirty[i] = true;
 		}
-		if (!(fabs(globals->reverb_scales[i]) < 0.0001f) || !globals->unknown0000)
+		if (!(fabs(SOUND_DRIVER_GLOBALS->reverb_scales[i]) < 0.0001f) || !SOUND_DRIVER_GLOBALS->unknown0000)
 		{
-			globals->reverb_scales[i] = 0.0f;
-			globals->occlusion_dirty[i] = true;
+			SOUND_DRIVER_GLOBALS->reverb_scales[i] = 0.0f;
+			SOUND_DRIVER_GLOBALS->occlusion_dirty[i] = true;
 		}
 	}
 }

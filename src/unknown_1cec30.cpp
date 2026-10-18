@@ -76,7 +76,6 @@ struct s_component_transform_render_model
 bool __stdcall function_e0d70(long object_index, real *offset);
 int __fastcall function_142a60(transform4x3f const *a, transform4x3f const *b, transform4x3f *result);
 transform4x3f *function_ba160(long object_index, transform4x3f *matrix);
-void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, transform4x3f *matrix);
 void function_1d43d0(s_havok_component *component, transform4x3f const *matrix, transform4x3f *result);
 
 // @retail 0x1d4360
@@ -86,7 +85,7 @@ void function_1d4360(s_havok_component *component, transform4x3f *volatile resul
 	short index = havok_component_main_rigid_body_index_get(component);
 	if (index != NONE)
 	{
-		havok_component_rigid_body_matrix_get(index, component, &matrix);
+		component->rigid_body_matrix_get(index, &matrix);
 	}
 	else
 	{
@@ -637,15 +636,15 @@ static inline void havok_rigid_body_activate(hkRigidBody *rigid_body)
 }
 
 // @retail 0x1d08e0
-void havok_component_rigid_body_matrix_get(long rigid_body_index, s_havok_component *component, transform4x3f *matrix)
+void s_havok_component::rigid_body_matrix_get(long rigid_body_index, transform4x3f *matrix)
 {
 	hkTransform transform;
 
-	transform.set(havok_component_rigid_body_get(rigid_body_index, component)->m_motion->m_transform);
+	transform.set(havok_component_rigid_body_get(rigid_body_index, this)->m_motion->m_transform);
 
-	if (TEST_FIELD_BIT(component->transformed))
+	if (TEST_FIELD_BIT(transformed))
 	{
-		transform.setMulEq(component->transform);
+		transform.setMulEq(this->transform);
 	}
 	matrix->scale = 1.0f;
 	vector3d_from_havok(&matrix->forward, &transform.m_rotation.m_col0);
@@ -661,7 +660,7 @@ void havok_component_rigid_body_position_get(long rigid_body_index, s_havok_comp
 	{
 		transform4x3f matrix;
 
-		havok_component_rigid_body_matrix_get(rigid_body_index, component, &matrix);
+		component->rigid_body_matrix_get(rigid_body_index, &matrix);
 		*position = matrix.position;
 	}
 	else
@@ -773,9 +772,9 @@ real havok_component_rigid_body_mass_get(long rigid_body_index, s_havok_componen
 }
 
 // @retail 0x1d0c00
-bool havok_component_rigid_body_keyframed(long rigid_body_index, s_havok_component *component)
+bool s_havok_component::rigid_body_keyframed(long rigid_body_index)
 {
-	return havok_component_rigid_body_get(rigid_body_index, component)->m_motion->getType() == 6;
+	return havok_component_rigid_body_get(rigid_body_index, this)->m_motion->getType() == 6;
 }
 
 // @retail 0x1d0dd0
@@ -991,7 +990,7 @@ void havok_component_node_states_get(s_havok_component *component, s_havok_node_
 			if (node_index >= 0 && node_index < MAXIMUM_HAVOK_NODES)
 			{
 				states->valid[node_index >> 5] |= 1 << (node_index & 0x1f);
-				havok_component_rigid_body_matrix_get(rigid_body_index, component, &states->matrices[node_index]);
+				component->rigid_body_matrix_get(rigid_body_index, &states->matrices[node_index]);
 				rigid_body_linear_velocity_get(component, rigid_body_index, &states->linear_velocities[node_index]);
 				rigid_body_angular_velocity_get(component, rigid_body_index, &states->angular_velocities[node_index]);
 			}
@@ -1687,10 +1686,11 @@ PRIVATE inline transform4x3f *component_node_matrices(long object_index)
  return (transform4x3f *)((byte *)object + object->matrices_offset);
 }
 
-// @retail 0x1d3d20
-void function_1d3d20(s_havok_component *component, long node_index, dword *updated, dword const *restore,
+// @retail 0x1d3d20 standard
+void s_havok_component::function_1d3d20(long node_index, dword *updated, dword const *restore,
  rigid_transform_scaled *orientations, long unknown)
 {
+ s_havok_component *component = this;
  s_component_node_object *object = (s_component_node_object *)havok_object_get(component->object_index);
  s_component_transform_definition *definition = (s_component_transform_definition *)g_4e3b44[object->definition_index & 0xffff].bytes;
  s_component_transform_model *model = (s_component_transform_model *)g_4e3b44[definition->model_index & 0xffff].bytes;
@@ -1739,7 +1739,7 @@ void function_1d3d20(s_havok_component *component, long node_index, dword *updat
  while (child != NONE)
  {
   s_component_node_link *next = &physics->nodes[child];
-  function_1d3d20(component, child, updated, restore, orientations, unknown);
+  component->function_1d3d20(child, updated, restore, orientations, unknown);
   child = next->sibling;
  }
 }
@@ -2711,8 +2711,9 @@ void function_1cf520(s_1cf520 *arg_1, c_1cf520 *arg_0, bool arg_2, bool arg_3, l
  function_1cf529(&local_0->field_0, (real *)&arg_1->field_1c);
  function_1cf529(&local_0->field_10, (real *)&arg_1->field_28);
  local_2->rigid_bodies.data[arg_5].rigid_body->m_motion->getType();
- real local_3 = 1.0f > local_2->rigid_bodies.data[arg_5].rigid_body->m_motion->getMass()
-  ? 1.0f : local_2->rigid_bodies.data[arg_5].rigid_body->m_motion->getMass();
+ hkRigidBody *body = local_2->rigid_bodies.data[arg_5].rigid_body;
+ real local_3 = 1.0f > body->m_motion->getMass()
+  ? 1.0f : body->m_motion->getMass();
  real local_4 = *(real *)local_1 >= 0.0f ? *(real *)local_1 : 0.0f - *(real *)local_1;
  if ((*(dword *)&local_4 & 0x7f800000) == 0x7f800000) local_4 = 0.0f;
  arg_1->field_38 = local_4 / local_3;

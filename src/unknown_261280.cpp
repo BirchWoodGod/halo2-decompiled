@@ -26,7 +26,7 @@ bool function_2613d0(long actor_index, s_reference reference, s_prop_search *sea
 	s_2605d0_request const *request = (s_2605d0_request const *)search;
 	s_actor_view *actor = actor_get(actor_index);
 	s_262b40_result *volatile definition = function_262b40(reference);
-	bool has_path = false;
+	bool result = false;
 	if (definition)
 	{
 		function_261510(actor_index, request);
@@ -49,16 +49,17 @@ bool function_2613d0(long actor_index, s_reference reference, s_prop_search *sea
 				}
 				byte *scratch = ai_scratch_buffer_get();
 				long reported_entry;
+				bool path_found;
 				s_reference selected = function_260670(actor_index, request, &entry, 1,
-					(long)evaluation.output, (long)&reported_entry, scratch, &has_path);
-				bool result = true;
-				if (!REFERENCE_EQUAL(selected, reference)) result = has_path;
+					(long)evaluation.output, (long)&reported_entry, scratch, &path_found);
+				if (REFERENCE_EQUAL(selected, reference))
+					result = true;
 				ai_scratch_buffer_release(scratch);
 				return result;
 			}
 		}
 	}
-	return has_path;
+	return result;
 }
 
 /* the request as function_261280 reads it */
@@ -448,6 +449,7 @@ bool function_2601f0(long actor_index, s_type_c3b527 const *point, long sector, 
         {
             s_path_source source;
             memset(&source, 0, sizeof(source));
+            source.unknown4c = 0.0f;
             source.radius = *(real *)((byte *)function_1e4a50(actor->unknown054) + 4);
             source.object_index = NONE;
             source.unknown0c = NONE;
@@ -457,7 +459,6 @@ bool function_2601f0(long actor_index, s_type_c3b527 const *point, long sector, 
             source.unknown24 = *sector_reference;
             source.unknown45 = true;
             source.unknown48 = *path_distance_reference;
-            source.unknown4c = 0.0f;
             s_path_settings settings;
             function_1f9240(actor_index, &settings);
             function_271300((s_type_f17a25 *)buffer, NULL, &settings, &source, 0);

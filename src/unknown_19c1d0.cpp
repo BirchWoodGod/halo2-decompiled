@@ -324,7 +324,7 @@ int __cdecl function_19c9a0(const void *a, const void *b)
 typedef bool (__stdcall *t_sort_4byte_compare_function)(long, long, const void *);
 typedef long (__stdcall *t_search_4byte_compare_function)(long, long, const void *);
 void sort_4byte(long *elements, unsigned long count, void *unused, t_sort_4byte_compare_function compare, const void *context);
-long function_13dd70(long key, const long *base, long count, t_search_4byte_compare_function compare, const long *context);
+long binary_search_4byte(long key, const long *base, long count, t_search_4byte_compare_function compare, const long *context);
 
 /* the elements of the data arrays these functions fill (8 bytes) */
 struct s_level_datum
@@ -429,7 +429,7 @@ void function_19c7e0(s_record_pool *data)
 		datum = (s_level_datum *)(data->data + data->size * index);
 		if (!datum)
 			break;
-		if (function_13dd70(datum->value, flagged, flagged_count, function_19c7d0, 0) != NONE)
+		if (binary_search_4byte(datum->value, flagged, flagged_count, function_19c7d0, 0) != NONE)
 			datum->flag = true;
 	}
 }

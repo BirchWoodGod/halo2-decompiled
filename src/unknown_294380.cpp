@@ -150,7 +150,8 @@ void function_294380(long arg_0, long arg_1)
     if (local_2->parent_index != NONE || !local_3) return;
     point3f local_4;
     real local_5 = 0.0f;
-    function_b9dd0(arg_1, &local_4);
+    /* arg_1 reread from its stack slot: keeps arg_0 arriving in eax, as retail */
+    function_b9dd0(*(long const volatile *)&arg_1, &local_4);
     vector3f local_6 = *g_4687a4;
     bool local_7 = !TEST_FIELD_BIT((*(dword *)(g_4e3b44[local_2->tag_index & 0xffff].bytes + 0xd4) >> 4) & 1);
     real local_8 = local_1->field_34 * 0.5f;

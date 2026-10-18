@@ -33,7 +33,7 @@ void ascii_string_to_unicode(const char *source, word *destination, long maximum
 word *function_1630e0(word *buffer, const word *format, ...);
 void function_23620d(long string_handle, word *buffer);
 void function_1a0180(long tag_index, long string_handle, word *buffer);
-bool function_140420(word c);
+bool unicode_character_is_private_use(word c);
 
 byte *network_session_interface_get_data_4db0(void);
 long network_session_interface_get_value_49c8(void);
@@ -191,7 +191,7 @@ void parse_replace_missing_characters(word *string, long count)
 {
 	while (count > 0 && *string)
 	{
-		if (function_140420(*string))
+		if (unicode_character_is_private_use(*string))
 		{
 			*string = 0x25a1;
 		}
@@ -1482,7 +1482,7 @@ void function_22d2ee(word *string, long maximum_length)
 	while (*character)
 	{
 		word replacement[k_parse_buffer_length];
-		volatile long replaced_length;
+		long replaced_length;
 		long c = *character;
 		long i;
 
@@ -1505,16 +1505,16 @@ void function_22d2ee(word *string, long maximum_length)
 				}
 			}
 		}
-		s_emoticon const *entry = g_44a3f0;
-		for (i = 0; i < NUMBEROF(g_44a3f0); i++, entry++)
+		for (i = 0; i < NUMBEROF(g_44a3f0); i++)
 		{
-			long text_length = wcslen(entry->text);
+			long text_length = wcslen(g_44a3f0[i].text);
+			wchar_t const *text = g_44a3f0[i].text;
 
-			if (!wcsncmp(entry->text, character, text_length))
+			if (!wcsncmp(text, character, text_length))
 			{
 				word glyph[2];
 
-				glyph[0] = (word)entry->character;
+				glyph[0] = (word)g_44a3f0[i].character;
 				glyph[1] = 0;
 				wcsncpy(replacement, glyph, k_parse_buffer_length - 1);
 				replacement[k_parse_buffer_length - 1] = 0;
@@ -1524,14 +1524,13 @@ void function_22d2ee(word *string, long maximum_length)
 replace:
 		{
 			long replacement_length = wcslen(replacement);
-			long new_length = replacement_length - replaced_length + length;
 
-			if (new_length < maximum_length)
+			if (replacement_length - replaced_length + length < maximum_length)
 			{
-				memcpy(character + replacement_length, character + replaced_length, (length - (character - string)) * sizeof(word));
+				memmove(character + replacement_length, character + replaced_length, (length - (character - string)) * sizeof(word));
 				memcpy(character, replacement, replacement_length * sizeof(word));
-				string[new_length] = 0;
-				length = new_length;
+				string[replacement_length - replaced_length + length] = 0;
+				length = replacement_length - replaced_length + length;
 			}
 		}
 		character++;

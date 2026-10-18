@@ -46,10 +46,10 @@ void function_2b8c05(long a, long b, word user_flags, multiple_choice_callback c
 void __stdcall function_2395dc(XONLINE_FRIEND *friend_, long controller_index, long mode);
 
 c_class_1473c9 *__stdcall function_2b8add(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b8099(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80a9(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80d9(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80e9(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type1(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type2(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type3(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type4(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2b8aed(s_screen_parameters *parameters);
 
 /* the player the online screens act on, as function_14887e copies it out:
@@ -94,16 +94,16 @@ void function_238e42(long controller_index, long type)
 	switch (type)
 	{
 	case 1:
-		parameters.load = function_2b8099;
+		parameters.load = xbox_live_message_send_screen_load_type1;
 		break;
 	case 2:
-		parameters.load = function_2b80a9;
+		parameters.load = xbox_live_message_send_screen_load_type2;
 		break;
 	case 3:
-		parameters.load = function_2b80d9;
+		parameters.load = xbox_live_message_send_screen_load_type3;
 		break;
 	case 4:
-		parameters.load = function_2b80e9;
+		parameters.load = xbox_live_message_send_screen_load_type4;
 		break;
 	}
 	if (parameters.load)
@@ -857,11 +857,14 @@ void function_239292(long controller_index)
 // @retail 0x2399da
 bool __stdcall function_2399da(long controller_index)
 {
+	/* the selected clan's details are copied out but not used; the clan
+	   comes from the user's own slot */
+	s_window_manager_754 selected_team;
 	s_friend_request team;
 	XONLINE_TEAM_MEMBER member;
 	long task_index;
 
-	function_14896e((s_window_manager_754 *)&team, (s_window_manager_df6 *)&member);
+	function_14896e(&selected_team, (s_window_manager_df6 *)&member);
 	player_slot_get_identity(controller_index, (s_player_identity *)&team);
 	member.TeamMemberProperties.dwPrivileges = 3;
 	task_index = online_team_member_set_rank(controller_index, &team.xuid, &member);
@@ -904,19 +907,19 @@ void __stdcall function_2393ae(long controller_index, long rank)
 		}
 		friends_lists_get_user(xuid, &arg_a721be, &is_player, &flags, &title_id, &in_session, NULL);
 		may_change = (bool)((flags >> 11) & 1);
-		if (!(!have_member))
-		{} else {
-			if (may_change)
-			{
-				member.xuidTeamMember = *xuid;
-				strncpy(member.szGamertag, name, 0x10);
-				member.szGamertag[0xf] = 0;
-			}
-			else
-			{
-				dialog_ok_show(1, 0x6e, 4, 1 << controller_index, 0, 0);
-				return;
-			}
+		if (have_member)
+		{
+		}
+		else if (may_change)
+		{
+			member.xuidTeamMember = *xuid;
+			strncpy(member.szGamertag, name, 0x10);
+			member.szGamertag[0xf] = 0;
+		}
+		else
+		{
+			dialog_ok_show(1, 0x6e, 4, 1 << controller_index, 0, 0);
+			return;
 		}
 		{
 			function_18ffc3(controller_index, (s_player_slot_blockb82 *)&membership);

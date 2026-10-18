@@ -628,9 +628,10 @@ long function_1469f0(real seconds);
 // @retail 0x1e6bd0
 void function_1e6bd0(long player_index)
 {
+ s_game_options_view *options = g_4e6948;
  s_player_request_view *player = (s_player_request_view *)(g_4e8c24->data + (player_index & 0xffff) * 0x21c);
  long local_index = player->local_player_index;
- bool restricted = g_4e6948->state == 1 && (g_4e6948->difficulty == 3 || g_4e6948->difficulty == 2);
+ bool restricted = options->state == 1 && (options->difficulty == 3 || options->difficulty == 2);
  if (local_index != NONE && *((byte *)g_51e9c0 + 0x6c5) && !restricted)
  {
   s_local_player_state_view *state = &((s_local_player_state_view *)g_51e9c0)[local_index];
@@ -743,7 +744,7 @@ void function_1e6bd0(long player_index)
   {
    if (i != *current)
    {
-    s_local_player_state_view *local_8da5ff = &((s_local_player_state_view *)g_51e9c0)[local_index];
+    s_local_player_state_view *local_8da5ff = state;
     long value = ((local_8da5ff->request_flags[1] & (1 << i)) ? 2 : 0) +
      ((local_8da5ff->request_flags[0] & (1 << i)) ? 1 : 0);
     if (value != 3)
@@ -763,8 +764,8 @@ void function_1e6bd0(long player_index)
 
 struct s_player_profile;
 struct s_player_profile_settings;
-void __stdcall function_18fcc4(long index, s_player_profile *settings, long profile_index);
-void __stdcall function_18fd20(long index, s_player_profile_settings *settings, long profile_index);
+void __stdcall player_slot_change_profile(long index, s_player_profile *settings, long profile_index);
+void __stdcall player_slot_store_profile(long index, s_player_profile_settings *settings, long profile_index);
 
 struct __declspec(align(8)) s_request_settings
 {
@@ -822,11 +823,11 @@ void __stdcall function_1e75d0(dword flush)
 						if (!flush)
 						{
 							if (changed)
-								function_18fcc4(*(long *)((byte *)player + 0x24), (s_player_profile *)&settings, profile_index);
+								player_slot_change_profile(*(long *)((byte *)player + 0x24), (s_player_profile *)&settings, profile_index);
 						}
 						else if (*((byte *)state + 0x19d))
 						{
-							function_18fd20(*(long *)((byte *)player + 0x24), (s_player_profile_settings *)&settings, profile_index);
+							player_slot_store_profile(*(long *)((byte *)player + 0x24), (s_player_profile_settings *)&settings, profile_index);
 							*((byte *)g_51e9c0 + index * 0x1b0 + 0x19d) = 0;
 						}
 					}

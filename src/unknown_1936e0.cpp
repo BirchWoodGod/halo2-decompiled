@@ -8,6 +8,7 @@
 #include <wchar.h>
 #include <string.h>
 #include "globals.h"
+#include "language.h"
 
 #define PIN(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
@@ -117,33 +118,33 @@ struct s_variant_string_list_view
 
 struct s_user_interface_shared_globals *ui_mode_definition_get(void);
 long function_11ca80(long value);
-__declspec(noinline) const char *string_table_find(s_string_table *table, long first, long count, long string_handle);
+const char *string_table_find(s_string_table *table, long first, long count, long string_handle);
 void utf8_string_to_utf16_string(const char *source, word *destination, long destination_count);
 void utf16_string_to_utf8_string(const word *source, char *destination, long destination_size);
 
-/* a string of a string list in the current language (as 0x1a0180, which
-   retail inlines here) */
-__forceinline void variant_string_get(long tag_index, long string_handle, word *buffer)
+/* a string of a table, as 0x1a0350, which retail inlines here */
+__forceinline void variant_string_table_get(s_string_table *table, long first, long count, long string_handle, word *buffer)
 {
-	long language;
-	s_variant_string_list_view *list;
-	s_string_table *table;
-
-	if (g_47ff38 == NONE)
-	{
-		g_47ff38 = function_11ca80(XGetLanguage());
-	}
-	language = g_47ff38;
-	list = (s_variant_string_list_view *)g_4e3b44[tag_index & 0xffff].bytes;
-	table = &((s_variant_string_tables_view *)g_4e034c)->tables[language];
 	if (table->loaded)
 	{
 		word string[0x100];
 
-		utf8_string_to_utf16_string(string_table_find(table, list->languages[language].first, list->languages[language].count, string_handle), string, 0x100);
+		utf8_string_to_utf16_string(string_table_find(table, first, count, string_handle), string, 0x100);
 		wcsncpy((wchar_t *)buffer, (wchar_t *)string, 0xff);
 		buffer[0xff] = 0;
 	}
+}
+
+/* a string of a string list in the current language: 0x1a0180 without
+   its test for NONE, which the caller makes */
+__forceinline void variant_string_get(long tag_index, long string_handle, word *buffer)
+{
+	long language = get_current_language();
+	s_variant_string_list_view *list = (s_variant_string_list_view *)g_4e3b44[tag_index & 0xffff].bytes;
+	s_variant_string_tables_view *tables = (s_variant_string_tables_view *)g_4e034c;
+
+	variant_string_table_get(&tables->tables[language], list->languages[language].first,
+		list->languages[language].count, string_handle, buffer);
 }
 
 /* fills a variant: its type and settings, its nine names and descriptions
@@ -198,8 +199,8 @@ void function_1936e0(long type, s_built_variant *variant, dword field_8, long de
 		variant->points[i] = points[i];
 }
 
-void function_1939f0(long scale, long first, long last, long *points);
-void function_193a50(long *points, long team_size, long last_team, long first_team, long scale);
+void matchmaking_hopper_build_player_start_delays(long scale, long first, long last, long *points);
+void matchmaking_hopper_build_team_start_delays(long *points, long team_size, long last_team, long first_team, long scale);
 
 /* fills a variant of type 4 */
 // @retail 0x193ac0
@@ -207,7 +208,7 @@ void function_193ac0(s_built_variant *variant, long name_string, long descriptio
 {
 	long points[16];
 
-	function_193a50(points, settings->team_size, settings->last_team, settings->first_team, scale);
+	matchmaking_hopper_build_team_start_delays(points, settings->team_size, settings->last_team, settings->first_team, scale);
 	function_1936e0(4, variant, field_8, description_string, scale, points, field_59c, name_string);
 	variant->settings.type4 = *settings;
 }
@@ -218,7 +219,7 @@ void function_193b30(s_built_variant *variant, long name_string, long descriptio
 {
 	long points[16];
 
-	function_193a50(points, settings->team_size, settings->last_team, settings->first_team, scale);
+	matchmaking_hopper_build_team_start_delays(points, settings->team_size, settings->last_team, settings->first_team, scale);
 	function_1936e0(3, variant, field_8, description_string, scale, points, field_59c, name_string);
 	variant->settings.team = *settings;
 }
@@ -229,7 +230,7 @@ void function_193ba0(long scale, bool flag, s_built_variant *variant, long name_
 {
 	long points[16];
 
-	function_1939f0(scale, settings->first, settings->last, points);
+	matchmaking_hopper_build_player_start_delays(scale, settings->first, settings->last, points);
 	function_1936e0(flag ? 2 : 1, variant, field_8, description_string, scale, points, field_59c, name_string);
 	variant->settings.place = *settings;
 }
@@ -240,7 +241,7 @@ void function_193c00(s_built_variant *variant, long name_string, long descriptio
 {
 	long points[16];
 
-	function_193a50(points, settings->team_size, settings->last_team, settings->first_team, 0);
+	matchmaking_hopper_build_team_start_delays(points, settings->team_size, settings->last_team, settings->first_team, 0);
 	function_1936e0(5, variant, field_8, description_string, 0, points, field_59c, name_string);
 	variant->settings.type5 = *settings;
 }

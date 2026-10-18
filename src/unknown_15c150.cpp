@@ -34,15 +34,15 @@ bool function_158eb0();
 bool function_158f50();
 long function_23f260(long mode, long player_index, long value);
 long function_23f360(long mode, long team);
-void function_196ab0(long index, long axis, short button);
-void function_196b00(long index, long value, char button);
+void game_results_set_player_score(long index, long axis, short button);
+void game_results_set_team_score(long index, long value, char button);
 void function_1968b0(long index, long team, long counter, long value);
 void function_15be20();
 void function_23f000();
 void function_159ac0();
 void __stdcall function_15ae70(s_netgame_entry_state *entries);
 void function_162de0();
-void function_19cd10();
+void teleporters_update();
 bool function_15eb20(long player_index);
 void function_15b270(long player_index);
 void __stdcall function_15bb20(long player_index);
@@ -83,7 +83,7 @@ void function_15c150()
 		function_159ac0();
 		function_15ae70((s_netgame_entry_state *)((byte *)g_4e9ae8 + 0x7dc));
 		function_162de0();
-		if (g_4e6948->mode != 4) function_19cd10();
+		if (g_4e6948->mode != 4) teleporters_update();
 		s_transition_player_iterator iterator;
 		iterator.data = g_4e8c24;
 		iterator.datum_index = NONE;
@@ -93,7 +93,9 @@ void function_15c150()
 		{
 			long index = iterator.datum_index;
 			++count;
+#pragma inline_depth(0)
 			if (!function_15eb20(index))
+#pragma inline_depth()
 			{
 				byte *player = g_4e8c24->data + (index & 0xffff) * 0x21c;
 				long unit_index = *(long *)(player + 0x2c);
@@ -145,8 +147,12 @@ void function_15c150()
 			{
 				byte *player = g_4e8c24->data + (index & 0xffff) * 0x21c;
 				real *fade = (real *)((byte *)globals + 0xe4 + local * 4);
-				if (*(short *)((byte *)globals + 0xfa) > g_510c54->field_2_3 * 4 ||
-					(*(long *)(player + 0x2c) == NONE && *(long *)(player + 0x170) <= 0 && function_158a50(index)))
+				if (*(short *)((byte *)globals + 0xfa) > g_510c54->field_2_3 * 4)
+				{
+					real value = *fade + 1.0f / (real)g_510c54->field_2_3;
+					*fade = value < 1.0f ? value : 1.0f;
+				}
+				else if (*(long *)(player + 0x2c) == NONE && *(long *)(player + 0x170) <= 0 && function_158a50(index))
 				{
 					real value = *fade + 1.0f / (real)g_510c54->field_2_3;
 					*fade = value < 1.0f ? value : 1.0f;
@@ -324,7 +330,7 @@ void function_15c6f0()
 					short score = *(short *)(statistics + (index & 0xffff) * 0x1c + 6);
 					bool mode = g_4e6948->flag1128 != 0;
 					long value = function_23f260(mode, index, NONE) / 2;
-					function_196ab0(i, score, (short)value);
+					game_results_set_player_score(i, score, (short)value);
 					if (!(player[2] & 2))
 					{
 						long player_team = *(char *)(player + 0xc0);
@@ -341,7 +347,7 @@ void function_15c6f0()
 						statistics = transition_statistics(globals);
 						score = *(short *)(statistics + 0x1c6 + *(char *)(player + 0xc0) * 0x12);
 						value = function_23f360(g_4e6948->flag1128 != 0, *(char *)(player + 0xc0)) / 2;
-						function_196b00(*(char *)(player + 0xc0), score, (char)value);
+						game_results_set_team_score(*(char *)(player + 0xc0), score, (char)value);
 						teams |= 1 << *(char *)(player + 0xc0);
 					}
 				}
@@ -364,7 +370,7 @@ void function_15c6f0()
 					byte *statistics = transition_statistics(globals);
 					short score = *(short *)(statistics + (index & 0xffff) * 0x1c + 6);
 					long value = function_23f260(g_4e6948->flag1128 != 0, index, NONE) / 2;
-					function_196ab0(i, score, (short)value);
+					game_results_set_player_score(i, score, (short)value);
 					if (!(player[2] & 2))
 					{
 						function_1968b0(i, NONE, 3, 1);

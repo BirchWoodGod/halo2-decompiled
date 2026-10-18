@@ -358,6 +358,11 @@ struct s_type_954545
 		s_widget_bounds title;
 		s_widget_bounds subtitle;
 	} title_bounds[4];
+	/* the main menu's music, a looping sound (main_menu_music.cpp) */
+	s_tag_reference_8 main_menu_music;
+	/* how long the music stays silent before the menu moves on
+	   (milliseconds) */
+	long main_menu_music_silence_time;
 };
 
 /* the user interface globals tag (ui_definition.cpp) */

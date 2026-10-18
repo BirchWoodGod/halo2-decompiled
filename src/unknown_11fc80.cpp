@@ -101,10 +101,10 @@ static inline real distance_squared(point3f const *a, point3f const *b)
    root and middle axes and copies the target into the end node */
 // @retail 0x120220
 void function_120220(
-	transform4x3f *mid,
-	transform4x3f *root,
 	transform4x3f *target,
-	transform4x3f *end)
+	transform4x3f *end,
+	transform4x3f *root,
+	transform4x3f *mid)
 {
 	real mid_root_squared = distance_squared(&mid->position, &root->position);
 	real end_mid_squared = distance_squared(&end->position, &mid->position);
@@ -166,38 +166,44 @@ void function_120220(
 		lift.j = e.j * height;
 		lift.k = e.k * height;
 
-		root->forward.i = along * u.i + lift.i;
-		root->forward.j = along * u.j + lift.j;
-		root->forward.k = along * u.k + lift.k;
-		function_30bf0(&root->forward);
+		vector3f *root_forward = &root->forward;
+		vector3f *root_up = &root->up;
 
-		root->up.i = root->forward.j * root->left.k - root->forward.k * root->left.j;
-		root->up.j = root->forward.k * root->left.i - root->forward.i * root->left.k;
-		root->up.k = root->left.j * root->forward.i - root->forward.j * root->left.i;
-		function_30bf0(&root->up);
+		root_forward->i = along * u.i + lift.i;
+		root_forward->j = along * u.j + lift.j;
+		root_forward->k = along * u.k + lift.k;
+		function_30bf0(root_forward);
 
-		root->left.i = root->forward.k * root->up.j - root->up.k * root->forward.j;
-		root->left.j = root->up.k * root->forward.i - root->forward.k * root->up.i;
-		root->left.k = root->forward.j * root->up.i - root->up.j * root->forward.i;
+		root_up->i = root_forward->j * root->left.k - root_forward->k * root->left.j;
+		root_up->j = root_forward->k * root->left.i - root_forward->i * root->left.k;
+		root_up->k = root->left.j * root_forward->i - root_forward->j * root->left.i;
+		function_30bf0(root_up);
+
+		root->left.i = root_forward->k * root_up->j - root_up->k * root_forward->j;
+		root->left.j = root_up->k * root_forward->i - root_forward->k * root_up->i;
+		root->left.k = root_forward->j * root_up->i - root_up->j * root_forward->i;
 
 		point3f new_mid;
-		new_mid.x = mid_root * root->forward.i + root->position.x;
-		new_mid.y = root->forward.j * mid_root + root->position.y;
-		new_mid.z = root->forward.k * mid_root + root->position.z;
+		new_mid.x = mid_root * root_forward->i + root->position.x;
+		new_mid.y = root_forward->j * mid_root + root->position.y;
+		new_mid.z = root_forward->k * mid_root + root->position.z;
 
-		mid->forward.i = remaining * u.i - lift.i;
-		mid->forward.j = remaining * u.j - lift.j;
-		mid->forward.k = remaining * u.k - lift.k;
-		function_30bf0(&mid->forward);
+		vector3f *mid_forward = &mid->forward;
+		vector3f *mid_up = &mid->up;
 
-		mid->up.i = mid->forward.j * mid->left.k - mid->forward.k * mid->left.j;
-		mid->up.j = mid->forward.k * mid->left.i - mid->forward.i * mid->left.k;
-		mid->up.k = mid->forward.i * mid->left.j - mid->left.i * mid->forward.j;
-		function_30bf0(&mid->up);
+		mid_forward->i = remaining * u.i - lift.i;
+		mid_forward->j = remaining * u.j - lift.j;
+		mid_forward->k = remaining * u.k - lift.k;
+		function_30bf0(mid_forward);
 
-		mid->left.i = mid->forward.k * mid->up.j - mid->up.k * mid->forward.j;
-		mid->left.j = mid->up.k * mid->forward.i - mid->forward.k * mid->up.i;
-		mid->left.k = mid->forward.j * mid->up.i - mid->up.j * mid->forward.i;
+		mid_up->i = mid_forward->j * mid->left.k - mid_forward->k * mid->left.j;
+		mid_up->j = mid_forward->k * mid->left.i - mid_forward->i * mid->left.k;
+		mid_up->k = mid_forward->i * mid->left.j - mid->left.i * mid_forward->j;
+		function_30bf0(mid_up);
+
+		mid->left.i = mid_forward->k * mid_up->j - mid_up->k * mid_forward->j;
+		mid->left.j = mid_up->k * mid_forward->i - mid_forward->k * mid_up->i;
+		mid->left.k = mid_forward->j * mid_up->i - mid_up->j * mid_forward->i;
 
 		mid->position = new_mid;
 		*end = *target;

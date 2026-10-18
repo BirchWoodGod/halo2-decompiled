@@ -15,6 +15,7 @@
 #include "reset_storage.h"
 #include "globals.h"
 #include "index_cache_storage.h"
+#include "depth_groups_storage.h"
 #include "physical_memory.h"
 #include <string.h>
 #include <xtl.h>
@@ -775,8 +776,9 @@ void *function_449e0(short index, bool load, bool instance)
 	return result;
 }
 
-PRIVATE __forceinline byte *visible_entry_geometry(s_44940_entry *entry)
+PRIVATE __forceinline byte *visible_entry_geometry(short index)
 {
+	s_44940_entry *entry = &g_4ba138[index];
 	if (entry->tag != NONE)
 	{
 		byte *definition = g_4e3b44[entry->tag & 0xffff].bytes;
@@ -784,16 +786,19 @@ PRIVATE __forceinline byte *visible_entry_geometry(s_44940_entry *entry)
 		return *(byte **)(sections + ((entry->flags >> 9) & 0x1ff) * 0x5c + 0x34);
 	}
 	byte *structure = (byte *)g_4e0348;
-	byte *section;
-	if (!((entry->unknown00 >> 12) & 1))
-		section = *(byte **)(structure + 0xa0) + ((entry->flags >> 9) & 0x1ff) * 0xb0;
+	byte *data;
+	if (!((byte)(entry->unknown00 >> 12) & 1))
+	{
+		byte *section = *(byte **)(structure + 0xa0) + ((entry->flags >> 9) & 0x1ff) * 0xb0;
+		data = *(byte **)(section + 0x50);
+	}
 	else
 	{
 		byte *instances = *(byte **)(structure + 0x144);
-		short index = *(short *)(instances + ((entry->flags >> 18) & 0x7ff) * 0x58 + 0x34);
-		section = *(byte **)(structure + 0x13c) + index * 0xc8;
+		short definition_index = *(short *)(instances + ((entry->flags >> 18) & 0x7ff) * 0x58 + 0x34);
+		data = (byte *)*(dword const *)(*(byte **)(structure + 0x13c) + definition_index * 0xc8 + 0x50);
 	}
-	return *(byte **)(section + 0x50);
+	return data;
 }
 
 struct s_render_part_context;
@@ -806,9 +811,8 @@ void function_41040(short index, long part_index, long group, byte weight,
 void function_458d0(short index, bool ranges, s_geometry_visibility_list const *first, s_geometry_visibility_list const *second)
 {
 	short const *index_reference = &index;
-	(void)&ranges; (void)&first; (void)&second;
+	byte *geometry = visible_entry_geometry(*index_reference);
 	s_44940_entry *entry = &g_4ba138[*index_reference];
-	byte *geometry = visible_entry_geometry(entry);
 	dword *mask = *(dword **)(entry->unknown10 + 4);
 	if (first->count > 0 || second->count > 0)
 		entry->unknown00 |= 1;
@@ -821,10 +825,8 @@ void function_458d0(short index, bool ranges, s_geometry_visibility_list const *
 		}
 		else
 		{
-			word *mapping = *(word **)(geometry + 0x34);
-			long offset = *(long *)(geometry + 8);
-			word end = mapping[(short)first->indices[i + 1] + offset];
-			for (long j = mapping[(short)first->indices[i] + offset]; j <= end; ++j)
+			word end = (*(word **)(geometry + 0x34))[(short)first->indices[i + 1] + *(long *)(geometry + 8)];
+			for (long j = (*(word **)(geometry + 0x34))[(short)first->indices[i] + *(long *)(geometry + 8)]; j <= end; ++j)
 			{
 				dword bit = (*(word **)(geometry + 0x34))[(short)j];
 				mask[bit >> 5] |= 1 << (bit & 31);
@@ -850,9 +852,8 @@ PRIVATE __forceinline void mark_visible_part(byte *geometry, long index, dword *
 void function_45a80(short index, bool ranges, s_geometry_visibility_list const *first, s_geometry_visibility_list const *second)
 {
 	short const *index_reference = &index;
-	(void)&ranges; (void)&first; (void)&second;
+	byte *geometry = visible_entry_geometry(*index_reference);
 	s_44940_entry *entry = &g_4ba138[*index_reference];
-	byte *geometry = visible_entry_geometry(entry);
 	dword *mask = *(dword **)(entry->unknown10 + 4);
 	if (first->count > 0 || second->count > 0)
 		entry->unknown00 |= 1;
@@ -862,10 +863,8 @@ void function_45a80(short index, bool ranges, s_geometry_visibility_list const *
 			mark_visible_part(geometry, (word)first->indices[i], mask);
 		else
 		{
-			word *mapping = *(word **)(geometry + 0x34);
-			long offset = *(long *)geometry + 2 * *(long *)(geometry + 8);
-			long end = mapping[(short)first->indices[i + 1] + offset];
-			for (long j = mapping[(short)first->indices[i] + offset]; j <= end; ++j)
+			word end = (*(word **)(geometry + 0x34))[(short)first->indices[i + 1] + *(long *)geometry + 2 * *(long *)(geometry + 8)];
+			for (long j = (*(word **)(geometry + 0x34))[(short)first->indices[i] + *(long *)geometry + 2 * *(long *)(geometry + 8)]; j <= end; ++j)
 			{
 				long part = (*(word **)(geometry + 0x34))[(short)j + 2 * *(long *)(geometry + 8)];
 				mark_visible_part(geometry, part, mask);
@@ -1227,16 +1226,6 @@ dword *function_1332b0(long bit_count, s_bit_vector_pool *data);
 long function_016ae0(real value);
 void function_30290(point3f const *point, s_view const *view, s_camera const *camera, real radius, box2f *bounds);
 byte g_509410, g_509411;
-
-struct s_42760_entry
-{
-    real depth;
-    point3f position;
-    byte unknown10[0x10];
-    long type;
-};
-extern s_42760_entry g_4c152c[32];
-extern long g_4c19ac;
 
 
 void __stdcall function_44e90(short entry_index, short section_index);

@@ -7,8 +7,8 @@
 
 struct s_unknown_13bf00;
 extern s_unknown_13bf00 *g_510c50;
-struct s_13cbb0;
-real function_13cbb0(s_13cbb0 const *arg_1);
+struct s_display_text;
+real display_text_get_alpha(s_display_text const *arg_1);
 bool function_13cbf0(void);
 void function_13ccf0(short_rectangle2d *arg_2, short_rectangle2d *arg_3, short_rectangle2d *arg_1);
 void function_13e8a0(void);
@@ -75,7 +75,7 @@ void function_13cf00(void)
 			{
 				local_11[0] = 0;
 				color4f local_13;
-				local_13.alpha = function_13cbb0((s_13cbb0 *)local_5);
+				local_13.alpha = display_text_get_alpha((s_display_text *)local_5);
 				function_1a0180(*(long *)(local_1 + 0x35c), local_9, local_11);
 				short_rectangle2d local_16;
 				local_16.left = local_6.left + 1;
@@ -97,8 +97,7 @@ void function_13cf00(void)
 	}
 }
 
-struct s_13c051;
-void function_13c050(s_13c051 const *arg_1, dword arg_2);
+void interface_rectangle_fill(short_rectangle2d const *arg_1, dword arg_2);
 bool function_147d13(void);
 color3f *unpack_color3f(dword arg_1, color3f *arg_2);
 void function_13ed50(color4f const *arg_1);
@@ -139,8 +138,8 @@ void function_13c780(void)
 				function_13c781(*(real *)local_1 * 255.0f) > 255 ? 255 : function_13c781(*(real *)local_1 * 255.0f)) << 24;
 			short_rectangle2d local_3, local_4, local_5;
 			function_13ccf0(&local_3, &local_4, &local_5);
-			function_13c050((s_13c051 *)&local_4, local_2);
-			function_13c050((s_13c051 *)&local_5, local_2);
+			interface_rectangle_fill(&local_4, local_2);
+			interface_rectangle_fill(&local_5, local_2);
 		}
 		for (long local_6 = 8; local_6 < 0x18; local_6 += 4)
 		{

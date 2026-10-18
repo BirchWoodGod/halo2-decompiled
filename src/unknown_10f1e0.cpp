@@ -345,11 +345,10 @@ const long g_468684[4][2] =
 };
 
 void function_10f040(long object_index);
-void function_10e920(long object_index);
-void function_10dbc0(long object_index);
+void unit_animation_channel_blend_reset(long object_index);
+void unit_animation_periodic_layer_reset(long object_index);
 long render_model_find_named_entry(long render_model_index, long name);
 void function_11b710(long unit_index, long field_7c);
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name);
 s_animation *function_1daea0(s_graph_tag *graph, c_type_709360 animation_id);
 
 // @retail 0x111590
@@ -381,7 +380,7 @@ struct s_1d9240;
 void function_1d9240(s_1d9240 *slot, char flag, real seconds);
 bool function_1d9320(s_1d9240 *slot);
 
-void function_1d90e0(long render_model_index, transform4x3f *nodes, long node_index, transform4x3f const *marker_matrix,
+void function_1d90e0(long render_model_index, long node_index, transform4x3f *nodes, transform4x3f const *marker_matrix,
 	transform4x3f const *target_matrix, real weight, long node_count);
 
 // @retail 0x113980
@@ -429,7 +428,7 @@ void __stdcall function_113980(long object_index, long target_index, bool altern
 						!(visited[marker.node_index >> 5] & (1 << (marker.node_index & 31))) &&
 						function_b8d30(target_index, iterator->b, &target, 1, false))
 					{
-						function_1d90e0(*(long *)(model + 4), nodes, marker.node_index, &marker.node_matrix,
+						function_1d90e0(*(long *)(model + 4), marker.node_index, nodes, &marker.node_matrix,
 							&target.matrix, weight, node_count);
 						visited[marker.node_index >> 5] |= 1 << (marker.node_index & 31);
 					}
@@ -438,7 +437,7 @@ void __stdcall function_113980(long object_index, long target_index, bool altern
 		}
 	}
 }
-bool function_10ee20(s_animation_state *state);
+bool unit_animation_state_finished(s_animation_state *state);
 bool function_10f630(long object_index, long *first, long *second);
 long function_10f720(long object_index, bool first);
 
@@ -448,7 +447,7 @@ bool function_113e40(long unit_index)
 	s_unit_animation_object *unit = UNIT_ANIMATION_OBJECT(unit_index);
 	s_animation_state *state = UNIT_ANIMATION_STATE(unit);
 	return state && state->graph_tag_index != NONE && state->channels[0].graph_tag_index != NONE &&
-		state->channels[0].animation_id.index != NONE && !(state->flags & 1) && !function_10ee20(state);
+		state->channels[0].animation_id.index != NONE && !(state->flags & 1) && !unit_animation_state_finished(state);
 }
 
 // @retail 0x114040
@@ -809,8 +808,8 @@ void __stdcall function_10f260(long unit_index)
 		state->unknown74 = NONE;
 		state->unknown78 = NONE;
 	}
-	function_10e920(unit_index);
-	function_10dbc0(unit_index);
+	unit_animation_channel_blend_reset(unit_index);
+	unit_animation_periodic_layer_reset(unit_index);
 	function_113870(unit_index);
 	control->weapon_class = NONE;
 	control->weapon_type = NONE;
@@ -1038,7 +1037,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 
 		if (graph)
 		{
-			c_type_709360 first_id = function_1dd0b0(graph, animation_name);
+			c_type_709360 first_id = graph->animation_by_name(animation_name);
 			if (first_id.index == NONE)
 				goto done_1101e0;
 
@@ -1054,7 +1053,7 @@ bool function_1101e0(long animation_graph_index, long unit_index, long animation
 				goto done_1101e0;
 			}
 
-			c_type_709360 animation_id = function_1dd0b0(GRAPH_GET(state->graph_tag_index), animation_name);
+			c_type_709360 animation_id = GRAPH_GET(state->graph_tag_index)->animation_by_name(animation_name);
 			function_10f260(unit_index);
 
 			word channel_flags = flag ? 0x4003 : 0x4001;
@@ -1530,7 +1529,7 @@ bool __stdcall function_1103a0(long unit_index, long requested, bool allow)
 extern point2f *g_4687c4;
 struct s_unit_seat_definition;
 s_unit_seat_definition *function_c8fc0(long unit_index);
-bool function_10f890(long object_index);
+bool unit_animation_control_channel_playing(long object_index);
 void function_b9fc0(long object_index, vector3f *forward, vector3f *up);
 vector2f *function_11df30(vector2f *angles, vector3f const *v);
 
@@ -1568,7 +1567,7 @@ void __stdcall function_112070(long unit_index, dword const *node_mask, long nod
 	{
 		s_unit_seat_definition *seat = function_c8fc0(unit_index);
 		real weight = 1.0f;
-		if (function_10f890(unit_index) && seat && *(real *)((byte *)seat + 0x1c) > 0.0f)
+		if (unit_animation_control_channel_playing(unit_index) && seat && *(real *)((byte *)seat + 0x1c) > 0.0f)
 			weight = *(real *)((byte *)seat + 0x1c);
 		control->channel_dc.sample(weight, node_mask, node_count, transforms);
 	}
@@ -1638,7 +1637,7 @@ void __stdcall function_112070(long unit_index, dword const *node_mask, long nod
 						if (screen_a) bounds_112070(screen_a, (real *)control->unknown04);
 						else if (screen_b) bounds_112070(screen_b, (real *)control->unknown04);
 						active = function_111590(unit_index, 4);
-						if ((state->unknown7c == 0x700005c || state->unknown7c == 0x700005d) && !function_10ee20(state))
+						if ((state->unknown7c == 0x700005c || state->unknown7c == 0x700005d) && !unit_animation_state_finished(state))
 							active = false;
 						bool centered = fabs(angles.j) < 0.0001f && fabs(angles.i) < 0.0001f;
 						if (control->slots[4].unknown1)
@@ -1790,7 +1789,7 @@ struct s_request_114b60
 };
 
 // @retail 0x114b60
-bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra)
+bool unit_submit_entry_request(short fallback_index, short entry_index, long unit_index, long priority, void const *extra)
 {
 	bool local_0 = false;
 	// Retail keeps the object on the stack and reuses the priority slot for the tag.
@@ -1830,6 +1829,12 @@ bool function_114b60(short entry_index, short fallback_index, long unit_index, l
 	}
 local_1:
 	return local_0;
+}
+
+/* the same request with the entry first, for callers written in that order */
+bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra)
+{
+	return unit_submit_entry_request(fallback_index, entry_index, unit_index, priority, extra);
 }
 
 real function_259a0(dword *seed);
@@ -2338,7 +2343,7 @@ bool __stdcall function_111650(long arg_0, long *arg_1)
             if ((local_5 == 0x7000101 ? local_2->unknown7c == 0x400000c : local_5 == 0x400000c) && !(local_2->unknown6e & 1))
                 local_2->channels_clear();
         }
-        if (local_2->graph_tag_index != NONE && function_111651(&local_2->channels[0]) && !function_10ee20(local_2))
+        if (local_2->graph_tag_index != NONE && function_111651(&local_2->channels[0]) && !unit_animation_state_finished(local_2))
             local_10 = true;
     }
     else if (!((++g_55e70c ^ arg_0) & 0xf))

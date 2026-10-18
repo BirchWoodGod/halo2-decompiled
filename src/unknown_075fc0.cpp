@@ -10,10 +10,10 @@ real g_4cf5d0;
 bool network_observer_channel_has_host(s_network_observer *arg_0, long arg_1);
 bool function_76520(long arg_0, bool arg_1, long *arg_2);
 long __stdcall function_765c0(long arg_0, long arg_1, byte *arg_2);
-long network_connection_get_reliable_window(s_network_connection *arg_0);
-long network_connection_get_reliable_value48(s_network_connection *arg_0);
-long network_connection_get_reliable_pending(s_network_connection *arg_0);
-long network_connection_owner_active(s_network_connection *arg_0);
+long link_connection_get_reliable_window(s_link_connection *arg_0);
+long link_connection_get_reliable_bytes(s_link_connection *arg_0);
+long link_connection_get_reliable_pending(s_link_connection *arg_0);
+long link_connection_owner_active(s_link_connection *arg_0);
 
 struct s_75fc0
 {
@@ -82,7 +82,7 @@ bool s_network_observer::connection_v05(long arg_1,
 	bool local_2 = false;
 	if (local_0 == NONE)
 		return local_2;
-	s_network_connection *local_3 = function_x7665e0(arg_1);
+	s_link_connection *local_3 = link_connection_get(arg_1);
 	s_75fc0 *local_4 = (s_75fc0 *)((byte *)arg_0 + local_0 * sizeof(arg_0->channels[0]));
 	long local_5 = NONE;
 	long local_6 = NONE;
@@ -131,7 +131,7 @@ bool s_network_observer::connection_v05(long arg_1,
 	if (local_3->state == 5 && !local_8)
 	{
 		long local_19 = (local_3->flags & 8) ? 128 : 0;
-		long local_20 = network_connection_get_reliable_window(local_3);
+		long local_20 = link_connection_get_reliable_window(local_3);
 		real local_21 = (real)local_20 /
 			((real)local_19 * *(real *)((byte *)arg_0->configuration + 0x90));
 		if (local_21 < 1.0f)
@@ -189,8 +189,8 @@ bool s_network_observer::connection_v05(long arg_1,
 		local_7 = true;
 	if (local_5 >= 0 && local_26 >= 0)
 	{
-		long local_27 = network_connection_get_reliable_value48(local_3);
-		long local_28 = network_connection_get_reliable_pending(local_3);
+		long local_27 = link_connection_get_reliable_bytes(local_3);
+		long local_28 = link_connection_get_reliable_pending(local_3);
 		if (local_28 > 0 && local_27 + local_26 > local_5)
 		{
 			long local_29 = local_5 - local_27;
@@ -211,7 +211,7 @@ bool s_network_observer::connection_v05(long arg_1,
 		{
 			if (local_3->callback)
 				local_31 = *(real *)((byte *)arg_0->configuration +
-					(network_connection_owner_active(local_3) ? 0xe4 : 0xe8));
+					(link_connection_owner_active(local_3) ? 0xe4 : 0xe8));
 			else
 				local_31 = *(real *)((byte *)arg_0->configuration + 0xec);
 		}

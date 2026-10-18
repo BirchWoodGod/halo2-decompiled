@@ -130,13 +130,13 @@ long __stdcall function_b8ca0(long object_index)
 
 	if (object->parent_index != NONE)
 	{
-		byte const &parent_flag = TAG_DATA(s_object_definition_view, object->definition_index)->flag4;
-		if (TEST_FIELD_BIT(parent_flag))
+		word parent_flags = *(word const *)((byte const *)TAG_DATA(s_object_definition_view, object->definition_index) + 2);
+		if ((bool)(((dword)parent_flags >> 4) & 1))
 	{
 		{ result_value = function_b8ca0(object->parent_index); goto return_exit; }
 	}
 	}
-	if (TEST_FIELD_BIT(object->flag0) && ((byte)(1u << object->type) & 0x1c) && function_10cf50(object_index))
+	if (TEST_FIELD_BIT(object->flag0) && ((1u << object->type) & 0x1c) && function_10cf50(object_index))
 		{ result_value = object->unit_index; goto return_exit; }
 	{ result_value = object_index; goto return_exit; }
 
@@ -942,7 +942,7 @@ void function_15b220(long object_index, long slot);
 void __stdcall object_list_erase(long object_index);
 void function_bb950(long object_index, bool add, long delta);
 void function_a7a60(long object_index);
-void function_10ace0(long object_index);
+void object_interpolated_values_clear_all(long object_index);
 
 // Disabled: round 18 reactivation with exact bef30 still breaks matched 11a320; retain the complete 14-difference, 190/189-byte draft
 // Disabled: round 35: five new fruitless trials, 14 differences; activation loses matched d6bc0 and 11a320
@@ -967,7 +967,7 @@ void __stdcall function_b8540(long object_index)
     object_list_erase(object_index);
     function_bb950(object_index, false, NONE);
     function_a7a60(object_index);
-    function_10ace0(object_index);
+    object_interpolated_values_clear_all(object_index);
 }
 #endif
 
@@ -1347,8 +1347,6 @@ void function_ba3d0(long index);
 void function_be1d0(long index);
 void __stdcall function_b8890(long index);
 void function_be690(long index);
-long function_176780(long index, s_effect_owner const *owner, real scale_a,
-    long tag, real scale_b, point3f const *point, vector3f const *direction);
 void function_2e1e0(long index);
 void object_list_insert(long index);
 long function_b8820();

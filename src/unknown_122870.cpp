@@ -281,7 +281,17 @@ __declspec(noinline) void *function_122c10(long group_tag, long tag_index);
 // @retail 0x122c10
 void *function_122c10(long group_tag, long tag_index)
 {
-	s_cache_tag_instance *instance = cache_tag_instance_get(tag_index);
+	s_cache_tag_instance *instance = NULL;
+	if ((short)tag_index >= 0)
+	{
+		long count = cache_file_globals.tags->instance_count;
+		long index = (short)tag_index;
+		if (index < count)
+		{
+			if (tag_index == CACHE_TAG_INSTANCES[index].datum_index)
+				instance = &CACHE_TAG_INSTANCES[index];
+		}
+	}
 	void *result = NULL;
 
 	if (instance && cache_tag_group_is(cache_tag_group_get(instance->group_tag), group_tag))

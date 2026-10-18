@@ -15,31 +15,31 @@
 #include <xmmintrin.h>
 
 
-/* the codecs' channel decoders (unknown_28c470.cpp, unknown_28c510.cpp,
-   unknown_28cdb0.cpp, unknown_2c4d60.cpp) */
-void function_28c470(void);
-void function_28c4e0(void);
-void function_28c510(void);
-void function_28c530(void);
-void function_28c5d0(void);
-void function_28c6b0(void);
-void function_28c710(void);
-void function_28c750(void);
-void function_28c790(void);
-void function_28c880(void);
-void function_28c960(void);
-void function_28c9e0(void);
-void function_28cb70(void);
-void function_28ccc0(void);
-void function_28cdb0(void);
-void function_28cf40(void);
-void function_28d090(void);
-void function_28d180(void);
-void function_28d320(void);
-void function_28d470(void);
-void function_28d560(void);
-void function_28d6f0(void);
-void function_28d840(void);
+/* the codecs' channel decoders (animation_channel_decoders.cpp,
+   animation_keyframe_decoders.cpp, unknown_2c4d60.cpp) */
+void animation_codec_static_rotation_sample(void);
+void animation_codec_static_translation_sample(void);
+void animation_codec_static_scale_sample(void);
+void animation_codec_blend_screen_rotation_interpolate(void);
+void animation_codec_blend_screen_translation_interpolate(void);
+void animation_codec_scale_interpolate(void);
+void animation_codec_blend_screen_rotation_sample(void);
+void animation_codec_translation_sample(void);
+void animation_codec_quantized_rotation_interpolate(void);
+void animation_codec_quantized_translation_interpolate(void);
+void animation_codec_quantized_rotation_sample(void);
+void animation_codec_byte_keyframe_rotation_interpolate(void);
+void animation_codec_byte_keyframe_translation_interpolate(void);
+void animation_codec_byte_keyframe_scale_interpolate(void);
+void animation_codec_byte_keyframe_rotation_sample(void);
+void animation_codec_byte_keyframe_translation_sample(void);
+void animation_codec_byte_keyframe_scale_sample(void);
+void animation_codec_word_keyframe_rotation_interpolate(void);
+void animation_codec_word_keyframe_translation_interpolate(void);
+void animation_codec_word_keyframe_scale_interpolate(void);
+void animation_codec_word_keyframe_rotation_sample(void);
+void animation_codec_word_keyframe_translation_sample(void);
+void animation_codec_word_keyframe_scale_sample(void);
 void function_2c4d60(void);
 void function_2c4da0(void);
 void function_2c4de0(void);
@@ -49,28 +49,28 @@ s_animation_codec const g_47fb18[9] =
 {
 	{ "_no_compression_codec", 1, 0, { { NULL, NULL, NULL }, { NULL, NULL, NULL } }, function_28d170 },
 	{ "_uncompressed_static_data_codec", 0, 0,
-		{ { function_28c470, function_28c4e0, function_28c510 }, { function_28c470, function_28c4e0, function_28c510 } },
+		{ { animation_codec_static_rotation_sample, animation_codec_static_translation_sample, animation_codec_static_scale_sample }, { animation_codec_static_rotation_sample, animation_codec_static_translation_sample, animation_codec_static_scale_sample } },
 		function_28d170 },
 	{ "_uncompressed_animated_data_codec", 1, 0,
 		{ { function_2c4d60, function_2c4da0, function_2c4de0 }, { function_2c4d60, function_2c4da0, function_2c4de0 } },
 		function_28d170 },
 	{ "_8byte_quantized_rotation_only_codec", 1, 0,
-		{ { function_28c960, function_28c750, function_2c4de0 }, { function_28c790, function_28c880, function_28c6b0 } },
+		{ { animation_codec_quantized_rotation_sample, animation_codec_translation_sample, function_2c4de0 }, { animation_codec_quantized_rotation_interpolate, animation_codec_quantized_translation_interpolate, animation_codec_scale_interpolate } },
 		function_28d170 },
 	{ "byte_keyframe_lightly_quantized", 2, 1,
-		{ { function_28cdb0, function_28cf40, function_28d090 }, { function_28c9e0, function_28cb70, function_28ccc0 } },
+		{ { animation_codec_byte_keyframe_rotation_sample, animation_codec_byte_keyframe_translation_sample, animation_codec_byte_keyframe_scale_sample }, { animation_codec_byte_keyframe_rotation_interpolate, animation_codec_byte_keyframe_translation_interpolate, animation_codec_byte_keyframe_scale_interpolate } },
 		function_28d170 },
 	{ "word_keyframe_lightly_quantized", 2, 2,
-		{ { function_28d560, function_28d6f0, function_28d840 }, { function_28d180, function_28d320, function_28d470 } },
+		{ { animation_codec_word_keyframe_rotation_sample, animation_codec_word_keyframe_translation_sample, animation_codec_word_keyframe_scale_sample }, { animation_codec_word_keyframe_rotation_interpolate, animation_codec_word_keyframe_translation_interpolate, animation_codec_word_keyframe_scale_interpolate } },
 		function_28d170 },
 	{ "reverse_byte_keyframe_lightly_quantized", 2, 1,
-		{ { function_28cdb0, function_28cf40, function_28d090 }, { function_28c9e0, function_28cb70, function_28ccc0 } },
+		{ { animation_codec_byte_keyframe_rotation_sample, animation_codec_byte_keyframe_translation_sample, animation_codec_byte_keyframe_scale_sample }, { animation_codec_byte_keyframe_rotation_interpolate, animation_codec_byte_keyframe_translation_interpolate, animation_codec_byte_keyframe_scale_interpolate } },
 		function_28d170 },
 	{ "reverse_word_keyframe_lightly_quantized", 2, 2,
-		{ { function_28d560, function_28d6f0, function_28d840 }, { function_28d180, function_28d320, function_28d470 } },
+		{ { animation_codec_word_keyframe_rotation_sample, animation_codec_word_keyframe_translation_sample, animation_codec_word_keyframe_scale_sample }, { animation_codec_word_keyframe_rotation_interpolate, animation_codec_word_keyframe_translation_interpolate, animation_codec_word_keyframe_scale_interpolate } },
 		function_28d170 },
 	{ "_blend_screen_codec", 1, 0,
-		{ { function_28c710, function_28c750, function_2c4de0 }, { function_28c530, function_28c5d0, function_28c6b0 } },
+		{ { animation_codec_blend_screen_rotation_sample, animation_codec_translation_sample, function_2c4de0 }, { animation_codec_blend_screen_rotation_interpolate, animation_codec_blend_screen_translation_interpolate, animation_codec_scale_interpolate } },
 		function_28d170 },
 };
 
@@ -281,12 +281,13 @@ void function_279d80(s_graph_tag *graph, c_type_709360 animation_id, long node_c
 	byte *address;
 
 	function_1ddb40(&data, graph, animation_id);
+	address = data.data;
 	size = animation_data_size(data.sizes);
 	if (size > 0x400)
 	{
 		size = 0x400;
 	}
-	for (address = data.data; address < data.data + size; address += 0x20)
+	for (; address < data.data + size; address += 0x20)
 	{
 		_mm_prefetch((char const *)address, _MM_HINT_T0);
 	}

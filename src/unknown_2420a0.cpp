@@ -2032,14 +2032,6 @@ bool function_244680(long team, long unit_index)
 	return result;
 }
 
-PRIVATE __forceinline real function_2447f1(point3f const *arg_0, point3f const *arg_1)
-{
-	real local_0 = arg_1->z - arg_0->z;
-	real local_1 = arg_1->y - arg_0->y;
-	real local_2 = arg_1->x - arg_0->x;
-	return local_0 * local_0 + local_1 * local_1 + local_2 * local_2;
-}
-
 PRIVATE __forceinline void function_2447f2(long arg_0, s_palette_source_globals const *arg_1, point3f *arg_2)
 {
 	point3f const *local_0 = &arg_1->marker_entries[arg_0].position;
@@ -2073,7 +2065,11 @@ bool function_2447f0()
 					continue;
 				function_b9dd0(entry->object_index, &position);
 				function_2447f2(marker_index, g_4e0350, &marker);
-				if (!(function_2447f1(&position, &marker) > 0.2f * 0.2f))
+				real delta_x = marker.x - position.x;
+				real delta_y = marker.y - position.y;
+				real delta_z = marker.z - position.z;
+				real distance_squared = delta_z * delta_z + delta_y * delta_y + delta_x * delta_x;
+				if (!(distance_squared > 0.2f * 0.2f))
 					continue;
 			}
 
@@ -2312,7 +2308,7 @@ void __stdcall function_240820(long arg_0)
 			{
 				for (long local_18 = players_first_active_local_player(); local_18 != NONE; local_18 = function_14de10(local_18))
 				{
-					long local_19 = g_4e8c20->entries[local_18];
+					long local_19 = local_18 == NONE ? NONE : g_4e8c20->entries[local_18];
 					if (local_19 != NONE && ctf_player_get(local_19)->team == local_17)
 						function_2007b3(local_18, 8, 1, NONE);
 				}

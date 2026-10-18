@@ -1221,12 +1221,11 @@ void function_17aec0(s_effect_datum *effect, transform4x3f *matrix, short node_i
 // @retail 0x17af30
 void function_17af30(bool field_b4, short node_index, s_effect_datum *effect, transform4x3f *matrix)
 {
-	/* read through its address: retail keeps the node index on the stack */
-	short const *node_reference = &node_index;
-	short node = *node_reference;
+	short node = node_index;
 
-	if (field_b4 && node != NONE && (node & 0x8000) && effect->unknown58 != NONE)
-		*matrix = *function_1664a5(effect->unknown58, effect->object_index, node & 0x7fff);
+	if (field_b4 && node != NONE && node < 0 && effect->unknown58 != NONE)
+		/* the node reread from its stack slot here: retail takes the flag in al and the matrix in ecx */
+		*matrix = *function_1664a5(effect->unknown58, effect->object_index, *(short const volatile *)&node_index & 0x7fff);
 	else
 		function_17aec0(effect, matrix, node);
 }
@@ -1464,7 +1463,7 @@ long function_1766b0(long object_index, long tag_index, long unknown34, long unk
 }
 
 // @retail 0x176780
-long function_176780(long object_index, s_effect_owner const *owner, real scale_a, long tag_index, real scale_b, point3f const *origin, vector3f const *direction)
+long function_176780(s_effect_owner const *owner, long object_index, real scale_a, long tag_index, real scale_b, point3f const *origin, vector3f const *direction)
 {
 	s_effect_parameters parameters;
 	point3f point;

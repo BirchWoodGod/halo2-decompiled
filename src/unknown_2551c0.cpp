@@ -450,7 +450,7 @@ bool function_255ce0(long arg_0)
 
 long function_1e4a50(long arg_0);
 void function_26bfa0(long object_index, long *location_index, s_location_view *location);
-bool function_10fa80(long unit_index, long mode, long set, short *event_ticks, real *distance, short *duration_ticks, real *event_distance);
+bool unit_animation_get_timing(long unit_index, long mode, long set, short *event_ticks, real *distance, short *duration_ticks, real *event_distance);
 short __stdcall function_255740(long arg_0, s_slot *arg_1);
 
 s_slot_handler_0 g_47f7dc = {8, 0, 0, -2, 0, function_255740};
@@ -535,7 +535,7 @@ short __stdcall function_255740(long arg_0, s_slot *arg_1)
 							short local_19, local_21;
 							real local_20, local_22;
 							real local_23;
-							if (function_10fa80(local_0->unknown018, 0x7000101, local_18, &local_19, &local_20, &local_21, &local_22))
+							if (unit_animation_get_timing(local_0->unknown018, 0x7000101, local_18, &local_19, &local_20, &local_21, &local_22))
 								local_23 = local_20 * 1.33f;
 							else
 								local_23 = 0.4f;

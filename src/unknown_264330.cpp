@@ -396,15 +396,14 @@ void function_262ba0(long actor_index)
 	bool sampled_one = false;
 	if (actor[0x44]) function_263210(actor_index);
 	function_265680(actor_index);
-	actor = (byte *)actor_get(actor_index);
-	long next = *(long *)(actor + 0x58);
+	long next = *(long *)((byte *)actor_get(actor_index) + 0x58);
 	while (next != NONE)
 	{
 		long index = next;
 		s_prop_datum *node = prop_ref_get(index);
 		byte *p = (byte *)node;
 		next = *(long *)(p + 0x2c);
-		long old_state = *(short *)(p + 0x24);
+		short old_state = *(short *)(p + 0x24);
 		bool sample = false, update = false;
 		function_263670(node);
 		if (!sampled_one && *(short *)(p + 0xc) >= *(short *)(actor + 0x50) && actor[0x48])
@@ -468,11 +467,11 @@ void function_262ba0(long actor_index)
 					*(short *)(p + 0x24) = 2;
 					if (tracking) *(short *)((byte *)tracking + 0xa0) = (short)real_to_long((real)g_510c54->field_2_3 * 0.33f);
 				}
-				else { function_1e2150(actor_index, index); function_25c820(index, actor_index); }
+				else goto release_tracking;
 			}
 			break;
 		case 2:
-			if (!function_25da40(node)) { function_1e2150(actor_index, index); function_25c820(index, actor_index); }
+			if (!function_25da40(node)) goto release_tracking;
 			else if ((char)p[0x27] > 0) function_25c230(actor_index, index, NONE);
 			else
 			{
@@ -490,8 +489,10 @@ void function_262ba0(long actor_index)
 			}
 			break;
 		case 3:
-			if (!function_25da40(node)) { function_1e2150(actor_index, index); function_25c820(index, actor_index); break; }
+			if (!function_25da40(node)) goto release_tracking;
+#pragma inline_depth(0)
 			view = (byte *)function_25d700(index);
+#pragma inline_depth()
 			if (view && !view[0x88])
 			{
 				real limit = 1.5f;
@@ -509,7 +510,7 @@ void function_262ba0(long actor_index)
 			{
 				long decrement = index == *(long *)(actor + 0x338) ? (view[0x69] ? 2 : 0) : (view[0x69] ? 3 : 1);
 				*(short *)(view + 0x8e) -= (short)decrement;
-				if (*(short *)(view + 0x8e) < 0) { function_1e2150(actor_index, index); function_25c820(index, actor_index); }
+				if (*(short *)(view + 0x8e) < 0) goto release_tracking;
 			}
 			break;
 		case 4:
@@ -521,6 +522,11 @@ void function_262ba0(long actor_index)
 			}
 			break;
 		}
+		goto tracking_complete;
+release_tracking:
+		function_1e2150(actor_index, index);
+		function_25c820(index, actor_index);
+tracking_complete:
 		if (old_state != *(short *)(p + 0x24))
 		{
 			view = *(long *)(p + 0x14) == NONE ? NULL : g_502414->data + (*(long *)(p + 0x14) & 0xffff) * 0x124 + 0x70;
@@ -533,9 +539,13 @@ void function_262ba0(long actor_index)
 	long current = *(long *)(actor + 0x338);
 	if (current != NONE)
 	{
+#pragma inline_depth(0)
 		byte *view = (byte *)function_25d700(current);
+#pragma inline_depth()
 		if (view && *(short *)view >= 5) actor[0x34c] = true;
+#pragma inline_depth(0)
 		view = (byte *)function_25d700(current);
+#pragma inline_depth()
 		if (view && *(short *)view >= 6) { *(long *)(actor + 0x350) = 0; *(short *)(actor + 0x50) = maximum; return; }
 	}
 	if (*(long *)(actor + 0x350) != NONE) ++*(long *)(actor + 0x350);

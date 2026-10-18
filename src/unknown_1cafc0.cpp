@@ -6,7 +6,7 @@
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_1c62f0.h"
-#include "unknown_123680.h"
+#include "animation_cache.h"
 #include "unknown_1cafc0.h"
 #include "unknown_11cb00.h"
 #include <math.h>
@@ -25,7 +25,6 @@ struct s_graph_name_entry
 void function_279d80(s_graph_tag *graph, c_type_709360 animation_id, long node_count, real frame, real weight,
 	s_graph_inheritance *inheritance, dword const *node_mask, real_quaternion_transform *transforms, bool interpolate);
 matrix3x3 *function_141e10(matrix3x3 *out, quaternionf const *q);
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name);
 void function_1dd1c0(s_graph_tag *graph, transform4x3f *matrices, rigid_transform_scaled const *orientations,
 	transform4x3f const *root);
 
@@ -524,7 +523,7 @@ PRIVATE __forceinline void graph_weapon_type_request(s_graph_tag *graph, long mo
 
 			if (resource->streamed)
 			{
-				function_1236f0(resource, true);
+				animation_cache_request_resource(resource, true);
 			}
 		}
 	}
@@ -804,12 +803,12 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 	s_animation_names names;
 	s_animation_names found;
 	c_type_709360 animation_id;
-	bool loops = true;
 
 	names.mode = mode;
 	names.weapon_class = weapon_class;
 	names.weapon_type = weapon_type;
 	names.set = set;
+	bool loops = true;
 	if (channel_valid(&channels[0]))
 	{
 		loops = !TEST_FIELD_BIT(function_1daea0(graph_tag_get(channels[0].graph_tag_index), channels[0].animation_id)->flag1);
@@ -823,7 +822,6 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 		animation_id.index != NONE && !(state_flags & 8))
 	{
 		c_type_709360 transition_id;
-		c_type_709360 blend_id;
 		bool blend = false;
 		real fraction;
 		long transition_set;
@@ -865,6 +863,7 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 					fraction = PIN(fraction, 0.0f, 1.0f);
 				}
 			}
+			c_type_709360 blend_id;
 			transition_set = NONE;
 			if (!(state_flags & 0x100))
 			{
@@ -924,7 +923,7 @@ bool s_animation_state::animation_set(long mode, long weapon_class, long weapon_
 	}
 	if (!(state_flags & 4))
 	{
-		return result;
+		goto animation_done;
 	}
 	result = true;
 
@@ -953,6 +952,7 @@ names_store:
 			}
 		}
 	}
+animation_done:
 	return result;
 }
 
@@ -1092,7 +1092,7 @@ void s_animation_state::transition_offset_compute()
 // @retail 0x1cbd10
 c_type_709360 s_animation_state::animation_find(long name)
 {
-	return function_1dd0b0(graph_get(), name);
+	return graph_get()->animation_by_name(name);
 }
 
 // @retail 0x1cbd50
@@ -1209,7 +1209,7 @@ bool s_animation_state::channel_play_named(c_animation_channel *channel, long na
 
 	if (graph_tag_index != NONE)
 	{
-		c_type_709360 animation_id = function_1dd0b0(graph_get(), name);
+		c_type_709360 animation_id = graph_get()->animation_by_name(name);
 
 		if (animation_id.index != NONE)
 		{
@@ -1523,9 +1523,12 @@ bool s_animation_state::channel_refresh(c_animation_channel *channel, long weapo
 		{
 			if (animation_id.graph_index == old_animation_id.graph_index && animation_id.index == old_animation_id.index)
 			{
-				return true;
+				result = true;
 			}
-			result = channel_start(channel, animation_id, name, NONE, NONE, kind, channel->flags);
+			else
+			{
+				result = channel_start(channel, animation_id, name, NONE, NONE, kind, channel->flags);
+			}
 		}
 		if (!result)
 		{

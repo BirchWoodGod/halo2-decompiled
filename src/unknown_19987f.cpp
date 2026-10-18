@@ -46,7 +46,7 @@ byte *network_session_interface_get_data_4db0(void);
 bool network_session_interface_get_values_4d08(long *a, long *b, byte **c);
 long network_session_interface_get_value_49b0(void);
 bool network_session_interface_can_add_player(void);
-long function_190262(long value);
+long player_slot_iterate_next(long value);
 
 bool network_session_get_membership(c_class_58d20 *session, long *value4c, long *host_member_index, long *local_member_index, long *value50, long *member_count, s_session_member **members, long *player_count, dword *player_mask, s_network_session_player **players);
 
@@ -411,7 +411,7 @@ long function_19b3e3(void)
 	long count = 0;
 	long index;
 
-	for (index = 0; index != NONE; index = function_190262(index))
+	for (index = 0; index != NONE; index = player_slot_iterate_next(index))
 	{
 		if (TEST_FIELD_BIT(g_54e8e0[index].flag4))
 		{
@@ -1158,7 +1158,7 @@ bool function_199dc9(long a, long b, long c)
 
 void function_1487c3(long a, long b, long load, long c, long d);
 class c_online_task_screen;
-void __stdcall function_2523bc(c_online_task_screen *screen);
+void __stdcall session_leave_task_screen_begin(c_online_task_screen *screen);
 
 /* leaves the sessions and goes back to the main menu. Retail keeps close in
    a stack slot and pushes it from there, as its address being taken does */
@@ -1169,7 +1169,7 @@ void function_199e3c(long controller)
 	bool const *close_reference = &close;
 
 	function_199e2e(close);
-	function_1487c3(controller, NONE, (long)function_2523bc, 0, 0);
+	function_1487c3(controller, NONE, (long)session_leave_task_screen_begin, 0, 0);
 }
 
 long __stdcall function_63e90(long index);
@@ -1254,9 +1254,9 @@ bool window_manager_window_has_dialog(long channel, long index, long dialog_id);
 void function_1906b4(void);
 void __stdcall function_1483c3(long reason);
 void dialog_choice_show(long a, long dialog_id, long b, short user_flags, dialog_choice_callback first_chosen, dialog_choice_callback second_chosen, dialog_closed_callback closed);
-bool __stdcall function_23690b(long controller);
-bool __stdcall function_236917(long controller_index);
-bool __stdcall function_236953(long controller);
+bool __stdcall dialog_callback_return_to_main_menu(long controller);
+bool __stdcall dialog_callback_dashboard_network_configuration(long controller_index);
+bool __stdcall dialog_callback_sign_out_to_main_menu(long controller);
 c_class_1473c9 *__stdcall function_2524a8(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_25240c(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_253185(s_screen_parameters *parameters);
@@ -1397,7 +1397,7 @@ void function_19ae0f(long change, long pending, long error)
 				return;
 			}
 			bool choice = false;
-			dialog_choice_callback first_chosen = function_23690b;
+			dialog_choice_callback first_chosen = dialog_callback_return_to_main_menu;
 			dialog_choice_callback second_chosen = 0;
 			if (g_4ee4c4.session_booted)
 			{
@@ -1427,8 +1427,8 @@ void function_19ae0f(long change, long pending, long error)
 					{
 						dialog_id = 0x38;
 						choice = true;
-						first_chosen = function_236917;
-						second_chosen = function_236953;
+						first_chosen = dialog_callback_dashboard_network_configuration;
+						second_chosen = dialog_callback_sign_out_to_main_menu;
 					}
 					break;
 				default:
@@ -1479,7 +1479,7 @@ void function_19ae0f(long change, long pending, long error)
 	}
 }
 
-bool function_138800();
+bool game_loop_running();
 
 /* which of the network menus a screen belongs to */
 // @retail 0x19b0e1
@@ -1487,7 +1487,7 @@ long function_19b0e1(long screen_id)
 {
 	long result = 0;
 
-	if (function_138800() && g_4e6948->state != 3)
+	if (game_loop_running() && g_4e6948->state != 3)
 	{
 		result = 4;
 	}
@@ -1560,9 +1560,9 @@ long function_147f4f();
 void network_session_manager_leave_session_a(bool close);
 void network_session_manager_leave_session_b(bool close);
 c_class_1473c9 *window_manager_open_channel_5_screen(short user_flags, long load);
-c_class_1473c9 *__stdcall function_2521f8(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall session_joining_screen_load(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2519bb(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_24fa4c(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall session_lobby_screen_load(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_24f8c6(s_screen_parameters *parameters);
 
 /* when the session state no longer fits the menu a screen belongs to, opens
@@ -1574,12 +1574,12 @@ void function_19b1c9(long screen_id, long menu, long state)
 	{
 		if (screen_id != 0xe7)
 		{
-			window_manager_open_channel_5_screen(function_1901fc(), (long)function_2521f8);
+			window_manager_open_channel_5_screen(function_1901fc(), (long)session_joining_screen_load);
 		}
 	}
 	else if (!state || state == menu)
 	{
-		if (screen_id != 9 && screen_id != 0x1e && function_138800() && g_4e6948->state == 3 && !player_slot_count_active())
+		if (screen_id != 9 && screen_id != 0x1e && game_loop_running() && g_4e6948->state == 3 && !player_slot_count_active())
 		{
 			function_18f1c0(0);
 		}
@@ -1639,7 +1639,7 @@ void function_19b1c9(long screen_id, long menu, long state)
 
 				if (in_game & players)
 				{
-					window_manager_open_channel_5_screen(NONE, (long)function_24fa4c);
+					window_manager_open_channel_5_screen(NONE, (long)session_lobby_screen_load);
 					return;
 				}
 				stay = false;
@@ -2422,7 +2422,7 @@ void function_199a03(long mode)
 {
 	long index;
 
-	for (index = 0; index != NONE; index = function_190262(index))
+	for (index = 0; index != NONE; index = player_slot_iterate_next(index))
 	{
 		word *name = function_1902c1(index);
 

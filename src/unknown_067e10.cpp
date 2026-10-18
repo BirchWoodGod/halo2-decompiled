@@ -158,11 +158,12 @@ struct s_world_player_input
 	byte unknown2a[0x21c - 0x2a];
 };
 
+// Retail calls both initializers out of line.
+#pragma inline_depth(0)
 // @retail 0x694c0
 void function_694c0(c_class_6a600 *world, long player_index)
 {
-	long const *player_reference = &player_index;
-	long index = (word)*player_reference;
+	long index = player_index & 0xffff;
 	s_world_player_input *player = &((s_world_player_input *)g_4e8c24->data)[index];
 	short local_index = player->local_index;
 	bool local = local_index != NONE;
@@ -170,7 +171,7 @@ void function_694c0(c_class_6a600 *world, long player_index)
 	switch (g_4e6948->mode)
 	{
 	case 1: kind = 0; break;
-	case 2: kind = local ? 0 : 3; break;
+	case 2:
 	case 3: kind = local ? 0 : 3; break;
 	case 4: kind = local ? 1 : 5; break;
 	case 5: kind = local ? 0 : 4; break;
@@ -181,6 +182,7 @@ void function_694c0(c_class_6a600 *world, long player_index)
 	simulation_controller_initialize((s_simulation_controller *)&world->players[index], world,
 		index, player_index, kind, &player->machine, &player->key);
 }
+#pragma inline_depth()
 
 // @retail 0x6a690
 long function_6a690(long index, c_class_6a600 *world, long value)
@@ -449,8 +451,8 @@ bool world_buffer_append(c_class_6a600 *world, long size, const void *data, long
 /* the texture cache lends its memory (unknown_12c0d0.cpp) */
 long function_12d400(long type, long size, long user_data, long update, long release);
 void function_12bf00(void);
-void function_199520(dword flags);
-void function_199540(dword flags);
+void game_state_modules_call_before_load(dword flags);
+void game_state_modules_call_after_load(dword flags);
 
 /* decompresses the join data into the game state (not decompiled yet:
    src/stubs/lane_d.cpp) */
@@ -832,12 +834,12 @@ bool world_buffer_complete(c_class_6a600 *world, long size)
 	{
 		long decompressed_size;
 		byte *destination = game_state_globals.base_address;
-		function_199520(0);
+		game_state_modules_call_before_load(0);
 		if (function_199740(world->buffer, *size_reference, destination, &decompressed_size) && decompressed_size == 0x3fe000)
 			result = true;
 		else
 			function_12bf00();
-		function_199540(0);
+		game_state_modules_call_after_load(0);
 		function_12d520((long)world->buffer);
 		world->buffer = 0;
 		world->buffer_size = NONE;
@@ -1091,7 +1093,7 @@ void function_69fe0(c_class_6a600 *world)
 }
 
 /* the game's main update (not decompiled yet: src/stubs/lane_d.cpp) */
-void function_137fe0(void);
+void game_loop_tick(void);
 
 long g_4cf774;
 
@@ -1178,7 +1180,7 @@ void function_69350(c_class_6a600 *world, bool value)
 	{
 		bool buffered;
 		while (function_69300(world, &buffered) > 0)
-			function_137fe0();
+			game_loop_tick();
 	}
 }
 
@@ -1334,7 +1336,7 @@ valid:
 			bool buffered;
 			if (function_69300(world, &buffered) <= 0)
 				break;
-			function_137fe0();
+			game_loop_tick();
 		}
 		result = true;
 	}
@@ -1954,7 +1956,7 @@ void function_687b0(void)
 
 bool function_83220(s_simulation_world_owner *watcher);
 bool function_138860(void);
-bool function_138a10(void);
+bool game_finish_countdown_done(void);
 bool function_138840(void);
 void __stdcall function_18f1c0(long value);
 
@@ -1987,7 +1989,7 @@ void function_680f0(void)
  }
  {
   bool (*query_mode)(void) = function_138860;
-  bool (*query_pending)(void) = function_138a10;
+  bool (*query_pending)(void) = game_finish_countdown_done;
   bool (*query_network)(void) = function_138840;
   if (query_mode() && query_pending() && !query_network()) function_18f1c0(6);
  }
@@ -2212,7 +2214,7 @@ void __stdcall function_683a0(byte *block)
 		}
 		update++;
 		j++;
-	} while (j < count);
+	} while (j < *(long *)(block + 0xe38));
 	if (*(bool *)(block + 0x403c) &&
 		(SIMULATION_WORLD->state == 3 || SIMULATION_WORLD->state == 5))
 	{

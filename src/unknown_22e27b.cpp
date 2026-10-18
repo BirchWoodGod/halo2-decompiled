@@ -1105,7 +1105,7 @@ c_class_22cc8e *c_text_widget_458940::function_22f52e()
 void unicode_string_copy(word *destination, const word *source, long maximum_count);
 
 // @retail 0x22f4fa
-c_user_interface_text_buffer_32::c_user_interface_text_buffer_32()
+inline c_user_interface_text_buffer_32::c_user_interface_text_buffer_32()
 {
 }
 
@@ -1145,7 +1145,7 @@ c_class_1473c9::c_class_1473c9(long screen_id, long a, long b, word user_flags) 
 	value5f2(false),
 	value5f3(0),
 	value5f4(false),
-	delegate(this, &c_class_1473c9::function_230427)
+	delegate(this, &c_class_1473c9::select_pane)
 {
 	type = 0;
 	value0c = ++next_widget_id;
@@ -1378,11 +1378,15 @@ void c_text_widget_45a5e0::function_253b1a(long string_handle)
 		c_class_1473c9 *screen = get_screen();
 		if (screen)
 		{
-			word buffer[0x100];
+			struct s_string_buffer
+			{
+				word text[0x100];
+				void load(c_widget *screen, long handle) { screen->function_230134(handle, text); }
+			} buffer;
 
-			buffer[0] = 0;
-			((c_widget *)screen)->function_230134(string_handle, buffer);
-			function_22f52e()->set_text(buffer);
+			buffer.text[0] = 0;
+			buffer.load((c_widget *)screen, string_handle);
+			function_22f52e()->set_text(buffer.text);
 		}
 	}
 }
@@ -1612,18 +1616,19 @@ void c_text_widget_45a5e0::v4(long screen_rect_address)
     function_2363d4(screen, &x, &y);
     short_rectangle2d rectangle;
     get_bounds((s_widget_bounds *)&rectangle);
-    color3f saved = function_22f52e()->color;
+    c_class_22cc8e *original = function_22f52e();
+    color3f saved = original->color;
     color3f widget_color = color;
     color3f tinted;
-    tinted.red = widget_color.red * saved.red;
-    tinted.green = widget_color.green * saved.green;
-    tinted.blue = widget_color.blue * saved.blue;
+    tinted.red = saved.red * widget_color.red;
+    tinted.green = saved.green * widget_color.green;
+    tinted.blue = saved.blue * widget_color.blue;
     c_class_22cc8e *text = function_22f52e();
+    text->color = tinted;
     rectangle.left += x;
     rectangle.right += x;
     rectangle.top += y;
     rectangle.bottom += y;
-    text->color = tinted;
     if (!debug)
         function_22cd48(function_22f52e(), &rectangle, &rectangle, depth, alpha, screen);
     function_22f52e()->color = saved;
@@ -1632,8 +1637,9 @@ void c_text_widget_45a5e0::v4(long screen_rect_address)
         c_user_interface_text_buffer_32 label;
         word buffer[16];
         unicode_string_snprintf(buffer, 16, (word const *)L"%d", value0a);
-        label.setup(buffer, 0, (color3f const *)g_468720, 0, NONE, 0, NONE);
-        function_22cd48(&label, &rectangle, &rectangle, depth, alpha, screen);
+        c_class_22cc8e *label_text = &label;
+        label_text->setup(buffer, 0, (color3f const *)g_468720, 0, NONE, 0, NONE);
+        function_22cd48(label_text, &rectangle, &rectangle, depth, alpha, screen);
         function_235d69(&rectangle, depth, screen, g_4686dc);
     }
 }

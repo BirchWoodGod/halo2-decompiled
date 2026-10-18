@@ -7,7 +7,7 @@
 #include "hs.h"
 
 /* script_return_store: stores a script function's value in the calling frame */
-void function_209ae0(long thread_index, long value);
+void hs_thread_return_value(long thread_index, long value);
 
 /* evaluates a script function's arguments one per call; returns the
    arguments once they are all evaluated, NULL until then */
@@ -23,7 +23,7 @@ long function_15e730(void);
 void function_277380(void);
 void function_13bff0(void);
 void function_13ca80(void);
-void function_1388e0(void);
+void game_finish(void);
 bool function_226190(void);
 void function_24cdaf(void);
 bool function_187ec0(void);

@@ -621,7 +621,7 @@ long c_widget_45ad60::v6()
 	return 0;
 }
 
-/* a player's profile (unknown_18f576.cpp) */
+/* a player's profile (player_slots.cpp) */
 struct s_player_profile
 {
 	dword data[0x78];
@@ -1191,7 +1191,7 @@ void c_thumbstick_settings_screen::v3()
 				break;
 			}
 			datum = list.get_focused_datum();
-			function_230427((short *)&datum);
+			select_pane((short *)&datum);
 			value8b8 = type;
 		}
 	}
@@ -1359,7 +1359,7 @@ void c_button_settings_screen::v3()
 				break;
 			}
 			datum = list.get_focused_datum();
-			function_230427((short *)&datum);
+			select_pane((short *)&datum);
 			value8b8 = type;
 		}
 	}
@@ -3621,8 +3621,8 @@ void function_238c69(long mode, long type, word *name, long maximum_count, long 
 c_class_1473c9 *__stdcall function_23764f(s_screen_parameters *parameters);
 c_class_1473c9 *__stdcall function_2ba666(s_screen_parameters *parameters);
 bool __stdcall function_2523b7(long controller);
-bool __stdcall function_236973(long controller);
-bool __stdcall function_236989(long controller);
+bool __stdcall dialog_callback_dashboard_memory_for_profile(long controller);
+bool __stdcall dialog_callback_dashboard_memory_for_game_variant(long controller);
 
 // @retail 0x2ba6a4
 bool __stdcall function_2ba6a4(long controller)
@@ -3673,7 +3673,7 @@ void function_2ba8e9(long controller)
 	}
 	else
 	{
-		dialog_choice_show(3, 0x4e, 4, 1 << controller, function_236973, function_2523b7, 0);
+		dialog_choice_show(3, 0x4e, 4, 1 << controller, dialog_callback_dashboard_memory_for_profile, function_2523b7, 0);
 	}
 }
 
@@ -3731,7 +3731,7 @@ void function_2ba9f4(long controller)
 	}
 	else
 	{
-		dialog_choice_show(3, 0x4f, 4, 1 << controller, function_236989, function_2523b7, 0);
+		dialog_choice_show(3, 0x4f, 4, 1 << controller, dialog_callback_dashboard_memory_for_game_variant, function_2523b7, 0);
 	}
 }
 
@@ -4391,8 +4391,8 @@ long online_team_member_remove(long controller_index, _XUID const *team, _XUID c
 long online_team_delete(_XUID const *team, long controller_index);
 void function_1487c3(long controller_index, long task_index, long callback, long value, long context);
 void __stdcall function_1a2cb7(c_online_task_screen *screen);
-c_class_1473c9 *__stdcall function_2b80d9(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_2b80e9(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type3(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall xbox_live_message_send_screen_load_type4(s_screen_parameters *parameters);
 
 /* a recipient of a message: the player's id and what follows it */
 #pragma pack(push, 4)
@@ -4504,7 +4504,7 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 				{
 					s_message_send_screen_view *screen;
 
-					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)function_2b80d9);
+					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)xbox_live_message_send_screen_load_type3);
 					screen = (s_message_send_screen_view *)parameters.load(&parameters);
 					if (screen)
 					{
@@ -4553,7 +4553,7 @@ void c_clan_options_list::handle_item(s_controller_reference **controller, long 
 				{
 					s_message_send_screen_view *screen;
 
-					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)function_2b80e9);
+					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)xbox_live_message_send_screen_load_type4);
 					screen = (s_message_send_screen_view *)parameters.load(&parameters);
 					if (screen)
 					{
@@ -4655,7 +4655,7 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 				{
 					s_message_send_screen_view *screen;
 
-					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)function_2b80d9);
+					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)xbox_live_message_send_screen_load_type3);
 					screen = (s_message_send_screen_view *)parameters.load(&parameters);
 					if (screen)
 					{
@@ -4705,7 +4705,7 @@ void c_friends_options_list::handle_item(s_controller_reference **controller, lo
 				{
 					s_message_send_screen_view *screen;
 
-					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)function_2b80e9);
+					function_149f49((s_message *)&parameters, 0, 0, 1 << (*controller)->controller_index, 3, 4, (long)xbox_live_message_send_screen_load_type4);
 					screen = (s_message_send_screen_view *)parameters.load(&parameters);
 					if (screen)
 					{
@@ -5512,7 +5512,7 @@ void function_28980(long index);
 
 struct s_main_menu_music;
 real main_menu_music_silence_fraction(s_main_menu_music const *music);
-dword function_235ca9();
+dword main_menu_music_silence_time();
 real __stdcall function_122dd0(byte *map_name, long mode, long type);
 
 // @retail 0x2c52e7
@@ -5520,7 +5520,7 @@ void __stdcall function_2c52e7(char const *map_name)
 {
 	real progress = function_122dd0((byte *)map_name, 0, 0);
 	real step = 1.0f;
-	real duration = (real)(long)function_235ca9();
+	real duration = (real)(long)main_menu_music_silence_time();
 	dword now = GetTickCount();
 	dword elapsed_ticks = now - g_509338;
 	g_509338 = now;
@@ -5642,7 +5642,7 @@ void function_2b10a3(dword const *appearance, c_class_2b0b5e *widget, long type)
 struct s_friend_request { byte data[0x6a2]; };
 bool friend_request_get(s_friend_request *request);
 bool friends_list_task_running();
-bool function_230265(c_class_1473c9 *screen);
+bool screen_lower_channel_window_in_use(c_class_1473c9 *screen);
 void friends_lists_get_user(XUID const *xuid, bool *listed_friend, bool *is_player, dword *flags, DWORD *title_id, bool *in_session, XONLINE_FRIEND *details);
 bool xuid_equal(XUID const *a, XUID const *b, bool compare_guest_number);
 bool network_session_interface_has_user(XUID const *xuid);
@@ -5754,7 +5754,7 @@ PRIVATE void update_player_actions_2b55ae(c_y_menu_player_selected_list *list)
 void c_y_menu_player_selected_list::v3()
 {
     ((c_widget *)this)->c_widget::v11();
-    if (!value3a4 && !function_230265(get_screen()) && friends_list_task_running())
+    if (!value3a4 && !screen_lower_channel_window_in_use(get_screen()) && friends_list_task_running())
         update_player_actions_2b55ae(this);
 }
 

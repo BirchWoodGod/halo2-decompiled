@@ -525,7 +525,7 @@ void sound_source_get_position(s_sound_location_source const *source, long liste
 real magnitude3d(vector3f const *v);
 
 // @retail 0x127e20
-real sound_source_get_listener_distance(s_sound_location_source const *source, long listener_index)
+real sound_source_get_listener_distance(long listener_index, s_sound_location_source const *source)
 {
 	real result;
 
@@ -933,7 +933,7 @@ void sound_voice_reset_stream(short voice_index)
 	}
 }
 
-long sound_format_duration_to_bytes(long arg_da1d74, long encoding, long compression, real duration);
+long sound_format_duration_to_bytes(long encoding, long compression, long arg_da1d74, real duration);
 long sound_permutation_chunks_size(long chunk_count, s_sound_permutation const *permutation);
 void function_21f5d0(long channel_index, long offset);
 
@@ -950,8 +950,7 @@ void sound_voice_restart_stream(short voice_index)
 		{
 			s_sound_playback *sound = SOUND_PLAYBACK_GET(voice->sound_index);
 			s_sound_definition *definition = sound_definition_get(sound->definition_index);
-			long arg_da1d74 = (char)definition->unknown03;
-			long offset = sound_format_duration_to_bytes(arg_da1d74, (char)definition->format, (char)definition->type, voice->unknown10);
+			long offset = sound_format_duration_to_bytes((char)definition->format, (char)definition->type, (char)definition->unknown03, voice->unknown10);
 
 			offset -= sound_permutation_chunks_size(voice->chunk_index, voice->permutation);
 			function_21f5d0(voice->channel_index, offset);
@@ -1164,26 +1163,28 @@ long sound_definition_rate_limited(long definition_index, long *stage_index)
 // @retail 0x127f10
 bool sound_playback_update_source(long sound_index, s_sound_source_callbacks const *source, s_sound_playback_flags *flags)
 {
-	bool local_1 = true;
-	s_sound_playback_flags *const volatile *local_0 = &flags;
 	s_sound_playback *sound = SOUND_PLAYBACK_GET(sound_index);
 	long definition_index = sound->definition_index;
+	bool result = true;
 	s_sound_definition *definition = sound_definition_get(definition_index);
 
 	if (source)
 	{
 		if (source->update(sound->object_index, definition_index, &sound->marker, &sound->location))
-			return local_1;
+			return true;
 		if (!((1 << SOUND_PLAYBACK_GET(sound_index)->state) & 0x1e) &&
 			!function_124f90((s_sound const *)function_221810(definition->promotion_index)))
 		{
-			(*local_0)->source_updated = true;
-			return local_1;
+			result = true;
+			flags->source_updated = true;
 		}
-		(*local_0)->source_updated = true;
-		local_1 = false;
+		else
+		{
+			result = false;
+			flags->source_updated = true;
+		}
 	}
-	return local_1;
+	return result;
 }
 static __forceinline bool function_127fc1(long arg_0, s_sound_playback *arg_1, s_sound_playback_flags *arg_2)
 {
@@ -1480,7 +1481,7 @@ bool function_128b90(long other_index, long sound_index, real distance)
 			if (other->value_a0 != sound->value_a0)
 				return false;
 		}
-		if (sound_source_get_listener_distance((s_sound_location_source const *)&sound->location, sound->listener_index) > distance)
+		if (sound_source_get_listener_distance(sound->listener_index, (s_sound_location_source const *)&sound->location) > distance)
 			return true;
 	}
 	return false;
@@ -1496,7 +1497,7 @@ short sound_voice_find(long sound_index, long *reason)
 	short result = NONE;
 	long result_sound_index = NONE;
 	real result_distance;
-	real distance = sound_source_get_listener_distance((s_sound_location_source const *)&sound->location, sound->listener_index);
+	real distance = sound_source_get_listener_distance(sound->listener_index, (s_sound_location_source const *)&sound->location);
 
 	*reason = 0;
 	for (short i = 0; i < SOUND_SYSTEM->voice_count; i++)
@@ -1518,7 +1519,7 @@ short sound_voice_find(long sound_index, long *reason)
 				*reason = 9;
 				result_sound_index = voice->sound_index;
 				result = i;
-				result_distance = sound_source_get_listener_distance((s_sound_location_source const *)&other->location, other->listener_index);
+				result_distance = sound_source_get_listener_distance(other->listener_index, (s_sound_location_source const *)&other->location);
 			}
 		}
 	}
@@ -2163,11 +2164,10 @@ static __forceinline long sound_local_player_first_index(void)
 // @retail 0x127d00
 long __stdcall function_127d00(s_type_99c531 const *source, real maximum_distance, real *distance)
 {
-	s_type_99c531 const *const *source_reference = &source;
 	long listener_index = NONE;
 	real result;
 
-	if (((s_sound_location_type_view const *)*source_reference)->type != 1)
+	if (((s_sound_location_type_view const *)source)->type != 1)
 	{
 		listener_index = sound_local_player_first_index();
 		result = 0.0f;
@@ -2180,7 +2180,7 @@ long __stdcall function_127d00(s_type_99c531 const *source, real maximum_distanc
 		{
 			if (SOUND_SYSTEM->listeners[i].active)
 			{
-				real listener_distance = sound_source_get_listener_distance((s_sound_location_source const *)*source_reference, i);
+				real listener_distance = sound_source_get_listener_distance(i, (s_sound_location_source const *)source);
 
 				if (best > listener_distance)
 				{
@@ -2190,9 +2190,9 @@ long __stdcall function_127d00(s_type_99c531 const *source, real maximum_distanc
 			}
 		}
 		result = (real)sqrt(best);
-		if (function_221da0(listener_index, (s_sound_transmission_view const *)*source_reference, result / maximum_distance))
+		if (function_221da0(listener_index, (s_sound_transmission_view const *)source, result / maximum_distance))
 			listener_index = NONE;
-		if (!SOUND_FLAG((*source_reference)->flags, 8) && !SOUND_FLAG((*source_reference)->flags, 11))
+		if (!SOUND_FLAG(source->flags, 8) && !SOUND_FLAG(source->flags, 11))
 		{
 			if (best > maximum_distance * maximum_distance)
 			{
@@ -2289,7 +2289,7 @@ long function_126000(long tag_index, long listener_index, s_sound_play_state *st
 		if (result != NONE)
 		{
 			s_sound_playback *sound = SOUND_PLAYBACK_GET(result);
-			long delay = (long)(sqrt(sound_source_get_listener_distance((s_sound_location_source const *)&state->location, listener_index)) * g_547f14);
+			long delay = (long)(sqrt(sound_source_get_listener_distance(listener_index, (s_sound_location_source const *)&state->location)) * g_547f14);
 			long chunk_index;
 
 			sound->state = 0;
@@ -2566,6 +2566,8 @@ struct s_driver_voice_index_view
 	byte unknown04[0x6c - 4];
 };
 
+static __forceinline short sound_voice_find_available_channel(char type);
+
 static inline short sound_voice_find_available_channel(char type)
 {
 	s_sound_system_channels_view *system = (s_sound_system_channels_view *)g_4e6380;
@@ -2770,26 +2772,35 @@ void function_128020(void)
 			function_127320(sound_index, 0xf);
 			goto skip_to_next;
 		}
+/* retail calls these two out of line */
+#pragma inline_depth(0)
 		if (!sound_playback_update_location(sound_index))
+#pragma inline_depth()
 		{
 			function_127320(sound_index, 3);
 			goto skip_to_next;
 		}
 		if (definition->flags & 8)
-			sound->location.flag0 = true;
+			((s_sound_location_byte_flags *)&sound->location)->flag0 = true;
 		{
 			real maximum;
-			if (TEST_FIELD_BIT(sound->location.flag3))
-				maximum = *(real *)((byte *)&sound->location + 0x38);
+			s_type_99c531 *location = &sound->location;
+			word location_flags = *(word *)location;
+			if ((bool)((location_flags >> 3) & 1))
+				maximum = *(real *)((byte *)location + 0x38);
 			else
 			{
 				s_sound_definition *current = sound_definition_get(sound->definition_index);
 				if (current->flags & 0x800)
+				{
+#pragma inline_depth(0)
 					maximum = *(real *)((byte *)function_221810(current->promotion_index) + 0x1c);
+#pragma inline_depth(255)
+				}
 				else
 					maximum = function_xaa8231(current->class_index)->maximum_distance;
 			}
-			long listener = function_127d00(&sound->location, maximum, NULL);
+			long listener = function_127d00(location, maximum, NULL);
 			if (listener == NONE)
 			{
 				if (!TEST_FIELD_BIT(sound->flag2))
@@ -2801,7 +2812,8 @@ void function_128020(void)
 						fading->fade_curve = 0;
 						fading->fade_start_time = 2000;
 						fading->fade_end_time = NONE;
-						fading->fading = true;
+						byte *flags = (byte *)&fading->flags;
+						*flags |= 0x80;
 					}
 					sound->flag2 = true;
 				}
@@ -2811,7 +2823,9 @@ void function_128020(void)
 				sound->listener_index = (char)listener;
 				if (TEST_FIELD_BIT(sound->flag2))
 				{
+#pragma inline_depth(0)
 					function_126df0(sound_index, NONE, 0, 0.5f);
+#pragma inline_depth()
 					sound->flag2 = false;
 				}
 			}

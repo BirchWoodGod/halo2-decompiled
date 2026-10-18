@@ -113,7 +113,7 @@ bool s_lookup::initialize(long object_handle)
 /* ---- a three-level table of items, walked by a packed position ---- */
 struct s_item
 {
-	byte first;
+	signed char first;
 	byte unknown01[3];
 	byte data[0x40];
 };
@@ -192,8 +192,9 @@ bool s_iterator::advance()
   sub_index = sub;
 		s = &table->groups[g].subs[sub_index];
 
-		long sub_count = s ? s->count : 0;
-		if (s && item + 1 < sub_count)
+		long sub_count = 0;
+		if (s) sub_count = s->count;
+		if (item + 1 < sub_count)
 		{
 			item_index = item + 1;
 			next = false;
@@ -378,9 +379,9 @@ struct s_surface_object_header
 // @retail 0x1ef3e0
 bool function_1ef3e0(dword key)
 {
+	bool result = true;
 	long object_index = key & 0xffff;
 	long surface_index = (key >> 16) & 0x1fff;
-	volatile bool result = true;
 	switch (key >> 29)
 	{
 	case 5:

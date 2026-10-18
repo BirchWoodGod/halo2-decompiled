@@ -120,10 +120,10 @@ void function_a7d50(long index, long group, long target, short node, point3f con
             long parent = NONE;
             if (object[0x12c] & 1)
                 parent = *(long *)(object + 0x154);
-            long slot = function_101f50(index);
-            long objects[2] = {NONE, NONE};
             long source = NONE;
             long subject = NONE;
+            long slot = function_101f50(index);
+            long objects[2] = {NONE, NONE};
             if (parent != NONE)
             {
                 if (slot >= 0 && slot < 4)
@@ -224,7 +224,8 @@ void function_a85c0(long index, s_collision_result_1697c0 const *collision,
             }
             else
             {
-                s_collision_event_data data;
+                struct { long target; s_collision_event_data data; } packet;
+                s_collision_event_data &data = packet.data;
                 data.definition = *(long *)object;
                 data.first_scale = first_scale;
                 data.second_scale = second_scale;

@@ -721,7 +721,7 @@ inline s_actor_cs_run_view *actor_cs_run_get(long actor_index)
 extern long g_50240c;
 extern long g_502410;
 long g_50242c;
-short function_209580(long thread_index); /* unknown_209520.cpp */
+short hs_thread_run_if_due(long thread_index); /* unknown_209520.cpp */
 
 /* runs the command script's thread for the actor, again while it ends in
    type 0x16: 0 when it is done, 1 while it sleeps, 2 while it waits, 3 when
@@ -759,7 +759,7 @@ short function_258880(long actor_index, long cs_index)
 		cs->unknown2c = NONE;
 		g_502410 = cs_index;
 		_ReadWriteBarrier();
-		result = function_209580(cs->thread_index);
+		result = hs_thread_run_if_due(cs->thread_index);
 		g_502428 = NONE;
 		_ReadWriteBarrier();
 		g_50240c = NONE;
@@ -1164,6 +1164,10 @@ void function_259e70(long cs_index)
 #define cs_point_get(reference) \
 	(&((s_cs_scenario_view *)g_4e0350)->script_data->point_sets[((reference) >> 16) & 0xffff].points[(reference) & 0xffff])
 
+/* the point set a command script reference's high word names */
+#define cs_point_set_get(set_index) \
+	(&((s_cs_scenario_view *)g_4e0350)->script_data->point_sets[(set_index)])
+
 #pragma inline_depth(0)
 // @retail 0x259ec0
 bool function_259ec0(long actor_index, long cs_index)
@@ -1310,17 +1314,13 @@ bool function_25ab50(long reference)
 		if (scenario->script_data_count > 0)
 		{
 			long set_index = (reference >> 16) & 0xffff;
-			long point_index = reference & 0xffff;
 
-			if (set_index >= 0)
+			if (set_index >= 0 && set_index < scenario->script_data->point_set_count)
 			{
-				if (set_index < scenario->script_data->point_set_count)
-				{
-					if (point_index >= 0 && point_index < scenario->script_data->point_sets[set_index].point_count)
-					{
-						result = true;
-					}
-				}
+				long point_index = reference & 0xffff;
+
+				if (point_index >= 0 && point_index < cs_point_set_get(set_index)->point_count)
+					result = true;
 			}
 		}
 	}
@@ -1411,8 +1411,8 @@ void function_25a380(long arg_0)
 			{
 				point3f local_3;
 				function_210850(&cs_point_get(local_2->unknown4c)->point, &local_3);
-				local_0->unknown438.point = local_3;
 				local_0->unknown434 = 3;
+				local_0->unknown438.point = local_3;
 				local_0->unknown430 = 2;
 				break;
 			}
@@ -1440,13 +1440,13 @@ void function_25a380(long arg_0)
 		case 2:
 			if (function_25ab50(local_2->unknown58))
 			{
-				s_type_c3b527 *local_6 = &cs_point_get(local_2->unknown58)->point;
+				s_cs_point *local_6 = cs_point_get(local_2->unknown58);
 				point3f local_7;
-				function_210850(local_6, &local_7);
+				function_210850(&local_6->point, &local_7);
 				local_0->unknown41c = 3;
 				local_0->unknown420 = 3;
 				local_0->unknown424.point = local_7;
-				local_4 = *local_6;
+				local_4 = local_6->point;
 				local_5 = true;
 			}
 			break;
@@ -1466,36 +1466,50 @@ void function_25a380(long arg_0)
 		{
 			if (local_2->unknown45)
 			{
-				local_0->unknown490_point = local_4;
 				local_0->unknown48c = true;
+				local_0->unknown490_point = local_4;
 				local_0->unknown4a0 = true;
 				local_0->unknown489[2] = true;
 			}
 		}
 		else
 		{
-			local_0->unknown424.vector = local_0->unknown290;
 			local_0->unknown41c = 3;
 			local_0->unknown420 = 4;
+			local_0->unknown424.vector = local_0->unknown290;
 		}
 		local_0->unknown44d = *(bool *)&local_2->unknown50;
 	}
 	else if (local_2->state == 1 && !local_2->unknown80)
 	{
-		local_0->unknown424.vector = local_0->unknown290;
 		local_0->unknown41c = 3;
 		local_0->unknown420 = 4;
+		local_0->unknown424.vector = local_0->unknown290;
 	}
 	else if (local_2->unknown7f)
 	{
-		local_0->unknown41c = local_2->unknown45 ? 3 : 2;
-		local_0->unknown420 = 2;
+		if (local_2->unknown45)
+		{
+			local_0->unknown41c = 3;
+			local_0->unknown420 = 2;
+		}
+		else
+		{
+			local_0->unknown41c = 2;
+			local_0->unknown420 = 2;
+		}
 	}
 	((s_actor_cs_move_view *)local_0)->unknown478 = local_2->unknown75;
 	if (local_2->unknown78)
 	{
-		local_2->unknown78 = function_1f8660(arg_0) ||
-			(actor_get(arg_0)->unknown504 == 3 && !local_2->unknown76);
+		if (function_1f8660(arg_0) || (actor_get(arg_0)->unknown504 == 3 && !local_2->unknown76))
+		{
+			local_2->unknown78 = true;
+		}
+		else
+		{
+			local_2->unknown78 = false;
+		}
 	}
 	if (local_2->state == 1 && !local_2->unknown81 && !local_2->unknown78)
 	{
@@ -1532,12 +1546,12 @@ void function_25a380(long arg_0)
 			vector3f local_13;
 			function_210850(&local_8->field_c0, &local_12);
 			vector3d_from_points3d(&local_12, &local_9, &local_13);
-			if (length_sq3f(&local_13) <= local_11 && local_0->unknown040)
+			if (!(length_sq3f(&local_13) > local_11) && local_0->unknown040)
 			{
 				long local_14;
-				s_location_view local_15;
-				function_26bfa0(local_2->unknownb0, &local_14, &local_15);
-				if (function_1f4460(arg_0, &local_15.point, local_14, local_2->unknownb0, false) && local_8->field_b4 > 0.f)
+				s_type_c3b527 local_15; /* 0x26bfa0 fills only the point */
+				function_26bfa0(local_2->unknownb0, &local_14, (s_location_view *)&local_15);
+				if (function_1f4460(arg_0, &local_15, local_14, local_2->unknownb0, false) && local_8->field_b4 > 0.f)
 				{
 					local_0->unknown4cc = (real)sqrt(local_8->field_b4) * 0.75f;
 				}
@@ -1560,8 +1574,22 @@ void function_25a380(long arg_0)
 			g_4f55d0->unknown22 = (short)local_17;
 		}
 	}
-	*(real *)&local_0->unknown478[4] = local_2->unknown6c ? *(real *)&local_2->unknown6d[3] : 0.f;
-	local_0->unknown4b4 = local_2->unknown64 ? *(real *)&local_2->unknown65[3] : 0.f;
+	if (local_2->unknown6c)
+	{
+		*(real *)&local_0->unknown478[4] = *(real *)&local_2->unknown6d[3];
+	}
+	else
+	{
+		*(real *)&local_0->unknown478[4] = 0.f;
+	}
+	if (local_2->unknown64)
+	{
+		local_0->unknown4b4 = *(real *)&local_2->unknown65[3];
+	}
+	else
+	{
+		local_0->unknown4b4 = 0.f;
+	}
 	if (local_2->unknown94 != NONE)
 	{
 		local_0->unknown450 = local_2->unknown94;

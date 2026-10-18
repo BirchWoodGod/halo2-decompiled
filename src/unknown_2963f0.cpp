@@ -284,7 +284,7 @@ struct s_2959c1
 	s_2959c0 *field_cc;
 };
 
-bool function_114b60(short entry_index, short fallback_index, long unit_index, long priority, void const *extra);
+bool unit_submit_entry_request(short fallback_index, short entry_index, long unit_index, long priority, void const *extra);
 void function_295bd0(bool prefer_selected);
 
 __forceinline long function_295a34(real arg_0)
@@ -301,7 +301,7 @@ __forceinline long function_295a34(real arg_0)
 #pragma inline_depth(0)
 PRIVATE __forceinline bool function_2959c1(short arg_0, short arg_1, long arg_2, long arg_3, void const *arg_4)
 {
-    return function_114b60(arg_0, arg_1, arg_2, arg_3, arg_4);
+    return unit_submit_entry_request(arg_1, arg_0, arg_2, arg_3, arg_4);
 }
 #pragma inline_depth(255)
 

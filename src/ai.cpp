@@ -808,7 +808,7 @@ void function_1caa40(long object_index, point3f *position)
 {
 	s_ai_position_object *object = (s_ai_position_object *)((s_ai_object_header *)g_4e0300->data)[object_index & 0xffff].object;
 	long type_mask = 1 << object->type;
-	bool use_marker = (type_mask & 3) || (type_mask & 0x1000);
+	bool use_marker = (type_mask & 0x1003) != 0;
 
 	if (use_marker)
 	{
@@ -1049,18 +1049,14 @@ bool function_1ca670(void)
 
 void function_200240(long object_index, long target_index);
 
-#pragma optimize("y", off)
+#pragma optimize("gy", off)
 // @retail 0x1ca9f0
 void __stdcall function_1ca9f0(long object_index, long target_index)
 {
-	(void)&object_index;
-	(void)&target_index;
-	s_ai_globals *local_0 = g_4f55d0;
-	long local_1 = *(volatile byte const *)&local_0->active;
-	if (local_1)
+	if (g_4f55d0->active)
 		function_200240(object_index, target_index);
 }
-#pragma optimize("y", on)
+#pragma optimize("gy", on)
 
 
 void hash_table_initialize(hash_table *table);

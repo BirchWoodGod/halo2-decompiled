@@ -95,7 +95,7 @@ struct s_profile_list_entry
 class c_unknown_249fa3 : public c_unknown_249fa3_base
 {
 public:
-	c_unknown_249fa3(word arg_0);
+	c_unknown_249fa3(word user_flags);
 	virtual void v1();
 	virtual void v2();
 	virtual void v3();
@@ -109,11 +109,12 @@ public:
 class c_profile_mode_screen : public c_screen_with_menu
 {
 public:
-	c_profile_mode_screen(long arg_0, long arg_1, word arg_2);
+	c_profile_mode_screen(long a, long b, word user_flags);
 	virtual void v17();
 	virtual screen_load_proc get_load_proc();
 	c_unknown_249fa3 menu;
-	bool mode;
+	/* choosing a profile also signs it in online */
+	bool sign_in_online;
 };
 
 #endif

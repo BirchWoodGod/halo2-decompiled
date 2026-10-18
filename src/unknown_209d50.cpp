@@ -69,10 +69,8 @@ static inline void *function_xc5914d(long thread_index, short size)
 long *__stdcall function_209d50(long thread_index, short parameter_count, short const *parameter_types, bool initialize)
 {
 	s_hs_macro_frame **frame = &hs_macro_thread_get(thread_index)->frame;
-	unsigned short previous_size = (unsigned short)(*frame)->size;
-	(*frame)->size = (short)(previous_size + parameter_count * sizeof(long));
-	long *result = (long *)((*frame)->data + (short)previous_size);
-	long *volatile arguments = result;
+	long *volatile arguments = (long *)function_xc5914d(thread_index, parameter_count * sizeof(long));
+	long *result = arguments;
 	short &argument_index = *(short *)function_xc5914d(thread_index, sizeof(short));
 	long &expression_index = *(long *)function_xc5914d(thread_index, sizeof(long));
 
@@ -84,7 +82,8 @@ long *__stdcall function_209d50(long thread_index, short parameter_count, short 
 	if (argument_index < parameter_count &&
 		hs_macro_expression_get(expression_index)->type == parameter_types[argument_index])
 	{
-		function_2099f0(thread_index, &arguments[argument_index], expression_index);
+		long *argument = &arguments[argument_index];
+		function_2099f0(thread_index, argument, expression_index);
 		expression_index = hs_macro_expression_get(expression_index)->next_index;
 		(argument_index)++;
 		result = NULL;

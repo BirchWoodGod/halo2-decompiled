@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-void function_07ad80(long count, byte *buffer);
+void transport_get_random_bytes(long count, byte *buffer);
 bool network_session_host_leave_to_peer(c_class_58d20 *session, long peer_index);
 struct s_surface_description;
 s_surface_description *function_192e60(long index);
@@ -282,17 +282,17 @@ bool c_session_state_in_game::update()
 			}
 			if (a->function_058d20())
 			{
-				if (function_138a10())
+				if (game_finish_countdown_done())
 				{
 					network_session_set_mode(a, 5);
 					result = true;
 				}
 				else if (a->get_value_49c4())
 				{
-					function_1388e0();
+					game_finish();
 				}
 			}
-			if (function_138800())
+			if (game_loop_running())
 			{
 				s_game_options_view *options = g_4e6948;
 				if (options->id_a == id_a && options->id_b == id_b)
@@ -374,7 +374,7 @@ bool c_session_state_in_match::update()
 				result = true;
 				goto local_0;
 			}
-			if (function_138a10() && b->function_058d20())
+			if (game_finish_countdown_done() && b->function_058d20())
 			{
 				network_session_set_mode(b, 5);
 				result = true;
@@ -916,7 +916,7 @@ void function_06e620(c_class_58d20 *s)
 		long now = time(NULL);
 		long seed = rand() ^ GetTickCount() ^ now;
 		long id[2];
-		function_07ad80(sizeof(id), (byte *)id);
+		transport_get_random_bytes(sizeof(id), (byte *)id);
 		s->set_values_4da0(id[0], id[1]);
 		s->set_value_4da8(seed);
 		s->clear_value_49c4();
@@ -1641,11 +1641,11 @@ bool function_71480(c_session_state_matchmaking *state)
 						network_session_parameters_set_value49c8(other, *(long *)((byte *)state + 0x18));
 						network_session_parameters_set_language(other, network_session_get_language(session));
 						other->set_value_4994(*(long *)((byte *)state + 0x938));
-						network_session_parameters_set_value4d08(other, (const char *)map + 0xb4c, NONE, map_id);
+						network_session_parameters_set_value4d08(other, NONE, map_id, (const char *)map + 0xb4c);
 						network_session_host_set_summary(other, (const s_session_summary *)((byte *)state + 0x630));
 						network_session_parameters_set_value4dac(other, value);
 						network_session_parameters_set_data4db0(other, (const s_session_data4db0 *)settings);
-						function_07ad80(8, (byte *)&original);
+						transport_get_random_bytes(8, (byte *)&original);
 						other->set_values_4da0(original.a, original.b);
 						if (*(long *)(manager + 8)) *(long *)(manager + 8) = 0;
 						network_session_set_mode(session, 11);

@@ -157,7 +157,7 @@ bool player_iterator_next(long *iterator);
 void function_b58c0(long index, dword mask);
 void function_1523c0();
 void function_23aea0(void);
-void function_19cad0(void);
+void teleporters_initialize(void);
 void function_23f0a0(void);
 void function_157790(void);
 void function_157670(void);
@@ -278,7 +278,7 @@ void function_1574c0(void)
 	if (game_engine_get())
 	{
 		function_23aea0();
-		function_19cad0();
+		teleporters_initialize();
 		function_23f0a0();
 		function_15ace0(globals->netgame_entries);
 		if (!game_engine_get()->p1())
@@ -1507,11 +1507,10 @@ void function_15cd90(long player_index, short identifier, long other_player_inde
 
 		if (game_engine_get()->p27(other_team, team))
 		{
-			s_engine_player_mark *mark = player->marks;
-			long i;
-
-			for (i = 8; i != 0; i--, mark++)
+			for (long i = 0; i < 8; i++)
 			{
+				s_engine_player_mark *mark = &player->marks[i];
+
 				if (mark->identifier == identifier)
 				{
 					function_196e60(player_index & 0xffff, 5, function_196ef0(mark->code), 1);
@@ -2287,14 +2286,14 @@ void function_15fe70(long player_index)
 	}
 }
 
-void function_1389c0(void);
+void game_finish_countdown_start(void);
 
 // @retail 0x15ba00
 void function_15ba00(void)
 {
 	if (!g_4e6948->flag1128 && g_4e6948->mode != 4)
 	{
-		function_1389c0();
+		game_finish_countdown_start();
 	}
 }
 
@@ -2494,7 +2493,7 @@ void function_15b3a0(long player_or_team, bool value)
 		}
 		if (!g_4e6948->flag1128 && g_4e6948->mode != 4)
 		{
-			function_1389c0();
+			game_finish_countdown_start();
 		}
 	}
 	else
@@ -5359,8 +5358,8 @@ void function_11be40(void);
 void function_11cc10(void);
 void function_123b30(void);
 void function_123bf0(void);
-void arena_initialize_for_new_map(void);
-void arena_initialize_for_new_structure_bsp(void);
+void game_state_map_begin(void);
+void game_state_bsp_begin(void);
 void function_1253d0(void);
 void function_125600(void);
 void function_125690(void);
@@ -5462,9 +5461,9 @@ void function_1ec4b0(void);
 void function_1fb2f0(void);
 void function_1fb330(void);
 void function_1fb350(void);
-void function_20a700(void);
-void function_20a750(void);
-void function_20a7d0(void);
+void hs_init(void);
+void hs_map_begin(void);
+void hs_map_end(void);
 void script_nodes_dispose(void);
 void function_20aee0(void);
 void function_20af50(void);
@@ -5510,7 +5509,7 @@ s_subsystem_440dd8 const g_440dd8[68] =
     { level_handle_tables_initialize, level_handle_tables_dispose, function_19c190, function_19c1d0, NULL, NULL, NULL, NULL, NULL },
     { function_131ff0, function_1320b0, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { function_225700, function_175f40, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { function_123b30, function_123bf0, arena_initialize_for_new_map, function_175f40, arena_initialize_for_new_structure_bsp, function_175f40, NULL, NULL, NULL },
+    { function_123b30, function_123bf0, game_state_map_begin, function_175f40, game_state_bsp_begin, function_175f40, NULL, NULL, NULL },
     { game_time_globals_allocate, function_175f40, game_time_globals_initialize, game_time_stop, NULL, NULL, NULL, NULL, NULL },
     { function_1df460, function_175f40, function_1df4b0, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_14b4b0, function_14b560, function_14b580, function_14b600, function_175f40, function_175f40, NULL, NULL, NULL },
@@ -5548,7 +5547,7 @@ s_subsystem_440dd8 const g_440dd8[68] =
     { function_13e5c7, function_3361a4, interface_initialize_for_new_map, interface_dispose_from_old_map, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_13bf00, function_175f40, function_13bf60, function_13bfc0, NULL, NULL, NULL, NULL, NULL },
-    { function_20a700, script_nodes_dispose, function_20a750, function_20a7d0, NULL, NULL, NULL, NULL, NULL },
+    { hs_init, script_nodes_dispose, hs_map_begin, hs_map_end, NULL, NULL, NULL, NULL, NULL },
     { function_1fb2f0, function_175f40, function_1fb330, function_1fb350, NULL, NULL, NULL, NULL, NULL },
     { function_175f40, function_175f40, function_175f40, function_175f40, NULL, NULL, NULL, NULL, NULL },
     { function_d4de0, function_175f40, function_d4e20, function_175f40, function_d4e30, function_175f40, (t_subsystem_440dd8_callback_18)function_d4e60, NULL, NULL },

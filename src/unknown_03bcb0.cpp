@@ -653,11 +653,13 @@ bool function_1bf50(long level, long tag, real distance, long *out)
         }
     }
     *out = selected;
+    long result;
     if (selected < 0)
-        *out = 0;
+        result = 0;
     else
-        *out = selected > count - 1 ? count - 1 : selected;
-    return *out < count;
+        result = selected > count - 1 ? count - 1 : selected;
+    *out = result;
+    return result < count;
 }
 
 void function_1cf50(void);
@@ -817,9 +819,8 @@ void function_3d000(real const *state)
 {
     real direction[4] = { 1.0f, -1.0f, -1.0f, 0.5f };
     D3DDevice_SetVertexShaderConstant(-75, direction, 1);
-    double sine = sin(state[30]);
-    direction[0] = (real)(cos(state[29]) * sine);
-    direction[1] = (real)(sin(state[29]) * sine);
+    direction[0] = (real)(cos(state[29]) * sin(state[30]));
+    direction[1] = (real)(sin(state[29]) * sin(state[30]));
     direction[2] = (real)cos(state[30]);
     direction[3] = state[25];
     real mapped[4];
@@ -840,6 +841,7 @@ void function_3d000(real const *state)
         direction[1] = 0.0f - inverse_range * local_low_high_record.a;
         direction[2] = 0.0f;
         direction[3] = 0.0f;
+        D3DDevice_SetVertexShaderConstant(-72, direction, 1);
     }
     else
     {
@@ -847,8 +849,8 @@ void function_3d000(real const *state)
         direction[1] = 0.0f;
         direction[2] = 0.0f;
         direction[3] = 0.0f;
+        D3DDevice_SetVertexShaderConstant(-72, direction, 1);
     }
-    D3DDevice_SetVertexShaderConstant(-72, direction, 1);
     D3DDevice_SetRenderState(D3DRS_TEXTUREFACTOR, pack_color3f((color3f const *)(state + 22)));
     real parameters[4];
     memcpy(parameters, state + 36, sizeof(parameters));
@@ -1006,24 +1008,21 @@ s_3c9a0_matrix g_4c1b68;
 // @retail 0x3ca90
 void function_3ca90(byte const *state)
 {
-	real angle = *(real const *)(state + 0x7c);
-	if (angle == 0.0f) return;
+	if (*(real const *)(state + 0x7c) == 0.0f) return;
 	real height = *(real const *)(state + 0x84);
 	real offset = *(real const *)(state + 0xa8);
 	point3f camera = g_485618.position;
 	real distance = camera.z - height;
 	if (distance < 0.0f) distance = 0.0f - distance;
 	if (distance < 0.0001f) distance = 0.0001f;
-	vector3f forward = g_4b9dac;
-	s_3c9a0_matrix basis;
-	function_3c9a0(&forward, g_4687b0, &basis);
-	basis.scale = distance;
-	basis.position.x = camera.x;
-	basis.position.y = camera.y;
-	basis.position.z = height - distance * offset;
-	g_4c1b68 = basis;
+	/* retail passes the view forward vector itself (eax = 0x4b9dac) */
+	function_3c9a0((vector3f const *)&g_4b9dac, g_4687b0, &g_4c1b68);
+	g_4c1b68.scale = distance;
+	g_4c1b68.position.x = camera.x;
+	g_4c1b68.position.y = camera.y;
+	g_4c1b68.position.z = height - distance * offset;
 	real aspect = ((real)(short)g_48564e - (real)(short)g_48564a) / ((short)g_48564c - (short)g_485648);
-	real tangent = (real)(tan((double)angle * 0.5f) * *(real const *)(state + 0x80));
+	real tangent = (real)(tan(*(real const *)(state + 0x7c) * 0.5f) * *(real const *)(state + 0x80));
 	if (!(g_4e6948 && g_4e6948->flag && g_4e6948->index != NONE && g_4e6948->state == 3) && g_485ac2)
 		aspect *= 1.5f;
 	real half_angle = g_485640 * 0.5f;
@@ -1033,31 +1032,41 @@ void function_3ca90(byte const *state)
 	if (width_scale <= 1.0f) width_scale = 1.0f;
 	else if (width_scale > 1.0f) width_scale *= 1.13f;
 	width_scale *= distance;
-	g_4c1b38[0][0] = basis.forward.i * distance;
-	g_4c1b38[0][1] = basis.left.i * width_scale;
-	g_4c1b38[0][2] = basis.up.i;
-	g_4c1b38[0][3] = basis.position.x;
-	g_4c1b38[1][0] = basis.forward.j * distance;
-	g_4c1b38[1][1] = basis.left.j * width_scale;
-	g_4c1b38[1][2] = basis.up.j;
-	g_4c1b38[1][3] = basis.position.y;
-	g_4c1b38[2][0] = basis.forward.k * distance;
-	g_4c1b38[2][1] = basis.left.k * width_scale;
-	g_4c1b38[2][2] = basis.up.k;
-	g_4c1b38[2][3] = basis.position.z;
-	real near_x = (real)tan((double)angle * 0.04f * -12.0f);
-	double tangent2 = tan((double)angle * 0.5f) * *(real const *)(state + 0x80);
-	real near_y = (real)(sqrt((double)near_x * near_x + 1.0f) * tangent2);
+	g_4c1b38[0][0] = g_4c1b68.forward.i * distance;
+	g_4c1b38[0][1] = g_4c1b68.left.i * width_scale;
+	g_4c1b38[0][2] = g_4c1b68.up.i;
+	g_4c1b38[0][3] = g_4c1b68.position.x;
+	g_4c1b38[1][0] = g_4c1b68.forward.j * distance;
+	g_4c1b38[1][1] = g_4c1b68.left.j * width_scale;
+	g_4c1b38[1][2] = g_4c1b68.up.j;
+	g_4c1b38[1][3] = g_4c1b68.position.y;
+	g_4c1b38[2][0] = g_4c1b68.forward.k * distance;
+	g_4c1b38[2][1] = g_4c1b68.left.k * width_scale;
+	g_4c1b38[2][2] = g_4c1b68.up.k;
+	g_4c1b38[2][3] = g_4c1b68.position.z;
+	real near_x = (real)tan(*(real const *)(state + 0x7c) * 0.04f * -12.0f);
+	double tangent2 = tan(*(real const *)(state + 0x7c) * 0.5f) * *(real const *)(state + 0x80);
+	real near_y = (real)(sqrt(near_x * near_x + 1.0f) * tangent2);
 	real far_x = *(real const *)(state + 0x88);
-	real far_y = (real)(sqrt((double)far_x * far_x + 1.0f) * tangent2);
+	real far_y = (real)(sqrt(far_x * far_x + 1.0f) * tangent2);
+	g_4c1b08[0].x = near_x;
+	g_4c1b08[0].y = 0.0f - near_y;
+	g_4c1b08[0].z = 0.0f;
+	g_4c1b08[1].x = near_x;
+	g_4c1b08[1].y = near_y;
+	g_4c1b08[1].z = 0.0f;
+	g_4c1b08[2].x = far_x;
+	g_4c1b08[2].y = far_y;
+	g_4c1b08[2].z = 0.0f;
+	g_4c1b08[3].x = far_x;
+	g_4c1b08[3].y = 0.0f - far_y;
+	g_4c1b08[3].z = 0.0f;
 	point3f corners[4];
 	for (long i = 0; i < 4; ++i)
 	{
-		real x = i < 2 ? near_x : far_x;
-		real y = i == 0 ? 0.0f - near_y : i == 1 ? near_y : i == 2 ? far_y : 0.0f - far_y;
-		corners[i].x = g_4c1b38[0][1] * y + g_4c1b38[0][0] * x + basis.up.i * 0.0f + camera.x;
-		corners[i].y = g_4c1b38[1][1] * y + g_4c1b38[1][0] * x + basis.up.j * 0.0f + camera.y;
-		corners[i].z = g_4c1b38[2][1] * y + g_4c1b38[2][0] * x + basis.up.k * 0.0f + basis.position.z;
+		corners[i].x = g_4c1b38[0][1] * g_4c1b08[i].y + g_4c1b38[0][0] * g_4c1b08[i].x + g_4c1b38[0][2] * g_4c1b08[i].z + g_4c1b38[0][3];
+		corners[i].y = g_4c1b38[1][1] * g_4c1b08[i].y + g_4c1b38[1][0] * g_4c1b08[i].x + g_4c1b38[1][2] * g_4c1b08[i].z + g_4c1b38[1][3];
+		corners[i].z = g_4c1b38[2][1] * g_4c1b08[i].y + g_4c1b38[2][0] * g_4c1b08[i].x + g_4c1b38[2][2] * g_4c1b08[i].z + g_4c1b38[2][3];
 	}
 	memcpy(g_4c1b08, corners, sizeof(corners));
 }

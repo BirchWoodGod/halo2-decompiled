@@ -116,32 +116,14 @@ void __stdcall function_1ada70(long actor_index, s_slot *slot);
 
 /* ---- slot type 0x2c ---- */
 
-#pragma optimize("g", off)
-PRIVATE __forceinline real function_1ac091(dword const *arg_0)
-{
-	return (real)*arg_0;
-}
-#pragma optimize("", on)
-#pragma optimize("g", off)
-PRIVATE __forceinline real function_1ac092(long const *arg_0)
-{
-	return (real)*arg_0;
-}
-#pragma optimize("", on)
-
 // @retail 0x1ac090
 bool __stdcall function_1ac090(long actor_index, s_slot *slot)
 {
 	s_slot_2c *state = (s_slot_2c *)slot;
-	s_random_globals *local_0 = g_4e7408;
-	dword *seed = &local_0->unknown0;
+	real scale = (slot_random() + 1.0f) * 2.0f;
 	long ticks;
 
-	*seed = 1664525 * *seed + 1013904223;
-	*(dword *)&slot = *seed >> 16;
-	real local_1 = (function_1ac091((dword *)&slot) * (1.f / 65535.f) + 1.0f) * 2.0f;
-	*(long *)&slot = g_510c54->field_2_3;
-	*(real *)&slot = local_1 * function_1ac092((long *)&slot);
+	*(real *)&slot = scale * g_510c54->field_2_3;
 	__asm
 	{
 		fld slot
@@ -180,8 +162,7 @@ PRIVATE __forceinline void local_1(real seconds, short *timer)
 short __stdcall function_1ac100(long actor_index, s_slot *slot, s_slot *next)
 {
 	short result = g_46fbe8;
-	long local_2 = actor_index;
-	s_actor_view *actor = actor_get(local_2);
+	s_actor_view *actor = actor_get(actor_index);
 	s_slot_2c *state = (s_slot_2c *)slot;
 	long unit_index = actor->unknown018;
 	short mode = UNIT_MODE(unit_index);
@@ -192,23 +173,23 @@ short __stdcall function_1ac100(long actor_index, s_slot *slot, s_slot *next)
 		dword *seed = &g_4e7408->unknown0;
 		*seed = 1664525 * *seed + 1013904223;
 		short delay = (short)(2 + (3 * (*seed >> 16) >> 16));
-		*(real *)&actor_index = (real)delay * g_510c54->field_2_3;
+		real seconds = (real)delay * g_510c54->field_2_3;
 		__asm
 		{
-			fld actor_index
+			fld seconds
 			fistp slot
 		}
 		state->ticks += (short)(long)slot;
 		state->unknown12 = false;
-		*(real *)&actor_index = g_510c54->field_2_3 * 0.5f;
+		seconds = g_510c54->field_2_3 * 0.5f;
 		__asm
 		{
-			fld actor_index
+			fld seconds
 			fistp slot
 		}
 		state->unknown22 = (short)(long)slot;
 		if (actor->prop_index != NONE)
-			function_265bb0(local_2);
+			function_265bb0(actor_index);
 		if (function_e68c0(0x24, actor->unknown018))
 		{
 			g_46eeb8[0x2c]->unknown8 = g_46f348;
@@ -296,13 +277,6 @@ short __stdcall function_1ac3f0(long actor_index)
 	return result;
 }
 
-#pragma optimize("g", off)
-PRIVATE __forceinline real function_1ac433(real arg_0, real arg_1)
-{
-    return arg_0 + (arg_1 - arg_0) * slot_random();
-}
-#pragma optimize("", on)
-
 // @retail 0x1ac430
 bool __stdcall function_1ac430(long actor_index, s_slot *slot)
 {
@@ -311,8 +285,8 @@ bool __stdcall function_1ac430(long actor_index, s_slot *slot)
 
 	if (!state->unknown0c)
 	{
-		real delay = random_range(character->lower, character->upper);
-		real scale = function_1ac433(1.0f, 3.0f);
+		real delay = function_259d0(&g_4e7408->unknown0, __FILE__, __LINE__, character->lower, character->upper);
+		real scale = function_259d0(&g_4e7408->unknown0, __FILE__, __LINE__, 1.0f, 3.0f);
 
 		state->unknown0d = true;
 		state->unknown12 = false;
@@ -323,7 +297,8 @@ bool __stdcall function_1ac430(long actor_index, s_slot *slot)
 		state->unknown22 = 0;
 		state->unknown3b = false;
 		{
-			real seconds = (real)g_510c54->field_2_3 * scale;
+			real rate = g_510c54->field_2_3;
+			real seconds = rate * scale;
 			long ticks;
 			__asm
 			{

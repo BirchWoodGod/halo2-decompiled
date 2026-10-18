@@ -894,7 +894,7 @@ void function_b75a0(long object_index, point3f const *point, vector3f const *for
 #if 0
 
 __declspec(noinline) bool function_0bfe60(dword const *mask, long node);
-bool function_10db60(long object_index);
+bool unit_animation_periodic_layer_active(long object_index);
 bool function_10edd0(long object_index);
 __declspec(noinline) void function_10ec00(long object_index, s_animation_state *state, long unused,
 	dword const *node_mask, long count, real_quaternion_transform *orientations, byte *mask);
@@ -957,7 +957,7 @@ transform4x3f const *__stdcall function_bd610(long object_index, byte const *nod
 		}
 	}
 	if (((1 << ((byte *)header)[3]) & 3) &&
-		(function_10db60(object_index) || function_10edd0(object_index)))
+		(unit_animation_periodic_layer_active(object_index) || function_10edd0(object_index)))
 	{
 		memcpy(g_4dc2f0, object_orientations, node_count * sizeof(rigid_transform_scaled));
 		memcpy(g_4d8f20, input_matrices, node_count * sizeof(transform4x3f));
@@ -995,8 +995,8 @@ void __stdcall function_bc070(real a, real b, real c, real d, real e)
 {
     (void)&a; (void)&b; (void)&c; (void)&d; (void)&e;
     volatile real *state = (volatile real *)g_4de2f4;
-    real vertical = b * 0.01745329238474369f;
-    real horizontal = a * 0.01745329238474369f;
+    real vertical = a * 0.01745329238474369f;
+    real horizontal = b * 0.01745329238474369f;
     state[0x60 / 4] = (real)(cos(horizontal) * cos(vertical));
     state[0x64 / 4] = (real)(sin(horizontal) * cos(vertical));
     state[0x68 / 4] = (real)sin(vertical);
@@ -1014,8 +1014,8 @@ void __stdcall function_bbfc0(real a, real b, real c, real d, real e)
 {
     (void)&a; (void)&b; (void)&c; (void)&d; (void)&e;
     volatile real *state = (volatile real *)g_4de2f4;
-    real vertical = b * 0.01745329238474369f;
-    real horizontal = a * 0.01745329238474369f;
+    real vertical = a * 0.01745329238474369f;
+    real horizontal = b * 0.01745329238474369f;
     state[0x48 / 4] = (real)(cos(horizontal) * cos(vertical));
     state[0x4c / 4] = (real)(sin(horizontal) * cos(vertical));
     state[0x50 / 4] = (real)sin(vertical);

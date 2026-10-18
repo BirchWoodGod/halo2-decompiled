@@ -44,7 +44,7 @@ struct s_audio_queue;
 extern s_audio_queue *g_4f939c;
 
 long __declspec(noinline) function_20f040(short arg_0);
-bool function_114b60(short arg_0, short arg_1, long arg_2, long arg_3, void const *arg_4);
+bool unit_submit_entry_request(short fallback_index, short entry_index, long unit_index, long priority, void const *extra);
 long function_20f2d0(short arg_1, long arg_0, long arg_2, long arg_3, long arg_4, s_20d0c0 const *arg_5);
 void function_20cbd0(short arg_0, s_audio_priority_table *arg_1, long arg_2,
     long arg_3, long arg_4, long arg_5, short arg_6,
@@ -69,7 +69,6 @@ PRIVATE __forceinline s_audio_priority_table *function_20cdc1(void)
     return local_0;
 }
 
-#pragma inline_depth(1)
 // @retail 0x20d0c0
 bool __stdcall function_20d0c0(s_audio_priority_table *arg_0, long arg_1, short arg_2,
     s_audio_selection const *arg_3, s_1fb7e0_data const *arg_4, long arg_5, long *arg_6)
@@ -98,7 +97,7 @@ bool __stdcall function_20d0c0(s_audio_priority_table *arg_0, long arg_1, short 
     if (*(short *)((byte *)local_5 + 0xa) >= 13)
     {
         short local_14 = local_18->type;
-        local_7 = function_114b60(local_14, NONE, local_1, 13, &local_6);
+        local_7 = unit_submit_entry_request(NONE, local_14, local_1, 13, &local_6);
     }
     else
     {
@@ -123,10 +122,9 @@ bool __stdcall function_20d0c0(s_audio_priority_table *arg_0, long arg_1, short 
     }
     return local_7;
 }
-#pragma inline_depth(255)
 
 // @retail 0x20ba60
-bool __stdcall function_20ba60(short arg_0, long arg_1, long arg_2, long arg_3, long arg_4, s_1fb7e0_data const *arg_5)
+bool __stdcall function_20ba60(short arg_0, long arg_1, long arg_2, long arg_3, short arg_4, s_1fb7e0_data const *arg_5)
 {
     volatile bool local_0 = false;
     if (*((byte *)g_4f55d0 + 0x20) && *(short *)((byte *)g_4f55d0 + 0x22) <= 0)

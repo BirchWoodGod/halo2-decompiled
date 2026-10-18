@@ -576,7 +576,7 @@ bool function_06e720(c_class_58d20 *session)
 		{
 			s_session_summary *summary = session->flag49fd ? (s_session_summary *)session->data4a00 : NULL;
 			s_unknown_108 machines;
-			__declspec(align(8)) s_session_player players[16];
+			s_session_player players[16];
 			memset(&machines, 0, sizeof(machines));
 			memset(players, 0, sizeof(players));
 			machines.data[0] = (1 << session->member_count) - 1;
@@ -619,9 +619,9 @@ bool function_06e720(c_class_58d20 *session)
 
 void function_148823();
 void window_manager_reset_all_windows();
-bool __stdcall function_236917(long controller);
-bool __stdcall function_236953(long controller);
-bool __stdcall function_2323ab(long controller);
+bool __stdcall dialog_callback_dashboard_network_configuration(long controller);
+bool __stdcall dialog_callback_sign_out_to_main_menu(long controller);
+bool __stdcall pause_game_quit_confirmed(long controller);
 void network_session_check_tracking(c_class_58d20 *session);
 void network_session_close(c_class_58d20 *session);
 
@@ -640,19 +640,19 @@ void function_6d270(void)
  function_148823();
  window_manager_reset_all_windows();
  long id = 0x38;
- dialog_choice_callback accept = function_236917;
+ dialog_choice_callback accept = dialog_callback_dashboard_network_configuration;
  bool choice = true;
  if (g_4e6948 && g_4e6948->flag1120 && g_4e6948->state == 1 && !g_4e6948->flag134)
  {
   choice = false;
   id = 0xb8;
-  accept = function_2323ab;
+  accept = pause_game_quit_confirmed;
  }
  bool present = session_dialog_is(g_54d598.windows_1[4].current, id);
  if (!session_dialog_is(g_54d598.windows_1[4].next, id) && !present)
  {
   if (choice)
-   dialog_choice_show(1, id, 4, (word)-1, accept, function_236953, 0);
+   dialog_choice_show(1, id, 4, (word)-1, accept, dialog_callback_sign_out_to_main_menu, 0);
   else
    dialog_ok_show(1, id, 4, (word)-1, accept, 0);
  }
@@ -743,13 +743,13 @@ bool function_90160(long task_index, s_match_result_data *result);
 long online_match_session_find(XNKID const *session_id);
 long qos_lookup(long kind, long count, long bits_per_second, s_qos_target *targets);
 bool qos_is_complete(long handle);
-bool function_7c530(const byte *data, long size, void *description);
+bool session_description_decode_buffer(const byte *data, long size, void *description);
 
 PRIVATE __forceinline bool function_6f4b1(const s_qos_result *arg_0, s_session_description *arg_1)
 {
  const byte *local_0 = *(byte *volatile const *)&arg_0->data;
  long local_1 = *(volatile const long *)&arg_0->data_size;
- return function_7c530(local_0, local_1, arg_1);
+ return session_description_decode_buffer(local_0, local_1, arg_1);
 }
 
 // @retail 0x6f4b0

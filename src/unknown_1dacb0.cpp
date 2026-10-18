@@ -5,7 +5,7 @@
 #include "unknown_11c920.h"
 #include "globals.h"
 #include "unknown_1dacb0.h"
-#include "unknown_123680.h"
+#include "animation_cache.h"
 #include "unknown_0259d0.h"
 #include "unknown_11cb00.h"
 
@@ -27,7 +27,7 @@ inline void graph_animation_request(s_graph_tag *graph, long animation_index)
 
 		if (resource->streamed)
 		{
-			function_1236f0(resource, true);
+			animation_cache_request_resource(resource, true);
 		}
 	}
 }
@@ -358,7 +358,7 @@ byte *function_1dd7c0(s_graph_tag *graph, c_type_709360 animation_id)
 	{
 		s_cache_resource *resource = &graph->resources[animation->resource_index];
 
-		return (byte *)function_1237e0(resource, animation->name) + animation->resource_offset;
+		return (byte *)animation_cache_get_resource(resource, animation->name) + animation->resource_offset;
 	}
 	return animation->data;
 }
@@ -390,7 +390,7 @@ void function_1ddab0(s_graph_tag *graph)
 
 		if (resource->streamed)
 		{
-			function_1236f0(resource, false);
+			animation_cache_request_resource(resource, false);
 		}
 	}
 }
@@ -452,7 +452,7 @@ PRIVATE __forceinline void graph_type_resources_request(s_graph_tag *graph, long
 
 					if (resource->streamed)
 					{
-						function_1236f0(resource, true);
+						animation_cache_request_resource(resource, true);
 					}
 				}
 			}
@@ -464,7 +464,7 @@ PRIVATE __forceinline void graph_type_resources_request(s_graph_tag *graph, long
 
 					if (resource->streamed)
 					{
-						function_1236f0(resource, false);
+						animation_cache_request_resource(resource, false);
 					}
 				}
 			}
@@ -645,13 +645,13 @@ bool function_1dceb0(s_graph_iterator3c *iterator, s_graph_tag *graph)
 /* the animation of the given name in the graph or the graphs it inherits
    from, the graph first */
 // @retail 0x1dd0b0
-c_type_709360 function_1dd0b0(s_graph_tag *graph, long name)
+c_type_709360 s_graph_tag::animation_by_name(long name)
 {
 	c_type_709360 animation_id;
-	s_graph_tag *current = graph;
+	s_graph_tag *current = this;
 	long graph_index = NONE;
 
-	if (graph)
+	if (this)
 	{
 
 		do
@@ -680,17 +680,17 @@ c_type_709360 function_1dd0b0(s_graph_tag *graph, long name)
 			if (animation_id.index == NONE)
 			{
 				graph_index++;
-				if (graph_index >= graph->inheritance_count)
+				if (graph_index >= inheritance_count)
 				{
 					break;
 				}
-				current = graph_inherited_get(graph, graph_index);
+				current = graph_inherited_get(this, graph_index);
 			}
 		}
 		while (current);
 		if (animation_id.index != NONE)
 		{
-			function_1dd9d0(graph, animation_id);
+			function_1dd9d0(this, animation_id);
 		}
 	}
 	return animation_id;

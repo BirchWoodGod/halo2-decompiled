@@ -23,11 +23,11 @@ void function_23538b(c_window_channel *channel);
 
 bool function_1900a5(long player);
 bool __stdcall function_148e6d(long user_index);
-bool function_138800();
+bool game_loop_running();
 long function_147f4f();
-c_class_1473c9 *__stdcall function_231995(s_screen_parameters *request);
+c_class_1473c9 *__stdcall online_y_menu_open(s_screen_parameters *request);
 long function_199d7c(void);
-long function_18fa4d(long mode);
+long player_slot_find_signed_in(long mode);
 void __stdcall function_238ea7(long user_index);
 void __stdcall function_238eb5(long user_index, long type);
 
@@ -215,7 +215,7 @@ void window_manager_online_menu_open(long user_index)
 	s_screen_parameters parameters;
 
 	parameters.field_c = 0;
-	function_149f49((s_message *)&parameters, 6, 0, 1 << user_index, 4, 4, (long)function_231995);
+	function_149f49((s_message *)&parameters, 6, 0, 1 << user_index, 4, 4, (long)online_y_menu_open);
 	parameters.load(&parameters);
 }
 
@@ -266,7 +266,7 @@ void window_manager_send_pending_join(void)
 	{
 		if (function_6c7e0())
 		{
-			long user_index = function_18fa4d(0);
+			long user_index = player_slot_find_signed_in(0);
 
 			if (user_index != NONE)
 			{
@@ -369,7 +369,7 @@ bool window_manager_main_menu_focused(void)
 {
 	bool result = false;
 
-	if (function_138800() && g_4e6948->state == 3)
+	if (game_loop_running() && g_4e6948->state == 3)
 	{
 		long screen = function_147f4f();
 
@@ -422,7 +422,7 @@ void window_manager_update_team_task(void)
 			online_teams_enumerate_get_results(g_54d598.team_task, &count, teams);
 			if ((long)count > 0)
 			{
-				long controller_index = function_18fa4d(1);
+				long controller_index = player_slot_find_signed_in(1);
 
 				if (controller_index >= 0 && controller_index < 4)
 				{
@@ -519,7 +519,7 @@ bool function_68290(void);
 long function_1910b8(long controller);
 void function_236299(long sound);
 c_class_1473c9 *__stdcall function_2320c4(s_screen_parameters *parameters);
-c_class_1473c9 *__stdcall function_1475c7(s_screen_parameters *parameters);
+c_class_1473c9 *__stdcall mp_pause_game_open(s_screen_parameters *parameters);
 
 /* a player slot's player (NONE when the user has none) */
 struct s_player_slot_player_view
@@ -595,7 +595,7 @@ void window_manager_handle_multiplayer_event(s_event const *event)
 					{
 						s_screen_parameters parameters;
 						parameters.field_c = 0;
-						function_149f49((s_message *)&parameters, 0, 0, 1 << user, 5, player, (long)function_1475c7);
+						function_149f49((s_message *)&parameters, 0, 0, 1 << user, 5, player, (long)mp_pause_game_open);
 						parameters.load(&parameters);
 					}
 				}

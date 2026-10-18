@@ -214,11 +214,11 @@ void online_message_block_set_text(s_state_block *block, const wchar_t *text)
 // @retail 0x8ef60
 void online_message_block_set_values(s_state_block *block, long value210, long value214, long value20c)
 {
- if (value210 < 0x499a)
+ if (0x499a > value210)
  {
+  block->unknown20c = (long)value214;
   block->unknown210 = value210;
   *(long *)block->unknown214 = value20c;
-  block->unknown20c = value214;
  }
 }
 
@@ -381,7 +381,7 @@ HRESULT online_task_continue(s_type_9df9da *task);
 /* unknown_0b49a0.cpp: the error string of a Live result */
 dword online_result_get_error_string(dword key);
 
-/* unknown_18f576.cpp */
+/* player_slots.cpp */
 bool player_slot_get_identity(long index, s_player_identity *identity);
 
 /* unknown_147f6d.cpp */

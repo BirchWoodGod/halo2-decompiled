@@ -79,10 +79,10 @@ long sound_permutation_chunks_size(long chunk_count, s_sound_permutation const *
 
 /* the size of the whole blocks of sound data that play for a duration */
 // @retail 0x218b00
-long sound_format_duration_to_bytes(long arg_da1d74, long encoding, long compression, real duration)
+long sound_format_duration_to_bytes(long encoding, long compression, long arg_da1d74, real duration)
 {
-	real bytes_per_sample = 1.0f / g_44a06c[compression] / g_44a060[encoding];
-	real block_count = bytes_per_sample * (real)g_44a054[arg_da1d74] * duration / (real)g_44a094[encoding] / (real)g_44a080[compression];
+	real block_count = 1.0f / g_44a060[encoding] / g_44a06c[compression] * (real)g_44a054[arg_da1d74] * duration /
+		(real)g_44a094[encoding] / (real)g_44a080[compression];
 
 	return g_44a094[encoding] * g_44a080[compression] * real_truncate(block_count);
 }

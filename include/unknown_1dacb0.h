@@ -4,7 +4,7 @@
    An animation is named by a c_type_709360: the graph it is in (NONE for the
    graph itself, else an index into the graph's inheritance list) and its index
    in that graph's animation block. An animation's data may sit in a streamed
-   resource of the graph (the cache of unknown_123680.cpp); the lookups request
+   resource of the graph (the cache of animation_cache.cpp); the lookups request
    the resources of the animations they touch. */
 
 #ifndef UNKNOWN_1DACB0_H
@@ -264,6 +264,9 @@ struct s_graph_tag
 		long *found_weapon_class, long *found_weapon_type);
 	c_type_709360 overlay_get(long mode, long weapon_class, long weapon_type, long set, long *found_mode,
 		long *found_weapon_class, long *found_weapon_type);
+	/* 0x1dd0b0: the animation of the given name here or in the graphs this
+	   one inherits from */
+	c_type_709360 animation_by_name(long name);
 	c_type_709360 animation_find(long mode, long weapon_class, long weapon_type, long set, long item_index,
 		long animation_index, long *found_mode, long *found_weapon_class, long *found_weapon_type);
 

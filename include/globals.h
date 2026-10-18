@@ -7,6 +7,7 @@ src/globals.cpp) */
 
 #include "unknown_0259d0.h"
 #include "data_array.h"
+#include <stddef.h>
 
 /* the game time globals (0x24 bytes); field_2_3 is read by
    firing position code; scale is 1.0 once initialized */
@@ -111,22 +112,32 @@ struct s_game_options_view
 	byte flag1120;
 	bool flag1121;
 	byte unknown1122[2];
-	long ticks1124;
+	long revert_ticks_left;
 	bool flag1128;
-	bool flag1129;
+	bool finish_sound_faded;
 	byte unknown112a[2];
-	long ticks112c;
+	long finish_ticks_left;
 	long value1130;
-	byte unknown1134[0x11f8 - 0x1134];
+	byte unknown1134[4];
+	/* the cluster masks game_clusters_update (game_loop.cpp) keeps: the clusters
+	   every player sees, those the local players see, and the first with
+	   the actors' clusters and the focus cluster's view added */
+	dword visible_clusters[16];
+	dword locally_visible_clusters[16];
+	dword active_clusters[16];
 	bool flag11f8;
 	byte unknown11f9;
 	short value11fa;
 	union
 	{
 		long value11fc;
-		short cluster11fc;
+		short focus_cluster_index;
 	};
 };
+typedef char assert_game_options_view_revert_ticks[((long)&((s_game_options_view *)0)->revert_ticks_left == 0x1124) ? 1 : -1];
+typedef char assert_game_options_view_visible_clusters[((long)&((s_game_options_view *)0)->visible_clusters == 0x1138) ? 1 : -1];
+typedef char assert_game_options_view_active_clusters[((long)&((s_game_options_view *)0)->active_clusters == 0x11b8) ? 1 : -1];
+typedef char assert_game_options_view_flag11f8[((long)&((s_game_options_view *)0)->flag11f8 == 0x11f8) ? 1 : -1];
 
 extern s_game_options_view *g_4e6948;
 
@@ -182,14 +193,43 @@ struct s_stats
 	long l[9];
 };
 
-/* the markers of types 7 and 8 found for one key (19cb20) */
-struct s_marker_pair
+/* a multiplayer teleporter (teleporters.cpp): the entrance and exit markers
+   (types 7 and 8) found for one key */
+struct s_teleporter
 {
-	long first;
-	long second;
-	long unknown08;
-	long unknown0c;
+	long entrance_marker_index;
+	long exit_marker_index;
+	long recharge_ticks;        /* ticks until the teleporter works again */
+	long blocked_message_ticks; /* ticks until the blocked message shows again */
 };
+typedef char assert_teleporter_size[(sizeof(s_teleporter) == 0x10) ? 1 : -1];
+
+/* a player's entry (0x1c bytes) in the multiplayer globals' scores */
+struct s_game_engine_player_points
+{
+	byte unknown00[4];
+	short score;
+	byte unknown06[0x1c - 0x6];
+};
+
+/* a team's entry (0x12 bytes) in the multiplayer globals' scores */
+struct s_game_engine_team_points
+{
+	byte unknown00[4];
+	short score;
+	byte unknown06[0x12 - 0x6];
+};
+
+/* the multiplayer globals' scores (at +0x304) */
+struct s_game_engine_scores
+{
+	s_game_engine_player_points players[16];
+	s_game_engine_team_points teams[8];
+	byte unknown250[0x254 - 0x250];
+};
+typedef char assert_game_engine_player_points_size[(sizeof(s_game_engine_player_points) == 0x1c) ? 1 : -1];
+typedef char assert_game_engine_team_points_size[(sizeof(s_game_engine_team_points) == 0x12) ? 1 : -1];
+typedef char assert_game_engine_scores_size[(sizeof(s_game_engine_scores) == 0x254) ? 1 : -1];
 
 struct s_mp_globals
 {
@@ -210,13 +250,14 @@ struct s_mp_globals
 	word we0;
 	byte unknowne2[0xfc - 0xe2];
 	s_stats stats;
-	byte unknown120[0x558 - 0x120];
+	byte unknown120[0x304 - 0x120];
+	s_game_engine_scores scores;
 	s_player_info players[1];
 	byte unknown570[0x6dc - 0x570];
 	long l6dc[4];
 	byte unknown6ec[0xafc - 0x6ec];
-	s_marker_pair marker_pairs[16];
-	long marker_pair_count;
+	s_teleporter teleporters[16];
+	long teleporter_count;
 	byte unknownc00[4];
 	long lc04;
 	bool bc08;
@@ -224,6 +265,10 @@ struct s_mp_globals
 	long engine_index;
 	byte unknownc18[0x84];
 };
+typedef char assert_mp_globals_scores[(offsetof(s_mp_globals, scores) == 0x304) ? 1 : -1];
+typedef char assert_mp_globals_players[(offsetof(s_mp_globals, players) == 0x558) ? 1 : -1];
+typedef char assert_mp_globals_teleporters[(offsetof(s_mp_globals, teleporters) == 0xafc) ? 1 : -1];
+typedef char assert_mp_globals_engine_index[(offsetof(s_mp_globals, engine_index) == 0xc14) ? 1 : -1];
 
 extern s_mp_globals *g_4e9ae8;
 
@@ -426,8 +471,11 @@ extern vector3f *g_4687a4;
 /* the rasterizer state flags, shared by 030290 and 0494b0 */
 extern dword g_4ba014;
 
-/* the animation sampling state, shared by the channel decoders of 28c510
-   and 28cdb0 (each defines its own view of the animation data and output) */
+/* the animation sampling state, shared by the samplers and the codecs' channel
+   decoders (src/animation_channel_decoders.cpp, src/animation_keyframe_decoders.cpp; the
+   data layouts are in animation_channel_decoders.h): g_5044b4, g_5044b8 and g_5044bc
+   index the current rotation, translation and scale channel, and the
+   decoders write the node to *g_5044c0 */
 struct s_animation_data;
 struct s_animation_output;
 extern long g_5044b4;
