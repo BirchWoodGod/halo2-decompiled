@@ -959,17 +959,16 @@ void __stdcall function_17b60(byte *context, s_packed_shader_range const *range)
     if (range->count() <= 0) return;
     byte *definition = *(byte **)(context + 0xc);
     byte const *entry = *(byte **)(definition + 0x58) + range->index() * 4;
-    for (long i = 0; i < (long)range->count(); ++i, entry += 4)
+    for (long i = 0; i < (long)range->count(); entry += 4, ++i)
     {
         definition = *(byte **)(context + 0xc);
         word selection = (*(word **)(definition + 0x50))[entry[3]];
         short index = (*(short **)(definition + 0x48))[(selection & 0x1ff) * 2];
         byte *parameter = *(byte **)(definition + 0x40) + index * 20;
-        s_1b230_function const *curve = (s_1b230_function *)(parameter + 12);
         s_texture_stage_parameter const *setting = &g_467020[entry[0]];
-        D3DRENDERSTATETYPE type = (D3DRENDERSTATETYPE)setting->state;
         if (entry[1] == 1)
         {
+            s_1b230_function const *curve = (s_1b230_function *)(parameter + 12);
             real value = function_1b230(curve, *(long *)parameter, *(long *)(parameter + 4), *(real *)(parameter + 8));
             byte *data = curve->data;
             if (!(data[1] & 0xf0))
@@ -985,21 +984,27 @@ void __stdcall function_17b60(byte *context, s_packed_shader_range const *range)
                 {
                     dword alpha = (dword)rounded_shader_alpha(value) << 24;
                     dword previous;
-                    D3DDevice_GetRenderState(type, &previous);
-                    D3DDevice_SetRenderState(type, (previous & 0xffffff) | alpha);
+                    D3DDevice_GetRenderState((D3DRENDERSTATETYPE)setting->state, &previous);
+                    D3DDevice_SetRenderState((D3DRENDERSTATETYPE)setting->state, alpha ^ ((previous ^ alpha) & 0xffffff));
                 }
                 break;
-            case 1: D3DDevice_SetRenderState(type, *(dword *)&value); break;
-            case 2: D3DDevice_SetRenderState(type, rounded_shader_integer(value)); break;
+            case 1: D3DDevice_SetRenderState((D3DRENDERSTATETYPE)setting->state, *(dword *)&value); break;
+            case 2:
+                {
+                    dword integer_value = rounded_shader_integer(value);
+                    D3DDevice_SetRenderState((D3DRENDERSTATETYPE)setting->state, integer_value);
+                }
+                break;
             }
         }
         else
         {
+            s_1b230_function const *curve = (s_1b230_function *)(parameter + 12);
             real value = function_1b230(curve, *(long *)parameter, *(long *)(parameter + 4), *(real *)(parameter + 8));
             dword color = function_13bc00((s_tag_data const *)curve, value);
             dword previous;
-            D3DDevice_GetRenderState(type, &previous);
-            D3DDevice_SetRenderState(type, (previous & 0xff000000) | (color & 0xffffff));
+            D3DDevice_GetRenderState((D3DRENDERSTATETYPE)setting->state, &previous);
+            D3DDevice_SetRenderState((D3DRENDERSTATETYPE)setting->state, (previous & 0xff000000) | (color & 0xffffff));
         }
     }
 }
