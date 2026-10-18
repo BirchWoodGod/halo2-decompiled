@@ -82,6 +82,28 @@ KNOWN_STARTS = {
     0x2b55ae: 'tail jump target of 0x2b557a',
 }
 
+# Data inside code sections: [start, end) ranges that hold no functions, each with
+# its evidence. Discovery takes their bytes for code (they are reached by nothing,
+# so the gaps pass fill them), so the rows it finds there are dropped.
+DATA_RANGES = {
+    # WMADEC's tables, from after 0x392447 (ends `ret 0x14` at 0x39250c) to the end
+    # of the section. The decoder's code reads them as data, never as code: for
+    # example `mov edx, dword ptr [edi*4 + 0x392830]` at 0x38d2be, `mov esi,
+    # 0x39259c` at 0x388da4 (one of a run of 16-byte strided table rows) and
+    # `push 0x3929b8` at 0x390027; no call or jump from code lands inside, and
+    # decoded as code the bytes are full of retf, iretd, into, in and out.
+    (0x392510, 0x3a061c): 'WMADEC tables',
+    # XPP: the dword 0xff and zero padding in front of 0x408940 (push ebp ;
+    # mov ebp, esp); nothing refers to it
+    (0x408933, 0x408940): 'padding before 0x408940',
+}
+
+
+def in_data(va):
+    """Whether va lies in one of DATA_RANGES."""
+    return any(start <= va < end for start, end in DATA_RANGES)
+
+
 EH_MAX_SIZE = 32
 MIN_HANDLER_THUNKS = 8
 
@@ -241,7 +263,9 @@ def main():
     for section in image.sections:
         if section.name not in CODE_SECTIONS and not (section.name.startswith('BINK') and section.name != 'BINKDATA'):
             continue
-        found = discover(image, seeds=old_rows.keys() | KNOWN_STARTS.keys(), text=section, not_starts=NOT_STARTS)
+        seeds = {va for va in old_rows.keys() | KNOWN_STARTS.keys() if not in_data(va)}
+        found = discover(image, seeds=seeds, text=section, not_starts=NOT_STARTS)
+        found = {va: fn for va, fn in found.items() if not in_data(va)}
         lib_hits = {}
         if section.name == '.text':
             lib_hits = library_hits(
