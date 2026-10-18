@@ -551,20 +551,18 @@ byte function_016a90();
 long function_13a690(long mode)
 {
 	long result = 0;
-	short width = g_4b9dd6 - g_4b9dd2;
 	short top = g_4b9dd0;
 	short bottom = g_4b9dd4;
 
-	if (width < 640 || (short)(bottom - top) < 480)
+	if ((short)(g_4b9dd6 - g_4b9dd2) < 640 || (short)(bottom - top) < 480)
 	{
-		result = 1;
-		if (width < 640 && (short)(bottom - top) < 480)
-		{
+		if ((short)(g_4b9dd6 - g_4b9dd2) < 640 && (short)(bottom - top) < 480)
 			result = 2;
-		}
-		else if (function_016a90() && mode == 3)
+		else
 		{
-			result = 2;
+			result = 1;
+			if (function_016a90() && mode == 3)
+				result = 2;
 		}
 	}
 

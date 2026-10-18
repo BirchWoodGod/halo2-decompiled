@@ -29,52 +29,52 @@ static __forceinline long function_9c912(long arg_0, long arg_1, long arg_2)
 // @retail 0x9c910
 bool c_damage_section_response_event_definition::v11(long arg_0, long const *arg_1, long arg_2, void const *arg_3)
 {
-    bool local_0 = false;
-    arg_1 = (long const *)function_a58d0(arg_1[0]);
-    volatile bool local_12 = local_0;
-    if ((long)arg_1 != NONE)
+    bool result = false;
+    long object_index = function_a58d0(arg_1[0]);
+    if (object_index != NONE)
     {
-        byte *local_3 = (byte *)((s_object_header *)g_4e0300->data)[(long)arg_1 & 0xffff].object;
-        byte *local_4 = g_4e3b44[*(long *)local_3 & 0xffff].bytes;
-        long local_5 = *(long *)(local_4 + 0x38);
-        if (local_5 != NONE)
+        byte *object = (byte *)((s_object_header *)g_4e0300->data)[object_index & 0xffff].object;
+        byte *definition = g_4e3b44[*(long *)object & 0xffff].bytes;
+        long damage_index = *(long *)(definition + 0x38);
+        if (damage_index != NONE)
         {
-            byte *local_6 = local_3 + *(short *)(local_3 + 0x122);
-            long const *local_2 = (long const *)arg_3;
-            long local_7 = local_2[0];
-            if (local_7 >= 0 && local_7 < (long)((dword)(*(short *)(local_3 + 0x120)) / 8))
+            byte *region_flags = object + *(short *)(object + 0x122);
+            long const *event = (long const *)arg_3;
+            long region_index = event[0];
+            if (region_index >= 0 && region_index < (long)((dword)(*(short *)(object + 0x120)) / 8))
             {
-                byte *local_8 = g_4e3b44[local_5 & 0xffff].bytes;
-                if (*(long *)(local_8 + 0x60) > 0)
+                byte *damage = g_4e3b44[damage_index & 0xffff].bytes;
+                if (*(long *)(damage + 0x60) > 0)
                 {
-                    byte *local_9 = *(byte **)(*(byte **)(local_8 + 0x64) + 0xc0) + local_7 * 0x38;
-                    arg_3 = (void const *)local_2[1];
-                    long local_10 = (long)arg_3;
-                    if (local_10 >= 0 && local_10 < *(long *)(local_9 + 0xc))
+                    byte *region = *(byte **)(*(byte **)(damage + 0x64) + 0xc0) + region_index * 0x38;
+                    /* the permutation index lives in the event pointer's slot from here on */
+                    arg_3 = (void const *)event[1];
+                    long permutation_index = (long)arg_3;
+                    if (permutation_index >= 0 && permutation_index < *(long *)(region + 0xc))
                     {
-                        long local_11 = local_2[2];
-                        if (function_9c912(local_11, 0, 1) == local_11)
+                        long mode = event[2];
+                        if (function_9c912(mode, 0, 1) == mode)
                         {
-                            long local_14 = *(volatile long const *)(local_2 + 1);
-                            if (!(*(word *)(local_6 + local_7 * 8) & (1 << local_14)))
+                            long permutation_bit = event[1];
+                            if (!(*(word *)(region_flags + region_index * 8) & (1 << permutation_bit)))
                             {
-                                if (local_11 != 1 || *(long *)(*(byte **)(local_9 + 0x10) + local_14 * 0x50 + 0x34) != NONE)
+                                if (mode != 1 || *(long *)(*(byte **)(region + 0x10) + permutation_bit * 0x50 + 0x34) != NONE)
                                 {
-                                    function_db760(local_7, *(volatile long *)&arg_3, *(volatile long *)&arg_1, local_11);
-                                    local_0 = true;
+                                    function_db760(region_index, (long)arg_3, object_index, mode);
+                                    result = true;
                                 }
                                 else
-                                    local_0 = local_12;
+                                    result = false;
                             }
                             else
-                                local_0 = local_12;
+                                result = false;
                         }
                     }
                 }
             }
         }
     }
-    return local_0;
+    return result;
 }
 
 struct s_9cca0
