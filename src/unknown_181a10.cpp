@@ -120,15 +120,11 @@ void c_nearest_query_callback::query(s_node *node, s_query_hit const *hit)
 		s_query_result *query_result = result;
 		if (query_result->fraction > distance)
 		{
-			hkEntity *entity = 0;
 			excluded = excluded_component;
-			if (excluded != NONE)
-			{
-				entity = query_node_entity(node);
-			}
+			hkEntity *entity = excluded != NONE ? query_node_entity(node) : 0;
 			bool include = true;
-			if (entity)
-				include = havok_entity_component_index_get(entity) != excluded;
+			if (entity && havok_entity_component_index_get(entity) == excluded)
+				include = false;
 			if (include)
 			{
 				vector3f normal;
