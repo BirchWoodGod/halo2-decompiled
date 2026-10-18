@@ -1803,9 +1803,7 @@ void function_73ca0(byte *results)
         count = batch->operation_count;
         procedures = (const XONLINE_STAT_PROC *)batch->operations;
     }
-    s_session_id session_id = g_510528;
-    s_session_id round_key = g_510520;
-    long task = online_round_report((const XNKID *)&session_id, (const ULONGLONG *)&round_key,
+    long task = online_round_report((const XNKID *)&g_510528, (const ULONGLONG *)&g_510520,
         count, procedures, local_host, g_51051d);
     if (task != NONE)
     {
@@ -1870,10 +1868,8 @@ void function_755d0(void)
             long last = g_510534;
             if (query_time_now() - last >= interval)
             {
-                s_session_id session_id = g_510528;
-                s_session_id round_key = g_510520;
-                long created = online_round_extend((const XNKID *)&session_id,
-                    (const ULONGLONG *)&round_key, (word)g_network_configuration.value374);
+                long created = online_round_extend((const XNKID *)&g_510528,
+                    (const ULONGLONG *)&g_510520, (word)g_network_configuration.value374);
                 if (created != NONE)
                     g_510538 = created;
             }
