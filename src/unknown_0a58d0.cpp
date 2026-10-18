@@ -617,46 +617,51 @@ bool function_aa970(long index)
 }
 
 #include "unknown_0d0690.h"
+#include "unknown_0259d0.h"
 
 // @retail 0xaa9e0
 void function_aa9e0(long index, point3f const *previous_position, vector3f const *velocity)
 {
- s_record_pool *objects = g_4e0300;
- s_object_header *header = &((s_object_header *)objects->data)[index & 0xffff];
+ s_object_header *header = &((s_object_header *)g_4e0300->data)[index & 0xffff];
  if (header->unknown03[0] == 1)
  {
+  s_record_pool *objects = g_4e0300;
   byte *object = (byte *)header->object;
   real elapsed = g_510c54->rate;
+  vector3f velocity_change;
+  s_object_child_iterator iterator;
+
   if (previous_position)
   {
-   real x = *(real *)(object + 0x64) - previous_position->x;
-   real y = *(real *)(object + 0x68);
-   real z = *(real *)(object + 0x6c);
-   real accumulated_x = *(real *)(object + 0x270);
-   y -= previous_position->y;
-   z -= previous_position->z;
-   accumulated_x += x;
-   *(real *)(object + 0x270) = accumulated_x;
-   *(real *)(object + 0x274) += y;
-   *(real *)(object + 0x278) += z;
+   vector3f *accumulated = (vector3f *)(object + 0x270);
+   vector3f displacement;
+
+   vector3d_from_points3d(previous_position, (point3f const *)(object + 0x64), &displacement);
+   accumulated->i += displacement.i;
+   accumulated->j += displacement.j;
+   accumulated->k += displacement.k;
   }
-  vector3f difference;
   if (velocity)
   {
-   difference.k = (velocity->k - *(real *)(object + 0x90)) * elapsed;
-   difference.j = (velocity->j - *(real *)(object + 0x8c)) * elapsed;
-   difference.i = (velocity->i - *(real *)(object + 0x88)) * elapsed;
+   velocity_change.i = velocity->i - *(real *)(object + 0x88);
+   velocity_change.j = velocity->j - *(real *)(object + 0x8c);
+   velocity_change.k = velocity->k - *(real *)(object + 0x90);
+   velocity_change.i *= elapsed;
+   velocity_change.j *= elapsed;
+   velocity_change.k *= elapsed;
   }
-  s_object_child_iterator iterator;
   function_d0620(index, &iterator);
   while (function_d0690(&iterator))
   {
    byte *child = (byte *)((s_object_header *)objects->data)[iterator.child_index & 0xffff].object;
+
    if (velocity)
    {
-    *(real *)(child + 0x270) = difference.i + *(real *)(child + 0x270);
-    *(real *)(child + 0x274) = difference.j + *(real *)(child + 0x274);
-    *(real *)(child + 0x278) = difference.k + *(real *)(child + 0x278);
+    vector3f *accumulated = (vector3f *)(child + 0x270);
+
+    accumulated->i += velocity_change.i;
+    accumulated->j += velocity_change.j;
+    accumulated->k += velocity_change.k;
    }
    *(dword *)(child + 0x134) |= 0x10000000;
   }

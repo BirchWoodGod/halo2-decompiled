@@ -832,15 +832,14 @@ bool c_game_engine_statborg_entity_definition::v23(s_entity_slot *entity, long b
 // @retail 0x9bad0
 bool c_game_engine_statborg_entity_definition::v24(s_entity_slot *entity)
 {
-	s_mp_globals *local_0 = g_4e9ae8;
 	long id = NONE;
-	if (g_55e4d0[local_0->engine_index])
-		id = local_0->value28;
+	if (g_55e4d0[g_4e9ae8->engine_index])
+		id = g_4e9ae8->value28;
 	long local_1 = entity->id;
 	bool result = false;
 	if (local_1 == id)
 	{
-		local_0->value28 = NONE;
+		g_4e9ae8->value28 = NONE;
 		result = true;
 	}
 	return result;

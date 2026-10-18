@@ -165,19 +165,20 @@ void function_11f0d0(
 		position->k = diff.k * s + position->k;
 	}
 
-	axis = *position;
-	theta = function_30bf0(&axis) * rate;
+	vector3f rotation_axis = *position;
+	theta = function_30bf0(&rotation_axis) * rate;
 	if (theta != 0.f)
 	{
 		real s = (real)sin(theta);
 		real c = (real)cos(theta);
-		real dot = (forward->i * axis.i + (forward->j * axis.j + forward->k * axis.k)) * (1.f - c);
-		real cx = forward->k * axis.i - forward->i * axis.k;
-		real cy = forward->i * axis.j - forward->j * axis.i;
-		real cz = forward->j * axis.k - forward->k * axis.j;
-		forward->i = forward->i * c + axis.i * dot - cz * s;
-		forward->j = forward->j * c + axis.j * dot - cx * s;
-		forward->k = forward->k * c + axis.k * dot - cy * s;
+		real dot = (forward->i * rotation_axis.i +
+			(forward->j * rotation_axis.j + forward->k * rotation_axis.k)) * (1.f - c);
+		real cx = forward->k * rotation_axis.i - forward->i * rotation_axis.k;
+		real cy = forward->i * rotation_axis.j - forward->j * rotation_axis.i;
+		real cz = forward->j * rotation_axis.k - forward->k * rotation_axis.j;
+		forward->i = forward->i * c + rotation_axis.i * dot - cz * s;
+		forward->j = forward->j * c + rotation_axis.j * dot - cx * s;
+		forward->k = forward->k * c + rotation_axis.k * dot - cy * s;
 		function_30bf0(forward);
 	}
 }
