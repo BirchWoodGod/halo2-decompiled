@@ -1646,7 +1646,7 @@ bool function_1a5e40(long object_index, bool alternate, long marker_index, s_tar
 			function_1a6340(&axis, direction, &candidate->point, &first->position, origin, marker->radius);
 		}
 		else
-			function_1a65b0(direction, &candidate->point, origin, &first->position, marker->radius);
+			function_1a65b0(direction, &candidate->point, &first->position, origin, marker->radius);
 		if (marker->flags & 1)
 			candidate->flags |= 1;
 		else

@@ -60,22 +60,30 @@ long function_23f990(long first, long second, char criterion, bool fallback)
 		switch (criterion)
 		{
 		case 10:
-			return (function_161e10(second) ? 1L : 0L) - (function_161e10(first) ? 1L : 0L);
+			result = (function_161e10(second) ? 1L : 0L) - (function_161e10(first) ? 1L : 0L);
+			break;
 		case 11:
-			return (long)!function_15db80(second) - (long)!function_15db80(first);
+			result = (long)!function_15db80(second) - (long)!function_15db80(first);
+			break;
 		case 12:
-			return table->teams[second].values[7] - table->teams[first].values[7];
+			result = table->teams[second].values[7] - table->teams[first].values[7];
+			break;
 		case 13:
-			return table->teams[second].values[0] - table->teams[first].values[0];
+			result = table->teams[second].values[0] - table->teams[first].values[0];
+			break;
 		case 14:
-			return table->teams[second].values[1] - table->teams[first].values[1]
+			result = table->teams[second].values[1] - table->teams[first].values[1]
 				- table->teams[first].values[0] + table->teams[second].values[0];
+			break;
 		case 15:
-			return table->teams[second].values[2] - table->teams[first].values[2];
+			result = table->teams[second].values[2] - table->teams[first].values[2];
+			break;
 		case 16:
-			return table->teams[first].values[3] - table->teams[second].values[3];
+			result = table->teams[first].values[3] - table->teams[second].values[3];
+			break;
 		case 17:
-			return table->teams[second].values[6] - table->teams[first].values[6];
+			result = table->teams[second].values[6] - table->teams[first].values[6];
+			break;
 		case 18:
 			if (fallback)
 				result = first - second;

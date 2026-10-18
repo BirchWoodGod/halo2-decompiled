@@ -933,15 +933,7 @@ void sound_voice_reset_stream(short voice_index)
 	}
 }
 
-long sound_format_duration_to_bytes(long arg_da1d74, long encoding, long compression, real duration);
-
-/* sound_format_duration_to_bytes (0x218b00) with retail's parameter order:
-   the encoding and compression first (its definition in
-   src/unknown_218ac0.cpp still takes arg_da1d74 first) */
-static inline long sound_duration_bytes(long encoding, long compression, long arg_da1d74, real duration)
-{
-	return sound_format_duration_to_bytes(arg_da1d74, encoding, compression, duration);
-}
+long sound_format_duration_to_bytes(long encoding, long compression, long arg_da1d74, real duration);
 long sound_permutation_chunks_size(long chunk_count, s_sound_permutation const *permutation);
 void function_21f5d0(long channel_index, long offset);
 
@@ -958,7 +950,7 @@ void sound_voice_restart_stream(short voice_index)
 		{
 			s_sound_playback *sound = SOUND_PLAYBACK_GET(voice->sound_index);
 			s_sound_definition *definition = sound_definition_get(sound->definition_index);
-			long offset = sound_duration_bytes((char)definition->format, (char)definition->type, (char)definition->unknown03, voice->unknown10);
+			long offset = sound_format_duration_to_bytes((char)definition->format, (char)definition->type, (char)definition->unknown03, voice->unknown10);
 
 			offset -= sound_permutation_chunks_size(voice->chunk_index, voice->permutation);
 			function_21f5d0(voice->channel_index, offset);

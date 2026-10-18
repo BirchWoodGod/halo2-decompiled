@@ -40,7 +40,7 @@ extern s_interpolator_globals *g_4e6740;
 real __stdcall scenario_ramp_evaluate(long arg_0, real arg_1);
 
 // @retail 0x12eb00
-long function_12eb00(long arg_0, s_fog_cluster_distance *arg_1, s_12eb00 *arg_2)
+long function_12eb00(long count, s_fog_cluster_distance *clusters, s_12eb00 *output)
 {
 	long local_0[18][2] = {
 		{4, 12}, {0x10, 4}, {0x18, 4}, {0x1c, 4}, {0x20, 4}, {0x24, 12},
@@ -49,14 +49,17 @@ long function_12eb00(long arg_0, s_fog_cluster_distance *arg_1, s_12eb00 *arg_2)
 	};
 	long local_1 = 0;
 	s_12ed00 *local_2 = (s_12ed00 *)g_4e0350;
-	if (local_2 && arg_0 > 0)
+	if (local_2 && count > 0)
 	{
+		long arg_0 = count;
+		s_fog_cluster_distance *arg_1 = clusters;
+		s_12eb00 *arg_2 = output;
 		do
 		{
 			byte *local_3 = *(byte **)((byte *)g_4e0348 + 0xa0) + arg_1->cluster_index * 0xb0;
 			signed char local_4 = *(signed char *)(local_3 + 0x6f);
 			s_12eb00 *local_5 = NULL;
-			if (local_4 >= 0 && local_4 < local_2->field_340)
+			if (local_4 != NONE && local_4 >= 0 && local_4 < local_2->field_340)
 				local_5 = &local_2->field_344[local_4];
 			if (local_5 && local_5->field_d8 > 0)
 			{

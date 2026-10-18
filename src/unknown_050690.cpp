@@ -162,8 +162,7 @@ long __stdcall function_516d0(bool reduced, dword seed,
 	if (reduced)
 	{
 		exponent = definition->exponent - 2;
-		if (exponent < 0)
-			exponent = 0;
+		exponent = exponent < 0 ? 0 : exponent;
 	}
 	else
 		exponent = definition->exponent;
@@ -175,7 +174,7 @@ long __stdcall function_516d0(bool reduced, dword seed,
 	real weights[257];
 	memset(sums, 0, sizeof(sums));
 	memset(weights, 0, sizeof(weights));
-	for (long level = 0; level < level_count; level++)
+	for (volatile long level = 0; level < level_count; level++)
 	{
 		if (!(definition->active_levels & (1 << level)))
 			continue;
