@@ -356,7 +356,6 @@ bool function_23dba0(long player_index)
 long function_23dc40(long player_index, long last_index, bool same_team)
 {
 	s_record_pool *players = g_4e8c24;
-	long index = NONE;
 	long team;
 
 	if (same_team)
@@ -364,6 +363,7 @@ long function_23dc40(long player_index, long last_index, bool same_team)
 	else
 		team = NONE;
 	long result = NONE;
+	long index = NONE;
 
 	for (;;)
 	{

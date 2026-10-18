@@ -112,7 +112,7 @@ void __stdcall function_df6c0(point3f *bottom, vector3f *axis, long object_index
 void function_1a6340(vector3f const *a, vector3f const *b, point3f *out, point3f const *c, point3f const *p, real radius);
 
 // @retail 0x1a62e0
-bool function_1a62e0(long object_index, point3f *out, vector3f const *direction, point3f const *origin)
+bool function_1a62e0(long object_index, point3f const *origin, vector3f const *direction, point3f *out)
 {
 	struct s_1a62e1 { real field_0; point3f field_4; vector3f field_10; };
 	s_1a62e1 local_0;
@@ -1622,7 +1622,7 @@ bool function_1a5e40(long object_index, bool alternate, long marker_index, s_tar
 	{
 		if (!((1 << object->type) & 1))
 			return result;
-		if (!function_1a62e0(object_index, &candidate->point, direction, origin))
+		if (!function_1a62e0(object_index, origin, direction, &candidate->point))
 			return false;
 		s_candidate_unit_definition *definition = (s_candidate_unit_definition *)g_4e3b44[object->definition_index & 0xffff].bytes;
 		if (definition->flags & 1)
@@ -1665,8 +1665,7 @@ bool function_1a5e40(long object_index, bool alternate, long marker_index, s_tar
 	candidate->distance = function_30bf0(&candidate->direction);
 	candidate->alternate = alternate;
 	real cosine = dot3f(&candidate->direction, *local_0);
-	cosine = -1.0f > cosine ? -1.0f : cosine > 1.0f ? 1.0f : cosine;
-	candidate->angle = function_50650(cosine);
+	candidate->angle = function_50650(-1.0f > cosine ? -1.0f : cosine > 1.0f ? 1.0f : cosine);
 	return true;
 }
 

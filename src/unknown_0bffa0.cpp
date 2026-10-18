@@ -1328,20 +1328,20 @@ struct s_light_setup_scenario_ab
 void function_c09c0(long mode)
 {
     s_light_setup_scenario_ab *scenario = (s_light_setup_scenario_ab *)g_4e0350;
-    long force = mode == 5 || mode == 4;
-    long const *force_reference = &force;
+    bool force = mode == 5 || mode == 4;
     long *count = &scenario->placement_count;
     for (long i = 0; i < *count; ++i)
     {
-        s_light_placement_ab *placement = &scenario->placements[i];
+        s_light_placement_ab *placement = &((s_light_setup_scenario_ab *)g_4e0350)->placements[i];
         long palette_index = placement->palette_index;
-        if (palette_index != NONE && palette_index >= 0 && palette_index < scenario->palette_count)
+        if (palette_index != NONE && palette_index >= 0 &&
+            palette_index < ((s_light_setup_scenario_ab *)g_4e0350)->palette_count)
         {
-            long tag_index = scenario->palette[palette_index].tag_index;
-            if (tag_index != NONE)
-                function_c0520(tag_index, i, *force_reference, placement);
+            s_light_palette_setup_ab const *entry =
+                &((s_light_setup_scenario_ab *)g_4e0350)->palette[palette_index];
+            if (entry->tag_index != NONE)
+                function_c0520(entry->tag_index, i, force, placement);
         }
-        scenario = (s_light_setup_scenario_ab *)g_4e0350;
     }
 }
 
