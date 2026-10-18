@@ -346,6 +346,31 @@ struct s_player_machine_table
 long function_14bc00(long player_index, const s_player_creation_record *record);
 void __stdcall function_14bf80(long player_index, const s_player_creation_record *record);
 
+/* the team a new player's record keeps: pinned to the eight teams in a team
+   game, the player's own index otherwise */
+static inline void creation_record_set_team(char *team, const s_simulation_player_update *update)
+{
+ char value = *team;
+ if (value == NONE)
+  return;
+ if (g_4e6948->flags184.bit0)
+ {
+  if (value < 0)
+  {
+   *team = 0;
+   return;
+  }
+  if (value > 7)
+  {
+   *team = 7;
+   return;
+  }
+ }
+ else
+  value = (char)update->player_index;
+ *team = value;
+}
+
 // @retail 0x85140
 bool __stdcall function_85140(const s_simulation_player_update *update)
 {
@@ -414,17 +439,7 @@ bool __stdcall function_85140(const s_simulation_player_update *update)
  }
  memcpy(record.key, update->key, sizeof(record.key));
  memcpy(record.configuration, update->configuration, sizeof(record.configuration));
- char *team = (char *)record.configuration + 0x7c;
- if (*team != NONE)
- {
-  if (g_4e6948->flags184.bit0)
-  {
-   if (*team < 0) *team = 0;
-   else if (*team > 7) *team = 7;
-  }
-  else
-   *team = (char)update->player_index;
- }
+ creation_record_set_team((char *)record.configuration + 0x7c, update);
  if (!existing)
  {
   if (function_14bc00(index, &record) != NONE)

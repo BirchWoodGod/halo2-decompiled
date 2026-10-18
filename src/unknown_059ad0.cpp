@@ -3288,7 +3288,7 @@ extern "C" DWORD WINAPI XGetLanguage(void);
 // @retail 0x59bd0 standard
 bool __stdcall network_session_host(c_class_58d20 *session, long mode, long local, const XNKID *kid, const XNKEY *key, long count, const dword *identities, const long *values, const s_session_id *id, long timeout)
 {
-	volatile bool result = true;
+	bool result = true;
 	s_session_member_identity identity;
 	if (!mode)
 	{
@@ -3300,61 +3300,63 @@ bool __stdcall network_session_host(c_class_58d20 *session, long mode, long loca
 			function_07a9b0();
 		*(XNADDR *)&identity = g_4cf793;
 		if (!g_4cf792)
-			return false;
-		if (kid && key)
+			result = false;
+		else if (kid && key)
 		{
 			if (!network_session_join_key(session, mode, kid, key, local))
-				return false;
+				result = false;
 		}
-		else
-		{
-			if (!network_session_create_key(session, local, mode))
-				return false;
-		}
+		else if (!network_session_create_key(session, local, mode))
+			result = false;
 	}
-	session->value18 = mode;
-	memset(&session->update_count, 0, 0x14b0);
-	session->type = 1;
-	session->value497c = 0;
-	session->time4984 = network_session_time_now();
-	session->update_count = 0;
-	session->value4988 = get_current_language();
-	session->value498c = 0;
-	session->value4990 = 16;
-	session->value4994 = 16;
-	session->value49a4 = 0;
-	session->value49c8 = NONE;
-	session->value4d08 = NONE;
-	session->value4d0c = NONE;
-	transport_get_random_bytes(8, (byte *)&session->value4da0);
-	session->value5dd0 = NONE;
-	session->value49b4 = NONE;
-	session->value5e20 = NONE;
-	session->value4da8 = 0xdeadbeef;
-	session->value4dac = 1;
-	session->flag49a8 = false;
-	session->value49ac = 0;
-	session->value49b0 = 0;
-	memset(&session->value4c, 0, 0x2494);
-	session->flag48 = false;
-	session->member_index = 0;
-	session->current_member = 0;
-	network_session_add_member(session, session->member_count, &identity, false, NONE, id);
-	session->update7618++;
-	session->value50 = 0;
-	session->value4c = 0;
-	memset(&session->value24e0, 0, 0x2494);
-	session->value24e0 = NONE;
-	memset(&session->value5e28, 0, 0x14b0);
-	session->value5e28 = NONE;
-	session->flag78ac = true;
-	session->time78b0 = -network_session_time_now();
-	session->time78b4 = time(NULL);
-	network_session_enter_state_5(session);
-	if (timeout == NONE || timeout > 0)
-		network_session_add_reservations(session, identities, id, count, timeout, values);
+	if (result)
+	{
+		session->value18 = mode;
+		memset(&session->update_count, 0, 0x14b0);
+		session->type = 1;
+		session->value497c = 0;
+		session->time4984 = network_session_time_now();
+		session->update_count = 0;
+		session->value4988 = get_current_language();
+		session->value498c = 0;
+		session->value4990 = 16;
+		session->value4994 = 16;
+		session->value49a4 = 0;
+		session->value49c8 = NONE;
+		session->value4d08 = NONE;
+		session->value4d0c = NONE;
+		transport_get_random_bytes(8, (byte *)&session->value4da0);
+		session->value5dd0 = NONE;
+		session->value49b4 = NONE;
+		session->value5e20 = NONE;
+		session->value4da8 = 0xdeadbeef;
+		session->value4dac = 1;
+		session->flag49a8 = false;
+		session->value49ac = 0;
+		session->value49b0 = 0;
+		memset(&session->value4c, 0, 0x2494);
+		session->flag48 = false;
+		session->member_index = 0;
+		session->current_member = 0;
+		network_session_add_member(session, session->member_count, &identity, false, NONE, id);
+		session->update7618++;
+		session->value50 = 0;
+		session->value4c = 0;
+		memset(&session->value24e0, 0, 0x2494);
+		session->value24e0 = NONE;
+		memset(&session->value5e28, 0, 0x14b0);
+		session->value5e28 = NONE;
+		long clock = -network_session_time_now();
+		session->flag78ac = true;
+		session->time78b0 = clock;
+		session->time78b4 = time(NULL);
+		network_session_enter_state_5(session);
+		if (timeout == NONE || timeout > 0)
+			network_session_add_reservations(session, identities, id, count, timeout, values);
+	}
 	return result;
 }
+
 /* sets a session up as owner owner_index of the observer */
 struct s_59ad0
 {
@@ -4157,24 +4159,22 @@ void __stdcall function_609e0(c_class_58d20 *session, const byte *current, s_609
  if (!local_0 || memcmp(current + 0x54, local_0 + 0x54, 0x1c))
  {
   update[0x52] = true;
-  dword kind = *(const dword *)(current + 0x54);
-  *(long *)(update + 0x54) = (long)kind;
+  *(long *)(update + 0x54) = *(const long *)(current + 0x54);
   *(long *)(update + 0x68) = 0;
   *(long *)(update + 0x6c) = 0;
   *(long *)(update + 0x58) = 0;
   *(long *)(update + 0x60) = 0;
   *(long *)(update + 0x5c) = 0;
   *(long *)(update + 0x64) = 0;
-  dword local_10 = kind - 1;
-  if (local_10 == 0)
+  if (*(const long *)(update + 0x54) == 1)
   {
    *(long *)(update + 0x58) = *(const long *)(current + 0x58);
    *(long *)(update + 0x60) = *(const long *)(current + 0x60);
    *(long *)(update + 0x5c) = *(const long *)(current + 0x5c);
    *(long *)(update + 0x64) = *(const long *)(current + 0x64);
   }
-  else if (local_10 == 1) memcpy(update + 0x68, current + 0x68, 4);
-  else if (local_10 == 2) memcpy(update + 0x6c, current + 0x6c, 4);
+  else if (*(const long *)(update + 0x54) == 2) memcpy(update + 0x68, current + 0x68, 4);
+  else if (*(const long *)(update + 0x54) == 3) memcpy(update + 0x6c, current + 0x6c, 4);
  }
  if (!local_0 || current[0x85] != local_0[0x85] || memcmp(current + 0x88, local_0 + 0x88, 0x308))
  {
