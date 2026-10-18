@@ -53,7 +53,7 @@ byte. The checker reports:
 
 ```
 matched 9062 of 11321 game functions (1285831 of 2784283 bytes, 46.18%)
-matched 9062 of 17219 functions in scope (1285831 of 3739273 bytes, 34.39%)
+matched 9062 of 16711 functions in scope (1285831 of 3681964 bytes, 34.92%)
 ```
 
 Matched code so far includes:
