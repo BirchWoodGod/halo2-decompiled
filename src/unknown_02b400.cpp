@@ -703,13 +703,20 @@ PRIVATE __forceinline double filter_random_fraction(void)
 
 PRIVATE __forceinline void filter_random_pair(point2f *point)
 {
-    g_4e7408->seed = g_4e7408->seed * 1664525 + 1013904223;
-    g_4e7408->seed = g_4e7408->seed * 1664525 + 1013904223;
-    point->x = (real)((double)(g_4e7408->seed >> 16) * (1.0f / 65535.0f));
+    dword seed = g_4e7408->seed * 1664525 + 1013904223;
+    *(dword volatile *)&g_4e7408->seed = seed;
+    seed = seed * 1664525 + 1013904223;
+    g_4e7408->seed = seed;
+    point->x = (real)(seed >> 16) * (1.0f / 65535.0f);
     point->y = (real)(word)(g_4e7408->seed >> 16) * (1.0f / 65535.0f);
 }
 
-// @retail 0x27aa0
+/* standard (frame alignment): retail's prologue realigns this frame itself
+   (and esp, -8), which our build does for such a function only when its
+   address escapes. It takes no arguments, so the marker changes no call.
+   The body doesn't match yet, but with the marker its prologue is
+   retail's; its caller 0x25a10 doesn't match yet either. */
+// @retail 0x27aa0 standard
 void function_27aa0(void)
 {
     if (g_4857b8 == NONE || !g_4857b8) return;
@@ -720,8 +727,7 @@ void function_27aa0(void)
     byte *bitmap = g_4e3b44[*(long *)(definition + 0x18) & 0xffff].bytes;
     g_4b9a00 = g_485600;
     if (g_485607) g_4b9a00 = 4;
-    double blend_cos = cos((double)g_485618.forward.k * 3.1415927410125732f);
-    real blend = (real)((blend_cos + 1.0f) * 0.5f);
+    real blend = (cosf(g_485618.forward.k * 3.1415927410125732f) + 1.0f) * 0.5f;
     g_4b9d8c = 19;
     g_4b9d90 = 0.5f;
     g_4b9d94 = *(real *)(definition + 0x20) * (1.0f - blend) + *(real *)(definition + 0x1c) * blend;
@@ -750,46 +756,45 @@ void function_27aa0(void)
     function_142a60(&identity, &relative, &relative);
     function_142a60((transform4x3f *)g_48568c, &relative, &relative);
     *previous = *(transform4x3f *)g_48568c;
-    real near_distance = g_4857dc;
     real far_distance = g_4857e0;
+    real near_distance = g_4857dc;
     if (!(far_distance > near_distance)) return;
     real step = (far_distance - near_distance) * 0.25f;
-    real inverse_span = 1.0f / (far_distance - near_distance < 0.0001f ? 0.0001f : far_distance - near_distance);
+    real inverse_span = 1.0f / (0.0001f > far_distance - near_distance ? 0.0001f : far_distance - near_distance);
     real aspect = ((real)(short)g_48564c - (real)(short)g_485648) /
         ((real)(short)g_48564e - (real)(short)g_48564a);
-    real largest_distance = far_distance < 0.0001f ? 0.0001f : far_distance;
+    real largest_distance = 0.0001f > far_distance ? 0.0001f : far_distance;
     real radius = (real)(*(real *)(definition + 0x10) * 0.5f /
-        (tan((double)g_485640 * 0.5f) * largest_distance * aspect));
+        (tan(g_485640 * 0.5f) * largest_distance * aspect));
     real angle_delta = (real)atan2(relative.forward.j + (relative.left.j + relative.up.j) * 0.0f,
         relative.forward.i + (relative.left.i + relative.up.i) * 0.0f);
     real *angle = (real *)(state->field_00 + 0x3c);
     *angle -= angle_delta * *(real *)(definition + 4);
     real cosine = (real)cos((double)*angle);
     real sine = (real)sin((double)*angle);
-    real phase = *(real *)(state->field_00 + 0x40);
-    phase -= *(real *)(definition + 0xc) / (step < 0.0001f ? 0.0001f : step) * relative.position.z;
-    real crossing = (real)floor((double)phase);
-    phase -= crossing;
-    *(real *)(state->field_00 + 0x40) = phase;
+    real volatile *phase_reference = (real volatile *)(state->field_00 + 0x40);
+    real stepped_phase = *phase_reference - *(real *)(definition + 0xc) / (step < 0.0001f ? 0.0001f : step) * relative.position.z;
+    *phase_reference = stepped_phase;
+    real crossing = (real)floor((double)stepped_phase);
+    *phase_reference = (real)((double)*phase_reference - crossing);
     long *ring = (long *)(state->field_00 + 0x38);
     *ring -= (long)crossing;
     while (*ring < 0) *ring += 4;
     while (*ring >= 4) *ring -= 4;
     if (crossing < 0.0f) filter_random_pair(points + ((*ring + 3) % 4));
     else if (crossing > 0.0f) filter_random_pair(points + *ring);
-    if (phase < 0.0f || phase >= 1.0f) return;
+    if (*phase_reference < 0.0f || *phase_reference >= 1.0f) return;
     real offsets[4] = { 0.0f, 0.7135000228881836f, 0.34220001101493835f, 0.579800009727478f };
-    volatile long bitmap_count = *(long *)(bitmap + 0x44);
     for (long i = 0; i < 4; ++i)
     {
         if (*(real *)(definition + 0x28) > 0.0f)
         {
-            double value = bitmap_count * (double)offsets[i] +
-                (double)state->previous_time / *(real *)(definition + 0x28);
+            double value = *(long *)(bitmap + 0x44) * offsets[i] +
+                state->previous_time / *(real *)(definition + 0x28);
             real rounded = (real)value;
-            records[i].bitmap = (long)floor(value) % bitmap_count;
-            records[i].fraction = (real)(rounded - floor(value) < 0.0f ? 0.0f :
-                rounded - floor(value) > 1.0f ? 1.0f : rounded - floor(value));
+            records[i].bitmap = (long)floor(value) % *(long *)(bitmap + 0x44);
+            records[i].fraction = rounded - (real)floor(value) < 0.0f ? 0.0f :
+                rounded - (real)floor(value) > 1.0f ? 1.0f : rounded - (real)floor(value);
             if (records[i].bitmap < 0)
             {
                 if (!g_55e6c4) g_55e6c4 = 1;
@@ -798,16 +803,19 @@ void function_27aa0(void)
         }
         else
         {
-            records[i].bitmap = i % bitmap_count;
+            records[i].bitmap = i % *(long *)(bitmap + 0x44);
             records[i].fraction = 0.0f;
         }
     }
     for (long j = 0; j < 4; ++j)
     {
-        volatile long index = (*ring + j) % 4;
-        real distance = (j + phase) * step + g_4857dc;
+        long index = (*ring + j) % 4;
+        real distance = (j + *phase_reference) * step + g_4857dc;
         real fraction = (distance - g_4857dc) * inverse_span;
-        real weight = (real)(pow(1.0 - pow((double)fabs(fraction * 2.0f - 1.0f), 3.0), 2.0) * g_4b9d98);
+        real centered = fraction * 2.0f - 1.0f;
+        real offset_from_center = centered >= 0.0f ? centered : 0.0f - centered;
+        real cubed_offset = (real)pow((double)offset_from_center, 3.0);
+        real weight = (real)(pow((double)(1.0f - cubed_offset), 2.0) * g_4b9d98);
         real size = *(real *)(definition + 0x10) / (g_4857e0 < 0.0001f ? 0.0001f : g_4857e0) * distance;
         real x = 0.0f, y = 0.0f, z = 0.0f - distance;
         if (relative.scale != 1.0f) { x *= relative.scale; y *= relative.scale; z *= relative.scale; }
@@ -819,12 +827,15 @@ void function_27aa0(void)
         if (*(real *)(definition + 0x28) != 0.0f)
         {
             real t = records[index].fraction;
-            real values[3];
-            values[0] = (1.0f - t) * (1.0f - t) * weight;
-            values[1] = t * 2.0f * (1.0f - t) * weight;
-            values[2] = t * t * weight;
-            for (long k = 0; k < 3; ++k)
-                records[index].weights[k] = values[k] < 0.0f ? 0.0f : values[k] > 1.0f ? 1.0f : values[k];
+            real weight_third = t * t * weight;
+            weight_third = weight_third < 0.0f ? 0.0f : weight_third > 1.0f ? 1.0f : weight_third;
+            real weight_second = t * 2.0f * (1.0f - t) * weight;
+            weight_second = weight_second < 0.0f ? 0.0f : weight_second > 1.0f ? 1.0f : weight_second;
+            real weight_first = (1.0f - t) * (1.0f - t) * weight;
+            weight_first = weight_first < 0.0f ? 0.0f : weight_first > 1.0f ? 1.0f : weight_first;
+            records[index].weights[0] = weight_first;
+            records[index].weights[2] = weight_third;
+            records[index].weights[1] = weight_second;
         }
         else
         {
